@@ -180,13 +180,13 @@ TEST_F(PeerConnectionTrackerTest, TrackCreateOffer) {
   // Note: blink::RTCOfferOptionsPlatform is not mockable. So we can't write
   // tests for anything but a null options parameter.
   RTCOfferOptionsPlatform* options =
-      MakeGarbageCollected<RTCOfferOptionsPlatform>(0, 0, false, false);
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(1, 1, true, true);
   EXPECT_CALL(
       *mock_host_,
       UpdatePeerConnection(
           _, String("createOffer"),
-          String("options: {offerToReceiveVideo: 0, offerToReceiveAudio: 0, "
-                 "voiceActivityDetection: false, iceRestart: false}")));
+          String("{\"offerToReceiveAudio\":true,\"offerToReceiveVideo\":true,"
+                 "\"voiceActivityDetection\":true,\"iceRestart\":true}")));
   tracker_->TrackCreateOffer(mock_handler_.get(), options);
   base::RunLoop().RunUntilIdle();
 }

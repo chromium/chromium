@@ -106,29 +106,40 @@ String SerializeGetUserMediaMediaConstraints(
 }
 
 String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
-  if (!options)
+  if (!options) {
     return "null";
+  }
 
-  StringBuilder result;
-  result.Append("offerToReceiveVideo: ");
-  result.AppendNumber(options->OfferToReceiveVideo());
-  result.Append(", offerToReceiveAudio: ");
-  result.AppendNumber(options->OfferToReceiveAudio());
-  result.Append(", voiceActivityDetection: ");
-  result.Append(String::Boolean(options->VoiceActivityDetection()));
-  result.Append(", iceRestart: ");
-  result.Append(String::Boolean(options->IceRestart()));
-  return result.ToString();
+  auto json = std::make_unique<JSONObject>();
+  if (options->OfferToReceiveAudio()) {
+    json->SetBoolean("offerToReceiveAudio", true);
+  }
+  if (options->OfferToReceiveVideo()) {
+    json->SetBoolean("offerToReceiveVideo", true);
+  }
+  if (options->VoiceActivityDetection()) {
+    json->SetBoolean("voiceActivityDetection", true);
+  }
+  if (options->IceRestart()) {
+    json->SetBoolean("iceRestart", true);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
-  if (!options)
+  if (!options) {
     return "null";
+  }
 
-  StringBuilder result;
-  result.Append(", voiceActivityDetection: ");
-  result.Append(String::Boolean(options->VoiceActivityDetection()));
-  return result.ToString();
+  auto json = std::make_unique<JSONObject>();
+  if (options->VoiceActivityDetection()) {
+    json->SetBoolean("voiceActivityDetection", true);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 String SerializeMediaStreamIds(const Vector<String>& stream_ids) {
@@ -795,9 +806,7 @@ void PeerConnectionTracker::TrackCreateOffer(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(
-      id, "createOffer",
-      StrCat({"options: {", SerializeOfferOptions(options), "}"}));
+  SendPeerConnectionUpdate(id, "createOffer", SerializeOfferOptions(options));
 }
 
 void PeerConnectionTracker::TrackCreateAnswer(
@@ -807,9 +816,7 @@ void PeerConnectionTracker::TrackCreateAnswer(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(
-      id, "createAnswer",
-      StrCat({"options: {", SerializeAnswerOptions(options), "}"}));
+  SendPeerConnectionUpdate(id, "createAnswer", SerializeAnswerOptions(options));
 }
 
 void PeerConnectionTracker::TrackSetSessionDescription(
