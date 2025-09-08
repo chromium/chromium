@@ -194,7 +194,8 @@ class ChangePasswordFormFillingSubmissionHelperTest
     ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(testing::Return(password_store_.get()));
 
-    logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
+    logs_uploader_ =
+        std::make_unique<ModelQualityLogsUploader>(web_contents(), GURL());
 
     existing_credential_.username_value = kUsername;
     existing_credential_.password_value = kOldPassword;

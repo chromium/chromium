@@ -307,8 +307,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
                          flow_start_time_ - leak_dialog_display_time_);
   LogPasswordSavedOnStart(originator_);
   UpdateState(State::kWaitingForChangePasswordForm);
-  logs_uploader_ =
-      std::make_unique<ModelQualityLogsUploader>(originator_.get());
+  logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
+      originator_.get(), change_password_url_);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kCheckLoginStateBeforePasswordChange)) {
     login_state_checker_ = std::make_unique<LoginStateChecker>(

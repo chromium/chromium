@@ -178,28 +178,18 @@ LoginPasswordType GetLoginAttemptPasswordType(
 }  // namespace
 
 ModelQualityLogsUploader::ModelQualityLogsUploader(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    const GURL& change_password_url) {
   CHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  SetCommonInformationQuality(web_contents);
+
+  auto* quality =
+      final_log_data_.mutable_password_change_submission()->mutable_quality();
+  quality->set_domain(GetPageDomain(change_password_url));
+  quality->set_location(GetLocation());
+  quality->set_language(GetPageLanguage(web_contents));
 }
 ModelQualityLogsUploader::~ModelQualityLogsUploader() = default;
-
-void ModelQualityLogsUploader::SetCommonInformationQuality(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  const GURL& page_url =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->set_domain(GetPageDomain(page_url));
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->set_location(GetLocation());
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->set_language(GetPageLanguage(web_contents));
-}
 
 void ModelQualityLogsUploader::SetLoggedInCheckQuality(int state_checks_count) {
   // If the initial login check wasn't performed because the page content failed
