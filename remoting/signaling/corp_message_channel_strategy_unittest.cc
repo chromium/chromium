@@ -37,7 +37,6 @@ namespace {
 using ::testing::_;
 using ::testing::Expectation;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Return;
 
 using remoting::internal::ChannelActiveStruct;
@@ -357,7 +356,7 @@ TEST_F(CorpMessageChannelStrategyTest, StreamsTwoMessages) {
       .WillOnce(Return());
   EXPECT_CALL(mock_on_incoming_msg_,
               Run(Field(&SimpleMessageStruct::payload, kMessage2Payload)))
-      .WillOnce(Invoke([&](const SimpleMessageStruct&) { run_loop.Quit(); }));
+      .WillOnce([&](const SimpleMessageStruct&) { run_loop.Quit(); });
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,

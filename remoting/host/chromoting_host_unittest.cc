@@ -71,7 +71,6 @@ using testing::DeleteArg;
 using testing::DoAll;
 using testing::Expectation;
 using testing::InSequence;
-using testing::Invoke;
 using testing::InvokeArgument;
 using testing::InvokeWithoutArgs;
 using testing::Return;

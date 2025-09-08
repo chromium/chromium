@@ -36,7 +36,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Expectation;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::Return;
 
@@ -318,7 +317,7 @@ TEST_F(FtlMessageChannelStrategyTest, StreamsTwoMessages) {
       .WillOnce(Return());
   EXPECT_CALL(mock_on_incoming_msg_,
               Run(Property(&ftl::InboxMessage::message_id, kMessage2Id)))
-      .WillOnce(Invoke([&](const ftl::InboxMessage&) { run_loop.Quit(); }));
+      .WillOnce([&](const ftl::InboxMessage&) { run_loop.Quit(); });
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
