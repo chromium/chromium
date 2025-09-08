@@ -97,8 +97,11 @@ constexpr unsigned char kIndexNamesKeyTypeByte = 201;
 constexpr unsigned char kObjectMetaDataTypeMaximum = 255;
 constexpr unsigned char kIndexMetaDataTypeMaximum = 255;
 
+// See comments where these are used for their meaning.
 constexpr unsigned char kTwoByteEncodingIndicator = 0x80;
 constexpr unsigned char kThreeByteEncodingIndicator = 0xff;
+constexpr char16_t kOneByteMaxChar = 0x80 - 2;
+constexpr char16_t kTwoByteMaxChar = 0xffff >> 2;
 
 // Appends encoded `source` to the end of `target` using a variable-length
 // encoding that maintains relative comparison order. When `source` is null, a
@@ -115,7 +118,7 @@ void EncodeSortableVarChar16(std::optional<char16_t> source,
   // first bit is 0), with a caveat. An actual null byte cannot be encoded as a
   // null byte because it would conflict with the sentinel, so we add 1 to all
   // of these, and 0x7f will fall into the next bucket.
-  if (*source <= (0x80 - 2)) {
+  if (*source <= kOneByteMaxChar) {
     target->push_back(*source + 1);
     return;
   }
@@ -123,7 +126,7 @@ void EncodeSortableVarChar16(std::optional<char16_t> source,
   // If the character can fit into 14 bits, encode in two bytes, with the first
   // two bits 1 and 0 so that it sorts higher than the previous bucket
   // encodings, which always start with 0.
-  if (*source < (0xffff >> 2)) {
+  if (*source <= kTwoByteMaxChar) {
     unsigned char high = ((*source >> 8) & 0xff) | kTwoByteEncodingIndicator;
     unsigned char low = *source & 0xff;
     target->push_back(high);
@@ -171,20 +174,27 @@ bool DecodeSortableVarChar16(std::string_view* from,
   if ((first & 0b11000000) == kTwoByteEncodingIndicator) {
     from->remove_prefix(2);
     *target = char16_t{second} | ((char16_t{first} & 0b00111111) << 8);
-    return true;
+    // If the decoded char is in the range that could have been encoded in one
+    // byte, it would have been, so this is only a well-formed encoding if it's
+    // not in that range.
+    return *target > kOneByteMaxChar;
   }
 
   if (from->size() < 3) {
     return false;
   }
 
-  unsigned char third = from->at(2);
   if (first != kThreeByteEncodingIndicator) {
     return false;
   }
+  unsigned char third = from->at(2);
   from->remove_prefix(3);
   *target = char16_t{third} | (char16_t{second} << 8);
-  return true;
+
+  // If the decoded char is in the range that could have been encoded in two
+  // bytes or less, it would have been, so this is only a well-formed encoding
+  // if it's not in that range.
+  return *target > kTwoByteMaxChar;
 }
 
 IndexedDBKey InvalidKey() {
