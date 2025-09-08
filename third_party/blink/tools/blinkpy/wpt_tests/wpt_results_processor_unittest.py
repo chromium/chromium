@@ -178,7 +178,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(self.processor.num_initial_failures, 0)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_called_once_with(
-            test_name_prefix='',
             result=mock.ANY,
             artifact_output_dir=self.fs.join('/mock-checkout', 'out',
                                              'Default'),
@@ -221,7 +220,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(self.processor.num_initial_failures, 1)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_called_once_with(
-            test_name_prefix='',
             result=mock.ANY,
             artifact_output_dir=self.fs.join('/mock-checkout', 'out',
                                              'Default'),
@@ -279,8 +277,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(self.processor.num_initial_failures, 1)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_has_calls([
-            mock.call(test_name_prefix='',
-                      result=mock.ANY,
+            mock.call(result=mock.ANY,
                       artifact_output_dir=self.fs.join('/mock-checkout', 'out',
                                                        'Default'),
                       expectations=None,
@@ -1395,7 +1392,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     status='SKIP')
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_called_once_with(
-            test_name_prefix='',
             result=mock.ANY,
             artifact_output_dir=self.fs.join('/mock-checkout', 'out',
                                              'Default'),

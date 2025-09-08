@@ -399,7 +399,6 @@ class WPTResultsProcessor:
                  port: Port,
                  artifacts_dir: str = '',
                  sink: Optional[ResultSinkReporter] = None,
-                 test_name_prefix: str = '',
                  failure_threshold: Optional[int] = None,
                  crash_timeout_threshold: Optional[int] = None,
                  reset_results: bool = False,
@@ -409,11 +408,6 @@ class WPTResultsProcessor:
         self.port = port
         self.artifacts_dir = artifacts_dir
         self.sink = sink or ResultSinkReporter(host=port.typ_host())
-        # This prefix does not actually exist on disk and only affects how the
-        # results are reported.
-        if test_name_prefix and not test_name_prefix.endswith('/'):
-            test_name_prefix += '/'
-        self.test_name_prefix = test_name_prefix
         self.path_finder = path_finder.PathFinder(self.fs)
         self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
@@ -705,7 +699,6 @@ class WPTResultsProcessor:
             self._handle_unexpected_result(result)
         product = self.port.get_option('product', '(unknown)')
         self.sink.report_individual_test_result(
-            test_name_prefix=self.test_name_prefix,
             result=result,
             artifact_output_dir=self.fs.dirname(self.artifacts_dir),
             expectations=None,
