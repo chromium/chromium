@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -69,6 +70,13 @@
 // Tests that search engine choice dialog is moved to the other active scene
 // when the current scene is removed.
 - (void)testOpenSecondWindow {
+  // TODO(crbug.com/443718522): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
