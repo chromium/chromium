@@ -44,6 +44,9 @@ found in the LICENSE file.
         <item name="android:minHeight">
             @dimen/keyboard_accessory_chip_min_height_redesign
         </item>
+        <item name="cornerRadius">
+            @dimen/keyboard_accessory_chip_corner_radius_redesign
+        </item>
         <item name="iconWidth">
             @dimen/keyboard_accessory_bar_item_icon_width
         </item>
