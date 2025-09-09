@@ -6421,7 +6421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwContentsConstructorTime{IsFirst}" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2026-04-07">
   <owner>cduvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7897,7 +7897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.OnRenderProcessGoneResult"
-    enum="AndroidWebViewRenderProcessGoneResult" expires_after="2024-06-21">
+    enum="AndroidWebViewRenderProcessGoneResult" expires_after="2026-06-21">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7908,7 +7908,8 @@ chromium-metrics-reviews@google.com.
     onRenderProcessGone() callback.
 
     Prior to M99, this histogram did not distinguish between crashes vs. kills
-    if the renderer crash was handled by the app.
+    if the renderer crash was handled by the app. Warning: this histogram was
+    expired from 2024-06-21 to 2025-09-08; data may be missing.
   </summary>
 </histogram>
 
