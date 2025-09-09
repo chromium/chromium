@@ -545,6 +545,13 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
+    if (url_fetcher_->data_received().empty()) {
+      RunCallback(
+          RegistrationResult(RegistrationResult::NoSessionConfigChange()));
+      // *this is deleted here.
+      return;
+    }
+
     base::expected<SessionParams, SessionError> params_or_error =
         ParseSessionInstructionJson(url_fetcher_->request().url(), *key_id_,
                                     session_identifier_,

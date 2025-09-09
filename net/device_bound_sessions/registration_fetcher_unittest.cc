@@ -1783,6 +1783,27 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
   ASSERT_TRUE(out_session.is_session());
 }
 
+TEST_F(RegistrationTest, EmptyResponse) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, ""));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  EXPECT_TRUE(out_session.is_no_session_config_change());
+}
+
 TEST_F(RegistrationTestWithOriginTrialFeedback,
        RegistrationBySubdomain_Success) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
