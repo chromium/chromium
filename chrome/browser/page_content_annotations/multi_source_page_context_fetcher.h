@@ -17,6 +17,35 @@
 
 namespace page_content_annotations {
 
+enum class ScreenshotIframeRedactionScope {
+  // No redaction.
+  kNone,
+  // Redact cross-site iframes.
+  kCrossSite,
+  // Redact cross-origin iframes.
+  kCrossOrigin,
+};
+
+struct PaintPreviewScreenshotOptions {
+  // Whether a full page screenshot will be taken rather than only the viewport.
+  bool capture_full_page_screenshot = false;
+
+  // The maximum memory/file bytes used for the capture of a single frame.
+  // 0 means no limit.
+  size_t max_per_capture_bytes = 0;
+
+  // Whether iframe redaction is enabled, and which scope is used if so.
+  ScreenshotIframeRedactionScope iframe_redaction_scope =
+      ScreenshotIframeRedactionScope::kNone;
+};
+
+struct ScreenshotOptions {
+  // Options for taking a screenshot using the Paint Preview backend. If not
+  // set, the screenshot will be taken using a legacy method.
+  std::optional<PaintPreviewScreenshotOptions>
+      paint_preview_screenshot_options = std::nullopt;
+};
+
 struct FetchPageContextOptions {
   FetchPageContextOptions();
   ~FetchPageContextOptions();
@@ -24,7 +53,10 @@ struct FetchPageContextOptions {
   // Limit defining the number of bytes for inner text returned. A value
   // of 0 indicates no inner text should be returned.
   uint32_t inner_text_bytes_limit = 0;
-  bool include_viewport_screenshot = false;
+
+  // Options for taking a screenshot. If not set, no screenshot will be taken.
+  std::optional<ScreenshotOptions> screenshot_options = std::nullopt;
+
   blink::mojom::AIPageContentOptionsPtr annotated_page_content_options;
 
   // Limit defining number of bytes for PDF data that should be returned.
@@ -103,26 +135,6 @@ extern const base::FeatureParam<int> kMaxScreenshotHeightParam;
 extern const base::FeatureParam<int> kScreenshotJpegQuality;
 
 extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
-
-// Enables the Paint Preview backend for taking screenshots.
-BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
-
-enum class ScreenshotIframeRedactionScope {
-  // No redaction.
-  kNone,
-  // Redact cross-site iframes.
-  kCrossSite,
-  // Redact cross-origin iframes.
-  kCrossOrigin,
-};
-
-// Controls whether iframe redaction is enabled, and which scope is used if so.
-extern const base::FeatureParam<ScreenshotIframeRedactionScope>
-    kScreenshotIframeRedaction;
-
-// Controls the maximum memory/file bytes used for the capture of a single
-// frame. 0 means no maximum.
-extern const base::FeatureParam<size_t> kScreenshotMaxPerCaptureBytes;
 
 // Enables page context eligibility checks.
 BASE_DECLARE_FEATURE(kGlicPageContextEligibility);

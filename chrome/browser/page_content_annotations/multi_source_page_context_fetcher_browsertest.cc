@@ -4,6 +4,8 @@
 
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
+#include <optional>
+
 #include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,7 +112,7 @@ class MultiSourcePageContextFetcherBrowserTest : public InProcessBrowserTest {
 
 class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
     : public MultiSourcePageContextFetcherBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::optional<bool>> {
  public:
   ScreenshotBackendMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
@@ -123,17 +125,17 @@ class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
          }},
     };
     std::vector<base::test::FeatureRef> disabled_features;
-    if (use_paint_preview_screenshot_backend()) {
-      enabled_features.push_back({kGlicTabScreenshotPaintPreviewBackend, {}});
-    } else {
-      disabled_features.emplace_back(kGlicTabScreenshotPaintPreviewBackend);
-    }
 
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
 
-  bool use_paint_preview_screenshot_backend() const { return GetParam(); }
+  bool use_paint_preview_screenshot_backend() const {
+    return GetParam().has_value();
+  }
+
+  // Only use if `use_paint_preview_screenshot_backend()` is true.
+  bool capture_full_page_screenshot() const { return GetParam().value(); }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -142,7 +144,13 @@ class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     ScreenshotBackendMultiSourcePageContextFetcherBrowserTest,
-    testing::Bool());
+    ::testing::Values(
+        // Use Paint Preview and take a full-page screenshot.
+        std::optional(true),
+        // Use Paint Preview and take a visible-rect screenshot.
+        std::optional(false),
+        // Don't use Paint Preview (use CopyFromSurface instead).
+        std::nullopt));
 
 IN_PROC_BROWSER_TEST_P(
     ScreenshotBackendMultiSourcePageContextFetcherBrowserTest,
@@ -155,7 +163,13 @@ IN_PROC_BROWSER_TEST_P(
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
   FetchPageContextOptions options;
-  options.include_viewport_screenshot = true;
+  options.screenshot_options = ScreenshotOptions();
+  if (use_paint_preview_screenshot_backend()) {
+    options.screenshot_options->paint_preview_screenshot_options =
+        PaintPreviewScreenshotOptions();
+    options.screenshot_options->paint_preview_screenshot_options
+        ->capture_full_page_screenshot = capture_full_page_screenshot();
+  }
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -166,6 +180,8 @@ IN_PROC_BROWSER_TEST_P(
 
   ScreenshotResult& screenshot = result->screenshot_result.value();
 
+  // TODO(crbug.com/443783984): Add test coverage for the dimensions of the
+  // screenshot.
   EXPECT_FALSE(screenshot.dimensions.IsZero());
   ASSERT_GT(screenshot.jpeg_data.size(), 0);
 
@@ -196,16 +212,20 @@ class RedactingMultiSourcePageContextFetcherBrowserTest
              {"screenshot_jpeg_quality", "100"},
              {"screenshot_timeout_ms", "10s"},
          }},
-        {kGlicTabScreenshotPaintPreviewBackend,
-         {
-             {"screenshot_iframe_redaction", "cross-site"},
-         }},
     };
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             /*disabled_features=*/{});
   }
 
   ~RedactingMultiSourcePageContextFetcherBrowserTest() override = default;
+
+  ScreenshotOptions GetScreenshotOptionsWithCrossSiteIframeRedaction() const {
+    ScreenshotOptions options;
+    options.paint_preview_screenshot_options = PaintPreviewScreenshotOptions();
+    options.paint_preview_screenshot_options->iframe_redaction_scope =
+        page_content_annotations::ScreenshotIframeRedactionScope::kCrossSite;
+    return options;
+  }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -226,7 +246,9 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
-  options.include_viewport_screenshot = true;
+  options.screenshot_options =
+      GetScreenshotOptionsWithCrossSiteIframeRedaction();
+
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -262,7 +284,9 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
-  options.include_viewport_screenshot = true;
+  options.screenshot_options =
+      GetScreenshotOptionsWithCrossSiteIframeRedaction();
+
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -298,7 +322,9 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
-  options.include_viewport_screenshot = true;
+  options.screenshot_options =
+      GetScreenshotOptionsWithCrossSiteIframeRedaction();
+
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,

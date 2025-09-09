@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -186,7 +187,23 @@ void ActorKeyedService::RequestTabObservation(
       last_committed_url, task_id, mojom::JournalTrack::kActor,
       "RequestTabObservation", "");
   page_content_annotations::FetchPageContextOptions options;
-  options.include_viewport_screenshot = true;
+
+  // Enable screenshot capture.
+  options.screenshot_options = page_content_annotations::ScreenshotOptions();
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicTabScreenshotPaintPreviewBackend)) {
+    page_content_annotations::PaintPreviewScreenshotOptions
+        paint_preview_options;
+    paint_preview_options.capture_full_page_screenshot =
+        actor::kFullPageScreenshot.Get();
+    paint_preview_options.max_per_capture_bytes =
+        actor::kScreenshotMaxPerCaptureBytes.Get();
+    paint_preview_options.iframe_redaction_scope =
+        actor::kScreenshotIframeRedaction.Get();
+    options.screenshot_options->paint_preview_screenshot_options =
+        std::move(paint_preview_options);
+  }
+
   options.annotated_page_content_options =
       optimization_guide::ActionableAIPageContentOptions(
           /* on_critical_path =*/true);

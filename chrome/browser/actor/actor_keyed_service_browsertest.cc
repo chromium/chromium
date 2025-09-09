@@ -41,6 +41,8 @@ namespace {
 class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
  public:
   ActorKeyedServiceBrowserTest() {
+    // TODO(crbug.com/443783931): Add test coverage for
+    // kGlicTabScreenshotPaintPreviewBackend.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                               features::kGlicActor},

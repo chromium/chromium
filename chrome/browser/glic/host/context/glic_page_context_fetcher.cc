@@ -174,8 +174,15 @@ void FetchPageContext(
   if (tab_context_options.include_pdf) {
     options.pdf_size_limit = tab_context_options.pdf_size_limit;
   }
-  options.include_viewport_screenshot =
-      tab_context_options.include_viewport_screenshot;
+
+  if (tab_context_options.include_viewport_screenshot) {
+    options.screenshot_options = page_content_annotations::ScreenshotOptions();
+    // Disable paint preview backend, which also disables full page screenshot
+    // capture.
+    // TODO(crbug.com/443996647): Make screenshot size configuration explicit.
+    options.screenshot_options->paint_preview_screenshot_options =
+        std::nullopt;
+  }
 
   const bool on_critical_path = true;
   if (tab_context_options.include_annotated_page_content) {

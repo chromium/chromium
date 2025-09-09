@@ -43,4 +43,33 @@ BASE_FEATURE(kGlicEnableAutoLoginDialogs,
              "GlicEnableAutoLoginDialogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
+             "GlicTabScreenshotPaintPreviewBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kFullPageScreenshot{
+    &kGlicTabScreenshotPaintPreviewBackend, "full_page_screenshot", false};
+
+const base::FeatureParam<size_t> kScreenshotMaxPerCaptureBytes{
+    &kGlicTabScreenshotPaintPreviewBackend, "screenshot_max_per_capture_bytes",
+    0};
+
+constexpr base::FeatureParam<
+    page_content_annotations::ScreenshotIframeRedactionScope>::Option
+    kScreenshotIframeRedactionOptions[] = {
+        {page_content_annotations::ScreenshotIframeRedactionScope::kNone,
+         "none"},
+        {page_content_annotations::ScreenshotIframeRedactionScope::kCrossSite,
+         "cross-site"},
+        {page_content_annotations::ScreenshotIframeRedactionScope::kCrossOrigin,
+         "cross-origin"},
+};
+
+const base::FeatureParam<
+    page_content_annotations::ScreenshotIframeRedactionScope>
+    kScreenshotIframeRedaction{
+        &kGlicTabScreenshotPaintPreviewBackend, "screenshot_iframe_redaction",
+        page_content_annotations::ScreenshotIframeRedactionScope::kCrossSite,
+        &kScreenshotIframeRedactionOptions};
+
 }  // namespace actor
