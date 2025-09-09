@@ -53,10 +53,6 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   return self;
 }
 
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)setTrailingIconType:(TrailingIconType)trailingIconType {
   if (trailingIconType == _trailingIconType) {
     return;
