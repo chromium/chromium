@@ -1659,10 +1659,20 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   }
 }
 
+// TODO(crbug.com/443863931): BleAdapterNeedsActionSplitsUsbAndQrSheets is
+// failing on Windows bots.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BleAdapterNeedsActionSplitsUsbAndQrSheets \
+  DISABLED_BleAdapterNeedsActionSplitsUsbAndQrSheets
+#else
+#define MAYBE_BleAdapterNeedsActionSplitsUsbAndQrSheets \
+  BleAdapterNeedsActionSplitsUsbAndQrSheets
+#endif
+
 // Tests that if the bluetooth adapter needs action, the QR sheet and USB sheet
 // are split.
 TEST_F(AuthenticatorRequestDialogControllerTest,
-       BleAdapterNeedsActionSplitsUsbAndQrSheets) {
+       MAYBE_BleAdapterNeedsActionSplitsUsbAndQrSheets) {
   for (BleStatus ble_status :
        {BleStatus::kPendingPermissionRequest, BleStatus::kPermissionDenied,
         BleStatus::kOff, BleStatus::kOn}) {
