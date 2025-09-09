@@ -141,4 +141,37 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, PendingUpdate) {
                 app_browser->GetAppBrowserController()->GetAppShortName()));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       ToolbarVisibilityUpdatedOnScopeChange) {
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/scope_updating/page.html");
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  // TODO(crbug.com/442643377): Delete this wait after the update runs for every
+  // navigation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/scope_updating/page_update.html");
+
+  {
+    UpdateAwaiter awaiter(
+        WebAppProvider::GetForTest(browser()->profile())->install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+    awaiter.AwaitUpdate();
+  }
+
+  // After update, we are on the update page, which is in scope.
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+
+  // Now navigate to the out-of-scope URL and check that the toolbar is
+  // hidden because the scope has been widened.
+  const GURL out_of_scope_url =
+      https_server()->GetURL("/web_apps/scope_updating/out-of-scope.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+}
+
 }  // namespace web_app

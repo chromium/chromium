@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/re2/src/re2/set.h"
@@ -56,7 +57,8 @@ class WebAppProvider;
 // Note: Much of the functionality in HostedAppBrowserController
 // will move to this class.
 class WebAppBrowserController : public AppBrowserController,
-                                public WebAppInstallManagerObserver {
+                                public WebAppInstallManagerObserver,
+                                public WebAppRegistrarObserver {
  public:
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
@@ -126,6 +128,11 @@ class WebAppBrowserController : public AppBrowserController,
   void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  // WebAppRegistrarObserver:
+  void OnWebAppEffectiveScopeChanged(const webapps::AppId& app_id,
+                                     const WebAppScope& new_scope) override;
+  void OnAppRegistrarDestroyed() override;
+
   base::CallbackListSubscription AddHomeTabIconLoadCallbackForTesting(
       const base::OnceClosure callback);
   static void SetIconLoadCallbackForTesting(base::OnceClosure callback);
@@ -192,6 +199,8 @@ class WebAppBrowserController : public AppBrowserController,
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
+      registrar_observation_{this};
 
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};
 };

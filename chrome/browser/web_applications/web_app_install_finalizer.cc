@@ -464,11 +464,16 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
+  bool scope_changed =
+      existing_web_app->scope() != web_app_info.scope ||
+      existing_web_app->scope_extensions() != web_app_info.scope_extensions;
+
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
       provider_->registrar_unsafe().GetAppShortName(app_id),
-      GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone());
+      GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone(),
+      scope_changed);
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   if (web_app->isolation_data().has_value()) {
@@ -693,12 +698,17 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     std::string old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
+    bool scope_changed,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
     std::move(callback).Run(webapps::AppId(),
                             webapps::InstallResultCode::kWriteDataFailed);
     return;
+  }
+
+  if (scope_changed) {
+    provider_->registrar_unsafe().NotifyWebAppEffectiveScopeChanged(app_id);
   }
 
   // OS integration should always be enabled on ChromeOS for manifest updates.

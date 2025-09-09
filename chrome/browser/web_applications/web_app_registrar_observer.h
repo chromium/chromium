@@ -16,6 +16,7 @@ class Time;
 
 namespace web_app {
 class WebApp;
+class WebAppScope;
 
 class WebAppRegistrarObserver : public base::CheckedObserver {
  public:
@@ -50,6 +51,8 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppUserDisplayModeChanged(
       const webapps::AppId& app_id,
       mojom::UserDisplayMode user_display_mode) {}
+  virtual void OnWebAppEffectiveScopeChanged(const webapps::AppId& app_id,
+                                             const WebAppScope& new_scope) {}
   virtual void OnWebAppRunOnOsLoginModeChanged(
       const webapps::AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) {}

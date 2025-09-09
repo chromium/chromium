@@ -576,6 +576,7 @@ class WebAppRegistrar {
       const webapps::AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode);
   void NotifyWebAppSettingsPolicyChanged();
+  void NotifyWebAppEffectiveScopeChanged(const webapps::AppId& app_id);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   void NotifyWebAppUserLinkCapturingPreferencesChanged(

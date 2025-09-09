@@ -427,6 +427,18 @@ void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
   }
 }
 
+void WebAppRegistrar::NotifyWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id) {
+  std::optional<WebAppScope> scope = GetEffectiveScope(app_id);
+  if (!scope) {
+    return;
+  }
+
+  for (WebAppRegistrarObserver& observer : observers_) {
+    observer.OnWebAppEffectiveScopeChanged(app_id, *scope);
+  }
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void WebAppRegistrar::NotifyWebAppUserLinkCapturingPreferencesChanged(
     const webapps::AppId& app_id,

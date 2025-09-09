@@ -130,6 +130,7 @@ WebAppBrowserController::WebAppBrowserController(
   effective_display_mode_ =
       registrar().GetAppEffectiveDisplayMode(this->app_id());
   install_manager_observation_.Observe(&provider.install_manager());
+  registrar_observation_.Observe(&provider.registrar_unsafe());
   PerformDigitalAssetLinkVerification(browser);
 }
 
@@ -344,6 +345,22 @@ void WebAppBrowserController::OnWebAppManifestUpdated(
 
 void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
+}
+
+void WebAppBrowserController::OnWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id,
+    const WebAppScope& new_scope) {
+  if (app_id != this->app_id()) {
+    return;
+  }
+
+  // When the HostedAppController finally goes away, pipe through the
+  // WebAppScope appropriately to remove another registrar lookup.
+  UpdateCustomTabBarVisibility(/*animate=*/true);
+}
+
+void WebAppBrowserController::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
 }
 
 ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
