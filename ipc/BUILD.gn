@@ -252,7 +252,6 @@ if (use_blink) {
       "ipc_sync_channel_unittest.cc",
       "ipc_sync_message_unittest.cc",
       "ipc_sync_message_unittest.h",
-      "sync_socket_unittest.cc",
       "tracing_helpers_unittest.cc",
     ]
 
