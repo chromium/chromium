@@ -44,8 +44,8 @@ class TestPrefetchWatcherImpl {
       response_completed_prefetches_;
   std::map<PrefetchKey, base::OnceClosure> response_completed_quit_closures_;
 
-  std::optional<raw_ptr<PrefetchContainer>>
-      prefetch_container_used_in_last_navigation_ = std::nullopt;
+  std::optional<PrefetchContainerIdForTesting>
+      prefetch_container_id_for_testing_used_in_last_navigation_;
 };
 
 TestPrefetchWatcherImpl::TestPrefetchWatcherImpl() {
@@ -78,7 +78,8 @@ void TestPrefetchWatcherImpl::OnPrefetchResponseCompleted(
 
 void TestPrefetchWatcherImpl::OnPrefetchInterceptionCompleted(
     PrefetchContainer* prefetch_container) {
-  prefetch_container_used_in_last_navigation_ = prefetch_container;
+  prefetch_container_id_for_testing_used_in_last_navigation_ =
+      GetContainerIdForTesting(prefetch_container);
 }
 
 PrefetchContainerIdForTesting
@@ -102,17 +103,15 @@ TestPrefetchWatcherImpl::WaitUntilPrefetchResponseCompleted(
 }
 
 bool TestPrefetchWatcherImpl::PrefetchUsedInLastNavigation() {
-  CHECK(prefetch_container_used_in_last_navigation_.has_value());
-  return !!prefetch_container_used_in_last_navigation_.value();
+  return GetPrefetchContainerIdForTestingInLastNavigation() !=
+         InvalidPrefetchContainerIdForTesting;
 }
 
 PrefetchContainerIdForTesting
 TestPrefetchWatcherImpl::GetPrefetchContainerIdForTestingInLastNavigation() {
-  if (!PrefetchUsedInLastNavigation()) {
-    return InvalidPrefetchContainerIdForTesting;
-  }
-  return GetContainerIdForTesting(
-      prefetch_container_used_in_last_navigation_.value());
+  CHECK(prefetch_container_id_for_testing_used_in_last_navigation_.has_value())
+      << "No prefetch interception has ever been done.";
+  return prefetch_container_id_for_testing_used_in_last_navigation_.value();
 }
 
 PrefetchContainerIdForTesting TestPrefetchWatcherImpl::GetContainerIdForTesting(
