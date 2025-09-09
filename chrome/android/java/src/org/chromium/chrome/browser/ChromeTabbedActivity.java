@@ -3870,9 +3870,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
             RecordUserAction.record("MobileTabClosedUndoShortCut");
         } else if (id == R.id.quick_delete_menu_id) {
-            assert !mTabModelSelector.getCurrentModel().isIncognito()
-                    : "Quick delete is not supported in Incognito.";
-
+            if (mTabModelSelector.getCurrentModel().isIncognito()) return false;
             if (getLayoutManager().getActiveLayoutType() == LayoutType.TAB_SWITCHER) {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction
