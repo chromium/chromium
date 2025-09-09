@@ -8,15 +8,11 @@ import type {DiscardsTabElement} from './discards_tab.js';
 
 export function getHtml(this: DiscardsTabElement) {
   //clang-format off
-  // TODO(crbug.com/399740817): Enable "Urgent discard a tab now" when
-  // PageDiscardingHelper is enabled on Android.
   return html`<!--_html_template_start_-->
 <div id="discards">
-<if expr="not is_android">
   <div is="action-link" @click="${this.discardUrgentNow_}">
     [Urgent discard a tab now]
   </div>
-</if>
   <div is="action-link" @click="${this.toggleBatterySaverMode_}">
     [Toggle battery saver mode]
   </div>

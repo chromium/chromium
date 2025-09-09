@@ -11,11 +11,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/resource_coordinator/utils.h"
+#else
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::mechanism {
 namespace {
@@ -35,7 +42,7 @@ enum class DiscardPageOnUIThreadOutcome {
 
 std::optional<base::ByteCount> PageDiscarder::DiscardPageNode(
     const PageNode* page_node,
-    resource_coordinator::LifecycleUnitDiscardReason discard_reason) {
+    ::mojom::LifecycleUnitDiscardReason discard_reason) {
   base::WeakPtr<content::WebContents> contents = page_node->GetWebContents();
 
   std::optional<DiscardPageOnUIThreadOutcome> outcome;
@@ -51,6 +58,15 @@ std::optional<base::ByteCount> PageDiscarder::DiscardPageNode(
     return std::nullopt;
   }
 
+  base::ByteCount memory_footprint_estimate =
+      user_tuning::GetDiscardedMemoryEstimateForPage(page_node);
+
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(base::FeatureList::IsEnabled(features::kWebContentsDiscard));
+  resource_coordinator::AttemptFastKillForDiscard(contents.get(),
+                                                  discard_reason);
+  contents->Discard(base::NullCallback());
+#else
   auto* lifecycle_unit =
       resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
           contents.get());
@@ -58,14 +74,13 @@ std::optional<base::ByteCount> PageDiscarder::DiscardPageNode(
     return std::nullopt;
   }
 
-  base::ByteCount memory_footprint_estimate =
-      user_tuning::GetDiscardedMemoryEstimateForPage(page_node);
-
   if (!lifecycle_unit->DiscardTab(discard_reason,
                                   memory_footprint_estimate.InKiB())) {
     outcome = DiscardPageOnUIThreadOutcome::kDiscardTabFailure;
     return std::nullopt;
   }
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
   outcome = DiscardPageOnUIThreadOutcome::kSuccess;
   return memory_footprint_estimate;

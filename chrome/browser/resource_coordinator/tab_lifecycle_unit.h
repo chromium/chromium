@@ -145,11 +145,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
       uint64_t tab_resident_set_size_estimate,
       base::TimeTicks discard_start_time);
 
-  // Attempts to fast kill the process hosting the main frame of `web_contents`
-  // if only hosting the main frame.
-  void AttemptFastKillForDiscard(content::WebContents* web_contents,
-                                 LifecycleUnitDiscardReason discard_reason);
-
   // content::WebContentsObserver:
   void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/byte_count.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
 namespace performance_manager {
 

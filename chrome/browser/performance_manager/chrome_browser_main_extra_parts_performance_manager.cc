@@ -26,6 +26,7 @@
 #include "chrome/browser/performance_manager/policies/frame_throttling_policy.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/termination_target_policy.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
@@ -78,7 +79,6 @@
 #include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
 #else
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -198,13 +198,21 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+  const bool need_page_discarding_helper =
+      base::FeatureList::IsEnabled(features::kWebContentsDiscard);
+#else
+  const bool need_page_discarding_helper = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (need_page_discarding_helper) {
+    graph->PassToGraph(std::make_unique<
+                       performance_manager::policies::PageDiscardingHelper>());
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   using performance_manager::policies::FreezingOptOutChecker;
 
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
-
-  graph->PassToGraph(
-      std::make_unique<performance_manager::policies::PageDiscardingHelper>());
 
 #if URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
   graph->PassToGraph(

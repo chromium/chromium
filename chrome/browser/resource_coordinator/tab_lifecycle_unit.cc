@@ -42,29 +42,14 @@
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
 namespace resource_coordinator {
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AttemptFastKillForDiscardResult)
-enum class AttemptFastKillForDiscardResult {
-  kKilled = 0,
-  kSkipped = 1,
-  kKilledWithoutUnloadHandlers = 2,
-  kMaxValue = kKilledWithoutUnloadHandlers,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AttemptFastKillForDiscardResult)
 
 using StateChangeReason = LifecycleUnitStateChangeReason;
 
@@ -463,37 +448,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::
 
   is_discarded_ = true;
   RecomputeLifecycleUnitState(DiscardReasonToStateChangeReason(discard_reason));
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
-    content::WebContents* web_contents,
-    LifecycleUnitDiscardReason discard_reason) {
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  CHECK(main_frame);
-  content::RenderProcessHost* render_process_host = main_frame->GetProcess();
-  CHECK(render_process_host);
-
-  // First try to fast-kill the process, if it's just running a single tab.
-  bool succeed = render_process_host->FastShutdownIfPossible(1u, false);
-  AttemptFastKillForDiscardResult result =
-      succeed ? AttemptFastKillForDiscardResult::kKilled
-              : AttemptFastKillForDiscardResult::kSkipped;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!succeed && discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    // We avoid fast shutdown on tabs with beforeunload handlers on the main
-    // frame, as that is often an indication of unsaved user state.
-    if (!main_frame->GetSuddenTerminationDisablerState(
-            blink::mojom::SuddenTerminationDisablerType::
-                kBeforeUnloadHandler) &&
-        render_process_host->FastShutdownIfPossible(
-            1u, /*skip_unload_handlers=*/true)) {
-      result = AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
-    }
-  }
-#endif
-  base::UmaHistogramEnumeration("Discarding.AttemptFastKillForDiscardResult",
-                                result);
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(

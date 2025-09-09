@@ -50,6 +50,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -325,6 +326,12 @@ class DiscardsDetailsProviderImpl
   }
 
   void Discard(DiscardCallback callback) override {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, discarding is enabled when kWebContentsDiscard is enabled.
+    if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+      return;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     performance_manager::user_tuning::DiscardAnyPage(
         mojom::LifecycleUnitDiscardReason::URGENT,
         /*ignore_minimum_time_in_background=*/true);

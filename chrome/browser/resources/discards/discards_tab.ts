@@ -420,19 +420,10 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
    * @param tab The tab.
    * @return true iff the tab can be discarded.
    */
-  // <if expr="not is_android">
   protected canDiscardViaUi_(tab: TabDiscardsInfo): boolean {
     return tab.visibility !== LifecycleUnitVisibility.VISIBLE &&
         tab.state !== LifecycleUnitState.DISCARDED;
   }
-  // </if>
-  // <if expr="is_android">
-  // TODO(crbug.com/399740817): Enable discarding when PageDiscardingHelper is
-  // enabled on Android.
-  protected canDiscardViaUi_(_tab: TabDiscardsInfo): boolean {
-    return false;
-  }
-  // </if>
 
   /**
    * Tests whether a tab can be frozen via the discards UI. This is different

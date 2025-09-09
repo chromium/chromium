@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Killed without unload handlers"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/tab_lifecycle_unit.cc:AttemptFastKillForDiscardResult) -->
+<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/utils.cc:AttemptFastKillForDiscardResult) -->
 
 <enum name="BooleanFocusedTab">
   <int value="0" label="Not Focused"/>
