@@ -153,6 +153,8 @@ class CORE_EXPORT SpeculationRuleSet final
   bool HasWarnings() const;
   bool ShouldReportUMAForError() const;
 
+  const String& tag() const { return tag_; }
+
   void AddConsoleMessageForValidation(ScriptElementBase& script_element);
   void AddConsoleMessageForValidation(Document& element_document,
                                       SpeculationRulesResource& resource);
@@ -164,6 +166,7 @@ class CORE_EXPORT SpeculationRuleSet final
 
  private:
   void SetError(SpeculationRuleSetErrorType error_type, String error_message);
+  void SetTag(String tag);
   void AddWarnings(base::span<const String> warning_messages);
 
   SpeculationRuleSetId inspector_id_;
@@ -187,6 +190,8 @@ class CORE_EXPORT SpeculationRuleSet final
       SpeculationRuleSetErrorType::kNoError;
   String error_message_;
   Vector<String> warning_messages_;
+
+  String tag_;
 };
 
 }  // namespace blink

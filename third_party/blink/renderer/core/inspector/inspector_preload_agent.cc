@@ -197,6 +197,10 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
     builder->setErrorMessage(GetProtocolRuleSetErrorMessage(rule_set));
   }
 
+  if (!rule_set.tag().IsNull()) {
+    builder->setTag(rule_set.tag());
+  }
+
   return builder;
 }
 

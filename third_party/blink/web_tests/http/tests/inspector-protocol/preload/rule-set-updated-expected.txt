@@ -15,7 +15,9 @@ Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
                 ]
             }
         ]
+        tag : prefetch_tag
     }
+    tag : prefetch_tag
 }
 {
     _selector : #prerender
@@ -31,7 +33,9 @@ Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
                 ]
             }
         ]
+        tag : prerender_tag
     }
+    tag : prerender_tag
 }
 {
     _selector : #invalid-json

@@ -581,6 +581,10 @@ void SpeculationRuleSet::SetError(SpeculationRuleSetErrorType error_type,
   error_message_ = error_message;
 }
 
+void SpeculationRuleSet::SetTag(String tag) {
+  tag_ = tag;
+}
+
 void SpeculationRuleSet::AddWarnings(
     base::span<const String> warning_messages) {
   warning_messages_.AppendSpan(warning_messages);
@@ -775,6 +779,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       /*allow_target_hint=*/true,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
+  result->SetTag(ruleset_tag);
   return result;
 }
 

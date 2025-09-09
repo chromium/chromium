@@ -40,6 +40,9 @@ experimental domain Preload
       optional RuleSetErrorType errorType
       # TODO(https://crbug.com/1425354): Replace this property with structured error.
       deprecated optional string errorMessage
+      # For more details, see:
+      # https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+      optional string tag
 
   type RuleSetErrorType extends string
     enum

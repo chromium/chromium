@@ -5,6 +5,7 @@
     <head>
       <script type="speculationrules" id="prefetch">
         {
+          "tag": "prefetch_tag",
           "prefetch":[
             {
               "source": "list",
@@ -15,6 +16,7 @@
       </script>
       <script type="speculationrules" id="prerender">
         {
+          "tag": "prerender_tag",
           "prerender":[
             {
               "source": "list",
