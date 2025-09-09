@@ -3727,7 +3727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.WaitingForHeadersFinishedReason{PreloadingTriggerType}"
-    enum="PrerenderWaitingForHeadersFinishedReason" expires_after="2025-10-19">
+    enum="PrerenderWaitingForHeadersFinishedReason" expires_after="2026-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
