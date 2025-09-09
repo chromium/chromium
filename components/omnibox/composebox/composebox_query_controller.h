@@ -168,7 +168,7 @@ class ComposeboxQueryController {
 
     // The request to be sent to the server. Will be set asynchronously after
     // StartFileUploadFlow() is called.
-    std::unique_ptr<lens::LensOverlayServerRequest> request_body_;
+    std::unique_ptr<lens::LensOverlayServerRequest> file_upload_request_body_;
 
     // The headers to attach to the request. Will be set asynchronously after
     // StartFileUploadFlow() is called.
@@ -346,9 +346,10 @@ class ComposeboxQueryController {
       lens::LensOverlayServerRequest request,
       std::optional<FileUploadErrorType> error_type);
 
-  // Asynchronous handler for when the file upload request headers are ready.
-  void OnUploadFileRequestHeadersReady(const base::UnguessableToken& file_token,
-                                       std::vector<std::string> headers);
+  // Asynchronous handler for when the request headers for uploading file and
+  // viewport data are ready.
+  void OnUploadRequestHeadersReady(const base::UnguessableToken& file_token,
+                                   std::vector<std::string> headers);
 
   // Sends the file upload request if the request body, headers, and cluster
   // info are ready.
@@ -358,10 +359,27 @@ class ComposeboxQueryController {
   // Creates the endpoint fetcher and sends the file upload network request.
   void SendFileUploadNetworkRequest(FileInfo* file_infon);
 
+  // Callback for when the file upload endpoint fetcher is created, storing it
+  // updating the file info state.
+  void OnFileUploadEndpointFetcherCreated(
+      const base::UnguessableToken& file_token,
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
+
   // Handles the response from the file upload request.
   void HandleFileUploadResponse(
       const base::UnguessableToken& file_token,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
+  // Performs the fetch request.
+  void PerformFetchRequest(
+      lens::LensOverlayServerRequest* request,
+      std::vector<std::string>* request_headers,
+      base::TimeDelta timeout,
+      base::OnceCallback<
+          void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+          fetcher_created_callback,
+      endpoint_fetcher::EndpointFetcherCallback response_received_callback,
+      UploadProgressCallback upload_progress_callback = base::NullCallback());
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;

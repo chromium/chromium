@@ -314,7 +314,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Async Flow 2: Retrieve the OAuth headers.
   current_file_info.file_upload_access_token_fetcher_ =
       CreateOAuthHeadersAndContinue(base::BindOnce(
-          &ComposeboxQueryController::OnUploadFileRequestHeadersReady,
+          &ComposeboxQueryController::OnUploadRequestHeadersReady,
           weak_ptr_factory_.GetWeakPtr(), file_token));
 
   // Async Flow 3: Creating the file upload request.
@@ -700,12 +700,12 @@ void ComposeboxQueryController::OnUploadFileRequestBodyReady(
     return;
   }
 
-  file_info->request_body_ =
+  file_info->file_upload_request_body_ =
       std::make_unique<lens::LensOverlayServerRequest>(request);
   MaybeSendFileUploadNetworkRequest(file_token);
 }
 
-void ComposeboxQueryController::OnUploadFileRequestHeadersReady(
+void ComposeboxQueryController::OnUploadRequestHeadersReady(
     const base::UnguessableToken& file_token,
     std::vector<std::string> headers) {
   FileInfo* file_info = GetFileInfo(file_token);
@@ -726,7 +726,7 @@ void ComposeboxQueryController::MaybeSendFileUploadNetworkRequest(
     return;
   }
 
-  if (file_info->request_headers_ && file_info->request_body_ &&
+  if (file_info->request_headers_ && file_info->file_upload_request_body_ &&
       cluster_info_.has_value() &&
       file_info->upload_status_ == FileUploadStatus::kProcessing &&
       query_controller_state_ == QueryControllerState::kClusterInfoReceived) {
@@ -736,43 +736,33 @@ void ComposeboxQueryController::MaybeSendFileUploadNetworkRequest(
 
 void ComposeboxQueryController::SendFileUploadNetworkRequest(
     FileInfo* file_info) {
-  CHECK(file_info->request_body_);
+  CHECK(file_info->file_upload_request_body_);
   CHECK(file_info->request_headers_);
-  CHECK_EQ(query_controller_state_, QueryControllerState::kClusterInfoReceived);
-  CHECK(cluster_info_.has_value());
-
-  // Get client experiment variations to include in the request.
-  std::vector<std::string> cors_exempt_headers =
-      lens::CreateVariationsHeaders(variations_client_);
-
-  // Generate the URL to fetch to and include the server session id if present.
-  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
-  // The endpoint fetches should use the server session id from the cluster
-  // info.
-  fetch_url =
-      net::AppendOrReplaceQueryParameter(fetch_url, kSessionIdQueryParameterKey,
-                                         cluster_info_->server_session_id());
-
-  std::string request_string;
-  CHECK(file_info->request_body_->SerializeToString(&request_string));
-
-  // Create the EndpointFetcher, responsible for making the request using our
-  // given params.
-  file_info->file_upload_endpoint_fetcher_ = CreateEndpointFetcher(
-      std::move(request_string), fetch_url, HttpMethod::kPost,
+  PerformFetchRequest(
+      file_info->file_upload_request_body_.get(),
+      file_info->request_headers_.get(),
       base::Milliseconds(
           lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
-      *file_info->request_headers_, cors_exempt_headers,
+      base::BindOnce(
+          &ComposeboxQueryController::OnFileUploadEndpointFetcherCreated,
+          weak_ptr_factory_.GetWeakPtr(), file_info->file_token_),
+      base::BindOnce(&ComposeboxQueryController::HandleFileUploadResponse,
+                     weak_ptr_factory_.GetWeakPtr(), file_info->file_token_),
       /*upload_progress_callback=*/base::DoNothing());
+}
+
+void ComposeboxQueryController::OnFileUploadEndpointFetcherCreated(
+    const base::UnguessableToken& file_token,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
+    return;
+  }
+
   file_info->upload_network_request_start_time_ = base::Time::Now();
   UpdateFileUploadStatus(file_info->file_token_,
                          FileUploadStatus::kUploadStarted, std::nullopt);
-
-  // Finally, perform the request.
-  file_info->file_upload_endpoint_fetcher_->PerformRequest(
-      base::BindOnce(&ComposeboxQueryController::HandleFileUploadResponse,
-                     weak_ptr_factory_.GetWeakPtr(), file_info->file_token_),
-      google_apis::GetAPIKey().c_str());
+  file_info->file_upload_endpoint_fetcher_ = std::move(endpoint_fetcher);
 }
 
 void ComposeboxQueryController::HandleFileUploadResponse(
@@ -796,6 +786,50 @@ void ComposeboxQueryController::HandleFileUploadResponse(
 
   UpdateFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful,
                          std::nullopt);
+}
+
+void ComposeboxQueryController::PerformFetchRequest(
+    lens::LensOverlayServerRequest* request,
+    std::vector<std::string>* request_headers,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+        fetcher_created_callback,
+    endpoint_fetcher::EndpointFetcherCallback response_received_callback,
+    UploadProgressCallback upload_progress_callback) {
+  CHECK_EQ(query_controller_state_, QueryControllerState::kClusterInfoReceived);
+  CHECK(cluster_info_.has_value());
+
+  // Get client experiment variations to include in the request.
+  std::vector<std::string> cors_exempt_headers =
+      lens::CreateVariationsHeaders(variations_client_);
+
+  // Generate the URL to fetch to and include the server session id if present.
+  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
+  // The endpoint fetches should use the server session id from the cluster
+  // info.
+  fetch_url =
+      net::AppendOrReplaceQueryParameter(fetch_url, kSessionIdQueryParameterKey,
+                                         cluster_info_->server_session_id());
+
+  std::string request_string;
+  CHECK(request->SerializeToString(&request_string));
+
+  // Create the EndpointFetcher, responsible for making the request using our
+  // given params.
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
+      std::move(request_string), fetch_url, HttpMethod::kPost,
+      base::Milliseconds(
+          lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
+      *request_headers, cors_exempt_headers,
+      std::move(upload_progress_callback));
+  EndpointFetcher* fetcher = endpoint_fetcher.get();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                std::move(endpoint_fetcher)));
+
+  // Finally, perform the request.
+  fetcher->PerformRequest(std::move(response_received_callback),
+                          google_apis::GetAPIKey().c_str());
 }
 
 ComposeboxQueryController::FileInfo* ComposeboxQueryController::GetFileInfo(
