@@ -10,7 +10,7 @@ Example Command:
 Example Output:
     Summary
     gn args: target_os="android" use_remoteexec=true incremental_install=true
-    gn gen: 6.7s
+    gn_gen: 6.7s
     chrome_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_sig: 38.9s avg (38.8s, 39.1s)
     base_nosig: 41.0s avg (41.1s, 40.9s)
@@ -39,8 +39,6 @@ import shutil
 
 from typing import Dict, Callable, Iterator, List, Optional, Tuple
 
-USE_PYTHON_3 = f'{__file__} will only run under python3.'
-
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(1, str(_SRC_ROOT / 'build'))
 import gn_helpers
@@ -60,7 +58,8 @@ _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
 _AVD_CONFIG_DIR = _EMULATOR_AVD_DIR / 'proto'
 _SECONDS_TO_POLL_FOR_EMULATOR = 30
 
-_SUPPORTED_EMULATORS = {
+# Anything not in this list is assumed to be x64.
+_X86_EMULATORS = {
     'generic_android23.textpb': 'x86',
     'generic_android24.textpb': 'x86',
     'generic_android25.textpb': 'x86',
@@ -74,18 +73,6 @@ _SUPPORTED_EMULATORS = {
     'android_29_google_apis_x86_local.textpb': 'x86',
     'android_30_google_apis_x86.textpb': 'x86',
     'android_30_google_apis_x86_local.textpb': 'x86',
-    'android_31_google_apis_x64.textpb': 'x64',
-    'android_31_google_apis_x64_local.textpb': 'x64',
-    'android_32_google_apis_x64_foldable.textpb': 'x64',
-    'android_32_google_apis_x64_foldable_local.textpb': 'x64',
-    'android_33_google_apis_x64.textpb': 'x64',
-    'android_33_google_apis_x64_local.textpb': 'x64',
-    'android_34_google_apis_x64.textpb': 'x64',
-    'android_34_google_apis_x64_local.textpb': 'x64',
-    'android_35_google_apis_x64.textpb': 'x64',
-    'android_35_google_apis_x64_local.textpb': 'x64',
-    'android_b_google_apis_x64.textpb': 'x64',
-    'android_b_google_apis_x64_local.textpb': 'x64',
 }
 
 _GN_ARGS = [
@@ -113,6 +100,7 @@ _NO_COMPONENT_BUILD = [
 _TARGETS = {
     'bundle': 'monochrome_public_bundle',
     'apk': 'chrome_public_apk',
+    'test': 'chrome_public_test_apk',
 }
 
 _SUITES = {
@@ -394,13 +382,13 @@ def _run_benchmark(
         emulator: Optional[device_utils.DeviceUtils]
 ) -> List[Tuple[str, float]]:
     # This ensures that the only change is the one that this script makes.
-    logging.info(f'Prepping benchmark...')
+    logging.info('Prepping benchmark...')
     if not benchmark.can_install:
         emulator = None
     results = _run_and_maybe_install(benchmark.name, out_dir, target, emulator)
     for name, elapsed in results:
         logging.info(f'Took {elapsed:.1f}s to prep {name}.')
-    logging.info(f'Starting actual test...')
+    logging.info('Starting actual test...')
     change_file_path = _SRC_ROOT / benchmark.change_file
     with _backup_file(change_file_path):
         with open(change_file_path, 'r') as f:
@@ -456,7 +444,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             f.write('\n'.join(gn_args))
         for run_num in range(repeat):
             logging.info(f'Run number: {run_num + 1}')
-            timings['gn gen'].append(_run_gn_gen(output_directory))
+            timings['gn_gen'].append(_run_gn_gen(output_directory))
             for benchmark in _parse_benchmarks(benchmarks):
                 logging.info(f'Starting {benchmark.name}...')
                 # Start a fresh emulator for each benchmark to produce more
@@ -495,12 +483,15 @@ def main():
         'benchmark',
         nargs='*',
         metavar='BENCHMARK',
-        # Allow empty to just test `gn gen` speed.
+        # Allow empty to just test `gn_gen` speed.
         choices=list(_all_benchmark_and_suite_names()) + [[]],
         help='Names of benchmark(s) or suites(s) to run.')
     parser.add_argument('--bundle',
                         action='store_true',
                         help='Switch the default target from apk to bundle.')
+    parser.add_argument('--test',
+                        action='store_true',
+                        help='Switch the default target to a test apk.')
     parser.add_argument('--no-server',
                         action='store_true',
                         help='Do not start a faster local dev server before '
@@ -524,7 +515,6 @@ def main():
         '--output-directory',
         help='If outdir is not provided, will attempt to guess.')
     parser.add_argument('--emulator',
-                        choices=list(_SUPPORTED_EMULATORS.keys()),
                         help='Specify this to override the default emulator.')
     parser.add_argument('--target',
                         help='Specify this to override the default target.')
@@ -533,6 +523,10 @@ def main():
                         action='count',
                         default=0,
                         help='1 to print logging, 2 to print ninja output.')
+    parser.add_argument('-q',
+                        '--quiet',
+                        action='store_true',
+                        help='Do not print the summary.')
     args = parser.parse_args()
 
     if args.output_directory:
@@ -550,7 +544,7 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    gn_args = _GN_ARGS
+    gn_args = _GN_ARGS.copy()
     if args.no_server:
         gn_args += _NO_SERVER
     else:
@@ -563,29 +557,38 @@ def main():
     if args.emulator:
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
-        gn_args.append(f'target_cpu="{_SUPPORTED_EMULATORS[args.emulator]}"')
+        if args.emulator in _X86_EMULATORS:
+            target_cpu = "x86"
+        else:
+            target_cpu = "x64"
     elif args.build_64bit:
         # Default to an emulator target_cpu when just building to be comparable
         # to building and installing on an emulator. It is likely that devs are
         # mostly using emulator builds so this is more valuable to track.
-        gn_args.append('target_cpu="x64"')
+        target_cpu = "x64"
     else:
-        gn_args.append('target_cpu="x86"')
+        target_cpu = "x86"
+    gn_args.append(f'target_cpu="{target_cpu}"')
 
     if args.target:
         target = args.target
+    elif args.bundle:
+        target = _TARGETS['bundle']
+    elif args.test:
+        target = _TARGETS['test']
     else:
-        target = _TARGETS['bundle' if args.bundle else 'apk']
+        target = _TARGETS['apk']
 
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
                              args.repeat, args.emulator)
 
-    print(f'Summary')
-    print(f'emulator: {args.emulator}')
-    print(f'gn args: {" ".join(gn_args)}')
-    print(f'target: {target}')
-    for name, timings in results.items():
-        print(f'{name}: {_format_result(timings)}')
+    if not args.quiet:
+        print(f'Summary')
+        print(f'emulator: {args.emulator}')
+        print(f'gn args: {" ".join(gn_args)}')
+        print(f'target: {target}')
+        for name, timings in results.items():
+            print(f'{name}: {_format_result(timings)}')
 
 
 if __name__ == '__main__':
