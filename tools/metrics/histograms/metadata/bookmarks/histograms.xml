@@ -158,6 +158,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.Android.ShownOnStartUp"
+    enum="BooleanShown" expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records whether the bookmark bar is shown at startup or not. This records
+    true (enabled/shown) when the user has a Desktop Profile pref and is on a
+    compatible device, or has the device-level preference to show the bar. This
+    is an accurate count of the times the bookmark bar is actually visible to
+    the user, not a count of how many users have the setting enabled (which can
+    be different). This does not count users that have the bookmark bar shown
+    due to a forced feature param.
+
+    Note: This histogram is distinctly different than the
+    &quot;Bookmarks.BookmarkBar.Shown&quot; histogram. This histogram is only
+    tracked on Android devices, and provides an accurate count of the number of
+    users with the Bookmark Bar enabled, taking into account not only the
+    Profile preference, but also the current device capabilities, window size,
+    and device-level preference overrides.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.Android.ShownOnStartupReason"
+    enum="BooleanShown" expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the reason that the bookmark bar is shown/not shown on start-up,
+    which can be because of a Profile pref, device preference, or environment
+    limitation (e.g. screen size).
+
+    Note: This histogram is only relevant on Android, where the visibility of
+    the histogram is controlled by many factors beyond the Profile preference.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarkBar.Click" enum="BookmarkBarClickType"
     expires_after="2026-03-01">
   <owner>mschillaci@google.com</owner>
@@ -224,6 +262,14 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether the bookmark bar is shown at startup or not.
+
+    Note: This histogram should not be used on Android. For Android devices, use
+    the histogram &quot;Bookmarks.BookmarkBar.Android.ShownOnStartUp&quot;. This
+    histogram defines &quot;shown&quot; as the current Profile preference on
+    start-up. This does not account for the behavior on Android that can hide
+    the Bookmark Bar on devices with small screens, or small window sizes (even
+    though the Profile pref is enabled), or that Android has device-level
+    preferences for the Bookmark Bar as well.
   </summary>
 </histogram>
 

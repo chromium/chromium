@@ -80,11 +80,44 @@ public class BookmarkBarUtils {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarClickType)
 
+    /**
+     * Enum that defines the possible reasons the bookmark bar may be shown or hidden. These values
+     * are persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    // LINT.IfChange(BookmarkBarShownReason)
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BookmarkBarShownReason.UNKNOWN,
+        BookmarkBarShownReason.DISABLED_BY_USER_PREF,
+        BookmarkBarShownReason.ENABLED_BY_USER_PREF,
+        BookmarkBarShownReason.DISABLED_BY_DEVICE_PREF,
+        BookmarkBarShownReason.ENABLED_BY_DEVICE_PREF,
+        BookmarkBarShownReason.DISABLED_BY_FEATURE_PARAM,
+        BookmarkBarShownReason.ENABLED_BY_FEATURE_PARAM,
+    })
+    public @interface BookmarkBarShownReason {
+        int UNKNOWN = 0;
+        int DISABLED_BY_USER_PREF = 1;
+        int ENABLED_BY_USER_PREF = 2;
+        int DISABLED_BY_DEVICE_PREF = 3;
+        int ENABLED_BY_DEVICE_PREF = 4;
+        int DISABLED_BY_FEATURE_PARAM = 5;
+        int ENABLED_BY_FEATURE_PARAM = 6;
+        int NUM_ENTRIES = 7;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarShownReason)
+
     // Histogram names:
     public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
     public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
             "Bookmarks.BookmarkBar.ToggledByKeyboardShortcut";
     public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
+    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP =
+            "Bookmarks.BookmarkBar.Android.ShownOnStartUp";
+    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP_REASON =
+            "Bookmarks.BookmarkBar.Android.ShownOnStartUpReason";
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
     private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
@@ -297,6 +330,44 @@ public class BookmarkBarUtils {
     public static void recordClick(@BookmarkBarClickType int clickType) {
         RecordHistogram.recordEnumeratedHistogram(
                 BOOKMARK_BAR_CLICK, clickType, BookmarkBarClickType.NUM_ENTRIES);
+    }
+
+    public static void recordStartUpMetrics(Context context, @Nullable Profile profile) {
+        boolean isCurrentlyVisible = isBookmarkBarVisible(context, profile);
+
+        // Record if the Bookmark Bar is visible, but not in cases of a forced feature param.
+        if (DeviceInfo.isDesktop() || hasUserSetDevicePrefShowBookmarksBar()) {
+            RecordHistogram.recordBooleanHistogram(
+                    BOOKMARK_BAR_SHOWN_ON_START_UP, isCurrentlyVisible);
+        }
+
+        // Record the reason why the Bookmark Bar is visible (hidden) in this instance.
+        if (DeviceInfo.isDesktop()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                    isCurrentlyVisible
+                            ? BookmarkBarShownReason.ENABLED_BY_USER_PREF
+                            : BookmarkBarShownReason.DISABLED_BY_USER_PREF,
+                    BookmarkBarShownReason.NUM_ENTRIES);
+        } else {
+            // On non-Desktop, we need to consider whether the device preference has been explicitly
+            // chosen by the user, or if they have a default feature param value.
+            if (hasUserSetDevicePrefShowBookmarksBar()) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                        isCurrentlyVisible
+                                ? BookmarkBarShownReason.ENABLED_BY_DEVICE_PREF
+                                : BookmarkBarShownReason.DISABLED_BY_DEVICE_PREF,
+                        BookmarkBarShownReason.NUM_ENTRIES);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(
+                        BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                        isCurrentlyVisible
+                                ? BookmarkBarShownReason.ENABLED_BY_FEATURE_PARAM
+                                : BookmarkBarShownReason.DISABLED_BY_FEATURE_PARAM,
+                        BookmarkBarShownReason.NUM_ENTRIES);
+            }
+        }
     }
 
     // Helper methods.

@@ -955,6 +955,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
+            BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfileSupplier.get());
             mBookmarkBarVisibilityProvider =
                     new BookmarkBarVisibilityProvider(
                             mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
