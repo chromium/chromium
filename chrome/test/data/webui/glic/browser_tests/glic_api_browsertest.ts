@@ -4,7 +4,7 @@
 import {ClientView, HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, UserProfileInfo, ViewChangeRequest, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, checkDefined, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
 // Since these tests run in the webview, this test can't use normal deps like
@@ -1481,10 +1481,24 @@ class ApiTests extends ApiTestFixtureBase {
     sequence.waitFor(tabs => tabs.length === 2);
   }
 
-  async testGetModelQualityClientId() {
+  async testGetModelQualityClientIdFeatureEnabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertTrue(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
+
     assertDefined(this.host.getModelQualityClientId);
     const clientId = await this.host.getModelQualityClientId();
     assertDefined(clientId);
+  }
+
+  async testGetModelQualityClientIdFeatureDisabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertFalse(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
+
+    assertUndefined(this.host.getModelQualityClientId);
   }
 
 /**
@@ -1714,6 +1728,8 @@ class ApiTests extends ApiTestFixtureBase {
         return 'SCROLL_TO_PDF';
       case HostCapability.RESET_SIZE_AND_LOCATION_ON_OPEN:
         return 'RESET_SIZE_AND_LOCATION_ON_OPEN';
+      case HostCapability.GET_MODEL_QUALITY_CLIENT_ID:
+        return 'GET_MODEL_QUALITY_CLIENT_ID';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

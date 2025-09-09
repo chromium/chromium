@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
-import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -381,6 +381,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.hostCapabilities.add(capability);
     }
 
+    // Set the method to undefined since it's gated behind a mojo
+    // RuntimeFeature. Calling a such a method when the feature is disabled
+    // results in a mojo pipe closure.
+    if (!this.hostCapabilities.has(
+            HostCapability.GET_MODEL_QUALITY_CLIENT_ID)) {
+      this.getModelQualityClientId = undefined;
+    }
+
     if (!state.enableScrollTo) {
       this.scrollTo = undefined;
       this.dropScrollToHighlight = undefined;
@@ -515,7 +523,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.sender.requestNoResponse('glicBrowserShowProfilePicker', undefined);
   }
 
-  async getModelQualityClientId(): Promise<string> {
+  async getModelQualityClientId?(): Promise<string> {
     const result = await this.sender.requestWithResponse(
         'glicBrowserGetModelQualityClientId', undefined);
     return result.modelQualityClientId;

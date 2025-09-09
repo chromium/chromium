@@ -506,7 +506,7 @@ interface WebClientHandler {
   ShowProfilePicker();
 
   // Returns the current model quality client id.
-  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
+   [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
   GetModelQualityClientId() => (string model_quality_client_id);
 
   // Returns the context from the currently active tab.
@@ -1150,6 +1150,9 @@ enum HostCapability {
   kScrollToPdf = 0,
   // Glic host will reset panel size and location on open.
   kResetSizeAndLocationOnOpen = 1,
+  // The glic host's GetModelQualityClientId() is enabled and can be called
+  // safely.
+  kGetModelQualityClientId = 2,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

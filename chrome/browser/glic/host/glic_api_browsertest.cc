@@ -118,6 +118,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicGetHostCapabilityApiTest",
       "GlicApiTestWithDefaultTabContextDisabled",
       "GlicApiTestWithDefaultTabContextEnabled",
+      "GlicApiTestWithMqlsIdGetterEnabled",
+      "GlicApiTestWithMqlsIdGetterDisabled",
   };
 }
 
@@ -150,10 +152,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   GlicApiTestWithOneTab() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {
-            features::kGlicClosedCaptioning,
-            mojom::features::kGlicAppendModelQualityClientId,
-        },
+        {features::kGlicClosedCaptioning},
         /*disabled_features=*/
         {});
   }
@@ -212,6 +211,34 @@ class GlicApiTestWithDefaultTabContextDisabled : public GlicApiTestWithOneTab {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestWithMqlsIdGetterEnabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithMqlsIdGetterEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {mojom::features::kGlicAppendModelQualityClientId},
+        /*disabled_features=*/
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicApiTestWithMqlsIdGetterDisabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithMqlsIdGetterDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {},
+        /*disabled_features=*/
+        {mojom::features::kGlicAppendModelQualityClientId});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test fixture that preloads the web client before starting the test.
@@ -785,7 +812,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetModelQualityClientId) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithMqlsIdGetterEnabled,
+                       testGetModelQualityClientIdFeatureEnabled) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithMqlsIdGetterDisabled,
+                       testGetModelQualityClientIdFeatureDisabled) {
   ExecuteJsTest();
 }
 

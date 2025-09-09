@@ -157,6 +157,10 @@ export declare interface GlicBrowserHost {
 
   /**
    * Returns the model quality client ID.
+   * IMPORTANT: callers must verify that getHostCapabilities() includes
+   * HostCapability.GET_MODEL_QUALITY_CLIENT_ID before calling this API.
+   * Checking that it's defined is not sufficient. In older Chromium versions
+   * this method can be unsafe to call even when it's defined.
    */
   getModelQualityClientId?(): Promise<string>;
 
@@ -1767,6 +1771,8 @@ export enum HostCapability {
   SCROLL_TO_PDF = 0,
   /** Glic host will reset panel size and location on open. */
   RESET_SIZE_AND_LOCATION_ON_OPEN = 1,
+  /** The glic host's getModelQualityClientId() can be called safely. */
+  GET_MODEL_QUALITY_CLIENT_ID = 2,
 }
 
 /**

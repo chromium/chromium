@@ -408,16 +408,22 @@ export function assertTrue(x: boolean, message?: string): asserts x {
   }
 }
 
+export function assertFalse(x: boolean, message?: string): asserts x is false {
+  if (x) {
+    throw new ApiTestError(
+        `assertFalse failed: '${x}' is not false. ${message ?? ''}`);
+  }
+}
+
 export function assertDefined<T>(x: T|undefined, message?: string): asserts x {
   if (x === undefined) {
     throw new Error(`assertDefined failed. ${message ?? ''}`);
   }
 }
 
-export function assertFalse(x: boolean, message?: string): asserts x is false {
-  if (x) {
-    throw new ApiTestError(
-        `assertFalse failed: '${x}' is not false. ${message ?? ''}`);
+export function assertUndefined<T>(x: T|undefined, message?: string) {
+  if (x !== undefined) {
+    throw new Error(`assertUndefined failed. ${message ?? ''}`);
   }
 }
 

@@ -710,6 +710,11 @@ class GlicWebClientHandler
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
     state->enable_api_activation_gating =
         base::FeatureList::IsEnabled(features::kGlicApiActivationGating);
+    if (base::FeatureList::IsEnabled(
+            glic::mojom::features::kGlicAppendModelQualityClientId)) {
+      state->host_capabilities.push_back(
+          mojom::HostCapability::kGetModelQualityClientId);
+    }
 
     std::move(callback).Run(std::move(state));
   }
