@@ -604,7 +604,7 @@
 <translation id="5650895901941743674">‏בדיקת ההגדרות האישיות של ה-APN</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
 <translation id="5678784840044122290">‏אפשר יהיה לגשת לאפליקציית Linux דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
-<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
+<translation id="5686799162999241776"><ph name="BEGIN_BOLD" /> אי אפשר היה להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    צריך לסגור את כל הקבצים בארכיון או בדיסק הווירטואלי ולנסות שוב.</translation>
 <translation id="5691596662111998220">אופס, <ph name="FILE_NAME" /> כבר לא קיים.</translation>

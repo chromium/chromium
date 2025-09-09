@@ -128,7 +128,7 @@
 <translation id="1544826120773021464">‏כדי לנהל את חשבון Google, יש ללחוץ על הכפתור "ניהול החשבון"</translation>
 <translation id="1549000191223877751">העברה לחלון האחר</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
-<translation id="1554532453982918912">‏המדדים שישותפו יעזרו בשיפור Chrome בשביל אנשים שמשתמשים בו בצורה דומה לשלך</translation>
+<translation id="1554532453982918912">‏עם העזרה שלך Chrome ישתפר עבור אנשים שמשתמשים בו באותה צורה</translation>
 <translation id="1568636008098739136">האזנה לדף הזה. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="1571041387761170095">אין סיסמאות חלשות או סיסמאות בשימוש חוזר</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{יש במכשיר הזה סיסמה אחת שנחשפה}one{יש במכשיר הזה # סיסמאות שנחשפו}two{יש במכשיר הזה # סיסמאות שנחשפו}other{יש במכשיר הזה # סיסמאות שנחשפו}}</translation>
@@ -306,7 +306,7 @@
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2497852260688568942">האדמין שלך השבית את הסנכרון</translation>
-<translation id="250020030759455918">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר</translation>
+<translation id="250020030759455918">‏אפשר לראות ב-Chrome את סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, את נתוני הגלישה ואת נתוני האתר.</translation>
 <translation id="2502798195266898572">הגיליון התחתון של מצב הקריאה נפתח בגובה מלא</translation>
 <translation id="2510106555128151389">מתבצעת התקנה של <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">חיפוש אפשרויות קנייה</translation>
@@ -517,7 +517,7 @@
 <translation id="3482805106082349287">חיפוש בהקלדה, בקול, במצב פרטי או בעזרת המצלמה</translation>
 <translation id="3487903178221457900">‏הקובץ המיוצא עלול להיות נגיש לאחרים, כולל אפליקציות. לאחר הייצוא, הסיסמאות שלך יימחקו מ-Chrome.</translation>
 <translation id="3488199663160411179">שם</translation>
-<translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
+<translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על תוכן מוצע</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">מיון לפי הישן ביותר</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
@@ -683,7 +683,7 @@
 <translation id="4282440837784183472">‏הארגון שלך, <ph name="MANAGED_DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chrome. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
-<translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
+<translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך צריך להיכנס להגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">כרטיסייה פרטית חדשה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4300632303535881174">חזרה לדף הקודם</translation>
@@ -1201,7 +1201,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{התבצעה בדיקה לפני שעה אחת}one{התבצעה בדיקה לפני # שעות}two{התבצעה בדיקה לפני שעתיים}other{התבצעה בדיקה לפני # שעות}}</translation>
 <translation id="6545017243486555795">ניקוי של כל הנתונים</translation>
 <translation id="6546511553472444032">הקובץ עלול להזיק</translation>
-<translation id="6550891580932862748">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. ההגדרות שקבעת לגלישה הבטוחה במוצרים אחרים של Google לא יושפעו.</translation>
+<translation id="6550891580932862748">‏במצב הזה המערכת לא מגינה מפני אתרים, הורדות ותוספים מסוכנים. ההגדרות שקבעת לגלישה הבטוחה במוצרים אחרים של Google לא יושפעו.</translation>
 <translation id="6554822972009632311">מסנן התוכן מופעל</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
@@ -1288,7 +1288,7 @@
 <translation id="6880903702195291049">נראה שהכול בסדר בהרשאות</translation>
 <translation id="6883204995689174413">שיתוף</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{‏פריט אחד שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים שלכם, שמרו אותו בחשבון Google שלכם.}one{‏‫# פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, שמרו אותם בחשבון Google שלכם.}two{‏‫# פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, שמרו אותם בחשבון Google שלכם.}other{‏‫# פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, שמרו אותם בחשבון Google שלכם.}}</translation>
-<translation id="6883606786470492001">אפשר לנהל את נושאי המודעות והגדרות אחרות כדי להגביל את המידע שאתרים יכולים לקבל עליך כדי להציג לך מודעות בהתאמה אישית</translation>
+<translation id="6883606786470492001">אפשר לקבוע את נושאי המודעות וההגדרות האחרות כדי להגביל את המידע שאתרים יכולים לאסוף בשביל להציג לך מודעות מותאמות אישית</translation>
 <translation id="6883906387682976294">ביטול ההרשמה לקבלת התראות מהאתר הזה</translation>
 <translation id="688398477366397178">לשתף אתרים ברשימת השפות שלך כדי שהתוכן שיוצג בהם יהיה בשפות האלה, כשהדבר יתאפשר.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{ביטלת את ההרשמה לאתר אחד}one{ביטלת את ההרשמה ל-# אתרים}two{ביטלת את ההרשמה ל-# אתרים}other{ביטלת את ההרשמה ל-# אתרים}}</translation>
@@ -1547,7 +1547,7 @@
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7968982339740310781">עיון בפרטים</translation>
 <translation id="7969391000881506217">תאריך התפוגה*</translation>
-<translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
+<translation id="7971136598759319605">פעילות אחרונה: אתמול</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7987499071758862048">‏‫<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות לאתרים האלה כי לא נכנסת אליהם לאחרונה</translation>
@@ -1789,7 +1789,7 @@
 <translation id="9055497320631373736">האתר הוחזר לאתרים פוטנציאליים</translation>
 <translation id="9057030985451135243">מידע על קבוצות משותפות של כרטיסיות</translation>
 <translation id="9063400323119781058">ההרשמה בוטלה</translation>
-<translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
+<translation id="9063523880881406963">ביטול הבקשה לאתר שמותאם למחשב</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים בלי הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
 <translation id="9067341854474068781">אין גיליון של מפתחות גישה שנפתח בגובה מלא</translation>
@@ -1844,7 +1844,7 @@
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
-<translation id="984756705737569814">‏לא ניתן לבדוק את הסיסמאות בחשבון Google</translation>
+<translation id="984756705737569814">‏לא הצלחנו לבדוק את הסיסמאות בחשבון שלך ב-Google</translation>
 <translation id="987264212798334818">כללי</translation>
 <translation id="988091779042748639">כדי למחוק מהמכשיר את היסטוריית הגלישה במצב פרטי, צריך לסגור את כל הכרטיסיות הפרטיות.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> כרטיסיות</translation>

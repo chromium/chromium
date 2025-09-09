@@ -13,7 +13,7 @@
 <translation id="1030856839388844477">איפוס השימוש בחבילת הגלישה</translation>
 <translation id="1047095725494118091">לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
-<translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
+<translation id="1047773237499189053">יש פיצ'ר חדש. כדי לקרוא עליו צריך ללחוץ על מקש החץ למעלה.</translation>
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
 <translation id="1053371972724535586">ההקלטות שלי</translation>
 <translation id="1056898198331236512">אזהרה</translation>
@@ -1137,7 +1137,7 @@
 <translation id="6048107060512778456">נכשלה – חסימת נייר</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6054711098834486579">אקספרסיוניסטי</translation>
-<translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
+<translation id="6058625436358447366">כדי לסיים, צריך להזין את הסיסמה הישנה והחדשה</translation>
 <translation id="6061772781719867950">‏בקשות HTTP שנכשלו</translation>
 <translation id="6073292342939316679">הפחתת הבהירות של המקלדת</translation>
 <translation id="6074608334942655098">הפסקת התרגום</translation>
@@ -1317,7 +1317,7 @@
 <translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
 <translation id="680983167891198932">מקש</translation>
-<translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
+<translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש ללחוץ על מקש החץ למעלה.</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6846843854964504403">איפוס הגדרות האבטחה</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>

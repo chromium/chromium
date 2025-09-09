@@ -256,7 +256,7 @@
 <translation id="4110895483821904099">‏הגדרת הפרופיל החדש שלך ב-Chrome</translation>
 <translation id="4111566860456076004">‏‫Chrome לא יכול לאמת את מקור התוסף הזה, ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chrome כדי שלא תהיה לו אפשרות לראות ולשנות נתונים באתרים שמבקרים בהם, כולל הפרטים האישיים.</translation>
 <translation id="4128488089242627000">‏דפדפן Chrome פועל מהר יותר ותכונות שמשתמשות ב-JavaScript אמורות לפעול כמו שצריך (מומלץ)</translation>
-<translation id="4147555960264124640">‏בחרת להיכנס לחשבון מנוהל, ומנהל המערכת שלו יקבל שליטה על הפרופיל שלך ב-Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
+<translation id="4147555960264124640">‏נכנסת לחשבון מנוהל, והאדמין שלו יקבל שליטה על הפרופיל שלך ב-Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">מתקין...</translation>
 <translation id="4149882025268051530">‏ההתקנה נכשלה בחילוץ הקובץ. יש להוריד מחדש אתGoogle Chrome</translation>
 <translation id="415112847282352845">‏כדי לקבל גישה לכתובות ולנתונים נוספים בכל המכשירים שלך, יש להיכנס ל-Chrome. אחרי הכניסה, הכתובת הזו תישמר בחשבון שלך ב-Google.</translation>
@@ -408,7 +408,7 @@
 <translation id="604424701295382420">‏התכונה הוצמדה. מעכשיו אפשר לגשת אל Google Lens דרך הלחצן החדש בסרגל הכלים</translation>
 <translation id="6069027071882229820">העתקה כתמונה</translation>
 <translation id="6070348360322141662">‏לשיפור האבטחה, Google Chrome יצפין את הנתונים</translation>
-<translation id="6075300983329039771">‏לפי דרישת הארגון שלך, <ph name="MANAGER" />, עליך להיכנס לחשבון ב-Chrome</translation>
+<translation id="6075300983329039771">‏הארגון שלך, <ph name="MANAGER" />, מחייב אותך להיכנס ל-Chrome.</translation>
 <translation id="6113794647360055231">‏Chrome השתפר</translation>
 <translation id="6116252277240876590">‏זו השפה שבה מוצגים תפריטים, הגדרות, התראות וטקסטים אחרים ב-Chrome</translation>
 <translation id="6127237283587442951">‏שימוש ב-Chrome כברירת מחדל והצמדה שלו</translation>
@@ -486,7 +486,7 @@
 <translation id="7025789849649390912">ההתקנה נעצרה.</translation>
 <translation id="7025800014283535195">‏כאן אפשר לעבור בין פרופילים של Chrome</translation>
 <translation id="7051685429025310665">‏לא נכנסת לאתר הזה בזמן האחרון. הדפדפן Chrome הסיר את ההרשאות בשביל "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" ו"<ph name="PERMISSION_3" />"</translation>
-<translation id="7059914902409643750">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
+<translation id="7059914902409643750">‏להתאים אישית את Chrome. בדרך שלך.</translation>
 <translation id="7060643578009939353">‏חיפוש הסרטון הזה באמצעות Google Lens</translation>
 <translation id="7071827361006050863">‏נתוני הגלישה ב-Chrome יימחקו בקרוב</translation>
 <translation id="7085332316435785646">‏כדי להתאים באופן אישי ומדויק יותר את החוויה שלך בשירותי Google אפשר לבחור לכלול את ההיסטוריה שלך ב-Chrome</translation>

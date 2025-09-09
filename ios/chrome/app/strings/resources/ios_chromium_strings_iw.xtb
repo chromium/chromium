@@ -69,8 +69,8 @@
 <translation id="2450140762465183767">‏מעכשיו אפשר להשתמש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2459183986985456602">‏פתיחת הכרטיסייה האחרונה שלי ב-Chromium</translation>
 <translation id="2476409803017965813">‏תמיד אפשר לבחור אפשרויות אחרות בהגדרות של Chromium.</translation>
-<translation id="2478931088402984578">‏בוחרים באפשרות<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
-<translation id="2485774047568879945">‏אפשר להגדיר את Chromium כדפדפן ברירת המחדל כדי לשתף ולפתוח קישורים בקלות</translation>
+<translation id="2478931088402984578">‏לוחצים על <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">‏כדי לשתף ולפתוח קישורים בקלות, אפשר להגדיר את Chromium כדפדפן ברירת המחדל</translation>
 <translation id="2512597191798760956">‏לוחצים לחיצה ארוכה על סמל Chromium ואז לוחצים על "עריכה של מסך הבית"</translation>
 <translation id="2517624234762908348">‏סנכרון את הנתונים שלך מ-Chromium</translation>
 <translation id="2592940277904433508">‏המשך השימוש ב-Chromium</translation>
@@ -269,7 +269,7 @@
 <translation id="7504829997542308412">‏פתיחת Chromium</translation>
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי לך להעביר את Chromium ל-Dock</translation>
-<translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>
+<translation id="7576863740961052505">‏ניהול ההגדרות של Chromium</translation>
 <translation id="7674213385180944843">‏עברו אל הגדרות &gt; פרטיות &gt; מצלמה &gt; Chromium והפעילו את המצלמה.</translation>
 <translation id="7733418656985455268">‏טיפ ל-Chromium: חיפוש באמצעות Lens</translation>
 <translation id="7747820849741499258">‏חיפוש ב-Chromium</translation>

@@ -222,7 +222,7 @@
 <translation id="3536227077203206203">יש אישור לשימוש חד-פעמי</translation>
 <translation id="3538390592868664640">חסימת אתרים מיצירת מפה תלת־ממדית של הסביבה שלך או ממעקב אחר מיקום המצלמה.</translation>
 <translation id="3544058026430919413">‏חברות יכולות להגדיר קבוצה של אתרים שיכולים להשתמש בקובצי cookie כדי לשתף את הפעילות שלך בין האתרים בקבוצה. האפשרות הזו מושבתת במצב הפרטי.</translation>
-<translation id="3551268116566418498">לצאת מהמצב האנונימי?</translation>
+<translation id="3551268116566418498">לצאת ממצב פרטי?</translation>
 <translation id="3586500876634962664">שימוש במצלמה ובמיקרופון</translation>
 <translation id="358794129225322306">מתן הרשאה לאתר להוריד קבצים מרובים באופן אוטומטי.</translation>
 <translation id="3594780231884063836">השתקת הסרטון</translation>
@@ -372,7 +372,7 @@
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5239623327352565343">יש הרשאת גישה למיקום</translation>
 <translation id="5246825184569358663">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="DOMAIN" /> ושל כל אתרי המשנה שלו</translation>
-<translation id="5264323282659631142">הסרת '<ph name="CHIP_LABEL" />'</translation>
+<translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" יוסר</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בכפתור '"הקודם".</translation>
 <translation id="5292915569214461965">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את הגישה לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
 <translation id="5300589172476337783">הצגה</translation>
@@ -501,7 +501,7 @@
 <translation id="6683865262523156564">האתר הזה שייך לקבוצה שיש לה הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
-<translation id="6709432001666529933">הצגת שאלה לפני מתן הרשאה לאתרים לעקוב אחר תנועות הידיים שלך (מומלץ)</translation>
+<translation id="6709432001666529933">שאל לפני מתן הרשאה לאתרים לעקוב אחר תנועות הידיים שלך (מומלץ)</translation>
 <translation id="6722828510648505498">חסימה של בקשות כניסה משירותי זיהוי.</translation>
 <translation id="6746124502594467657">העברה למטה</translation>
 <translation id="6749077623962119521">לאפס את ההרשאות?</translation>
@@ -603,7 +603,7 @@
 <translation id="8056330801132235235">‏ברירת המחדל של Chrome</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
 <translation id="8068648041423924542">אין אפשרות לבחור אישור.</translation>
-<translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>
+<translation id="8077120325605624147">כל אתר שמבקרים בו יכול להציג כל מודעה</translation>
 <translation id="80798452873915119">אתרים יכולים לבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8088603949666785339">אפשרויות נוספות ב<ph name="BANNER_TITLE" /></translation>
@@ -667,7 +667,7 @@
 <translation id="8707904142362025782">האתר יכול לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715862698998036666">כדי לצאת מהמסך המלא, צריך לגרור את האצבע מלמעלה למטה ולהחליק מהקצה הימני או השמאלי של המסך.</translation>
-<translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="8719283222052720129">‏יש לתת הרשאה ל-<ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לחפש מכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים לחפש מכשירי Bluetooth.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -678,7 +678,7 @@
 <translation id="8801657293260363985">‏‫V8 הוא מנוע WebAssembly ו-JavaScript של Chrome שמשמש לשיפור ביצועי האתרים</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>
 <translation id="8805385115381080995">הגלישה מהירה יותר כי האתר לא מבקש לאמת שמדובר באדם אמיתי</translation>
-<translation id="8816026460808729765">חסימת הגישה של אתרים אל חיישנים</translation>
+<translation id="8816026460808729765">חסימת הגישה של אתרים לחיישנים</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">‏אפשר לנסות להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה בזמן הגלישה, אבל יותר סיכוי שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8889294078294184559">‏במהלך הגלישה, אתרים אחרים יכולים לבדוק ב-Chrome ולאמת שסביר להניח שמדובר באדם אמיתי, לפי פרטים שנשמרו בביקור באתר קודם.</translation>
@@ -702,7 +702,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">‏למחוק קובצי cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}one{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
-<translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="913657688200966289">‏צריך לתת ל-<ph name="APP_NAME" /> הרשאות ב<ph name="BEGIN_LINK" />הגדרות של Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">יש הרשאת גישה להתראות</translation>
 <translation id="9138217887606523162">הזום הנוכחי: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="915112772806845021">התכונה הזו מעבירה אתרים באופן אוטומטי לתצוגה של תמונה בתוך תמונה. כך אפשר להמשיך לצפות בסרטון ולפנות מקום במסך למשימות אחרות.</translation>

@@ -183,7 +183,7 @@
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="858006550102277544">הערה</translation>
 <translation id="8743328882720071828">האם ברצונך לאפשר ל-<ph name="CLIENT_USERNAME" /> לראות את המחשב שלך ולשלוט בו?</translation>
-<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
+<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, צריך לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>

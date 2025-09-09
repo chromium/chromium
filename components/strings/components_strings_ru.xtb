@@ -3222,7 +3222,7 @@
 <translation id="6338645927051849741">Пароль • Google Менеджер паролей</translation>
 <translation id="6340739886198108203">Администратор не рекомендует делать снимки и видеозаписи экрана, когда на нем показаны конфиденциальные данные:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратор не рекомендует загружать этот файл на <ph name="DESTINATION_NAME" />.}one{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}few{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}many{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}other{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}}</translation>
-<translation id="6342069812937806050">только что</translation>
+<translation id="6342069812937806050">Только что</translation>
 <translation id="6342171901363060580">Вы видите это уведомление, потому что сайт не поддерживает HTTPS и у вас включен режим инкогнито. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Маршрут</translation>
 <translation id="6348220984832452017">Текущие изменения</translation>

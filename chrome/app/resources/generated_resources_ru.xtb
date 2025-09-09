@@ -2781,7 +2781,7 @@
 <translation id="2893168226686371498">Браузер по умолчанию</translation>
 <translation id="2893180576842394309">Google может использовать вашу историю, чтобы персонализировать Поиск и другие сервисы.</translation>
 <translation id="2893701697603065178">Управляемая среда разработки</translation>
-<translation id="2894757982205307093">Добавить новую вкладку в группу</translation>
+<translation id="2894757982205307093">Добавить вкладку в группу</translation>
 <translation id="289695669188700754">Идентификатор ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Когда вы закроете все окна в режиме инкогнито, эта специальная настройка будет сброшена</translation>
 <translation id="2897878306272793870">Вы действительно хотите открыть столько вкладок (<ph name="TAB_COUNT" />)?</translation>
@@ -3241,7 +3241,7 @@
 <translation id="3238192140106069382">Подключение и проверка…</translation>
 <translation id="3239373508713281971">Для приложения "<ph name="APP_NAME" />" снято ограничение времени использования.</translation>
 <translation id="3240299564104448052">Нет подключения к интернету</translation>
-<translation id="3240426699337459095">Ссылка скопирована.</translation>
+<translation id="3240426699337459095">Ссылка скопирована</translation>
 <translation id="3241638166094654466">Ячеек в каждой строке:</translation>
 <translation id="3241680850019875542">Выберите корневой каталог упаковываемого расширения. Для обновления расширения также укажите закрытый ключ.</translation>
 <translation id="3241810535741601486">Это изменение нельзя отменить. Расширенная поддержка будет применена ко всем пользователям устройства. <ph name="LINK_START" />Подробнее…<ph name="LINK_END" /></translation>
@@ -7417,7 +7417,7 @@
 <translation id="61988015556954366">Мигание экрана</translation>
 <translation id="6200047250927636406">Удалить файл</translation>
 <translation id="6200151268994853226">Настройки расширения</translation>
-<translation id="6201345951596836663">Ссылка скопирована.</translation>
+<translation id="6201345951596836663">Ссылка скопирована</translation>
 <translation id="6202304368170870640">Вы можете использовать PIN-код для входа в аккаунт или разблокировки устройства.</translation>
 <translation id="6202935572248792580">Разрешено. Подключите микрофон к устройству.</translation>
 <translation id="6203247599828309566">Вы добавили заметку о пароле на этом сайте. Чтобы ее посмотреть, нажмите на значок ключа.</translation>
@@ -7615,7 +7615,7 @@
 <translation id="6339668969738228384">Создать профиль для <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6341850831632289108">Определение вашего местоположения</translation>
-<translation id="6342069812937806050">только что</translation>
+<translation id="6342069812937806050">Только что</translation>
 <translation id="6343003829431264373">Только четные страницы</translation>
 <translation id="6343262564968371601">Ищите нужную информацию, например в Google, файлах и приложениях.</translation>
 <translation id="6343981313228733146">Окно перемещено вверх и вправо</translation>
@@ -11146,7 +11146,7 @@
 <translation id="8779944680596936487">Сайты могут использовать файлы cookie, только чтобы узнавать о ваших действиях на самих этих сайтах</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
-<translation id="8781834595282316166">Добавить новую вкладку в группу</translation>
+<translation id="8781834595282316166">Добавить вкладку в группу</translation>
 <translation id="8781980678064919987">Завершать работу при закрытии крышки</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
 <translation id="8783834180813871000">Введите код Bluetooth-подключения и нажмите Ввод.</translation>

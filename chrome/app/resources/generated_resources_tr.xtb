@@ -2216,7 +2216,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2502441965851148920">Otomatik güncellemeler etkin. Manuel güncellemeler yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="2502719318159902502">Tam erişim</translation>
 <translation id="2504801073028762184">Güvenlik önerileri</translation>
-<translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. Ekran}other{#. Ekran}}</translation>
+<translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. ekran}other{#. ekran}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Ekran düzenlemesi</translation>
 <translation id="2507253002925770350">Bilet kaldırıldı</translation>
@@ -11098,7 +11098,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8755175579224030324">Kuruluşunuz için, cihazda depolanan anahtarları ve sertifikaları yönetmek gibi güvenlik görevleri gerçekleştirin</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" /> cihazı için, her tuşa yönelik bir işlem seçin</translation>
 <translation id="8755376271068075440">Daha &amp;büyük</translation>
-<translation id="8755584192133371929">Paylaşılacak bir sekme seçin</translation>
+<translation id="8755584192133371929">Paylaşılacak sekmeyi seçin</translation>
 <translation id="875604634276263540">Görsel URL'si geçerli değil</translation>
 <translation id="8756262226135340085">Aynı klavye tuşuna hızlı bir şekilde tekrarlanan basma işlemlerini yoksayar</translation>
 <translation id="8756969031206844760">Şifre güncellensin mi?</translation>
@@ -11208,7 +11208,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8835005853697140186">Geliştirici Araçları'nın dosyaları düzenlemesine izin verilsin mi?</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" />, verilerinizi yedeklemenizi ve bu <ph name="DEVICE_TYPE" /> cihazı 1 hafta içinde iade etmenizi zorunlu tutuyor. <ph name="LINK_BEGIN" />Ayrıntılara bakın<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Gruptan çık}other{Gruplardan çık}}</translation>
-<translation id="8836782447513334597">devam etmek</translation>
+<translation id="8836782447513334597">Devam</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opak</translation>
 <translation id="8838770651474809439">Hamburger</translation>

@@ -198,13 +198,13 @@
 <translation id="3530103706039034513">‏החשבון כבר מחובר ל<ph name="EXISTING_USER" />.  כדי להפריד בין פעילויות הגלישה, עליך להתחבר ל-Chromium עם הפרופיל שלך באמצעות <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">‏כדי להגן על הפרטיות שלך, תחומי עניין שהוגדרו לפני יותר מ-4 שבועות נמחקים אוטומטית. עם המשך הגלישה, תחום עניין שנמחק יכול להופיע שוב ברשימה. אפשר גם להסיר תחומי עניין מ-Chromium, והם יותר לא יילקחו בחשבון.</translation>
 <translation id="3561853857681580870">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chromium בקטע "הגדרות המערכת".</translation>
-<translation id="3567254597502212821">‏היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chromium במכשיר הזה.</translation>
+<translation id="3567254597502212821">‏היסטוריית הגלישה שלך – תיעוד האתרים שביקרת בהם באמצעות Chromium במכשיר הזה.</translation>
 <translation id="3597003331831379823">הפעלת ההגדרה נכשלה עם הרשאות מורחבות. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, צריך להיכנס ל-Chromium בתור <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chromium. המערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chromium. המערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון הפרטי לא ייפתח שוב.}one{‏יש עדכון חדש בשביל Chromium. המערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו שוב.}two{‏יש עדכון חדש בשביל Chromium. המערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו שוב.}other{‏יש עדכון חדש בשביל Chromium. המערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו שוב.}}</translation>
 <translation id="3651803019964686660">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android שלך, צריך להיכנס אל Chromium בשני המכשירים.</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
-<translation id="3685209450716071127">‏Chromium לא יכול לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
+<translation id="3685209450716071127">‏Chromium לא יכול לבדוק את הסיסמאות שלך. צריך לבדוק את החיבור לאינטרנט.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{‏האדמין מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה}=1{‏האדמין מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. החלון הפרטי לא ייפתח מחדש.}one{‏האדמין מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות הפרטיים לא ייפתחו מחדש.}two{‏האדמין מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות הפרטיים לא ייפתחו מחדש.}other{‏האדמין מבקש להפעיל מחדש את Chromium כדי להחיל את העדכון הזה. # החלונות הפרטיים לא ייפתחו מחדש.}}</translation>
 <translation id="3713809861844741608">‏פתיחת הקישור ב&amp;כרטיסיית Chromium חדשה</translation>
 <translation id="3728124580182886854">‏אפשר לקשר את Chromium לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
@@ -240,7 +240,7 @@
 <translation id="4122186850977583290">‏מעבר לדף 'מידע על Chromium'</translation>
 <translation id="4148957013307229264">מתקין...</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chromium</translation>
-<translation id="421369550622382712">‏אפליקציות, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
+<translation id="421369550622382712">‏בחנות אפשר לבחור בין מגוון אפליקציות, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
 <translation id="4217080900579554343">‏כדי לקבל גישה לתוסף הזה ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chromium</translation>
 <translation id="4217972271355023382">‏כדי לשמור על בטיחות גבוהה יותר ברשת בהתאם להגדרות של ההורה שלכם, עברו לפרופיל Chromium שבו כבר נכנסתם כ-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">מבטל…</translation>
@@ -280,7 +280,7 @@
 <translation id="459535195905078186">‏יישומי Chromium</translation>
 <translation id="4598116752460667024">מחפשים תהליך כלשהו מהרשימה.</translation>
 <translation id="4613863813562375431">‏גרסת ChromiumOS</translation>
-<translation id="4621240073146040695">‏העדכון כמעט הושלם! הפעל מחדש את Chromium‏ כדי לסיים את העדכון.</translation>
+<translation id="4621240073146040695">‏העדכון כמעט הושלם! כדי לסיים את העדכון צריך להפעיל מחדש את Chromium.</translation>
 <translation id="4625064703209785397">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chromium, אבל Chromium יהיה קצת פחות עמיד בפני מתקפות.</translation>
 <translation id="4654936675281451226">‏‫Chromium מבין את הטפסים טוב יותר ויכול למלא אותם אוטומטית מהר יותר עבורך. ההגדרה הזו פועלת.</translation>
 <translation id="4665829708273112819">‏אזהרה: Chromium לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב פרטי, צריך לבטל את הבחירה של האפשרות הזו.</translation>
@@ -288,7 +288,7 @@
 <translation id="4677944499843243528">‏נראה שהפרופיל נמצא בשימוש של תהליך Chromium אחר (<ph name="PROCESS_ID" />) במחשב אחר (<ph name="HOST_NAME" />). דפדפן Chromium נעל את הפרופיל כדי שלא ייפגם. אם אין לך ספק שהפרופיל הזה לא נמצא בתהליך אחר, אפשר לבטל את נעילת הפרופיל ולהפעיל את Chromium מחדש.</translation>
 <translation id="4680828127924988555">ביטול ההתקנה</translation>
 <translation id="469259825538636168">‏חלק מהנתונים שלכם ב-Chromium עדיין לא נשמרו בחשבון Google שלכם. נסו לחכות כמה דקות לפני שתצאו מהחשבון. אם תצאו מהחשבון עכשיו, הנתונים האלה יימחקו.</translation>
-<translation id="4708193446201257833">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מחשבון Google ב-Chromium. אפשר לשנות את ההגדרות של שירותי Google באמצעות קיצור הדרך <ph name="SHORTCUT" />.</translation>
+<translation id="4708193446201257833">‏אחרי הכניסה לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מהחשבון שלך ב-Google ב-Chromium. אפשר לשנות את ההגדרות של שירותי Google באמצעות קיצור הדרך <ph name="SHORTCUT" />.</translation>
 <translation id="4708774505295300557">‏מישהו התחבר כבר ל-Chromium דרך המחשב הזה עם החשבון-<ph name="ACCOUNT_EMAIL_LAST" />. כדי לשמור על פרטיות המידע, צריך ליצור משתמש חדש ל-Chromium.</translation>
 <translation id="4724676981607797757">ההתקנה נכשלה בגלל שגיאת פרוטוקול שלא נתמך.</translation>
 <translation id="4746050847053251315">‏לסגור את Chromium בכל זאת?</translation>
@@ -421,7 +421,7 @@
 <translation id="645458117210240797">‏מושבת • Chromium לא יכול לאמת את מקור התוסף הזה</translation>
 <translation id="6455857529632101747">‏ברוך בואך לפרופילים של Chromium</translation>
 <translation id="6466344609055215035">‏הסרת החשבון מ-Chromium</translation>
-<translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
+<translation id="6475912303565314141">‏ההגדרה הזו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות מסוכנות ואתרים. לא בטוחים</translation>
 <translation id="6510925080656968729">‏הסרה של Chromium</translation>
 <translation id="651535675648445253">‏קיצורי הדרך נפתחים ב-Chromium</translation>
@@ -499,7 +499,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7384121030444253939">‏התוסף הזה כבר לא נתמך. ההמלצה של Chromium היא להסיר אותו.</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7450541714075000668">הטקסט הועתק</translation>
-<translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
+<translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה שלך בשביל האתר הזה</translation>
 <translation id="7458892263350425044">‏כדי להשתמש במיקרופון, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chromium גישה</translation>
 <translation id="7461356015007898716">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 7.</translation>
 <translation id="7467949745582939695">‏להפעיל את Chromium מחדש?</translation>
@@ -535,7 +535,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7888981273428720788">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
 <translation id="7934340546140346950">‏‫Chromium משדרג חיבורים לא מאובטחים ל-HTTPS באופן אוטומטי כשאפשר</translation>
 <translation id="7937630085815544518">‏נכנסת ל-Chromium כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
-<translation id="7975919845073681630">‏זוהי התקנה משנית של Chromium, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
+<translation id="7975919845073681630">‏זוהי התקנה משנית של Chromium. אי אפשר להפוך אותו לדפדפן ברירת המחדל.</translation>
 <translation id="7997934263947464652">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8010081455002666927">זיהוי אוטומטי</translation>
