@@ -506,24 +506,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Android.MediaPlayerSuccess" enum="MediaPlayerExitStatus"
-    expires_after="2026-02-09">
-  <owner>tguilbert@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>Android: Whether MediaPlayer exited without errors.</summary>
-</histogram>
-
-<histogram name="Media.Android.MediaPlayerWatchTime"
-    enum="MediaPlayerWatchTimeType" expires_after="2025-09-28">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Wall time of MediaPlayer playbacks. Each count represents one second of
-    media playback. Multiple MediaPlayer instances can together accumulate watch
-    time faster than real time.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
     expires_after="2026-05-19">
   <owner>evliu@google.com</owner>
