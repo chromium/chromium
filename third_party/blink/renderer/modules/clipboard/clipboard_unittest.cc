@@ -82,6 +82,9 @@ TEST_F(ClipboardTest, ClipboardPromiseReadText) {
   String promise_returned_string;
   promise_tester.Value().ToString(promise_returned_string);
   EXPECT_EQ(promise_returned_string, testing_string);
+
+  executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::PermissionService::Name_, {});
 }
 
 }  // namespace blink
