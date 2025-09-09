@@ -305,13 +305,13 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
   std::unique_ptr<aura::Window> root =
       aura::test::CreateTestWindow({.window_id = 0});
   std::unique_ptr<aura::Window> transient_parent =
-      aura::test::CreateTestWindow({.window_id = 1}, root.get());
-  std::unique_ptr<aura::Window> child_window =
-      aura::test::CreateTestWindow({.window_id = 2}, transient_parent.get());
+      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 1});
+  std::unique_ptr<aura::Window> child_window = aura::test::CreateTestWindow(
+      {.parent = transient_parent.get(), .window_id = 2});
   std::unique_ptr<aura::Window> transient_window_1 =
-      aura::test::CreateTestWindow({.window_id = 3}, root.get());
+      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 3});
   std::unique_ptr<aura::Window> transient_window_2 =
-      aura::test::CreateTestWindow({.window_id = 4}, root.get());
+      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 4});
 
   wm::AddTransientChild(transient_parent.get(), transient_window_1.get());
   wm::AddTransientChild(transient_parent.get(), transient_window_2.get());

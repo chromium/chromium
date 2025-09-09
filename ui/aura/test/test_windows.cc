@@ -18,15 +18,11 @@
 
 namespace aura::test {
 
-std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
-                                         Window* parent) {
+std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params) {
   return TestWindowBuilder(params)
-      .SetParent(parent)
       .AllowAllWindowStates()
       .Build();
 }
-
-
 
 Window* CreateTestWindow(SkColor color,
                          int id,
@@ -51,11 +47,11 @@ Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
                                             Window* parent,
                                             bool show_on_creation) {
   return CreateTestWindow({.delegate = delegate,
+                           .parent = parent,
                            .bounds = bounds,
                            .window_type = type,
                            .window_id = id,
-                           .show = show_on_creation},
-                          parent)
+                           .show = show_on_creation})
       .release();
 }
 

@@ -272,13 +272,15 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   WindowState::Get(window.get())->Maximize();
   InstallResizeHandleWindowTargeterForWindow(window.get());
 
-  auto* child = aura::test::CreateTestWindow(
-      {.delegate =
-           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-       .bounds = gfx::Rect(window->bounds().size()),
-       .window_type = aura::client::WINDOW_TYPE_UNKNOWN,
-       .window_id = 1},
-      window.get()).release();
+  auto* child =
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = window.get(),
+           .bounds = gfx::Rect(window->bounds().size()),
+           .window_type = aura::client::WINDOW_TYPE_UNKNOWN,
+           .window_id = 1})
+          .release();
 
   ui::EventTarget* root_target = window->GetRootWindow();
   auto* targeter = root_target->GetEventTargeter();

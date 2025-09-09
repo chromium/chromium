@@ -405,10 +405,14 @@ void OffsetBounds(Window* window, int horizontal, int vertical) {
 }
 
 TEST_F(WindowTest, GetChildById) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
-  std::unique_ptr<Window> w11(CreateTestWindow({.window_id = 11}, w1.get()));
-  std::unique_ptr<Window> w111(CreateTestWindow({.window_id = 111}, w11.get()));
-  std::unique_ptr<Window> w12(CreateTestWindow({.window_id = 12}, w1.get()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w11(
+      CreateTestWindow({.parent = w1.get(), .window_id = 11}));
+  std::unique_ptr<Window> w111(
+      CreateTestWindow({.parent = w11.get(), .window_id = 111}));
+  std::unique_ptr<Window> w12(
+      CreateTestWindow({.parent = w1.get(), .window_id = 12}));
 
   EXPECT_FALSE(w1->GetChildById(57));
   EXPECT_EQ(w12.get(), w1->GetChildById(12));
@@ -457,7 +461,8 @@ TEST_F(WindowTest, ContainsPoint) {
 }
 
 TEST_F(WindowTest, MakeWindowCapturable) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   // Initially the window is not capturable.
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
 
@@ -505,7 +510,8 @@ TEST_F(WindowTest, MakeWindowCapturable) {
 }
 
 TEST_F(WindowTest, DeletingCapturableWindows) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   // Initially the window is not capturable.
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
 
@@ -520,7 +526,8 @@ TEST_F(WindowTest, DeletingCapturableWindows) {
 }
 
 TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
   ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
   EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
@@ -543,7 +550,8 @@ TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
 }
 
 TEST_F(WindowTest, RecreateLayerOfCapturableWindow) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
   ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
   EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
@@ -561,7 +569,8 @@ TEST_F(WindowTest, ConvertPointToWindow) {
   // Window::ConvertPointToWindow is mostly identical to
   // Layer::ConvertPointToLayer, except NULL values for |source| are permitted,
   // in which case the function just returns.
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   gfx::Point reference_point(100, 100);
   gfx::Point test_point = reference_point;
   Window::ConvertPointToTarget(nullptr, w1.get(), &test_point);
@@ -777,10 +786,12 @@ TEST_F(WindowTest, GetToplevelWindow) {
   const gfx::Rect kBounds(0, 0, 10, 10);
   TestWindowDelegate delegate;
 
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   std::unique_ptr<Window> w11(
       CreateTestWindowWithDelegate(&delegate, 11, kBounds, w1.get()));
-  std::unique_ptr<Window> w111(CreateTestWindow({.window_id = 111}, w11.get()));
+  std::unique_ptr<Window> w111(
+      CreateTestWindow({.parent = w11.get(), .window_id = 111}));
   std::unique_ptr<Window> w1111(
       CreateTestWindowWithDelegate(&delegate, 1111, kBounds, w111.get()));
 
@@ -811,7 +822,7 @@ TEST_F(WindowTest, WindowAddedToRootWindowShouldNotifyChildAndNotParent) {
   AddedToRootWindowObserver parent_observer;
   AddedToRootWindowObserver child_observer;
   std::unique_ptr<Window> parent_window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   std::unique_ptr<Window> child_window(new Window(nullptr));
   child_window->Init(ui::LAYER_TEXTURED);
   child_window->Show();
@@ -1289,9 +1300,9 @@ TEST_F(WindowTest, ReleaseCaptureOnDestroy) {
 
 TEST_F(WindowTest, GetBoundsInRootWindow) {
   std::unique_ptr<Window> viewport(
-      CreateTestWindow({.bounds{0, 0, 300, 300}}, root_window()));
+      CreateTestWindow({.parent = root_window(), .bounds = {300, 300}}));
   std::unique_ptr<Window> child(
-      CreateTestWindow({.bounds = {100, 100}}, viewport.get()));
+      CreateTestWindow({.parent = viewport.get(), .bounds = {100, 100}}));
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
 
@@ -1306,14 +1317,14 @@ TEST_F(WindowTest, GetBoundsInRootWindow) {
 }
 
 TEST_F(WindowTest, GetBoundsInRootWindowWithLayers) {
-  std::unique_ptr<Window> viewport =
-      CreateTestWindow({.bounds = gfx::Rect(0, 0, 300, 300)}, root_window());
+  std::unique_ptr<Window> viewport = CreateTestWindow(
+      {.parent = root_window(), .bounds = gfx::Rect(0, 0, 300, 300)});
 
   std::unique_ptr<Window> widget(
-      CreateTestWindow({.bounds = {200, 200}}, viewport.get()));
+      CreateTestWindow({.parent = viewport.get(), .bounds = {200, 200}}));
 
   std::unique_ptr<Window> child(
-      CreateTestWindow({.bounds = {100, 100}}, widget.get()));
+      CreateTestWindow({.parent = widget.get(), .bounds = {100, 100}}));
 
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
@@ -1333,13 +1344,13 @@ TEST_F(WindowTest, GetBoundsInRootWindowWithLayers) {
 
 TEST_F(WindowTest, GetBoundsInRootWindowWithLayersAndTranslations) {
   std::unique_ptr<Window> viewport(
-      CreateTestWindow({.bounds = {300, 300}}, root_window()));
+      CreateTestWindow({.parent = root_window(), .bounds = {300, 300}}));
 
   std::unique_ptr<Window> widget =
-      CreateTestWindow({.bounds = {200, 200}}, viewport.get());
+      CreateTestWindow({.parent = viewport.get(), .bounds = {200, 200}});
 
   std::unique_ptr<Window> child(
-      CreateTestWindow({.bounds = {100, 100}}, widget.get()));
+      CreateTestWindow({.parent = widget.get(), .bounds = {100, 100}}));
 
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
@@ -1694,7 +1705,8 @@ TEST_F(WindowTest, Visibility) {
       CreateTestWindowWithDelegate(&d, 1, gfx::Rect(), root_window()));
   std::unique_ptr<Window> w2(
       CreateTestWindowWithDelegate(&d2, 2, gfx::Rect(), w1.get()));
-  std::unique_ptr<Window> w3(CreateTestWindow({.window_id = 3}, w2.get()));
+  std::unique_ptr<Window> w3(
+      CreateTestWindow({.parent = w2.get(), .window_id = 3}));
 
   // Create shows all the windows.
   EXPECT_TRUE(w1->IsVisible());
@@ -1873,7 +1885,8 @@ TEST_F(WindowTest, TransformGesture) {
 }
 
 TEST_F(WindowTest, Property) {
-  std::unique_ptr<Window> w(CreateTestWindow({.window_id = 0}, root_window()));
+  std::unique_ptr<Window> w(
+      CreateTestWindow({.parent = root_window(), .window_id = 0}));
 
   static const char native_prop_key[] = "fnord";
 
@@ -1930,7 +1943,7 @@ TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<Window> w1(
-      CreateTestWindow({.bounds = {100, 100}}, root_window()));
+      CreateTestWindow({.parent = root_window(), .bounds = {100, 100}}));
 
   EXPECT_TRUE(w1->layer());
   w1->layer()->GetAnimator()->set_disable_timer_for_test(true);
@@ -2173,11 +2186,13 @@ class WindowObserverTest : public WindowTest,
 
 // Various assertions for WindowObserver.
 TEST_F(WindowObserverTest, WindowObserver) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   w1->AddObserver(this);
 
   // Create a new window as a child of w1, our observer should be notified.
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}, w1.get()));
+  std::unique_ptr<Window> w2(
+      CreateTestWindow({.parent = w1.get(), .window_id = 2}));
   EXPECT_EQ("added=1 removing=0 removed=0", WindowObserverCountStateAndClear());
 
   // Delete w2, which should result in the remove notifications.
@@ -2186,7 +2201,8 @@ TEST_F(WindowObserverTest, WindowObserver) {
 
   // Create a window that isn't parented to w1, we shouldn't get any
   // notification.
-  std::unique_ptr<Window> w3(CreateTestWindow({.window_id = 3}, root_window()));
+  std::unique_ptr<Window> w3(
+      CreateTestWindow({.parent = root_window(), .window_id = 3}));
   EXPECT_EQ("added=0 removing=0 removed=0", WindowObserverCountStateAndClear());
 
   // Similarly destroying w3 shouldn't notify us either.
@@ -2198,8 +2214,10 @@ TEST_F(WindowObserverTest, WindowObserver) {
 // Test if OnWindowVisibilityChanged is invoked with expected
 // parameters.
 TEST_F(WindowObserverTest, WindowVisibility) {
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 1}, w1.get()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w2(
+      CreateTestWindow({.parent = w1.get(), .window_id = 1}));
   w2->AddObserver(this);
 
   // Hide should make the window invisible and the passed visible
@@ -2251,15 +2269,16 @@ TEST_F(WindowObserverTest, WindowVisibility) {
 // Test if OnWindowDestroyed is invoked as expected.
 TEST_F(WindowObserverTest, WindowDestroyed) {
   // Delete a window should fire a destroyed notification.
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   w1->AddObserver(this);
   w1.reset();
   EXPECT_EQ(1, DestroyedCountAndClear());
 
   // Observe on child and delete parent window should fire a notification.
   std::unique_ptr<Window> parent(
-      CreateTestWindow({.window_id = 1}, root_window()));
-  Window* child = CreateTestWindow({.window_id = 1}, parent.get())
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  Window* child = CreateTestWindow({.parent = parent.get(), .window_id = 1})
                       .release();  // owned by parent
   child->AddObserver(this);
   parent.reset();
@@ -2268,7 +2287,8 @@ TEST_F(WindowObserverTest, WindowDestroyed) {
 
 TEST_F(WindowObserverTest, PropertyChanged) {
   // Setting property should fire a property change notification.
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   w1->AddObserver(this);
 
   static const WindowProperty<int> prop = {-2};
@@ -2299,7 +2319,7 @@ TEST_F(WindowObserverTest, PropertyChanged) {
 // bounds of a Window's Layer change without an animation.
 TEST_F(WindowObserverTest, WindowBoundsChanged) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
   const gfx::Rect initial_bounds = window->bounds();
   constexpr gfx::Rect kTargetBounds(10, 20, 30, 40);
@@ -2316,7 +2336,7 @@ TEST_F(WindowObserverTest, WindowBoundsChanged) {
 // of a bounds animation.
 TEST_F(WindowObserverTest, WindowBoundsChangedAnimation) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
   const gfx::Rect initial_bounds = window->bounds();
   constexpr gfx::Rect kTargetBounds(10, 20, 30, 40);
@@ -2353,7 +2373,7 @@ TEST_F(WindowObserverTest, WindowBoundsChangedAnimation) {
 // opacity of a Window's Layer changes without an animation.
 TEST_F(WindowObserverTest, WindowOpacityChanged) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
   window->layer()->SetOpacity(0.5f);
   ASSERT_EQ(1, window_opacity_info().changed_count);
@@ -2366,7 +2386,7 @@ TEST_F(WindowObserverTest, WindowOpacityChanged) {
 // beginning and at the end of a threaded opacity animation.
 TEST_F(WindowObserverTest, WindowOpacityChangedAnimation) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
 
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
@@ -2390,7 +2410,7 @@ TEST_F(WindowObserverTest, WindowOpacityChangedAnimation) {
 // shape is set for a window.
 TEST_F(WindowObserverTest, WindowAlphaShapeChanged) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
 
   auto shape = std::make_unique<ui::Layer::ShapeRects>();
@@ -2407,7 +2427,7 @@ TEST_F(WindowObserverTest, WindowAlphaShapeChanged) {
 // are notified when SetTransform() is called and there is no animation.
 TEST_F(WindowObserverTest, SetTransform) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
   gfx::Transform target_transform;
   target_transform.Skew(10.0, 5.0);
@@ -2430,7 +2450,7 @@ TEST_F(WindowObserverTest, SetTransform) {
 // threaded animation is started by SetTransform().
 TEST_F(WindowObserverTest, SetTransformAnimation) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
 
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
@@ -2460,7 +2480,7 @@ TEST_F(WindowObserverTest, SetTransformAnimation) {
 
 TEST_F(WindowObserverTest, OnWindowLayerRecreated) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   window->AddObserver(this);
 
   EXPECT_EQ(0, layer_recreated_info().count);
@@ -2471,7 +2491,7 @@ TEST_F(WindowObserverTest, OnWindowLayerRecreated) {
 
 TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithOpacityAnimation) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
 
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -2495,7 +2515,7 @@ TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithOpacityAnimation) {
 
 TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithTransformAnimation) {
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
 
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -2521,9 +2541,9 @@ TEST_F(WindowObserverTest, OnWindowLayerRecreatedWithTransformAnimation) {
 
 TEST_F(WindowTest, AcquireLayer) {
   std::unique_ptr<Window> window1(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   std::unique_ptr<Window> window2(
-      CreateTestWindow({.window_id = 2}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 2}));
   ui::Layer* parent = window1->parent()->layer();
   EXPECT_EQ(2U, parent->children().size());
 
@@ -2639,7 +2659,7 @@ TEST_F(WindowTest, VisibilityClientIsVisible) {
   TestVisibilityClient client(root_window());
 
   std::unique_ptr<Window> window(
-      CreateTestWindow({.window_id = 1}, root_window()));
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   EXPECT_TRUE(window->IsVisible());
   EXPECT_TRUE(window->layer()->visible());
 
@@ -3040,11 +3060,11 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
 
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {
   WindowTracker tracker;
-  Window* root = CreateTestWindow({.window_id = 0}, nullptr).release();
+  Window* root = CreateTestWindow({.window_id = 0}).release();
   tracker.Add(root);
-  Window* child1 = CreateTestWindow({.window_id = 0}, root).release();
+  Window* child1 = CreateTestWindow({.parent = root, .window_id = 0}).release();
   tracker.Add(child1);
-  tracker.Add(CreateTestWindow({.window_id = 0}, root).release());
+  tracker.Add(CreateTestWindow({.parent = root, .window_id = 0}).release());
 
   // This deletes |root| (the parent) when OnWindowVisibilityChanged() is
   // received by |child1|.
@@ -3189,8 +3209,10 @@ class AddChildNotificationsObserver : public WindowObserver {
 // Assertions around when root window notifications are sent.
 TEST_F(WindowTest, AddChildNotifications) {
   AddChildNotificationsObserver observer;
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, root_window()));
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 1}, root_window()));
+  std::unique_ptr<Window> w1(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w2(
+      CreateTestWindow({.parent = root_window(), .window_id = 1}));
   w2->AddObserver(&observer);
   w2->Focus();
   EXPECT_TRUE(w2->HasFocus());
@@ -3260,7 +3282,7 @@ TEST_F(WindowTest, OnWindowHierarchyChange) {
     // Simple add & remove.
     HierarchyObserver oroot(root_window());
 
-    std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, nullptr));
+    std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}));
     HierarchyObserver o1(w1.get());
 
     // Add.
@@ -3306,8 +3328,9 @@ TEST_F(WindowTest, OnWindowHierarchyChange) {
     // Add & remove of hierarchy. Tests notification order per documentation in
     // WindowObserver.
     HierarchyObserver o(root_window());
-    std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, nullptr));
-    Window* w11 = CreateTestWindow({.window_id = 11}, w1.get()).release();
+    std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}));
+    Window* w11 =
+        CreateTestWindow({.parent = w1.get(), .window_id = 11}).release();
     w1->AddObserver(&o);
     w11->AddObserver(&o);
 
@@ -3361,11 +3384,13 @@ TEST_F(WindowTest, OnWindowHierarchyChange) {
   {
     // Reparent. Tests notification order per documentation in WindowObserver.
     std::unique_ptr<Window> w1(
-        CreateTestWindow({.window_id = 1}, root_window()));
-    Window* w11 = CreateTestWindow({.window_id = 11}, w1.get()).release();
-    Window* w111 = CreateTestWindow({.window_id = 111}, w11).release();
+        CreateTestWindow({.parent = root_window(), .window_id = 1}));
+    Window* w11 =
+        CreateTestWindow({.parent = w1.get(), .window_id = 11}).release();
+    Window* w111 =
+        CreateTestWindow({.parent = w11, .window_id = 111}).release();
     std::unique_ptr<Window> w2(
-        CreateTestWindow({.window_id = 2}, root_window()));
+        CreateTestWindow({.parent = root_window(), .window_id = 2}));
 
     HierarchyObserver o(root_window());
     w1->AddObserver(&o);
@@ -3458,7 +3483,7 @@ TEST_F(WindowTest, WindowDestroyCompletesAnimations) {
   // Make sure destroying a Window completes the animation.
   {
     std::unique_ptr<Window> window(
-        CreateTestWindow({.window_id = 1}, root_window()));
+        CreateTestWindow({.parent = root_window(), .window_id = 1}));
     window->layer()->SetAnimator(animator.get());
 
     gfx::Transform transform;
@@ -3481,7 +3506,7 @@ TEST_F(WindowTest, WindowDestroyCompletesAnimations) {
   layer.SetAnimator(animator.get());
   {
     std::unique_ptr<Window> window(
-        CreateTestWindow({.window_id = 1}, root_window()));
+        CreateTestWindow({.parent = root_window(), .window_id = 1}));
     window->layer()->Add(&layer);
 
     gfx::Transform transform;
@@ -3758,10 +3783,10 @@ class WindowActualScreenBoundsTest
   // WindowTest:
   void SetUp() override {
     WindowTest::SetUp();
-    viewport_ = std::unique_ptr<Window>(
-        CreateTestWindow({.bounds = {100, 50, 200, 200}}, root_window()));
+    viewport_ = std::unique_ptr<Window>(CreateTestWindow(
+        {.parent = root_window(), .bounds = {100, 50, 200, 200}}));
     child_ = std::unique_ptr<Window>(
-        CreateTestWindow({.bounds = {100, 100}}, viewport_.get()));
+        CreateTestWindow({.parent = viewport_.get(), .bounds = {100, 100}}));
   }
 
   void TearDown() override {

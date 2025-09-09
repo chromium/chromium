@@ -46,16 +46,24 @@ class TransientWindowStackingClientTest : public aura::test::AuraTestBase {
 
 // Tests that transient children are stacked as a unit when using stack above.
 TEST_F(TransientWindowStackingClientTest, TransientChildrenGroupAbove) {
-  std::unique_ptr<Window> parent(
-      CreateTestWindow({.window_id = 0}, root_window()));
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, parent.get()));
-  Window* w11 = CreateTestWindow({.window_id = 11}, parent.get()).release();
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}, parent.get()));
-  Window* w21 = CreateTestWindow({.window_id = 21}, parent.get()).release();
-  Window* w211 = CreateTestWindow({.window_id = 211}, parent.get()).release();
-  Window* w212 = CreateTestWindow({.window_id = 212}, parent.get()).release();
-  Window* w213 = CreateTestWindow({.window_id = 213}, parent.get()).release();
-  Window* w22 = CreateTestWindow({.window_id = 22}, parent.get()).release();
+  std::unique_ptr<Window> parent =
+      CreateTestWindow({.parent = root_window(), .window_id = 0});
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 1});
+  Window* w11 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 11}).release();
+  std::unique_ptr<Window> w2 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 2});
+  Window* w21 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 21}).release();
+  Window* w211 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 211}).release();
+  Window* w212 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 212}).release();
+  Window* w213 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 213}).release();
+  Window* w22 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 22}).release();
   ASSERT_EQ(8u, parent->children().size());
 
   AddTransientChild(w1.get(), w11);  // w11 is now owned by w1.
@@ -117,16 +125,24 @@ TEST_F(TransientWindowStackingClientTest, TransientChildrenGroupAbove) {
 
 // Tests that transient children are stacked as a unit when using stack below.
 TEST_F(TransientWindowStackingClientTest, TransientChildrenGroupBelow) {
-  std::unique_ptr<Window> parent(
-      CreateTestWindow({.window_id = 0}, root_window()));
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, parent.get()));
-  Window* w11 = CreateTestWindow({.window_id = 11}, parent.get()).release();
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}, parent.get()));
-  Window* w21 = CreateTestWindow({.window_id = 21}, parent.get()).release();
-  Window* w211 = CreateTestWindow({.window_id = 211}, parent.get()).release();
-  Window* w212 = CreateTestWindow({.window_id = 212}, parent.get()).release();
-  Window* w213 = CreateTestWindow({.window_id = 213}, parent.get()).release();
-  Window* w22 = CreateTestWindow({.window_id = 22}, parent.get()).release();
+  std::unique_ptr<Window> parent =
+      CreateTestWindow({.parent = root_window(), .window_id = 0});
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 1});
+  Window* w11 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 11}).release();
+  std::unique_ptr<Window> w2 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 2});
+  Window* w21 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 21}).release();
+  Window* w211 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 211}).release();
+  Window* w212 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 212}).release();
+  Window* w213 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 213}).release();
+  Window* w22 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 22}).release();
   ASSERT_EQ(8u, parent->children().size());
 
   AddTransientChild(w1.get(), w11);  // w11 is now owned by w1.
@@ -188,10 +204,12 @@ TEST_F(TransientWindowStackingClientTest, TransientChildrenGroupBelow) {
 // See crbug.com/443433
 TEST_F(TransientWindowStackingClientTest,
        StackAboveWindowWithNULLLayerDelegate) {
-  std::unique_ptr<Window> parent(
-      CreateTestWindow({.window_id = 0}, root_window()));
-  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}, parent.get()));
-  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}, parent.get()));
+  std::unique_ptr<Window> parent =
+      CreateTestWindow({.parent = root_window(), .window_id = 0});
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 1});
+  std::unique_ptr<Window> w2 =
+      CreateTestWindow({.parent = parent.get(), .window_id = 2});
   w2->layer()->set_delegate(NULL);
   EXPECT_EQ(w2.get(), parent->children().back());
 

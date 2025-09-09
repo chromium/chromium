@@ -126,9 +126,9 @@ TEST_F(WindowReordererTest, Association) {
 
   // Windows are deleted during shutdown even if it's not owned by the
   // stack.
-  aura::Window* w1 =
-      aura::test::CreateTestWindow({.window_id = 0}, parent->GetNativeWindow())
-          .release();
+  aura::Window* w1 = aura::test::CreateTestWindow(
+                         {.parent = parent->GetNativeWindow(), .window_id = 0})
+                         .release();
   SetWindowAndLayerName(w1, "w1");
 
   aura::Window* w2 = aura::test::CreateTestWindow({.window_id = 0}).release();

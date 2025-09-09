@@ -312,11 +312,13 @@ class TestEventClient : public client::EventClient {
       : root_window_(root_window), lock_(false) {
     client::SetEventClient(root_window_, this);
     Window* lock_window =
-        test::CreateTestWindow({.bounds = root_window_->bounds()}, root_window_)
+        test::CreateTestWindow(
+            {.parent = root_window_, .bounds = root_window_->bounds()})
             .release();
     lock_window->SetId(kLockWindowId);
     Window* non_lock_window =
-        test::CreateTestWindow({.bounds = root_window_->bounds()}, root_window_)
+        test::CreateTestWindow(
+            {.parent = root_window_, .bounds = root_window_->bounds()})
             .release();
     non_lock_window->SetId(kNonLockWindowId);
   }
@@ -367,12 +369,12 @@ TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
   client.GetNonLockWindow()->AddPreTargetHandler(&nonlock_ef);
   client.GetLockWindow()->AddPreTargetHandler(&lock_ef);
 
-  Window* w1 = test::CreateTestWindow({.bounds = {10, 10, 20, 20}},
-                                      client.GetNonLockWindow())
+  Window* w1 = test::CreateTestWindow({.parent = client.GetNonLockWindow(),
+                                       .bounds = {10, 10, 20, 20}})
                    .release();
   w1->SetId(1);
-  Window* w2 = test::CreateTestWindow({.bounds = {30, 30, 20, 20}},
-                                      client.GetNonLockWindow())
+  Window* w2 = test::CreateTestWindow({.parent = client.GetNonLockWindow(),
+                                       .bounds = {30, 30, 20, 20}})
                    .release();
   w2->SetId(2);
   std::unique_ptr<Window> w3(test::CreateTestWindowWithDelegate(
@@ -2756,7 +2758,7 @@ TEST_F(WindowEventDispatcherTest, DestroyWindowOnCaptureChanged) {
   EXPECT_TRUE(delegate.has_window());
 
   std::unique_ptr<aura::Window> window_second(
-      test::CreateTestWindow({.window_id = 2}, root_window()));
+      test::CreateTestWindow({.parent = root_window(), .window_id = 2}));
   window_second->Show();
 
   client::CaptureDelegate* capture_delegate = host()->dispatcher();
@@ -3256,7 +3258,8 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
   ConsumeKeyHandler key_handler;
   // Not using std::unique_ptr<> intentionally
   aura::Window* focused =
-      test::CreateTestWindow({.bounds = {200, 200, 100, 100}}, root_window())
+      test::CreateTestWindow(
+          {.parent = root_window(), .bounds = {200, 200, 100, 100}})
           .release();
   focused->SetProperty(client::kSkipImeProcessing, true);
   focused->AddPostTargetHandler(&key_handler);

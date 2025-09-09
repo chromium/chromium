@@ -39,9 +39,11 @@ TEST_F(RootWindowLayoutManagerTest, DeleteChildDuringResize) {
   aura::Window* parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_WallpaperContainer);
   aura::Window* w1 =
-      aura::test::CreateTestWindow({.window_id = 1}, parent).release();
+      aura::test::CreateTestWindow({.parent = parent, .window_id = 1})
+          .release();
   aura::Window* w2 =
-      aura::test::CreateTestWindow({.window_id = 2}, parent).release();
+      aura::test::CreateTestWindow({.parent = parent, .window_id = 2})
+          .release();
   WindowDeleter deleter(w1);
   w2->AddObserver(&deleter);
   UpdateDisplay("600x500");

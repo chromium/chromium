@@ -799,16 +799,18 @@ TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
   aura::Window* settings_bubble_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_SettingBubbleContainer);
-  aura::Window* window = aura::test::CreateTestWindow({.window_id = 100},
-                                                      settings_bubble_container)
-                             .release();
+  aura::Window* window =
+      aura::test::CreateTestWindow(
+          {.parent = settings_bubble_container, .window_id = 100})
+          .release();
   window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
 
   aura::Window* status_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_ShelfContainer);
-  window = aura::test::CreateTestWindow({.window_id = 100}, status_container)
+  window = aura::test::CreateTestWindow(
+               {.parent = status_container, .window_id = 100})
                .release();
   window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());

@@ -24,8 +24,7 @@ void SetEnvForTestWindows(Env* env);
 Env* GetEnvForTestWindows();
 
 // Creates a test window. It internally uses TestWindowBuilder.
-std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params = {},
-                                         Window* parent = nullptr);
+std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params = {});
 
 // Creates a test window. If parent window is nullptr, then the caller must take
 // ownership of the created window.

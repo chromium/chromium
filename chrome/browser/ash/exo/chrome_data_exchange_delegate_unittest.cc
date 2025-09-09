@@ -118,7 +118,8 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(IsArcWindow(arc_toplevel));
   aura::Window* arc_window =
-      aura::test::CreateTestWindow({.bounds = gfx::Rect()}, arc_toplevel)
+      aura::test::CreateTestWindow(
+          {.parent = arc_toplevel, .bounds = gfx::Rect()})
           .release();
   ASSERT_TRUE(IsArcWindow(arc_window->GetToplevelWindow()));
 
@@ -129,7 +130,8 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
                                  chromeos::AppType::CROSTINI_APP);
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
   aura::Window* crostini_window =
-      aura::test::CreateTestWindow({.bounds = gfx::Rect()}, crostini_toplevel)
+      aura::test::CreateTestWindow(
+          {.parent = crostini_toplevel, .bounds = gfx::Rect()})
           .release();
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
 
@@ -139,7 +141,8 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   exo::SetShellApplicationId(plugin_vm_toplevel, "org.chromium.plugin_vm_ui");
   ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel));
   aura::Window* plugin_vm_window =
-      aura::test::CreateTestWindow({.bounds = gfx::Rect()}, plugin_vm_toplevel)
+      aura::test::CreateTestWindow(
+          {.parent = plugin_vm_toplevel, .bounds = gfx::Rect()})
           .release();
   ASSERT_TRUE(
       plugin_vm::IsPluginVmAppWindow(plugin_vm_window->GetToplevelWindow()));

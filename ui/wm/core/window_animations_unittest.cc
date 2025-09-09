@@ -131,10 +131,10 @@ TEST_F(WindowAnimationsTest, HideAnimationDetachLayers) {
       aura::test::CreateTestWindow({.window_id = 0}));
 
   std::unique_ptr<aura::Window> other(
-      aura::test::CreateTestWindow({.window_id = 1}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 1}));
 
   std::unique_ptr<aura::Window> animating_window(
-      aura::test::CreateTestWindow({.window_id = 2}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 2}));
   SetWindowVisibilityAnimationTransition(animating_window.get(), ANIMATE_HIDE);
 
   EXPECT_EQ(0, GetWindowZPosition(other.get()));
@@ -188,16 +188,16 @@ TEST_F(WindowAnimationsTest, HideAnimationDetachLayersWithTransientChildren) {
       aura::test::CreateTestWindow({.window_id = 0}));
 
   std::unique_ptr<aura::Window> other(
-      aura::test::CreateTestWindow({.window_id = 1}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 1}));
 
   std::unique_ptr<aura::Window> animating_window(
-      aura::test::CreateTestWindow({.window_id = 2}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 2}));
   SetWindowVisibilityAnimationTransition(animating_window.get(), ANIMATE_HIDE);
 
   std::unique_ptr<aura::Window> transient1(
-      aura::test::CreateTestWindow({.window_id = 3}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 3}));
   std::unique_ptr<aura::Window> transient2(
-      aura::test::CreateTestWindow({.window_id = 4}, parent.get()));
+      aura::test::CreateTestWindow({.parent = parent.get(), .window_id = 4}));
 
   TransientWindowManager::GetOrCreate(animating_window.get());
   AddTransientChild(animating_window.get(), transient1.get());
