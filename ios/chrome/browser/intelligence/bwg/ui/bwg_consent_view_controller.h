@@ -26,9 +26,6 @@
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
 
-// Content height of the bottom sheet.
-- (CGFloat)contentHeight;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_CONSENT_VIEW_CONTROLLER_H_

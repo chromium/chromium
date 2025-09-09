@@ -22,9 +22,6 @@
 // NavigationController.
 @property(nonatomic, weak) id<BWGPromoViewControllerDelegate> BWGPromoDelegate;
 
-// Content height of the BWG Promo UI.
-- (CGFloat)contentHeight;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_PROMO_VIEW_CONTROLLER_H_
