@@ -162,8 +162,6 @@ source_set("app_list") {
 
   deps = [
     "//ash/app_menu",
-    "//ash/assistant/model",
-    "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp/app_list/vector_icons",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
@@ -317,7 +315,6 @@ source_set("unit_tests") {
     ":test_support",
     "//ash:test_support",
     "//ash/app_menu",
-    "//ash/assistant/model",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",

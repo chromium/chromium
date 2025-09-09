@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_app_shortcuts_search_provider.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_playstore_search_provider.h"
-#include "chrome/browser/ash/app_list/search/assistant_text_search_provider.h"
 #include "chrome/browser/ash/app_list/search/desks_admin_template_provider.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
@@ -67,7 +66,6 @@ std::unique_ptr<SearchController> CreateSearchController(
       controller->GetAppSearchDataSource()));
   controller->AddProvider(std::make_unique<OmniboxProvider>(
       profile, list_controller, LauncherSearchProviderTypes()));
-  controller->AddProvider(std::make_unique<AssistantTextSearchProvider>());
 
   // File search providers are added only when not in guest session and running
   // on Chrome OS.

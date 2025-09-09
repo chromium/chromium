@@ -1940,8 +1940,6 @@ static_library("ui") {
     deps += [
       "//ash",
       "//ash/app_list",
-      "//ash/assistant/model",
-      "//ash/assistant/util",
       "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",

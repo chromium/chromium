@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/assistant/util/assistant_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"

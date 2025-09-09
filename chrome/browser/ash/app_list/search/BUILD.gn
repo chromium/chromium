@@ -21,8 +21,6 @@ static_library("search") {
     "app_service_app_result.h",
     "app_zero_state_provider.cc",
     "app_zero_state_provider.h",
-    "assistant_text_search_provider.cc",
-    "assistant_text_search_provider.h",
     "burn_in_controller.cc",
     "burn_in_controller.h",
     "chrome_search_result.cc",
@@ -81,7 +79,6 @@ static_library("search") {
 
   deps = [
     "//ash/app_list/vector_icons",
-    "//ash/assistant/util",
     "//ash/webui/help_app_ui",
     "//ash/webui/personalization_app",
     "//ash/webui/shortcut_customization_ui",

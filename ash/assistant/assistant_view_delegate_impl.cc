@@ -8,10 +8,6 @@
 
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/assistant_notification_controller_impl.h"
-#include "ash/assistant/model/assistant_interaction_model.h"
-#include "ash/assistant/model/assistant_interaction_model_observer.h"
-#include "ash/assistant/model/assistant_notification_model.h"
-#include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/public/cpp/session/session_types.h"
