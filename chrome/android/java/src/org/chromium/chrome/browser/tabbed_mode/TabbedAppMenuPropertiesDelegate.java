@@ -283,7 +283,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Page Zoom
         // Disable page zoom menu item on Reading Mode pages.
-        if (shouldShowPageZoomItem(currentTab) && !shouldShowReaderModePrefs(currentTab)) {
+        if (shouldShowPageZoomItem(currentTab) && !isReaderModeShowing(currentTab)) {
             modelList.add(buildPageZoomItem(currentTab));
         }
 

@@ -492,6 +492,15 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 && !DomDistillerFeatures.sReaderModeDistillInApp.isEnabled();
     }
 
+    /**
+     * @param currentTab The currentTab for which the app menu is showing.
+     * @return Whether reader mode is currently showing.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean isReaderModeShowing(@Nullable Tab currentTab) {
+        return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
+    }
+
     /** Construct the reader mode preferences menu item. */
     protected ListItem buildReaderModePrefsItem() {
         return new MVCListAdapter.ListItem(

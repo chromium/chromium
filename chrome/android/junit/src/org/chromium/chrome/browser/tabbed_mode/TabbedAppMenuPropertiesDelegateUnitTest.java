@@ -1632,10 +1632,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void pageZoomMenuOption_NotVisibleInReadingMode() {
         setUpMocksForPageMenu();
         PageZoomCoordinator.setShouldShowMenuItemForTesting(true);
-        doReturn(true)
-                .when(mTabbedAppMenuPropertiesDelegate)
-                .shouldShowReaderModePrefs(any(Tab.class));
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
