@@ -37,15 +37,12 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
 
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, false); }
 
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
   TabStripRegionView* tab_strip_region_view() {
-    return browser_view()->tab_strip_region_view();
+    return views::AsViewClass<TabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
   }
 
-  TabStrip* tab_strip() { return browser_view()->tabstrip(); }
+  TabStrip* tab_strip() { return tab_strip_region_view()->tab_strip(); }
 
   TabSearchContainer* tab_search_container() {
     return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(

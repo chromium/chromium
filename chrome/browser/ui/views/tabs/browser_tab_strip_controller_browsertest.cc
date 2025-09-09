@@ -41,13 +41,13 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
     tabs::TabCreationMetricsController::SetTaskRunnerForTesting(nullptr);
   }
 
-  TabStripController* controller() {
-    return browser()->GetBrowserView().tabstrip()->controller();
-  }
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
   TabStrip* tabstrip() {
-    return browser()->GetBrowserView().tab_strip_region_view()->tab_strip();
+    return views::AsViewClass<TabStripRegionView>(
+               browser()->GetBrowserView().tab_strip_view())
+        ->tab_strip();
   }
+  TabStripController* controller() { return tabstrip()->controller(); }
 
  protected:
   void FastForwardPastDelay() {

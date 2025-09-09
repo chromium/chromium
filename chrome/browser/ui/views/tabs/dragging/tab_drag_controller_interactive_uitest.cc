@@ -488,9 +488,10 @@ void ResizeUsingMouseEmulation(Browser* browser,
   }
 
   // Move the window.
-  auto* grab_handle_space = BrowserView::GetBrowserViewForBrowser(browser)
-                                ->tab_strip_region_view()
-                                ->reserved_grab_handle_space_for_testing();
+  auto* tab_strip_region_view = views::AsViewClass<TabStripRegionView>(
+      browser->GetBrowserView().tab_strip_view());
+  auto* grab_handle_space =
+      tab_strip_region_view->reserved_grab_handle_space_for_testing();
   auto grab_coordinates =
       ui_test_utils::GetCenterInScreenCoordinates(grab_handle_space);
   gfx::Vector2d grab_offset = {grab_coordinates.x(), grab_coordinates.y()};

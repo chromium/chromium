@@ -111,17 +111,12 @@ class TabStripRegionViewTestBase : public InProcessBrowserTest {
   }
 
  protected:
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
   TabStripRegionView* tab_strip_region_view() {
-    return browser_view()->tab_strip_region_view();
+    return views::AsViewClass<TabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
   }
 
-  TabStrip* tab_strip() {
-    return browser_view()->tab_strip_region_view()->tab_strip();
-  }
+  TabStrip* tab_strip() { return tab_strip_region_view()->tab_strip(); }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
