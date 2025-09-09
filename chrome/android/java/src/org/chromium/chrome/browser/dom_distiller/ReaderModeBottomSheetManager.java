@@ -48,7 +48,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
                 public void onScrollStarted(
                         int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                     if (isDirectionUp && mActiveTab != null) {
-                        show(mActiveTab);
+                        handleScroll(mActiveTab);
                     }
                 }
             };
@@ -127,6 +127,12 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
                 mGestureListenerManager.removeListener(mGestureStateListener);
                 mGestureListenerManager = null;
             }
+        }
+    }
+
+    private void handleScroll(Tab tab) {
+        if (tab.getWebContents() != null && DomDistillerUrlUtils.isDistilledPage(tab.getWebContents().getVisibleUrl())) {
+            show(tab);
         }
     }
 

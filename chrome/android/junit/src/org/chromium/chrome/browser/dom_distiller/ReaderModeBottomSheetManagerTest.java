@@ -160,12 +160,23 @@ public class ReaderModeBottomSheetManagerTest {
 
     @Test
     public void testShowOnScrollUp() {
+        updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();
         verify(mGestureListenerManager).addListener(mGestureStateListenerCaptor.capture());
         GestureStateListener listener = mGestureStateListenerCaptor.getValue();
         listener.onScrollStarted(0, 0, true);
         // show() is called once on initial distilled page load, and once on scroll up.
         verify(mBottomSheetController, times(2)).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testShowOnScrollUp_onlyOnDistilledPages() {
+        updateUrl("https://www.google.com");
+        createManagerAndGetTabObserver();
+        verify(mGestureListenerManager).addListener(mGestureStateListenerCaptor.capture());
+        GestureStateListener listener = mGestureStateListenerCaptor.getValue();
+        listener.onScrollStarted(0, 0, true);
+        verify(mBottomSheetController, times(0)).requestShowContent(any(), anyBoolean());
     }
 
     @Test
