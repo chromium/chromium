@@ -2651,9 +2651,9 @@
     ],
     "owners": [
       "alexmt@chromium.org",
-      "dmcardle@chromium.org"
+      "linnan@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "private-aggregation-developer-mode",
@@ -2675,9 +2675,9 @@
     ],
     "owners": [
       "alexmt@chromium.org",
-      "dmcardle@chromium.org"
+      "linnan@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "produce-compile-hints",
