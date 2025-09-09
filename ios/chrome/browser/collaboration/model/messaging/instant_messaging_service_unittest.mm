@@ -47,7 +47,7 @@ InstantMessage CreateInstantMessage(InstantNotificationLevel level) {
 // Creates a MockTabGroupSyncService with a VersioningMessageController.
 std::unique_ptr<KeyedService> CreateMockTabGroupSyncService(
     tab_groups::VersioningMessageController* versioning_message_controller,
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   auto tab_group_sync_service =
       std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>();
   ON_CALL(*tab_group_sync_service.get(), GetVersioningMessageController())

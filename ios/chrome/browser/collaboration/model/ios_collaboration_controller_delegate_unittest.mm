@@ -69,16 +69,16 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
 }
 
 std::unique_ptr<KeyedService> BuildFakeTabGroupSyncService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<tab_groups::FakeTabGroupSyncService>();
 }
 
-std::unique_ptr<KeyedService> BuildTestSyncService(web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildTestSyncService(ProfileIOS* profile) {
   return std::make_unique<syncer::TestSyncService>();
 }
 
 std::unique_ptr<KeyedService> BuildMockCollaborationService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   ServiceStatus collaboration_status;
   collaboration_status.collaboration_status =
       CollaborationStatus::kEnabledCreateAndJoin;
@@ -89,8 +89,7 @@ std::unique_ptr<KeyedService> BuildMockCollaborationService(
   return std::move(mock_collaboration_service);
 }
 
-std::unique_ptr<KeyedService> BuildTestFaviconLoader(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildTestFaviconLoader(ProfileIOS* profile) {
   return std::make_unique<TestFaviconLoader>();
 }
 
