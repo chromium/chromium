@@ -178,9 +178,6 @@ RUNTIME_DIR_TEMPLATE = "/run/user/%s"
 # Binary name for `gnome-session`.
 GNOME_SESSION = "gnome-session"
 
-# Binary name for `gnome-session-quit`.
-GNOME_SESSION_QUIT = "gnome-session-quit"
-
 # Globals needed by the atexit cleanup() handler.
 g_desktop = None
 g_host_hash = hashlib.md5(socket.gethostname().encode()).hexdigest()
@@ -1327,22 +1324,6 @@ class WaylandDesktop(Desktop):
       except psutil.Error:
         logging.error("Error terminating process")
       self.host_proc = None
-
-    # We only support gnome-session, which is currently managed by CRD itself.
-    logging.info("Executing %s" % GNOME_SESSION_QUIT)
-    if shutil.which(GNOME_SESSION_QUIT):
-      cleanup_proc = subprocess.Popen(
-        [GNOME_SESSION_QUIT, "--force", "--no-prompt"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=self.child_env)
-      stdout, stderr = cleanup_proc.communicate()
-      if stderr:
-        logging.error("Failed to execute %s:\n%s" %
-                      (GNOME_SESSION_QUIT, stderr))
-      self.session_proc = None
-    else:
-      logging.warning("No %s found on the system" % GNOME_SESSION_QUIT)
 
     super(WaylandDesktop, self).cleanup()
     if self._wayland_socket:
