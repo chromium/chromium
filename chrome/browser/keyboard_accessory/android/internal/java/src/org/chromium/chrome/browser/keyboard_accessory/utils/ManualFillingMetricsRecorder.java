@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory;
+package org.chromium.chrome.browser.keyboard_accessory.utils;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
 
 /**
  * This class provides helpers to record metrics related to the keyboard accessory and its sheets.
  */
+@NullMarked
 public class ManualFillingMetricsRecorder {
     public static final String UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION =
             "KeyboardAccessory.AccessoryActionImpression";
@@ -33,6 +40,7 @@ public class ManualFillingMetricsRecorder {
 
     /**
      * Gets the complete name of a histogram for the given tab type.
+     *
      * @param baseHistogram the base histogram.
      * @param tabType The tab type that determines the histogram's suffix.
      * @return The complete name of the histogram.
@@ -56,6 +64,7 @@ public class ManualFillingMetricsRecorder {
 
     /**
      * Records why an accessory sheet was toggled.
+     *
      * @param tabType The tab that was selected to trigger the sheet.
      * @param bucket The {@link AccessorySheetTrigger} to record.
      */
@@ -76,6 +85,7 @@ public class ManualFillingMetricsRecorder {
 
     /**
      * Records a selected action.
+     *
      * @param bucket An {@link AccessoryAction}.
      */
     public static void recordActionSelected(@AccessoryAction int bucket) {
@@ -85,6 +95,7 @@ public class ManualFillingMetricsRecorder {
 
     /**
      * Records an impression for a single action.
+     *
      * @param bucket An {@link AccessoryAction} that was just impressed.
      */
     public static void recordActionImpression(@AccessoryAction int bucket) {
@@ -96,7 +107,7 @@ public class ManualFillingMetricsRecorder {
      * Records an impression for a single toggle.
      *
      * @param toggleType An {@link AccessoryToggleType} that was just seen. This includes the state
-     * that the toggle was in.
+     *     that the toggle was in.
      */
     public static void recordToggleImpression(@AccessoryToggleType int toggleType) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -107,7 +118,7 @@ public class ManualFillingMetricsRecorder {
      * Records a click for a single toggle.
      *
      * @param toggleType An {@link AccessoryToggleType} that was just tapped. This includes the
-     * state that the toggle was in before the user clicked it.
+     *     state that the toggle was in before the user clicked it.
      */
     public static void recordToggleClicked(@AccessoryToggleType int toggleType) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -121,7 +132,7 @@ public class ManualFillingMetricsRecorder {
      * @param suggestionType The type of the suggestion accepted from the keyboard accessory tab
      *     (e.g. a password field).
      */
-    static void recordSuggestionSelected(
+    public static void recordSuggestionSelected(
             @AccessoryTabType int tabType, @AccessorySuggestionType int suggestionType) {
         assert tabType != AccessoryTabType.OBSOLETE_TOUCH_TO_FILL;
         assert tabType != AccessoryTabType.ALL;

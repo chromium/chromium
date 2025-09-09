@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger.MANUAL_OPEN;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.recordSheetTrigger;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.recordSheetTrigger;
 
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;

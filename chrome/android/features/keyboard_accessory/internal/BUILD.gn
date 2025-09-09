@@ -72,7 +72,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingState.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingStateCache.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryCoordinator.java",
