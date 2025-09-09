@@ -128,6 +128,10 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     // Perform an initial check on startup.
     CheckDiskSpace();
   }
+
+  // Only update initialization vote, without triggering notifications, to
+  // prevent unexpected results from event listeners during initialization
+  UpdatePressureLevel();
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
