@@ -117,8 +117,8 @@ void SelfDeletingRequestDelegate::OnArticleReady(
     const DistilledArticleProto* article_proto) {
   if (callback_ && !callback_->is_null()) {
     bool has_title =
-        article_proto->has_title() && !article_proto->title().empty();
-    bool has_content = article_proto->pages_size() > 0 &&
+        article_proto != nullptr && article_proto->has_title() && !article_proto->title().empty();
+    bool has_content = article_proto != nullptr && article_proto->pages_size() > 0 &&
                        article_proto->pages(0).has_html() &&
                        !article_proto->pages(0).html().empty();
     bool success = article_proto != nullptr && has_title && has_content;
@@ -174,7 +174,10 @@ void MaybeStartDistillation(
     SelfDeletingRequestDelegate* view_request_delegate) {
   const GURL& last_committed_url =
       source_page_handle->web_contents()->GetLastCommittedURL();
+  // For non-distillable URLs, return an empty article so the request is
+  // fulfilled and the delegate is deleted.
   if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url)) {
+    view_request_delegate->OnArticleReady(nullptr);
     return;
   }
 
