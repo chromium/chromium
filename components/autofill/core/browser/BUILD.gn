@@ -1565,9 +1565,9 @@ source_set("unit_tests") {
     "studies/autofill_ablation_study_unittest.cc",
     "studies/autofill_experiments_unittest.cc",
     "suggestions/addresses/address_suggestion_generator_unittest.cc",
-    "suggestions/autocomplete_suggestion_generator_unittests.cc",
-    "suggestions/autofill_ai/autofill_ai_suggestion_generator_unittests.cc",
-    "suggestions/compose_suggestion_generator_unittests.cc",
+    "suggestions/autocomplete_suggestion_generator_unittest.cc",
+    "suggestions/autofill_ai/autofill_ai_suggestion_generator_unittest.cc",
+    "suggestions/compose_suggestion_generator_unittest.cc",
     "suggestions/one_time_passwords/otp_suggestion_generator_unittest.cc",
     "suggestions/passkeys/passkey_autofill_suggestion_generator_unittest.cc",
     "suggestions/payments/iban_suggestion_generator_unittest.cc",
@@ -1639,7 +1639,7 @@ source_set("unit_tests") {
       "permissions/autofill_policy_handler_unittest.cc",
 
       # Not included on iOS because the files need to be bundled specially.
-      "heuristic_classification_unittests.cc",
+      "heuristic_classification_unittest.cc",
     ]
   }
 
