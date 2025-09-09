@@ -121,7 +121,7 @@ public class NtpThemeCoordinator {
                             // TODO(crbug.com/423579377): call methods in
                             // NtpCustomizationConfigManager to convert two matrices to two
                             // drawables.
-                            mDismissBottomSheetRunnable.run();
+                            NtpCustomizationConfigManager.getInstance().onBackgroundChanged(bitmap);
                         },
                         // "On Cancel" callback
                         mDismissBottomSheetRunnable);
