@@ -6,6 +6,7 @@
 #define BASE_SYNCHRONIZATION_LOCK_METRICS_RECORDER_H_
 
 #include <atomic>
+#include <cstddef>
 #include <optional>
 
 #include "base/base_export.h"
@@ -30,7 +31,7 @@ class BASE_EXPORT LockMetricsRecorder {
   // of samples that can be stored. With sampling, this buffer size should be
   // sufficient for most cases. If the buffer overflows, the RingBuffer will
   // overwrite the oldest samples.
-  constexpr static size_t kMaxSamples = 512;
+  constexpr static size_t kMaxSamples = 256;
 
   LockMetricsRecorder() = default;
   LockMetricsRecorder(const LockMetricsRecorder&) = delete;
@@ -57,18 +58,28 @@ class BASE_EXPORT LockMetricsRecorder {
            metrics_sub_sampler_.ShouldSample(kSamplingRatio);
   }
 
+  // The type of lock the sample is associated with.
+  enum class LockType : size_t {
+    // For samples associated with base::Lock
+    kBaseLock = 0,
+    // For samples associated with partition_alloc::internal::Lock
+    kPartitionAllocLock = 1,
+    kMax = kPartitionAllocLock,
+  };
+
   // Records a sample into the internal buffer. Must be called on the target
   // thread.
-  void RecordLockAcquisitionTime(TimeDelta sample);
+  void RecordLockAcquisitionTime(TimeDelta sample, LockType type);
 
   // Report lock acquisition times to UMA histograms, if the current thread is
   // the target thread.
   void ReportLockAcquisitionTimes();
 
-  // Iterate over all the samples and synchronously call the FunctionRef for
-  // each sample. Only exposed for testing. Call `ReportLockAcquisitionTimes()`
-  // to report histograms for all the stored samples.
-  void ForEachSample(FunctionRef<void(const TimeDelta&)> f);
+  // Iterate over all the samples of the given type and synchronously call the
+  // FunctionRef for each sample. Only exposed for testing. Call
+  // `ReportLockAcquisitionTimes()` to report histograms for all the stored
+  // samples.
+  void ForEachSample(LockType type, FunctionRef<void(const TimeDelta&)> f);
 
   // Timer that records into a lock metrics object.
   class BASE_EXPORT ScopedLockAcquisitionTimer {
@@ -88,7 +99,8 @@ class BASE_EXPORT LockMetricsRecorder {
       }
 
       lock_metrics_->RecordLockAcquisitionTime(
-          subtle::TimeTicksNowIgnoringOverride() - *start_time_);
+          subtle::TimeTicksNowIgnoringOverride() - *start_time_,
+          LockType::kBaseLock);
     }
 
     static ScopedLockAcquisitionTimer CreateForTest(
@@ -115,7 +127,9 @@ class BASE_EXPORT LockMetricsRecorder {
 
  private:
   constexpr static double kSamplingRatio = 0.001;
-  RingBuffer<TimeDelta, kMaxSamples> buffer_;
+  std::array<RingBuffer<TimeDelta, kMaxSamples>,
+             static_cast<size_t>(LockType::kMax) + 1>
+      buffer_;
   MetricsSubSampler metrics_sub_sampler_;
   bool iterating_in_progress_ = false;
   // Thread local variables on Android are extremely slow. So on the hot-path,

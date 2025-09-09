@@ -617,4 +617,109 @@ TEST(PartitionAllocLockTest, FutexMigration) {
 
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
+namespace {
+
+class SimpleBarrier {
+ public:
+  explicit SimpleBarrier(size_t n) : num_threads_(n) {}
+
+  void Synchronize() {
+    num_threads_.fetch_sub(1, std::memory_order_release);
+    while (num_threads_.load(std::memory_order_acquire)) {
+      base::PlatformThread::Sleep(base::Microseconds(10));
+    }
+  }
+
+ private:
+  std::atomic<size_t> num_threads_;
+};
+
+class MetricsRecorderTestThread
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  MetricsRecorderTestThread(Lock& lock, SimpleBarrier& sync_point)
+      : lock_(lock), sync_point_(sync_point) {}
+
+  void ThreadMain() override {
+    // Signal that this thread has taken the lock, then go to sleep for a
+    // long-time holding the lock to make sure the other thread takes the slow
+    // path of acquire and will record a sample
+    ScopedGuard guard(lock_);
+    sync_point_.Synchronize();
+    base::PlatformThread::Sleep(base::Seconds(1));
+  }
+
+ private:
+  Lock& lock_;
+  SimpleBarrier& sync_point_;
+};
+
+// Two threads try to acquire the lock with very high-probability of lock
+// contention.
+void MakeThreadsContendOnLock() {
+  Lock lock;
+  base::PlatformThreadHandle handle;
+  SimpleBarrier sync_point{2};
+  MetricsRecorderTestThread thread(lock, sync_point);
+
+  // Create another thread and wait for it to acquire the lock before trying to
+  // acquire the lock to create contention.
+  base::PlatformThreadForTesting::Create(0, &thread, &handle);
+  sync_point.Synchronize();
+  {
+    ScopedGuard guard(lock);
+  }
+
+  base::PlatformThreadForTesting::Join(handle);
+}
+
+// Checks if the number of samples recorded until the object goes out of scope
+// (with sampling ratio set to 1) is equal to the expected value.
+class LockMetricsTestHelper : public LockMetricsRecorderInterface {
+ public:
+  LockMetricsTestHelper() {
+    SpinningMutex::SetLockMetricsRecorderForTesting(this);
+  }
+
+  ~LockMetricsTestHelper() override {
+    SpinningMutex::SetLockMetricsRecorderForTesting(nullptr);
+  }
+
+  bool ShouldRecordLockAcquisitionTime() const override { return true; }
+
+  void RecordLockAcquisitionTime(base::TimeDelta sample) override {
+    num_samples_recorded_++;
+  }
+
+  size_t GetRecordedSamplesCount() const { return num_samples_recorded_; }
+
+ private:
+  size_t num_samples_recorded_ = 0;
+};
+
+}  // namespace
+
+// Test that no samples are recorded when there is no contention on the lock.
+TEST(PartitionAllocLockTest, MetricsNotRecordedWhenUncontended) {
+  LockMetricsTestHelper helper;
+
+  {
+    Lock lock;
+    ScopedGuard guard(lock);
+  }
+
+  size_t num_samples_recorded = helper.GetRecordedSamplesCount();
+  EXPECT_EQ(num_samples_recorded, 0U);
+}
+
+// Test that samples are recorded when there is contention on the lock.
+TEST(PartitionAllocLockTest, MetricsRecordedWhenContended) {
+  LockMetricsTestHelper helper;
+
+  MakeThreadsContendOnLock();
+
+  size_t num_samples_recorded = helper.GetRecordedSamplesCount();
+  EXPECT_GE(num_samples_recorded, 1U);
+}
+
 }  // namespace partition_alloc::internal

@@ -4,6 +4,7 @@
 
 #include "base/synchronization/lock_metrics_recorder.h"
 
+#include <array>
 #include <cstddef>
 #include <memory>
 
@@ -32,13 +33,45 @@ class LockMetricsRecorderTest : public testing::Test {
 };
 }  // namespace
 
+// Test that samples are classified internally by type
+TEST_F(LockMetricsRecorderTest, SamplesClassifiedByLockType) {
+  constexpr size_t kSamplesRecordedPerType = 3;
+  size_t i;
+
+  for (i = 0; i < kSamplesRecordedPerType; i++) {
+    lock_metrics_recorder_.RecordLockAcquisitionTime(
+        Microseconds(i), LockMetricsRecorder::LockType::kBaseLock);
+    lock_metrics_recorder_.RecordLockAcquisitionTime(
+        Milliseconds(i), LockMetricsRecorder::LockType::kPartitionAllocLock);
+  }
+
+  size_t base_lock_num_samples = 0;
+  lock_metrics_recorder_.ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock, [&](const TimeDelta& sample) {
+        EXPECT_EQ(Microseconds(base_lock_num_samples), sample);
+        base_lock_num_samples++;
+      });
+  EXPECT_EQ(base_lock_num_samples, kSamplesRecordedPerType);
+
+  size_t pa_lock_num_samples = 0;
+  lock_metrics_recorder_.ForEachSample(
+      LockMetricsRecorder::LockType::kPartitionAllocLock,
+      [&](const TimeDelta& sample) {
+        EXPECT_EQ(Milliseconds(pa_lock_num_samples), sample);
+        pa_lock_num_samples++;
+      });
+  EXPECT_EQ(pa_lock_num_samples, kSamplesRecordedPerType);
+}
+
 // Test that recording while iterating through the ring buffer is not permitted.
 TEST_F(LockMetricsRecorderTest, TestRecordingWhileIterating) {
   EXPECT_TRUE(lock_metrics_recorder_.ShouldRecordLockAcquisitionTime());
-  lock_metrics_recorder_.RecordLockAcquisitionTime(Microseconds(1));
-  lock_metrics_recorder_.ForEachSample([&](const TimeDelta& sample) {
-    EXPECT_FALSE(lock_metrics_recorder_.ShouldRecordLockAcquisitionTime());
-  });
+  lock_metrics_recorder_.RecordLockAcquisitionTime(
+      Microseconds(1), LockMetricsRecorder::LockType::kBaseLock);
+  lock_metrics_recorder_.ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock, [&](const TimeDelta& sample) {
+        EXPECT_FALSE(lock_metrics_recorder_.ShouldRecordLockAcquisitionTime());
+      });
   EXPECT_TRUE(lock_metrics_recorder_.ShouldRecordLockAcquisitionTime());
 }
 
@@ -53,15 +86,17 @@ TEST_F(LockMetricsRecorderTest, TestSampleOverwrite) {
   // The i-th sample has value i microseconds to allow us to check the age of
   // the sample.
   for (size_t i = 0; i < kBufferSize + kExtraSamples; i++) {
-    lock_metrics_recorder_.RecordLockAcquisitionTime(Microseconds(i));
+    lock_metrics_recorder_.RecordLockAcquisitionTime(
+        Microseconds(i), LockMetricsRecorder::LockType::kBaseLock);
   }
   size_t num_samples = 0;
-  lock_metrics_recorder_.ForEachSample([&](const TimeDelta& sample) {
-    // The oldest `kExtraSamples` are expected to be overwritten, leaving us
-    // with samples starting at `kExtraSamples` microseconds.
-    EXPECT_EQ(sample, Microseconds(num_samples + kExtraSamples));
-    num_samples++;
-  });
+  lock_metrics_recorder_.ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock, [&](const TimeDelta& sample) {
+        // The oldest `kExtraSamples` are expected to be overwritten, leaving us
+        // with samples starting at `kExtraSamples` microseconds.
+        EXPECT_EQ(sample, Microseconds(num_samples + kExtraSamples));
+        num_samples++;
+      });
   EXPECT_EQ(num_samples, kBufferSize);
 }
 
@@ -77,12 +112,14 @@ TEST_F(LockMetricsRecorderTest, TestSamplesIteratedOverExactlyOnce) {
     // the sample.
     for (size_t j = 0; j < kSamplesPerIteration; j++) {
       lock_metrics_recorder_.RecordLockAcquisitionTime(
-          Microseconds(j + num_samples));
+          Microseconds(j + num_samples),
+          LockMetricsRecorder::LockType::kBaseLock);
     }
-    lock_metrics_recorder_.ForEachSample([&](const TimeDelta& sample) {
-      EXPECT_EQ(sample, Microseconds(num_samples));
-      num_samples++;
-    });
+    lock_metrics_recorder_.ForEachSample(
+        LockMetricsRecorder::LockType::kBaseLock, [&](const TimeDelta& sample) {
+          EXPECT_EQ(sample, Microseconds(num_samples));
+          num_samples++;
+        });
     EXPECT_EQ(num_samples - num_samples_prev, kSamplesPerIteration);
   }
 }
@@ -91,6 +128,7 @@ TEST_F(LockMetricsRecorderTest, TestSamplesIteratedOverExactlyOnce) {
 TEST_F(LockMetricsRecorderTest, ScopedLockAcquisitionTimerRecordsSample) {
   size_t num_samples = 0;
   lock_metrics_recorder_.ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock,
       [&](const TimeDelta& sample) { num_samples++; });
   EXPECT_EQ(num_samples, 0);
 
@@ -99,10 +137,11 @@ TEST_F(LockMetricsRecorderTest, ScopedLockAcquisitionTimerRecordsSample) {
         &lock_metrics_recorder_);
     PlatformThread::Sleep(Microseconds(500));
   }
-  lock_metrics_recorder_.ForEachSample([&](const TimeDelta& sample) {
-    EXPECT_GT(sample, Microseconds(500));
-    num_samples++;
-  });
+  lock_metrics_recorder_.ForEachSample(LockMetricsRecorder::LockType::kBaseLock,
+                                       [&](const TimeDelta& sample) {
+                                         EXPECT_GT(sample, Microseconds(500));
+                                         num_samples++;
+                                       });
   EXPECT_EQ(num_samples, 1);
 }
 
@@ -172,6 +211,7 @@ TEST_F(BaseLockMetricsTest, NoSamplesRecordedWhenUncontended) {
   }
 
   LockMetricsRecorder::Get()->ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock,
       [](const TimeDelta& sample) { GTEST_FAIL() << "No samples expected"; });
 }
 
@@ -180,6 +220,7 @@ TEST_F(BaseLockMetricsTest, SamplesRecordedWhenContended) {
   MakeThreadsContendOnLock();
   bool did_record_sample = false;
   LockMetricsRecorder::Get()->ForEachSample(
+      LockMetricsRecorder::LockType::kBaseLock,
       [&](const TimeDelta&) { did_record_sample = true; });
   EXPECT_TRUE(did_record_sample);
 }

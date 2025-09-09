@@ -42,6 +42,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock_impl.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -70,6 +71,7 @@
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.h"
+#include "partition_alloc/spinning_mutex.h"
 #include "partition_alloc/stack/stack.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -129,6 +131,31 @@ namespace switches {
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
 }  // namespace switches
+
+class LockMetricsRecorderSupport
+    : public partition_alloc::internal::LockMetricsRecorderInterface {
+ public:
+  LockMetricsRecorderSupport() : recorder_(base::LockMetricsRecorder::Get()) {}
+
+  static LockMetricsRecorderSupport* Instance() {
+    static LockMetricsRecorderSupport instance;
+    return &instance;
+  }
+
+  bool ShouldRecordLockAcquisitionTime() const override {
+    return recorder_->ShouldRecordLockAcquisitionTime();
+  }
+
+  void RecordLockAcquisitionTime(
+      partition_alloc::internal::base::TimeDelta sample) override {
+    recorder_->RecordLockAcquisitionTime(
+        Microseconds(sample.InMicroseconds()),
+        base::LockMetricsRecorder::LockType::kPartitionAllocLock);
+  }
+
+ private:
+  base::LockMetricsRecorder* recorder_;
+};
 
 }  // namespace
 
@@ -931,6 +958,9 @@ void PartitionAllocSupport::ReconfigureEarlyish(
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::EnablePartitionAllocMemoryReclaimer();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  partition_alloc::internal::SpinningMutex::SetLockMetricsRecorder(
+      LockMetricsRecorderSupport::Instance());
 }
 
 void PartitionAllocSupport::ReconfigureAfterZygoteFork(

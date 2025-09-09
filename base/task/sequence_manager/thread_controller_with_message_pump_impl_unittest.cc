@@ -2220,8 +2220,11 @@ TEST_F(ThreadControllerWithMessagePumpTest, WorkIdIncrementedDelegateRun) {
 TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
   constexpr TimeDelta test_sample1 = Microseconds(42);
   constexpr TimeDelta test_sample2 = Milliseconds(42);
-  const std::string histogram_name =
+  const std::string base_lock_histogram_name =
       StrCat({"Scheduling.ContendedLockAcquisitionTime.BaseLock.",
+              PlatformThread::GetName()});
+  const std::string pa_lock_histogram_name =
+      StrCat({"Scheduling.ContendedLockAcquisitionTime.PartitionAllocLock.",
               PlatformThread::GetName()});
 
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
@@ -2230,22 +2233,25 @@ TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
 
   HistogramTester histogram_tester;
 
-  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample1);
-  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample2);
-  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample2);
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(
+      test_sample1, LockMetricsRecorder::LockType::kBaseLock);
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(
+      test_sample2, LockMetricsRecorder::LockType::kPartitionAllocLock);
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(
+      test_sample2, LockMetricsRecorder::LockType::kPartitionAllocLock);
 
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce([&](MessagePump::Delegate* delegate) {
-        histogram_tester.ExpectBucketCount(histogram_name,
+        histogram_tester.ExpectBucketCount(base_lock_histogram_name,
                                            test_sample1.InMicroseconds(), 0);
-        histogram_tester.ExpectBucketCount(histogram_name,
+        histogram_tester.ExpectBucketCount(pa_lock_histogram_name,
                                            test_sample2.InMicroseconds(), 0);
 
         thread_controller_.DoIdleWork();
 
-        histogram_tester.ExpectBucketCount(histogram_name,
+        histogram_tester.ExpectBucketCount(base_lock_histogram_name,
                                            test_sample1.InMicroseconds(), 1);
-        histogram_tester.ExpectBucketCount(histogram_name,
+        histogram_tester.ExpectBucketCount(pa_lock_histogram_name,
                                            test_sample2.InMicroseconds(), 2);
       });
 

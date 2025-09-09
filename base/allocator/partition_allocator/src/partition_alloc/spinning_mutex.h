@@ -19,6 +19,7 @@
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_ref.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/yield_processor.h"
@@ -47,6 +48,8 @@
 #endif
 
 namespace partition_alloc::internal {
+
+class LockMetricsRecorderInterface;
 
 // The behavior of this class depends on platform support:
 // 1. When platform supports is available:
@@ -91,6 +94,14 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   static void EnableUsePriorityInheritance();
   inline bool HasWaitersForTesting() const;
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+
+  // Sets the global lock metrics recorder object. Must be called only once.
+  static void SetLockMetricsRecorder(LockMetricsRecorderInterface* recorder);
+
+  // Same as `SetLockMetricsRecorder` but can be called multiple times for
+  // testing.
+  static void SetLockMetricsRecorderForTesting(
+      LockMetricsRecorderInterface* recorder);
 
  private:
   PA_NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
@@ -308,6 +319,15 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
 }
 
 #endif
+
+// Class for bridging from partition alloc internals to
+// `::base::LockMetricsRecorder`
+class LockMetricsRecorderInterface {
+ public:
+  virtual bool ShouldRecordLockAcquisitionTime() const = 0;
+  virtual void RecordLockAcquisitionTime(base::TimeDelta sample) = 0;
+  virtual ~LockMetricsRecorderInterface() = default;
+};
 
 }  // namespace partition_alloc::internal
 
