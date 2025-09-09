@@ -56,7 +56,7 @@ fn main() {
         return;
     }
 
-    #[allow(unused_mut)]
+    #[cfg_attr(not(windows), expect(unused_mut))]
     let mut message = MISSING;
 
     #[cfg(windows)]

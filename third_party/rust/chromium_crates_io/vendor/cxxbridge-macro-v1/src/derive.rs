@@ -58,7 +58,7 @@ pub(crate) fn expand_enum(enm: &Enum, actual_derives: &mut Option<TokenStream>) 
                 has_clone = true;
             }
             Trait::Debug => expanded.extend(enum_debug(enm, span)),
-            Trait::Default => unreachable!(),
+            Trait::Default => expanded.extend(enum_default(enm, span)),
             Trait::Eq => {
                 traits.push(quote_spanned!(span=> ::cxx::core::cmp::Eq));
                 has_eq = true;
@@ -234,7 +234,6 @@ fn struct_partial_ord(strct: &Struct, span: Span) -> TokenStream {
         #[automatically_derived]
         impl #generics ::cxx::core::cmp::PartialOrd for #ident #generics {
             #[allow(clippy::non_canonical_partial_ord_impl)]
-            #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older
             fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
                 #body
             }
@@ -295,6 +294,28 @@ fn enum_debug(enm: &Enum, span: Span) -> TokenStream {
     }
 }
 
+fn enum_default(enm: &Enum, span: Span) -> TokenStream {
+    let ident = &enm.name.rust;
+    let attrs = &enm.attrs;
+
+    for variant in &enm.variants {
+        if variant.default {
+            let variant = &variant.name.rust;
+            return quote_spanned! {span=>
+                #attrs
+                #[automatically_derived]
+                impl ::cxx::core::default::Default for #ident {
+                    fn default() -> Self {
+                        #ident::#variant
+                    }
+                }
+            };
+        }
+    }
+
+    unreachable!("no #[default] variant");
+}
+
 fn enum_ord(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
     let attrs = &enm.attrs;
@@ -319,7 +340,6 @@ fn enum_partial_ord(enm: &Enum, span: Span) -> TokenStream {
         #[automatically_derived]
         impl ::cxx::core::cmp::PartialOrd for #ident {
             #[allow(clippy::non_canonical_partial_ord_impl)]
-            #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older
             fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
                 ::cxx::core::cmp::PartialOrd::partial_cmp(&self.repr, &other.repr)
             }

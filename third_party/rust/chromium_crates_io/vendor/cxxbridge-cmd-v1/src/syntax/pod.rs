@@ -1,10 +1,11 @@
 use crate::syntax::atom::Atom::{self, *};
-use crate::syntax::{primitive, Type, Types};
+use crate::syntax::query::TypeQuery;
+use crate::syntax::{primitive, Types};
 
 impl<'a> Types<'a> {
-    pub(crate) fn is_guaranteed_pod(&self, ty: &Type) -> bool {
-        match ty {
-            Type::Ident(ident) => {
+    pub(crate) fn is_guaranteed_pod(&self, ty: impl Into<TypeQuery<'a>>) -> bool {
+        match ty.into() {
+            TypeQuery::Ident(ident) => {
                 let ident = &ident.rust;
                 if let Some(atom) = Atom::from(ident) {
                     match atom {
@@ -20,15 +21,19 @@ impl<'a> Types<'a> {
                     self.enums.contains_key(ident)
                 }
             }
-            Type::RustBox(_)
-            | Type::RustVec(_)
-            | Type::UniquePtr(_)
-            | Type::SharedPtr(_)
-            | Type::WeakPtr(_)
-            | Type::CxxVector(_)
-            | Type::Void(_) => false,
-            Type::Ref(_) | Type::Str(_) | Type::Fn(_) | Type::SliceRef(_) | Type::Ptr(_) => true,
-            Type::Array(array) => self.is_guaranteed_pod(&array.inner),
+            TypeQuery::RustBox
+            | TypeQuery::RustVec
+            | TypeQuery::UniquePtr
+            | TypeQuery::SharedPtr
+            | TypeQuery::WeakPtr
+            | TypeQuery::CxxVector
+            | TypeQuery::Void => false,
+            TypeQuery::Ref(_)
+            | TypeQuery::Str
+            | TypeQuery::Fn
+            | TypeQuery::SliceRef
+            | TypeQuery::Ptr(_) => true,
+            TypeQuery::Array(array) => self.is_guaranteed_pod(&array.inner),
         }
     }
 }

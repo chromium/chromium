@@ -301,7 +301,6 @@ pub struct StackString {
     space: MaybeUninit<[usize; 8]>,
 }
 
-#[allow(missing_docs)]
 impl StackString {
     pub fn new() -> Self {
         StackString {

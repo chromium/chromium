@@ -3,10 +3,12 @@ use crate::syntax::cfg::ComputedCfg;
 use crate::syntax::improper::ImproperCtype;
 use crate::syntax::instantiate::ImplKey;
 use crate::syntax::map::{OrderedMap, UnorderedMap};
+use crate::syntax::query::TypeQuery;
 use crate::syntax::report::Errors;
 use crate::syntax::resolve::Resolution;
 use crate::syntax::set::UnorderedSet;
 use crate::syntax::trivial::{self, TrivialReason};
+use crate::syntax::unpin::{self, UnpinReason};
 use crate::syntax::visit::{self, Visit};
 use crate::syntax::{
     toposort, Api, Atom, Enum, ExternType, Impl, Lifetimes, Pair, Struct, Type, TypeAlias,
@@ -24,6 +26,8 @@ pub(crate) struct Types<'a> {
     pub aliases: UnorderedMap<&'a Ident, &'a TypeAlias>,
     pub untrusted: UnorderedMap<&'a Ident, &'a ExternType>,
     pub required_trivial: UnorderedMap<&'a Ident, Vec<TrivialReason<'a>>>,
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    pub required_unpin: UnorderedMap<&'a Ident, UnpinReason<'a>>,
     pub impls: OrderedMap<ImplKey<'a>, ConditionalImpl<'a>>,
     pub resolutions: UnorderedMap<&'a Ident, Resolution<'a>>,
     pub struct_improper_ctypes: UnorderedSet<&'a Ident>,
@@ -34,7 +38,7 @@ pub(crate) struct ConditionalImpl<'a> {
     pub cfg: ComputedCfg<'a>,
     // None for implicit impls, which arise from using a generic type
     // instantiation in a struct field or function signature.
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub explicit_impl: Option<&'a Impl>,
 }
 
@@ -232,7 +236,10 @@ impl<'a> Types<'a> {
         // the APIs above, in case some function or struct references a type
         // which is declared subsequently.
         let required_trivial =
-            trivial::required_trivial_reasons(apis, &all, &structs, &enums, &cxx);
+            trivial::required_trivial_reasons(apis, &all, &structs, &enums, &cxx, &aliases, &impls);
+
+        let required_unpin =
+            unpin::required_unpin_reasons(apis, &all, &structs, &enums, &cxx, &aliases);
 
         let mut types = Types {
             all,
@@ -243,6 +250,7 @@ impl<'a> Types<'a> {
             aliases,
             untrusted,
             required_trivial,
+            required_unpin,
             impls,
             resolutions,
             struct_improper_ctypes,
@@ -278,16 +286,17 @@ impl<'a> Types<'a> {
         types
     }
 
-    pub(crate) fn needs_indirect_abi(&self, ty: &Type) -> bool {
+    pub(crate) fn needs_indirect_abi(&self, ty: impl Into<TypeQuery<'a>>) -> bool {
+        let ty = ty.into();
         match ty {
-            Type::RustBox(_)
-            | Type::UniquePtr(_)
-            | Type::Ref(_)
-            | Type::Ptr(_)
-            | Type::Str(_)
-            | Type::Fn(_)
-            | Type::SliceRef(_) => false,
-            Type::Array(_) => true,
+            TypeQuery::RustBox
+            | TypeQuery::UniquePtr
+            | TypeQuery::Ref(_)
+            | TypeQuery::Ptr(_)
+            | TypeQuery::Str
+            | TypeQuery::Fn
+            | TypeQuery::SliceRef => false,
+            TypeQuery::Array(_) => true,
             _ => !self.is_guaranteed_pod(ty) || self.is_considered_improper_ctype(ty),
         }
     }
@@ -298,8 +307,7 @@ impl<'a> Types<'a> {
     // refuses to believe that C could know how to supply us with a pointer to a
     // Rust String, even though C could easily have obtained that pointer
     // legitimately from a Rust call.
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
-    pub(crate) fn is_considered_improper_ctype(&self, ty: &Type) -> bool {
+    pub(crate) fn is_considered_improper_ctype(&self, ty: impl Into<TypeQuery<'a>>) -> bool {
         match self.determine_improper_ctype(ty) {
             ImproperCtype::Definite(improper) => improper,
             ImproperCtype::Depends(ident) => self.struct_improper_ctypes.contains(ident),
@@ -312,6 +320,29 @@ impl<'a> Types<'a> {
         self.structs.contains_key(ty)
             || self.enums.contains_key(ty)
             || self.aliases.contains_key(ty)
+    }
+
+    pub(crate) fn contains_elided_lifetime(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(ty) => {
+                Atom::from(&ty.rust).is_none()
+                    && ty.generics.lifetimes.len()
+                        != self.resolve(&ty.rust).generics.lifetimes.len()
+            }
+            Type::RustBox(ty)
+            | Type::RustVec(ty)
+            | Type::UniquePtr(ty)
+            | Type::SharedPtr(ty)
+            | Type::WeakPtr(ty)
+            | Type::CxxVector(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Ref(ty) | Type::Str(ty) => {
+                ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner)
+            }
+            Type::Ptr(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::SliceRef(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
+            Type::Array(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Fn(_) | Type::Void(_) => false,
+        }
     }
 }
 

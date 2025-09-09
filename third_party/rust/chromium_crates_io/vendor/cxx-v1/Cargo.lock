@@ -16,9 +16,9 @@ checksum = "2261d10cca569e4643e526d8dc2e62e433cc8aba21ab764233731f8d369bf394"
 
 [[package]]
 name = "cc"
-version = "1.2.35"
+version = "1.2.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "590f9024a68a8c40351881787f1934dc11afd69090f5edb6831464694d836ea3"
+checksum = "5252b3d2648e5eedbc1a6f501e3c795e07025c1e93bbf8bbdd6eef7f447a6d54"
 dependencies = [
  "find-msvc-tools",
  "shlex",
@@ -69,7 +69,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.175"
+version = "1.0.179"
 dependencies = [
  "cc",
  "cxx-build",
@@ -92,9 +92,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.175"
+version = "1.0.179"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4e2aa0ea9f398b72f329197cfad624fcb16b2538d3ffb0f71f51cd19fa2a512"
+checksum = "ba16a03d510b0e52be1952831ae1656e3ac9f6ac0c293a7b261670a0c7ff3b54"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -107,9 +107,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-gen"
-version = "0.7.175"
+version = "0.7.179"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0fffc2331fd22e6950b5ddf1daf291da6c5b5ad5f5f00208d79f1013837ab56"
+checksum = "a9aa852016b22bde129d0a8f87483a68321133ec5130e44bf1fe24494e99b3dd"
 dependencies = [
  "codespan-reporting",
  "indexmap",
@@ -126,9 +126,9 @@ checksum = "2a0a413bcefc6b37668d9eae784f5fe11232343e11101f1d1834163a509610e7"
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.175"
+version = "1.0.179"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "902e9553c7db1cc00baee88d6a531792d3e1aaab06ed6d1dcd606647891ea693"
+checksum = "1c3aefd0d58a2df90cd67fe2eccdf7fb6e6905e9886ae5feb2258ce0dec23063"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -140,15 +140,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.175"
+version = "1.0.179"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35b2b0b4d405850b0048447786b70c2502c84e4d5c4c757416abc0500336edfc"
+checksum = "0b735d976ca632f9e94b9de9b0ab8283de65e2641e7ae9d5abc3e6b467ea6673"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.175"
+version = "1.0.179"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd2a8fe0dfa4a2207b80ca9492c0d5dc8752b66f5631d93b23065f40f6a943d3"
+checksum = "42fffb686dc0b7bab364ee41fcf5a04c295c7e7a5f07cd38155c1c3bda437666"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -187,9 +187,9 @@ checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e178e4fba8a2726903f6ba98a6d221e76f9c12c650d5dc0e6afdc50677b49650"
+checksum = "7fd99930f64d146689264c637b5af2f0233a933bef0d8570e2526bf9e083192d"
 
 [[package]]
 name = "foldhash"
@@ -251,9 +251,9 @@ checksum = "6a82ae493e598baaea5209805c49bbf2ea7de956d50d7da0da1164f9c6d28543"
 
 [[package]]
 name = "link-cplusplus"
-version = "1.0.11"
+version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c349c75e1ab4a03bd6b33fe6cbd3c479c5dd443e44ad732664d72cb0e755475"
+checksum = "7f78c730aaa7d0b9336a299029ea49f9ee53b0ed06e9202e8cb7db9bae7b8c82"
 dependencies = [
  "cc",
 ]
@@ -492,9 +492,9 @@ checksum = "4a1a07cc7db3810833284e8d372ccdc6da29741639ecc70c9ec107df0fa6154c"
 
 [[package]]
 name = "wasi"
-version = "0.14.3+wasi-0.2.4"
+version = "0.14.4+wasi-0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a51ae83037bdd272a9e28ce236db8c07016dd0d50c27038b3f407533c030c95"
+checksum = "88a5f4a424faf49c3c2c344f166f0662341d470ea185e939657aaff130f0ec4a"
 dependencies = [
  "wit-bindgen",
 ]
@@ -596,6 +596,6 @@ checksum = "21a0236b59786fed61e2a80582dd500fe61f18b5dca67a4a067d0bc9039339cf"
 
 [[package]]
 name = "wit-bindgen"
-version = "0.45.0"
+version = "0.45.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "052283831dbae3d879dc7f51f3d92703a316ca49f91540417d38591826127814"
+checksum = "5c573471f125075647d03df72e026074b7203790d41351cd6edc96f46bcccd36"

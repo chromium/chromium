@@ -10,20 +10,19 @@ error: needs a cxx::ExternType impl in order to be used as a vector element in V
 11 |         type Job;
    |         ^^^^^^^^
 
-error[E0271]: type mismatch resolving `<Job as ExternType>::Kind == Trivial`
+error[E0277]: the trait bound `handle::Job: ImplVec` is not satisfied
   --> tests/ui/vec_opaque.rs:22:14
    |
 22 |         type Job = crate::handle::Job;
-   |              ^^^ type mismatch resolving `<Job as ExternType>::Kind == Trivial`
+   |              ^^^ unsatisfied trait bound
    |
-note: expected this to be `Trivial`
-  --> tests/ui/vec_opaque.rs:1:1
+help: the trait `ImplVec` is not implemented for `handle::Job`
+  --> tests/ui/vec_opaque.rs:4:9
    |
- 1 | #[cxx::bridge]
-   | ^^^^^^^^^^^^^^
-note: required by a bound in `verify_extern_kind`
-  --> src/extern_type.rs
+ 4 |         type Job;
+   |         ^^^^^^^^
+note: required by a bound in `require_vec`
+  --> src/rust_type.rs
    |
-   | pub fn verify_extern_kind<T: ExternType<Kind = Kind>, Kind: self::Kind>() {}
-   |                                         ^^^^^^^^^^^ required by this bound in `verify_extern_kind`
-   = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)
+   | pub fn require_vec<T: ImplVec>() {}
+   |                       ^^^^^^^ required by this bound in `require_vec`

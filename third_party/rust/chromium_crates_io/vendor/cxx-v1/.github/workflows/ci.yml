@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.82.0, 1.81.0, 1.80.0, 1.77.0, 1.73.0]
+        rust: [nightly, beta, stable, 1.82.0, 1.81.0]
         os: [ubuntu]
         cc: [g++]
         flags: ['']
@@ -121,7 +121,7 @@ jobs:
         # builds.
         run: |
           echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
-          echo exclude=--exclude cxx-test-suite ${{matrix.rust == '1.73.0' && '--exclude cxxbridge-cmd' || ''}} >> $GITHUB_OUTPUT
+          echo exclude=--exclude cxx-test-suite >> $GITHUB_OUTPUT
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} ${{matrix.os != 'ubuntu' && github.event_name != 'schedule' && '--cfg skip_ui_tests' || ''}}
         id: testsuite
@@ -131,7 +131,7 @@ jobs:
         if: matrix.os == 'macos'
       - run: cargo run --manifest-path demo/Cargo.toml
       - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
-        if: matrix.rust != '1.73.0' && !contains(matrix.flags, '-fno-exceptions')
+        if: contains(matrix.flags, '-fno-exceptions') == false
       - run: cargo check --no-default-features --features alloc
         env:
           RUSTFLAGS: --cfg compile_error_if_std ${{env.RUSTFLAGS}}
@@ -144,6 +144,27 @@ jobs:
           name: Cargo.lock
           path: Cargo.lock
         continue-on-error: true
+
+  wasi:
+    name: WebAssembly
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-wasip1
+          components: rust-src
+      - uses: dtolnay/install@wasmtime-cli
+      - run: curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-27/wasi-sdk-27.0-x86_64-linux.tar.gz --location --silent --show-error --fail --retry 2 --output ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux.tar.gz
+      - run: tar xf ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux.tar.gz -C ${{runner.temp}}
+      - run: cargo build --target=wasm32-wasip1 --manifest-path=demo/Cargo.toml --release
+          --config='target.wasm32-wasip1.linker="${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/bin/lld"'
+          --config='target.wasm32-wasip1.rustflags=["-Clink-args=-L${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/share/wasi-sysroot/lib/wasm32-wasip1", "-Clink-args=-lc++abi"]'
+        env:
+          CXX: ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/bin/clang++
+          CXXFLAGS: --sysroot=${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/share/wasi-sysroot
+      - run: wasmtime target/wasm32-wasip1/release/demo.wasm
 
   reindeer:
     name: Reindeer

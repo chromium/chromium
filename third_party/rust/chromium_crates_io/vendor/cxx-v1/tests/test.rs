@@ -281,6 +281,8 @@ fn test_c_method_calls() {
     };
     array.c_set_array(val);
     assert_eq!(array.a.len() as i32 * val, array.r_get_array_sum());
+
+    R(2020).c_member_function_on_rust_type();
 }
 
 #[test]
@@ -353,6 +355,11 @@ fn test_enum_representations() {
     assert_eq!(0, ffi::Enum::AVal.repr);
     assert_eq!(2020, ffi::Enum::BVal.repr);
     assert_eq!(2021, ffi::Enum::LastVal.repr);
+}
+
+#[test]
+fn test_enum_default() {
+    assert_eq!(ffi::Enum::BVal, ffi::Enum::default());
 }
 
 #[test]

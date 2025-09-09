@@ -10,9 +10,9 @@ checksum = "862ed96ca487e809f1c8e5a8447f6ee2cf102f846893800b20cebdf541fc6bbd"
 
 [[package]]
 name = "cc"
-version = "1.2.35"
+version = "1.2.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "590f9024a68a8c40351881787f1934dc11afd69090f5edb6831464694d836ea3"
+checksum = "5252b3d2648e5eedbc1a6f501e3c795e07025c1e93bbf8bbdd6eef7f447a6d54"
 dependencies = [
  "find-msvc-tools",
  "shlex",
@@ -57,23 +57,23 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.174"
+version = "1.0.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5ba77f286ce5c44c7ba02de894b057bc0a605a210e3d81fa83b92d94586c0e1"
+checksum = "83debbf9cba437faafaf79670021b1b39052a11ce7d5940a1b6befe8a12ba6e9"
 dependencies = [
  "cc",
  "cxxbridge-cmd",
  "cxxbridge-flags",
- "cxxbridge-macro 1.0.174",
+ "cxxbridge-macro 1.0.177",
  "foldhash",
  "link-cplusplus",
 ]
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.174"
+version = "1.0.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19ade5eb6d6e6ef9c5631eff7e4f74e0e7109140e775f124d76904c0e5e6a202"
+checksum = "6e3b69decbbc971cb79175299aebdc39d2db33dcb13624134a5abb6a4b08e411"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -85,15 +85,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.174"
+version = "1.0.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99f99fe2f3f76a2ba40c5431f854efe3725c19a89f4d59966bca3ec561be940e"
+checksum = "69af04f14e7748460723ed28f0c4eed95a123e5e9ad2b46624ef03e1cfd280d6"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.174"
+version = "1.0.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b6e5fa0545804d2d8d398a1e995203a1f2403a9f0651d50546462e61a28340e"
+checksum = "831941e2914c1ce51336c45e489ca514c0fc3ad175287619bdd9fe7e8a63c891"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -104,7 +104,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.175"
+version = "1.0.179"
 dependencies = [
  "cxx",
  "indexmap",
@@ -122,9 +122,9 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e178e4fba8a2726903f6ba98a6d221e76f9c12c650d5dc0e6afdc50677b49650"
+checksum = "7fd99930f64d146689264c637b5af2f0233a933bef0d8570e2526bf9e083192d"
 
 [[package]]
 name = "foldhash"
@@ -150,9 +150,9 @@ dependencies = [
 
 [[package]]
 name = "link-cplusplus"
-version = "1.0.11"
+version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c349c75e1ab4a03bd6b33fe6cbd3c479c5dd443e44ad732664d72cb0e755475"
+checksum = "7f78c730aaa7d0b9336a299029ea49f9ee53b0ed06e9202e8cb7db9bae7b8c82"
 dependencies = [
  "cc",
 ]

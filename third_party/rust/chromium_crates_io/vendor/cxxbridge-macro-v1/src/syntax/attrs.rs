@@ -32,6 +32,7 @@ pub(crate) struct Parser<'a> {
     pub doc: Option<&'a mut Doc>,
     pub derives: Option<&'a mut Vec<Derive>>,
     pub repr: Option<&'a mut Option<Repr>>,
+    pub default: Option<&'a mut bool>,
     pub namespace: Option<&'a mut Namespace>,
     pub cxx_name: Option<&'a mut Option<ForeignName>>,
     pub rust_name: Option<&'a mut Option<Ident>>,
@@ -82,6 +83,19 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
                 Ok(attr) => {
                     if let Some(repr) = &mut parser.repr {
                         **repr = Some(attr);
+                        continue;
+                    }
+                }
+                Err(err) => {
+                    cx.push(err);
+                    break;
+                }
+            }
+        } else if attr_path.is_ident("default") {
+            match parse_default_attribute(&attr.meta) {
+                Ok(()) => {
+                    if let Some(default) = &mut parser.default {
+                        **default = true;
                         continue;
                     }
                 }
@@ -228,6 +242,18 @@ fn parse_derive_attribute(cx: &mut Errors, input: ParseStream) -> Result<Vec<Der
         cx.error(path, "unsupported derive");
     }
     Ok(derives)
+}
+
+fn parse_default_attribute(meta: &Meta) -> Result<()> {
+    let error_span = match meta {
+        Meta::Path(_) => return Ok(()),
+        Meta::List(meta) => meta.delimiter.span().open(),
+        Meta::NameValue(meta) => meta.eq_token.span,
+    };
+    Err(Error::new(
+        error_span,
+        "#[default] attribute does not accept an argument",
+    ))
 }
 
 fn parse_cxx_name_attribute(meta: &Meta) -> Result<ForeignName> {

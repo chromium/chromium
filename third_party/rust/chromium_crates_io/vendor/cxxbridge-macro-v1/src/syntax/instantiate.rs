@@ -14,14 +14,14 @@ pub(crate) enum ImplKey<'a> {
 }
 
 pub(crate) struct NamedImplKey<'a> {
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub begin_span: Span,
     pub rust: &'a Ident,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub lt_token: Option<Token![<]>,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub gt_token: Option<Token![>]>,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub end_span: Span,
 }
 

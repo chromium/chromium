@@ -1,7 +1,9 @@
 use crate::syntax::cfg::ComputedCfg;
+use crate::syntax::instantiate::ImplKey;
 use crate::syntax::map::{OrderedMap, UnorderedMap};
 use crate::syntax::set::{OrderedSet as Set, UnorderedSet};
-use crate::syntax::{Api, Enum, ExternFn, NamedType, Pair, Struct, Type};
+use crate::syntax::types::ConditionalImpl;
+use crate::syntax::{Api, Enum, ExternFn, NamedType, Pair, SliceRef, Struct, Type, TypeAlias};
 use proc_macro2::Ident;
 use std::fmt::{self, Display};
 
@@ -10,10 +12,18 @@ pub(crate) enum TrivialReason<'a> {
     StructField(&'a Struct),
     FunctionArgument(&'a ExternFn),
     FunctionReturn(&'a ExternFn),
-    BoxTarget,
-    VecElement,
-    SliceElement { mutable: bool },
-    UnpinnedMut(&'a ExternFn),
+    BoxTarget {
+        // Whether the extern functions used by rust::Box are being produced
+        // within this cxx::bridge expansion, as opposed to the boxed type being
+        // a type alias from a different module.
+        #[cfg_attr(not(proc_macro), expect(dead_code))]
+        local: bool,
+    },
+    VecElement {
+        #[cfg_attr(not(proc_macro), expect(dead_code))]
+        local: bool,
+    },
+    SliceElement(&'a SliceRef),
 }
 
 pub(crate) fn required_trivial_reasons<'a>(
@@ -22,6 +32,8 @@ pub(crate) fn required_trivial_reasons<'a>(
     structs: &UnorderedMap<&'a Ident, &'a Struct>,
     enums: &UnorderedMap<&'a Ident, &'a Enum>,
     cxx: &UnorderedSet<&'a Ident>,
+    aliases: &UnorderedMap<&'a Ident, &'a TypeAlias>,
+    impls: &OrderedMap<ImplKey<'a>, ConditionalImpl<'a>>,
 ) -> UnorderedMap<&'a Ident, Vec<TrivialReason<'a>>> {
     let mut required_trivial = UnorderedMap::new();
 
@@ -48,45 +60,15 @@ pub(crate) fn required_trivial_reasons<'a>(
                 }
             }
             Api::CxxFunction(efn) | Api::RustFunction(efn) => {
-                if let Some(receiver) = &efn.receiver() {
-                    if receiver.mutable && !receiver.pinned {
-                        let reason = TrivialReason::UnpinnedMut(efn);
-                        insist_extern_types_are_trivial(&receiver.ty, reason);
-                    }
-                }
                 for arg in &efn.args {
-                    match &arg.ty {
-                        Type::Ident(ident) => {
-                            let reason = TrivialReason::FunctionArgument(efn);
-                            insist_extern_types_are_trivial(ident, reason);
-                        }
-                        Type::Ref(ty) => {
-                            if ty.mutable && !ty.pinned {
-                                if let Type::Ident(ident) = &ty.inner {
-                                    let reason = TrivialReason::UnpinnedMut(efn);
-                                    insist_extern_types_are_trivial(ident, reason);
-                                }
-                            }
-                        }
-                        _ => {}
+                    if let Type::Ident(ident) = &arg.ty {
+                        let reason = TrivialReason::FunctionArgument(efn);
+                        insist_extern_types_are_trivial(ident, reason);
                     }
                 }
-                if let Some(ret) = &efn.ret {
-                    match ret {
-                        Type::Ident(ident) => {
-                            let reason = TrivialReason::FunctionReturn(efn);
-                            insist_extern_types_are_trivial(ident, reason);
-                        }
-                        Type::Ref(ty) => {
-                            if ty.mutable && !ty.pinned {
-                                if let Type::Ident(ident) = &ty.inner {
-                                    let reason = TrivialReason::UnpinnedMut(efn);
-                                    insist_extern_types_are_trivial(ident, reason);
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
+                if let Some(Type::Ident(ident)) = &efn.ret {
+                    let reason = TrivialReason::FunctionReturn(efn);
+                    insist_extern_types_are_trivial(ident, reason);
                 }
             }
             _ => {}
@@ -98,23 +80,25 @@ pub(crate) fn required_trivial_reasons<'a>(
         // trivial, we enforce that it is trivial in all configurations. This
         // can potentially be relaxed if there is a motivating use case.
         match ty {
-            Type::RustBox(ty) => {
-                if let Type::Ident(ident) = &ty.inner {
-                    let reason = TrivialReason::BoxTarget;
+            Type::RustBox(ty1) => {
+                if let Type::Ident(ident) = &ty1.inner {
+                    let local = !aliases.contains_key(&ident.rust)
+                        || impls.contains_key(&ty.impl_key().unwrap());
+                    let reason = TrivialReason::BoxTarget { local };
                     insist_extern_types_are_trivial(ident, reason);
                 }
             }
-            Type::RustVec(ty) => {
-                if let Type::Ident(ident) = &ty.inner {
-                    let reason = TrivialReason::VecElement;
+            Type::RustVec(ty1) => {
+                if let Type::Ident(ident) = &ty1.inner {
+                    let local = !aliases.contains_key(&ident.rust)
+                        || impls.contains_key(&ty.impl_key().unwrap());
+                    let reason = TrivialReason::VecElement { local };
                     insist_extern_types_are_trivial(ident, reason);
                 }
             }
             Type::SliceRef(ty) => {
                 if let Type::Ident(ident) = &ty.inner {
-                    let reason = TrivialReason::SliceElement {
-                        mutable: ty.mutable,
-                    };
+                    let reason = TrivialReason::SliceElement(ty);
                     insist_extern_types_are_trivial(ident, reason);
                 }
             }
@@ -143,7 +127,6 @@ pub(crate) fn as_what<'a>(name: &'a Pair, reasons: &'a [TrivialReason]) -> impl 
             let mut vec_element = false;
             let mut slice_shared_element = false;
             let mut slice_mut_element = false;
-            let mut unpinned_mut = Set::new();
 
             for reason in self.reasons {
                 match reason {
@@ -156,17 +139,14 @@ pub(crate) fn as_what<'a>(name: &'a Pair, reasons: &'a [TrivialReason]) -> impl 
                     TrivialReason::FunctionReturn(efn) => {
                         return_of.insert(&efn.name.rust);
                     }
-                    TrivialReason::BoxTarget => box_target = true,
-                    TrivialReason::VecElement => vec_element = true,
-                    TrivialReason::SliceElement { mutable } => {
-                        if *mutable {
+                    TrivialReason::BoxTarget { .. } => box_target = true,
+                    TrivialReason::VecElement { .. } => vec_element = true,
+                    TrivialReason::SliceElement(slice) => {
+                        if slice.mutable {
                             slice_mut_element = true;
                         } else {
                             slice_shared_element = true;
                         }
-                    }
-                    TrivialReason::UnpinnedMut(efn) => {
-                        unpinned_mut.insert(&efn.name.rust);
                     }
                 }
             }
@@ -214,13 +194,6 @@ pub(crate) fn as_what<'a>(name: &'a Pair, reasons: &'a [TrivialReason]) -> impl 
                     shared: slice_shared_element,
                     mutable: slice_mut_element,
                     param: self.name,
-                });
-            }
-            if !unpinned_mut.is_empty() {
-                clauses.push(Clause::Set {
-                    article: "a",
-                    desc: "non-pinned mutable reference in signature of",
-                    set: &unpinned_mut,
                 });
             }
 

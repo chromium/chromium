@@ -39,7 +39,7 @@ impl Symbol {
         symbol
     }
 
-    #[allow(dead_code)]
+    #[cfg_attr(proc_macro, expect(dead_code))]
     pub(crate) fn contains(&self, ch: char) -> bool {
         self.0.contains(ch)
     }

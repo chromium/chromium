@@ -8,18 +8,18 @@ use syn::{
 };
 
 pub(crate) struct Module {
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub cfg: CfgExpr,
     pub namespace: Namespace,
     pub attrs: Vec<Attribute>,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub vis: Visibility,
     pub unsafety: Option<Token![unsafe]>,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub mod_token: Token![mod],
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub ident: Ident,
-    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
     pub brace_token: token::Brace,
     pub content: Vec<Item>,
 }
@@ -37,7 +37,7 @@ pub(crate) struct ItemForeignMod {
     pub attrs: Vec<Attribute>,
     pub unsafety: Option<Token![unsafe]>,
     pub abi: Abi,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub brace_token: token::Brace,
     pub items: Vec<ForeignItem>,
 }

@@ -303,6 +303,7 @@ fn parse_variant(
 ) -> Result<Variant> {
     let mut cfg = CfgExpr::Unconditional;
     let mut doc = Doc::new();
+    let mut default = false;
     let mut cxx_name = None;
     let mut rust_name = None;
     let attrs = attrs::parse(
@@ -311,6 +312,7 @@ fn parse_variant(
         attrs::Parser {
             cfg: Some(&mut cfg),
             doc: Some(&mut doc),
+            default: Some(&mut default),
             cxx_name: Some(&mut cxx_name),
             rust_name: Some(&mut rust_name),
             ..Default::default()
@@ -341,6 +343,7 @@ fn parse_variant(
     Ok(Variant {
         cfg,
         doc,
+        default,
         attrs,
         name,
         discriminant,

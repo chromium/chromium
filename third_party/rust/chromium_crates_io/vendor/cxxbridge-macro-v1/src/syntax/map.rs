@@ -7,6 +7,7 @@ pub(crate) use self::unordered::UnorderedMap;
 pub(crate) use std::collections::hash_map::Entry;
 
 mod ordered {
+    use indexmap::Equivalent;
     use std::hash::Hash;
 
     pub(crate) struct OrderedMap<K, V>(indexmap::IndexMap<K, V>);
@@ -16,9 +17,15 @@ mod ordered {
             OrderedMap(indexmap::IndexMap::new())
         }
 
-        #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
         pub(crate) fn keys(&self) -> indexmap::map::Keys<K, V> {
             self.0.keys()
+        }
+
+        pub(crate) fn contains_key<Q>(&self, key: &Q) -> bool
+        where
+            Q: ?Sized + Hash + Equivalent<K>,
+        {
+            self.0.contains_key(key)
         }
     }
 

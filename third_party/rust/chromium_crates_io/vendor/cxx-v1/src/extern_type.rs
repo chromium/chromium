@@ -191,7 +191,6 @@ macro_rules! impl_extern_type {
         $($(
             $(#[$($attr)*])*
             unsafe impl ExternType for $ty {
-                #[allow(unused_attributes)] // incorrect lint; this doc(hidden) attr *is* respected by rustdoc
                 #[doc(hidden)]
                 type Id = crate::type_id!($cxxpath);
                 type Kind = $kind;

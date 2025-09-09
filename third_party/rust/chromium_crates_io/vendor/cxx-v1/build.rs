@@ -1,5 +1,4 @@
-#![allow(unknown_lints)]
-#![allow(unexpected_cfgs)]
+#![expect(unexpected_cfgs)]
 
 use std::env;
 use std::path::{Path, PathBuf};
@@ -26,33 +25,19 @@ fn main() {
         println!("cargo:HEADER={}", cxx_h.to_string_lossy());
     }
 
-    if let Some(rustc) = rustc_version() {
-        if rustc.minor >= 80 {
-            println!("cargo:rustc-check-cfg=cfg(built_with_cargo)");
-            println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
-            println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
-            println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
-            println!("cargo:rustc-check-cfg=cfg(no_error_in_core)");
-            println!("cargo:rustc-check-cfg=cfg(no_seek_relative)");
-            println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
-        }
+    println!("cargo:rustc-check-cfg=cfg(built_with_cargo)");
+    println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
+    println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
+    println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
+    println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
 
-        if rustc.minor < 73 {
-            println!("cargo:warning=The cxx crate requires a rustc version 1.73.0 or newer.");
+    if let Some(rustc) = rustc_version() {
+        if rustc.minor < 81 {
+            println!("cargo:warning=The cxx crate requires a rustc version 1.81.0 or newer.");
             println!(
                 "cargo:warning=You appear to be building with: {}",
                 rustc.version,
             );
-        }
-
-        if rustc.minor < 80 {
-            // std::io::Seek::seek_relative
-            println!("cargo:rustc-cfg=no_seek_relative");
-        }
-
-        if rustc.minor < 81 {
-            // core::error::Error
-            println!("cargo:rustc-cfg=no_error_in_core");
         }
     }
 }

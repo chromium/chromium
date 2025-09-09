@@ -3,11 +3,14 @@ use crate::syntax::attrs::{self, OtherAttrs};
 use crate::syntax::cfg::{CfgExpr, ComputedCfg};
 use crate::syntax::file::Module;
 use crate::syntax::instantiate::{ImplKey, NamedImplKey};
+use crate::syntax::message::Message;
 use crate::syntax::namespace::Namespace;
 use crate::syntax::qualified::QualifiedName;
 use crate::syntax::report::Errors;
 use crate::syntax::symbol::Symbol;
+use crate::syntax::trivial::TrivialReason;
 use crate::syntax::types::ConditionalImpl;
+use crate::syntax::unpin::UnpinReason;
 use crate::syntax::{
     self, check, mangle, Api, Doc, Enum, ExternFn, ExternType, FnKind, Lang, Lifetimes, Pair,
     Signature, Struct, Trait, Type, TypeAlias, Types,
@@ -580,8 +583,16 @@ fn expand_extern_shared_struct(ety: &ExternType, ffi: &Module) -> TokenStream {
 fn expand_cxx_function_decl(efn: &ExternFn, types: &Types) -> TokenStream {
     let generics = &efn.generics;
     let receiver = efn.receiver().into_iter().map(|receiver| {
-        let receiver_type = receiver.ty();
-        quote!(_: #receiver_type)
+        if types.is_considered_improper_ctype(&receiver.ty) {
+            if receiver.mutable {
+                quote!(_: *mut ::cxx::core::ffi::c_void)
+            } else {
+                quote!(_: *const ::cxx::core::ffi::c_void)
+            }
+        } else {
+            let receiver_type = receiver.ty();
+            quote!(_: #receiver_type)
+        }
     });
     let args = efn.args.iter().map(|arg| {
         let var = &arg.name.rust;
@@ -603,10 +614,10 @@ fn expand_cxx_function_decl(efn: &ExternFn, types: &Types) -> TokenStream {
     let ret = if efn.throws {
         quote!(-> ::cxx::private::Result)
     } else {
-        expand_extern_return_type(&efn.ret, types, true)
+        expand_extern_return_type(efn, types, true, efn.lang)
     };
     let mut outparam = None;
-    if indirect_return(efn, types) {
+    if indirect_return(efn, types, efn.lang) {
         let ret = expand_extern_type(efn.ret.as_ref().unwrap(), types, true);
         outparam = Some(quote!(__return: *mut #ret));
     }
@@ -646,11 +657,24 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
     } else {
         expand_return_type(&efn.ret)
     };
-    let indirect_return = indirect_return(efn, types);
-    let receiver_var = efn
-        .receiver()
-        .into_iter()
-        .map(|receiver| receiver.var.to_token_stream());
+    let indirect_return = indirect_return(efn, types, efn.lang);
+    let receiver_var = efn.receiver().into_iter().map(|receiver| {
+        if types.is_considered_improper_ctype(&receiver.ty) {
+            let var = receiver.var;
+            let ty = &receiver.ty.rust;
+            let resolve = types.resolve(ty);
+            let lifetimes = resolve.generics.to_underscore_lifetimes();
+            if receiver.pinned {
+                quote!(::cxx::core::pin::Pin::into_inner_unchecked(#var) as *mut #ty #lifetimes as *mut ::cxx::core::ffi::c_void)
+            } else if receiver.mutable {
+                quote!(#var as *mut #ty #lifetimes as *mut ::cxx::core::ffi::c_void)
+            } else {
+                quote!(#var as *const #ty #lifetimes as *const ::cxx::core::ffi::c_void)
+            }
+        } else {
+            receiver.var.to_token_stream()
+        }
+    });
     let arg_vars = efn.args.iter().map(|arg| {
         let var = &arg.name.rust;
         let span = var.span();
@@ -1003,20 +1027,13 @@ fn expand_rust_type_impl(ety: &ExternType) -> TokenStream {
 fn expand_rust_type_assert_unpin(ety: &ExternType, types: &Types) -> TokenStream {
     let ident = &ety.name.rust;
     let attrs = &ety.attrs;
-    let begin_span = Token![::](ety.type_token.span);
-    let unpin = quote_spanned! {ety.semi_token.span=>
-        #begin_span cxx::core::marker::Unpin
-    };
 
     let resolve = types.resolve(ident);
     let lifetimes = resolve.generics.to_underscore_lifetimes();
 
     quote_spanned! {ident.span()=>
         #attrs
-        let _ = {
-            fn __AssertUnpin<T: ?::cxx::core::marker::Sized + #unpin>() {}
-            __AssertUnpin::<#ident #lifetimes>
-        };
+        const _: fn() = ::cxx::private::require_unpin::<#ident #lifetimes>;
     }
 }
 
@@ -1264,7 +1281,7 @@ fn expand_rust_function_shim_impl(
     };
 
     let mut outparam = None;
-    let indirect_return = indirect_return(sig, types);
+    let indirect_return = indirect_return(sig, types, Lang::Rust);
     if indirect_return {
         let ret = expand_extern_type(sig.ret.as_ref().unwrap(), types, false);
         outparam = Some(quote_spanned!(span=> __return: *mut #ret,));
@@ -1298,7 +1315,7 @@ fn expand_rust_function_shim_impl(
     let ret = if sig.throws {
         quote!(-> ::cxx::private::Result)
     } else {
-        expand_extern_return_type(&sig.ret, types, false)
+        expand_extern_return_type(sig, types, false, Lang::Rust)
     };
 
     let pointer = match invoke {
@@ -1408,16 +1425,177 @@ fn expand_type_alias_verify(alias: &TypeAlias, types: &Types) -> TokenStream {
     let begin = quote_spanned!(begin_span=> ::cxx::private::verify_extern_type::<);
     let end = quote_spanned!(end_span=> >);
 
+    let resolve = types.resolve(ident);
+    let lifetimes = resolve.generics.to_underscore_lifetimes();
+
     let mut verify = quote! {
         #attrs
-        const _: fn() = #begin #ident, #type_id #end;
+        const _: fn() = #begin #ident #lifetimes, #type_id #end;
     };
 
-    if types.required_trivial.contains_key(&alias.name.rust) {
+    let mut require_unpin = false;
+    let mut require_box = false;
+    let mut require_vec = false;
+    let mut require_extern_type_trivial = false;
+    let mut require_rust_type_or_trivial = None;
+    if let Some(reasons) = types.required_trivial.get(&alias.name.rust) {
+        for reason in reasons {
+            match reason {
+                TrivialReason::BoxTarget { local: true }
+                | TrivialReason::VecElement { local: true } => require_unpin = true,
+                TrivialReason::BoxTarget { local: false } => require_box = true,
+                TrivialReason::VecElement { local: false } => require_vec = true,
+                TrivialReason::StructField(_)
+                | TrivialReason::FunctionArgument(_)
+                | TrivialReason::FunctionReturn(_) => require_extern_type_trivial = true,
+                TrivialReason::SliceElement(slice) => require_rust_type_or_trivial = Some(slice),
+            }
+        }
+    }
+
+    'unpin: {
+        if let Some(reason) = types.required_unpin.get(ident) {
+            let ampersand;
+            let reference_lifetime;
+            let mutability;
+            let mut inner;
+            let generics;
+            let shorthand;
+            match reason {
+                UnpinReason::Receiver(receiver) => {
+                    ampersand = &receiver.ampersand;
+                    reference_lifetime = &receiver.lifetime;
+                    mutability = &receiver.mutability;
+                    inner = receiver.ty.rust.clone();
+                    generics = &receiver.ty.generics;
+                    shorthand = receiver.shorthand;
+                    if receiver.shorthand {
+                        inner.set_span(receiver.var.span);
+                    }
+                }
+                UnpinReason::Ref(mutable_reference) => {
+                    ampersand = &mutable_reference.ampersand;
+                    reference_lifetime = &mutable_reference.lifetime;
+                    mutability = &mutable_reference.mutability;
+                    let Type::Ident(inner_type) = &mutable_reference.inner else {
+                        unreachable!();
+                    };
+                    inner = inner_type.rust.clone();
+                    generics = &inner_type.generics;
+                    shorthand = false;
+                }
+                UnpinReason::Slice(mutable_slice) => {
+                    ampersand = &mutable_slice.ampersand;
+                    mutability = &mutable_slice.mutability;
+                    let inner = quote_spanned!(mutable_slice.bracket.span=> [#ident #lifetimes]);
+                    let trait_name = format_ident!("SliceOfUnpin_{ident}");
+                    let label = format!("requires `{ident}: Unpin`");
+                    verify.extend(quote! {
+                        #attrs
+                        let _ = {
+                            #[diagnostic::on_unimplemented(
+                                message = "mutable slice of pinned type is not supported",
+                                label = #label,
+                            )]
+                            trait #trait_name {
+                                fn check_unpin() {}
+                            }
+                            #[diagnostic::do_not_recommend]
+                            impl<'a, T: ?::cxx::core::marker::Sized + ::cxx::core::marker::Unpin> #trait_name for &'a #mutability T {}
+                            <#ampersand #mutability #inner as #trait_name>::check_unpin
+                        };
+                    });
+                    require_unpin = false;
+                    break 'unpin;
+                }
+            }
+            let trait_name = format_ident!("ReferenceToUnpin_{ident}");
+            let message =
+                format!("mutable reference to C++ type requires a pin -- use Pin<&mut {ident}>");
+            let label = {
+                let mut label = Message::new();
+                write!(label, "use `");
+                if shorthand {
+                    write!(label, "self: ");
+                }
+                write!(label, "Pin<&");
+                if let Some(reference_lifetime) = reference_lifetime {
+                    write!(label, "{reference_lifetime} ");
+                }
+                write!(label, "mut {ident}");
+                if !generics.lifetimes.is_empty() {
+                    write!(label, "<");
+                    for (i, lifetime) in generics.lifetimes.iter().enumerate() {
+                        if i > 0 {
+                            write!(label, ", ");
+                        }
+                        write!(label, "{lifetime}");
+                    }
+                    write!(label, ">");
+                } else if shorthand && !alias.generics.lifetimes.is_empty() {
+                    write!(label, "<");
+                    for i in 0..alias.generics.lifetimes.len() {
+                        if i > 0 {
+                            write!(label, ", ");
+                        }
+                        write!(label, "'_");
+                    }
+                    write!(label, ">");
+                }
+                write!(label, ">`");
+                label
+            };
+            let lifetimes = generics.to_underscore_lifetimes();
+            verify.extend(quote! {
+                #attrs
+                let _ = {
+                    #[diagnostic::on_unimplemented(message = #message, label = #label)]
+                    trait #trait_name {
+                        fn check_unpin() {}
+                    }
+                    #[diagnostic::do_not_recommend]
+                    impl<'a, T: ?::cxx::core::marker::Sized + ::cxx::core::marker::Unpin> #trait_name for &'a mut T {}
+                    <#ampersand #mutability #inner #lifetimes as #trait_name>::check_unpin
+                };
+            });
+            require_unpin = false;
+        }
+    }
+
+    if require_unpin {
+        verify.extend(quote! {
+            #attrs
+            const _: fn() = ::cxx::private::require_unpin::<#ident #lifetimes>;
+        });
+    }
+
+    if require_box {
+        verify.extend(quote! {
+            #attrs
+            const _: fn() = ::cxx::private::require_box::<#ident #lifetimes>;
+        });
+    }
+
+    if require_vec {
+        verify.extend(quote! {
+            #attrs
+            const _: fn() = ::cxx::private::require_vec::<#ident #lifetimes>;
+        });
+    }
+
+    if require_extern_type_trivial {
         let begin = quote_spanned!(begin_span=> ::cxx::private::verify_extern_kind::<);
         verify.extend(quote! {
             #attrs
-            const _: fn() = #begin #ident, ::cxx::kind::Trivial #end;
+            const _: fn() = #begin #ident #lifetimes, ::cxx::kind::Trivial #end;
+        });
+    } else if let Some(slice_type) = require_rust_type_or_trivial {
+        let ampersand = &slice_type.ampersand;
+        let mutability = &slice_type.mutability;
+        let inner = quote_spanned!(slice_type.bracket.span.join()=> [#ident #lifetimes]);
+        verify.extend(quote! {
+            #attrs
+            let _ = || ::cxx::private::with::<#ident #lifetimes>().check_slice::<#ampersand #mutability #inner>();
         });
     }
 
@@ -2119,10 +2297,15 @@ fn expand_return_type(ret: &Option<Type>) -> TokenStream {
     }
 }
 
-fn indirect_return(sig: &Signature, types: &Types) -> bool {
-    sig.ret
-        .as_ref()
-        .is_some_and(|ret| sig.throws || types.needs_indirect_abi(ret))
+fn indirect_return(sig: &Signature, types: &Types, lang: Lang) -> bool {
+    sig.ret.as_ref().is_some_and(|ret| {
+        sig.throws
+            || types.needs_indirect_abi(ret)
+            || match lang {
+                Lang::Cxx | Lang::CxxUnwind => types.contains_elided_lifetime(ret),
+                Lang::Rust => false,
+            }
+    })
 }
 
 fn expand_extern_type(ty: &Type, types: &Types, proper: bool) -> TokenStream {
@@ -2197,9 +2380,14 @@ fn expand_extern_type(ty: &Type, types: &Types, proper: bool) -> TokenStream {
     }
 }
 
-fn expand_extern_return_type(ret: &Option<Type>, types: &Types, proper: bool) -> TokenStream {
-    let ret = match ret {
-        Some(ret) if !types.needs_indirect_abi(ret) => ret,
+fn expand_extern_return_type(
+    sig: &Signature,
+    types: &Types,
+    proper: bool,
+    lang: Lang,
+) -> TokenStream {
+    let ret = match &sig.ret {
+        Some(ret) if !indirect_return(sig, types, lang) => ret,
         _ => return TokenStream::new(),
     };
     let ty = expand_extern_type(ret, types, proper);

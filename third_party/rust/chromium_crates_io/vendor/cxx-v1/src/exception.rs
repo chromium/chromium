@@ -3,10 +3,7 @@
 use alloc::boxed::Box;
 use core::fmt::{self, Display};
 
-#[cfg(not(no_error_in_core))]
 use core::error::Error as StdError;
-#[cfg(all(feature = "std", no_error_in_core))]
-use std::error::Error as StdError;
 
 /// Exception thrown from an `extern "C++"` function.
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
@@ -21,7 +18,6 @@ impl Display for Exception {
     }
 }
 
-#[cfg(any(not(no_error_in_core), feature = "std"))]
 impl StdError for Exception {}
 
 impl Exception {

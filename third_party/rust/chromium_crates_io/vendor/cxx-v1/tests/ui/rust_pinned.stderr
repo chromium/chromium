@@ -11,8 +11,8 @@ note: required because it appears within the type `Pinned`
    |
 10 | pub struct Pinned {
    |            ^^^^^^
-note: required by a bound in `__AssertUnpin`
-  --> tests/ui/rust_pinned.rs:6:9
+note: required by a bound in `require_unpin`
+  --> src/rust_type.rs
    |
- 6 |         type Pinned;
-   |         ^^^^^^^^^^^^ required by this bound in `__AssertUnpin`
+   | pub fn require_unpin<T: ?Sized + Unpin>() {}
+   |                                  ^^^^^ required by this bound in `require_unpin`

@@ -34,6 +34,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/instantiate.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/mangle.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/message.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/names.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/namespace.rs",
@@ -41,6 +42,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/pod.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/primitive.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/qualified.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/query.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/report.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/repr.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/resolve.rs",
@@ -51,6 +53,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/toposort.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/trivial.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/unpin.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/visit.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/tokens.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/type_id.rs",
@@ -63,7 +66,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.175"
+  cargo_pkg_version = "1.0.179"
 
   allow_unsafe = false
 
