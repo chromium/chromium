@@ -307,6 +307,9 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
     GetLensSearchboxController()->SetSearchboxThumbnail("");
     GetLensOverlayController()->ClearAllSelections();
     GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
+    GetLensSearchboxController()->SetShowSidePanelSearchboxThumbnail(false);
+  } else {
+    GetLensSearchboxController()->SetShowSidePanelSearchboxThumbnail(true);
   }
 
   // Grab the current state of the overlay and use it to update populate the

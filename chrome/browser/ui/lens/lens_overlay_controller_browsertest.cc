@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
@@ -1520,6 +1521,89 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(controller->get_selected_text_for_region().has_value());
   fake_controller->FlushForTesting();
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
+}
+
+// TODO(crbug.com/335801964): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SetShowSidePanelSearchboxThumbnail \
+  DISABLED_SetShowSidePanelSearchboxThumbnail
+#else
+#define MAYBE_SetShowSidePanelSearchboxThumbnail \
+  SetShowSidePanelSearchboxThumbnail
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_SetShowSidePanelSearchboxThumbnail) {
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerLensOverlayResults, _,
+                                       _, _, _, _, _, _, _, _));
+  WaitForPaint();
+
+  std::string text_query = "Apples";
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Simulate mouse events on the overlay for drawing a manual region.
+  gfx::Point center =
+      GetOverlayWebContents()->GetContainerBounds().CenterPoint();
+  gfx::Point off_center = gfx::Point(center);
+  off_center.Offset(100, 100);
+  SimulateLeftClickDrag(center, off_center);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify that the side panel searchbox displays a thumbnail and that the
+  // controller has a copy.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true == content::EvalJs(
+                       controller->GetSidePanelWebContentsForTesting(),
+                       content::JsReplace(kCheckSidePanelThumbnailShownScript));
+  }));
+  EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
+
+  GetLensSearchController()
+      ->lens_searchbox_controller()
+      ->SetShowSidePanelSearchboxThumbnail(false);
+
+  // Verify that the thumbnail is hidden.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return false ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelThumbnailShownScript));
+  }));
+
+  GetLensSearchController()
+      ->lens_searchbox_controller()
+      ->SetShowSidePanelSearchboxThumbnail(true);
+
+  // Verify that the thumbnail is shown again.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true == content::EvalJs(
+                       controller->GetSidePanelWebContentsForTesting(),
+                       content::JsReplace(kCheckSidePanelThumbnailShownScript));
+  }));
 }
 
 // TODO(b/350991033): Test flaky on Mac.

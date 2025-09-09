@@ -126,13 +126,29 @@ void LensSearchboxController::SetSearchboxThumbnail(
   if (side_panel_searchbox_handler_ &&
       side_panel_searchbox_handler_->IsRemoteBound()) {
     side_panel_searchbox_handler_->SetThumbnail(
-        thumbnail_uri, /*is_deletable=*/!IsContextualSearchbox());
+        init_data_->show_side_panel_thumbnail ? thumbnail_uri : "",
+        /*is_deletable=*/!IsContextualSearchbox());
   }
 
   if (overlay_searchbox_handler_ &&
       overlay_searchbox_handler_->IsRemoteBound()) {
     overlay_searchbox_handler_->SetThumbnail(
         thumbnail_uri, /*is_deletable=*/!IsContextualSearchbox());
+  }
+}
+
+void LensSearchboxController::SetShowSidePanelSearchboxThumbnail(bool shown) {
+  if (!init_data_) {
+    return;
+  }
+
+  init_data_->show_side_panel_thumbnail = shown;
+
+  if (side_panel_searchbox_handler_ &&
+      side_panel_searchbox_handler_->IsRemoteBound()) {
+    side_panel_searchbox_handler_->SetThumbnail(
+        shown ? init_data_->thumbnail_uri : "",
+        /*is_deletable=*/!IsContextualSearchbox());
   }
 }
 

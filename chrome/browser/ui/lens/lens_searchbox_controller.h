@@ -80,10 +80,11 @@ class LensSearchboxController : public LensSearchboxClient {
   // it stores it in `pending_text_query_` instead.
   void SetSearchboxInputText(const std::string& text);
 
-  // Sets the thumbnail URI values on the searchbox if it is
-  // bound. If it hasn't yet been bound, stores the value in
-  // `pending_thumbnail_uri_` instead.
+  // Sets the thumbnail URI values on the searchbox if it is bound.
   void SetSearchboxThumbnail(const std::string& thumbnail_uri);
+
+  // Sets whether the thumbnail is shown in the side panel.
+  void SetShowSidePanelSearchboxThumbnail(bool shown);
 
   // Handles the create of a new thumbnail from a bitmap.
   void HandleThumbnailCreatedBitmap(const SkBitmap& thumbnail);
@@ -155,6 +156,9 @@ class LensSearchboxController : public LensSearchboxClient {
 
     // Whether to suppress contextualization for the current session.
     bool suppress_contextualization = false;
+
+    // Whether the thumbnail should be shown in the side panel.
+    bool show_side_panel_thumbnail = true;
   };
 
   // Called on the UI thread with the processed thumbnail URI.
@@ -210,10 +214,6 @@ class LensSearchboxController : public LensSearchboxClient {
   // A pending text query to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
   std::optional<std::string> pending_text_query_ = std::nullopt;
-
-  // A pending thumbnail URI to be loaded in the side panel. Needed when the
-  // side panel is not bound at the time of a region request.
-  std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
 
   // Must be last member.
   base::WeakPtrFactory<LensSearchboxController> weak_factory_{this};
