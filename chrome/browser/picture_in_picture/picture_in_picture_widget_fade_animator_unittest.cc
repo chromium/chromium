@@ -122,29 +122,58 @@ TEST_F(PictureInPictureWidgetFadeAnimatorTest,
 }
 
 TEST_F(PictureInPictureWidgetFadeAnimatorTest,
-       AnimateShowWindow_MultipleCalls_RecreatesAnimator) {
+       AnimateShowWindow_OnVisibleWidget_DestroysAnimator) {
   // Start animation.
   fade_animator()->AnimateShowWindow(
       widget(),
       PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowInactive);
 
-  // Fast-forward to the middle of the animation and, verify that the fade
-  // animator is fading in.
+  // Fast-forward to the middle of the animation. The widget is now visible.
   FastForwardToMiddleOfAnimation();
   EXPECT_TRUE(IsFadingIn());
 
-  // Second call to `AnimateShowWindow` should cancel the first animation and
-  // then start a new one.
+  // A second call to `AnimateShowWindow` on a visible widget should cancel the
+  // animation and destroy the animator, but not start a new one.
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
+  EXPECT_TRUE(widget()->IsVisible());
+  EXPECT_EQ(nullptr, fade_animator()->GetWidgetFadeAnimatorForTesting());
+  EXPECT_FLOAT_EQ(1.0f, widget()->GetLayer()->opacity());
+}
+
+TEST_F(PictureInPictureWidgetFadeAnimatorTest,
+       AnimateShowWindow_MultipleCalls_RecreatesAnimatorIfNotVisible) {
+  // Start animation.
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowInactive);
+
+  // Fast-forward to the middle of the animation. The widget is now visible.
+  FastForwardToMiddleOfAnimation();
+  EXPECT_TRUE(IsFadingIn());
+
+  // A second call to `AnimateShowWindow` on a visible widget should cancel the
+  // animation and destroy the animator, but not start a new one.
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
+  EXPECT_TRUE(widget()->IsVisible());
+  EXPECT_EQ(nullptr, fade_animator()->GetWidgetFadeAnimatorForTesting());
+  EXPECT_FLOAT_EQ(1.0f, widget()->GetLayer()->opacity());
+
+  // Hide the widget.
+  widget()->Hide();
+  ASSERT_FALSE(widget()->IsVisible());
+
+  // Calling `AnimateShowWindow` after hiding the widget should start a new
+  // animation.
   fade_animator()->AnimateShowWindow(
       widget(),
       PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
   EXPECT_TRUE(widget()->IsVisible());
   EXPECT_TRUE(IsFadingIn());
-
-  // Fast-forward past the end of the animation and, verify the fade animator is
-  // not fading in.
-  FastForwardPastAnimationDuration();
-  EXPECT_FALSE(IsFadingIn());
+  EXPECT_NE(nullptr, fade_animator()->GetWidgetFadeAnimatorForTesting());
 }
 
 TEST_F(PictureInPictureWidgetFadeAnimatorTest,
@@ -185,7 +214,7 @@ TEST_F(PictureInPictureWidgetFadeAnimatorTest,
 }
 
 TEST_F(PictureInPictureWidgetFadeAnimatorTest,
-       AnimateShowWindow_MultipleCalls_IncrementsFadeInCallsCount) {
+       AnimateShowWindow_MultipleCalls_IncrementsFadeInCallsCountIfNotVisible) {
   EXPECT_EQ(0, fade_animator()->GetFadeInCallsCountForTesting());
 
   // Start animation and verify the fade in calls count.
@@ -194,9 +223,36 @@ TEST_F(PictureInPictureWidgetFadeAnimatorTest,
       PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowInactive);
   EXPECT_EQ(1, fade_animator()->GetFadeInCallsCountForTesting());
 
+  // Hide the widget so we can test that the count increments again.
+  widget()->Hide();
+  ASSERT_FALSE(widget()->IsVisible());
+
   // Second call to `AnimateShowWindow` should increase the fade in calls count.
   fade_animator()->AnimateShowWindow(
       widget(),
       PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
   EXPECT_EQ(2, fade_animator()->GetFadeInCallsCountForTesting());
+}
+
+TEST_F(
+    PictureInPictureWidgetFadeAnimatorTest,
+    AnimateShowWindow_MultipleCalls_DoesNotIncrementFadeInCallsCountIfVisible) {
+  EXPECT_EQ(0, fade_animator()->GetFadeInCallsCountForTesting());
+
+  // Start animation and verify the fade in calls count.
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowInactive);
+  EXPECT_EQ(1, fade_animator()->GetFadeInCallsCountForTesting());
+
+  // Make sure the widget is visible before the second call.
+  FastForwardToMiddleOfAnimation();
+  ASSERT_TRUE(widget()->IsVisible());
+
+  // Second call to `AnimateShowWindow` should not increase the fade in calls
+  // count because the widget is already visible.
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
+  EXPECT_EQ(1, fade_animator()->GetFadeInCallsCountForTesting());
 }
