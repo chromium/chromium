@@ -4207,6 +4207,11 @@
       status: "stable",
     },
     {
+      // HTML event loop invoking 'Run snapshot post-layout state steps' from
+      // the CSSOM View per spec proposal.
+      name: "RunSnapshotPostLayoutStateSteps",
+    },
+    {
       // Spec: https://wicg.github.io/sanitizer-api/
       // Tracking bug: crbug.com/356601280
       name: "SanitizerAPI",

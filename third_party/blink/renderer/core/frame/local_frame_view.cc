@@ -2263,8 +2263,9 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     }
     bool run_more_lifecycle_phases =
         RunStyleAndLayoutLifecyclePhases(target_state);
-    if (!run_more_lifecycle_phases)
+    if (!run_more_lifecycle_phases) {
       return;
+    }
     DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
 
     // ScrollSnapshotClients may be associated with scrollers that never had a
@@ -2275,13 +2276,15 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // https://github.com/w3c/csswg-drafts/issues/5261
     if (should_run_scroll_snapshot_client_steps) {
       should_run_scroll_snapshot_client_steps = false;
-      bool needs_to_repeat_lifecycle = RunScrollSnapshotClientSteps();
-      if (needs_to_repeat_lifecycle)
+      bool needs_to_repeat_lifecycle = RunSnapshotPostLayoutStateSteps();
+      if (needs_to_repeat_lifecycle) {
         continue;
+      }
     }
 
-    if (!GetLayoutView())
+    if (!GetLayoutView()) {
       return;
+    }
 
     {
       // We need scoping braces here because this
@@ -2414,7 +2417,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
 }
 
-bool LocalFrameView::RunScrollSnapshotClientSteps() {
+bool LocalFrameView::RunSnapshotPostLayoutStateSteps() {
   // TODO(crbug.com/1329159): Determine if the source for a view timeline has
   // changed, which may in turn require a fresh style/layout cycle.
 
@@ -3601,7 +3604,9 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
           start_time.since_origin().InSecondsF());
     }
 
-    GetFrame().UpdateScrollSnapshotClientsForServiceAnimations();
+    if (!RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+      GetFrame().UpdateScrollSnapshotClientsForServiceAnimations();
+    }
     if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document)) {
       GetPage()->Animator().SetHasSmilAnimation();
     }

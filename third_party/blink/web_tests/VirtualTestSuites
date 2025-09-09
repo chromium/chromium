@@ -2768,7 +2768,26 @@
     ],
     "expires": "Nov 29, 2025"
   },
-
+  {
+    "prefix": "run-snapshot-post-layout",
+    "owners": [
+      "futhark@chromium.org",
+      "flackr@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-anchor-position/",
+      "external/wpt/css/css-conditional/container-queries/scroll-state/",
+      "external/wpt/scroll-animations/",
+      "fast/animation/scroll-animations/"
+    ],
+    "args": [
+      "--enable-blink-features=RunSnapshotPostLayoutStateSteps"
+    ],
+    "expires": "Jan 1, 2026"
+  },
   {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
     "platforms": [

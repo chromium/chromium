@@ -1037,7 +1037,9 @@ class CORE_EXPORT LocalFrameView final
       ComputeIntersectionsContext&) override;
   void DeliverSynchronousIntersectionObservations();
 
-  bool RunScrollSnapshotClientSteps();
+  // https://drafts.csswg.org/cssom-view/#post-layout-snapshot
+  bool RunSnapshotPostLayoutStateSteps();
+
   bool ShouldDeferLayoutSnap() const;
 
   bool NotifyResizeObservers();
