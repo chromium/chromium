@@ -20,13 +20,13 @@ chrome.test.runTests([
       // expected.
       chrome.test.assertTrue(platformOsList.includes(platformInfo.os));
       chrome.test.assertTrue(platformArchList.includes(platformInfo.arch));
-      if ('nacl_arch' in platformInfo) {
+      if (platformInfo.os === chrome.runtime.PlatformOs.ANDROID ||
+          platformInfo.arch === chrome.runtime.PlatformArch.RISCV64) {
+        // Native Client never supported Android OS and RISC-V ISA.
+        chrome.test.assertFalse('nacl_arch' in platformInfo);
+      } else {
         chrome.test.assertTrue(
           platformNaclArchList.includes(platformInfo.nacl_arch));
-      } else {
-        // RISC-V is the only architecture which never supported Native Client.
-        chrome.test.assertEq(platformInfo.arch,
-                             chrome.runtime.PlatformArch.RISCV64);
       }
       chrome.test.succeed();
     });

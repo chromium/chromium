@@ -198,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
           new RuntimeGetPlatformInfoFunction(), "[]", profile()));
   EXPECT_TRUE(dict.contains("os"));
   EXPECT_TRUE(dict.contains("arch"));
-#if defined(ARCH_CPU_RISCV64)
-  // NaCl had never supported RISC-V, so nacl_arch is meaningless there.
+#if defined(ARCH_CPU_RISCV64) || BUILDFLAG(IS_ANDROID)
+  // Native Client had never supported RISC-V ISA or Android OS.
   EXPECT_FALSE(dict.contains("nacl_arch"));
 #else
   EXPECT_TRUE(dict.contains("nacl_arch"));
