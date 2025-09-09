@@ -417,25 +417,60 @@ void ProfileImportProcess::ApplyImport() {
   if (!confirmed_import_candidate_.has_value()) {
     return;
   }
-  // Confirming an import candidate corresponds to either a new/update profile
-  // or a migration prompt.
-  if (is_migration()) {
-    address_data_manager_->MigrateProfileToAccount(
-        *confirmed_import_candidate_);
-  } else if (is_confirmable_update()) {
-    address_data_manager_->UpdateProfile(*confirmed_import_candidate_);
-  } else {
-    // This is reached in case of:
-    // 1. New profile prompt
-    // 2. Home & Work superset import prompt
-    // 3. `kAccountNameEmail` superset import prompt
-    // 4. Merging the `kAccountNameEmail` profile with a H/W profile prompt
-    address_data_manager_->AddProfile(*confirmed_import_candidate_);
-    if (import_type() == AutofillProfileImportType::kHomeAndWorkSuperset) {
+  // Handle bubble-showing autofill profile import types.
+  switch (import_type()) {
+    case AutofillProfileImportType::kNewProfile:
+      address_data_manager_->AddProfile(*confirmed_import_candidate_);
+      break;
+    case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+      address_data_manager_->UpdateProfile(*confirmed_import_candidate_);
+      break;
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+      address_data_manager_->MigrateProfileToAccount(
+          *confirmed_import_candidate_);
+      break;
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+      address_data_manager_->AddProfile(*confirmed_import_candidate_);
       // Remove the original H/W profile since a superset was just saved.
       CHECK(merge_candidate_->IsHomeAndWorkProfile());
       address_data_manager_->RemoveProfile(merge_candidate_->guid());
-    }
+      break;
+    case AutofillProfileImportType::kNameEmailSuperset: {
+      address_data_manager_->AddProfile(*confirmed_import_candidate_);
+      // Remove the original `kAccountNameEmail` profile since a superset was
+      // just saved.
+      const std::vector<const AutofillProfile*> account_name_email_profiles =
+          address_data_manager_->GetProfilesByRecordType(
+              AutofillProfile::RecordType::kAccountNameEmail);
+
+      if (account_name_email_profiles.size() == 1) {
+        address_data_manager_->RemoveProfile(
+            account_name_email_profiles[0]->guid());
+      }
+    } break;
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      address_data_manager_->AddProfile(*confirmed_import_candidate_);
+      CHECK_EQ(import_metadata_.unedited_autofilled_profile_guids.size(), 2u);
+      // Remove both original `kAccountNameEmail` and
+      // `kAccountHome`/`kAccountWork` profiles since a superset of them was
+      // just saved.
+      for (const std::string& guid :
+           import_metadata_.unedited_autofilled_profile_guids) {
+        address_data_manager_->RemoveProfile(guid);
+      }
+      break;
+
+    // Those import types do not cause save/update/migrate/merge bubble to be
+    // displayed.
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      NOTREACHED();
   }
 }
 

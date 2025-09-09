@@ -1607,7 +1607,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // Tests that when a profile which is a superset of a `kAccountNameEmail`
 // profile is observed, the save profile prompt is offered to the user. In this
 // scenario the user is eligible for the address account storage, thus the save
-// should result in a creation of a new `kAccount` profile.
+// should result in a creation of a new `kAccount` profile. Also, accepting this
+// save should result in the removal of the `kAccountNameEmail` profile.
 TEST_P(AddressProfileSaveManagerTest,
        NameEmailSuperset_SaveProfile_EligibleUser) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
@@ -1625,8 +1626,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .is_profile_change_expected = true,
       .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
-      .expected_final_profiles = {account_name_email_profile,
-                                  observed_profile}};
+      .expected_final_profiles = {observed_profile}};
 
   TestImportScenario(test_scenario);
 }
@@ -1634,7 +1634,9 @@ TEST_P(AddressProfileSaveManagerTest,
 // Tests that when a profile which is a superset of a `kAccountNameEmail`
 // profile is observed, the save profile prompt is offered to the user. In this
 // scenario the user is ineligible for the address account storage, thus the
-// save should result in a creation of a new `kLocalOrSyncable` profile.
+// save should result in a creation of a new `kLocalOrSyncable` profile. Also,
+// accepting this save should result in the removal of the `kAccountNameEmail`
+// profile.
 TEST_P(AddressProfileSaveManagerTest,
        NameEmailSuperset_SaveProfile_IneligibleUser) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(false);
@@ -1655,14 +1657,14 @@ TEST_P(AddressProfileSaveManagerTest,
       .is_profile_change_expected = true,
       .merge_candidate = std::nullopt,
       .import_candidate = final_profile,
-      .expected_final_profiles = {account_name_email_profile, final_profile}};
+      .expected_final_profiles = {final_profile}};
 
   TestImportScenario(test_scenario);
 }
 
 // Tests that when the user declines the save profile prompt, offered due to a
 // creation of a new `kAccountNameEmail` superset profile, no new profile is
-// created.
+// created and no existing profile is removed.
 TEST_P(AddressProfileSaveManagerTest, NameEmailSuperset_SaveProfile_Declined) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   const AutofillProfile account_name_email_profile =
@@ -1686,6 +1688,9 @@ TEST_P(AddressProfileSaveManagerTest, NameEmailSuperset_SaveProfile_Declined) {
 
 // Tests that importing an observed profile created as a result of filling both
 // `kAccountNameEmail` and `kAccountWork` profiles, results in a save prompt.
+// When accepted, a new superset profile should be created while the
+// `kAccountNameEmail` profile and the `kAccountWork` profiles should be
+// removed.
 TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   const AutofillProfile account_name_email_profile =
@@ -1707,8 +1712,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
-      .expected_final_profiles = {account_name_email_profile, observed_profile,
-                                  work_profile}};
+      .expected_final_profiles = {observed_profile}};
   AddGuidsToImportMetadataCollection(
       {account_name_email_profile.guid(), work_profile.guid()});
 
@@ -1717,6 +1721,9 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile) {
 
 // Tests that importing an observed profile created as a result of filling both
 // `kAccountNameEmail` and `kAccountHome` profiles, results in a save prompt.
+// When accepted, a new superset profile should be created while the
+// `kAccountNameEmail` profile and the `kAccountHome` profiles should be
+// removed.
 TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   const AutofillProfile account_name_email_profile =
@@ -1738,8 +1745,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
-      .expected_final_profiles = {account_name_email_profile, observed_profile,
-                                  home_profile}};
+      .expected_final_profiles = {observed_profile}};
   AddGuidsToImportMetadataCollection(
       {account_name_email_profile.guid(), home_profile.guid()});
 
@@ -1748,7 +1754,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile) {
 
 // Tests that when the user declines the save profile prompt, offered due to a
 // creation of a new `kAccountNameEmail` and `kAccountWork` superset profile, no
-// new profile is created.
+// new profile is created and no existing profile is removed.
 TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile_Declined) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   const AutofillProfile account_name_email_profile =
@@ -1779,7 +1785,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile_Declined) {
 
 // Tests that when the user declines the save profile prompt, offered due to a
 // creation of a new `kAccountNameEmail` and `kAccountHome` superset profile, no
-// new profile is created.
+// new profile is created and no existing profile is removed.
 TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile_Declined) {
   address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   const AutofillProfile account_name_email_profile =

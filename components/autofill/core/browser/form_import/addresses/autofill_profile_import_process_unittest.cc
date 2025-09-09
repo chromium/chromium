@@ -1136,13 +1136,10 @@ TEST_F(AutofillProfileImportProcessTest,
   test_api(expected_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
 
-  // Confirm two profiles exist post-import: the original
-  // `account_name_email_profile` and a newly created superset profile of type
-  // `kAccount`.
-  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::UnorderedPointwise(
-                  CompareWithRecordType(),
-                  {expected_profile, account_name_email_profile}));
+  // Confirm that only the superset profile exists.
+  EXPECT_THAT(
+      ApplyImportAndGetProfiles(import_data),
+      testing::UnorderedPointwise(CompareWithRecordType(), {expected_profile}));
 }
 
 // Tests that an accepted import of a `kAccountNameEmail` superset profile by an
@@ -1180,13 +1177,10 @@ TEST_F(
   test_api(expected_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
 
-  // Confirm two profiles exist post-import: the original
-  // `account_name_email_profile` and a newly created superset profile of type
-  // `kLocalOrSyncable`.
-  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::UnorderedPointwise(
-                  CompareWithRecordType(),
-                  {expected_profile, account_name_email_profile}));
+  // Confirm that only the superset profile exists.
+  EXPECT_THAT(
+      ApplyImportAndGetProfiles(import_data),
+      testing::UnorderedPointwise(CompareWithRecordType(), {expected_profile}));
 }
 
 // Tests that when importing a superset of the `kAccountNameEmail` profile,
@@ -1263,14 +1257,9 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Work_SupersetImport) {
   test_api(expected_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
 
-  // Confirm three profiles exist post-import:
-  // - `account_name_email_profile`
-  // - `work_profile`
-  // - a new superset `kAccount` profile
+  // Confirm that only the superset profile exists.
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              UnorderedPointwise(CompareWithRecordType(),
-                                 {account_name_email_profile, work_profile,
-                                  expected_profile}));
+              UnorderedPointwise(CompareWithRecordType(), {expected_profile}));
 }
 
 // Tests that an accepted import of a profile that is a superset of both the
@@ -1318,14 +1307,9 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Home_SupersetImport) {
   test_api(expected_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
 
-  // Confirm three profiles exist post-import:
-  // - `account_name_email_profile`
-  // - `home_profile`
-  // - a new superset `kAccount` profile
+  // Confirm that only the superset profile exists.
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              UnorderedPointwise(CompareWithRecordType(),
-                                 {account_name_email_profile, home_profile,
-                                  expected_profile}));
+              UnorderedPointwise(CompareWithRecordType(), {expected_profile}));
 }
 
 // Tests that an accepted import of a profile that is a superset of both
