@@ -4454,11 +4454,6 @@ const FeatureEntry::FeatureVariation kHistoryOptInEducationalTipVariations[] = {
      std::size(kHistoryOptInEducationalTipContinue), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kStandardBoundSessionCredentialsStandard[] = {
-    {"RequireOriginTrialTokens", "true"},
-    {"RefreshQuota", "true"},
-    {"CheckSubdomainRegistration", "true"},
-    {"CheckFederatedRegistration", "true"}};
 const FeatureEntry::FeatureParam
     kStandardBoundSessionCredentialsForDevelopers[] = {
         {"RequireOriginTrialTokens", "false"},
@@ -4468,8 +4463,6 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation
     kStandardBoundSessionCredentialsVariations[] = {
-        {"- Standard", kStandardBoundSessionCredentialsStandard,
-         std::size(kStandardBoundSessionCredentialsStandard), nullptr},
         {"- For developers", kStandardBoundSessionCredentialsForDevelopers,
          std::size(kStandardBoundSessionCredentialsForDevelopers), nullptr}};
 
