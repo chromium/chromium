@@ -106,7 +106,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindOnce(
-            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               // Creates a FakeTabGroupSyncService, as the real implementation
               // registers some optimization types.
               return std::make_unique<tab_groups::FakeTabGroupSyncService>();
