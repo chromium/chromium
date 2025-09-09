@@ -82,12 +82,11 @@ def _FindFeaturesInFile(filepath: str) -> List[str]:
       # 3-arg: BASE_FEATURE(kMyFeature, "MyFeature", ...), name is the 2nd arg.
       feature_name = args[1].strip(b'"')
     elif len(args) == 2:
-      # TODO(crbug.com/436274260): Remove support for the old 2-param
-      # BASE_FEATURE macro.
-      # 2-arg: BASE_FEATURE(MyFeature, ...) or BASE_FEATURE(kMyFeature, ...)
+      # 2-arg: BASE_FEATURE(kMyFeature, ...)
       feature_name = args[0]
-      if feature_name.startswith(b'k'):
-        feature_name = feature_name[1:]
+      if not feature_name.startswith(b'k'):
+        continue
+      feature_name = feature_name[1:]
     else:
       # Should not happen with valid C++ code.
       continue

@@ -63,7 +63,7 @@ class UndeclaredFeaturesTest(unittest.TestCase):
     # Declare a variety of features using both 2- and 3-argument macros.
     self._create_file_in_repo(
         'components/feature_a.cc',
-        'BASE_FEATURE(FeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
+        'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
     self._create_file_in_repo(
         'chrome/feature_b.cc', 'BASE_FEATURE(kFeatureB, "FeatureB", '
         'base::FEATURE_ENABLED_BY_DEFAULT);')
@@ -97,7 +97,7 @@ class UndeclaredFeaturesTest(unittest.TestCase):
   def testUndeclaredFeatureOnChangedLine(self):
     self._create_file_in_repo(
         'components/feature_a.cc',
-        'BASE_FEATURE(FeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
+        'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
     json_data = {
         'Study1': [{
             'experiments': [{
@@ -129,24 +129,6 @@ class UndeclaredFeaturesTest(unittest.TestCase):
         }]
     }
     changed_lines = [(1, '"enable_features": ["FeatureD"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
-    self.assertEqual(result, [])
-
-  def testOldTwoParameterFeatureWithMacroParametersOnDifferentLines(self):
-    self._create_file_in_repo(
-        'components/feature_e.cc', 'BASE_FEATURE(FeatureE,\n'
-        '             base::FEATURE_ENABLED_BY_DEFAULT);')
-    json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureE']
-            }]
-        }]
-    }
-    changed_lines = [(1, '"enable_features": ["FeatureE"]')]
     result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
                                                self.mock_output_api, json_data,
                                                changed_lines)
@@ -207,6 +189,29 @@ class UndeclaredFeaturesTest(unittest.TestCase):
         }]
     }
     changed_lines = [(1, '"enable_features": ["FeatureF"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(result, [])
+
+  def testTwoParameterMacroWithPreprocessorDirectives(self):
+    self._create_file_in_repo(
+        'components/feature_k.cc', 'BASE_FEATURE(kFeatureK,\n'
+        '#if BUILDFLAG(IS_WIN)\n'
+        '    base::FEATURE_ENABLED_BY_DEFAULT\n'
+        '#else\n'
+        '    base::FEATURE_DISABLED_BY_DEFAULT\n'
+        '#endif\n'
+        ');')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name': 'group1',
+                'enable_features': ['FeatureK']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["FeatureK"]')]
     result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
                                                self.mock_output_api, json_data,
                                                changed_lines)
