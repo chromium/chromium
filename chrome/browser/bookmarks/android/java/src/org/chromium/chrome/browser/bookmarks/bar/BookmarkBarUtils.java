@@ -50,10 +50,41 @@ public class BookmarkBarUtils {
         int ITEM = 1;
     }
 
+    /**
+     * Enum that defines the possible types of clicks on the Bookmark Bar. These values are
+     * persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    // LINT.IfChange(BookmarkBarClickType)
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BookmarkBarClickType.UNKNOWN,
+        BookmarkBarClickType.BOOKMARK_BAR_URL,
+        BookmarkBarClickType.BOOKMARK_BAR_FOLDER,
+        BookmarkBarClickType.OVERFLOW_MENU,
+        BookmarkBarClickType.ALL_BOOKMARKS,
+        BookmarkBarClickType.POP_UP_URL,
+        BookmarkBarClickType.POP_UP_FOLDER,
+        BookmarkBarClickType.NUM_ENTRIES
+    })
+    public @interface BookmarkBarClickType {
+        int UNKNOWN = 0;
+        int BOOKMARK_BAR_URL = 1;
+        int BOOKMARK_BAR_FOLDER = 2;
+        int OVERFLOW_MENU = 3;
+        int ALL_BOOKMARKS = 4;
+        int POP_UP_URL = 5;
+        int POP_UP_FOLDER = 6;
+        int NUM_ENTRIES = 7;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarClickType)
+
     // Histogram names:
     public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
     public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
             "Bookmarks.BookmarkBar.ToggledByKeyboardShortcut";
+    public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
     private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
@@ -259,6 +290,13 @@ public class BookmarkBarUtils {
      */
     public static void toggleDevicePrefShowBookmarksBar(boolean fromKeyboardShortcut) {
         setDevicePrefShowBookmarksBar(!isDevicePrefShowBookmarksBarEnabled(), fromKeyboardShortcut);
+    }
+
+    // Histogram recording methods.
+
+    public static void recordClick(@BookmarkBarClickType int clickType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                BOOKMARK_BAR_CLICK, clickType, BookmarkBarClickType.NUM_ENTRIES);
     }
 
     // Helper methods.

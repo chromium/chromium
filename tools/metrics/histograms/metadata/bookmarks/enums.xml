@@ -26,6 +26,20 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(BookmarkBarClickType)-->
+
+<enum name="BookmarkBarClickType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="URL in Bookmark Bar"/>
+  <int value="2" label="Folder in Bookmark Bar"/>
+  <int value="3" label="Overflow Menu"/>
+  <int value="4" label="All Bookmarks"/>
+  <int value="5" label="URL in Pop-up"/>
+  <int value="6" label="Folder in Pop-up"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarClickType) -->
+
 <enum name="BookmarkBarDragDropType">
   <int value="0" label="Drop single URL onto bar"/>
   <int value="1" label="Drop single URL into folder"/>

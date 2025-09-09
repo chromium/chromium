@@ -158,6 +158,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.Click" enum="BookmarkBarClickType"
+    expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted when users click on an item that is part of the bookmark bar or its
+    anchored pop-up menu. Emits an enum corresponding to the type of click that
+    a user can make (folder vs. url, overflow, all bookmarks).
+  </summary>
+</histogram>
+
 <histogram
     name="Bookmarks.BookmarkBar.NavigationOrActivationToFirstContentfulPaint"
     units="ms" expires_after="2026-01-18">

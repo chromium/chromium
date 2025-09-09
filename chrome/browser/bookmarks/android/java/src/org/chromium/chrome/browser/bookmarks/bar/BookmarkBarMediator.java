@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarClickType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -255,9 +256,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
     private void onAllBookmarksButtonClick(int metaState) {
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
-        // opening the manager for the wrong profile/model.
+        // opening the manager for the wrong profile/model. We will only record the click event if
+        // this guard passes, so the data shows only actions that resulted in a change.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
+                    BookmarkBarUtils.recordClick(BookmarkBarClickType.ALL_BOOKMARKS);
                     mBookmarkManagerOpenerSupplier
                             .get()
                             .showBookmarkManager(
@@ -282,11 +285,13 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         // in SUBMENU_ITEMS.
                         ModelList menuModel =
                                 buildMenuModelListForFolder(modelAfterLoading, item.getId());
+                        BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
                         showPopupMenu(menuModel, anchorView);
                     });
             return;
         }
 
+        BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_URL);
         final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
         if (isCtrlPressed) {
             mBookmarkOpener.openBookmarksInNewTabs(
@@ -307,7 +312,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
     private void onOverflowButtonClick() {
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
-        // opening the manager for the wrong profile/model.
+        // opening the manager for the wrong profile/model. We will only record the click event if
+        // this guard passes, so the data shows only actions that resulted in a change.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
                     // Get the id of the entire bookmarks bar.
@@ -345,6 +351,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     // #showPopupMenu inside #onBookmarkItemClick, we are calling it for one
                     // specific folder in the bookmarks bar, whereas here it is for all the hidden
                     // items in the entire bookmarks bar ("desktopFolder").
+                    BookmarkBarUtils.recordClick(BookmarkBarClickType.OVERFLOW_MENU);
                     showPopupMenu(hiddenItemsModelList, anchorView);
                 });
     }
@@ -660,6 +667,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             childrenList.add(item);
         }
 
+        // TODO(crbug.com/430057288): Add metric for more submenu folder clicks.
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
@@ -691,6 +699,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     if (event.getAction() == MotionEvent.ACTION_UP) {
                         boolean isCtrlPressed = (event.getMetaState() & KeyEvent.META_CTRL_ON) != 0;
 
+                        BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
                         if (isCtrlPressed) {
                             // Open in new tab.
                             mBookmarkOpener.openBookmarksInNewTabs(
@@ -818,13 +827,13 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             model.get(ListMenuItemProperties.CLICK_LISTENER);
                     if (clickListener != null) {
                         // Calls ListMenuUtils#onItemWithSubmenuClicked.
+                        BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
                         clickListener.onClick(view);
                     }
                     // We've handled the right arrow, so consume the event.
                     return true;
                 }
             }
-
             // Only proceed if the user has released the Enter key.
             if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER) {
                 if (bookmarkItem.isFolder()) {
@@ -833,25 +842,28 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             model.get(ListMenuItemProperties.CLICK_LISTENER);
                     if (clickListener != null) {
                         // Calls ListMenuUtils#onItemWithSubmenuClicked.
+                        BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
                         clickListener.onClick(view);
                     }
-                } else if (event.isCtrlPressed()) {
-                    // Not a folder and ctrl pressed. Open bookmark in new tab.
+                    return true;
+                }
+
+                // When not a folder, this must be a URL, which will be opened in either the current
+                // tab or a new tab when Ctrl is also pressed.
+                BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                if (event.isCtrlPressed()) {
                     mBookmarkOpener.openBookmarksInNewTabs(
                             List.of(bookmarkItem.getId()),
                             mProfileSupplier.get().isOffTheRecord(),
                             Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
-                    // Dismiss only when opening a bookmark (webpage) and not a folder.
-                    if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
                 } else {
-                    // Not a folder and ctrl not pressed. This is a plain enter key press. Open
-                    // bookmark in current tab,
                     mBookmarkOpener.openBookmarkInCurrentTab(
                             bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());
-                    // Dismiss only when opening a bookmark (webpage) and not a folder.
-                    if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
                 }
-                // Always consume the event to prevent fallback.
+
+                // Dismiss only when opening a bookmark (webpage) and not a folder, and always
+                // consume the event to prevent fallback.
+                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
                 return true;
             }
             return false;
