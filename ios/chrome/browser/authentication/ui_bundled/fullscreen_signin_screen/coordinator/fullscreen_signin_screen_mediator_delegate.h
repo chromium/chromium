@@ -13,8 +13,8 @@
 - (void)fullscreenSigninScreenMediatorDidFinishSignin:
     (FullscreenSigninScreenMediator*)mediator;
 
-// Let the coordinator know that sign-in is not forced anymore.
-- (void)fullscreenSigninScreenMediatorSigninIsNotForced:
+// Let the coordinator know that sign-in dialog can be dismissed.
+- (void)fullscreenSigninScreenMediatorWantsToBeDismissed:
     (FullscreenSigninScreenMediator*)mediator;
 
 @end

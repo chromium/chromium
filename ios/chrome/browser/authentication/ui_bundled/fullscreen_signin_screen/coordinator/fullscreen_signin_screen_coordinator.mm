@@ -275,7 +275,7 @@
   [self finishPresentingWithSignIn:YES];
 }
 
-- (void)fullscreenSigninScreenMediatorSigninIsNotForced:
+- (void)fullscreenSigninScreenMediatorWantsToBeDismissed:
     (FullscreenSigninScreenMediator*)mediator {
   CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M141);
   [self finishPresentingWithSignIn:NO];
