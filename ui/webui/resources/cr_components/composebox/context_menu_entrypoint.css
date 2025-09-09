@@ -59,3 +59,10 @@
   height: 1px;
   margin: 8px 0;
 }
+
+.tab-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
