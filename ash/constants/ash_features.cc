@@ -498,7 +498,7 @@ BASE_FEATURE(kDemoModeAppResetWindowContainer,
 
 // Controls whether use a demo account (consumer account) to login Demo mode
 // session.
-BASE_FEATURE(kDemoModeSignIn, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDemoModeSignIn, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether demo mode applies CBX wallpaper logic.
 BASE_FEATURE(kDemoModeWallpaperUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
