@@ -559,8 +559,17 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   // to determine the appropriate language pack path. Note that
   // SodaInstaller::GetLanguagePath() is not implemented outside of Chrome OS,
   // and options_->language is not set for Live Caption.
+  std::optional<speech::SodaLanguagePackComponentConfig> language_config =
+      speech::GetLanguageComponentConfigMatchingLanguageSubtag(
+          primary_language_name_);
+  auto primary_language_name = language_config.has_value()
+                                   ? language_config.value().language_name
+                                   : primary_language_name_;
   std::string language_pack_directory =
-      config_paths_[primary_language_name_].AsUTF8Unsafe();
+      config_paths_[language_config.has_value()
+                        ? language_config.value().language_name
+                        : primary_language_name_]
+          .AsUTF8Unsafe();
 
   // Initialize the SODA instance with the serialized config.
   config_msg_ = soda::chrome::ExtendedSodaConfigMsg();

@@ -17,6 +17,9 @@ namespace speech {
 namespace {
 
 constexpr char kPrimaryLanguageName[] = "en-US";
+constexpr char kPrimaryLanguageNameLowerCase[] = "en-us";
+constexpr char kPrimaryLanguageNameGeneric[] = "en";
+constexpr char kPrimaryLanguageNameGenericUpperCase[] = "EN";
 
 }  // namespace
 
@@ -46,10 +49,11 @@ class SpeechRecognitionRecognizerImplTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override {}
 
-  void CreateRecognizer(media::mojom::SpeechRecognitionOptionsPtr options) {
+  void CreateRecognizer(media::mojom::SpeechRecognitionOptionsPtr options,
+                        const std::string& primary_language_name) {
     recognizer_ = std::make_unique<SpeechRecognitionRecognizerImpl>(
         receiver_.BindNewPipeAndPassRemote(), std::move(options),
-        base::FilePath(), config_paths_, kPrimaryLanguageName,
+        base::FilePath(), config_paths_, primary_language_name,
         /*mask_offensive_words=*/true);
     auto soda_client = std::make_unique<NiceMock<::soda::MockSodaClient>>();
     soda_client_ = soda_client.get();
@@ -108,7 +112,7 @@ class SpeechRecognitionRecognizerImplTest
 };
 
 TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
-  CreateRecognizer(CreateOptions());
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
   EXPECT_CALL(*soda_client_, Reset(_, _, _));
   recognizer_->OnLanguagePackInstalled(config_paths());
 
@@ -123,9 +127,9 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
        SpeechRecognitionRecognitionContextTest) {
   std::vector<media::SpeechRecognitionPhrase> phrases;
   phrases.emplace_back("test phrase", 2.0);
-
   CreateRecognizer(
-      CreateOptions(media::SpeechRecognitionRecognitionContext(phrases)));
+      CreateOptions(media::SpeechRecognitionRecognitionContext(phrases)),
+      kPrimaryLanguageName);
   recognizer_->OnLanguagePackInstalled(config_paths());
 
   auto context =
@@ -140,7 +144,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
 }
 
 TEST_F(SpeechRecognitionRecognizerImplTest, UpdateRecognitionContextTest) {
-  CreateRecognizer(CreateOptions());
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
   media::SpeechRecognitionRecognitionContext context;
   context.phrases.emplace_back("test phrase", 2.0);
   EXPECT_CALL(*soda_client_, UpdateRecognitionContext(_));
@@ -149,7 +153,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest, UpdateRecognitionContextTest) {
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
        PopulatesTimestampsForFinalResults) {
-  CreateRecognizer(CreateOptions());
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
 
   // 1. Populate the timestamp estimator.
   // Audio from media time [10s, 12s) corresponds to speech time [0s, 2s).
@@ -180,7 +184,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
        PopulatesTimestampsForNonFinalResults) {
-  CreateRecognizer(CreateOptions());
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
 
   // 1. Populate the timestamp estimator.
   // Audio from media time [20s, 25s) corresponds to speech time [0s, 5s).
@@ -232,7 +236,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
        HandlesResultsWithInvalidAudioEndTime) {
-  CreateRecognizer(CreateOptions());
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
 
   // 1. Populate the timestamp estimator.
   // Audio from media time [10s, 12s) corresponds to speech time [0s, 2s).
@@ -272,6 +276,42 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   timestamps =
       last_received_result_.timing_information->originating_media_timestamps;
   ASSERT_FALSE(timestamps.has_value());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, ResetSodaWithDifferentCaseLang) {
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/path");
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageNameLowerCase);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _));
+  recognizer_->OnLanguagePackInstalled(config_paths());
+
+  auto* config = recognizer_->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_EQ("/fake/path", config->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, ResetSodaWithGenericLang) {
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/path");
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageNameGeneric);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _));
+  recognizer_->OnLanguagePackInstalled(config_paths());
+
+  auto* config = recognizer_->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_EQ("/fake/path", config->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, ResetSodaWithGenericUpperCaseLang) {
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/path");
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageNameGenericUpperCase);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _));
+  recognizer_->OnLanguagePackInstalled(config_paths());
+
+  auto* config = recognizer_->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_EQ("/fake/path", config->language_pack_directory());
 }
 
 }  // namespace speech
