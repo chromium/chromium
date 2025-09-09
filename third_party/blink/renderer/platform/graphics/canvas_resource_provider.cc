@@ -1269,7 +1269,7 @@ CanvasResourceProvider::CreateBitmapProvider(gfx::Size size,
   return nullptr;
 }
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderSharedImage>
 CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -1302,7 +1302,7 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
   return nullptr;
 }
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderSharedImage>
 CanvasResourceProvider::CreateSharedImageProvider(
     gfx::Size size,
     viz::SharedImageFormat format,

@@ -63,6 +63,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kUseCRPSIForLowLatencyOnWindows);
 
 class CanvasResource;
 class CanvasResourceSharedImage;
+class CanvasResourceProviderSharedImage;
 class ExternalCanvasResource;
 class MemoryManagedPaintCanvas;
 class StaticBitmapImage;
@@ -137,7 +138,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider>
+  static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateSharedImageProviderForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -147,16 +148,16 @@ class PLATFORM_EXPORT CanvasResourceProvider
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      Delegate* delegate = nullptr);
+  static std::unique_ptr<CanvasResourceProviderSharedImage>
+  CreateSharedImageProvider(gfx::Size size,
+                            viz::SharedImageFormat format,
+                            SkAlphaType alpha_type,
+                            const gfx::ColorSpace& color_space,
+                            ShouldInitialize initialize_provider,
+                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                            RasterMode raster_mode,
+                            gpu::SharedImageUsageSet shared_image_usage_flags,
+                            Delegate* delegate = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       gfx::Size size,

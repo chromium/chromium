@@ -2026,7 +2026,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // Used to provide accelerated snapshots and CanvasResources holding the
   // current content.
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<CanvasResourceProviderSharedImage> resource_provider_;
 
   // Whether `resource_provider_` has fresh content that should be sent to the
   // compositor in response to a PushFrame() call.
