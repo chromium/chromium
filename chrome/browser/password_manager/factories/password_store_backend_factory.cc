@@ -12,11 +12,10 @@
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
+#include "components/password_manager/core/browser/android/android_requirements.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
@@ -52,9 +51,7 @@ CreatePasswordStoreBackend(password_manager::IsAccountStore is_account_store,
                                 : "ProfilePasswordStoreBackendCreation");
 
 #if BUILDFLAG(IS_ANDROID)
-  using password_manager_android_util::PasswordManagerUtilBridge;
-  if (!password_manager_android_util::IsPasswordManagerAvailable(
-          std::make_unique<PasswordManagerUtilBridge>())) {
+  if (!password_manager::IsPasswordManagerAvailable()) {
     return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
   }
   if (is_account_store) {

@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -91,16 +92,11 @@ public class PasswordManagerCheckupHelperTest {
 
     @Mock private Profile mProfile;
 
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
     @Mock private SyncService mSyncServiceMock;
 
     @Mock private PendingIntent mPendingIntentMock;
 
     @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-
-    // TODO(crbug.com/40854050): Use fake instead of mock
-    @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
@@ -113,7 +109,6 @@ public class PasswordManagerCheckupHelperTest {
 
     @Before
     public void setUp() {
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mLoadingModalDialogCoordinator.getState())
@@ -130,9 +125,9 @@ public class PasswordManagerCheckupHelperTest {
                         })
                 .when(mLoadingModalDialogCoordinator)
                 .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
         when(mPasswordCheckupClientHelperFactoryMock.createHelper())
                 .thenReturn(mPasswordCheckupClientHelperMock);
         PasswordCheckupClientHelperFactory.setFactoryForTesting(
@@ -142,7 +137,9 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testThrowsPasswordManagerNotAvailableException() {
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         chooseToSyncPasswords();
         setUpSuccessfulRunPasswordCheckup();
 
@@ -162,7 +159,9 @@ public class PasswordManagerCheckupHelperTest {
     public void testDoesNotShowUpdateDialogOnShowPasswordCheckupForAccountWhenNoUpdateNeeded() {
         chooseToSyncPasswords();
 
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
 
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
@@ -178,7 +177,9 @@ public class PasswordManagerCheckupHelperTest {
     public void testDoesNotShowUpdateDialogOnShowPasswordCheckupForLocalWhenNoUpdateNeeded() {
         chooseToSyncPasswords();
 
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
 
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
@@ -1028,8 +1029,9 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmNotAvailable() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -1057,8 +1059,9 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndNoGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -1085,8 +1088,9 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testShowPwmUnavailableDialogNoCsvNoGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -1107,8 +1111,9 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testShowPwmUnavailableDialogNoCsvUpdatableGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =

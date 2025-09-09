@@ -20,18 +20,15 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
-import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -54,7 +51,6 @@ public class GmsCorePasswordCheckControllerTest {
     @Mock private SyncService mSyncService;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
     @Mock private Profile mProfile;
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
 
@@ -74,15 +70,10 @@ public class GmsCorePasswordCheckControllerTest {
     }
 
     private void configurePasswordManagerBackendSupport() {
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
-                .thenReturn(true);
-
-        FakePasswordManagerBackendSupportHelper helper =
-                new FakePasswordManagerBackendSupportHelper();
-        helper.setBackendPresent(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
     }
 
     private void configureMockSyncServiceToSyncPasswords() {

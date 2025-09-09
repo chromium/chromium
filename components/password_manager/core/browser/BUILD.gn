@@ -232,7 +232,6 @@ static_library("browser") {
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
     ]
-    public_deps += [ ":split_stores_and_local_upm" ]
     deps += [
       "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
@@ -259,21 +258,6 @@ static_library("browser") {
     sources += [
       "password_reuse_manager_signin_notifier_impl.cc",
       "password_reuse_manager_signin_notifier_impl.h",
-    ]
-  }
-}
-
-if (is_android) {
-  source_set("split_stores_and_local_upm") {
-    sources = [
-      "split_stores_and_local_upm.cc",
-      "split_stores_and_local_upm.h",
-    ]
-    deps = [
-      "//base",
-      "//components/password_manager/core/browser/features:password_features",
-      "//components/password_manager/core/common",
-      "//components/prefs",
     ]
   }
 }
@@ -534,7 +518,6 @@ source_set("unit_tests") {
     sources += [
       "first_cct_page_load_passwords_ukm_recorder_unittest.cc",
       "password_credential_filler_impl_unittest.cc",
-      "split_stores_and_local_upm_unittest.cc",
     ]
   } else {
     sources += [ "os_crypt_async_migrator_unittest.cc" ]

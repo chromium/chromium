@@ -96,6 +96,7 @@ source_set("backend_factory") {
     deps += [
       "//chrome/browser/password_manager/android:backend",
       "//chrome/browser/password_manager/android:utils",
+      "//components/password_manager/core/browser/android",
       "//components/webauthn/android",
     ]
   }

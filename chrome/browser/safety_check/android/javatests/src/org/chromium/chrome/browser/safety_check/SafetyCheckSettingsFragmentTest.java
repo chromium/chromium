@@ -29,12 +29,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
@@ -42,6 +39,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesSta
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -75,8 +73,6 @@ public class SafetyCheckSettingsFragmentTest {
             new SettingsActivityTestRule<>(SafetyCheckSettingsFragment.class);
 
     @Mock private SyncService mSyncService;
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
-    @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
 
     private PropertyModel mSafetyCheckModel;
@@ -86,15 +82,14 @@ public class SafetyCheckSettingsFragmentTest {
     @Before
     public void setUp() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         // Make sure that if requests to the UPM backends are made, they hit the fake backends.
         PasswordManagerTestHelper.setUpGmsCoreFakeBackends();
 
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
         // The password manger is always available in Safety Check after login db deprecation.
-        configurePasswordManagerUtilBridge();
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
     }
 
     @Test
@@ -182,14 +177,8 @@ public class SafetyCheckSettingsFragmentTest {
                 .thenReturn(isPasswordSyncEnabled);
     }
 
-    private void configurePasswordManagerUtilBridge() {
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
-                .thenReturn(true);
-    }
-
     private void verifyNullStateDisplayedCorrectly(boolean isPasswordSyncEnabled) {
         configureMockSyncService(isPasswordSyncEnabled);
-        configurePasswordManagerUtilBridge();
         createFragmentAndModel();
         // Binds the account model.
         ThreadUtils.runOnUiThreadBlocking(
@@ -230,7 +219,6 @@ public class SafetyCheckSettingsFragmentTest {
     @MediumTest
     public void testPasswordsCheckTitlesAreCorrect() {
         configureMockSyncService(true);
-        configurePasswordManagerUtilBridge();
         mSettingsActivityTestRule.startSettingsActivity();
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
 

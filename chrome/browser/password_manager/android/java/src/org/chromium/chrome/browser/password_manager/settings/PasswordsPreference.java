@@ -18,13 +18,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -89,7 +89,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
     private void setUpPostDeprecationWarning(PreferenceViewHolder holder) {
         assert mProfile != null : "Profile is not set!";
 
-        boolean isPasswordManagerAvailable = PasswordManagerUtilBridge.isPasswordManagerAvailable();
+        boolean isPasswordManagerAvailable = AndroidRequirements.get().isPasswordManagerAvailable();
         boolean hasPasswordsInCsv = LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile);
 
         // If there are no unmigrated passwords left in Chrome and the password manager is available

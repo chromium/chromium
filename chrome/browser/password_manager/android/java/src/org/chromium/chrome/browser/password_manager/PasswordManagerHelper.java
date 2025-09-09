@@ -26,6 +26,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -164,8 +166,8 @@ public class PasswordManagerHelper {
                 .showDialogAndStartFlow(
                         activity,
                         mProfile,
-                        PasswordManagerUtilBridge.isGooglePlayServicesUpdatable(),
-                        PasswordManagerUtilBridge.isPasswordManagerAvailable(),
+                        isGooglePlayServicesUpdatable(),
+                        AndroidRequirements.get().isPasswordManagerAvailable(),
                         settingsCustomTabLauncher);
     }
 
@@ -180,17 +182,20 @@ public class PasswordManagerHelper {
             return true;
         }
 
-        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
+        if (!AndroidRequirements.get().isPasswordManagerAvailable()) {
             new PasswordManagerUnavailableDialogCoordinator()
                     .showDialog(
                             context,
                             assertNonNull(modalDialogManagerSupplier.get()),
-                            PasswordManagerUtilBridge.isGooglePlayServicesUpdatable()
-                                    ? GmsUpdateLauncher::launch
-                                    : null);
+                            isGooglePlayServicesUpdatable() ? GmsUpdateLauncher::launch : null);
             return true;
         }
         return false;
+    }
+
+    private static boolean isGooglePlayServicesUpdatable() {
+        return PackageUtils.isPackageInstalled("com.google.android.gms")
+                && PackageUtils.getPackageInfo("com.android.vending", 0) != null;
     }
 
     private void showDownloadCsvDialog(
@@ -418,7 +423,7 @@ public class PasswordManagerHelper {
             Context context,
             @Nullable String account) {
         assert syncService != null;
-        assert PasswordManagerUtilBridge.isPasswordManagerAvailable();
+        assert AndroidRequirements.get().isPasswordManagerAvailable();
         CredentialManagerLauncher credentialManagerLauncher =
                 CredentialManagerLauncherFactory.getInstance().createLauncher();
         assert credentialManagerLauncher != null;
@@ -648,7 +653,7 @@ public class PasswordManagerHelper {
         // Callers shouldn't need to distinguish between the errors anymore, since there will be no
         // more partial support, so PASSWORD_MANGER_NOT_AVAILABLE will replace and include all the
         // errors.
-        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
+        if (!AndroidRequirements.get().isPasswordManagerAvailable()) {
             throw new PasswordManagerUnavailableException();
         }
 

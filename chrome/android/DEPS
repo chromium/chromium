@@ -50,6 +50,7 @@ include_rules = [
   "+components/messages/android",
   "+components/metrics",
   "+components/page_info/android/java",
+  "+components/password_manager/core/browser/android",
   "+components/permissions/android/nfc",
   "+components/plus_addresses/android/java",
   "+components/policy",

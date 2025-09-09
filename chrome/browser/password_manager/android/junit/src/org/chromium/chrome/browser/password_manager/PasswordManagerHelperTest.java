@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_manager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -60,6 +59,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
+import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -94,8 +94,6 @@ public class PasswordManagerHelperTest {
 
     @Mock private Profile mProfile;
 
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
     @Mock private SyncService mSyncServiceMock;
 
     @Mock private SettingsNavigation mSettingsNavigationMock;
@@ -103,9 +101,6 @@ public class PasswordManagerHelperTest {
     @Mock private PendingIntent mPendingIntentMock;
 
     @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-
-    // TODO(crbug.com/40854050): Use fake instead of mock
-    @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
     private ModalDialogManager mModalDialogManager;
 
@@ -119,9 +114,9 @@ public class PasswordManagerHelperTest {
     @Before
     public void setUp() throws CredentialManagerBackendException {
         // TODO(crbug.com/40940922): Parametrise the tests for local and account.
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(anyBoolean()))
-                .thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
@@ -141,8 +136,6 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mLoadingModalDialogCoordinator)
                 .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
 
         when(mCredentialManagerLauncherFactoryMock.createLauncher())
                 .thenReturn(mCredentialManagerLauncherMock);
@@ -669,8 +662,9 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmNotAvailable() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -699,8 +693,9 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmAvailable() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -729,8 +724,9 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndNoGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -758,8 +754,9 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testShowPwmUnavailableDialogNoCsvNoGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -781,8 +778,9 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testShowPwmUnavailableDialogNoCsvUpdatableGms() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -803,8 +801,9 @@ public class PasswordManagerHelperTest {
     }
 
     private void setUpPwmAvailableWithoutUnmigratedPasswords() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        AndroidRequirements.setForTesting(
+                new AndroidRequirements(
+                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
     }
 

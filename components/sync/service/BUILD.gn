@@ -129,7 +129,7 @@ static_library("service") {
     ]
     deps += [
       "../android:jni_headers",
-      "//components/password_manager/core/browser:split_stores_and_local_upm",
+      "//components/password_manager/core/browser/android",
     ]
   }
 
