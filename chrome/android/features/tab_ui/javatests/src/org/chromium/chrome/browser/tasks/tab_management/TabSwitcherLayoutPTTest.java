@@ -20,8 +20,11 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -32,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -308,6 +312,63 @@ public class TabSwitcherLayoutPTTest {
         tabSwitcherStation = pageStation.openRegularTabSwitcher();
 
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "regular_pinned_tabs");
+
+        RegularNewTabPageStation previousPage =
+                tabSwitcherStation.leaveHubToPreviousTabViaBack(
+                        RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(previousPage);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testRenderGrid_PinnedTabs_Scrolled() throws IOException {
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
+        RegularNewTabPageStation pageStation =
+                Journeys.prepareTabsWithThumbnails(
+                        mStartPage,
+                        10,
+                        0,
+                        UrlConstants.NTP_URL,
+                        RegularNewTabPageStation::newBuilder);
+        // Make sure all thumbnails are there before switching tabs.
+        RegularTabSwitcherStation tabSwitcherStation =
+                enterRegularHtsWithThumbnailChecking(pageStation);
+
+        // Pin two tabs.
+        pageStation = tabSwitcherStation.selectTabAtIndex(0, RegularNewTabPageStation.newBuilder());
+        RegularNewTabPageAppMenuFacility menu = pageStation.openAppMenu();
+        menu.pinTab();
+
+        tabSwitcherStation = pageStation.openRegularTabSwitcher();
+        pageStation = tabSwitcherStation.selectTabAtIndex(1, RegularNewTabPageStation.newBuilder());
+        menu = pageStation.openAppMenu();
+        menu.pinTab();
+
+        tabSwitcherStation = pageStation.openRegularTabSwitcher();
+
+        // Scroll to the bottom to make the pinned tab strip visible.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+                    if (recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
+                        return false;
+                    }
+                    LinearLayout parent = (LinearLayout) recyclerView.getParent();
+                    View pinnedTabView = parent.getChildAt(0);
+                    return pinnedTabView != null
+                            && pinnedTabView.getVisibility() == View.VISIBLE
+                            && pinnedTabView.getAlpha() == 1.0f
+                            && pinnedTabView.getTranslationY() == 0f;
+                });
+
+        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "pinned_tabs_scrolled");
 
         RegularNewTabPageStation previousPage =
                 tabSwitcherStation.leaveHubToPreviousTabViaBack(

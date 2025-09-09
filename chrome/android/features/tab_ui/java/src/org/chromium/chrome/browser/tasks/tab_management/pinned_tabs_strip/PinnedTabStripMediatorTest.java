@@ -9,7 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import android.util.Size;
+
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +35,10 @@ public class PinnedTabStripMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private GridLayoutManager mLayoutManager;
     private TabListModel mTabListModel;
     private TabListModel mPinnedTabsModelList;
@@ -39,6 +47,10 @@ public class PinnedTabStripMediatorTest {
 
     @Before
     public void setUp() {
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    void onActivity(TestActivity activity) {
         mTabListModel = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
         mStripPropertyModel =
@@ -49,7 +61,11 @@ public class PinnedTabStripMediatorTest {
 
         mMediator =
                 new PinnedTabStripMediator(
-                        mLayoutManager, mTabListModel, mPinnedTabsModelList, mStripPropertyModel);
+                        activity,
+                        mLayoutManager,
+                        mTabListModel,
+                        mPinnedTabsModelList,
+                        mStripPropertyModel);
     }
 
     @Test
@@ -154,6 +170,26 @@ public class PinnedTabStripMediatorTest {
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
         mMediator.onScrolled();
         assertTrue(mStripPropertyModel.get(PinnedTabStripProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testOnSizeChanged_setsGridCardSize() {
+        // Set up the size and trigger the size change observer.
+        final int cardWidth = 200;
+        final int cardHeight = 300;
+        final int delta = 16;
+        mMediator.onSizeChanged(new Size(cardWidth, cardHeight));
+
+        // Add a pinned tab and simulate it being scrolled off-screen.
+        mTabListModel.add(createTabListItem(1, true));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mMediator.onScrolled();
+
+        // Verify the GRID_CARD_SIZE is set correctly.
+        assertEquals(1, mPinnedTabsModelList.size());
+        PropertyModel model = mPinnedTabsModelList.get(0).model;
+        Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
+        assertEquals(cardWidth - delta, cardSize.getWidth());
     }
 
     private ListItem createTabListItem(int id, boolean isPinned) {

@@ -1390,6 +1390,7 @@ public class TabSwitcherLayoutTest {
 
     private void verifyItemSelectedAtPosition(int position) {
         onView(withId(R.id.tab_list_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(position))
                 .check(
                         matches(
                                 RecyclerViewMatcherUtils.atPosition(
