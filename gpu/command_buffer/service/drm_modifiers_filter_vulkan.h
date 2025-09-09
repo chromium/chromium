@@ -7,13 +7,21 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace gpu {
+
+// Populate the map of fourcc formats to the list of modifiers supported by that
+// format on Vulkan.
+GPU_GLES2_EXPORT void PopulateVkDrmFormatsAndModifiers(
+    VulkanDeviceQueue* device_queue,
+    base::flat_map<uint32_t, std::vector<uint64_t>>& fourcc_modifier_map);
 
 // DRM modifiers filter object that lets clients filter out modifiers that are
 // not supported for Vulkan import. The list of modifiers that the Vulkan

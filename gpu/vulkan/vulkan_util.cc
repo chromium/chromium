@@ -743,34 +743,4 @@ QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
   return modifier_props;
 }
 
-void PopulateVkDrmFormatsAndModifiers(
-    VulkanDeviceQueue* device_queue,
-    base::flat_map<uint32_t, std::vector<uint64_t>>&
-        drm_formats_and_modifiers) {
-#if BUILDFLAG(IS_CHROMEOS)
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-    gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
-    VkFormat vk_format = gfx::ToVkFormat(buffer_format);
-    int fourcc_format = ui::GetFourCCFormatFromBufferFormat(buffer_format);
-    if (vk_format == VK_FORMAT_UNDEFINED || fourcc_format == 0) {
-      continue;
-    }
-
-    std::vector<VkDrmFormatModifierPropertiesEXT> modifier_props =
-        QueryVkDrmFormatModifierPropertiesEXT(
-            device_queue->GetVulkanPhysicalDevice(), vk_format);
-    if (modifier_props.empty()) {
-      continue;
-    }
-
-    std::vector<uint64_t> modifiers;
-    modifiers.reserve(modifier_props.size());
-    for (const auto& props : modifier_props) {
-      modifiers.push_back(props.drmFormatModifier);
-    }
-    drm_formats_and_modifiers.emplace(fourcc_format, std::move(modifiers));
-  }
-#endif
-}
-
 }  // namespace gpu

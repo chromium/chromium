@@ -474,6 +474,10 @@ target(link_target_type, "gles2_sources") {
       ]
 
       deps += [ "//ui/ozone" ]
+
+      if (is_chromeos) {
+        deps += [ "//ui/gfx/linux:drm" ]
+      }
     }
 
     if (is_linux && use_dawn) {

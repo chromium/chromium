@@ -11,9 +11,59 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "ui/gfx/buffer_format_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/drm_util_linux.h"  //nogncheck
+#endif
+
+namespace {
+
+VkFormat ToTextureVkFormat(viz::SharedImageFormat format) {
+  VkFormat vulkan_format;
+  if (format.is_single_plane()) {
+    vulkan_format = gpu::ToVkFormatSinglePlanar(format);
+  } else {
+    // Format prefers external sampler.
+    format.SetPrefersExternalSampler();
+    vulkan_format = gpu::ToVkFormatExternalSampler(format);
+  }
+  return vulkan_format;
+}
+
+}  // anonymous namespace
 
 namespace gpu {
+
+void PopulateVkDrmFormatsAndModifiers(
+    VulkanDeviceQueue* device_queue,
+    base::flat_map<uint32_t, std::vector<uint64_t>>&
+        drm_formats_and_modifiers) {
+#if BUILDFLAG(IS_CHROMEOS)
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
+    viz::SharedImageFormat si_format =
+        viz::GetSharedImageFormat(static_cast<gfx::BufferFormat>(i));
+    VkFormat vulkan_format = ToTextureVkFormat(si_format);
+    int fourcc_format = ui::GetFourCCFormatFromSharedImageFormat(si_format);
+    if (vulkan_format == VK_FORMAT_UNDEFINED || fourcc_format == 0) {
+      continue;
+    }
+
+    std::vector<VkDrmFormatModifierPropertiesEXT> modifier_props =
+        QueryVkDrmFormatModifierPropertiesEXT(
+            device_queue->GetVulkanPhysicalDevice(), vulkan_format);
+    if (modifier_props.empty()) {
+      continue;
+    }
+
+    std::vector<uint64_t> modifiers;
+    modifiers.reserve(modifier_props.size());
+    for (const auto& props : modifier_props) {
+      modifiers.push_back(props.drmFormatModifier);
+    }
+    drm_formats_and_modifiers.emplace(fourcc_format, std::move(modifiers));
+  }
+#endif
+}
 
 DrmModifiersFilterVulkan::DrmModifiersFilterVulkan(
     raw_ptr<gpu::VulkanImplementation> vulkan_implementation)
@@ -25,14 +75,7 @@ std::vector<uint64_t> DrmModifiersFilterVulkan::Filter(
     viz::SharedImageFormat format,
     const std::vector<uint64_t>& modifiers) {
   CHECK(viz::HasEquivalentBufferFormat(format));
-  VkFormat vulkan_format;
-  if (format.is_single_plane()) {
-    vulkan_format = gpu::ToVkFormatSinglePlanar(format);
-  } else {
-    // Format prefers external sampler.
-    format.SetPrefersExternalSampler();
-    vulkan_format = gpu::ToVkFormatExternalSampler(format);
-  }
+  VkFormat vulkan_format = ToTextureVkFormat(format);
   gpu::VulkanInstance* instance = vulkan_implementation_->GetVulkanInstance();
   CHECK(instance->vulkan_info().physical_devices.size() > 0);
   VkPhysicalDevice phys_dev =
