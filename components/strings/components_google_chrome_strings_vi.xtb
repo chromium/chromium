@@ -33,16 +33,6 @@
           và bỏ chọn "<ph name="NO_PREFETCH_DESCRIPTION" />."
         Nếu cách này không giải quyết được sự cố thì chúng tôi khuyên bạn nên chọn lại tùy chọn này
         để cải thiện hiệu suất.</translation>
-<translation id="6581867098636731226">Chuyển đến
-          trình đơn Chrome &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Mạng và Internet &gt; Proxy
-          rồi bỏ chọn "Tự động phát hiện chế độ cài đặt".</translation>
 <translation id="7230956101631259640">Bạn đang xem trang Chrome an toàn</translation>
 <translation id="8232971017369963250">Chrome được cung cấp thông qua dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome cũng được cung cấp thông qua <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>

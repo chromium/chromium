@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">PIN kodas nepakeistas. Patikrinkite interneto ryšį ir bandykite dar kartą</translation>
 <translation id="1063070031224282617">Pasirinkite, kur noite išsaugoti <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Atsiliepimai pagal jūsų pomėgius</translation>
-<translation id="1072679792409426431">Išjungė administratorius</translation>
 <translation id="1074827084851510304">Ketina ištrinti tiek slaptažodžių: {password_count} ir svetainių bei programų, kurių prisijungimo informacijos pasirinkote niekada nesaugoti, sąrašą. Jokia sukurta svetainių ir programų paskyra nebus ištrinta.</translation>
 <translation id="1076421457278169141">Kodas nuskaitytas</translation>
 <translation id="1081114897601629648">Toliau nurodyti slaptažodžiai nebuvo importuoti į „Google“ slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Šis adresas bus ištrintas iš šio įrenginio.}one{Šie adresai bus ištrinti iš šio įrenginio.}few{Šie adresai bus ištrinti iš šio įrenginio.}many{Šie adresai bus ištrinti iš šio įrenginio.}other{Šie adresai bus ištrinti iš šio įrenginio.}}</translation>
 <translation id="2297989278479054870">Kai atsijungsite, „Google“ paskyroje esantys slaptažodžiai, žymės ir kt. bus pašalinti iš šio įrenginio.</translation>
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
-<translation id="2306265833370324042">Rodyti „<ph name="SEARCH_ENGINE_NAME" />“ išsamią informaciją</translation>
 <translation id="2309265394777270359">Uždaryti skirtuką</translation>
 <translation id="2311077293164383652">Uždaryti prisegtą skirtuką</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
@@ -673,6 +671,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3631443864840848029">Išsaugokite dabartinį šios svetainės slaptažodį.</translation>
 <translation id="3642060527569456384">Skirtukų grupės automatiškai išsaugomos ir atnaujinamos visuose įrenginiuose.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje ({email}).}one{{count} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}few{{count} slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}many{{count} slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}other{{count} slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}}</translation>
+<translation id="3650299480924308502">Atsijungus neišsaugoti duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, istorija ir kt.</translation>
 <translation id="3659297405161482746">Nerasta jokių mokėjimo metodų</translation>
 <translation id="3668816008081204991">Skaitymo sąrašas paslėptas</translation>
 <translation id="3670030362669914947">Numeris</translation>
@@ -1202,7 +1201,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5709005673595820640">{count,plural, =1{Turite {count} pakartotinai naudojamą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}one{Turite {count} pakartotinai naudojamą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}few{Turite {count} pakartotinai naudojamus slaptažodžius, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}many{Turite {count} pakartotinai naudojamo slaptažodžio, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}other{Turite {count} pakartotinai naudojamų slaptažodžių, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}}</translation>
 <translation id="57094364128775171">Siūlyti sudėtingą slaptažodį…</translation>
 <translation id="5718049162805123412">Turėtumėte pakeisti juos dabar</translation>
-<translation id="5721040778297053709">Kredito kortelė turėtų būti rodoma šiame rėmelyje</translation>
 <translation id="572328651809341494">Naujausi skirtukai</translation>
 <translation id="5724941645893276623">Norėdami žiniatinklyje naršyti privačiai, pridėkite naują skirtuką</translation>
 <translation id="5728072125198221967">Susietos „Google“ paslaugos</translation>
@@ -1570,6 +1568,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7055240621761583113">Automatinis slaptažodžio pildymas</translation>
 <translation id="7063811929043357292">Jūsų paskyrą tvarko vienas iš tėvų.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Siekiant užtikrinti organizacijos saugą, neišsaugoti duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, istorija ir kt.</translation>
 <translation id="7067780033517902110">Visi failai</translation>
 <translation id="707086654079606593">Tvarkyti adresus…</translation>
 <translation id="7080806333218412752">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų. Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes. Laikinai susieja šiuos duomenis su „Google“ paskyra, kai esate prisijungę, kad apsaugotų jus „Google“ programose.</translation>
@@ -1781,7 +1780,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7889910613639381518">Paprasta ir saugi prieiga naudojant „Google“ slaptažodžių tvarkyklės valdiklį.</translation>
 <translation id="7899199123054742721">Žymėti visus neskaitytus</translation>
 <translation id="7911190106180361398">Jūsų organizacija neleidžia jums visko sinchronizuoti.</translation>
-<translation id="7918999344502274923">Slėpti „<ph name="SEARCH_ENGINE_NAME" />“ išsamią informaciją</translation>
 <translation id="792357691529995513">Problemų neaptikta</translation>
 <translation id="7925108652071887026">Automatinio pildymo duomenys</translation>
 <translation id="7926975587469166629">Kortelės slapyvardis</translation>

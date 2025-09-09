@@ -31,16 +31,6 @@
           <ph name="ADVANCED_TITLE" />
           "<ph name="NO_PREFETCH_DESCRIPTION" />" сонголтыг устгана уу. 
 Хэрвээ ингээд асуудлыг шийдвэрлэж чадахгүй байгаа бол бид танд үзүүлэлтийг сайжруулахын тулд энэ сонголтоо дахин хийхийг зөвлөж байна.</translation>
-<translation id="6581867098636731226">Та 
-          Chrome-н цэс &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Сүлжээ, интернэт &gt; Прокси
-          руу очиж, "Тохиргоог автоматаар илрүүлэх" сонголтыг цуцална уу</translation>
 <translation id="7230956101631259640">Та Chrome-н аюулгүй хуудсыг үзэж байна</translation>
 <translation id="8232971017369963250">Chrome-г <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төслөөр боломжтой болгосон.</translation>
 <translation id="8279509328145658601">Chrome-г мөн <ph name="BEGIN_LINK_OSS" />нээлттэй эх кодтой бусад программ хангамжаар<ph name="END_LINK_OSS" /> боломжтой болгосон.</translation>

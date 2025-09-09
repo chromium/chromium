@@ -31,15 +31,6 @@
           <ph name="ADVANCED_TITLE" />
           र अचयन गर्नुहोस् "<ph name="NO_PREFETCH_DESCRIPTION" />."
           यदि यसले मुद्दाको समाधान गर्दैन भने हामी सिफारिस गर्दछौं कि सुधारिएको कार्य सम्पादनका लागि तपाईं फेरि यस विकल्पलाई चयन गर्नुहोस्।</translation>
-<translation id="6581867098636731226">"Chrome मेनु &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          नेटवर्क तथा इन्टरनेट &gt; प्रोक्सी"
-          मा जानुहोस् र "सेटिङ स्वतः पत्ता लगाउनुहोस्" को चयन रद्द गर्नुहोस्।</translation>
 <translation id="7230956101631259640">तपाईं सुरक्षित Chrome पेज हेर्दै हुनुहुन्छ</translation>
 <translation id="8232971017369963250">Chrome बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>
 <translation id="8279509328145658601">Chrome बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>

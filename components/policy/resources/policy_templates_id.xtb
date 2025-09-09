@@ -477,7 +477,6 @@ Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
       Jika kebijakan ini diaktifkan, pintasan keyboard internasional yang ditingkatkan akan aktif.
       Jika tidak disetel, kebijakan ini akan diaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
       Perhatikan bahwa ini hanya kebijakan sementara untuk memungkinkan pengguna terkelola agar tetap dapat menggunakan pintasan lama yang tidak digunakan lagi. Kebijakan ini tidak akan digunakan lagi setelah pintasan keyboard khusus tersedia.</translation>
-<translation id="1357214899305978790">Menyetel pintasan di Halaman Tab Baru (Beta)</translation>
 <translation id="1361661842732478894">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1363839375295535439">Jika kebijakan ini disetel ke Aktif atau tidak disetel, LPAC Sandbox akan diaktifkan untuk layanan pencetakan setiap kali konfigurasi sistem mendukungnya.
@@ -3590,6 +3589,7 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
       Jika setelan ini dinonaktifkan atau tidak ditetapkan, alur login inline baru akan digunakan secara default. Pengguna tetap dapat mengaktifkan alur login berbasis web yang lama melalui tanda command line --enable-web-based-signin.
 
       Setelan eksperimental ini akan dihapus di masa mendatang setelah login inline mendukung sepenuhnya semua alur login SSO.</translation>
+<translation id="3435178885391813398">Jangan izinkan Scanner.</translation>
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
 <translation id="3437924696598384725">Izinkan pengguna mengelola koneksi VPN</translation>
@@ -5473,17 +5473,6 @@ Pengguna akan tetap login ke Akun Google mereka saat menghapus cookie.
 Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true). Mulai Chrome 115, menyetel kebijakan ini akan menonaktifkan sinkronisasi untuk setiap jenis data jika `<ph name="CHROME_SYNC_NAME" />` tidak dinonaktifkan dengan menyetel kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> atau <ph name="BROWSER_SIGNIN_POLICY_NAME" /> dinonaktifkan.</translation>
 <translation id="4694138212536142867">Aktifkan pelaporan status hardware perangkat</translation>
 <translation id="4697581738794063407">Mengontrol fitur filter parameter URL</translation>
-<translation id="4698488381632756664">Dalam pengembangan: hanya untuk pratinjau awal.
-
-Menyetel kebijakan ini akan membuat prakonfigurasi hingga 10 pintasan khusus di halaman Tab Baru <ph name="PRODUCT_NAME" />.
-
-Jika kebijakan ini disetel, pengguna akan melihat pintasan ini secara default dan dapat beralih antara “Pintasan saya”, “Situs yang paling sering dikunjungi”, atau “Pintasan organisasi saya” di panel “Sesuaikan Chrome”. Jika kebijakan ini disetel ke nilai kosong atau tidak disetel, pengguna hanya dapat beralih antara “Pintasan saya” atau “Situs yang paling sering dikunjungi” di panel “Sesuaikan Chrome”.
-
-URL pintasan harus unik.
-
-Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> disetel ke benar (true), pengguna dapat mengubah nama pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat mengubah nama pintasan.
-
-Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true), pengguna dapat menghapus pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat menghapus pintasan.</translation>
 <translation id="4698895924806859508">Jangan laporkan peristiwa jaringan</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
@@ -7442,6 +7431,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 
       Jika kebijakan disetel ke Nonaktif, penggunaan protokol QUIC tidak akan diizinkan.</translation>
 <translation id="5916855682471300200">Kebijakan perangkat cloud lebih diutamakan daripada kebijakan perangkat platform</translation>
+<translation id="5917092644305650513">Setelan untuk fitur Scanner</translation>
 <translation id="5917425424971710623">Jangan laporkan informasi tentang peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="5917897389577978190">Gmail (didukung sejak versi 135)</translation>
 <translation id="592036544845479336">Mengaktifkan kembali Peristiwa Mutasi yang tidak digunakan lagi/dihapus</translation>
@@ -7857,6 +7847,7 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
       tidak akan dilaporkan. Jika ditetapkan ke true, informasi laporan kerusakan akan
       dilaporkan.</translation>
 <translation id="624219423122512710">Tindakan Browser Tidak Ada Aktivitas</translation>
+<translation id="6243061183100681514">Izinkan Scanner dan tingkatkan kualitas model AI.</translation>
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
@@ -8655,6 +8646,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan KDC selalu dipatuhi.</translation>
 <translation id="666203515318060501">Izinkan isi otomatis yang ditingkatkan tanpa meningkatkan kualitas model AI.</translation>
 <translation id="6665670272107384733">Setel seberapa sering pengguna harus memasukkan sandi untuk menggunakan buka kunci cepat.</translation>
 <translation id="6667586534922258705">Memperlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
+<translation id="6667636336079341367">Izinkan Scanner tanpa meningkatkan kualitas model AI.</translation>
 <translation id="6668559639284945695">Kebijakan ini memungkinkan Anda kembali ke perilaku lama dalam penentuan cakupan cookie.
 
 Artinya, cookie yang disetel pada protokol tertentu (misalnya, HTTPS) atau port tertentu dapat diakses dari protokol atau port lain.
@@ -11405,6 +11397,17 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, informasi tidak akan dilaporkan.
       Jika kebijakan disetel ke Aktif, peristiwa CRD akan dilaporkan saat pengguna terafiliasi.</translation>
 <translation id="85723976805793612">Log aktivitas penginstalan aplikasi Android dibagikan ke Google</translation>
+<translation id="8573354257711790704">Kebijakan ini mengontrol setelan fitur Scanner untuk <ph name="PRODUCT_OS_NAME" />.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi sumber, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Kebijakan ini tidak digunakan lagi. Pertimbangkan untuk menggunakan BrowserSignin.
 
       Jika kebijakan ini ditetapkan ke true, pengguna harus login ke <ph name="PRODUCT_NAME" /> dengan profilnya sebelum menggunakan browser. Nilai default BrowserGuestModeEnabled akan ditetapkan ke false. Harap diperhatikan bahwa profil yang ada dan belum ditandatangani akan dikunci dan tidak dapat diakses setelah kebijakan ini diaktifkan. Untuk informasi selengkapnya, lihat artikel pusat bantuan.

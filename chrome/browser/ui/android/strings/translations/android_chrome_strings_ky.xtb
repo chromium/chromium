@@ -632,7 +632,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен өтүңүз</translation>
 <translation id="4044708993631234325">Ылдыйкы экран</translation>
 <translation id="4045441967987592849">Кайра ачуу</translation>
-<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />: кошумча параметрлер</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_ONE" /> стандарттуу өтмөк}other{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_MANY" /> стандарттуу өтмөк}}</translation>
 <translation id="405365679581583349">Google Play кызматтарын жаңыртуу</translation>
 <translation id="405399507749852140">Кандайдыр бир сайтта баасы төмөндөсө, эскертүүлөрдү алыңыз</translation>

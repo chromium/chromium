@@ -474,7 +474,6 @@ Questa funzionalità è disponibile a partire da <ph name="MAC_OS_NAME" /> 10.15
       Se viene attivata, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
       Se non viene configurata, questa policy viene attivata per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
       Tieni presente che questa policy è temporanea per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirata quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
-<translation id="1357214899305978790">Impostazione delle scorciatoie nella pagina Nuova scheda (beta)</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1363839375295535439">Se la policy viene attivata o se non viene configurata, la sandbox LPAC per i servizi di stampa viene attivata ogni volta che la configurazione del sistema supporta l'operazione.
@@ -3510,6 +3509,7 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
       Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul Web tramite il flag della riga di comando --enable-web-based-signin.
 
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
+<translation id="3435178885391813398">Non consentire la funzionalità di scansione.</translation>
 <translation id="3435796032110614169">Consenti l'eliminazione della cronologia dei processi di stampa</translation>
 <translation id="3436217793443508863">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata la batteria.</translation>
 <translation id="3437924696598384725">Consente all'utente di gestire le connessioni VPN</translation>
@@ -5346,17 +5346,6 @@ L'utente manterrà l'accesso al proprio Account Google quando elimina i cookie.
 Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
-<translation id="4698488381632756664">In fase di sviluppo: solo per l'anteprima.
-
-Se la policy viene configurata, è possibile preconfigurare fino a 10 scorciatoie personalizzate nella pagina Nuova scheda di <ph name="PRODUCT_NAME" />.
-
-Se la policy viene configurata, gli utenti vedranno queste scorciatoie per impostazione predefinita e potranno attivare/disattivare "Le mie scorciatoie", "Siti più visitati" o "Scorciatoie della mia organizzazione" nel riquadro "Personalizza Chrome". Se la policy è vuota o se non viene configurata, l'utente potrà solo attivare/disattivare "Le mie scorciatoie" o "Siti più visitati" nel riquadro "Personalizza Chrome".
-
-Gli URL delle scorciatoie devono essere univoci.
-
-Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> è impostata su True, gli utenti possono modificare il nome della scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono modificare il nome.
-
-Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> è impostata su True, gli utenti possono rimuovere la scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono rimuovere la scorciatoia.</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699592681017489215">Questa policy consente di configurare un'opzione locale che permette di disattivare i controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
@@ -7264,6 +7253,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se viene impostata su Disattivata, non è consentito utilizzare il protocollo QUIC.</translation>
 <translation id="5916855682471300200">Le policy relative al cloud in ambito computer hanno la precedenza sulle policy relative al computer della piattaforma</translation>
+<translation id="5917092644305650513">Impostazioni per la funzionalità di scansione</translation>
 <translation id="5917425424971710623">Non segnalare informazioni su eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="5917897389577978190">Gmail (supportato a partire dalla versione 135)</translation>
 <translation id="592036544845479336">Riattiva eventi Mutazione deprecati/rimossi</translation>
@@ -7671,6 +7661,7 @@ Dalla versione 114 in poi, questa policy è facoltativa se viene configurata la 
       non verranno segnalate. Se viene impostata su true, le informazioni relative ai report sugli arresti anomali verranno
       segnalate.</translation>
 <translation id="624219423122512710">Azioni per browser inattivo</translation>
+<translation id="6243061183100681514">Consenti la funzionalità di scansione e migliora i modelli di AI.</translation>
 <translation id="6244061205361004687">Consenti all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
@@ -8423,6 +8414,7 @@ Su <ph name="MS_WIN_NAME" />, la policy KDC viene sempre rispettata.</translatio
 <translation id="666203515318060501">Consenti la compilazione automatica avanzata senza migliorare i modelli di AI.</translation>
 <translation id="6665670272107384733">Imposta la frequenza di inserimento della password per poter usare lo sblocco rapido</translation>
 <translation id="6667586534922258705">Mostra il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
+<translation id="6667636336079341367">Consenti la funzionalità di scansione senza migliorare i modelli di AI.</translation>
 <translation id="6668559639284945695">Questa policy consente di ripristinare il comportamento precedente per l'ambito dei cookie.
 
 Ciò significa che i cookie impostati su un protocollo (ad es. HTTPS) o una porta in particolare possono essere accessibili da un altro protocollo o da un'altra porta.
@@ -11111,6 +11103,17 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
       Se la policy viene disattivata o se non viene configurata, le informazioni non vengono segnalate.
       Se viene attivata, gli eventi CRD vengono segnalati, se l'utente è affiliato.</translation>
 <translation id="85723976805793612">I log eventi di installazione di app per Android sono condivisi con Google</translation>
+<translation id="8573354257711790704">Questa policy consente di controllare le impostazioni della funzionalità di scansione per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Questa norma è stata ritirata; usa la norma BrowserSignin.
 
       Se questa norma viene impostata su true, l'utente deve accedere a <ph name="PRODUCT_NAME" /> con il proprio profilo per poter usare il browser e il valore predefinito di BrowserGuestModeEnabled viene impostato su false. Tieni presente che i profili esistenti a cui non è stato eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questa norma. Per ulteriori informazioni, leggi l'articolo del Centro assistenza.

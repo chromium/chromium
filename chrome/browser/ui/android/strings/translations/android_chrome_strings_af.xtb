@@ -632,7 +632,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4042941173059740150">Gaan voort na <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Onderste blad</translation>
 <translation id="4045441967987592849">Heropen</translation>
-<translation id="4049920046559074950">Meer opsies vir <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardoortjie met nuwe aktiwiteit in gedeelde oortjiegroepe}other{<ph name="TABS_COUNT_MANY" /> standaardoortjies met nuwe aktiwiteit in gedeelde oortjiegroepe}}</translation>
 <translation id="405365679581583349">Dateer Google Play Dienste op</translation>
 <translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>

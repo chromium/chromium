@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="130631256467250065">تغییرات بار بعد که دستگاه راه‌اندازی می‌شود اعمال می‌شوند.</translation>
-<translation id="261308610302996111">‏به
-          «منو Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />»
-          بروید و مطمئن شوید پیکربندی روی «no proxy» (بدون پراکسی) یا «direct» (مستقیم) تنظیم شده باشد.</translation>
 <translation id="275588974610408078">‏گزارش خرابی در Chromium موجود نیست.</translation>
 <translation id="3064346599913645280">‏درحال مشاهده یک صفحه Chromium امن هستید</translation>
 <translation id="3255926992597692024">‏Chromebook می‌خواهد تنظیمات تکمیل روش‌های پرداخت را اصلاح کند.</translation>
@@ -22,16 +14,6 @@
 <translation id="4949828774841497663">به «برنامه‌ها &gt; تنظیمات سیستم &gt; شبکه» بروید، شبکه
           فعال را انتخاب کنید، روی دکمه «جزئیات…» کلیک کنید، و همه
           پراکسی‌هایی را که ممکن است انتخاب شده باشند لغو انتخاب کنید.</translation>
-<translation id="6480456350195404966">‏به
-          «منو Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          شبکه و اینترنت &gt; پراکسی»
-          بروید و «Automatically detect settings» (تشخیص خودکار تنظیمات) را لغو انتخاب کنید.</translation>
 <translation id="648062525172759633">‏این صفحه‌ها برای استفاده توسعه‌دهندگان Chromium درنظر گرفته شده‌اند و ممکن است به‌طور فعال نگهداری یا آزمایش نشوند. برای فعال کردن آن‌ها، به <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> بروید، روی دکمه فعال کردن صفحه‌های اشکال‌زدایی کلیک کنید و سپس دوباره به این صفحه بروید.</translation>
 <translation id="6549378540556750549">‏ارائه Chromium ازطریق <ph name="BEGIN_LINK_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_OSS" /> دیگر نیز ممکن شده است.</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>

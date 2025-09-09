@@ -33,16 +33,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
         e desmarque "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Se isso não resolver o problema, recomendamos que selecione esta opção
         novamente para obter um desempenho melhorado.</translation>
-<translation id="6581867098636731226">Aceda
-          ao menu do Chrome &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Rede e Internet &gt; Proxy
-          e desmarque a opção "Detetar automaticamente as definições".</translation>
 <translation id="7230956101631259640">Está a ver uma página segura do Chrome</translation>
 <translation id="8232971017369963250">A criação do Chrome foi possível devido ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">A criação do Chrome também foi possível devido a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>

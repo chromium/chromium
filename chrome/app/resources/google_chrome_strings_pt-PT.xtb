@@ -11,9 +11,6 @@
 <translation id="1051793555070215510">Responda a este inquérito de 1 minuto e ajude-nos a melhorar a Navegação anónima.</translation>
 <translation id="1059838145689930908">Para usar esta extensão como <ph name="USER_EMAIL_ADDRESS" />, inicie sessão no Chrome.</translation>
 <translation id="1065672644894730302">Não é possível ler as suas preferências. Algumas funcionalidades poderão estar indisponíveis e as alterações efetuadas às preferências não serão guardadas.</translation>
-<translation id="1070377999570795893">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chrome</translation>
 <translation id="110877069173485804">Este é o seu Chrome</translation>
@@ -49,9 +46,6 @@
 <translation id="1547295885616600893">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1547469039832541117">Termina a tarefa realçada.</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
-<translation id="1585717515139318619">Outro programa no computador adicionou um tema que pode alterar o funcionamento do Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">O Google Chrome está a utilizar a câmara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, por isso o Chrome bloqueou-o.</translation>
 <translation id="1597911401261118146">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chrome<ph name="END_LINK" />.</translation>
@@ -453,7 +447,6 @@
 <translation id="6321592572353357376">A extensão "<ph name="EXTENSION_NAME" />" quer que inicie sessão no Chrome</translation>
 <translation id="6326175484149238433">Remover do Chrome</translation>
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
-<translation id="6334815226785304306">Defina o Google Chrome como o navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="6360449101159168105">Enquanto este separador estava inativo, foi libertada memória para manter o Chrome rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
 <translation id="6388799252195623474">ajuda-me com isto</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
@@ -552,9 +545,6 @@
 <translation id="7572537927358445944">Desativada • O Chrome não consegue validar a origem desta extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
-<translation id="760353356052806707">Outro programa no computador adicionou uma aplicação que pode alterar o funcionamento do Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente.</translation>

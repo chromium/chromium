@@ -471,7 +471,6 @@ Deze functie is beschikbaar vanaf <ph name="MAC_OS_NAME" /> 10.15.</translation>
       Als je dit beleid toepast, staan verbeterde sneltoetsen voor internationale toetsenborden aan.
       Als je dit beleid niet instelt, wordt het niet toegepast op beheerde apparaten en wel toegepast op apparaten van consumenten.
       Houd er rekening mee dat dit een tijdelijk beleid is zodat beheerde gebruikers nog steeds beëindigde verouderde sneltoetsen kunnen gebruiken. Dit beleid wordt beëindigd nadat aangepaste sneltoetsen beschikbaar zijn gekomen.</translation>
-<translation id="1357214899305978790">Snelkoppelingen instellen op de pagina Nieuw tabblad (bèta)</translation>
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1363839375295535439">Als je het beleid aanzet of niet instelt, wordt de LPAC-sandbox voor afdrukservices aangezet als de systeemconfiguratie dit ondersteunt.
@@ -3421,6 +3420,7 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
       Als je deze instelling uitzet of niet instelt, wordt het nieuwe inline inlogproces standaard gebruikt. Gebruikers kunnen het oude online inlogproces nog steeds gebruiken via de opdrachtregelmarkering --enable-web-based-signin.
 
       De experimentele instelling wordt in de toekomst verwijderd als het inline inlogproces alle SSO-inlogprocessen volledig ondersteunt.</translation>
+<translation id="3435178885391813398">Scanner niet toestaan.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
 <translation id="3437924696598384725">De gebruiker toestaan VPN-verbindingen te beheren</translation>
@@ -5228,17 +5228,6 @@ De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwij
 Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="4694138212536142867">Rapportage voor hardwarestatus van apparaat aanzetten</translation>
 <translation id="4697581738794063407">De filterfunctie voor URL-parameters beheren</translation>
-<translation id="4698488381632756664">In ontwikkeling: alleen voor vroege preview.
-
-Door het beleid in te stellen worden maximaal 10 aangepaste snelkoppelingen vooraf ingesteld op de pagina Nieuw tabblad van <ph name="PRODUCT_NAME" />.
-
-Als het beleid is ingesteld, zien gebruikers deze snelkoppelingen standaard. Gebruikers kunnen wisselen tussen Mijn snelkoppelingen, Meest bezochte sites en Snelkoppelingen van mijn organisatie in het deelvenster Chrome aanpassen. Als het beleid leeg is of niet is ingesteld, kan de gebruiker alleen wisselen tussen Mijn snelkoppelingen en Meest bezochte sites in het deelvenster Chrome aanpassen.
-
-Snelkoppelings-URL's moeten uniek zijn.
-
-Als <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> is ingesteld op waar, kunnen gebruikers de naam van de snelkoppeling wijzigen. Als je dit beleid instelt op onwaar of niet instelt, kunnen gebruikers de naam niet bewerken.
-
-Als <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> is ingesteld op waar, kunnen gebruikers de snelkoppeling verwijderen. Als je het beleid instelt op onwaar of niet instelt, kunnen gebruikers de snelkoppeling niet verwijderen.</translation>
 <translation id="4698895924806859508">Netwerkgebeurtenissen niet rapporteren</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4699592681017489215">Met dit beleid wordt een lokale schakelaar ingesteld die kan worden gebruikt om controles voor DNS-onderschepping uit te zetten. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
@@ -7116,6 +7105,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Als je het beleid niet toepast, mag het QUIC-protocol niet worden gebruikt.</translation>
 <translation id="5916855682471300200">Cloud-apparaatbeleid krijgt voorrang op platformapparaatbeleid</translation>
+<translation id="5917092644305650513">Instellingen voor de functie Scanner</translation>
 <translation id="5917425424971710623">Informatie over XDR-gebeurtenissen (Extended Detection and Response) niet rapporteren</translation>
 <translation id="5917897389577978190">Gmail (ondersteund sinds versie 135)</translation>
 <translation id="592036544845479336">Beëindigde/verwijderde mutatiegebeurtenissen opnieuw aanzetten</translation>
@@ -7514,6 +7504,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 
       Als het beleid is ingesteld op False of niet is ingesteld, wordt informatie over crashrapporten niet gerapporteerd. Als het beleid is ingesteld op True, wordt informatie over crashrapporten gerapporteerd.</translation>
 <translation id="624219423122512710">Acties bij inactieve browser</translation>
+<translation id="6243061183100681514">Scanner toestaan en AI-modellen verbeteren.</translation>
 <translation id="6244061205361004687">De gebruiker toestaan een VPN handmatig te ontkoppelen of aan te passen</translation>
 <translation id="6244210204546589761">URL's die worden geopend bij starten</translation>
 <translation id="624595269193747921">Of het zoeken naar de overeenkomende printer moet worden beperkt tot een specifieke reeks printers.</translation>
@@ -8236,6 +8227,7 @@ Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</transla
 <translation id="666203515318060501">Verbeterd automatisch invullen toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
+<translation id="6667636336079341367">Scanner toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="6668559639284945695">Met dit beleid kun je het verouderde gedrag voor cookiebereik herstellen.
 
 Dit betekent dat cookies die zijn ingesteld op een specifiek protocol (bijv. HTTPS) of een specifieke poort, toegankelijk zijn vanaf een ander protocol of een andere poort.
@@ -10868,6 +10860,17 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid niet toepast of niet instelt, wordt de informatie niet gerapporteerd.
       Als je het beleid toepast, worden de CRD-gebeurtenissen gerapporteerd als het een aangesloten gebruiker betreft.</translation>
 <translation id="85723976805793612">Gebeurtenislogboeken van Android-app-installaties worden gedeeld met Google</translation>
+<translation id="8573354257711790704">Dit beleid beheert de instellingen van de functie Scanner voor <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="857369585509260201">Dit beleid is verouderd. Je kunt in plaats daarvan BrowserSignin gebruiken.
 
       Als dit beleid is ingesteld op 'True', moet de gebruiker inloggen bij <ph name="PRODUCT_NAME" /> met zijn profiel voordat hij de browser gebruikt. De standaardwaarde van BrowserGuestModeEnabled wordt ingesteld op 'False'. Houd er rekening mee dat bestaande, niet-ingelogde profielen worden vergrendeld en niet toegankelijk zijn na inschakeling van dit beleid. Bekijk het Helpcentrum-artikel voor meer informatie.

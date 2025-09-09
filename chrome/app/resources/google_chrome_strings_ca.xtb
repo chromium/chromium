@@ -11,9 +11,6 @@
 <translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1059838145689930908">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chrome.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
-<translation id="1070377999570795893">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chrome</translation>
 <translation id="110877069173485804">Aquest és el vostre Chrome</translation>
@@ -49,9 +46,6 @@
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Finalitza la tasca destacada.</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
-<translation id="1585717515139318619">Un altre programa de l'ordinador ha afegit un tema que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome està utilitzant la càmera.</translation>
 <translation id="1587325591171447154">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
 <translation id="1597911401261118146">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chrome<ph name="END_LINK" />.</translation>
@@ -453,7 +447,6 @@
 <translation id="6321592572353357376">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chrome</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
-<translation id="6334815226785304306">Fes que Google Chrome sigui el navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="6360449101159168105">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chrome funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="6388799252195623474">ajuda'm amb això</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
@@ -552,9 +545,6 @@
 <translation id="7572537927358445944">Desactivat • Chrome no pot verificar d'on prové aquesta extensió</translation>
 <translation id="7583399374488819119">Instal·lador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Pregunta a Google sobre aquesta pàgina</translation>
-<translation id="760353356052806707">Un altre programa de l'ordinador ha afegit una aplicació que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Google Chrome OS.</translation>
 <translation id="7627609214560473136">Per protegir les teves dades, permet que Chrome suprimeixi els permisos dels llocs web que no has visitat recentment.</translation>

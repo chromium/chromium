@@ -632,7 +632,6 @@
 <translation id="4042941173059740150">Pokračujte na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Dolný hárok</translation>
 <translation id="4045441967987592849">Znova otvoriť</translation>
-<translation id="4049920046559074950">Ďalšie možnosti pre inštanciu <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> štandardná karta s novou aktivitou v zdieľaných skupinách kariet}few{<ph name="TABS_COUNT_MANY" /> štandardné karty s novou aktivitou v zdieľaných skupinách kariet}many{<ph name="TABS_COUNT_MANY" /> standard tabs with new activity in shared tab groups}other{<ph name="TABS_COUNT_MANY" /> štandardných kariet s novou aktivitou v zdieľaných skupinách kariet}}</translation>
 <translation id="405365679581583349">Aktualizujte Služby Google Play</translation>
 <translation id="405399507749852140">Dostávajte upozornenia, keď cena na ľubovoľnom webe poklesne</translation>

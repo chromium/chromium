@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">Teie PIN-koodi ei muudetud. Kontrollige internetiühendust ja proovige uuesti</translation>
 <translation id="1063070031224282617">Valige, kuhu salvestada fail „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />).</translation>
 <translation id="1072476005125066234">Teie huvidel põhinevad arvustused</translation>
-<translation id="1072679792409426431">Teie administraator on selle keelanud.</translation>
 <translation id="1074827084851510304">Jätkates kustutate {password_count} parooli ning loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata.</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1081114897601629648">Järgmiseid paroole ei imporditud Google’i paroolihaldurisse, kuna need ei vasta nõuetele.</translation>
@@ -184,7 +183,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valitud</translation>
 <translation id="1709916727352927457">Pääsuvõtme kustutamine</translation>
 <translation id="1715515772563243997">Kui usaldate saiti <ph name="SITE" />, saate sisselogimiseks kasutada salvestatud parooli.</translation>
-<translation id="1718835860248848330">Viimane tund</translation>
+<translation id="1718835860248848330">Viimase tunni jooksul</translation>
 <translation id="1728549374069268714">Kleebi ja mine</translation>
 <translation id="1732468323901456775">Lülita funktsiooni <ph name="MODULE_NAME" /> märguanded sisse</translation>
 <translation id="1740468249224277719">Installimiseks topeltpuudutage.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{See aadress kustutatakse sellest seadmest.}other{Need aadressid kustutatakse sellest seadmest.}}</translation>
 <translation id="2297989278479054870">Pärast väljalogimist eemaldatakse sellest seadmest järjehoidjad, paroolid ja muu Google’i kontol olev sisu.</translation>
 <translation id="2299218006564889602">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse.</translation>
-<translation id="2306265833370324042">Kuva üksuse <ph name="SEARCH_ENGINE_NAME" /> üksikasjad</translation>
 <translation id="2309265394777270359">Sule vaheleht</translation>
 <translation id="2311077293164383652">Sule kinnitatud vaheleht</translation>
 <translation id="2316129865977710310">Ei, aitäh</translation>
@@ -673,6 +671,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3631443864840848029">Veenduge, et salvestaksite selle saidi jaoks praeguse parooli.</translation>
 <translation id="3642060527569456384">Vahelehegruppe salvestatakse ja värskendatakse kõikides teie seadmetes automaatselt.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parool on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole {email}.}other{{count} parooli on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}}</translation>
+<translation id="3650299480924308502">Pärast väljalogimist kustutatakse salvestamata andmed sellest seadmest. See võib hõlmata paroole, ajalugu ja muud.</translation>
 <translation id="3659297405161482746">Ühtki makseviisi ei leitud</translation>
 <translation id="3668816008081204991">Lugemisloend on peidetud</translation>
 <translation id="3670030362669914947">Number</translation>
@@ -1202,7 +1201,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5709005673595820640">{count,plural, =1{Teil on {count} korduvalt kasutatud parool, mis võib teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage see kohe.}other{Teil on {count} korduvalt kasutatud parooli, mis võivad teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage need kohe.}}</translation>
 <translation id="57094364128775171">Soovita tugevat parooli …</translation>
 <translation id="5718049162805123412">Peaksite need kohe ära muutma</translation>
-<translation id="5721040778297053709">Paigutage krediitkaart sellesse kaadrisse.</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5724941645893276623">Privaatselt veebi sirvimiseks lisage uus vaheleht</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
@@ -1570,6 +1568,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7055240621761583113">Parooli automaatselt täitmine</translation>
 <translation id="7063811929043357292">Sinu kontot haldab vanem.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Teie organisatsiooni turvalisuse kaitsmiseks kustutatakse sellest seadmest salvestamata andmed. See võib hõlmata paroole, ajalugu ja muud.</translation>
 <translation id="7067780033517902110">Kõik failid</translation>
 <translation id="707086654079606593">Aadresside haldamine …</translation>
 <translation id="7080806333218412752">Saadab URL-id kontrollimiseks teenusesse Google'i ohutu sirvimine. Saadab ka lehtede, allalaadimiste, laienduste tegevuse ja süsteemiteabe näidiseid, et aidata uusi ohte tuvastada. Kui olete sisse logitud, lingitakse andmed ajutiselt teie Google'i kontoga, et kaitsta teid kõigis Google'i rakendustes.</translation>
@@ -1781,7 +1780,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7889910613639381518">Lihtne ja turvaline juurdepääs Google'i paroolihalduri vidinaga.</translation>
 <translation id="7899199123054742721">Märgi kõik mitteloetuks</translation>
 <translation id="7911190106180361398">Teie organisatsioon ei luba teil kõike sünkroonida.</translation>
-<translation id="7918999344502274923">Peida üksuse <ph name="SEARCH_ENGINE_NAME" /> üksikasjad</translation>
 <translation id="792357691529995513">Ühtegi probleemi ei leitud</translation>
 <translation id="7925108652071887026">Andmete automaatne täitmine</translation>
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>

@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">你的 PIN 並未變更。請檢查你的互聯網連線，然後再試一次</translation>
 <translation id="1063070031224282617">請選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="1072476005125066234">切合你興趣的評論</translation>
-<translation id="1072679792409426431">已由管理員停用</translation>
 <translation id="1074827084851510304">你將會刪除 {password_count} 個密碼，以及你選擇一律不儲存登入資料的網站和應用程式清單。系統不會刪除任何你為網站和應用程式建立的帳戶。</translation>
 <translation id="1076421457278169141">已掃描編碼</translation>
 <translation id="1081114897601629648">以下密碼不符合要求，因此並未匯入到「Google 密碼管理工具」。</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
 <translation id="2297989278479054870">登出後，系統會將 Google 帳戶中的書籤、密碼和其他資料從此裝置移除。</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
-<translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
 <translation id="2309265394777270359">關閉分頁</translation>
 <translation id="2311077293164383652">關閉固定分頁</translation>
 <translation id="2316129865977710310">不用了，謝謝</translation>
@@ -673,6 +671,7 @@
 <translation id="3631443864840848029">請確保要儲存此網站目前的密碼。</translation>
 <translation id="3642060527569456384">分頁群組會自動儲存並同步至所有裝置。</translation>
 <translation id="3643338347976071250">{count,plural, =1{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
+<translation id="3650299480924308502">登出後，此裝置上未儲存的資料將會刪除，包括密碼、記錄等項目。</translation>
 <translation id="3659297405161482746">找不到付款方法</translation>
 <translation id="3668816008081204991">閱讀清單已隱藏</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -1202,7 +1201,6 @@
 <translation id="5709005673595820640">{count,plural, =1{你有 {count} 個重用密碼，可能導致安全風險。請立即修正以確保安全。}other{你有 {count} 個重用密碼，可能導致安全風險。請立即修正以確保安全。}}</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
 <translation id="5718049162805123412">您應立即變更這些密碼</translation>
-<translation id="5721040778297053709">將信用卡放在框內</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5724941645893276623">如要以無痕模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -1570,6 +1568,7 @@
 <translation id="7055240621761583113">自動填入密碼</translation>
 <translation id="7063811929043357292">你的帳戶由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">為確保機構的安全，系統將從此裝置中刪除未儲存的資料，包括密碼、記錄等項目。</translation>
 <translation id="7067780033517902110">所有檔案</translation>
 <translation id="707086654079606593">管理地址…</translation>
 <translation id="7080806333218412752">將網址傳送至「安全瀏覽」功能檢查。同時傳送少量網頁、下載檔案、擴充程式活動及系統資料，以協助探索新威脅。當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各個 Google 應用程式的使用安全。</translation>
@@ -1781,7 +1780,6 @@
 <translation id="7889910613639381518">「Google 密碼管理工具」小工具，資料存取輕鬆又安全。</translation>
 <translation id="7899199123054742721">全部標示為未讀</translation>
 <translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
-<translation id="7918999344502274923">隱藏 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
 <translation id="792357691529995513">未發現任何問題</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>

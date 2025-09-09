@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1081061862829655580">Fach 19</translation>
 <translation id="1082026381988252344">Inhalte im geteilten Tab scrollen und zoomen</translation>
-<translation id="108859316315249327">Noch einmal versuchen</translation>
 <translation id="1088664500620117635">Der Normalpreis für „<ph name="PRODUCT_NAME" />“ liegt zwischen <ph name="LOW_PRICE" /> und <ph name="HIGH_PRICE" />. Im Web wird derzeit aber ein Preis von <ph name="CURRENT_PRICE" /> verlangt.</translation>
 <translation id="1089439967362294234">Passwort ändern</translation>
 <translation id="1089599132348386324">Wenn du deine Meinung änderst, kannst du die Chrome-Einstellungen jederzeit entsprechend anpassen.</translation>
@@ -75,7 +74,6 @@
 <translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
 <translation id="112840717907525620">Richtlinien-Cache einwandfrei</translation>
 <translation id="1131264053432022307">Von dir kopiertes Bild</translation>
-<translation id="1132735979845538847"><ph name="ORIGIN" /> – zum Beenden des Vollbildmodus: von oben ziehen und auf die Schaltfläche „Zurück“ tippen</translation>
 <translation id="1138458427267715730">Du kannst dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="1142713751288681188">Papiertyp</translation>
 <translation id="1144136880160289237">Du hast noch keine aktiven Themen</translation>
@@ -456,7 +454,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1734878702283171397">Setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, gültig bis: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
-<translation id="1740404923954980840">Zum Beenden des Vollbildmodus: von oben ziehen und auf die Schaltfläche „Zurück“ tippen</translation>
 <translation id="1741474054575634405">Kundenkarten verwalten…</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
 <translation id="1743393865165844832">Bettwaren und -wäsche</translation>
@@ -930,6 +927,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2515629240566999685">Signal an deinem Standort prüfen</translation>
 <translation id="2515761554693942801">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit Touch ID durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Diese Karte ist nicht verfügbar. Bitte wende dich an deinen Kartenanbieter.</translation>
+<translation id="2519250377986324805">So gehts</translation>
 <translation id="2521385132275182522">Heftklammer unten rechts</translation>
 <translation id="2521736961081452453">Formular erstellen</translation>
 <translation id="2524461107774643265">Weitere Informationen hinzufügen</translation>
@@ -1156,7 +1154,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2933624813161016821">Prägefolie</translation>
 <translation id="293796669683825859">Kommentare</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
-<translation id="2938370569652058706"><ph name="ORIGIN" /> – zum Einblenden des Cursors: zu einer anderen App wechseln, die Seite aktualisieren oder zurückgehen</translation>
 <translation id="2940418897281183211">PNG-Bild</translation>
 <translation id="2941878205777356567">Umschlag 9 × 12 Zoll</translation>
 <translation id="2941952326391522266">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat stammt von <ph name="DOMAIN2" />. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -1326,7 +1323,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
-<translation id="3212468046572043669">Download gestartet. Zum Ansehen: von oben ziehen und auf die Schaltfläche „Zurück“ tippen</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
 <translation id="3215311088819828484">Ergebnis aktualisiert</translation>
@@ -1862,7 +1858,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4085326869263783566">Formuliere für mich. Zum Öffnen Tabulator- und Eingabetaste drücken.</translation>
 <translation id="4085769736382018559">Produkte vergleichen</translation>
 <translation id="4085778582400064057">Blau 2</translation>
-<translation id="4085859451613666999">Deine Karte wurde in deinem Google-Konto gespeichert, damit du ihre Daten bei zukünftigen Käufen automatisch einfügen lassen kannst</translation>
 <translation id="4088981014127559358">Seite 1 – Y-Verschiebung des Bilds</translation>
 <translation id="4089152113577680600">Fach 14</translation>
 <translation id="4092349052316400070">Adresse einfügen</translation>
@@ -2412,7 +2407,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4995474875135717171">Geändert:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Website-Suche und deine Standardsuchmaschine zu verwalten</translation>
 <translation id="4998950033665438990">Einseitig</translation>
-<translation id="5001338033791319371">Zum Beenden des Vollbildmodus und Ansehen des Downloads: von oben ziehen und auf die Schaltfläche „Zurück“ tippen</translation>
 <translation id="5001526427543320409">Drittanbieter-Cookies</translation>
 <translation id="5002932099480077015">Wenn diese Funktion aktiviert ist, speichert Chrome eine Kopie deiner Karte auf diesem Gerät, um ein Ausfüllen von Formularen zu beschleunigen.</translation>
 <translation id="5007344584818503324">Aktivitäten in geteilten Tabgruppen</translation>
@@ -2473,7 +2467,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5097099694988056070">Gerätestatistiken, z. B. CPU/RAM-Nutzung</translation>
 <translation id="5097468150760963273">27 x 39 Zoll</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Tabulator- und dann Eingabetaste drücken, um den KI‑Modus zu fragen</translation>
 <translation id="510644072453496781">Karton (Ende)</translation>
 <translation id="5106648964679263509">Virtuelle Karte für <ph name="BNPL_ISSUER_NAME" /> ausgefüllt</translation>
 <translation id="5108567515277121477">Kundenkarte</translation>
@@ -3482,7 +3475,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6786145470008421571">Umschlag 6 × 9 Zoll</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6787094689637422836">Wir führen neue Datenschutzeinstellungen ein, mit denen du mehr Auswahlmöglichkeiten in Bezug auf die angezeigte Werbung hast.</translation>
-<translation id="6788615780749001893">Schaltfläche für den KI‑Modus, Eingabetaste drücken, um den KI-Modus zu fragen</translation>
 <translation id="6789062271869667677">Endlos (lang)</translation>
 <translation id="678982761784843853">Geschützte Inhalts-IDs</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
@@ -3548,6 +3540,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">Du bist abgemeldet</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
+<translation id="6905163627763043954">Jetzt ausprobieren</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
 <translation id="691046363691324218">Redress-Nummer</translation>
@@ -3976,7 +3969,6 @@ Weitere Details:
 <translation id="7582602800368606489">Schnell einen neuen Termin in Google Kalender erstellen</translation>
 <translation id="7586676035079382730">Benachrichtigungen nicht zulässig</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">In deinem Google-Konto ist möglicherweise dein <ph name="BEGIN_LINK_GAA" />Aktivitätsverlauf in Gemini-Apps<ph name="END_LINK_GAA" /> gespeichert</translation>
 <translation id="7591288787774558753">Vertrauliche Inhalte freigeben?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> möchte Cookies und Websitedaten auf <ph name="TOP_LEVEL_URL" /> verwenden</translation>
 <translation id="7592362899630581445">Das Serverzertifikat verstößt gegen Namensbeschränkungen.</translation>
@@ -4262,7 +4254,6 @@ Weitere Details:
 <translation id="8075736640322370409">Schnell eine neue Google-Tabelle erstellen</translation>
 <translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
 <translation id="8076492880354921740">Tabs</translation>
-<translation id="8076880883123051368">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert, z. B. dein <ph name="BEGIN_LINK_GAA" />Aktivitätsverlauf in Gemini-Apps<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Umschlag Chinesisch Nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vertrauliche Datei hochladen?}other{Vertrauliche Dateien hochladen?}}</translation>
 <translation id="8079031581361219619">Website neu laden?</translation>
@@ -4396,7 +4387,6 @@ Weitere Details:
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297545700510100061">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. für die Anmeldung oder personalisierte Werbung. Du kannst Cookies für alle Websites in den <ph name="SETTINGS" /> verwalten.</translation>
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
-<translation id="8298399736867690281">Karte nur auf Gerät gespeichert</translation>
 <translation id="8301894345671534559">Code eingeben</translation>
 <translation id="8304912090860925649">Neue Vergleichstabelle</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
@@ -4918,7 +4908,6 @@ Weitere Details:
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Naturkosmetik</translation>
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
-<translation id="9198613052465150219">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert</translation>
 <translation id="9199905725844810519">Drucken ist blockiert</translation>
 <translation id="9201904868909900493">Umfrage öffnen…</translation>
 <translation id="9204089334327209740">Sobald der Upload abgeschlossen ist, kannst du deine Dateien in <ph name="CLOUD_PROVIDER" /> bearbeiten. Der lokale Speicher, einschließlich aller Dateien im Papierkorb, wird automatisch deaktiviert.</translation>

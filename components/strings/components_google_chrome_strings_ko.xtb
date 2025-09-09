@@ -32,16 +32,6 @@
         (으)로 이동하고 '<ph name="NO_PREFETCH_DESCRIPTION" />'을(를) 선택 취소합니다.
         그래도 문제가 해결되지 않으면 이 옵션을 다시 선택하여
         성능을 개선해 보시기 바랍니다.</translation>
-<translation id="6581867098636731226">Chrome 메뉴 &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          네트워크 및 인터넷
-          &gt; 프록시로 이동하여
-          '자동으로 설정 검색'을 선택 해제합니다.</translation>
 <translation id="7230956101631259640">안전한 Chrome 페이지를 보는 중</translation>
 <translation id="8232971017369963250">Chrome은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 통해 제작된 브라우저입니다.</translation>
 <translation id="8279509328145658601">Chrome은 다른 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 사용하여 제작된 브라우저입니다.</translation>

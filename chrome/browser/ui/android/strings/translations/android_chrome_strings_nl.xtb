@@ -632,7 +632,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4042941173059740150">Doorgaan naar <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Blad onderaan</translation>
 <translation id="4045441967987592849">Opnieuw openen</translation>
-<translation id="4049920046559074950">Meer opties voor <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardtabblad met nieuwe activiteit in gedeelde tabbladgroepen}other{<ph name="TABS_COUNT_MANY" /> standaardtabbladen met nieuwe activiteit in gedeelde tabbladgroepen}}</translation>
 <translation id="405365679581583349">Google Play-services updaten</translation>
 <translation id="405399507749852140">Krijg meldingen bij een prijsdaling op een site</translation>
@@ -1445,7 +1444,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="751961395872307827">Kan geen verbinding maken met de site</translation>
 <translation id="7523960634226602883">Zoeken met je camera via Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> gesloten en opgeslagen</translation>
-<translation id="7545347190366646170">Personen met toegang</translation>
+<translation id="7545347190366646170">Mensen met toegang</translation>
 <translation id="7554643625247105821">Kan Chrome-versie niet checken</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
 <translation id="7573665567024262965">Je standaard-apps kiezen</translation>

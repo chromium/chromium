@@ -632,7 +632,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4042941173059740150">Fortsett til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Felt nederst</translation>
 <translation id="4045441967987592849">Gjenåpne</translation>
-<translation id="4049920046559074950">Flere alternativer for <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />-standardfane med ny aktivitet i delte fanegrupper}other{<ph name="TABS_COUNT_MANY" /> standardfaner med ny aktivitet i delte fanegrupper}}</translation>
 <translation id="405365679581583349">Oppdater Google Play-tjenester</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>

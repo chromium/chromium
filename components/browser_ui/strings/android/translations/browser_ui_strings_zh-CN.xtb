@@ -27,7 +27,7 @@
 <translation id="1317194122196776028">移除此网站</translation>
 <translation id="1321110954513621549">已允许 • 大致位置</translation>
 <translation id="1323433172918577554">展开</translation>
-<translation id="1333965224356556482">不允许网站查看您的位置信息</translation>
+<translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
 <translation id="1343356790768851700">该网站会先判断您的喜好，然后向其他网站建议相关广告</translation>
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1371239764779356792">允许某个网站将数据保存在您的设备上</translation>
@@ -236,7 +236,7 @@
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3619294456800709762">网站可以自动进入画中画模式</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
-<translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
+<translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
@@ -531,7 +531,7 @@
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7044081119134178347">这次可以使用摄像头</translation>
-<translation id="7053983685419859001">屏蔽</translation>
+<translation id="7053983685419859001">禁止</translation>
 <translation id="7055552182600664515">网站可能需要使用一项内容保护服务，才能播放受版权保护的内容。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
 <translation id="708014373017851679">“<ph name="APP_NAME" />”版本过旧。请更新该应用。</translation>

@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">ウィンドウ幅に合わせる</translation>
 <translation id="1081061862829655580">トレイ 19</translation>
 <translation id="1082026381988252344">共有タブの内容をスクロールしてズームする</translation>
-<translation id="108859316315249327">もう一度お試しください</translation>
 <translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> の一般的な価格は <ph name="LOW_PRICE" />～<ph name="HIGH_PRICE" /> ですが、ウェブ上の現在の価格は <ph name="CURRENT_PRICE" /> です。</translation>
 <translation id="1089439967362294234">パスワードを変更</translation>
 <translation id="1089599132348386324">この設定は Chrome の設定でいつでも変更できます。</translation>
@@ -75,7 +74,6 @@
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
-<translation id="1132735979845538847"><ph name="ORIGIN" /> – 全画面表示を終了するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="1138458427267715730">値下げしたウェブサイトがあった場合にアラートを受け取ります</translation>
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1144136880160289237">アクティブなトピックはまだありません</translation>
@@ -456,7 +454,6 @@
 <translation id="1734878702283171397">システム管理者にお問い合わせください。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />、<ph name="CARD_NETWORK_NAME" />、<ph name="CARD_LAST_FOUR_DIGITS" /> の有効期限は <ph name="CARD_EXPIRATION" /> です</translation>
 <translation id="1736420071277903564">パソコン</translation>
-<translation id="1740404923954980840">全画面表示を終了するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="1741474054575634405">ポイントカードを管理...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
@@ -930,6 +927,7 @@
 <translation id="2515629240566999685">電波状況を確認する</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで Touch ID による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="2518584823165598232">このカードは使用できません。カード発行会社にお問い合わせください。</translation>
+<translation id="2519250377986324805">方法を見る</translation>
 <translation id="2521385132275182522">ステープル（右下）</translation>
 <translation id="2521736961081452453">フォームを作成</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
@@ -1156,7 +1154,6 @@
 <translation id="2933624813161016821">ホイル（エンボス）</translation>
 <translation id="293796669683825859">コメント</translation>
 <translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
-<translation id="2938370569652058706"><ph name="ORIGIN" /> – カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
 <translation id="2940418897281183211">PNG 画像</translation>
 <translation id="2941878205777356567">9x12 インチ封筒</translation>
 <translation id="2941952326391522266">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は <ph name="DOMAIN2" /> から発行されています。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -1326,7 +1323,6 @@
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
-<translation id="3212468046572043669">ダウンロードを開始しました。表示するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> でのアクティビティは監視されています</translation>
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
 <translation id="3215311088819828484">結果が更新されました</translation>
@@ -1864,7 +1860,6 @@
 <translation id="4085326869263783566">文書作成サポートです。開くには、Tab キーと Enter キーを押します</translation>
 <translation id="4085769736382018559">商品を比較</translation>
 <translation id="4085778582400064057">青 2</translation>
-<translation id="4085859451613666999">カードは今後の購入時に自動入力できるように Google アカウントに保存されます</translation>
 <translation id="4088981014127559358">1 面の画像の Y 軸移動</translation>
 <translation id="4089152113577680600">トレイ 14</translation>
 <translation id="4092349052316400070">住所を入力してください</translation>
@@ -2414,7 +2409,6 @@
 <translation id="4995474875135717171">更新日時:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、サイト内検索とデフォルトの検索エンジンを管理します</translation>
 <translation id="4998950033665438990">片面</translation>
-<translation id="5001338033791319371">全画面表示を終了してダウンロードを表示するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5002932099480077015">有効にすると、Chrome ではこのデバイスにカードのコピーが保存されます。これにより、フォームにすばやく入力できるようになります。</translation>
 <translation id="5007344584818503324">共有タブグループのアクティビティ</translation>
@@ -2475,7 +2469,6 @@
 <translation id="5097099694988056070">CPU や RAM の使用率などのデバイスの統計情報</translation>
 <translation id="5097468150760963273">27x39 インチ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Tab キーを押してから Enter キーを押すと、AI モードに質問できます</translation>
 <translation id="510644072453496781">段ボール（エンド）</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> の仮想カードの入力</translation>
 <translation id="5108567515277121477">ポイントカード</translation>
@@ -3484,7 +3477,6 @@
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787094689637422836">ユーザーの選択の幅が広がる新たなプライバシー機能がリリースされます。</translation>
-<translation id="6788615780749001893">AI モードのボタン。Enter キーを押すと、AI モードに質問できます</translation>
 <translation id="6789062271869667677">連続（長尺）</translation>
 <translation id="678982761784843853">保護されたコンテンツ ID</translation>
 <translation id="6790428901817661496">再生</translation>
@@ -3550,6 +3542,7 @@
 <translation id="6898699227549475383">組織（O）</translation>
 <translation id="6900702165119149418">ログアウトしました</translation>
 <translation id="6903907808598579934">同期をオンにする</translation>
+<translation id="6905163627763043954">使ってみる</translation>
 <translation id="6907458757809079309">フィットネス</translation>
 <translation id="691024665142758461">複数ファイルのダウンロード</translation>
 <translation id="691046363691324218">Redress 番号</translation>
@@ -3979,7 +3972,6 @@
 <translation id="7582602800368606489">Google カレンダーで新しいイベントをすばやく作成します</translation>
 <translation id="7586676035079382730">通知は許可されていません</translation>
 <translation id="7588707273764747927">転写</translation>
-<translation id="7589062909165841767">お使いの Google アカウントに <ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />が記録されている場合があります</translation>
 <translation id="7591288787774558753">機密コンテンツを共有しますか？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> から <ph name="TOP_LEVEL_URL" /> での Cookie とサイトデータの使用許可を求められています</translation>
 <translation id="7592362899630581445">サーバーの証明書が名前の制約に違反しています。</translation>
@@ -4265,7 +4257,6 @@
 <translation id="8075736640322370409">新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="8075898834294118863">サイトの設定を管理</translation>
 <translation id="8076492880354921740">タブ</translation>
-<translation id="8076880883123051368">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />など）が記録されている場合があります</translation>
 <translation id="8077669823243888800">中国 #8 封筒</translation>
 <translation id="8078006011486731853">{0,plural, =1{機密ファイルをアップロードしますか？}other{機密ファイルをアップロードしますか？}}</translation>
 <translation id="8079031581361219619">このサイトを再読み込みしますか？</translation>
@@ -4399,7 +4390,6 @@
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
-<translation id="8298399736867690281">カードはデバイスのみに保存されました</translation>
 <translation id="8301894345671534559">コードの入力</translation>
 <translation id="8304912090860925649">新しい比較表</translation>
 <translation id="830498451218851433">2 つ折り</translation>
@@ -4920,7 +4910,6 @@
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
-<translation id="9198613052465150219">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9201904868909900493">アンケートを開いています…</translation>
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>

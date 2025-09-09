@@ -9,13 +9,10 @@
 <translation id="1297285729613779935">网站推荐广告既有助于保护您的浏览记录和身份信息，又能让网站向您展示相关广告。其他网站可以根据您的活动记录（例如您在访问网站时的具体行为），在您继续浏览时建议相关广告。您可在设置中查看这些网站的列表，并酌情屏蔽其中一些网站。</translation>
 <translation id="132963621759063786">Chromium 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK1" />在 Chromium 中管理广告隐私权设置<ph name="LINK_END1" />。</translation>
 <translation id="1432306053064625042">在常规 Chrome 窗口中打开</translation>
-<translation id="1472807065399636739">您访问的网站可能会嵌入其他网站的内容和服务，例如图片、广告和文字；这些内容可用于了解您的情况。详细了解如何管理<ph name="BEGIN_LINK" />无痕模式下的跟踪保护功能<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />系统会使用哪些数据？<ph name="END_BOLD" />为确定您的广告主题，系统会使用您近期的浏览记录，即您在此设备上使用 Chrome 访问过的网站的列表。</translation>
 <translation id="1529201733207295376">第三方 Cookie 已被屏蔽。无痕模式还提供了一些功能，可限制在您访问的网站上嵌入内容的公司可获取的信息。您可以在<ph name="START_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="1559726735555610004">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="1569440020357229235">在无痕模式下，网站无法使用第三方 Cookie。如果某个依赖这些 Cookie 的网站无法正常运行，您可<ph name="BEGIN_LINK" />尝试授予该网站对第三方 Cookie 的临时访问权限<ph name="END_LINK" />。</translation>
-<translation id="1617293350324746198">已阻止第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。</translation>
-<translation id="1685116584758270048">在所有无痕式标签页关闭之前，保护功能会保持暂停状态。<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />网站会如何使用这些数据？<ph name="END_BOLD" />Chrome 会在您浏览时记下您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您感兴趣的若干主题，以便向您展示个性化广告。</translation>
 <translation id="172522356264798673">恢复跟踪保护功能</translation>
 <translation id="1732764153129912782">您可以在广告隐私权设置中进行更改</translation>
@@ -34,7 +31,6 @@
 <translation id="2506926923133667307">详细了解如何管理广告隐私权</translation>
 <translation id="2578376035831129583">适用于被嵌入的网站，而非您直接访问的网站</translation>
 <translation id="259163387153470272">网站及其广告合作伙伴可以根据您的活动记录（例如您在访问网站时的具体行为）为您展示个性化广告</translation>
-<translation id="2648072482252767506">Chromium 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。无痕模式还可以提供额外的跟踪保护功能。</translation>
 <translation id="2669351694216016687">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" /></translation>
 <translation id="2672038477572666782">请告诉我们您暂停跟踪保护功能的原因，以帮助我们改进 Chrome</translation>
 <translation id="2818622030603911133">已在此网站上暂停跟踪保护功能</translation>
@@ -50,7 +46,6 @@
 <translation id="3624583033347146597">选择第三方 Cookie 偏好设置</translation>
 <translation id="364348650177270461">Chromium 将尝试限制嵌入式网站访问设备和浏览器数据（例如已安装的字体或您所在的时区），防止其收集关于您的个人信息</translation>
 <translation id="3645682729607284687">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题，例如体育、服饰等主题</translation>
-<translation id="3665701035629774409">Chrome 在无痕模式下会阻止第三方 Cookie，但您的管理员已允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="3696118321107706175">网站会如何使用您的数据</translation>
 <translation id="3749724428455457489">详细了解网站推荐广告</translation>
 <translation id="3763433740586298940">您可根据自己的需要屏蔽网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。</translation>
@@ -69,7 +64,6 @@
 <translation id="435360899831421654">限制对设备和浏览器数据的访问。此设置已关闭。</translation>
 <translation id="4370439921477851706">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。详情请参阅<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
-<translation id="4448728649751001728">仅当从已登录账号的 Chrome 窗口中打开无痕模式时可用</translation>
 <translation id="4456330419644848501">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="4501357987281382712">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="4502954140581098658">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />广告主题<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
@@ -83,19 +77,15 @@
 <translation id="4864452159627050077">管理在无痕模式下网站可以使用哪些信息来了解您的情况</translation>
 <translation id="4894490899128180322">如果某个网站无法按预期运行，您可尝试临时允许您访问的特定网站使用第三方 Cookie</translation>
 <translation id="4995684599009077956">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK" />详情请参阅《隐私权政策》<ph name="END_LINK" />。</translation>
-<translation id="5023078137728844766">Chromium 在无痕模式下会阻止第三方 Cookie，但您的管理员已允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。</translation>
 <translation id="5055880590417889642">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解</translation>
-<translation id="5110547311636263835">Chrome 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。无痕模式还可以提供额外的跟踪保护功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="5117284457376555514">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您允许相关网站访问第三方 Cookie。部分网站功能可能无法按预期运行。</translation>
 <translation id="5165490319523240316">网站及其广告合作伙伴可根据您的活动记录（例如您在访问网站时的具体行为），在其他网站上向您展示个性化广告。例如，如果您访问某个网站来查找晚餐食谱，该网站可能会判定您对烹饪感兴趣。之后，另一个网站可能会根据第一个网站的建议，向您展示杂货配送服务相关的广告。</translation>
-<translation id="5188610687455399162">Chromium 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。无痕模式还可以提供额外的跟踪保护功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="5362892126200493757">请告诉我们您在此网站上暂停跟踪保护功能的原因</translation>
 <translation id="544199055391706031">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解<ph name="BEGIN_LINK" />网站推荐广告<ph name="END_LINK" />。</translation>
 <translation id="5574580428711706114">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="565589626121534692">暂停跟踪保护功能</translation>
 <translation id="5677928146339483299">已屏蔽</translation>
 <translation id="5759648952769618186">主题是系统根据您近期的浏览记录推测出来的，有助于限制网站及其广告合作伙伴可以了解您的哪些信息，用于向您展示个性化广告</translation>
-<translation id="5767485620278818297">Chromium 在无痕模式下会阻止第三方 Cookie，但有一项扩展程序允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />网站会如何使用这些数据？<ph name="END_BOLD" />您访问的网站可请求 Chrome 提供相关信息，以便衡量广告效果。Chrome 会对网站之间可分享的信息加以限制，以保护您的隐私。</translation>
 <translation id="5841014997407214978">请尝试在此网站上暂停跟踪保护功能，这有助于网站功能正常运行。</translation>
 <translation id="5915946252696843290">隐私权和网站数据</translation>
@@ -111,7 +101,6 @@
 <translation id="6398358690696005758">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="6702015235374976491">借助广告主题，网站既能向您展示相关广告，又能保护您的浏览记录和身份信息。Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
 <translation id="6710025070089118043">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您授予相关网站对第三方 Cookie 的访问权限</translation>
-<translation id="6737378617247709185">Chromium 在无痕模式下会阻止第三方 Cookie，但您的管理员已允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="6774168155917940386">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。详情请参阅<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="6789193059040353742">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK1" />广告主题<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="6904948821498934430">Chromium 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。</translation>
@@ -119,31 +108,24 @@
 <translation id="6984151429741932257">限制对 IP 地址的访问</translation>
 <translation id="7084100010522077571">详细了解广告效果衡量</translation>
 <translation id="721207178659484186">Google 的隐私保护服务器在保护您的 IP 地址时，可以看到您的 IP 地址，但看不到您浏览的目标网站</translation>
-<translation id="731039612501012263">已阻止第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理无痕模式下的跟踪保护功能。</translation>
 <translation id="7315780377187123731">详细了解“阻止第三方 Cookie”选项</translation>
 <translation id="737025278945207416">某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起</translation>
 <translation id="7374493521304367420">网站仍可使用 Cookie 查看您在该网站上的浏览活动</translation>
 <translation id="7379649202155190245">无痕模式下的跟踪保护功能</translation>
 <translation id="7419391859099619574">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK1" />在 Chrome 中管理广告隐私权设置<ph name="LINK_END1" />。</translation>
-<translation id="7446815120569226585">Chrome 在无痕模式下会阻止第三方 Cookie，但您的管理员已允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。</translation>
-<translation id="74479430756188350">Chrome 在无痕模式下会阻止第三方 Cookie，但有一项扩展程序允许此网站使用第三方 Cookie。无痕模式还可以提供额外的跟踪保护功能。</translation>
 <translation id="7453144832830554937">依赖第三方 Cookie 的网站功能可能无法正常运行</translation>
 <translation id="7475768947023614021">查看广告主题设置</translation>
 <translation id="7538480403395139206">详细了解“允许第三方 Cookie”选项</translation>
-<translation id="7552005635894902732">Chrome 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。无痕模式还可以提供额外的跟踪保护功能。</translation>
-<translation id="7564124309155378881">仅当从已登录账号的 Chromium 窗口中打开无痕模式时可用</translation>
 <translation id="7590906321816761911">跟踪保护功能已暂停</translation>
 <translation id="7686086654630106285">详细了解网站推荐广告</translation>
 <translation id="7747003797915893222">您在无痕模式下浏览时，Chrome 不会保存您的浏览记录、Cookie 和网站数据，也不会保存您在表单中输入的信息。无痕模式还提供了一些功能，可以限制嵌入式网站能获取的信息。</translation>
 <translation id="7766094116932490292">跟踪保护功能已启用</translation>
 <translation id="7789658094395162849">限制对 IP 地址的访问。此设置已关闭。</translation>
-<translation id="7947135702324060924">Chromium 可以保护您的 IP 地址，防止嵌入式网站收集关于您的个人信息</translation>
 <translation id="795219618398555200">Chromium 在无痕模式下会阻止网站使用第三方 Cookie</translation>
 <translation id="8080808348468200193">Chrome 在无痕模式下会阻止网站使用第三方 Cookie</translation>
 <translation id="8086115837395871435">正在重新加载网站</translation>
 <translation id="8096996737013848963">保护 IP 地址</translation>
-<translation id="816233773179678758">Chrome 可以保护您的 IP 地址，防止嵌入式网站收集关于您的个人信息</translation>
 <translation id="8180936577740217261">Chrome 在无痕模式下会阻止第三方 Cookie，但您已将此网站设置为例外网站。</translation>
 <translation id="8200078544056087897">依赖第三方 Cookie 的网站功能应该会按预期运行</translation>
 <translation id="8257935463851606210">Chromium 在无痕模式下会阻止第三方 Cookie，但有一项扩展程序允许此网站使用第三方 Cookie。</translation>
@@ -152,7 +134,6 @@
 <translation id="8428213095426709021">设置</translation>
 <translation id="8430082659493731737">仅当从已登录账号的 Chrome 标签页中打开无痕模式时可用</translation>
 <translation id="8442977418416307640">在常规 Chromium 窗口中打开</translation>
-<translation id="8578320000709741352">您访问的网站可能会嵌入其他网站的内容和服务，例如图片、广告和文字；这些内容可用于了解您的情况。详细了解如何管理<ph name="START_LINK" />无痕模式下的跟踪保护功能<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">在新标签页中打开《隐私权政策》</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />您可以如何管理这些数据？<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题。</translation>
 <translation id="8803526663383843427">处于开启状态时</translation>

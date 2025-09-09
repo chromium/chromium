@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="130631256467250065">您所做的更改会在下次重新启动设备时生效。</translation>
-<translation id="261308610302996111">依次前往 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="SYSTEM_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”，确保您的配置设置为“不使用代理”或“直接”。</translation>
 <translation id="275588974610408078">Chromium 未提供崩溃报告。</translation>
 <translation id="3064346599913645280">您正在查看安全的 Chromium 网页</translation>
 <translation id="3255926992597692024">Chromium 正在尝试修改用于填入付款方式的设置。</translation>
@@ -12,7 +11,6 @@
 <translation id="4622039161600275920">此页面已被 Chromium 屏蔽</translation>
 <translation id="48558539577516920">在防火墙或防病毒设置部分设为允许 Chromium 访问网络。</translation>
 <translation id="4949828774841497663">依次前往“应用”&gt;“系统设置”&gt;“网络”，选择有效的网络，点击“详情…”按钮，然后取消选择所有已选的代理。</translation>
-<translation id="6480456350195404966">依次前往 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="SYSTEM_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”&gt;“网络和 Internet”&gt;“代理”，然后取消选择“自动检测设置”。</translation>
 <translation id="648062525172759633">这些页面供 Chromium 开发者使用，可能不会积极维护或测试。如需启用这些页面，请前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，点击启用调试页面的按钮，然后再次前往此页面。</translation>
 <translation id="6549378540556750549">Chromium 的诞生也离不开其他<ph name="BEGIN_LINK_OSS" />开源软件<ph name="END_LINK_OSS" />。</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>

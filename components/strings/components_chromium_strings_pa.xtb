@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="130631256467250065">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਅਗਲੀ ਵਾਰ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਨੂੰ ਮੁੜ ਚਾਲੂ ਕਰਨ 'ਤੇ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>
-<translation id="261308610302996111">Chromium
-          ਮੀਨੂ&gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" /> ਤੇ ਜਾਓ 
-          ਅਤੇ ਪੱਕਾ ਕਰੋ ਕਿ ਸੰਰੂਪਣ "ਪ੍ਰੌਕਸੀ ਨਹੀਂ ਹੈ" ਜਾਂ "ਡਾਇਰੈਕਟ" ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="275588974610408078">ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਿੰਗ Chromium ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3064346599913645280">ਤੁਸੀਂ ਇੱਕ ਸੁਰੱਖਿਅਤ Chromium ਪੰਨਾ  ਦੇਖ  ਰਹੇ ਹੋ</translation>
 <translation id="3255926992597692024">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਭਰਨ ਲਈ Chromium ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੋਧ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
@@ -19,16 +11,6 @@
 <translation id="4622039161600275920">ਇਸ ਪੰਨੇ ਨੂੰ Chromium ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="48558539577516920">Chromium ਨੂੰ ਆਪਣੀਆਂ ਫ਼ਾਇਰਵਾਲ ਜਾਂ ਐਂਟੀਵਾਇਰਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਨੈੱਟਵਰਕ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ।</translation>
 <translation id="4949828774841497663">ਐਪਲੀਕੇਸ਼ਨਾਂ &gt; ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ &gt; ਨੈੱਟਵਰਕ 'ਤੇ ਜਾਓ, ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਦੀ ਚੋਣ ਕਰੋ, ਵੇਰਵੇ... ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਚੁਣੀ ਗਈ ਕਿਸੇ ਵੀ ਪ੍ਰੌਕਸੀ ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
-<translation id="6480456350195404966">Chromium
-          ਮੀਨੂ 'ਤੇ ਜਾਓ &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ &gt; ਪ੍ਰੌਕਸੀ
-          ਅਤੇ "ਸੈਟਿੰਗਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਓ" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="648062525172759633">ਇਹ ਪੰਨੇ Chromium ਵਿਕਾਸਕਾਰਾਂ ਵੱਲੋਂ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਣਾਏ ਗਏ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਦੀ ਸਮੇਂ-ਸਮੇਂ 'ਤੇ ਸਾਂਭ-ਸੰਭਾਲ ਜਾਂ ਜਾਂਚ ਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੋਵੇ। ਉਨ੍ਹਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> 'ਤੇ ਜਾਓ, ਡੀਬੱਗ ਪੰਨਿਆਂ ਦੀ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਫਿਰ ਇਸ ਪੰਨੇ 'ਤੇ ਦੁਬਾਰਾ ਜਾਓ।</translation>
 <translation id="6549378540556750549">Chromium ਨੂੰ ਹੋਰ <ph name="BEGIN_LINK_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_OSS" /> ਦੀ ਮਦਦ ਨਾਲ ਵੀ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="6613594504749178791">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਅਗਲੀ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ Chromium ਨੂੰ ਰੀਲੌਂਚ ਕਰਨ 'ਤੇ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>

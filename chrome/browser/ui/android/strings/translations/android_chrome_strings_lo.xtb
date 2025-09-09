@@ -632,7 +632,6 @@
 <translation id="4042941173059740150">ໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຕໍ່ໄປ</translation>
 <translation id="4044708993631234325">ຊີດລຸ່ມສຸດ</translation>
 <translation id="4045441967987592849">ເປີດຄືນໃໝ່</translation>
-<translation id="4049920046559074950">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ແຖບມາດຕະຖານທີ່ມີກິດຈະກຳໃໝ່ໃນກຸ່ມແຖບທີ່ແບ່ງປັນ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ແຖບມາດຕະຖານທີ່ມີກິດຈະກຳໃໝ່ໃນກຸ່ມແຖບທີ່ແບ່ງປັນ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="405365679581583349">ອັບເດດບໍລິການ Google Play</translation>
 <translation id="405399507749852140">ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ</translation>

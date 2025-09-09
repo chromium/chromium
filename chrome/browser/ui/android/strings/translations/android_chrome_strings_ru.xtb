@@ -632,7 +632,6 @@
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Нижний экран</translation>
 <translation id="4045441967987592849">Открыть</translation>
-<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />: другие действия</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная вкладка с новым действием. Она помещена в группу вкладок с общим доступом.}one{<ph name="TABS_COUNT_MANY" /> стандартная вкладка с новым действием. Они помещены в группу вкладок с общим доступом.}few{<ph name="TABS_COUNT_MANY" /> стандартные вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}many{<ph name="TABS_COUNT_MANY" /> стандартных вкладок с новым действием. Они помещены в группу вкладок с общим доступом.}other{<ph name="TABS_COUNT_MANY" /> стандартной вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}}</translation>
 <translation id="405365679581583349">Обновите сервисы Google Play</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
@@ -1076,7 +1075,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
 <translation id="6071995715087444295">Чтобы проверить наличие раскрытых паролей, войдите в аккаунт Google</translation>
-<translation id="6078323886959318429">Добавить</translation>
+<translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>
 <translation id="60923314841986378">Осталось <ph name="HOURS" /> ч.</translation>

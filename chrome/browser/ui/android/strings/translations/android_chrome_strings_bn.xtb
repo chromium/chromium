@@ -632,7 +632,6 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যান</translation>
 <translation id="4044708993631234325">স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="4045441967987592849">আবার খুলুন</translation>
-<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />-এর জন্য আরও বিকল্প</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_ONE" />টি স্ট্যান্ডার্ড ট্যাব}one{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}other{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}}</translation>
 <translation id="405365679581583349">Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>

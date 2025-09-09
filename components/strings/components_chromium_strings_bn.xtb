@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="130631256467250065">পরের বার আপনি আপনার ডিভাইস পুনরারম্ভ করলে আপনার পরিবর্তনগুলি প্রভাবী হবে৷</translation>
-<translation id="261308610302996111">Chromium
-          মেনু &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          বিকল্পে যান এবং কনফিগারেশন "কোনও প্রক্সি নয়" বা "সরাসরি" বিকল্পে সেট করা আছে কিনা দেখুন।</translation>
 <translation id="275588974610408078">Chromium-এ ক্র্যাশ প্রতিবেদন উপলব্ধ নেই৷</translation>
 <translation id="3064346599913645280">আপনি একটি নিরাপদ Chromium পৃষ্ঠা  দেখছেন</translation>
 <translation id="3255926992597692024">পেমেন্ট পদ্ধতি পূরণের জন্য Chromium চেষ্টা করছে সেটিংস পরিবর্তন করার।</translation>
@@ -22,16 +14,6 @@
 <translation id="4949828774841497663">'অ্যাপ্লিকেশন &gt; সিস্টেম সেটিংস &gt; নেটওয়ার্ক'-এ যান, চালু নেটওয়ার্ক
           বেছে নিন, 'বিবরণ'... বোতামে ক্লিক করুন এবং যেকোনও প্রক্সি যা হয়ত বেছে নেওয়া হয়েছে সেটির
           থেকে টিকচিহ্ন সরান।</translation>
-<translation id="6480456350195404966">Chromium
-          মেনু &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          নেটওয়ার্ক ও ইন্টারনেট &gt; প্রক্সি
-          বিকল্পে যান এবং "সেটিংস অটোমেটিক শনাক্ত করো" বিকল্প থেকে টিকচিহ্ন সরিয়ে দিন।</translation>
 <translation id="648062525172759633">এইসব পৃষ্ঠা Chromium ডেভেলপারদের ব্যবহার করার উদ্দেশ্যে তৈরি এবং এগুলি হয়ত সক্রিয়ভাবে রক্ষণাবেক্ষণ বা পরীক্ষা করা হয় না। এগুলি চালু করতে <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> লিঙ্কে যান, ডিবাগ পৃষ্ঠা চালু করতে বোতামে ক্লিক করে আবার এই পৃষ্ঠায় নেভিগেট করুন।</translation>
 <translation id="6549378540556750549">এছাড়াও Chromium অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>

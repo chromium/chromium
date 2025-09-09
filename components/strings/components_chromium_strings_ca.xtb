@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="130631256467250065">Els canvis es faran efectius la propera vegada que reinicieu el dispositiu.</translation>
-<translation id="261308610302996111">Ves al menú de Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> i assegura't que la configuració estigui definida sense servidor intermediari o com a directa.</translation>
 <translation id="275588974610408078">La creació d'informes de bloqueig no està disponible a Chromium.</translation>
 <translation id="3064346599913645280">Estàs visualitzant una pàgina segura de Chromium</translation>
 <translation id="3255926992597692024">Chromium està provant de modificar la configuració per emplenar les formes de pagament.</translation>
@@ -13,7 +12,6 @@
 <translation id="48558539577516920">Configureu el tallafoc o l'antivirus per permetre que Chromium accedeixi
           a la xarxa.</translation>
 <translation id="4949828774841497663">Ves a Aplicacions &gt; Configuració del sistema &gt; Xarxa, selecciona la xarxa activa, fes clic al botó Detalls... i desselecciona els servidors intermediaris que s'hagin seleccionat.</translation>
-<translation id="6480456350195404966">Ves al menú de Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Xarxa i Internet &gt; Servidor intermediari i, tot seguit, desselecciona Detecta la configuració automàticament.</translation>
 <translation id="648062525172759633">Aquestes pàgines estan pensades per a desenvolupadors de Chromium i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="6549378540556750549">Chromium també és possible gràcies a un altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Els canvis s'aplicaran la propera vegada que reinicieu Chromium.</translation>

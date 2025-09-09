@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">প্ৰস্থৰ সৈতে খাপ খুৱাওক</translation>
 <translation id="1081061862829655580">ট্ৰে’ ১৯</translation>
 <translation id="1082026381988252344">স্ক্ৰ’ল কৰক আৰু আপোনাৰ শ্বেয়াৰ কৰা টেবৰ সমল জুম কৰক</translation>
-<translation id="108859316315249327">পুনৰ চেষ্টা কৰক</translation>
 <translation id="1088664500620117635"><ph name="PRODUCT_NAME" />ৰ দাম সচৰাচৰ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> হয় কিন্তু বৰ্তমান সমগ্ৰ পৃথিৱীত ইয়াৰ দাম <ph name="CURRENT_PRICE" />।</translation>
 <translation id="1089439967362294234">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="1089599132348386324">আপুনি যিকোনো সময়তে Chromeৰ ছেটিঙত নিজৰ সিদ্ধান্ত সলনি কৰিব পাৰে।</translation>
@@ -928,6 +927,7 @@
 <translation id="2515629240566999685">আপোনাৰ অঞ্চলৰ ছিংগনেল পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2515761554693942801">আপুনি <ph name="PROVIDER_ORIGIN" /> ব্যৱহাৰ কৰা ৱেবছাইটসমূহত স্পৰ্শ আইডিৰ জৰিয়তে সত্যাপন কৰিবলৈ বাছনি কৰিছে। এই প্ৰদানকাৰীয়ে হয়তো আপোনাৰ পৰিশোধ পদ্ধতিৰ বিষয়ে তথ্য ষ্ট’ৰ কৰি ৰাখিব পাৰে, যিটো আপুনি <ph name="LINK_TEXT" /> পাৰে।</translation>
 <translation id="2518584823165598232">এই কাৰ্ডখন উপলব্ধ নহয়। অনুগ্ৰহ কৰি আপোনাৰ কাৰ্ড প্ৰদানকাৰীৰ সৈতে যোগাযোগ কৰক।</translation>
+<translation id="2519250377986324805">কেনেকৈ কৰে চাওক</translation>
 <translation id="2521385132275182522">তলৰ অংশৰ সোঁফালে ষ্টে'পল কৰক</translation>
 <translation id="2521736961081452453">ফ’ৰ্ম সৃষ্টি কৰক</translation>
 <translation id="2524461107774643265">অধিক তথ্য যোগ কৰক</translation>
@@ -2465,7 +2465,6 @@
 <translation id="5097099694988056070">PU/RAMৰ ব্যৱহাৰৰ দৰে ডিভাইচৰ পৰিসংখ্যা</translation>
 <translation id="5097468150760963273">২৭ x ৩৯ ইঞ্চি</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">AI ম’ডটো বিচাৰিবলৈ প্ৰথমে টেব টিপি এণ্টাৰ টিপক</translation>
 <translation id="510644072453496781">কাৰ্ডব’ৰ্ড (এণ্ড)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />ৰ বাবে ভাৰ্ছুৱেল কাৰ্ড পূৰ হৈছে</translation>
 <translation id="5108567515277121477">লয়েল্টী কাৰ্ড</translation>
@@ -3473,7 +3472,6 @@
 <translation id="6786145470008421571">এনভেল’প ৬ x ৯ ইঞ্চি</translation>
 <translation id="6786747875388722282">এক্সটেনশ্বনসমূহ</translation>
 <translation id="6787094689637422836">আমি গোপনীয়তাৰ নতুন সুবিধা আগবঢ়াবলৈ লৈছোঁ যিবিলাকে আপুনি দেখা পোৱা বিজ্ঞাপনৰ ক্ষেত্ৰত আপোনাক বাছনি কৰিবলৈ অধিক বিষয়বস্তু প্ৰদান কৰে।</translation>
-<translation id="6788615780749001893">AI ম’ডৰ বুটাম, AI ম’ডটো বিচাৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="6789062271869667677">অবিৰত (দীঘলীয়া)</translation>
 <translation id="678982761784843853">সুৰক্ষিত সমল আইডি</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
@@ -3539,6 +3537,7 @@
 <translation id="6898699227549475383">প্ৰতিষ্ঠান (O)</translation>
 <translation id="6900702165119149418">আপুনি ছাইন আউট কৰিলে</translation>
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
+<translation id="6905163627763043954">ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6907458757809079309">ফিটনেছ</translation>
 <translation id="691024665142758461">একাধিক ফাইল ডাউনল’ড কৰক</translation>
 <translation id="691046363691324218">ৰিড্ৰেছ নম্বৰ</translation>

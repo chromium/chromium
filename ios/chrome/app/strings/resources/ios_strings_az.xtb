@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">PIN dəyişdirilmədi. İnternet bağlantısını yoxlayın və yenidən cəhd edin</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) faylını harada yadda saxlayacağınızı seçin</translation>
 <translation id="1072476005125066234">Maraqlarınıza əsasən rəylər</translation>
-<translation id="1072679792409426431">Administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="1074827084851510304">{password_count} parolu və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
 <translation id="1076421457278169141">Kod skan olundu</translation>
 <translation id="1081114897601629648">Aşağıdakı parollar tələblərə uyğun olmadığı üçün Google Parol Menecerinə import edilmədi.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Bu ünvan bu cihazdan silinəcək.}other{Bu ünvanlar bu cihazdan silinəcək.}}</translation>
 <translation id="2297989278479054870">Çıxdıqdan sonra əlfəcin, parol və Google Hesabındakı digər data bu cihazdan silinəcək.</translation>
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
-<translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını göstərin</translation>
 <translation id="2309265394777270359">Tabı bağlayın</translation>
 <translation id="2311077293164383652">Sancılmış tabı bağlayın</translation>
 <translation id="2316129865977710310">Yox, çox sağ olun</translation>
@@ -673,6 +671,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3631443864840848029">Bu sayt üçün cari parolunuzu saxladığınıza əmin olun.</translation>
 <translation id="3642060527569456384">Tab qrupları bütün cihazlarda avtomatik yadda saxlanılır və güncəllənir.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} parol yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
+<translation id="3650299480924308502">Siz çıxdıqdan sonra yadda saxlanmamış data bu cihazdan silinəcək. Bura parollar, tarixçə və daha çoxu daxil ola bilər.</translation>
 <translation id="3659297405161482746">Ödəniş metodu tapılmadı</translation>
 <translation id="3668816008081204991">Oxu siyahısı gizlədilib</translation>
 <translation id="3670030362669914947">Nömrə</translation>
@@ -1202,7 +1201,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5709005673595820640">{count,plural, =1{Təhlükəsizliyi riskə atan {count} təkrar işlənən parolunuz var. Təhlükəsizlik üçün bunu indi həll edin.}other{Təhlükəsizliyi riskə atan {count} təkrar işlənən parolunuz var. Təhlükəsizlik üçün bunları indi həll edin.}}</translation>
 <translation id="57094364128775171">Güclü parol təklif edin…</translation>
 <translation id="5718049162805123412">Bunları indi dəyişməlisiniz</translation>
-<translation id="5721040778297053709">Kredit kartını çərçivəyə yerləşdirin</translation>
 <translation id="572328651809341494">Son panellər</translation>
 <translation id="5724941645893276623">Vebdə məxfi axtarış etmək üçün yeni tab açın</translation>
 <translation id="5728072125198221967">Əlaqələndirilmiş Google xidmətləri</translation>
@@ -1570,6 +1568,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7055240621761583113">Parolu avtomatik doldurun</translation>
 <translation id="7063811929043357292">Hesabı valideyn idarə edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Təşkilatın təhlükəsizliyini qorumaq üçün yadda saxlanmamış data bu cihazdan silinəcək. Bura parollar, tarixçə və daha çoxu daxil ola bilər.</translation>
 <translation id="7067780033517902110">Bütün fayllar</translation>
 <translation id="707086654079606593">Ünvanları idarə edin…</translation>
 <translation id="7080806333218412752">URL'ləri yoxlamaq üçün onları Təhlükəsiz Baxışa göndərir. Həmçinin yeni təhlükələri aşkarlamaqda kömək məqsədilə səhifə, endirmə, artırma fəaliyyətindən ibarət kiçik nümunə göndərir. Daxil olduğunuzda sizi Google tətbiqlərində qorumaq üçün bu datanı Google Hesabınız ilə müvəqqəti olaraq əlaqələndirir.</translation>
@@ -1781,7 +1780,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7889910613639381518">Google Parol Meneceri vidceti ilə asan və təhlükəsiz giriş.</translation>
 <translation id="7899199123054742721">Hamısını oxunmamış kimi qeyd edin</translation>
 <translation id="7911190106180361398">Təşkilatınız hər şeyi sinxronizasiya etməyinizə icazə vermir.</translation>
-<translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını gizlədin</translation>
 <translation id="792357691529995513">Problem tapılmadı</translation>
 <translation id="7925108652071887026">Datanı avtomatik doldurun</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>

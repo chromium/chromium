@@ -30,7 +30,6 @@
         i odznacz „<ph name="NO_PREFETCH_DESCRIPTION" />”.
         Jeśli nie rozwiąże to problemu, zalecamy ponowne wybranie tej opcji,
         by poprawić wydajność.</translation>
-<translation id="6581867098636731226">Otwórz menu Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Sieć i internet &gt; Serwer proxy i odznacz „Automatycznie wykrywaj ustawienia”.</translation>
 <translation id="7230956101631259640">Przeglądasz bezpieczną stronę Chrome</translation>
 <translation id="8232971017369963250">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Stworzenie przeglądarki Chrome było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>

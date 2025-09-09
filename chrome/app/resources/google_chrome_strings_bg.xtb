@@ -11,9 +11,6 @@
 <translation id="1051793555070215510">Помогнете ни да подобрим режима „инкогнито“, като попълните тази едноминутна анкета.</translation>
 <translation id="1059838145689930908">За да използвате това разширение като <ph name="USER_EMAIL_ADDRESS" />, влезте в профила си в Chrome.</translation>
 <translation id="1065672644894730302">Предпочитанията ви не могат да бъдат прочетени. Възможно е да няма достъп до някои функции и промените в предпочитанията няма да бъдат запазени.</translation>
-<translation id="1070377999570795893">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1088300314857992706">По-рано <ph name="USER_EMAIL_ADDRESS" /> използва Chrome</translation>
 <translation id="110877069173485804">Това е вашият Chrome</translation>
@@ -49,9 +46,6 @@
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Прекратява откроената задача.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
-<translation id="1585717515139318619">Друга програма на компютъра ви добави тема, която може да промени начина на работа на Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
 <translation id="1587325591171447154">Chrome блокира „<ph name="FILE_NAME" />“, тъй като файлът е опасен.</translation>
 <translation id="1597911401261118146">За да проверите дали паролите ви не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chrome<ph name="END_LINK" />.</translation>
@@ -455,7 +449,6 @@
 <translation id="6321592572353357376">Разширението <ph name="EXTENSION_NAME" /> иска да влезете в профила си в Chrome</translation>
 <translation id="6326175484149238433">Премахване от Chrome</translation>
 <translation id="6327105987658262776">Не е налична актуализация.</translation>
-<translation id="6334815226785304306">Задаване на Google Chrome като браузър по подразбиране и фиксиране в лентата на задачите</translation>
 <translation id="6360449101159168105">Докато този раздел бе неактивен, бе освободена памет, за да се запази бързината на Chrome. Този сайт може да бъде добавен към изключенията, така че разделите с него да не стават неактивни.</translation>
 <translation id="6388799252195623474">помогни ми с това</translation>
 <translation id="6412673304250309937">Проверка на URL адресите в съхраняван в Chrome списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chrome може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
@@ -554,9 +547,6 @@
 <translation id="7572537927358445944">Изключено • Chrome не може да потвърди източника на това разширение</translation>
 <translation id="7583399374488819119">Инсталационна програма за <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Попитайте Google за тази страница</translation>
-<translation id="760353356052806707">Друга програма на компютъра ви добави приложение, което може да промени начина на работа на Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google Chrome OS.</translation>
 <translation id="7627609214560473136">За да защитите данните си, разрешете на Chrome да премахва разрешенията от сайтовете, които не сте посещавали наскоро.</translation>

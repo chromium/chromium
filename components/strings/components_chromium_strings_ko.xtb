@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="130631256467250065">기기를 다시 시작할 때 변경사항이 적용됩니다.</translation>
-<translation id="261308610302996111">Chromium 메뉴 &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          (으)로 이동하여
-          '프록시 없음' 또는 '직접 연결'로 설정되어 있는지 확인합니다.</translation>
 <translation id="275588974610408078">비정상 종료 보고서는 Chromium에서 사용할 수 없습니다.</translation>
 <translation id="3064346599913645280">안전한 Chromium 페이지를 보는 중</translation>
 <translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
@@ -22,16 +14,6 @@
 <translation id="4949828774841497663">애플리케이션 &gt; 시스템 설정 &gt; 네트워크로 이동하여
           활성 네트워크를 선택하고 세부정보... 버튼을 클릭한 후
           선택되어 있을 수 있는 프록시를 선택 해제합니다.</translation>
-<translation id="6480456350195404966">Chromium 메뉴 &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          네트워크 및 인터넷
-          &gt; 프록시로 이동하여
-          '자동으로 설정 검색'을 선택 해제합니다.</translation>
 <translation id="648062525172759633">이 페이지는 Chromium 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
 <translation id="6549378540556750549">Chromium은 다른 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 사용하여 제작된 브라우저입니다.</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>

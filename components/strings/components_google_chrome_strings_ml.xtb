@@ -32,15 +32,6 @@
           <ph name="ADVANCED_TITLE" /> എന്നതിലേക്ക് പോയി
           "<ph name="NO_PREFETCH_DESCRIPTION" />" തിരഞ്ഞെടുത്തത് മാറ്റുക.          
    ഇത് പ്രശ്‌നം പരിഹരിക്കുന്നില്ലെങ്കിൽ, മെച്ചപ്പെട്ട പ്രകടനത്തിനായി ഈ ഓപ്‌ഷൻ വീണ്ടും തിരഞ്ഞെടുക്കുന്നതിനായി ഞങ്ങൾ ശുപാർശ ചെയ്യുന്നു.</translation>
-<translation id="6581867098636731226">Chrome മെനു &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          നെറ്റ്‌വർക്കും ഇന്റർനെറ്റും &gt; പ്രോക്സി
-          എന്നിങ്ങനെ പോയി "ക്രമീകരണം സ്വയമേവ കണ്ടെത്തുക" തിരഞ്ഞെടുത്തത് മാറ്റുക.</translation>
 <translation id="7230956101631259640">സുരക്ഷിതമായ ഒരു Chrome പേജാണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="8232971017369963250">Chrome സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ഓപ്പൺ സോഴ്‌സ് പ്രോജക്റ്റ് ഉപയോഗിച്ചാണ്.</translation>
 <translation id="8279509328145658601">Chrome സാധ്യമാക്കിയത് മറ്റ് <ph name="BEGIN_LINK_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയറുകൾ<ph name="END_LINK_OSS" /> കൂടി ഉപയോഗിച്ചാണ്.</translation>

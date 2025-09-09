@@ -91,7 +91,7 @@
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1343442362630695901">אגם מלח</translation>
 <translation id="1348657754632799065">סרגל ההקלטה</translation>
-<translation id="1350909945461913813">חשוב לשמור את העבודות</translation>
+<translation id="1350909945461913813">חשוב לשמור את העבודה</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1371650399987522809">‏משוב לגבי טפט שמבוסס על AI מבית Google</translation>
 <translation id="1374385338586507108">הגדרה</translation>
@@ -157,7 +157,7 @@
 <translation id="1587031308639983732">יכול להיות ששינויים שמבוססים על זמן לא יהיו מדויקים. ההגדרה הזו מנוהלת על-ידי האדמין.</translation>
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1591562245178063882">החודש</translation>
-<translation id="1593528591614229756">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין שלך. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור שלך לרשת הסלולרית. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="1593528591614229756">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1604959087182679653">הסתרת התמליל</translation>
 <translation id="160633243685262989">תצוגה מקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
@@ -366,12 +366,12 @@
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2448857983905133469">כלי עזר להוראה</translation>
 <translation id="2468124392950503650">אפשר לבחור הנחיה ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">‏כדי ליצור טיוטה או לשפר עבודה קיימת, אפשר להשתמש בכלי "עזרה בכתיבה", שמבוסס על Google AI</translation>
+<translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="2480572840229215612">סרטנים</translation>
-<translation id="248546197012830854">‏המכשיר במצב אופליין. כדי לראות את תוכן העזרה, צריך להתחבר לרשת Wi-Fi.</translation>
+<translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
 <translation id="2486301288428798846">עץ</translation>
-<translation id="2491955442992294626">המקשים לא נבדקים בשימוש בחלון אחר</translation>
+<translation id="2491955442992294626">המקשים לא נבדקים כשמשתמשים בחלון אחר</translation>
 <translation id="2493126929778606526">התמונות הטובות ביותר שלך שנבחרו באופן אוטומטי</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">אופאל</translation>
@@ -433,7 +433,7 @@
 <translation id="2787237339470862294">השפה הזו לא נתמכת כרגע</translation>
 <translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
-<translation id="28232023175184696">אי אפשר להתחבר לאינטרנט. אפשר ללחוץ כדי לנסות שוב.</translation>
+<translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
 <translation id="2855718259207180827">צמר</translation>
 <translation id="2856429654176718363">‏ספינת חלל ענקית מרחפת מעל העיר, שמוארת באורות רבים. הסצנה כולה מוצגת בסגנון של ציור שמן בגוונים כהים. היא יוצרת אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני. הפוסטר הזה נוצר באמצעות תוכנת C4D וכלי OC לעיבוד כדי להדגיש את הרזולוציה הגבוהה והפרטים המדויקים. היו גם כמה בניינים עירוניים בטווח קרוב, שיצרו אפקט של עומק שדה. הסצנה מוצגת בסגנון של ציור שמן, עם גוונים כהים שיוצרים אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני.</translation>
 <translation id="2859243502336719778">עדכון קריטי</translation>
@@ -483,7 +483,7 @@
 <translation id="3122614491980756867">בריכות</translation>
 <translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3124039320086536031">המכשיר מחובר.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}one{להסיר את דף {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
 <translation id="3134486240968249588">כמה דברים שכדאי לזכור</translation>
 <translation id="3140130301071865159">שלג</translation>
 <translation id="3146655726035122603">רק ב-<ph name="PRODUCT_NAME" /></translation>
@@ -748,7 +748,7 @@
 <translation id="4269815121975886860">העדפות ההפעלה</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
 <translation id="4275663329226226506">מדיה</translation>
-<translation id="4278766082079064416">נעשה שימוש במקש קיצור הזה בשביל <ph name="CONFLICT_ACCEL_NAME" />. כדי לפתור את ההתנגשות, צריך לערוך או להסיר אותו.</translation>
+<translation id="4278766082079064416">נעשה שימוש במקש קיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. צריך לערוך או להסיר אותו כדי לפתור את ההתנגשות.</translation>
 <translation id="4285999655021474887">סגול</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4289849978083912975">מצגת</translation>
@@ -839,7 +839,7 @@
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="467715984478005772">חומת אש חשודה</translation>
-<translation id="4678534708181186163">לא ניתן לסכם. אפשר לנסות תמליל קצר יותר.</translation>
+<translation id="4678534708181186163">לא ניתן לסכם. צריך לנסות תמליל קצר יותר.</translation>
 <translation id="4683762547447150570">כדי למקד את הקצאת המקשים יש ללחוץ על הכפתור</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
@@ -905,7 +905,7 @@
 <translation id="4950893758552030541">מנהרת עצים</translation>
 <translation id="4964806321337443935">4k</translation>
 <translation id="4965661459364092269">האיפוס של הגדרות האבטחה הושלם</translation>
-<translation id="4965703485264574128">כדי לקבל תוצאה קרובה, יש להכפיל את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
+<translation id="4965703485264574128">כדי לקבל תוצאה מקורבת, צריך להכפיל את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">פיצול</translation>
 <translation id="4972592110715526173">שינוי מצב</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
@@ -942,7 +942,7 @@
 <translation id="5130848777448318809">סוסי פוני</translation>
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5139813694804168398">נא לא להפריע</translation>
-<translation id="5140788690559353412">‏ברגע שאין גישה יותר לחשבון הבית ספרי, גם המייל והקבצים ב-Google Drive כמו Gmail, Docs, Slides ועוד כבר לא יהיו זמינים.</translation>
+<translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
 <translation id="5142961317498132443">אימות</translation>
 <translation id="5144311987923128508">כפתור האישור מושבת עכשיו</translation>
 <translation id="5144887194300568405">העתקת התרגום</translation>
@@ -1148,7 +1148,7 @@
 <translation id="6090672065638047175">תמונה של עץ זוהר שעשוי מכוכבים עם שמי לילה יפים וגלקסיה ברקע</translation>
 <translation id="6091080061796993741">צהוב</translation>
 <translation id="6104112872696127344">הסריקה בוטלה</translation>
-<translation id="6106186594183574873">כדי לסיים צריך להזין את הסיסמה הישנה</translation>
+<translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
 <translation id="6108952804512516814">‏יצירה באמצעות AI</translation>
 <translation id="6112878310391905610">ההגדרה הזו מנוהלת על ידי האדמינים</translation>
@@ -1245,9 +1245,9 @@
 <translation id="6492891353338939218">דהוי</translation>
 <translation id="6494974875566443634">התאמה אישית</translation>
 <translation id="6500818810472529210">‏לתוצאות בחיפוש Google</translation>
-<translation id="650266656685499220">‏כדי ליצור אלבומים, צריך לעבור ל-Google Photos</translation>
+<translation id="650266656685499220">‏כדי ליצור אלבומים, יש לעבור ל-Google Photos</translation>
 <translation id="6505750420152840539">מעלות השחר עד לרדת החושך</translation>
-<translation id="6515056490985026110">אי אפשר ליצור כותרות. צריך לנסות תמליל ארוך יותר.</translation>
+<translation id="6515056490985026110">לא ניתן ליצור את השמות. צריך לנסות תמליל ארוך יותר.</translation>
 <translation id="6516990319416533844">כדי לבדוק את מהירות הטעינה של הסוללה, צריך לתת לה להתרוקן למשך זמן מה</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6526200165918397681">התאמת הטפט</translation>
@@ -1409,7 +1409,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
-<translation id="7184043045742675738">כדי להתאים אישית את הכפתור, צריך ללחוץ על מקש כלשהו. אפשר לשנות את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
+<translation id="7184043045742675738">כדי להתאים אישית את הכפתור, לוחצים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7187669805838282391">ביום רביעי</translation>
 <translation id="7205318498545665455">צריך לבחור את המיקרופון</translation>
 <translation id="7206979415662233817">תנאים והגבלות</translation>
@@ -1418,7 +1418,7 @@
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="7221869452894271364">טעינת מחדש של הדף</translation>
-<translation id="7223952304612664117">ההגדרה הזו מאפשרת לשירותי המערכת להשתמש בתכונה "זיהוי מיקום משופר" כדי לקבוע את המיקום שלך. התכונה "זיהוי מיקום משופר" משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
+<translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7233782086689993269">מקש הקיצור שוחזר</translation>
 <translation id="723419678599947502">‏יצירת שם באמצעות AI מבית Google</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
@@ -1531,7 +1531,7 @@
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
 <translation id="7752963721013053477">מעלות השחר עד לרדת החושך – בלעדי</translation>
 <translation id="7760571082554155847">הגדרות דף הבית</translation>
-<translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעכשיו והלאה.</translation>
+<translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7764171263909999400">תאורה מרוכזת</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
@@ -1615,7 +1615,7 @@
 <translation id="8082644724189923105">אזור ההגדרות של המקלדת</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8088963492174775412">ללחוץ כדי לצלם</translation>
-<translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בקשר לבעיה הזו</translation>
+<translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שהתחברת אליה פתוחה ולא מאובטחת</translation>
 <translation id="8108879170356113798">בעוד <ph name="NUM_SECONDS" /> שניות תהיה לך אפשרות להשתמש רק בכלי העזר להוראה</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>

@@ -33,16 +33,6 @@
         in počistite polje »<ph name="NO_PREFETCH_DESCRIPTION" />«.
         Če s tem težave ne odpravite, priporočamo, da to možnost
         znova izberete.</translation>
-<translation id="6581867098636731226">Odprite
-          Chromov meni &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Omrežje in internet &gt; Strežnik proxy
-          in počistite izbiro možnosti »Samodejno zaznaj nastavitve«.</translation>
 <translation id="7230956101631259640">Ogledujete si varno stran Chroma.</translation>
 <translation id="8232971017369963250">Chrome omogoča odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome omogoča tudi druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>

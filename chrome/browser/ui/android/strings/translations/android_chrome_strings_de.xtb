@@ -632,7 +632,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4042941173059740150">Weiter zu <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Tabellenblatt am unteren Rand</translation>
 <translation id="4045441967987592849">Noch einmal öffnen</translation>
-<translation id="4049920046559074950">Weitere Optionen für „<ph name="INSTANCE_TITLE" />“</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Standard-Tab mit neuer Aktivität in freigegebenen Tabgruppen}other{<ph name="TABS_COUNT_MANY" /> Standard-Tabs mit neuer Aktivität in freigegebenen Tabgruppen}}</translation>
 <translation id="405365679581583349">Google Play-Dienste aktualisieren</translation>
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>

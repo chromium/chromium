@@ -22,7 +22,7 @@
 <translation id="1843105061469674856">مسح صفحة إضافية ضوئيًا</translation>
 <translation id="1851616744363735765">متوقف مؤقتًا</translation>
 <translation id="1899697626337024495">درجة دقة الصورة</translation>
-<translation id="1925845977604399247">الانتقال إلى "المعرض"</translation>
+<translation id="1925845977604399247">الانتقال إلى المعرض</translation>
 <translation id="199526504800285197">توقَّف التسجيل</translation>
 <translation id="1995951722691075581">توقَّف التسجيل بسبب انخفاض مساحة التخزين على الجهاز. لتسجيل المزيد من الفيديوهات، عليك إخلاء مساحة على جهازك.</translation>
 <translation id="2036868001356139588">مدة المؤقِّت</translation>
@@ -39,7 +39,7 @@
 <translation id="2486151619109781620">تصغير مربّع الحوار وبدء المسح الضوئي</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2501853267655415902">تم إيقاف التسجيل</translation>
-<translation id="2517472476991765520">المسح ضوئيًا</translation>
+<translation id="2517472476991765520">فحص</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
 <translation id="2577915835281444458">سيتوقف التسجيل قريبًا. يمكنك الانتقال إلى إعدادات مساحة التخزين في الجهاز لإخلاء بعض المساحة.</translation>
 <translation id="2599796128805996109">الكاميرا الخلفية</translation>
@@ -77,7 +77,7 @@
 <translation id="4445542136948522167">إيقاف التقاط الصورة</translation>
 <translation id="4570032796877367747">الكاميرا الأمامية</translation>
 <translation id="4598556348158889687">إدارة مساحة التخزين</translation>
-<translation id="4620818268515773682">زر إعادة صوت الميكروفون. تمت إعادة صوت الميكروفون</translation>
+<translation id="4620818268515773682">زر كتم الميكروفون. تم إلغاء كتم الميكروفون.</translation>
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4649291346448517080">تعذّر حفظ الملف</translation>
 <translation id="4695379108709712600">جارٍ نقل زاوية المستند في اتجاه الأعلى</translation>
@@ -169,7 +169,7 @@
 <translation id="8730621377337864115">تم</translation>
 <translation id="8732462232047530626">معاينة البيانات الوصفية</translation>
 <translation id="874854738381978209">‏تم رصد شبكة Wi-Fi.</translation>
-<translation id="8815966864175525708">التبديل لالتقاط صورة أشخاص</translation>
+<translation id="8815966864175525708">التبديل لالتقاط صورة بورتريه</translation>
 <translation id="8828441885228359828">استئناف التسجيل</translation>
 <translation id="8870695351537079478">يتعذّر بدء التسجيل</translation>
 <translation id="8880167521484863515">4 إلى 3</translation>

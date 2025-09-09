@@ -33,16 +33,6 @@
         en ontmerk "<ph name="NO_PREFETCH_DESCRIPTION" />."
         As dit nie die probleem oplos nie, beveel ons aan dat hierdie opsie weer gekies word
         vir verbeterde werkverrigting.</translation>
-<translation id="6581867098636731226">Gaan na
-          die Chrome-kieslys &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Netwerk en internet &gt; Instaanbediener
-          en ontkies “Vind instellings outomaties”.</translation>
 <translation id="7230956101631259640">Jy bekyk tans 'n veilige Chrome-bladsy</translation>
 <translation id="8232971017369963250">Chrome word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek.</translation>
 <translation id="8279509328145658601">Chrome word ook moontlik gemaak deur ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>

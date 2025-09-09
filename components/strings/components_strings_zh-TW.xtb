@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">符合視窗寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
 <translation id="1082026381988252344">捲動及縮放已分享分頁的內容</translation>
-<translation id="108859316315249327">再試一次</translation>
 <translation id="1088664500620117635">「<ph name="PRODUCT_NAME" />」的一般價格為 <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />，但目前網路上的價格為 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1089599132348386324">你隨時可以前往 Chrome 設定調整。</translation>
@@ -75,7 +74,6 @@
 <translation id="1123753900084781868">目前無法使用即時字幕功能</translation>
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
-<translation id="1132735979845538847"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1144136880160289237">目前沒有任何有效主題</translation>
@@ -351,7 +349,7 @@
 <translation id="1569694109004336106">Google Chrome 正在嘗試開啟 Windows Hello，以便在填入密碼時進行驗證。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
 <translation id="1574714699824202614">正在驗證付款方式</translation>
-<translation id="1576277203042721907">購物分析</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1579189948231786790">貴機構已封鎖這個網站</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">沒有期限</translation>
@@ -455,7 +453,6 @@
 <translation id="1734878702283171397">建議您與系統管理員聯絡。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">電腦</translation>
-<translation id="1740404923954980840">如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1741474054575634405">管理會員卡...</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">寢具與床用織物</translation>
@@ -929,6 +926,7 @@
 <translation id="2515629240566999685">檢查所在位置的網路訊號</translation>
 <translation id="2515761554693942801">你已選擇使用 Touch ID 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="2518584823165598232">無法使用這張卡片。請與卡片供應商聯絡。</translation>
+<translation id="2519250377986324805">查看操作說明</translation>
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
@@ -1155,7 +1153,6 @@
 <translation id="2933624813161016821">壓紋箔</translation>
 <translation id="293796669683825859">留言</translation>
 <translation id="2938225289965773019">開啟<ph name="PROTOCOL" />連結</translation>
-<translation id="2938370569652058706"><ph name="ORIGIN" /> - 如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
 <translation id="2940418897281183211">PNG 圖片</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -1324,7 +1321,6 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
-<translation id="3212468046572043669">目前已開始下載。如要查看，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="3212581601480735796">你在 <ph name="HOSTNAME" /> 上進行的活動正遭到監控</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
 <translation id="3215311088819828484">結果已更新</translation>
@@ -1862,7 +1858,6 @@
 <translation id="4085326869263783566">幫我寫。按下 Tab 鍵和 Enter 鍵即可開啟</translation>
 <translation id="4085769736382018559">比較產品</translation>
 <translation id="4085778582400064057">藍色 2</translation>
-<translation id="4085859451613666999">卡片已存入 Google 帳戶，日後購物時可自動填入卡片資訊</translation>
 <translation id="4088981014127559358">側邊 1 圖片 Y 批次</translation>
 <translation id="4089152113577680600">紙匣 14</translation>
 <translation id="4092349052316400070">填入地址</translation>
@@ -2412,7 +2407,6 @@
 <translation id="4995474875135717171">修改日期：</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理站內搜尋和預設搜尋引擎</translation>
 <translation id="4998950033665438990">單面</translation>
-<translation id="5001338033791319371">如要退出全螢幕模式並查看下載內容，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5002932099480077015">啟用後，Chrome 會將您的信用卡複本儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="5007344584818503324">共用的分頁群組活動</translation>
@@ -2473,7 +2467,6 @@
 <translation id="5097099694988056070">CPU/RAM 使用量等裝置統計資料</translation>
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">依序按下 Tab 鍵和 Enter 鍵，即可在 AI 模式中提問</translation>
 <translation id="510644072453496781">紙板 (封邊)</translation>
 <translation id="5106648964679263509">已填入「<ph name="BNPL_ISSUER_NAME" />」的虛擬卡片資訊</translation>
 <translation id="5108567515277121477">會員卡</translation>
@@ -3482,7 +3475,6 @@
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787094689637422836">我們推出全新的隱私權功能，讓你更能掌控自己看到的廣告。</translation>
-<translation id="6788615780749001893">AI 模式按鈕，按下 Enter 鍵即可在 AI 模式中提問</translation>
 <translation id="6789062271869667677">連續 (長邊)</translation>
 <translation id="678982761784843853">受保護的內容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -3548,6 +3540,7 @@
 <translation id="6898699227549475383">組織 (O)</translation>
 <translation id="6900702165119149418">你已登出帳戶</translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
+<translation id="6905163627763043954">試用</translation>
 <translation id="6907458757809079309">健身</translation>
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="691046363691324218">補救號碼 (redress number)</translation>
@@ -3976,7 +3969,6 @@
 <translation id="7582602800368606489">在 Google 日曆中快速建立新活動</translation>
 <translation id="7586676035079382730">不允許通知</translation>
 <translation id="7588707273764747927">轉印</translation>
-<translation id="7589062909165841767">Google 帳戶可能會有 <ph name="BEGIN_LINK_GAA" />Gemini 系列應用程式活動記錄<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">要分享機密內容嗎？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> 要求使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料</translation>
 <translation id="7592362899630581445">伺服器憑證的名稱不符合限制。</translation>
@@ -4131,7 +4123,7 @@
 <translation id="782886543891417279">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">開始擷取螢幕畫面</translation>
-<translation id="784137052867620416">購物分析</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">付款方式可供選取，以便繼續付款。鍵盤已隱藏。</translation>
 <translation id="7842611866969435396">開始使用</translation>
 <translation id="784404208867107517">分類歷史記錄</translation>
@@ -4262,7 +4254,6 @@
 <translation id="8075736640322370409">快速建立新的 Google 試算表</translation>
 <translation id="8075898834294118863">管理網站設定</translation>
 <translation id="8076492880354921740">分頁</translation>
-<translation id="8076880883123051368">Google 帳戶可能會有其他形式的瀏覽記錄，例如 <ph name="BEGIN_LINK_GAA" />Gemini 系列應用程式活動記錄<ph name="END_LINK_GAA" />。如要查看，請前往 <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{要上傳機密檔案嗎？}other{要上傳機密檔案嗎？}}</translation>
 <translation id="8079031581361219619">要重新載入網站嗎？</translation>
@@ -4396,7 +4387,6 @@
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料來記住你，用於登入帳戶或是放送個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
-<translation id="8298399736867690281">卡片只會儲存在裝置上</translation>
 <translation id="8301894345671534559">輸入驗證碼</translation>
 <translation id="8304912090860925649">新比較表</translation>
 <translation id="830498451218851433">對折</translation>
@@ -4916,7 +4906,6 @@
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9192947025498305328">純淨美妝</translation>
 <translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
-<translation id="9198613052465150219">Google 帳戶可能會有其他形式的瀏覽記錄。如要查看，請前往 <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>
 <translation id="9201904868909900493">正在開啟問卷調查...</translation>
 <translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>

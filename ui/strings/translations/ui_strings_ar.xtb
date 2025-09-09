@@ -10,7 +10,7 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1253734725326687145">تم نقل مساحة اللمس إلى أعلى يمين الشاشة. يُرجى النقر هنا.</translation>
-<translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" /></translation>
+<translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">يُرجى تجربة مشاركة النص في مجموعات أصغر.</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -121,8 +121,8 @@
 <translation id="4729257764711776855">الرقم</translation>
 <translation id="4746179598275229723">تمت إزالة تثبيت الإضافة.</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{يتبقى شهر واحد}zero{يتبقى # شهر}two{يتبقى شهرين (#)}few{يتبقى # أشهر}many{يتبقى # شهرًا}other{يتبقى # شهر}}</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}}</translation>
-<translation id="482932175346970750">‏اكتب <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}}</translation>
+<translation id="482932175346970750">‏كتابة <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
 <translation id="4888938634149558681">إجراء مكالمة</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ثانية واحدة}zero{# من الثواني}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
@@ -133,7 +133,7 @@
 <translation id="5278860589123563674">تعذّر الإرسال</translation>
 <translation id="5283101102242354279">لتفعيل إضافة في وضع التصفّح المتخفي، يُرجى اتّباع الخطوات الآتية:</translation>
 <translation id="528468243742722775">إنهاء</translation>
-<translation id="5329858601952122676">حذف</translation>
+<translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5361107212971249203">النص</translation>
 <translation id="5463830097259460683">رموز الإيموجي والرموز</translation>
 <translation id="5505748296268090374">إزالة <ph name="ITEM_TEXT" /></translation>
@@ -174,7 +174,7 @@
 <translation id="6503257047630241175">‏محتوى RTF</translation>
 <translation id="6539092367496845964">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="654149438358937226">حظر جميع الإشعارات</translation>
-<translation id="6612467943526193239">‏للخروج من المعايرة، يجب الضغط على Esc.</translation>
+<translation id="6612467943526193239">‏للخروج من المعايرة، اضغط على Esc.</translation>
 <translation id="6620110761915583480">حفظ الملف</translation>
 <translation id="6699343763173986273">المقطع الصوتي التالي للوسائط</translation>
 <translation id="6738856801552481343">‏في حال لم تكُن هذه الشاشة تعمل باللمس، يُرجى الضغط على مفتاح Esc.</translation>
@@ -215,7 +215,7 @@
 <translation id="8131263257437993507">{SECONDS,plural, =1{يتبقى ثانية واحدة}zero{يتبقى # من الثواني}two{يتبقى ثانيتان (#)}few{يتبقى # ثوانٍ}many{يتبقى # ثانية}other{يتبقى # من الثواني}}</translation>
 <translation id="8134065097954893699">إعادة تحميل هذه الصفحة</translation>
 <translation id="813785873406874127">لم يتم ترتيب العمود "<ph name="COLUMN_NAME" />"</translation>
-<translation id="815598010540052116">التمرير إلى الأسفل</translation>
+<translation id="815598010540052116">التمرير إلى أسفل</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">صفحة  إلى أسفل</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>

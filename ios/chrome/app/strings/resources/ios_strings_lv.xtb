@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">PIN netika mainīts. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="1063070031224282617">Izvēlieties, kur saglabāt failu “<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Atsauksmes, kuru pamatā ir jūsu intereses</translation>
-<translation id="1072679792409426431">Atspējoja administrators</translation>
 <translation id="1074827084851510304">Jūs gatavojaties dzēst paroles ({password_count}) un to vietņu un lietotņu sarakstu, kurām izvēlējāties nekad nesaglabāt pierakstīšanās informāciju. Konti, kurus izveidojāt vietnēm un lietotnēm, netiks dzēsti.</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
 <translation id="1081114897601629648">Tālāk norādītās paroles netika importētas Google paroļu pārvaldniekā, jo tās neatbilst prasībām.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Šī adrese tiks dzēsta no šīs ierīces.}zero{Šīs adreses tiks dzēstas no šīs ierīces.}one{Šīs adreses tiks dzēstas no šīs ierīces.}other{Šīs adreses tiks dzēstas no šīs ierīces.}}</translation>
 <translation id="2297989278479054870">Pēc izrakstīšanās grāmatzīmes, paroles un citi dati jūsu Google kontā tiks noņemti no šīs ierīces.</translation>
 <translation id="2299218006564889602">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
-<translation id="2306265833370324042">Rādīt informāciju par meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Aizvērt cilni</translation>
 <translation id="2311077293164383652">Aizvērt piesprausto cilni</translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
@@ -673,6 +671,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3631443864840848029">Noteikti saglabājiet šīs vietnes pašreizējo paroli.</translation>
 <translation id="3642060527569456384">Ciļņu grupas tiek automātiski saglabātas un atjauninātas visās jūsu ierīcēs.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parole ir saglabāta tikai šajā ierīcē. Lai varētu šo paroli izmantot citās ierīcēs, saglabājiet to savā Google kontā ({email}).}zero{{count} paroles ir saglabātas tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({email}).}one{{count} parole ir saglabāta tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({email}).}other{{count} paroles ir saglabātas tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({email}).}}</translation>
+<translation id="3650299480924308502">Pēc izrakstīšanās nesaglabātie dati tiks dzēsti no šīs ierīces. Tie var ietvert paroles, vēsturi un citus datus.</translation>
 <translation id="3659297405161482746">Netika atrasts neviens maksājuma veids</translation>
 <translation id="3668816008081204991">Lasīšanas saraksts ir paslēpts.</translation>
 <translation id="3670030362669914947">Numurs</translation>
@@ -1202,7 +1201,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5709005673595820640">{count,plural, =1{Jums ir {count} atkārtoti izmantota parole, kas var apdraudēt jūsu drošību. Labojiet to tūlīt, lai gādātu par savu drošību.}zero{Jums ir {count} atkārtoti izmantotas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}one{Jums ir {count} atkārtoti izmantota parole, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}other{Jums ir {count} atkārtoti izmantotas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}}</translation>
 <translation id="57094364128775171">Ieteikt drošu paroli…</translation>
 <translation id="5718049162805123412">Nekavējoties nomainiet šīs paroles</translation>
-<translation id="5721040778297053709">Novietojiet kredītkarti rāmī</translation>
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
 <translation id="5724941645893276623">Lai pārlūkotu tīmekli privāti, pievienojiet jaunu cilni</translation>
 <translation id="5728072125198221967">Saistītie Google pakalpojumi</translation>
@@ -1570,6 +1568,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7055240621761583113">Automātiski aizpildīt paroli</translation>
 <translation id="7063811929043357292">Jūsu kontu pārvalda viens no vecākiem.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Lai gādātu par jūsu organizācijas drošību, nesaglabātie dati tiks dzēsti no šīs ierīces. Tie var ietvert paroles, vēsturi un citus datus.</translation>
 <translation id="7067780033517902110">Visi faili</translation>
 <translation id="707086654079606593">Adrešu pārvaldīšana…</translation>
 <translation id="7080806333218412752">Vietrāži URL tiek sūtīti uz funkciju Droša pārlūkošana, lai tos pārbaudītu. Lai palīdzētu atklāt jaunus draudus, tiek nosūtīti arī nelieli datu paraugi, kas ietver lapas, lejupielādes, paplašinājumu aktivitāti un sistēmas informāciju. Lai aizsargātu jūs dažādās Google lietotnēs, šie dati tiek īslaicīgi saistīti ar jūsu Google kontu, kad esat pierakstījies.</translation>
@@ -1781,7 +1780,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7889910613639381518">Ērta un droša piekļuve ar Google paroļu pārvaldnieka logrīku.</translation>
 <translation id="7899199123054742721">Atzīmēt visu kā nelasītu</translation>
 <translation id="7911190106180361398">Jūsu organizācija neatļauj jums sinhronizēt visu.</translation>
-<translation id="7918999344502274923">Slēpt meklētājprogrammas <ph name="SEARCH_ENGINE_NAME" /> informāciju</translation>
 <translation id="792357691529995513">Problēmas netika atrastas</translation>
 <translation id="7925108652071887026">Automātiskās aizpildes dati</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>

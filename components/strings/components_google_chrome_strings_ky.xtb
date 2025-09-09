@@ -32,16 +32,6 @@
         өтүп, "<ph name="NO_PREFETCH_DESCRIPTION" />." дегенди тандоодон чыгарыңыз.
         Эгер ушуну менен маселе чечилбесе, иштин майнаптуулугун 
         жогорулатуу үчүн бул параметрлерди кайра тандаңыз.</translation>
-<translation id="6581867098636731226">Төмөнкүгө өтүңүз:
-          Google Chrome менюсу &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Тармак жана Интернет &gt; Прокси.
-          "Параметрлерди автоматтык түрдө аныктоо" дегенди тандоодон чыгарыңыз.</translation>
 <translation id="7230956101631259640">Коопсуз Chrome баракчасын карап жатасыз</translation>
 <translation id="8232971017369963250">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык ресурс долбоору аркылуу түзүлдү.</translation>
 <translation id="8279509328145658601">Chrome башка <ph name="BEGIN_LINK_OSS" />ачык ресурс программасы<ph name="END_LINK_OSS" /> аркылуу да жеткиликтүү.</translation>

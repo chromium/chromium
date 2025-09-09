@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1001534784610492198">Archiv instalačního programu je poškozený nebo neplatný. Stáhněte prosím Google Chrome ještě jednou.</translation>
-<translation id="1006034097353797313">Pokračujte od stavu, ve kterém jste skončili: Chrome při restartech obnovuje karty. Tuto funkci můžete vypnout v</translation>
+<translation id="1006034097353797313">Pokračujte od stavu, ve kterém jste skončili: Chrome při restartech obnovuje karty. Tuto funkci můžete zapnout v</translation>
 <translation id="1018937009655463387">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chrome nahrávání obrazovky.</translation>
 <translation id="1026101648481255140">Pokračovat v instalaci</translation>
 <translation id="102763973188675173">Přizpůsobte si Google Chrome a ovládejte jej. Je k dispozici aktualizace.</translation>
@@ -13,9 +13,6 @@
 <translation id="1065672644894730302">Nelze číst vaše nastavení.
 
 Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</translation>
-<translation id="1070377999570795893">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
 <translation id="1088300314857992706">Před vámi prohlížeč Chrome používal uživatel <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="110877069173485804">Toto je váš Chrome</translation>
@@ -51,9 +48,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1547295885616600893">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Ukončí zvýrazněnou úlohu</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
-<translation id="1585717515139318619">Jiný program ve vašem počítači nainstaloval motiv, který může měnit funkce Chromu.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome používá vaši kameru.</translation>
 <translation id="1587325591171447154">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="1597911401261118146">Chcete-li zkontrolovat, zda jsou hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do Chromu<ph name="END_LINK" />.</translation>
@@ -460,7 +454,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6321592572353357376">Rozšíření <ph name="EXTENSION_NAME" /> chce, abyste se do Chromu přihlásili</translation>
 <translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6327105987658262776">Nejsou k dispozici žádné aktualizace.</translation>
-<translation id="6334815226785304306">Nastavit Google Chrome jako výchozí prohlížeč a připnout ho na hlavní panel</translation>
 <translation id="6360449101159168105">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chrome rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="6388799252195623474">pomoz mi s tímhle</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
@@ -478,7 +471,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6532945796722480006">Otevřít Gemini v Chromu Canary</translation>
 <translation id="6585124893636629274">Zavřít Gemini v Chromu</translation>
 <translation id="659498884637196217">Ve Správci hesel Google na tomto zařízení</translation>
-<translation id="6631524303639368205">Pokračujte od stavu, ve kterém jste skončili: Chrome obnovil karty z poslední relace. Tuto funkci můžete vypnout v</translation>
+<translation id="6631524303639368205">Pokračujte od stavu, ve kterém jste skončili: Chrome obnovil karty z poslední relace. Tuto funkci můžete zapnout v</translation>
 <translation id="6632473616050862500">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Změny tohohle nastavení se projeví po restartování Chromu.</translation>
 <translation id="6660596345553328257">Přihlásit se do Chromu?</translation>
@@ -559,9 +552,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7572537927358445944">Vypnuto • Chrome nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="7583399374488819119">instalační program prohlížeče <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Zeptat se Googlu ohledně této stránky</translation>
-<translation id="760353356052806707">Jiný program ve vašem počítači nainstaloval aplikaci, která může měnit funkce Chromu.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému Google ChromeOS.</translation>
 <translation id="7627609214560473136">Chraňte svá data tím, že prohlížeči Chrome povolíte odebírat oprávnění webům, které jste v poslední době nenavštívili.</translation>

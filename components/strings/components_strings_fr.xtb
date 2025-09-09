@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">Ajuster à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1082026381988252344">Faire défiler le contenu de l'onglet partagé et faire un zoom dessus</translation>
-<translation id="108859316315249327">Réessayer</translation>
 <translation id="1088664500620117635">Le prix habituel d'un <ph name="PRODUCT_NAME" /> est entre <ph name="LOW_PRICE" /> et <ph name="HIGH_PRICE" />, mais le prix actuel sur le Web est de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1089599132348386324">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome</translation>
@@ -928,6 +927,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2515629240566999685">Vérifiez le signal dans votre zone.</translation>
 <translation id="2515761554693942801">Vous avez choisi la validation avec Touch ID sur les sites Web utilisant <ph name="PROVIDER_ORIGIN" />. Il est possible que ce fournisseur ait stocké des informations sur votre mode de paiement. Vous pouvez <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Cette carte n'est pas disponible, veuillez contacter l'établissement émetteur.</translation>
+<translation id="2519250377986324805">En savoir plus</translation>
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2521736961081452453">Créer un formulaire</translation>
 <translation id="2524461107774643265">Ajouter des informations</translation>
@@ -2469,7 +2469,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5097099694988056070">Statistiques concernant l'appareil, telles que l'utilisation du processeur et de la RAM</translation>
 <translation id="5097468150760963273">27 x 39 pouces</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Appuyer sur Tabulation, puis sur Entrée pour demander le Mode IA</translation>
 <translation id="510644072453496781">Carton (morceau)</translation>
 <translation id="5106648964679263509">Carte virtuelle pour <ph name="BNPL_ISSUER_NAME" /> renseignée</translation>
 <translation id="5108567515277121477">Carte de fidélité</translation>
@@ -3478,7 +3477,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6786145470008421571">Enveloppe 150x230</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787094689637422836">Nous lançons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix quant aux annonces que vous voyez.</translation>
-<translation id="6788615780749001893">Bouton Mode IA, appuyer sur Entrée pour demander le Mode IA</translation>
 <translation id="6789062271869667677">Continu (long)</translation>
 <translation id="678982761784843853">ID de contenu protégé</translation>
 <translation id="6790428901817661496">Lire</translation>
@@ -3544,6 +3542,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">Vous êtes déconnecté</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
+<translation id="6905163627763043954">Essayer</translation>
 <translation id="6907458757809079309">Remise en forme</translation>
 <translation id="691024665142758461">Télécharger plusieurs fichiers</translation>
 <translation id="691046363691324218">Numéro de recours</translation>

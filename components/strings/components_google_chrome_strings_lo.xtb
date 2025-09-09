@@ -33,16 +33,6 @@
           ແລະ​ຖອນ​ເລືອກ "<ph name="NO_PREFETCH_DESCRIPTION" />."
           ຖ້າອັນ​ນີ້​ບໍ່​ແກ້​ໄຂ​ບັນ​ຫາ​ໄດ້, ພວກ​ເຮົາ​ແນະ​ນຳ​ໃຫ້​ເລືອກ​ເອົາ​ທາງ​ເລືອກ​ນີ້
           ອີກເພື່ອ​ເພີ່ມ​ການ​ປະ​ຕິ​ບັດ​ງານ.</translation>
-<translation id="6581867098636731226">ເຂົ້າໄປ
-          ເມນູ Chrome &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          ເຄືອຂ່າຍ ແລະ ອິນເຕີເນັດ &gt; ພຣັອກຊີ
-          ແລ້ວເຊົາເລືອກ "ກວດຫາການຕັ້ງຄ່າໂດຍອັດຕະໂນມັດ".</translation>
 <translation id="7230956101631259640">ທ່ານກຳລັງເບິ່ງໜ້າເວັບ Chrome ທີ່ປອດໄພ</translation>
 <translation id="8232971017369963250">Chrome ເປັນໄປໄດ້ໂດຍໂຄງການໂອເພນຊອດ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome ຍັງເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_OSS" /> ອື່ນນຳອີກ.</translation>

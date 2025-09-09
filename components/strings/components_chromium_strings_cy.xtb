@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="130631256467250065">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ailgychwyn eich dyfais.</translation>
-<translation id="261308610302996111">Ewch i
-          ddewislen Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          a gwnewch yn siŵr bod eich ffurfweddiad wedi'i osod i "dim dirprwy weinydd" neu i "uniongyrchol."</translation>
 <translation id="275588974610408078">Nid yw adrodd am doriadau ar gael yn Chromium.</translation>
 <translation id="3064346599913645280">Rydych yn edrych ar dudalen Chromium ddiogel</translation>
 <translation id="3255926992597692024">Mae Chromium yn ceisio addasu gosodiadau ar gyfer llenwi dulliau talu.</translation>
@@ -22,16 +14,6 @@
 <translation id="4949828774841497663">Ewch i Apiau &gt; Gosodiadau System &gt; Rhwydwaith, dewiswch y
           rhwydwaith gweithredol, cliciwch ar y botwm Manylion... a dad-ddewiswch unrhyw ddirprwyon gweinydd
           a allai fod wedi cael eu dewis.</translation>
-<translation id="6480456350195404966">Ewch i
-          ddewislen Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Rhwydwaith a rhyngrwyd &gt; Dirprwy weinydd
-          a dad-ddewis "Canfod gosodiadau yn awtomatig".</translation>
 <translation id="648062525172759633">Mae'r tudalennau hyn wedi'u bwriadu i'w defnyddio gan ddatblygwyr Chromium, ac mae'n bosib na fyddant yn cael eu cynnal na'u profi'n weithredol. Er mwyn eu galluogi, llywiwch i <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliciwch ar y botwm i alluogi tudalennau dadfygio, ac yna llywiwch i'r dudalen hon eto.</translation>
 <translation id="6549378540556750549">Mae Chromium hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="6613594504749178791">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Chromium.</translation>

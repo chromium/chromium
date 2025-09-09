@@ -436,11 +436,11 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">‏רמז: כדי לצאת מהמדריך לוחצים על Escape.</translation>
-<translation id="3676062394766691318">‏אחרי הגדרת המכשיר, אפשר לחזור ולעיין במדרכים נוספים בלחיצה על מקש החיפוש ועל O ולאחר מכן לחיצה על T.</translation>
+<translation id="3676062394766691318">‏לאחר הגדרת המכשיר, אפשר לחזור ולהציג עוד מדריכים כך: מקישים על מקש החיפוש ועל O ולאחר מכן מקישים על T.</translation>
 <translation id="3681531118904532409">וניל פפאיה</translation>
 <translation id="3692274950075847560">ח:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">קו חוצה</translation>
-<translation id="3704037000573066734">‏כדי לעבור לפרטים, צריך ללחוץ על Search+A ולאחר מכן על J</translation>
+<translation id="3704037000573066734">‏כדי לעבור לפרטים, יש להקיש על Search+A ולאחר מכן על J</translation>
 <translation id="3712520970944678024">בקרת דיבור</translation>
 <translation id="371302509916403935">קו תחתון</translation>
 <translation id="3716845769494773620">שורות מרובות</translation>
@@ -554,7 +554,7 @@
 <translation id="4432896207833262240">תוכן מסומן</translation>
 <translation id="4437615272777527928">כדי לחפש בתפריטים צריך להקליד כאן. כדי לעבור בין התוצאות, אפשר ללחוץ על החץ למעלה או החץ למטה. כדי לשלוט בסמן הטקסט ולעבור בין התפריטים, אפשר להשתמש בחץ שמאלה ובחץ ימינה.</translation>
 <translation id="4441677939526091190">לחיצה על מקש החץ למעלה</translation>
-<translation id="4453530046591759283">‏כדי לעבור אל חלקים אחרים במסך, כמו סרגלי כלים או מגש המערכת, צריך ללחוץ על Control + F1. מקש F1 הוא המקש הראשון מימין למקש Escape.</translation>
+<translation id="4453530046591759283">‏כדי לעבור אל חלקים אחרים במסך, כמו סרגלי כלים או מגש המערכת, צריך להקיש על Control + F1. מקש F1 הוא המקש הראשון מימין למקש Escape.</translation>
 <translation id="4457472090507035117">בחירת הקול שמוגדר כרגע:</translation>
 <translation id="4476183483923481720">שורה חדשה</translation>
 <translation id="4479068155583208887">אדום קיר-לבנים</translation>
@@ -772,7 +772,7 @@
 <translation id="5867591286054666064">בזמן השיעור, אפשר ללחוץ על המקשים כדי לשמוע את השם שלהם.</translation>
 <translation id="5869546221129391014">רשת</translation>
 <translation id="5876817486144482042">החלשת עוצמת הדיבור</translation>
-<translation id="5878206664863390311">כדי לדפדף בין הנושאים, לוחצים על מקש החיפוש ועל החץ ימינה או שמאלה</translation>
+<translation id="5878206664863390311">כדי לעיין בנושאים, מקישים על מקש החיפוש ועל החץ ימינה או על מקש החיפוש ועל החץ שמאלה</translation>
 <translation id="5878908838135392163">כחול חיוור</translation>
 <translation id="588108970619830498">איפוס ההגדרות של המרת טקסט לדיבור לערכי ברירת המחדל</translation>
 <translation id="5891934789323004067">טבלה</translation>
@@ -818,7 +818,7 @@
 <translation id="6186305613600865047">דילוג לתחתית הדף</translation>
 <translation id="6187190722927752226">ירוק כחלחל</translation>
 <translation id="6197361807490522975">כחול כהה</translation>
-<translation id="6218813441317556731">להחליף <ph name="DELETE_PHRASE" /> עם <ph name="INSERT_PHRASE" /></translation>
+<translation id="6218813441317556731">replace <ph name="DELETE_PHRASE" /> with <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">הכותרת הבאה</translation>
 <translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{pipe}} *{{{$$COUNT} vertical pipes}}</translation>
 <translation id="6254901459154107917">האזור הבא בטקסט הניתן לעריכה</translation>
@@ -863,7 +863,7 @@
 <translation id="6563126228219321999">אין פריט לא תקין</translation>
 <translation id="6579990219486187401">ורוד בהיר</translation>
 <translation id="6583174818554398774">מעבר לפריט הבא ברמת הפירוט הספציפית</translation>
-<translation id="6584162722998608255">עכשיו נראה איך לנוע במסך. כדי לעבור לפריט הבא, מחליקים אצבע אחת מימין לשמאל. אפשר לנסות זאת עכשיו כדי לעבור לשלב הבא.</translation>
+<translation id="6584162722998608255">עכשיו נראה איך לנוע במסך. ניתן להחליק בעזרת אצבע אחת מימין לשמאל כדי לעבור לפריט הבא. אפשר לנסות זאת עכשיו כדי לעבור לשלב הבא.</translation>
 <translation id="6609828810966525877">‏אפשר ללמוד על תנועות נוספות במצב למידה ובמרכז העזרה של Chromebook</translation>
 <translation id="6628427060004938651">חלק</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
@@ -893,7 +893,7 @@
 <translation id="6858047746862060282">פרולוג</translation>
 <translation id="6859876496651143278">החלקה שמאלה עם אצבע אחת</translation>
 <translation id="6865519907510167493">שגיאת איות</translation>
-<translation id="6873188295213080042">רמז: כדי לנווט, צריך ללחוץ על מקש החיפוש, להחזיק אותו וללחוץ על מקשי החצים.</translation>
+<translation id="6873188295213080042">רמז: כדי לנווט, מקישים הקשה ארוכה על מקש החיפוש ועל מקשי החצים.</translation>
 <translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">אמירת התאריך והשעה הנוכחיים</translation>
 <translation id="6896758677409633944">העתקה</translation>
@@ -967,7 +967,7 @@
 <translation id="7285387653379749618">טבלאות</translation>
 <translation id="7289186959554153431">כותרת 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7297440685387139507">סיום הפעולה "גרירה ושחרור"</translation>
+<translation id="7297440685387139507">סיום הפעולה 'גרירה ושחרור'</translation>
 <translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{space}} *{{{$$COUNT} spaces}}</translation>
 <translation id="7308519659008003150">אין שדה טופס קודם</translation>
 <translation id="731121099745151312">tritm</translation>
@@ -1078,7 +1078,7 @@
 <translation id="8058636807889143711">אין עוד ביטויים מתמטיים</translation>
 <translation id="8066678206530322333">מודעת באנר</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
-<translation id="8083115023881784332">‏אין פריט שמודגש עכשיו ב-ChromeVox. כדי לעבור אל מרכז האפליקציות, צריך ללחוץ יחד על המקשים Alt,‏Shift ‏ו-L.</translation>
+<translation id="8083115023881784332">‏אין מיקוד נוכחי ב-ChromeVox. כדי לעבור אל מרכז האפליקציות, יש להקיש Alt+Shift+L.</translation>
 <translation id="8091452896542422286">רווח</translation>
 <translation id="8096975275316362544">מנטה בהיר</translation>
 <translation id="8098587210054821856">אפור תכלת</translation>
@@ -1185,7 +1185,7 @@
 <translation id="8898516272131543774">מצבי הקראת פיסוק</translation>
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
-<translation id="8910180774920883033">‏יש פעולות שאפשר לבצע. כדי לראות אותן, צריך ללחוץ על "חיפוש"+Ctrl+‏A</translation>
+<translation id="8910180774920883033">‏יש פעולות שאפשר לבצע. כדי להציג אותן, יש להקיש על 'חיפוש'+Ctrl+‏A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">מקשי צירוף</translation>
 <translation id="8943282376843390568">ליים</translation>
@@ -1236,7 +1236,7 @@
 <translation id="958854023026327378">להחליק אצבע אחת למטה</translation>
 <translation id="962913030769097253">הכותרת הבאה של רמה 1</translation>
 <translation id="966588271015727539">‏בחירת צג ברייל תואם Bluetooth</translation>
-<translation id="973955474346881951">הפעלה והשבתה של הקשה ביד אחת</translation>
+<translation id="973955474346881951">הפעלה/השבתה של מצב דביק</translation>
 <translation id="985654871861528815">העברת הסמן שורה אחת למטה</translation>
 <translation id="992256792861109788">ורוד</translation>
 </translationbundle>

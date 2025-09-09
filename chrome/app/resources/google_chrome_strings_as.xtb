@@ -13,9 +13,6 @@
 <translation id="1065672644894730302">আপোনাৰ অগ্ৰাধিকাৰসমূহ পঢ়িব নোৱাৰি।
 
 কিছুমান সুবিধা উপলব্ধ নহ'ব পাৰে আৰু অগ্ৰাধিকাৰসমূহত কৰা সলনি কার্য ছেভ নহ'ব পাৰে।</translation>
-<translation id="1070377999570795893">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ’গামে যোগ কৰা এক্সটেনশ্বনে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Google Lensৰে সন্ধান কৰক</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" />এ আগতে Chrome ব্যৱহাৰ কৰি আছিল</translation>
 <translation id="110877069173485804">এয়া হৈছে আপোনাৰ Chrome</translation>
@@ -51,9 +48,6 @@
 <translation id="1547295885616600893">ChromeOSক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="1547469039832541117">হাইলাইট থকা কাৰ্যটো সমাপ্ত কৰে।</translation>
 <translation id="1553358976309200471">Chrome আপডে’ট কৰক</translation>
-<translation id="1585717515139318619">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ'গামে কোনো থীম যোগ কৰিছে যি Chromeৰ কার্যকলাপ সলনি কৰিব পাৰে।
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chromeএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" />টো ক্ষতিকাৰক বাবে Chromeএ সেইটো অৱৰোধ কৰিছে।</translation>
 <translation id="1597911401261118146">আপোনাৰ পাছৱৰ্ডসমূহ ডেটা উলংঘন আৰু আন সুৰক্ষা সম্পৰ্কীয় সমস্যাৰ পৰা নিৰাপদে আছেনে নাই পৰীক্ষা কৰিবলৈ <ph name="BEGIN_LINK" />Chromeত ছাইন ইন কৰক<ph name="END_LINK" />।</translation>

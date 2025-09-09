@@ -33,16 +33,6 @@
           at alisin sa pagkakapili ang "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Kung hindi nito malulutas ang isyu, inirerekomenda naming piliing muli ang opsyong ito
           para sa pinahusay na pagganap.</translation>
-<translation id="6581867098636731226">Pumunta sa
-          menu ng Chrome &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Network at internet &gt; Proxy
-          at i-deselect ang "Awtomatikong mag-detect ng mga setting."</translation>
 <translation id="7230956101631259640">Isang secure na page ng Chrome ang tinitingnan mo</translation>
 <translation id="8232971017369963250">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project.</translation>
 <translation id="8279509328145658601">Nagiging posible rin ang Chrome sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>

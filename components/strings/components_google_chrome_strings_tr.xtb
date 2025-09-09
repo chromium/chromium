@@ -27,7 +27,6 @@
           <ph name="ADVANCED_TITLE" /> öğesine gidin
           ve "<ph name="NO_PREFETCH_DESCRIPTION" />" seçeneğinin işaretini kaldırın.
           Bu işlem sorunu çözmezse performansın iyileşmesi için bu seçeneği tekrar işaretlemenizi öneririz.</translation>
-<translation id="6581867098636731226">Chrome menüsü &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Ağ ve internet &gt; Proxy'ye gidip "Ayarları otomatik olarak algıla"nın seçimini kaldırın.</translation>
 <translation id="7230956101631259640">Güvenli bir Chrome sayfasını görüntülüyorsunuz.</translation>
 <translation id="8232971017369963250">Chrome, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açık kaynak projesiyle hazırlanmıştır.</translation>
 <translation id="8279509328145658601">Chrome diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> da yararlanılarak geliştirilmiştir.</translation>

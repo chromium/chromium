@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="130631256467250065">ለውጦችዎ መሣሪያዎን ዳግም በሚያስጀምሩበት ቀጣዩ ጊዜ ላይ ይተገበራሉ።</translation>
-<translation id="261308610302996111">ወደ
-          የChromium ምናሌ &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          ይሂዱ እና ውቅርዎ ወደ «ምንም ተኪ» ወይም «ቀጥታ» መዋቀሩን ያረጋግጡ።</translation>
 <translation id="275588974610408078">የብልሽት ሪፖርት በChromium ውስጥ አይገኝም።</translation>
 <translation id="3064346599913645280">ደህንነቱ የተጠበቀ የChromium ገፅ እየተመለከቱ ነው</translation>
 <translation id="3255926992597692024">Chromium የመክፈያ ዘዴዎችን ለመሙላት ቅንብሮችን ለማሻሻል እየሞከረ ነው።</translation>
@@ -22,16 +14,6 @@
 <translation id="4949828774841497663">ወደ መተግበሪያዎች &gt; የሥርዓት ቅንብሮች &gt; አውታረ መረብ ይሂዱ፣
           ንቁ አውታረ መረብ የሚለውን ይምረጡ፣ የዝርዝሮች... አዝራሩ ላይ ጠቅ ያድርጉ እና የተመረጡ ሊሆኑ የሚችሉ
           ማናቸውም ተኪዎችን አይምረጡ።</translation>
-<translation id="6480456350195404966">ወደ
-          Chromium ምናሌ &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          አውታረ መረብ እና በይነመረብ &gt; ተኪ
-          ይሂዱ እና «በራስ-ሰር ቅንብሮችን እወቅ» የሚለውን አይምረጡ።</translation>
 <translation id="648062525172759633">እነዚህ ገፆች በChromium ገንቢዎች ጥቅም ላይ እንዲውሉ የታሰቡ ናቸው እና በንቃት ተጠብቀው ላይቆዩ ወይም ላይፈተሹ ይችላሉ። እነሱን ለማንቃት ወደ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ያስሱ፣ የስሕተት አርም ገፆችን ለማንቃት አዝራሩን ጠቅ ያድርጉ እና ከዚያም እንደገና ወደዚህ ገፅ ያስሱ።</translation>
 <translation id="6549378540556750549">እንዲሁም Chromium በሌላ <ph name="BEGIN_LINK_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_OSS" /> እንዲሆን ተደርጓል።</translation>
 <translation id="6613594504749178791">ለውጦችዎ Chromium በሚያስጀምሩበት ቀጣዩ ጊዜ ላይ ይተገበራሉ።</translation>

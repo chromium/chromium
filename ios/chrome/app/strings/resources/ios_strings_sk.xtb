@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">Váš kód PIN nebol zmenený. Skontrolujte internetové pripojenie a skúste to znova.</translation>
 <translation id="1063070031224282617">Vyberte, kam sa má uložiť súbor <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recenzie na základe vašich záujmov</translation>
-<translation id="1072679792409426431">Deaktivoval váš správca</translation>
 <translation id="1074827084851510304">Chystáte sa odstrániť niekoľko hesiel ({password_count}) a zoznam webov a aplikácií, pre ktoré ste nastavili, aby nikdy neukladali prihlasovacie údaje. Účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="1076421457278169141">Kód bol naskenovaný</translation>
 <translation id="1081114897601629648">Nasledujúce heslá neboli importované do Správcu hesiel Google, pretože nespĺňajú požiadavky.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Táto adresa bude odstránená z tohto zariadenia.}few{Tieto adresy budú odstránené z tohto zariadenia.}many{Tieto adresy budú odstránené z tohto zariadenia.}other{Tieto adresy budú odstránené z tohto zariadenia.}}</translation>
 <translation id="2297989278479054870">Po odhlásení budú záložky, heslá a ďalšie položky vo vašom účte Google odstránené z tohto zariadenia.</translation>
 <translation id="2299218006564889602">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>
-<translation id="2306265833370324042">Zobraziť podrobnosti o vyhľadávači <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zavrieť kartu</translation>
 <translation id="2311077293164383652">Zavrieť pripnutú kartu</translation>
 <translation id="2316129865977710310">Nie, ďakujem</translation>
@@ -673,6 +671,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3631443864840848029">Uistite sa, že ukladáte aktuálne heslo tohto webu.</translation>
 <translation id="3642060527569456384">Skupiny kariet sa automaticky ukladajú a aktualizujú vo všetkých vašich zariadeniach.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do účtu Google {email}.}few{{count} heslá sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} hesiel je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
+<translation id="3650299480924308502">Keď sa odhlásite, neuložené údaje sa z tohto zariadenia odstránia. Môže to zahŕňať heslá, históriu a ďalší obsah.</translation>
 <translation id="3659297405161482746">Nenašli sa žiadne spôsoby platby</translation>
 <translation id="3668816008081204991">Čitateľský zoznam je skrytý</translation>
 <translation id="3670030362669914947">Číslo</translation>
@@ -1202,7 +1201,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5709005673595820640">{count,plural, =1{Máte {count} recyklované heslo, ktoré môže ohroziť vaše zabezpečenie. Zmeňte ho, aby ste boli v bezpečí.}few{Máte {count} recyklované heslá, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}many{You have {count} reused passwords that could put your security at risk. Fix them now to stay safe.}other{Máte {count} recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}}</translation>
 <translation id="57094364128775171">Navrhnúť silné heslo…</translation>
 <translation id="5718049162805123412">Mali by ste ich okamžite zmeniť</translation>
-<translation id="5721040778297053709">Umiestnite kreditnú kartu do tohto rámčeka</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
 <translation id="5728072125198221967">Prepojené služby Googlu</translation>
@@ -1570,6 +1568,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7055240621761583113">Automaticky doplniť heslo</translation>
 <translation id="7063811929043357292">Tvoj účet spravuje tvoj rodič.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Neuložené údaje budú odstránené z tohto zariadenia, aby sa zaistilo zabezpečenie vašej organizácie. Môže to zahŕňať heslá, históriu a ďalší obsah.</translation>
 <translation id="7067780033517902110">Všetky súbory</translation>
 <translation id="707086654079606593">Spravovať adresy…</translation>
 <translation id="7080806333218412752">Odosiela webové adresy na kontrolu do Bezpečného prehliadania. Posiela tiež malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme a pomáha tak objavovať nové hrozby. Dočasne prepojí tieto údaje s vaším účtom Google (keď sa prihlásite), aby vás chránila v aplikáciách Google.</translation>
@@ -1781,7 +1780,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7889910613639381518">Jednoduchý a zabezpečený prístup pomocou miniaplikácie Správca hesiel Google.</translation>
 <translation id="7899199123054742721">Označiť všetko ako neprečítané</translation>
 <translation id="7911190106180361398">Vaša organizácia vám nepovoľuje synchronizovať všetko.</translation>
-<translation id="7918999344502274923">Skryť podrobnosti o vyhľadávači <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nenašli sa žiadne problémy</translation>
 <translation id="7925108652071887026">Údaje automatického dopĺňania</translation>
 <translation id="7926975587469166629">Prezývka karty</translation>

@@ -178,9 +178,6 @@
 <translation id="3155163173539279776">Reiniciar o Chromium</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3179665906251668410">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
-<translation id="3183357154200327217">Outro programa do computador adicionou um tema que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalize o seu novo perfil do Chromium</translation>
 <translation id="3224847870593914902">Para remover a sua Conta Google do Chromium, termine sessão no Chromium na página Definições</translation>
 <translation id="3234316605225071811">Mais tarde, o Chromium pode perguntar-lhe se quer usar as informações guardadas para preencher automaticamente formulários</translation>
@@ -245,9 +242,6 @@
 <translation id="4036079820698952681">Ajude a melhorar o Chromium ao comunicar as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4055805654398742145">Gestor de P&amp;alavras-passe</translation>
-<translation id="4061696872429826774">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="4118474109249235144">Navegação anónima do Chromium</translation>
 <translation id="4122186850977583290">Aceder à página Acerca do Chromium</translation>
@@ -407,9 +401,6 @@
 <translation id="6174920971222007286">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chromium pode verificar esta transferência se facultar a palavra-passe. As informações sobre o ficheiro são enviadas para a Navegação Segura do Google, mas o conteúdo do ficheiro e a palavra-passe permanecem no seu dispositivo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
-<translation id="6204922163963157461">Outro programa no computador adicionou uma app que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
 <translation id="6239161312595354541">Pergunte à pesquisa de imagens acerca deste vídeo</translation>
@@ -626,7 +617,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
 <translation id="8818550178040858407">Iniciar sessão no Chromium?</translation>
-<translation id="8823401858233292222">Torne o Chromium o navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="8826492472752484139">Clique em "Gestor de Palavras-passe"</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8852026904190808918">Este idioma é usado para apresentar menus, definições, alertas e outro texto no Chromium</translation>

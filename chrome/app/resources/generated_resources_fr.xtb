@@ -114,6 +114,9 @@
 <translation id="1069814191880976658">Choisir un autre écran</translation>
 <translation id="107022587824771715">Les suggestions de groupes d'onglets sont actuellement indisponibles. Vous pouvez <ph name="BEGIN_LINK" />actualiser la page maintenant<ph name="END_LINK" /> ou réessayer plus tard.</translation>
 <translation id="1070357312245925724">Raccourci de navigation</translation>
+<translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Ouverture dans le navigateur secondaire dans <ph name="COUNTDOWN_SECONDS" /> secondes</translation>
 <translation id="1071661533099313342">Séparer les vues</translation>
 <translation id="1071917609930274619">Chiffrement des données</translation>
@@ -853,6 +856,9 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1583082742220286248">Reprise de la session</translation>
 <translation id="1583127975413389276">La langue "<ph name="LANGUAGE" />" est traitée localement et fonctionne hors connexion</translation>
 <translation id="1584990664401018068">Pour utiliser ce réseau Wi-Fi (<ph name="NETWORK_ID" />), vous devrez peut-être vous identifier.</translation>
+<translation id="1585717515139318619">Un thème qui risque de modifier le fonctionnement de Chrome a été ajouté via un autre programme sur votre ordinateur.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587275751631642843">Console &amp;JavaScript</translation>
 <translation id="1587907146729660231">Appuyez sur le bouton Marche/Arrêt avec votre doigt</translation>
 <translation id="1588438908519853928">Standard</translation>
@@ -3347,7 +3353,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="331080746368555063">Les sites privés peuvent inclure l'intranet de votre entreprise, par exemple</translation>
 <translation id="3311007761540106761">Paramètre système par défaut</translation>
 <translation id="3311445899360743395">Les données associées à cette application pourront être supprimées de cet appareil.</translation>
-<translation id="3312300514034250578">Navigation sécurisée avec protection renforcée</translation>
 <translation id="3312470654018965389">Configuration du conteneur Linux…</translation>
 <translation id="3312883087018430408">Pour effectuer une recherche sur un site spécifique ou une partie de Chrome, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix. Par exemple, pour limiter votre recherche aux favoris, saisissez "@favoris", puis appuyez sur Tabulation ou Espace.</translation>
 <translation id="3313622045786997898">Valeur de signature du certificat</translation>
@@ -3655,7 +3660,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3522088408596898827">Le disque est presque saturé. Veuillez libérer de l'espace et réessayer.</translation>
 <translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
 <translation id="3523447078673133727">Ne pas autoriser les sites à suivre vos mains</translation>
-<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3524518036046613664">Découvrir les appareils de votre réseau local, comme les imprimantes</translation>
 <translation id="3524965460886318643">Exporter les activités</translation>
 <translation id="3525606571546393707">Essayez d'ouvrir le fichier depuis un autre dossier ou sélectionnez "Ouvrir dans l'éditeur de base" pour utiliser des options d'affichage et de modification limitées.</translation>
@@ -6615,7 +6619,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
-<translation id="5596808802173376270">Problème avec le fichier de restauration fourni : type probablement incorrect pour l'invité Linux existant. Consultez /var/log/messages pour en savoir plus.</translation>
 <translation id="5600348067066185292">L'installation s'effectue facilement en quelques étapes. Vous aurez une autre occasion de vérifier les modifications avant qu'elles ne soient appliquées à l'ordinateur.</translation>
 <translation id="5600706100022181951">Le téléchargement de la mise à jour utilisera <ph name="UPDATE_SIZE_MB" /> Mo de données mobiles. Voulez-vous continuer ?</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
@@ -8078,7 +8081,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6657240842932274095">Autoriser les services système à utiliser votre position ?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension "<ph name="NAME" />" sur cette page</translation>
-<translation id="6659594942844771486">Onglet</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Enregistrement de la caméra</translation>
 <translation id="6660301751798595791">Sélection de la voix</translation>
 <translation id="6660819301598582123">Voici à quoi ressemblera votre texte.</translation>
@@ -9713,6 +9715,10 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
     Visible sur les appareils à proximité avec le nom "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="7786889348652477777">&amp;Actualiser l'application</translation>
 <translation id="7787308148023287649">Afficher sur un autre écran</translation>
+<translation id="7788298548579301890">Une application qui risque de modifier le fonctionnement de Chrome a été ajoutée sur votre ordinateur via un autre programme.
+
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7789895198197042595">L'adresse de votre domicile peut vous aider à accomplir des tâches dans les services Google, par exemple pour obtenir des résultats de recherche et des itinéraires plus pertinents dans Google Maps. Vous pouvez modifier ou supprimer votre adresse dans votre <ph name="BEGIN_LINK" />compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Mode de saisie</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome actuellement utilisé</translation>
@@ -9816,7 +9822,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7861846108263890455">Langue du compte Google</translation>
-<translation id="7863211248337747225">Obtenir l'appli</translation>
 <translation id="7864114920800968141">Dans <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Désactiver le Bluetooth</translation>
 <translation id="7864825798076155402">Enregistrer dans votre compte Google ?</translation>

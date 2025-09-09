@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">Hindi napalitan ang iyong PIN. Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="1063070031224282617">Piliin kung saan ise-save ang "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Mga review batay sa iyong mga interes</translation>
-<translation id="1072679792409426431">Na-disable ng iyong administrator</translation>
 <translation id="1074827084851510304">Ide-delete mo ang {password_count} (na) password at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1081114897601629648">Hindi na-import ang mga sumusunod na password sa Google Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
 <translation id="2297989278479054870">Pagkatapos mong mag-sign out, maaalis sa device na ito ang mga bookmark, password, at higit pa sa iyong Google Account.</translation>
 <translation id="2299218006564889602">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager.</translation>
-<translation id="2306265833370324042">Ipakita ang mga detalye ng <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Isara ang Tab</translation>
 <translation id="2311077293164383652">Isara ang Naka-pin na Tab</translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
@@ -673,6 +671,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3631443864840848029">Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito.</translation>
 <translation id="3642060527569456384">Awtomatikong nase-save at naa-update ang mga grupo ng tab sa lahat ng iyong device.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Mase-save lang ang {count} password sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na {email}.}one{Mase-save lang ang {count} password sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na {email}.}other{Mase-save lang ang {count} na password sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na {email}.}}</translation>
+<translation id="3650299480924308502">Pagka-sign out mo, made-delete ang hindi naka-save na data sa device na ito. Puwedeng kabilang dito ang mga password, history, at higit pa.</translation>
 <translation id="3659297405161482746">Walang nakitang paraan ng pagbabayad</translation>
 <translation id="3668816008081204991">Naka-hide ang listahan ng babasahin</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -1202,7 +1201,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5709005673595820640">{count,plural, =1{Mayroon kang {count} password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>
 <translation id="57094364128775171">Magmungkahi ng malakas na password...</translation>
 <translation id="5718049162805123412">Dapat mong palitan ang mga ito ngayon mismo</translation>
-<translation id="5721040778297053709">Iposisyon ang credit card sa frame na ito</translation>
 <translation id="572328651809341494">Mga kamakailang tab</translation>
 <translation id="5724941645893276623">Para pribadong mag-browse sa web, magdagdag ng bagong tab</translation>
 <translation id="5728072125198221967">Mga naka-link na serbisyo ng Google</translation>
@@ -1570,6 +1568,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7055240621761583113">I-autofill ang password</translation>
 <translation id="7063811929043357292">Pinapamahalaan ng iyong magulang ang account mo.
 <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Para protektahan ang seguridad ng iyong organisasyon, made-delete ang hindi naka-save na data sa device na ito. Puwedeng kabilang dito ang mga password, history, at higit pa.</translation>
 <translation id="7067780033517902110">Lahat ng File</translation>
 <translation id="707086654079606593">Pamahalaan ang mga address…</translation>
 <translation id="7080806333218412752">Nagpapadala ng mga URL sa Ligtas na Pag-browse para masuri ang mga ito. Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta. Pansamantalang nili-link ang data na ito sa iyong Google Account kapag naka-sign in ka, para protektahan ka sa lahat ng Google app.</translation>
@@ -1781,7 +1780,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7889910613639381518">Madali at secure na access gamit ang widget ng Google Password Manager.</translation>
 <translation id="7899199123054742721">Markahan ang lahat bilang hindi pa nababasa</translation>
 <translation id="7911190106180361398">Hindi ka pinapayagan ng iyong organisasyon na i-sync ang lahat.</translation>
-<translation id="7918999344502274923">I-hide ang mga detalye ng <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Walang nakitang isyu</translation>
 <translation id="7925108652071887026">Mag-autofill ng data</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>

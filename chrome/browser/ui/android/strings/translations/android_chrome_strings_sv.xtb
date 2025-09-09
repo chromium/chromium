@@ -633,7 +633,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4042941173059740150">Fortsätt till <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Ark på nedre delen av skärmen</translation>
 <translation id="4045441967987592849">Öppna igen</translation>
-<translation id="4049920046559074950">Fler alternativ för <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardflik med ny aktivitet i delade flikgrupper}other{<ph name="TABS_COUNT_MANY" /> standardflikar med ny aktivitet i delade flikgrupper}}</translation>
 <translation id="405365679581583349">Uppdatera Google Play-tjänsterna</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
@@ -1077,7 +1076,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
 <translation id="6071995715087444295">Logga in på Google-kontot för att kontrollera om det finns utsatta lösenord</translation>
-<translation id="6078323886959318429">Genväg</translation>
+<translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
 <translation id="6087286598828478206">Vill du blockera och lämna gruppen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>

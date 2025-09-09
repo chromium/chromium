@@ -11,9 +11,6 @@
 <translation id="1051793555070215510">Responde esta encuesta de 1 minuto para ayudarnos a mejorar la navegación de Incógnito.</translation>
 <translation id="1059838145689930908">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, accede a Chrome.</translation>
 <translation id="1065672644894730302">No se pueden leer tus preferencias. Es posible que algunas funciones no estén disponibles y que no se guarden los cambios realizados a las preferencias.</translation>
-<translation id="1070377999570795893">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> usaba Chrome anteriormente</translation>
 <translation id="110877069173485804">Este es tu navegador Chrome</translation>
@@ -49,9 +46,6 @@
 <translation id="1547295885616600893">ChromeOS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1547469039832541117">Finaliza la tarea destacada.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
-<translation id="1585717515139318619">Otro programa en tu computadora agregó un tema que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome está usando tu cámara.</translation>
 <translation id="1587325591171447154">Chrome bloqueó <ph name="FILE_NAME" /> porque es un archivo peligroso.</translation>
 <translation id="1597911401261118146">Para comprobar si tus contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chrome<ph name="END_LINK" />.</translation>
@@ -453,7 +447,6 @@
 <translation id="6321592572353357376">La extensión "<ph name="EXTENSION_NAME" />" quiere que accedas a Chrome</translation>
 <translation id="6326175484149238433">Quitar de Chrome</translation>
 <translation id="6327105987658262776">No hay actualizaciones disponibles.</translation>
-<translation id="6334815226785304306">Establece Google Chrome como navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="6360449101159168105">Mientras esta pestaña estaba inactiva, se liberó memoria para mantener Chrome rápido. Puedes elegir que este sitio nunca esté inactivo.</translation>
 <translation id="6388799252195623474">ayúdame con esto</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
@@ -552,9 +545,6 @@
 <translation id="7572537927358445944">Desactivada • Chrome no puede verificar de dónde proviene esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Preguntar a Google acerca de esta página</translation>
-<translation id="760353356052806707">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite permisos de los sitios que no visitaste recientemente.</translation>

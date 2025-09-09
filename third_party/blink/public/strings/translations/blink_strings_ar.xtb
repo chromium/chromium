@@ -21,7 +21,7 @@
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
 <translation id="2507943997699731163">يُرجى ملء هذا الحقل.</translation>
-<translation id="2613802280814924224">الرجاء إدخال قيمة صالحة. أقرب قيمة صالحة هي <ph name="VALID_VALUE" />.</translation>
+<translation id="2613802280814924224">يُرجى إدخال قيمة صالحة. علمًا بأن أقرب قيمة صالحة هي <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>

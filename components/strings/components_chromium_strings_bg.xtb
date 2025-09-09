@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="130631256467250065">Промените ви ще влязат в сила следващия път, когато рестартирате устройството си.</translation>
-<translation id="261308610302996111">Отворете
-менюто на Chromium &gt;
-<ph name="SETTINGS_TITLE" />
-&gt;
-<ph name="SYSTEM_TITLE" />
-&gt;
-<ph name="PROXIES_TITLE" />
-и се уверете, че за конфигурацията ви е зададено no proxy или direct.</translation>
 <translation id="275588974610408078">Подаването на сигнали за сривове не е налице в Chromium.</translation>
 <translation id="3064346599913645280">Преглеждате защитена страница в Chromium.</translation>
 <translation id="3255926992597692024">Chromium се опитва да промени настройките за попълване на начините на плащане.</translation>
@@ -20,16 +12,6 @@
 <translation id="48558539577516920">Разрешете достъпа на Chromium до мрежата от настройките на защитната стена
 или антивирусния си софтуер.</translation>
 <translation id="4949828774841497663">Отворете Applications &gt; System Settings &gt; Network, изберете активната мрежа, кликнете върху бутона Details... и премахнете избора от всички евентуално избрани прокси сървъри.</translation>
-<translation id="6480456350195404966">Отворете
-менюто на Chromium &gt;
-<ph name="SETTINGS_TITLE" />
-&gt;
-<ph name="SYSTEM_TITLE" />
-&gt;
-<ph name="PROXIES_TITLE" />
-&gt;
-„Мрежа и интернет &gt; Прокси сървър“
-и премахнете избора от опцията за автоматично установяване на настройките.</translation>
 <translation id="648062525172759633">Тези страници са предназначени за програмисти на Chromium и може да не се поддържат или тестват активно. За да ги активирате, навигирайте до <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете върху бутона за активиране на страниците за отстраняване на грешки и след това отново се придвижете до тази страница.</translation>
 <translation id="6549378540556750549">Браузърът Chromium е възможен и благодарение на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Промените ви ще влязат в сила следващия път, когато стартирате отново Chromium.</translation>

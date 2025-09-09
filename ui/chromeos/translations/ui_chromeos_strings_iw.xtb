@@ -73,7 +73,7 @@
 <translation id="1577977504532381335">עיון במדיניות האדמין</translation>
 <translation id="158849752021629804">נדרשת רשת ביתית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1601786938618212857">כיווץ</translation>
+<translation id="1601786938618212857">מיקוד</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="162175252992296058">פורטוגזית עם מקלדת בינלאומית של ארה"ב</translation>
 <translation id="1629521517399325891">אישור המשתמש לא זמין לאימות הרשת.</translation>
@@ -257,7 +257,7 @@
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
 <translation id="3085752524577180175">‏מארח SOCKS</translation>
 <translation id="3104793765551262433">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי האדמין שלך, פרטים</translation>
-<translation id="3113592018909187986">נשאר לך עוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
+<translation id="3113592018909187986">נישאר לךעוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
 <translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. יש לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
@@ -329,7 +329,7 @@
 <translation id="3619115746895587757">קפוצ'ינו</translation>
 <translation id="3619593063686672873">אין סרטונים מהזמן האחרון</translation>
 <translation id="3634507049637220048">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי האדמין שלך</translation>
-<translation id="36451918667380448">ספק הסלולר נעול. עליך לפנות לספק לקבלת תמיכה.</translation>
+<translation id="36451918667380448">ספק הרשת הסלולרית נעול. עליך לפנות לספק לקבלת תמיכה.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> קבצים נבחרו</translation>
 <translation id="3685122418104378273">‏הסנכרון של Google Drive מושבת כברירת מחדל בעת שימוש בנתונים לנייד.</translation>
@@ -352,11 +352,11 @@
 <translation id="3811408895933919563">אנגלית (פקיסטן)</translation>
 <translation id="3811494700605067549">בחרת קובץ אחד</translation>
 <translation id="3817579325494460411">לא צוין</translation>
-<translation id="3819448694985509187">קוד האימות שגוי. נשאר לך עוד ניסיון אחד.</translation>
+<translation id="3819448694985509187">קוד האימות שגוי. נותר לך עוד ניסיון אחד.</translation>
 <translation id="3822559385185038546">‏שרת ה-proxy הזה נאכף על ידי האדמין</translation>
 <translation id="3830674330436234648">לא ניתן להפעיל</translation>
 <translation id="383652340667548381">סרבית</translation>
-<translation id="3839045880592694915">המודם אינו מורשה להתחבר לספק שלך. לקבלת מידע נוסף, אפשר לפנות לספק.</translation>
+<translation id="3839045880592694915">למודם אין הרשאה להתחבר לספק שלך. למידע נוסף, אפשר לפנות לספק.</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
 <translation id="3858860766373142691">שם</translation>
@@ -384,7 +384,7 @@
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שלא צריכים יותר</translation>
 <translation id="4134804435730168042">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר</translation>
-<translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, צריך ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות "<ph name="PIN_COMMAND" />".</translation>
+<translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
 <translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="4176286497474237543">לריקון האשפה</translation>
@@ -440,7 +440,7 @@
 <translation id="4509667233588080747">‏מקלדת Workman בינלאומית באנגלית (ארה"ב)</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
-<translation id="4552678318981539154">לרכישת נפח אחסון נוסף</translation>
+<translation id="4552678318981539154">לרכישת עוד נפח אחסון</translation>
 <translation id="4552759165874948005">‏רשת <ph name="NETWORK_TYPE" />, עוצמת אות ‎<ph name="SIGNAL_STRENGTH" />%‎</translation>
 <translation id="4559767610552730302">טשטוש</translation>
 <translation id="4572815280350369984">קובץ <ph name="FILE_TYPE" /></translation>
@@ -539,7 +539,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5177526793333269655">תצוגת תמונה ממוזערת</translation>
 <translation id="5181896909298187506">לא פתחת קבצים לאחרונה</translation>
-<translation id="5194713942430106590">צריך ללחוץ כדי למיין את העמודה בסדר עולה.</translation>
+<translation id="5194713942430106590">יש ללחוץ כדי למיין את העמודה בסדר עולה.</translation>
 <translation id="5211614973734216083">פארואזית</translation>
 <translation id="5218183485292899140">צרפתית שוויצרית</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -708,7 +708,7 @@
 <translation id="6438480100790416671">נפח האחסון נבדק…</translation>
 <translation id="6451527188465304418">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
-<translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי האדמין שלך, פרטים</translation>
+<translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="649877868557234318">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">‏ביטול הרשאה של שרתי proxy לרשתות משותפות</translation>
 <translation id="6503285896705205014">בהתאם למדיניות האדמין, העתקה של <ph name="COUNT" /> קבצים חסומה</translation>
@@ -831,7 +831,7 @@
 <translation id="7419668828140929293">בתהליך שחזור של הקובץ <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
-<translation id="7469894403370665791">התחברות אוטומטית לרשת הזו</translation>
+<translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
 <translation id="7486315294984620427">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעתיק אותו לקובצי Windows.</translation>
 <translation id="749452993132003881">היראגאנה</translation>
 <translation id="7495372004724182530">מליאלאם פונטית</translation>
@@ -989,7 +989,7 @@
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="8492972329130824181">הרשת הביתית אינה זמינה. יש להפעיל נדידה בחבילת גלישה כדי להתחבר.</translation>
 <translation id="8499098729323186194">מתבצע חילוץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
-<translation id="8502913769543567768">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, תופעל בסיום הגדרת המכשיר, לפי הגדרת האדמין.</translation>
+<translation id="8502913769543567768">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
 <translation id="8512483403832814140">כל זמן</translation>
 <translation id="8521441079177373948">בריטניה</translation>
 <translation id="853494022971700746">צרפתית (צרפת)</translation>
@@ -1002,14 +1002,14 @@
 <translation id="8561206103590473338">פיל</translation>
 <translation id="8566466896628108558">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי האדמין, פרטים</translation>
 <translation id="8568374623837201676">הקובץ יימחק באופן סופי. להמשיך?</translation>
-<translation id="8569764466147087991">בחירת קובץ לפתיחה</translation>
+<translation id="8569764466147087991">יש לבחור קובץ לפתיחה</translation>
 <translation id="8577897833047451336">קרואטית</translation>
 <translation id="8578308463707544055">אינדונזית</translation>
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
-<translation id="8630384863424041081">‏עליך להזין את קוד האימות של כרטיס ה-SIM או את קוד האימות שמוגדר כברירת מחדל שקיבלת מהספק. אפשר לפנות לספק לקבלת תמיכה.</translation>
-<translation id="863903787380594467">קוד האימות שגוי. נשארו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
+<translation id="8630384863424041081">‏עליך להזין את קוד האימות של כרטיס ה-SIM או את קוד האימות שמוגדר כברירת מחדל שניתן לך על ידי הספק. אפשר לפנות לספק לקבלת תמיכה.</translation>
+<translation id="863903787380594467">קוד האימות שגוי. נישאר לךעוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>
 <translation id="8656407365183407932">היה צורך להסיר את הקבצים במצב אופליין</translation>
 <translation id="8656768832129462377">לא להשתמש ברשות אישורים</translation>
@@ -1079,7 +1079,7 @@
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
-<translation id="938470336146445890">צריך להתקין אישור משתמש.</translation>
+<translation id="938470336146445890">יש להתקין אישור משתמש.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="943972244133411984">שונה על ידי</translation>
 <translation id="945522503751344254">שליחת משוב</translation>

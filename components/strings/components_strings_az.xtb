@@ -50,7 +50,6 @@
 <translation id="1080116354587839789">Eninə uyğunlaşdırın</translation>
 <translation id="1081061862829655580">Qab 19</translation>
 <translation id="1082026381988252344">Sürüşdürün və paylaşılan tab kontentinin miqyasını dəyişin</translation>
-<translation id="108859316315249327">Yenidən cəhd edin</translation>
 <translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> üçün tipik qiymət <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> təşkil edir, lakin cari qiymət vebdə <ph name="CURRENT_PRICE" /> təşkil edir.</translation>
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
 <translation id="1089599132348386324">Chrome ayarlarında fikrinizi dəyişə bilərsiniz.</translation>
@@ -75,7 +74,6 @@
 <translation id="1123753900084781868">Canlı Altyazı hazırda əlçatan deyil</translation>
 <translation id="112840717907525620">Siyasət keşi OK-dir</translation>
 <translation id="1131264053432022307">Kopyalanmış Şəkil</translation>
-<translation id="1132735979845538847"><ph name="ORIGIN" /> – Tam ekrandan çıxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="1138458427267715730">Veb-saytlarda qiymət düşəndə bildiriş alın</translation>
 <translation id="1142713751288681188">Kağız növü</translation>
 <translation id="1144136880160289237">Hələ aktiv mövzu yoxdur</translation>
@@ -456,7 +454,6 @@
 <translation id="1734878702283171397">Sistem admini ilə əlaqə yaratmağa çalışın.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, vaxtı bitir: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompüter</translation>
-<translation id="1740404923954980840">Tam ekrandan çıxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="1741474054575634405">Loyallıq kartlarını idarə edin...</translation>
 <translation id="1741613555002899862">Təyin edilməli və DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduqda, doğru dəyər olmalıdır.</translation>
 <translation id="1743393865165844832">Yataq və yataq örtükləri</translation>
@@ -930,6 +927,7 @@
 <translation id="2515629240566999685">Ərazinizdəki siqnal yoxlanılır</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda Touch ID ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, onu <ph name="LINK_TEXT" /> ünvanında tapa bilərsiniz.</translation>
 <translation id="2518584823165598232">Bu kart əlçatan deyil. Kart provayderinizlə əlaqə saxlayın.</translation>
+<translation id="2519250377986324805">İpucuna baxın</translation>
 <translation id="2521385132275182522">Aşağı sağdan ştapel vurun</translation>
 <translation id="2521736961081452453">Forma yaradın</translation>
 <translation id="2524461107774643265">Ətraflı Məlumat Əlavə Edin</translation>
@@ -1156,7 +1154,6 @@
 <translation id="2933624813161016821">Qabarıq folqa</translation>
 <translation id="293796669683825859">Şərhlər</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linklərini açın</translation>
-<translation id="2938370569652058706"><ph name="ORIGIN" /> – Kursoru göstərmək üçün tətbiqləri dəyişin, səhifəni yenidən yükləyin və ya geri qayıdın</translation>
 <translation id="2940418897281183211">PNG şəkil</translation>
 <translation id="2941878205777356567">Zərf 9 x 12 düym</translation>
 <translation id="2941952326391522266">Server <ph name="DOMAIN" /> olmasını sübut edə bilmədi; güvənlik sertifikatı <ph name="DOMAIN2" /> domenindəndir.</translation>
@@ -1324,7 +1321,6 @@
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208701679386778924">Gələcək ChromeOS güncəllənmələrini təkmilləşdirməyimiz üçün hesabat göndərin.</translation>
 <translation id="3209034400446768650">Səhifədə pul çıxıla bilər</translation>
-<translation id="3212468046572043669">Endirmə başladı. Bunu görmək üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> hostundakı fəaliyyətinizə nəzarət edilir</translation>
 <translation id="3215092763954878852">WebAuthn istifadə edilmədi</translation>
 <translation id="3215311088819828484">Nəticə yeniləndi</translation>
@@ -1860,7 +1856,6 @@
 <translation id="4085326869263783566">Yazmağa kömək et. Açmaq üçün tab və "enter" üzərinə basın</translation>
 <translation id="4085769736382018559">Məhsulları müqayisə edin</translation>
 <translation id="4085778582400064057">Mavi 2</translation>
-<translation id="4085859451613666999">Kartınız Google Hesabınızda saxlanılır, beləliklə gələcək alış-verişlər üçün avtomatik doldura bilərsiniz</translation>
 <translation id="4088981014127559358">Şəklin 1-ci tərəfinin Y oxu üzrə yerdəyişməsi</translation>
 <translation id="4089152113577680600">Qab 14</translation>
 <translation id="4092349052316400070">Ünvanı doldurun</translation>
@@ -2410,7 +2405,6 @@
 <translation id="4995474875135717171">Dəyişdirilib:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq sayt axtarışı və defolt axtarış sisteminizi idarə edin</translation>
 <translation id="4998950033665438990">Birüzlü</translation>
-<translation id="5001338033791319371">Tam ekrandan çıxmaq və endirməyə baxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="5001526427543320409">Üçüncü tərəf kukiləri</translation>
 <translation id="5002932099480077015">Imkan varsa, Chrome sürətli forma doldurmaq üçün bu cihaz sizin kart surəti saxlamaq olacaq.</translation>
 <translation id="5007344584818503324">Paylaşılan tab qrupları üzrə fəaliyyət</translation>
@@ -2471,7 +2465,6 @@
 <translation id="5097099694988056070">CPU/RAM istifadəsi kimi cihaz statistikası</translation>
 <translation id="5097468150760963273">27 x 39 düym</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Sİ rejimindən soruşmaq üçün taba basın, sonra daxil olun</translation>
 <translation id="510644072453496781">Karton (son)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> üçün virtual kart daxil edilib</translation>
 <translation id="5108567515277121477">Loyallıq kartı</translation>
@@ -3480,7 +3473,6 @@
 <translation id="6786145470008421571">Zərf 6 x 9 düym</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
 <translation id="6787094689637422836">Sizə gördüyünüz reklamlar üzərində daha çox seçim imkanı verən yeni məxfilik funksiyalarını işə salırıq.</translation>
-<translation id="6788615780749001893">Sİ rejimi düyməsi, Sİ rejimindən soruşmaq üçün Enter düyməsinə basın</translation>
 <translation id="6789062271869667677">Davamlı (uzun)</translation>
 <translation id="678982761784843853">Qorunan məzmun ID-ləri</translation>
 <translation id="6790428901817661496">Oxudun</translation>
@@ -3546,6 +3538,7 @@
 <translation id="6898699227549475383">Təşkilat (T)</translation>
 <translation id="6900702165119149418">Hesabdan çıxdınız</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
+<translation id="6905163627763043954">Sınayın</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="691024665142758461">Bir çox faylları endirin</translation>
 <translation id="691046363691324218">Təzminat nömrəsi</translation>
@@ -3973,7 +3966,6 @@
 <translation id="7582602800368606489">Google Calendar'da cəld yeni tədbir yaradın</translation>
 <translation id="7586676035079382730">Bildirişlərə icazə verilmir</translation>
 <translation id="7588707273764747927">Ötürmə</translation>
-<translation id="7589062909165841767">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini tətbiq fəaliyyətiniz<ph name="END_LINK_GAA" /> ola bilər</translation>
 <translation id="7591288787774558753">Məxfi kontent paylaşılsın?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> ünvanında kukilər və sayt datasını istifadə etmək istəyir</translation>
 <translation id="7592362899630581445">Serverin sertifikatı ad limitlərini pozur.</translation>
@@ -4259,7 +4251,6 @@
 <translation id="8075736640322370409">Cəld yeni Google Cədvəl yaradın</translation>
 <translation id="8075898834294118863">Sayt ayarlarını idarə edin</translation>
 <translation id="8076492880354921740">Tablar</translation>
-<translation id="8076880883123051368">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ünvanında <ph name="BEGIN_LINK_GAA" />Gemini tətbiq fəaliyyətiniz<ph name="END_LINK_GAA" /> kimi digər axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="8077669823243888800">Zərf Çin #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Məxfi fayl yüklənsin?}other{Məxfi fayllar yüklənsin?}}</translation>
 <translation id="8079031581361219619">Sayt yenidən yüklənsin?</translation>
@@ -4393,7 +4384,6 @@
 <translation id="8294431847097064396">Mənbə</translation>
 <translation id="8297545700510100061">Kukilər və digər sayt datası sizin yadda saxlamaq üçün istifadə edilir, məsələn, daxil olmanıza və ya reklamları fərdiləşdirməyə imkan yaradır. Bütün saytlar üzrə kukiləri idarə etmək üçün baxın: <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
-<translation id="8298399736867690281">Kart yalnız cihazda saxlanılıb</translation>
 <translation id="8301894345671534559">Kod daxil edin</translation>
 <translation id="8304912090860925649">Yeni müqayisə cədvəli</translation>
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
@@ -4914,7 +4904,6 @@
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Zərərsiz Gözəllik Məhsulları</translation>
 <translation id="9195969368671142407">Təşkilatınız Google Hesabınızda yadda saxlaya biləcəklərinizi məhdudlaşdırdıqda tab qruplarını paylaşa və ya onlara qoşula bilməzsiniz</translation>
-<translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> saytında Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
 <translation id="9201904868909900493">Sorğu açılır…</translation>
 <translation id="9204089334327209740">Yüklənmə tamamlandıqdan sonra faylları <ph name="CLOUD_PROVIDER" /> buludunda dəyişə bilərsiniz. Zibil qutusundakı fayllar daxil olmaqla yerli yaddaş avtomatik olaraq silinəcək.</translation>

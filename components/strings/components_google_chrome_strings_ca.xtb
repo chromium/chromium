@@ -31,7 +31,6 @@
         i desmarqueu <ph name="NO_PREFETCH_DESCRIPTION" />.
         Si això no resol el problema, us recomanem que torneu a seleccionar
         aquesta opció per obtenir un rendiment millorat.</translation>
-<translation id="6581867098636731226">Ves al menú de Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Xarxa i Internet &gt; Servidor intermediari i, tot seguit, desselecciona Detecta la configuració automàticament.</translation>
 <translation id="7230956101631259640">Estàs consultant una pàgina segura de Chrome</translation>
 <translation id="8232971017369963250">Chrome és possible gràcies al projecte de codi obert de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome també és possible gràcies a un altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>

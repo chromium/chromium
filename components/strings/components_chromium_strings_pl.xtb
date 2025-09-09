@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="130631256467250065">Zmiany zostaną zastosowane przy następnym uruchomieniu urządzenia.</translation>
-<translation id="261308610302996111">Otwórz menu Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
 <translation id="275588974610408078">Zgłaszanie awarii nie jest dostępne w Chromium.</translation>
 <translation id="3064346599913645280">Przeglądasz bezpieczną stronę Chromium</translation>
 <translation id="3255926992597692024">Chromium próbuje zmienić ustawienia wypełniania form płatności.</translation>
@@ -13,7 +12,6 @@
 <translation id="48558539577516920">Zezwalaj Chromium na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
 <translation id="4949828774841497663">Otwórz kolejno Aplikacje &gt; Ustawienia systemu &gt; Sieć, wybierz aktywną sieć, kliknij przycisk Szczegóły… i usuń zaznaczenie wszystkich zaznaczonych serwerów proxy.</translation>
-<translation id="6480456350195404966">Otwórz menu Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Sieć i internet &gt; Serwer proxy i odznacz „Automatycznie wykrywaj ustawienia”.</translation>
 <translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="6549378540556750549">Stworzenie przeglądarki Chromium było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>

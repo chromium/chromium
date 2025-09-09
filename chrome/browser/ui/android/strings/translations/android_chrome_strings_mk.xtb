@@ -632,7 +632,6 @@
 <translation id="4042941173059740150">Продолжете на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Долен лист</translation>
 <translation id="4045441967987592849">Отвори повторно</translation>
-<translation id="4049920046559074950">Повеќе опции за <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картичка со нова активност во споделените групи картички}one{<ph name="TABS_COUNT_MANY" /> стандардна картичка со нова активност во споделените групи картички}other{<ph name="TABS_COUNT_MANY" /> стандардни картички со нова активност во споделените групи картички}}</translation>
 <translation id="405365679581583349">Ажурирајте ги „Услугите на Google Play“</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>

@@ -13,9 +13,6 @@
 <translation id="1065672644894730302">Non se poden ler as túas preferencias.
 
 É posible que algunhas funcións non estean dispoñibles e que non se garden os cambios nas preferencias.</translation>
-<translation id="1070377999570795893">Outro programa do teu ordenador engadiu unha extensión que pode cambiar o funcionamento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chrome previamente</translation>
 <translation id="110877069173485804">Este é o teu navegador Chrome</translation>
@@ -51,9 +48,6 @@
 <translation id="1547295885616600893">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1547469039832541117">Finaliza a tarefa destacada.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
-<translation id="1585717515139318619">Outro programa do teu ordenador engadiu un tema que pode cambiar o funcionamento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome utiliza a túa cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="1597911401261118146">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
@@ -461,7 +455,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6321592572353357376">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chrome</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
-<translation id="6334815226785304306">Definir Google Chrome como o navegador predeterminado e fixalo na barra de tarefas</translation>
 <translation id="6360449101159168105">Mentres esta pestana estaba inactiva, liberouse memoria para que Chrome siga funcionando rápido. Podes optar por excluír este sitio para que nunca estea inactivo.</translation>
 <translation id="6388799252195623474">axúdame con isto</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
@@ -560,9 +553,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7572537927358445944">Desactivado • Chrome non pode verificar de onde procede esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Pregúntalle a Google sobre esta páxina</translation>
-<translation id="760353356052806707">Outro programa do teu ordenador engadiu unha aplicación que pode cambiar o funcionamento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS.</translation>
 <translation id="7627609214560473136">Para protexer os teus datos, Chrome quita permisos dos sitios que leves tempo sen visitar.</translation>

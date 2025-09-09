@@ -236,7 +236,7 @@
 <translation id="3611658447322220736">最近閉じたサイトがデータの送受信を完了できるようにする</translation>
 <translation id="3619294456800709762">サイトはピクチャー イン ピクチャーを自動的に開始できる</translation>
 <translation id="3628308229821498208">提案された検索</translation>
-<translation id="3641456520301071208">サイトが位置情報を要求できるようにする</translation>
+<translation id="3641456520301071208">位置情報へのアクセス権限がサイトからリクエストされる場合があります</translation>
 <translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}other{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}}</translation>
 <translation id="3676777756440746804">サイトがあなたに関する保存済みの情報の使用を要求できないようにする</translation>

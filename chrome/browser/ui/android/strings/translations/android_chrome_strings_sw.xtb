@@ -632,7 +632,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4042941173059740150">Endelea <ph name="SITE_ETLD_PLUS_ONE" /> ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Safu ya chini</translation>
 <translation id="4045441967987592849">Fungua upya</translation>
-<translation id="4049920046559074950">Chaguo zaidi za <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" /> cha kawaida kilicho na shughuli mpya katika vikundi vya vichupo vya pamoja}other{Vichupo <ph name="TABS_COUNT_MANY" /> vya kawaida vilivyo na shughuli mpya katika vikundi vya vichupo vya pamoja}}</translation>
 <translation id="405365679581583349">Sasisha huduma za Google Play</translation>
 <translation id="405399507749852140">Pata arifa bei ikipunguzwa kwenye tovuti yoyote</translation>

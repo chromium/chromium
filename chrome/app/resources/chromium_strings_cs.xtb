@@ -446,7 +446,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6598877126913850652">Přejít na nastavení oznámení prohlížeče Chromium</translation>
 <translation id="6600016381025017075">Vyhledat cokoliv na této stránce</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
-<translation id="6648212540664651655">Pokračujte od stavu, ve kterém jste skončili: Prohlížeč Chromium obnovil karty z poslední relace. Tuto funkci můžete vypnout v</translation>
+<translation id="6648212540664651655">Pokračujte od stavu, ve kterém jste skončili: Prohlížeč Chromium obnovil karty z poslední relace. Tuto funkci můžete zapnout v</translation>
 <translation id="665732753414869868">K vytvoření 3D mapy vašeho okolí potřebuje Chromium přístup k fotoaparátu</translation>
 <translation id="6669284030132180248">Pokud si záložky uložíte také do účtu Google, můžete v prohlížeči Chromium sledovat ceny produktů a dostávat upozornění, když cena klesne</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
@@ -511,7 +511,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7376384068949534168">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.</translation>
-<translation id="7413153308467572558">Pokračujte od stavu, ve kterém jste skončili: Chromium při restartech obnovuje karty. Tuto funkci můžete vypnout v</translation>
+<translation id="7413153308467572558">Pokračujte od stavu, ve kterém jste skončili: Chromium při restartech obnovuje karty. Tuto funkci můžete zapnout v</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7451052299415159299">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
@@ -618,7 +618,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8818550178040858407">Přihlásit se do prohlížeče Chromium?</translation>
-<translation id="8823401858233292222">Nastavit Chromium jako výchozí prohlížeč a připnout ho na hlavní panel</translation>
 <translation id="8826492472752484139">Klikněte na Správce hesel</translation>
 <translation id="8833697763442816810">Systém ChromiumOS</translation>
 <translation id="8852026904190808918">Tento jazyk se používá k zobrazení nabídek, nastavení, upozornění a dalšího textu v prohlížeči Chromium</translation>

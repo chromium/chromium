@@ -3576,6 +3576,7 @@ Se a política for deixada sem definição, a navegação no navegador será blo
       Se você desativar ou não definir esta configuração, o novo fluxo de login in-line será usado por padrão. Os usuários podem ativar o antigo fluxo de login baseado na Web com a flag de linha de comando --enable-web-based-signin.
 
       A configuração experimental será removida no futuro, quando o login in-line for compatível com todos os fluxos de login SSO.</translation>
+<translation id="3435178885391813398">Não permitir o Scanner.</translation>
 <translation id="3435796032110614169">Permite a exclusão do histórico de trabalhos de impressão</translation>
 <translation id="3436217793443508863">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia da bateria.</translation>
 <translation id="3437924696598384725">Permitir que o usuário gerencie conexões VPN</translation>
@@ -7414,6 +7415,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Se a política for definida como "Desativada", o uso de protocolo QUIC não será permitido.</translation>
 <translation id="5916855682471300200">As políticas da nuvem têm prioridade em relação às do computador da plataforma</translation>
+<translation id="5917092644305650513">Configurações do recurso Scanner</translation>
 <translation id="5917425424971710623">Não relatar informações sobre eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
 <translation id="5917897389577978190">Gmail (compatível desde a versão 135)</translation>
 <translation id="592036544845479336">Reativar eventos de mutação descontinuados/removidos</translation>
@@ -7826,6 +7828,7 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
 
       Se a política for definida como falsa ou não for definida, as informações de relatórios de erros não serão enviadas. Se ela for definida como verdadeira, as informações de relatórios de erros serão enviadas.</translation>
 <translation id="624219423122512710">Ações do navegador inativo</translation>
+<translation id="6243061183100681514">Permitir o Scanner e melhorar os modelos de IA.</translation>
 <translation id="6244061205361004687">Permitir que o usuário desconecte ou modifique uma VPN de forma manual</translation>
 <translation id="6244210204546589761">URLs que devem ser abertos na inicialização</translation>
 <translation id="624595269193747921">Se a pesquisa de impressora correspondente é limitada ou não a um conjunto específico de impressoras.</translation>
@@ -8622,6 +8625,7 @@ No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translat
 <translation id="666203515318060501">Permitir o preenchimento automático aprimorado sem melhorar os modelos de IA.</translation>
 <translation id="6665670272107384733">Definir com que frequência o usuário precisa digitar a senha para usar o desbloqueio rápido</translation>
 <translation id="6667586534922258705">Exibir o botão "mostrar senha" na tela de login e de bloqueio</translation>
+<translation id="6667636336079341367">Permitir o Scanner sem melhorar os modelos de IA.</translation>
 <translation id="6668559639284945695">Esta política permite reverter para o comportamento do escopo legado dos cookies.
 
 Isso significa que os cookies definidos em um protocolo específico (por exemplo, HTTPS) ou porta podem ser acessados de outro protocolo ou porta.
@@ -11374,6 +11378,17 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       Se a política for desativada ou deixada sem definição, a informação não será informada.
       Se ela for ativada, os eventos de CRD serão informados caso o usuário seja afiliado.</translation>
 <translation id="85723976805793612">Os logs de eventos de instalação de apps Android são compartilhados com o Google</translation>
+<translation id="8573354257711790704">Esta política controla as configurações do recurso Scanner para o <ph name="PRODUCT_OS_NAME" />.
+
+Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Esta política está obsoleta, portanto, é recomendável usar BrowserSignin.
 
       Se esta política for definida como true, o usuário precisará fazer login no <ph name="PRODUCT_NAME" /> com o próprio perfil antes de usar o navegador. O valor padrão de BrowserGuestModeEnabled será definido como false. Os perfis existentes desconectados serão bloqueados, e não será possível acessá-los depois de ativar esta política. Para mais informações, consulte o artigo da Central de Ajuda.

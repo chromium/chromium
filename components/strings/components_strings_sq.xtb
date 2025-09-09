@@ -724,7 +724,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="218940509700321686">Vlera të ndara me presje</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
-<translation id="2198183835992354675">Numri i udhëtarit të njohur</translation>
 <translation id="2198215508485017216">Ndodhi diçka e papritur <ph name="BEGIN_LINK" />Mëso më shumë rreth ngarkimeve te "Disku"<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Butoni i gishtave poshtë, shtyp tastin Enter për të hapur një formular për të dërguar koment të detajuar se pse nuk të pëlqen ky sugjerim</translation>
 <translation id="2202627062836089804">pjesën e pasme e kartës</translation>
@@ -927,6 +926,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2515629240566999685">Të kontrollosh sinjalin në zonën tënde</translation>
 <translation id="2515761554693942801">Ti zgjodhe që të verifikohesh me Touch ID në uebsajtet që përdorin <ph name="PROVIDER_ORIGIN" />. Ky ofrues mund të ketë ruajtur informacione për mënyrën tënde të pagesës, të cilat mund <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Kjo kartë nuk ofrohet. Kontakto me ofruesin e kartës.</translation>
+<translation id="2519250377986324805">Shiko si të veprosh</translation>
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
 <translation id="2521736961081452453">Krijo formular</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
@@ -1115,7 +1115,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2879233115503670140">E vlefshme deri më <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">të përdorë kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="2881276955470682203">Të ruhet karta?</translation>
-<translation id="2882280148032777436">Fshi numrin e udhëtarit të njohur</translation>
 <translation id="2882949212241984732">Palosje me dy dritare</translation>
 <translation id="2891963978019740012">Motori yt i kërkimit në Chrome</translation>
 <translation id="2893773853358652045">Ruli i katërt</translation>
@@ -2631,7 +2630,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ora jote është prapa" ose "Ora jote është përpara" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Verifiko që je ti për ta marrë këtë fjalëkalim në të gjitha pajisjet e tua</translation>
-<translation id="5380539543938195166">Të përditësohet numri i udhëtarit të njohur?</translation>
 <translation id="5380953781541843508">në rend rritës</translation>
 <translation id="5381318171304904246">Kur të vazhdosh, do të drejtohesh tek uebsajti i bankës. Pasi të verifikohesh, do të kthehesh automatikisht për të përfunduar blerjen.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> përditësoi skedën “<ph name="WEBSITE_TITLE" />”</translation>
@@ -3540,6 +3538,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6898699227549475383">Organizata (O)</translation>
 <translation id="6900702165119149418">Ke dalë</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
+<translation id="6905163627763043954">Provoje</translation>
 <translation id="6907458757809079309">Palestra</translation>
 <translation id="691024665142758461">Shkarko shumë skedarë</translation>
 <translation id="691046363691324218">Numri i zhdëmtimit</translation>
@@ -4042,7 +4041,6 @@ Detaje shtesë:
 <translation id="7690647519407127574">Oufuku Hagaki (kartolinë)</translation>
 <translation id="7693583928066320343">Renditja e faqeve u mor</translation>
 <translation id="769424100851389104">Fillo përditësimin tani</translation>
-<translation id="7696107855583699585">Modifiko numrin e udhëtarit të njohur</translation>
 <translation id="7697837508203274589">Ngjarje sportive të drejtpërdrejta</translation>
 <translation id="7698864304447945242">Të përditësohen "Shërbimet e Google Play për AR"?</translation>
 <translation id="7701040980221191251">Asnjë</translation>
@@ -4331,7 +4329,6 @@ Detaje shtesë:
 <translation id="822925450938886901">Për informacione shtesë dhe politikat që mund të zbatohen, hap chrome://management në shfletuesin tënd.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230528737876789478">VIN (numri i identifikimit të automjetit)</translation>
 <translation id="8232343881378637145">Temperatura e platformës</translation>
 <translation id="8233773197406738106">Po përgatit skedarin</translation>
 <translation id="823490921909113114">Për t'i aktivizuar këto cilësime dhe për të përdorur informacionin për pagesën nga "Llogaria jote e Google", vizito cilësimet e shërbimeve të plotësimit automatik.</translation>
@@ -4656,7 +4653,6 @@ Detaje shtesë:
 <translation id="8772387130037509473">Joga dhe pilate</translation>
 <translation id="877348612833018844">{0,plural, =1{Të zhvendoset skedari konfidencial?}other{Të zhvendosen skedarët konfidencialë?}}</translation>
 <translation id="8775347646940100151">Letër (letër me kokë)</translation>
-<translation id="8776941011841875705">Të ruhet numri i udhëtarit të njohur?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Butoni "Përkthe faqen". Aktivizoje për ta përkthyer këtë faqe me "Përkthe me Google"</translation>
 <translation id="8785658048882205566">Motoçikletat</translation>
@@ -4841,7 +4837,6 @@ Detaje shtesë:
 <translation id="9107199998619088551"><ph name="MANAGER" /> menaxhon profilin tënd</translation>
 <translation id="9107467864910557787">Shfletuesi yt menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Politika e administratorit çaktivizon ndarjen e ekranit me <ph name="APPLICATION_TITLE" /> kur përmbajtja konfidenciale është e dukshme</translation>
-<translation id="9114101423898634479">Shto numrin e udhëtarit të njohur</translation>
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>
 <translation id="9114581008513152754">Ky shfletues nuk menaxhohet nga një kompani ose organizatë tjetër. Aktiviteti në këtë pajisje mund të menaxhohet jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Më shumë rreth reklamave në Chrome</translation>

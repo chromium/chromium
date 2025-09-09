@@ -632,7 +632,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4042941173059740150">Continuă la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Foaia din partea de jos</translation>
 <translation id="4045441967987592849">Redeschide</translation>
-<translation id="4049920046559074950">Mai multe opțiuni pentru <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> filă standard cu activitate nouă în grupurile de file comune}few{<ph name="TABS_COUNT_MANY" /> file standard cu activitate nouă în grupurile de file comune}other{<ph name="TABS_COUNT_MANY" /> de file standard cu activitate nouă în grupurile de file comune}}</translation>
 <translation id="405365679581583349">Actualizează serviciile Google Play</translation>
 <translation id="405399507749852140">Primește alerte dacă prețul scade pe orice site</translation>

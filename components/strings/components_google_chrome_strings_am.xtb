@@ -31,16 +31,6 @@
         <ph name="ADVANCED_TITLE" />
         ይሂዱና «<ph name="NO_PREFETCH_DESCRIPTION" />»ን አይምረጡ።
         ይሄ ችግሩን ካልፈታው ለተሻሻለ አፈጻጸም ይህን አማራጭ እንደገና መምረጥ እንመክራለን።</translation>
-<translation id="6581867098636731226">ወደ
-          Chrome ምናሌ &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          አውታረ መረብ እና በይነመረብ &gt; ተኪ
-          ይሂዱ እና «በራስ-ሰር ቅንብሮችን እወቅ» የሚለውን አይምረጡ።</translation>
 <translation id="7230956101631259640">ደህንነቱ የተጠበቀ የChrome ገፅ እየተመለከቱ ነው</translation>
 <translation id="8232971017369963250">Chrome በ<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ክፍት ምንጭ ፕሮጀክት እንዲሆን ተደርጓል።</translation>
 <translation id="8279509328145658601">እንዲሁም Chrome በሌላ <ph name="BEGIN_LINK_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_OSS" /> እንዲሆን ተደርጓል።</translation>

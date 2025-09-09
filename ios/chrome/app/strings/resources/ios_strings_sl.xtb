@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">Koda PIN ni bila spremenjena. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="1063070031224282617">Izberite lokacijo za shranjevanje datoteke »<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />« (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Mnenja na podlagi vaših zanimanj</translation>
-<translation id="1072679792409426431">Onemogočil skrbnik</translation>
 <translation id="1074827084851510304">Izbrisali boste toliko gesel: {password_count} ter seznam spletnih mest in aplikacij, za katere ste izbrali, da se podatki za prijavo nikoli ne shranjujejo. Računi, ki ste jih ustvarili za spletna mesta in aplikacije, ne bodo izbrisani.</translation>
 <translation id="1076421457278169141">Koda je bila optično prebrana</translation>
 <translation id="1081114897601629648">Googlov upravitelj gesel ni mogel uvoziti naslednjih gesel, ker se ne ujemajo z zahtevami.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Ta naslov bo izbrisan iz te naprave.}one{Ti naslovi bodo izbrisani iz te naprave.}two{Ti naslovi bodo izbrisani iz te naprave.}few{Ti naslovi bodo izbrisani iz te naprave.}other{Ti naslovi bodo izbrisani iz te naprave.}}</translation>
 <translation id="2297989278479054870">Po odjavi bodo zaznamki, gesla in drugo v računu Google odstranjeni iz te naprave.</translation>
 <translation id="2299218006564889602">Gesla se šifrirajo v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
-<translation id="2306265833370324042">Prikaz podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zapri zavihek</translation>
 <translation id="2311077293164383652">Zapri pripeti zavihek</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
@@ -673,6 +671,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3631443864840848029">Poskrbite, da boste shranili trenutno geslo za to spletno mesto.</translation>
 <translation id="3642060527569456384">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {email}.}one{{count} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
+<translation id="3650299480924308502">Po odjavi se neshranjeni podatki izbrišejo iz te naprave. To lahko vključuje gesla, zgodovino in drugo.</translation>
 <translation id="3659297405161482746">Najdeno ni bilo nobeno plačilno sredstvo</translation>
 <translation id="3668816008081204991">Bralni seznam je skrit</translation>
 <translation id="3670030362669914947">Številka</translation>
@@ -1202,7 +1201,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5709005673595820640">{count,plural, =1{Imate {count} znova uporabljeno geslo, ki lahko ogrozi vašo varnost. Popravite ga, če se želite zavarovati.}one{Imate {count} znova uporabljeno geslo; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}two{Imate {count} znova uporabljeni gesli; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}few{Imate {count} znova uporabljena gesla, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}other{Imate {count} znova uporabljenih gesel, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}}</translation>
 <translation id="57094364128775171">Predlagaj močno geslo …</translation>
 <translation id="5718049162805123412">Takoj jih spremenite.</translation>
-<translation id="5721040778297053709">Kreditno kartico postavite v ta okvir</translation>
 <translation id="572328651809341494">Nedavni zavihki</translation>
 <translation id="5724941645893276623">Če želite zasebno brskati po spletu, dodajte nov zavihek</translation>
 <translation id="5728072125198221967">Povezane Googlove storitve</translation>
@@ -1570,6 +1568,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7055240621761583113">Samodejno izpolnjevanje gesla</translation>
 <translation id="7063811929043357292">Tvoj račun upravlja starš.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Zaradi zaščite varnosti organizacije bodo neshranjeni podatki izbrisani iz te naprave. To lahko vključuje gesla, zgodovino in drugo.</translation>
 <translation id="7067780033517902110">Vse datoteke</translation>
 <translation id="707086654079606593">Upravljanje naslovov …</translation>
 <translation id="7080806333218412752">Pošlje URL-je Varnemu brskanju, da jih ta preveri. Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj. Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
@@ -1781,7 +1780,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7889910613639381518">Preprost in varen dostop s pripomočkom Googlovega upravitelja gesel.</translation>
 <translation id="7899199123054742721">Označi vse kot neprebrano</translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
-<translation id="7918999344502274923">Skrivanje podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Najdena ni bila nobena težava</translation>
 <translation id="7925108652071887026">Samodejno izpolnjevanje podatkov</translation>
 <translation id="7926975587469166629">Vzdevek za kartico</translation>

@@ -11,9 +11,6 @@
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
 <translation id="1059838145689930908">Selle laienduse kasutamiseks kasutajana <ph name="USER_EMAIL_ADDRESS" /> logige Chrome'i sisse.</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
-<translation id="1070377999570795893">Muu arvutis olev programm lisas laienduse, mis võib muuta Chrome'i tööd.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1088300314857992706">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> kasutas varem Chrome'i</translation>
 <translation id="110877069173485804">See on teie Chrome</translation>
@@ -49,9 +46,6 @@
 <translation id="1547295885616600893">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Lõpetab esiletõstetud ülesande.</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
-<translation id="1585717515139318619">Muu arvutis olev programm lisas teema, mis võib muuta Chrome'i tööd.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome kasutab teie kaamerat.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> on ohtlik, mistõttu Chrome blokeeris selle.</translation>
 <translation id="1597911401261118146">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chrome'i sisse<ph name="END_LINK" />.</translation>
@@ -457,7 +451,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6321592572353357376">Laiendus „<ph name="EXTENSION_NAME" />“ soovib, et logiksite Chrome'i sisse</translation>
 <translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6327105987658262776">Ühtegi uuendust ei ole saadaval.</translation>
-<translation id="6334815226785304306">Muuda Google Chrome vaikebrauseriks ja kinnita tegumiribale</translation>
 <translation id="6360449101159168105">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chrome oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
 <translation id="6388799252195623474">aita mul seda teha</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
@@ -556,9 +549,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7572537927358445944">Väljas • Chrome ei suuda tuvastada, kust see laiendus pärineb</translation>
 <translation id="7583399374488819119">Brauseri <ph name="COMPANY_NAME" /> installiprogramm</translation>
 <translation id="7602868996817972616">Küsige Google'ilt selle lehe kohta</translation>
-<translation id="760353356052806707">Muu arvutis olev programm lisas rakenduse, mis võib muuta Chrome'i tööd.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> nõuab, et loeksite enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustuksite nendega. Need tingimused ei laienda, muuda ega piira Google Chrome OS-i tingimusi.</translation>
 <translation id="7627609214560473136">Andmete kaitsmiseks laske Chrome'il eemaldada load saitidelt, mida te pole hiljuti külastanud.</translation>

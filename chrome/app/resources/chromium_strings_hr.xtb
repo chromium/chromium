@@ -178,9 +178,6 @@
 <translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
 <translation id="3179665906251668410">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
-<translation id="3183357154200327217">Drugi program na vašem računalu dodao je temu koja može promijeniti Chromiumov način rada.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Prilagodba novog profila u Chromiumu</translation>
 <translation id="3224847870593914902">Da biste uklonili svoj Google račun iz Chromiuma, odjavite se iz Chromiuma na stranici Postavke</translation>
 <translation id="3234316605225071811">Chromium vas poslije može pitati želite li upotrijebiti spremljene podatke za automatsko popunjavanje obrazaca</translation>
@@ -245,9 +242,6 @@
 <translation id="4036079820698952681">Pomognite poboljšati Chromium tako što ćete prijaviti <ph name="BEGIN_LINK" />trenutačne postavke<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Najnovija verzija sadrži važna sigurnosna poboljšanja i nove značajke.</translation>
 <translation id="4055805654398742145">Upravitelj zaporki</translation>
-<translation id="4061696872429826774">Drugi program na vašem računalu dodao je proširenje koje može promijeniti Chromiumov način rada.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Kad se Chromium ne koristi jednu minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}one{Kad se Chromium ne koristi # minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}few{Kad se Chromium ne koristi # minute, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}other{Kad se Chromium ne koristi # minuta, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="4118474109249235144">Chromiumov anonimni način</translation>
 <translation id="4122186850977583290">Otvorite stranicu O pregledniku Chromium</translation>
@@ -407,9 +401,6 @@
 <translation id="6174920971222007286">Datoteka može biti opasna<ph name="LINE_BREAK" />Chromium može provjeriti tu datoteku za vas ako unesete zaporku. Podaci o datoteci šalju se Google sigurnom pregledavanju, ali sadržaj i zaporka datoteke ostaju na vašem uređaju.</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne pogreške poslužitelja ažuriranja.</translation>
 <translation id="6183079672144801177">Obavezno se prijavite na Chromium na uređaju <ph name="TARGET_DEVICE_NAME" /> i nakon toga ponovno pokušajte sa slanjem.</translation>
-<translation id="6204922163963157461">Drugi program na vašem računalu dodao je aplikaciju koja može promijeniti Chromiumov način rada.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Ovo računalo već ima noviju verziju Chromiuma. Ako softver ne funkcionira, deinstalirajte Chromium i pokušajte ponovo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium će se sada ponovo pokrenuti}=1{Chromium će se ponovo pokrenuti za jednu sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="6239161312595354541">Postavite pitanja pretraživanju slika o tom videozapisu</translation>
@@ -626,7 +617,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="878572486461146056">Pogreška pri instalaciji: vaš administrator mreže primijenio je pravilo grupe koje sprječava instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium treba dopuštenje za pristup kameri i mikrofonu za ovu web-lokaciju</translation>
 <translation id="8818550178040858407">Prijaviti se u Chromium?</translation>
-<translation id="8823401858233292222">Postavi Chromium kao zadani preglednik i prikvači ga na traku sa zadacima</translation>
 <translation id="8826492472752484139">Kliknite Upravitelj zaporki</translation>
 <translation id="8833697763442816810">Sustav Chromium OS</translation>
 <translation id="8852026904190808918">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromiumu</translation>

@@ -13,9 +13,6 @@
 <translation id="1065672644894730302">Ni ellir darllen eich dewisiadau.
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
-<translation id="1070377999570795893">Ychwanegodd rhaglen arall ar eich cyfrifiadur estyniad a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1088300314857992706">Yn flaenorol roedd <ph name="USER_EMAIL_ADDRESS" /> yn defnyddio Chrome</translation>
 <translation id="110877069173485804">Dyma eich Chrome</translation>
@@ -51,9 +48,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1547295885616600893">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="1547469039832541117">Yn gorffen y dasg a amlygwyd.</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
-<translation id="1585717515139318619">Mae rhaglen arall ar eich cyfrifiadur wedi ychwanegu thema a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Mae Google Chrome yn defnyddio'ch camera.</translation>
 <translation id="1587325591171447154">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="1597911401261118146">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
@@ -461,7 +455,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6321592572353357376">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau i chi fewngofnodi i Chrome</translation>
 <translation id="6326175484149238433">Tynnu o Chrome</translation>
 <translation id="6327105987658262776">Nid oes diweddariad ar gael.</translation>
-<translation id="6334815226785304306">Gwneud Google Chrome yn borwr diofyn a'i binio i'r bar tasgau</translation>
 <translation id="6360449101159168105">Tra bod y tab hwn yn anweithredol, rhyddhawyd cof i gadw Chrome yn gyflym. Gallwch ddewis gwahardd y wefan hon rhag bod yn anactif bob amser.</translation>
 <translation id="6388799252195623474">helpu fi gyda hyn</translation>
 <translation id="6412673304250309937">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>

@@ -32,16 +32,6 @@
           și debifează „<ph name="NO_PREFETCH_DESCRIPTION" />”.
           Dacă această acțiune nu rezolvă problema, îți recomandăm să selectezi din nou
           această opțiune pentru performanță îmbunătățită.</translation>
-<translation id="6581867098636731226">Accesează
-          meniul Chrome &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Rețea și internet &gt; Proxy
-          și debifează opțiunea Detectează automat setările.</translation>
 <translation id="7230956101631259640">Se afișează o pagină Chrome securizată</translation>
 <translation id="8232971017369963250">Chrome există datorită proiectului open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome funcționează și datorită altor <ph name="BEGIN_LINK_OSS" />programe software open source<ph name="END_LINK_OSS" />.</translation>

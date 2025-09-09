@@ -31,16 +31,6 @@
         og fjern markeringen af "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Hvis dette ikke løser problemet, bør du markere dette afkrydsningsfelt
         igen for at forbedre effektiviteten.</translation>
-<translation id="6581867098636731226">Gå til
-          Chrome-menuen &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="SYSTEM_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Netværk og internet &gt; Proxy,
-          og fravælg "Registrer indstillinger automatisk".</translation>
 <translation id="7230956101631259640">Du ser en sikker Google Chrome-side</translation>
 <translation id="8232971017369963250">Chrome leveres ved hjælp af open source-projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome leveres også ved hjælp af andet <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>

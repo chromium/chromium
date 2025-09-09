@@ -5,7 +5,7 @@
 <translation id="1140871961407805696">الكاميرا الخلفية المواجهة للبيئة</translation>
 <translation id="1196338895211115272">تعذّر تصدير المفتاح الخاص.</translation>
 <translation id="132960226125594336">تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى لأنّه سيتجاوز الحد الأقصى لحجم النص البرمجي أو الحد الأقصى لحجم النص البرمجي لإجمالي المحتوى الخاص بالإضافة.</translation>
-<translation id="1445572445564823378">تتسبب هذه الإضافة في إبطاء <ph name="PRODUCT_NAME" />. وبالتالي، يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
 <translation id="1610570795592207282">‏تعذَّر تحميل ملف css (صفحات الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
@@ -25,7 +25,7 @@
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
-<translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل عملية معالجة. يُرجى إعادة تشغيل Chrome والمحاولة مرة أخرى.</translation>
+<translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل معالجة الأداة المساعدة. جرّب إعادة تشغيل Chrome وحاول مرة أخرى.</translation>
 <translation id="4988792151665380515">تعذّر تصدير المفتاح العام.</translation>
 <translation id="5026754133087629784">عرض الويب: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">لا يمكن العثور على المسار المطلق للدليل للحزمة.</translation>

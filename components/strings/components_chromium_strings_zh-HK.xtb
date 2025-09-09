@@ -2,14 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="130631256467250065">您的變更會在下次重新啟動裝置時生效。</translation>
-<translation id="261308610302996111">前往
-          Chromium 選單 &gt;
-          [<ph name="SETTINGS_TITLE" />]
-          &gt;
-          [<ph name="SYSTEM_TITLE" />]
-          &gt;
-          [<ph name="PROXIES_TITLE" />]，
-          確認已設定為「不使用 Proxy」或「直接連線」。</translation>
 <translation id="275588974610408078">Chromium 不支援當機報告功能。</translation>
 <translation id="3064346599913645280">您正在查看安全的 Chromium 頁面</translation>
 <translation id="3255926992597692024">Chromium 正嘗試修改填入付款方法的設定。</translation>
@@ -21,16 +13,6 @@
 
           網絡。</translation>
 <translation id="4949828774841497663">前往 [應用程式] &gt; [系統設定] &gt; [網絡]，選取有效的網絡，然後按一下「詳細資料…」按鈕，並取消選取任何可能已選取的 Proxy。</translation>
-<translation id="6480456350195404966">前往
-          Chromium 選單 &gt;
-          [<ph name="SETTINGS_TITLE" />]
-          &gt;
-          [<ph name="SYSTEM_TITLE" />]
-          &gt;
-          [<ph name="PROXIES_TITLE" />]
-          &gt;
-          [網絡和互聯網] &gt; [Proxy]，
-          然後取消選取 [自動偵測設定]。</translation>
 <translation id="648062525172759633">這些頁面的適用對象為 Chromium 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，按一下按鈕啟用偵錯頁面，再返回此頁面。</translation>
 <translation id="6549378540556750549">Chrome 的開發亦有賴其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟件<ph name="END_LINK_OSS" />。</translation>
 <translation id="6613594504749178791">您的變更將於下次重新啟動 Chromium 時生效。</translation>

@@ -632,7 +632,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4042941173059740150">Pārejiet uz vietni <ph name="SITE_ETLD_PLUS_ONE" />, izmantojot <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="4044708993631234325">Ekrāna apakšdaļas lapa</translation>
 <translation id="4045441967987592849">Atkārtoti atvērt</translation>
-<translation id="4049920046559074950">Citas opcijas ierakstam “<ph name="INSTANCE_TITLE" />”</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standarta cilne ar jaunām darbībām kopīgoto ciļņu grupās}zero{<ph name="TABS_COUNT_MANY" /> standarta cilnes ar jaunām darbībām kopīgoto ciļņu grupās}one{<ph name="TABS_COUNT_MANY" /> standarta cilne ar jaunām darbībām kopīgoto ciļņu grupās}other{<ph name="TABS_COUNT_MANY" /> standarta cilnes ar jaunām darbībām kopīgoto ciļņu grupās}}</translation>
 <translation id="405365679581583349">Atjauniniet Google Play pakalpojumus</translation>
 <translation id="405399507749852140">Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>

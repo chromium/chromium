@@ -180,9 +180,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3155163173539279776">Starta om Chromium</translation>
 <translation id="3161522574479303604">Alla språk</translation>
 <translation id="3179665906251668410">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
-<translation id="3183357154200327217">Ett annat program i datorn har lagt till ett tema som kan ändra hur Chromium fungerar.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Anpassa din nya Chromium-profil</translation>
 <translation id="3224847870593914902">Du kan ta bort Google-kontot från Chromium genom att logga ut från Chromium på sidan Inställningar</translation>
 <translation id="3234316605225071811">Senare kan Chromium fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt</translation>
@@ -247,9 +244,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4036079820698952681">Hjälp oss att förbättra Chromium genom att rapportera dina <ph name="BEGIN_LINK" />aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4055805654398742145">Lösenordshantering</translation>
-<translation id="4061696872429826774">Ett annat program i datorn har lagt till ett tillägg som kan ändra hur Chromium fungerar.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="4118474109249235144">Inkognitoläget i Chromium</translation>
 <translation id="4122186850977583290">Öppna sidan Om Chromium</translation>
@@ -409,9 +403,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6174920971222007286">Den här filen kan vara farlig<ph name="LINE_BREAK" />Chromium kan kontrollera den här nedladdningen åt dig om du anger lösenordet. Information om filen skickas till Google Säker webbsökning, men filinnehållet och lösenordet lämnar inte enheten.</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
 <translation id="6183079672144801177">Se till att du är inloggad i Chromium på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
-<translation id="6204922163963157461">Ett annat program i datorn har lagt till en app som kan ändra hur Chromium fungerar.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Det finns redan en nyare version av Chromium på den här datorn. Avinstallera Chromium och försök igen om mjukvaran inte fungerar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startas om nu}=1{Om en sekund startas Chromium om}other{Om # sekunder startas Chromium om}}</translation>
 <translation id="6239161312595354541">Fråga bildsökning om den här videon</translation>
@@ -628,7 +619,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="878572486461146056">Installationsfel: Nätverksadministratören har tillämpat en grupprincip som förhindrar installation: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="8818550178040858407">Vill du logga in i Chromium?</translation>
-<translation id="8823401858233292222">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="8826492472752484139">Klicka på Lösenordshantering</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8852026904190808918">Menyer, inställningar, varningar och annan text i Chromium visas på det här språket</translation>

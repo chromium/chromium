@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">Tu PIN no se ha cambiado. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="1063070031224282617">Elige dónde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Reseñas según tus intereses</translation>
-<translation id="1072679792409426431">Inhabilitado por tu administrador</translation>
 <translation id="1074827084851510304">Estás a punto de eliminar {password_count} contraseñas y la lista de sitios y aplicaciones de los que has elegido no guardar nunca información de inicio de sesión. Las cuentas que hayas creado para sitios y aplicaciones no se eliminarán.</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1081114897601629648">Las siguientes contraseñas no se han importado al Gestor de contraseñas de Google porque no cumplen los requisitos.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se eliminará de este dispositivo.}other{Estas direcciones se eliminarán de este dispositivo.}}</translation>
 <translation id="2297989278479054870">Cuando cierres sesión, los marcadores, las contraseñas y otros datos de tu cuenta de Google se eliminarán de este dispositivo.</translation>
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
-<translation id="2306265833370324042">Mostrar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Cerrar pestaña</translation>
 <translation id="2311077293164383652">Cerrar pestaña fija</translation>
 <translation id="2316129865977710310">No, gracias</translation>
@@ -673,6 +671,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3631443864840848029">Asegúrate de guardar la contraseña que usas en este sitio.</translation>
 <translation id="3642060527569456384">Los grupos de pestañas se guardan y se actualizan automáticamente en todos tus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {email}.}other{{count} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {email}.}}</translation>
+<translation id="3650299480924308502">Después de cerrar sesión, los datos no guardados se eliminarán de este dispositivo. Esto podría incluir las contraseñas, el historial y más.</translation>
 <translation id="3659297405161482746">No se ha encontrado ningún método de pago</translation>
 <translation id="3668816008081204991">La lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1202,7 +1201,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5709005673595820640">{count,plural, =1{Tienes {count} contraseña reutilizada que podría poner en riesgo tu seguridad. Soluciona el problema para protegerte.}other{Tienes {count} contraseñas reutilizadas que podrían poner en riesgo tu seguridad. Soluciona el problema para protegerte.}}</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
 <translation id="5718049162805123412">Deberías cambiarlas de inmediato</translation>
-<translation id="5721040778297053709">Coloca la tarjeta de crédito dentro del marco</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5724941645893276623">Para navegar por la Web de forma privada, añade una nueva pestaña.</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
@@ -1570,6 +1568,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7055240621761583113">Autocompletar la contraseña</translation>
 <translation id="7063811929043357292">Tu padre o madre gestiona tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Para proteger la seguridad de tu organización, los datos no guardados se eliminarán de este dispositivo. Esto podría incluir las contraseñas, el historial y más.</translation>
 <translation id="7067780033517902110">Todos los archivos</translation>
 <translation id="707086654079606593">Gestionar direcciones…</translation>
 <translation id="7080806333218412752">Envía URL a Navegación segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para ayudar a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
@@ -1781,7 +1780,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7889910613639381518">Acceso fácil y seguro con el widget del Gestor de contraseñas de Google.</translation>
 <translation id="7899199123054742721">Marcar todo como no leído</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo.</translation>
-<translation id="7918999344502274923">Ocultar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">No se han detectado problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
@@ -2159,7 +2157,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
-<translation id="961856697154696964">Borrar datos navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Apps</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Unirte al grupo de pestañas con <ph name="OWNER_NAME" />}=1{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} persona más}other{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} personas más}}</translation>

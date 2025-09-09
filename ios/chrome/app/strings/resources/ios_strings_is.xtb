@@ -19,7 +19,6 @@
 <translation id="1062138828266376352">PIN-númerinu þínu var ekki breytt. Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="1063070031224282617">Veldu hvar á að vista „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Umsagnir sem tengjast áhugasviðunum þínum</translation>
-<translation id="1072679792409426431">Gert óvirkt af kerfisstjóranum þínum</translation>
 <translation id="1074827084851510304">Þú ert í þann mund að fara að eyða {password_count} aðgangsorðum og listanum yfir vefsvæðin og forritin sem þú valdir að þurfa aldrei að skrá þig inn á/í. Engum reikningum sem þú hefur búið til á vefsvæðum eða í forritum verður eytt.</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
 <translation id="1081114897601629648">Eftirfarandi aðgangsorð voru ekki flutt inn í Google-aðgangsorðastjórnun því þau uppfylla ekki skilyrðin.</translation>
@@ -349,7 +348,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Þessu heimilisfangi verður eytt úr tækinu.}one{Þessum heimilisföngum verður eytt úr tækinu.}other{Þessum heimilisföngum verður eytt úr tækinu.}}</translation>
 <translation id="2297989278479054870">Eftir að þú skráir þig út verða bókamerkin, aðgangsorðin og fleira á Google-reikningnum þínum fjarlægt úr tækinu.</translation>
 <translation id="2299218006564889602">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google.</translation>
-<translation id="2306265833370324042">Sýna upplýsingar um <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Loka flipa</translation>
 <translation id="2311077293164383652">Loka festum flipa</translation>
 <translation id="2316129865977710310">Nei, takk</translation>
@@ -673,6 +671,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3631443864840848029">Gakktu úr skugga um að þú sért að vista núverandi aðgangsorð þitt fyrir þetta vefsvæði.</translation>
 <translation id="3642060527569456384">Flipahópar vistast og uppfærast sjálfkrafa í öllum tækjunum þínum.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, {email}.}one{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} aðgangsorð eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
+<translation id="3650299480924308502">Eftir að þú skráir þig út verður óvistuðum gögnum eytt úr þessu tæki. Slík gögn gætu t.d. verið lykilorð, ferill og fleira.</translation>
 <translation id="3659297405161482746">Engir greiðslumátar fundust</translation>
 <translation id="3668816008081204991">Leslisti er falinn</translation>
 <translation id="3670030362669914947">Númer</translation>
@@ -1202,7 +1201,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5709005673595820640">{count,plural, =1{Þú ert með {count} endurnýtt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} endurnýtt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} endurnýtt aðgangsorð sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>
 <translation id="57094364128775171">Tillaga að traustu aðgangsorði…</translation>
 <translation id="5718049162805123412">Þú ættir að breyta þeim strax</translation>
-<translation id="5721040778297053709">Settu kreditkortið innan þessa ramma</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
 <translation id="5724941645893276623">Opnaðu nýjan flipa til að vafra leynilega</translation>
 <translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
@@ -1570,6 +1568,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7055240621761583113">Fylla aðgangsorðið sjálfkrafa út</translation>
 <translation id="7063811929043357292">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Óvistuðum gögnum verður eytt úr þessu tæki til að gæta að öryggi fyrirtækisins þíns. Slík gögn gætu t.d. verið aðgangsorð, ferill og fleira.</translation>
 <translation id="7067780033517902110">Allar skrár</translation>
 <translation id="707086654079606593">Stjórna heimilisföngum…</translation>
 <translation id="7080806333218412752">Sendir vefslóðir til athugunar í Öruggri vefskoðun. Sendir einnig lítið brot af síðum, niðurhali, virkni viðbóta og kerfisupplýsingar til að auðvelda leit að nýjum ógnum. Tengir þessi gögn tímabundið við Google reikninginn þinn þegar þú ert skráð(ur) inn til að auka öryggi þitt í Google forritum.</translation>
@@ -1781,7 +1780,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7889910613639381518">Greiður og öruggur aðgangur með græju Google-aðgangsorðastjórnunar.</translation>
 <translation id="7899199123054742721">Merkja allt sem ólesið</translation>
 <translation id="7911190106180361398">Fyrirtækið leyfir þér ekki að samstilla allt.</translation>
-<translation id="7918999344502274923">Fela upplýsingar um <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Engin vandamál fundust</translation>
 <translation id="7925108652071887026">Gögn sjálfvirkrar útfyllingar</translation>
 <translation id="7926975587469166629">Gælunafn spjalds</translation>
