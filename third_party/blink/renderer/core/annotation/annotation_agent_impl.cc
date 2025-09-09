@@ -96,7 +96,13 @@ bool IsValidRangeAndMarkable(const RangeInFlatTree* range) {
   Node* common_node = ephemeral_range.CommonAncestorContainer();
 
   LayoutObject* object = common_node->GetLayoutObject();
-  CHECK(object);
+  while (!object) {
+    common_node = FlatTreeTraversal::Parent(*common_node);
+    // We should exit this loop before this is false (i.e. there must be at
+    // least one ancestor node with a LayoutObject).
+    CHECK(common_node);
+    object = common_node->GetLayoutObject();
+  }
 
   PhysicalRect absolute_bounding_box =
       object->AbsoluteBoundingBoxRectForScrollIntoView();

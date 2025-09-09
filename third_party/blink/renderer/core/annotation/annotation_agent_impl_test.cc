@@ -1238,6 +1238,39 @@ TEST_F(AnnotationAgentImplTest, NodeContentsBeginsWithLineBreak) {
   EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
+TEST_F(AnnotationAgentImplTest, NodeWithDisplayContents) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+     <style>
+      #container {
+        position: absolute;
+        width: 200px;
+        height: 20px;
+        left: 0;
+        top: 20000px;
+      }
+    </style>
+    <body>
+      <div id="container">
+        <div id="contents" style="display: contents;">Text</div>
+      </div>
+    </body>
+  )HTML");
+
+  auto* div_with_display_contents =
+      GetDocument().body()->getElementById(AtomicString("contents"));
+  ASSERT_NE(div_with_display_contents, nullptr);
+  auto* agent = CreateNodeAgent(div_with_display_contents->GetDomNodeId());
+  // Produce a compositor frame. This should process the DOM mutations and
+  // finish attaching the agent.
+  Compositor().BeginFrame();
+  EXPECT_TRUE(agent->IsAttached());
+  agent->ScrollIntoView(/*applies_focus=*/false);
+  EXPECT_TRUE(ExpectInViewport(*div_with_display_contents->firstChild()));
+}
+
 // kTextFinder type annotations must not cause side-effects. Ensure they do not
 // expand a hidden=until-found element.
 TEST_F(AnnotationAgentImplTest, TextFinderDoesntMutateDom) {
@@ -1570,6 +1603,30 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
 
     EXPECT_TRUE(agent_foo->IsAttached());
   }
+}
+
+TEST_F(AnnotationAgentImplTest, TextFinderFindsAcrossDisplayContents) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>
+      <div id="1">
+        <div id="2" style="display: contents;">
+          <span>Hello </span>
+          <span>world!</span>
+        </div>
+      </div>
+    </body>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* agent = CreateTextFinderAgent("Hello%20world!",
+                                      mojom::blink::AnnotationType::kTextFinder);
+  ASSERT_TRUE(agent->NeedsAttachment());
+
+  Compositor().BeginFrame();
+  EXPECT_TRUE(agent->IsAttached());
 }
 
 TEST_F(AnnotationAgentImplTest, GlicShouldAnimateScroll) {
