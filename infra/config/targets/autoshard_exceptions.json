@@ -14,15 +14,15 @@
         },
         "android-15-x64-rel": {
             "android_browsertests": {
-                "shards": 8,
+                "shards": 10,
                 "try_builder": "android-x64-rel"
             },
             "chrome_public_test_apk": {
-                "shards": 47,
+                "shards": 56,
                 "try_builder": "android-x64-rel"
             },
             "components_browsertests": {
-                "shards": 293,
+                "shards": 455,
                 "try_builder": "android-x64-rel"
             }
         },
@@ -52,11 +52,11 @@
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
-                "shards": 40,
+                "shards": 72,
                 "try_builder": "android-desktop-x64-rel"
             },
             "unit_tests": {
-                "shards": 2,
+                "shards": 3,
                 "try_builder": "android-desktop-x64-rel"
             }
         }
@@ -70,7 +70,7 @@
         },
         "linux-chromeos-rel": {
             "ash_pixeltests": {
-                "shards": 1,
+                "shards": 2,
                 "try_builder": "linux-chromeos-rel"
             },
             "ash_unittests": {
@@ -86,7 +86,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "content_browsertests": {
-                "shards": 8,
+                "shards": 9,
                 "try_builder": "linux-chromeos-rel"
             },
             "interactive_ui_tests": {
@@ -102,7 +102,7 @@
     "chromium.fuchsia": {
         "fuchsia-x64-cast-receiver-rel": {
             "blink_unittests": {
-                "shards": 1,
+                "shards": 2,
                 "try_builder": "fuchsia-x64-cast-receiver-rel"
             },
             "blink_unittests_v2": {
@@ -146,7 +146,7 @@
                 "try_builder": "linux-rel"
             },
             "headless_shell_wpt_tests": {
-                "shards": 21,
+                "shards": 20,
                 "try_builder": "linux-rel"
             },
             "interactive_ui_tests": {
@@ -232,7 +232,7 @@
     "chromium.win": {
         "Win10 Tests x64": {
             "browser_tests": {
-                "shards": 60,
+                "shards": 56,
                 "try_builder": "win-rel"
             },
             "content_browsertests": {
@@ -244,7 +244,7 @@
                 "try_builder": "win-rel"
             },
             "interactive_ui_tests": {
-                "shards": 15,
+                "shards": 14,
                 "try_builder": "win-rel"
             },
             "pixel_browser_tests": {
