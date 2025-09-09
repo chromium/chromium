@@ -112,6 +112,8 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
         case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
           break;
+        default:
+          break;
       }
       this.set('pref_.controlledBy', controlledBy);
     } else {

@@ -16,6 +16,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -49,6 +50,8 @@ export function getTimePeriodString(
       return loadTimeData.getString('clearPeriod4Weeks');
     case TimePeriod.ALL_TIME:
       return loadTimeData.getString('clearPeriodEverything');
+    default:
+      assertNotReachedCase(timePeriod);
   }
 }
 

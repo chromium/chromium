@@ -34,9 +34,9 @@ export function isSignedIn(syncStatus: SyncStatus|undefined) {
     case SignedInState.WEB_ONLY_SIGNED_IN:
     case SignedInState.SIGNED_OUT:
       return false;
+    default:
+      assertNotReached('Invalid SignedInState');
   }
-
-  assertNotReached('Invalid SignedInState');
 }
 
 function isSyncPaused(syncStatus: SyncStatus): boolean {

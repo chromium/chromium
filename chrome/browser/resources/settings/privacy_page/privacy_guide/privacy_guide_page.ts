@@ -563,6 +563,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       case 'ArrowRight':
         isLtr ? this.navigateForward_() : this.navigateBackward_();
         break;
+      default:
+        break;
     }
   }
 }

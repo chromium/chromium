@@ -25,7 +25,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -117,6 +117,8 @@ function getDataTypeLabel(datatypes: BrowsingDataType) {
       return loadTimeData.getString('clearDownloadHistory');
     case BrowsingDataType.HOSTED_APPS_DATA:
       return loadTimeData.getString('clearHostedAppData');
+    default:
+      assertNotReachedCase(datatypes);
   }
 }
 
@@ -136,6 +138,8 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
       return 'browser.clear_data.download_history';
     case BrowsingDataType.HOSTED_APPS_DATA:
       return 'browser.clear_data.hosted_apps_data';
+    default:
+      assertNotReachedCase(datatypes);
   }
 }
 
