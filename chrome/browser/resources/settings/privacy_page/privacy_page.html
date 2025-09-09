@@ -127,51 +127,16 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryCamera}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
-          </media-picker>
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsCameraDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.CAMERA]]"
-              allow-option-label=
-                  "$i18n{siteSettingsCameraAllowed}"
-              allow-option-icon="cr:videocam"
-              block-option-label="$i18n{siteSettingsCameraBlocked}"
-              block-option-sub-label=
-                  "$i18n{siteSettingsCameraBlockedSubLabel}"
-              block-option-icon="privacy:videocam-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.CAMERA]]" read-only-list
-              allow-header="$i18n{siteSettingsCameraAllowedExceptions}"
-              block-header="$i18n{siteSettingsCameraBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-camera-page search-term="[[searchFilter_]]">
+          </settings-camera-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/images" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsImagesDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.IMAGES]]"
-              allow-option-label="$i18n{siteSettingsImagesAllowed}"
-              allow-option-icon="privacy:imagesmode"
-              block-option-label="$i18n{siteSettingsImagesBlocked}"
-              block-option-sub-label=
-                  "$i18n{siteSettingsImagesBlockedSubLabel}"
-              block-option-icon="privacy:hide-image">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.IMAGES]]"
-              allow-header="$i18n{siteSettingsImagesAllowedExceptions}"
-              block-header="$i18n{siteSettingsImagedBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-images-page search-term="[[searchFilter_]]">
+          </settings-images-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/insecureContent" no-search>
@@ -179,20 +144,8 @@
             page-title="$i18n{siteSettingsCategoryInsecureContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsInsecureContentDescription}
-          </div>
-          <div class="cr-row first secondary">
-            $i18n{siteSettingsInsecureContentBlock}
-          </div>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
-              allow-header=
-                  "$i18n{siteSettingsInsecureContentAllowedExceptions}"
-              block-header=
-                  "$i18n{siteSettingsInsecureContentBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-insecure-content-page search-term="[[searchFilter_]]">
+          </settings-insecure-content-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableFederatedIdentityApiContentSetting_]]">
@@ -229,33 +182,8 @@
         <settings-subpage page-title="$i18n{siteSettingsSound}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsSoundDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.SOUND]]"
-              allow-option-label="$i18n{siteSettingsSoundAllowed}"
-              allow-option-icon="privacy:volume-up"
-              block-option-label="$i18n{siteSettingsSoundBlocked}"
-              block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
-              block-option-icon="privacy:volume-off">
-          </settings-category-default-radio-group>
-          <settings-toggle-button
-              id="block-autoplay-setting"
-              class="hr"
-              label="$i18n{siteSettingsBlockAutoplaySetting}"
-              pref="{{blockAutoplayStatus_.pref}}"
-              disabled="[[!blockAutoplayStatus_.enabled]]"
-              hidden="[[!enableBlockAutoplayContentSetting_]]"
-              on-settings-boolean-control-change="onBlockAutoplayToggleChange_"
-              no-set-pref>
-          </settings-toggle-button>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.SOUND]]"
-              allow-header="$i18n{siteSettingsSoundAllowedExceptions}"
-              block-header="$i18n{siteSettingsSoundBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-sound-page search-term="[[searchFilter_]]">
+          </settings-sound-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/autoVerify" no-search>
@@ -267,26 +195,8 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryMicrophone}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <media-picker label="$i18n{siteSettingsMicrophoneLabel}" type="mic">
-          </media-picker>
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsMicDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.MIC]]"
-              allow-option-label=
-                  "$i18n{siteSettingsMicAllowed}"
-              allow-option-icon="privacy:mic"
-              block-option-label="$i18n{siteSettingsMicBlocked}"
-              block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
-              block-option-icon="privacy:mic-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.MIC]]" read-only-list
-              allow-header="$i18n{siteSettingsMicAllowedExceptions}"
-              block-header="$i18n{siteSettingsMicBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-microphone-page search-term="[[searchFilter_]]">
+          </settings-microphone-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]"

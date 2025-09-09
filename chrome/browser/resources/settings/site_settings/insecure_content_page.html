@@ -1,0 +1,13 @@
+  <style include="settings-shared site-settings-shared"></style>
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsInsecureContentDescription}
+  </div>
+  <div class="cr-row first secondary">
+    $i18n{siteSettingsInsecureContentBlock}
+  </div>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
+      allow-header="$i18n{siteSettingsInsecureContentAllowedExceptions}"
+      block-header="$i18n{siteSettingsInsecureContentBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
