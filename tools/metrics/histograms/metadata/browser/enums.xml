@@ -428,6 +428,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/public/browser/process_allocation_context.h:ProcessAllocationSource) -->
 
+<!-- LINT.IfChange(ProcessReusePolicy) -->
+
+<enum name="ProcessReusePolicy">
+  <int value="0" label="Default"/>
+  <int value="1" label="ProcessPerSite"/>
+  <int value="2" label="ReusePendingOrCommittedSiteSubframe"/>
+  <int value="3" label="ReusePendingOrCommittedSiteWorker"/>
+  <int value="4" label="ReusePendingOrCommittedSiteWithMainFrameThreshold"/>
+  <int value="5" label="ReusePrerenderingProcessForMainFrame"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/process_reuse_policy.h:ProcessReusePolicy) -->
+
 <enum name="RendererType">
   <int value="1" label="Normal renderer"/>
   <int value="2" label="Extension renderer"/>

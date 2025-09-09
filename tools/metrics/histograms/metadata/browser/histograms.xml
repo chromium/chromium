@@ -1362,6 +1362,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy"
+    enum="ProcessReusePolicy" expires_after="2026-07-04">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the process reuse policy when a SiteInstance reuses an existing
+    process. Recorded when RenderProcessHostImpl::GetProcessHostForSiteInstance
+    is called and the site instance is assigned a process by reusing an existing
+    process.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SiteInstanceRenderProcessAssignment"
     enum="SiteInstanceProcessAssignment" expires_after="2026-07-04">
   <owner>ziadyoussef@chromium.org</owner>

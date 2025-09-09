@@ -15,6 +15,11 @@ namespace content {
 // soft process limit has been reached. When the limit has been reached, an
 // existing suitable (e.g., same-site if Site Isolation is enabled)
 // RenderProcessHost will be chosen randomly to be reused when possible.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProcessReusePolicy)
 enum class ProcessReusePolicy {
   // In this mode, SiteInstances don't proactively reuse processes. An
   // existing process with an unmatched service worker for the site is reused
@@ -47,7 +52,10 @@ enum class ProcessReusePolicy {
   // When used, this main frame's site will be rendered in a RenderProcessHost
   // that is already in use for the site and hosting prerendered frames only.
   kReusePrerenderingProcessForMainFrame = 5,
+
+  kMaxValue = kReusePrerenderingProcessForMainFrame,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:ProcessReusePolicy)
 
 }  // namespace content
 

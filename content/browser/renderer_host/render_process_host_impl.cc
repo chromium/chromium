@@ -5092,6 +5092,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   base::UmaHistogramEnumeration(
       "BrowserRenderProcessHost.SiteInstanceRenderProcessAssignment",
       site_instance->GetLastProcessAssignmentOutcome());
+  if (site_instance->GetLastProcessAssignmentOutcome() ==
+      SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS) {
+    base::UmaHistogramEnumeration(
+        "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy",
+        process_reuse_policy);
+  }
   MAYBEVLOG(2) << __func__ << "(" << site_info << ") selected process host "
                << render_process_host->GetDeprecatedID()
                << " using assignment \""
