@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,14 +41,15 @@ TabCreationMetricsController::TabCreationMetricsController(TabInterface* tab)
 TabCreationMetricsController::~TabCreationMetricsController() = default;
 
 void TabCreationMetricsController::ScheduleRecordTabGroupingTransition() {
-  if (!tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
+  TabStripModel* tab_strip_model =
+      tab_->GetBrowserWindowInterface()->GetTabStripModel();
+  if (!tab_strip_model) {
     return;
   }
 
   std::optional<tab_groups::TabGroupId> last_active_group_id;
-  if (Profile* profile =
-          tab_->GetBrowserWindowInterface()->GetTabStripModel()->profile()) {
-    if (auto* data = profile->GetUserData(
+  if (Profile* profile = tab_strip_model->profile()) {
+    if (base::SupportsUserData::Data* data = profile->GetUserData(
             NewTabGroupingUserData::kNewTabGroupingUserDataKey)) {
       last_active_group_id =
           static_cast<NewTabGroupingUserData*>(data)->last_active_group_id();

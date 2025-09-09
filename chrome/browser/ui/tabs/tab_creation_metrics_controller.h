@@ -24,19 +24,24 @@ enum TabGroupingTransitionType {
   // Used when the transition type is not set.
   kUninitialized = 0,
 
-  // The tab was not in a group at the start and remains ungrouped.
+  // The active tab was ungrouped when a new tab was created, and the new tab
+  // was left ungrouped.
   kUngroupedToUngrouped = 1,
 
-  // The tab was not in a group at the start and joined a group.
+  // The active tab was ungrouped when a new tab was created, and the new tab
+  // was left grouped.
   kUngroupedToGrouped = 2,
 
-  // The tab was in a group at the start and became ungrouped.
+  // The active tab was grouped when a new tab was created, and the new tab
+  // was left ungrouped.
   kGroupedToUngrouped = 3,
 
-  // The tab was in a group at the start and remains in the same group.
+  // The active tab was grouped when a new tab was created, and the new tab
+  // was grouped to the existing group of the active tab.
   kGroupedToInPreviousGroup = 4,
 
-  // The tab was in a group at the start but joined a different group.
+  // The active tab was grouped when a new tab was created, and the new tab
+  // was grouped to a group different from the active tab's group.
   kGroupedToOutsidePreviousGroup = 5,
 
   kMaxValue = kGroupedToOutsidePreviousGroup,
