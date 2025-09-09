@@ -1327,6 +1327,9 @@ struct HistoryAddPageArgs {
   GURL referrer;
   RedirectList redirects;
   ui::PageTransition transition;
+  // Whether the visit should be hidden from UI features. Should generally be
+  // `true` for visits in subframes and ad frames, and for visits that resulted
+  // in an error response (HTTP 4XX/5XX).
   bool hidden;
   VisitSource visit_source;
   VisitResponseCodeCategory response_code_category;
