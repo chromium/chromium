@@ -165,7 +165,7 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
 // Coordinates fetching multiple types of page context.
 class PageContextFetcher : public content::WebContentsObserver {
  public:
-  PageContextFetcher(
+  explicit PageContextFetcher(
       std::unique_ptr<FetchPageProgressListener> progress_listener)
       : progress_listener_(std::move(progress_listener)) {}
   ~PageContextFetcher() override = default;
