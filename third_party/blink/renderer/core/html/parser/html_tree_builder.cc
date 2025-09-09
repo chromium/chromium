@@ -289,12 +289,14 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  const HTMLParserOptions& options,
                                  bool include_shadow_roots,
                                  ContainerNode* fragment_target,
-                                 Element* fragment_context_element)
+                                 Element* fragment_context_element,
+                                 CustomElementRegistry* registry)
     : tree_(parser->ReentryPermit(),
             document,
             parser_content_policy,
             fragment_target,
-            fragment_context_element),
+            fragment_context_element,
+            registry),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
@@ -314,20 +316,23 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                       options,
                       include_shadow_roots,
                       nullptr,
+                      nullptr,
                       nullptr) {}
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  ContainerNode* fragment_target,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool include_shadow_roots)
+                                 bool include_shadow_roots,
+                                 CustomElementRegistry* registry)
     : HTMLTreeBuilder(parser,
                       fragment_target->GetDocument(),
                       parser_content_policy,
                       options,
                       include_shadow_roots,
                       fragment_target,
-                      context_element) {
+                      context_element,
+                      registry) {
   DCHECK(IsMainThread());
   fragment_context_.Init(fragment_target, context_element);
 

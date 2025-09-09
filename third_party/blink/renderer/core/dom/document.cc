@@ -1613,7 +1613,7 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   }
 
   if (definition) {
-    return definition->CreateElement(*this, q_name, flags, registry);
+    return definition->CreateElement(*this, q_name, flags);
   }
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(

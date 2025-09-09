@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] importNode should clone using target's registry if non-null, including when it's not the global registry
-  assert_false: expected false got true
-[FAIL] importNode should clone a template content using a specified scoped registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.

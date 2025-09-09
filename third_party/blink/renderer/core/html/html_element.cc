@@ -3468,9 +3468,12 @@ ElementInternals* HTMLElement::attachInternals(
   }
 
   // 2. Let definition be the result of looking up a custom element definition
-  // given this's node document, its namespace, its local name, and null as the
+  // given this's node registry, its namespace, its local name, and null as the
   // is value.
   CustomElementRegistry* registry = GetTreeScope().customElementRegistry();
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    registry = customElementRegistry();
+  }
   auto* definition =
       registry ? registry->DefinitionForName(localName()) : nullptr;
 

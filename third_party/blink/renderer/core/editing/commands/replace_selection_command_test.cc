@@ -73,7 +73,8 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<span><div>bar</div></span>", b_element);
+  fragment->ParseHTML("<span><div>bar</div></span>", b_element,
+                      /*registry*/ nullptr);
 
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
@@ -119,7 +120,7 @@ TEST_F(ReplaceSelectionCommandTest, TextAutosizingDoesntInflateText) {
       SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("baz", span);
+  fragment->ParseHTML("baz", span, /*registry*/ nullptr);
 
   ReplaceSelectionCommand::CommandOptions options =
       ReplaceSelectionCommand::kMatchStyle;
@@ -139,7 +140,8 @@ TEST_F(ReplaceSelectionCommandTest, TrailingNonVisibleTextCrash) {
                            SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<div>bar</div> ", QuerySelector("div"));
+  fragment->ParseHTML("<div>bar</div> ", QuerySelector("div"),
+                      /*registry*/ nullptr);
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
       GetDocument(), fragment, options);

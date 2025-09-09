@@ -122,7 +122,7 @@ Node* DOMPatchSupport::PatchNode(Node* node,
 
   // FIXME: This code should use one of createFragment* in Serialization.h
   if (IsA<HTMLDocument>(GetDocument()))
-    fragment->ParseHTML(markup, target_element);
+    fragment->ParseHTML(markup, target_element, /*registry*/ nullptr);
   else
     fragment->ParseXML(markup, target_element, IGNORE_EXCEPTION);
 

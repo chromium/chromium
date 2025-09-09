@@ -497,7 +497,8 @@ HTMLConstructionSite::HTMLConstructionSite(
     Document& document,
     ParserContentPolicy parser_content_policy,
     ContainerNode* fragment_target,
-    Element* context_element)
+    Element* context_element,
+    CustomElementRegistry* registry)
     : reentry_permit_(reentry_permit),
       document_(&document),
       attachment_root_(fragment_target && fragment_target->IsDocumentFragment()
@@ -512,7 +513,8 @@ HTMLConstructionSite::HTMLConstructionSite(
           ScriptingContentIsAllowed(parser_content_policy)),
       is_parsing_fragment_(fragment_target),
       redirect_attach_to_foster_parent_(false),
-      in_quirks_mode_(document.InQuirksMode()) {
+      in_quirks_mode_(document.InQuirksMode()),
+      custom_element_registry_(registry) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
          is_parsing_fragment_);
 
@@ -551,6 +553,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(pending_text_);
   visitor->Trace(pending_dom_parts_);
   visitor->Trace(patch_scope_);
+  visitor->Trace(custom_element_registry_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -1167,21 +1170,31 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
 CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
     Document& document,
     const QualifiedName& tag_name,
-    const AtomicString& is) {
-  // "1. If namespace is not the HTML namespace, return null."
+    const AtomicString& is,
+    CustomElementRegistry* registry) {
+  // "2. If namespace is not the HTML namespace, return null."
   if (tag_name.NamespaceURI() != html_names::xhtmlNamespaceURI)
     return nullptr;
 
-  // "2. If document does not have a browsing context, return null."
-  LocalDOMWindow* window = document.domWindow();
-  if (!window)
-    return nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if (!registry) {
+      return nullptr;
+    }
+  } else {
+    // "1. (pre-scoped registry old spec) If document does not have a browsing
+    // context, return null."
+    LocalDOMWindow* window = document.domWindow();
+    if (!window) {
+      return nullptr;
+    }
 
-  // "3. Let registry be document's browsing context's Window's
-  // CustomElementRegistry object."
-  CustomElementRegistry* registry = window->MaybeCustomElements();
-  if (!registry)
-    return nullptr;
+    // "3. (pre-scoped registry old spec) Let registry be document's browsing
+    // context's Window's CustomElementRegistry object."
+    registry = window->MaybeCustomElements();
+    if (!registry) {
+      return nullptr;
+    }
+  }
 
   const AtomicString& local_name = tag_name.LocalName();
   const AtomicString& name = !is.IsNull() ? is : local_name;
@@ -1196,21 +1209,38 @@ CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
 Element* HTMLConstructionSite::CreateElement(
     AtomicHTMLToken* token,
     const AtomicString& namespace_uri) {
-  // "1. Let document be intended parent's node document."
+  // "3. Let document be intended parent's node document."
   Document& document = OwnerDocumentForCurrentNode();
 
-  // "2. Let local name be the tag name of the token."
+  // "4. Let local name be the tag name of the token."
   QualifiedName tag_name =
       ((token->IsValidHTMLTag() &&
         namespace_uri == html_names::xhtmlNamespaceURI)
            ? static_cast<const QualifiedName&>(
                  html_names::TagToQualifiedName(token->GetHTMLTag()))
            : QualifiedName(g_null_atom, token->GetName(), namespace_uri));
-  // "3. Let is be the value of the "is" attribute in the given token ..." etc.
+  // "5. Let is be the value of the "is" attribute in the given token ..." etc.
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   const AtomicString& is = is_attribute ? is_attribute->Value() : g_null_atom;
-  // "4. Let definition be the result of looking up a custom element ..." etc.
-  auto* definition = LookUpCustomElementDefinition(document, tag_name, is);
+  // "6. Let registry be the result of looking up a custom element registry
+  // given intended parent."
+  CustomElementRegistry* registry = custom_element_registry_;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // Look up intended parent's custom element registry. Note that if the
+    // intended parent is a template element, which means it will create a
+    // document fragment, the custom element registry should be null.
+    if (open_elements_.StackDepth() > 1) {
+      if (IsA<HTMLTemplateElement>(CurrentNode())) {
+        registry = nullptr;
+      } else {
+        registry = CurrentElement()->customElementRegistry();
+      }
+    }
+  }
+  // 8. Let definition be the result of looking up a custom element definition
+  // given registry, given namespace, local name and is.
+  auto* definition =
+      LookUpCustomElementDefinition(document, tag_name, is, registry);
   // "5. If definition is non-null and the parser was not originally created
   // for the HTML fragment parsing algorithm, then let will execute script
   // be true."
@@ -1265,8 +1295,7 @@ Element* HTMLConstructionSite::CreateElement(
                                           GetCreateElementFlags());
     } else {
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is,
-          /*registry*/ nullptr);
+          document, tag_name, GetCreateElementFlags(), is, registry);
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.

@@ -110,7 +110,8 @@ class HTMLConstructionSite final {
                        Document&,
                        ParserContentPolicy,
                        ContainerNode*,
-                       Element*);
+                       Element*,
+                       CustomElementRegistry*);
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
@@ -227,7 +228,8 @@ class HTMLConstructionSite final {
   static CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
       const QualifiedName&,
-      const AtomicString& is);
+      const AtomicString& is,
+      CustomElementRegistry* registry);
 
   class RedirectToFosterParentGuard {
     STACK_ALLOCATED();
@@ -390,6 +392,10 @@ class HTMLConstructionSite final {
 
   // Whether duplicate attribute was reported.
   bool reported_duplicate_attribute_ = false;
+
+  // The custom element registry used to parse html and grab definition from
+  // when custom elements are encountered.
+  Member<CustomElementRegistry> custom_element_registry_;
 };
 
 }  // namespace blink

@@ -141,7 +141,7 @@ class SubtreePatchSink : public UnderlyingSinkBase {
     HTMLDocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(
         sink_template->content(), sink_template,
         ParserContentPolicy::kDisallowScriptingAndPluginContent,
-        ParserPrefetchPolicy::kDisallowPrefetching);
+        ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
     parser->SetPatchScope(root_);
     parser_ = parser;
     return ToResolvedUndefinedPromise(script_state);

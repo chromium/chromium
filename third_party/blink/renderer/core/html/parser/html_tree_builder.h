@@ -62,7 +62,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   Element* context_element,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
-                  bool include_shadow_roots);
+                  bool include_shadow_roots,
+                  CustomElementRegistry* registry);
 
  private:
   HTMLTreeBuilder(HTMLDocumentParser*,
@@ -71,7 +72,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   const HTMLParserOptions&,
                   bool include_shadow_roots,
                   ContainerNode* fragment_target,
-                  Element* fragment_context_element);
+                  Element* fragment_context_element,
+                  CustomElementRegistry* registry);
 
  public:
   HTMLTreeBuilder(const HTMLTreeBuilder&) = delete;

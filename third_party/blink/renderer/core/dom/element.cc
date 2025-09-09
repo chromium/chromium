@@ -8474,12 +8474,20 @@ void Element::SetInnerHTMLInternal(
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
+    // Use null registry to create fragment if the context element is a
+    // template element as the container of the document fragment will be a
+    // document fragment without browsing context.
+    auto* template_element = DynamicTo<HTMLTemplateElement>(*this);
+    CustomElementRegistry* registry = GetDocument().customElementRegistry();
+    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+      registry = template_element ? nullptr : customElementRegistry();
+    }
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, parse_declarative_shadows,
-            force_html, exception_state)) {
+            force_html, registry, exception_state)) {
       ContainerNode* container = this;
       bool swap_dom_parts{false};
-      if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
+      if (template_element) {
         container = template_element->content();
         swap_dom_parts =
             RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
@@ -8538,10 +8546,13 @@ void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
   Node* prev = previousSibling();
   Node* next = nextSibling();
 
-  DocumentFragment* fragment =
-      CreateFragmentForInnerOuterHTML(html, parent, kAllowScriptingContent,
-                                      ParseDeclarativeShadowRoots::kDontParse,
-                                      ForceHtml::kDontForce, exception_state);
+  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+      html, parent, kAllowScriptingContent,
+      ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+          ? customElementRegistry()
+          : GetDocument().customElementRegistry(),
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -8792,6 +8803,9 @@ void Element::InsertAdjacentHTMLWithoutTrustedTypes(
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent,
       ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+          ? customElementRegistry()
+          : GetDocument().customElementRegistry(),
       exception_state);
   if (!fragment) {
     return;

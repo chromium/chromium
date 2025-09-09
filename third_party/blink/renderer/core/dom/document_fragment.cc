@@ -88,12 +88,13 @@ Node* DocumentFragment::Clone(Document& factory,
 
 void DocumentFragment::ParseHTML(const String& source,
                                  Element* context_element,
+                                 CustomElementRegistry* registry,
                                  ParserContentPolicy parser_content_policy) {
   RUNTIME_CALL_TIMER_SCOPE(
       GetDocument().GetAgent().isolate(),
       RuntimeCallStats::CounterId::kDocumentFragmentParseHTML);
   HTMLDocumentParser::ParseDocumentFragment(source, this, context_element,
-                                            parser_content_policy);
+                                            registry, parser_content_policy);
 }
 
 bool DocumentFragment::ParseXML(const String& source,

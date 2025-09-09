@@ -95,7 +95,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLDocumentParser(ContainerNode* fragment_target,
                      Element* context_element,
                      ParserContentPolicy,
-                     ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
+                     ParserPrefetchPolicy prefetch_policy,
+                     CustomElementRegistry* registry);
   ~HTMLDocumentParser() override;
   void Trace(Visitor*) const override;
 
@@ -103,6 +104,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       const String&,
       DocumentFragment*,
       Element* context_element,
+      CustomElementRegistry*,
       ParserContentPolicy = kAllowScriptingContent);
 
   // Exposed for testing.

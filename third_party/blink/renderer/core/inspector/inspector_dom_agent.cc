@@ -1101,10 +1101,12 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(
                         : StrCat({"<span ", text, "></span>"});
     DocumentFragment* fragment =
         element->GetDocument().createDocumentFragment();
-    if (is_html_document && contextElement)
-      fragment->ParseHTML(markup, contextElement, kAllowScriptingContent);
-    else
+    if (is_html_document && contextElement) {
+      fragment->ParseHTML(markup, contextElement, /*registry*/ nullptr,
+                          kAllowScriptingContent);
+    } else {
       fragment->ParseXML(markup, contextElement, IGNORE_EXCEPTION);
+    }
     return DynamicTo<Element>(fragment->firstChild());
   };
 

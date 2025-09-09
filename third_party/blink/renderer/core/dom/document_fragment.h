@@ -44,6 +44,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
 
   void ParseHTML(const String&,
                  Element* context_element,
+                 CustomElementRegistry*,
                  ParserContentPolicy = kAllowScriptingContent);
   bool ParseXML(const String&,
                 Element* context_element,

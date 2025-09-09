@@ -1073,8 +1073,8 @@ void XMLDocumentParser::StartElementNs(
   std::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
       throw_on_dynamic_markup_insertions;
   if (!parsing_fragment_) {
-    if (HTMLConstructionSite::LookUpCustomElementDefinition(*document_, q_name,
-                                                            is)) {
+    if (HTMLConstructionSite::LookUpCustomElementDefinition(
+            *document_, q_name, is, document_->customElementRegistry())) {
       throw_on_dynamic_markup_insertions.emplace(document_);
       document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
       reactions.emplace(isolate);

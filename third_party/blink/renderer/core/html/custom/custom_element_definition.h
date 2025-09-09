@@ -67,8 +67,7 @@ class CORE_EXPORT CustomElementDefinition
       CustomElementRegistry*) = 0;
   HTMLElement* CreateElement(Document&,
                              const QualifiedName&,
-                             const CreateElementFlags,
-                             CustomElementRegistry* = nullptr);
+                             const CreateElementFlags);
 
   void Upgrade(Element&);
 

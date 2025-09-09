@@ -123,8 +123,7 @@ HTMLElement* CustomElementDefinition::CreateElementForConstructor(
 HTMLElement* CustomElementDefinition::CreateElement(
     Document& document,
     const QualifiedName& tag_name,
-    CreateElementFlags flags,
-    CustomElementRegistry* registry) {
+    CreateElementFlags flags) {
   DCHECK(
       CustomElement::ShouldCreateCustomElement(tag_name) ||
       CustomElement::ShouldCreateCustomizedBuiltinElement(tag_name, document))
@@ -175,9 +174,9 @@ HTMLElement* CustomElementDefinition::CreateElement(
                                                                    *element);
       // Keeping the following creation call here to avoid the construction
       // stack above fall out of scope.
-      return CreateAutonomousCustomElementSync(document, tag_name, registry);
+      return CreateAutonomousCustomElementSync(document, tag_name, registry_);
     }
-    return CreateAutonomousCustomElementSync(document, tag_name, registry);
+    return CreateAutonomousCustomElementSync(document, tag_name, registry_);
   }
 
   // 5.2. Otherwise: (the synchronous custom elements flag is not set)
@@ -187,6 +186,9 @@ HTMLElement* CustomElementDefinition::CreateElement(
   // element state set to "undefined", and node document set to document.
   auto* element = MakeGarbageCollected<HTMLElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kUndefined);
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    element->SetCustomElementRegistry(registry_);
+  }
   // 5.2.2. Enqueue a custom element upgrade reaction given result and
   // definition.
   EnqueueUpgradeReaction(*element);

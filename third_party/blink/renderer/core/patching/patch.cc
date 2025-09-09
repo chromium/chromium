@@ -102,7 +102,7 @@ void Patch::Commit() {
       target_->IsElementNode() ? &To<Element>(*target_)
                                : target_->parentElement(),
       ParserContentPolicy::kDisallowScriptingAndPluginContent,
-      ParserPrefetchPolicy::kDisallowPrefetching);
+      ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
 }
 
 void Patch::DispatchPatchEvent() {
