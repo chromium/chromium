@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_slide_transition_animator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -37,6 +40,7 @@
     AccountPickerLayoutDelegate,
     AccountPickerSelectionScreenCoordinatorDelegate,
     AccountPickerScreenPresentationControllerDelegate,
+    ReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -47,6 +51,8 @@
 
 @implementation AccountPickerCoordinator {
   SigninCoordinator* _addAccountSigninCoordinator;
+  // Coordinator to show a reauth screen.
+  __strong ReauthCoordinator* _reauthCoordinator;
   signin_metrics::AccessPoint _accessPoint;
 
   // Navigation controller for the account picker.
@@ -208,11 +214,61 @@
 
 // Starts the validation flow.
 - (void)startValidation {
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) &&
+      !self.selectedIdentity.hasValidAuth) {
+    [self startReauthFlowWithIdentity:self.selectedIdentity];
+    return;
+  }
   [self.delegate
       accountPickerCoordinator:self
              didSelectIdentity:self.selectedIdentity
                   askEveryTime:_accountPickerConfirmationScreenCoordinator
                                    .askEveryTime];
+}
+
+- (void)startReauthFlowWithIdentity:(id<SystemIdentity>)identity {
+  // TODO(crbug.com/391342053): Add logging.
+  CoreAccountInfo account;
+  account.gaia = GaiaId(identity.gaiaID);
+  account.email = base::SysNSStringToUTF8(identity.userEmail);
+  if (_reauthCoordinator.viewWillPersist) {
+    // In case of double tap, let the first reauth proceed.
+    return;
+  }
+  [self stopReauthCoordinator];
+  _reauthCoordinator = [[ReauthCoordinator alloc]
+      initWithBaseViewController:_navigationController
+                         browser:self.browser
+                         account:account
+               signinAccessPoint:_accessPoint];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+- (void)stopReauthCoordinator {
+  _reauthCoordinator.delegate = nil;
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
+}
+
+#pragma mark - ReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result {
+  [self stopReauthCoordinator];
+  if (result == ReauthResult::kSuccess) {
+    [self.delegate
+        accountPickerCoordinator:self
+               didSelectIdentity:self.selectedIdentity
+                    askEveryTime:_accountPickerConfirmationScreenCoordinator
+                                     .askEveryTime];
+  }
+}
+
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  // This coordinator always presents a navigation controller.
+  return YES;
 }
 
 #pragma mark - AccountPickerLayoutDelegate
