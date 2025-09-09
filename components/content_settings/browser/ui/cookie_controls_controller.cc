@@ -543,14 +543,12 @@ void CookieControlsController::OnCookieSettingChanged() {
 }
 
 void CookieControlsController::OnIpProtectionEnabledChanged() {
-  // TODO(crbug.com/434953880): Add tests for this logic.
   if (GetWebContents()) {
     UpdateUserBypass();
   }
 }
 
 void CookieControlsController::OnFpProtectionEnabledChanged() {
-  // TODO(crbug.com/434953880): Add tests for this logic.
   if (GetWebContents()) {
     UpdateUserBypass();
   }
