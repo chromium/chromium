@@ -267,6 +267,15 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
   NOTREACHED();
 }
 
+bool SaveOrUpdateAutofillAiDataControllerImpl::IsWallatableEntity() const {
+  return new_entity_->record_type() ==
+         EntityInstance::RecordType::kServerWallet;
+}
+
+void SaveOrUpdateAutofillAiDataControllerImpl::OnGoToWalletLinkClicked() const {
+  // TODO(crbug.com/441742849): Navigate to wallet.
+}
+
 void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
         close_reason) {

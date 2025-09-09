@@ -88,6 +88,14 @@ class SaveOrUpdateAutofillAiDataController {
 
   virtual std::u16string GetDialogTitle() const = 0;
 
+  // Returns true if the entity to be saved or updated will be stored in the
+  // wallet server.
+  virtual bool IsWallatableEntity() const = 0;
+
+  // Whether the user clicked the link the dialog subtitle which navigates them
+  // to wallet.
+  virtual void OnGoToWalletLinkClicked() const = 0;
+
   // Returns an image resource id to be used in the dialog header.
   virtual int GetTitleImagesResourceId() const = 0;
 
