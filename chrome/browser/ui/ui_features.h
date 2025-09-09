@@ -139,6 +139,8 @@ BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
 BASE_DECLARE_FEATURE(kReloadSelectionModel);
 
+BASE_DECLARE_FEATURE(kCloseActiveTabInSplitViewViaHotkey);
+
 BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kScrimForTabModal);

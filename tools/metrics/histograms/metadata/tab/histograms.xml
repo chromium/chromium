@@ -3921,6 +3921,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.Tab.HotkeyClosedCount" units="tabs"
+    expires_after="2026-03-01">
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    When the user closes tab(s) using hotkey, records the number of tabs being
+    closed.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Tab.ReloadCount" units="tabs"
     expires_after="2026-01-18">
   <owner>agale@chromium.org</owner>

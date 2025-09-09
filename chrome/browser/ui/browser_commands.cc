@@ -376,6 +376,18 @@ content::WebContents* DuplicateTabAt(Browser* browser,
   return raw_contents_dupe;
 }
 
+void RecordTabCloseCount(int count) {
+  base::UmaHistogramCounts100("TabStrip.Tab.HotkeyClosedCount", count);
+}
+
+void CloseSelectedTabAndRecordTabCountMetric(Browser* browser) {
+  const int selected_tabs_count =
+      browser->tab_strip_model()->selection_model().size();
+  RecordTabCloseCount(selected_tabs_count);
+
+  browser->tab_strip_model()->CloseSelectedTabs();
+}
+
 }  // namespace
 
 using base::UserMetricsAction;
@@ -1062,14 +1074,32 @@ void NewTabToRight(Browser* browser) {
 void CloseTab(Browser* browser) {
   base::RecordAction(UserMetricsAction("CloseTab_Accelerator"));
 
+  // If the selection model consists of only the indices of a single split tab,
+  // decide if just the active tab in the split is closed instead of all tabs in
+  // the split.
+  const bool only_active_split_tab_selected =
+      browser->tab_strip_model()->IsActiveTabSplit() &&
+      browser->tab_strip_model()->selection_model().size() == 2;
+  if (only_active_split_tab_selected &&
+      base::FeatureList::IsEnabled(
+          features::kCloseActiveTabInSplitViewViaHotkey)) {
+    RecordTabCloseCount(1);
+
+    content::WebContents* active_web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    active_web_contents->Close();
+
+    return;
+  }
+
   if (!toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
-    browser->tab_strip_model()->CloseSelectedTabs();
+    CloseSelectedTabAndRecordTabCountMetric(browser);
     return;
   }
 
   ToastController* toast_controller = browser->GetFeatures().toast_controller();
   if (!toast_controller) {
-    browser->tab_strip_model()->CloseSelectedTabs();
+    CloseSelectedTabAndRecordTabCountMetric(browser);
     return;
   }
 
@@ -1090,7 +1120,7 @@ void CloseTab(Browser* browser) {
         accelerator.GetShortcutText());
     toast_controller->MaybeShowToast(std::move(params));
   } else {
-    browser->tab_strip_model()->CloseSelectedTabs();
+    CloseSelectedTabAndRecordTabCountMetric(browser);
     if (single_pinned_tab_selected) {
       base::RecordAction(
           UserMetricsAction("Tab.PinnedTabToastClosedAfterConfirmation"));
