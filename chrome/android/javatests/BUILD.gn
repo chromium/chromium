@@ -1305,6 +1305,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
   sources = [
     "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java",
     "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationTestUtils.java",
+    "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/DataSharingServiceStartupTest.java",
   ]
 
   deps = [

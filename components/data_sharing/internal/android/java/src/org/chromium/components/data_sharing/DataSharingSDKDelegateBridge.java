@@ -40,9 +40,13 @@ public class DataSharingSDKDelegateBridge {
 
     private static @Nullable DataSharingSDKDelegate sSDKDelegateForTesting;
 
+    // Flag to check if the bridge has been initialized. Used for testing purposes.
+    private static boolean sIsInitializedForTesting;
+
     @CalledByNative
     private static DataSharingSDKDelegateBridge create(
             long unused_nativePtr, DataSharingSDKDelegate delegate) {
+        sIsInitializedForTesting = true;
         if (sSDKDelegateForTesting != null) {
             return new DataSharingSDKDelegateBridge(sSDKDelegateForTesting);
         }
@@ -287,6 +291,16 @@ public class DataSharingSDKDelegateBridge {
     /* Set a delegate for testing, to be used by bridge when creating. */
     public static void setForTesting(DataSharingSDKDelegate delegate) {
         sSDKDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sSDKDelegateForTesting = null);
+    }
+
+    /**
+     * Returns whether the SDK bridge has been initialized.
+     *
+     * @return True if the bridge has been initialized, false otherwise.
+     */
+    public static boolean isInitializedForTesting() {
+        return sIsInitializedForTesting;
     }
 
     @NativeMethods

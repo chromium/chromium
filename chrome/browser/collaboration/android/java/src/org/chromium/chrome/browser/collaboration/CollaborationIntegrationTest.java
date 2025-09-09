@@ -431,6 +431,11 @@ public class CollaborationIntegrationTest {
         mCollaborationTestUtils.prepareToShareGroup(
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
+        // Assert that sdk delegate has been initialized.
+        assertTrue(
+                "DataSharingSDKDelegateBridge should be initialized for shared tab group.",
+                DataSharingSDKDelegateBridge.isInitializedForTesting());
+
         // Check share button changes to manage.
         onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
                 .check(matches(isDisplayed()));
