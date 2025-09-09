@@ -11966,14 +11966,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"use-managed-print-job-options-in-print-preview",
-     flag_descriptions::kUseManagedPrintJobOptionsInPrintPreviewName,
-     flag_descriptions::kUseManagedPrintJobOptionsInPrintPreviewDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kUseManagedPrintJobOptionsInPrintPreview)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-third-party-mode-content-provider",
      flag_descriptions::kAutofillThirdPartyModeContentProviderName,

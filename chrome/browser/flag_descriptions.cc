@@ -7723,12 +7723,6 @@ const char kUseFakeDeviceForMediaStreamDescription[] =
     "timestamp) instead of the system audio/video devices, for debugging "
     "purposes.";
 
-const char kUseManagedPrintJobOptionsInPrintPreviewName[] =
-    "Use managed print job options in print preview";
-const char kUseManagedPrintJobOptionsInPrintPreviewDescription[] =
-    "Use managed print job options set via "
-    "DevicePrinters/PrinterBulkConfiguration policy in print preview.";
-
 const char kUiDevToolsName[] = "Enable native UI inspection";
 const char kUiDevToolsDescription[] =
     "Enables inspection of native UI elements. For local inspection use "

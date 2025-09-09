@@ -4455,9 +4455,6 @@ extern const char kUseDHCPCD10Description[];
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 
-extern const char kUseManagedPrintJobOptionsInPrintPreviewName[];
-extern const char kUseManagedPrintJobOptionsInPrintPreviewDescription[];
-
 extern const char kVcDlcUiName[];
 extern const char kVcDlcUiDescription[];
 
