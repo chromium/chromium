@@ -38,8 +38,7 @@ class AcceleratedCompositingTestPlatform
   bool IsGpuCompositingDisabled() const override { return false; }
 };
 
-template <class GLES2InterfaceType>
-class SharedGpuContextTestBase : public Test {
+class SharedGpuContextTest : public Test {
  public:
   void SetUp() override {
     accelerated_compositing_scope_ = std::make_unique<
@@ -48,7 +47,7 @@ class SharedGpuContextTestBase : public Test {
     handle_ =
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
             task_runner_);
-    auto factory = [](GLES2InterfaceType* gl)
+    auto factory = [](FakeGLES2Interface* gl)
         -> std::unique_ptr<WebGraphicsContext3DProvider> {
       gl->SetIsContextLost(false);
       auto fake_context =
@@ -69,19 +68,16 @@ class SharedGpuContextTestBase : public Test {
     accelerated_compositing_scope_ = nullptr;
   }
 
-  GLES2InterfaceType& GlInterface() { return gl_; }
+  FakeGLES2Interface& GlInterface() { return gl_; }
 
  private:
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
-  GLES2InterfaceType gl_;
+  FakeGLES2Interface gl_;
   std::unique_ptr<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
       accelerated_compositing_scope_;
 };
-
-class SharedGpuContextTest
-    : public SharedGpuContextTestBase<FakeGLES2Interface> {};
 
 // Test fixure that simulate a graphics context creation failure, when using gpu
 // compositing.
