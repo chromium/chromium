@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -143,21 +144,32 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
 
   // Gets or creates a browser bound key for the given `credential_id`,
   // `relying_party` and `allowed_algorithms` returning the browser bound key
-  // by running `callback`.
+  // by running `callback`. An optional `last_used` timestamp can be provided
+  // to record when the browser bound key was created. If a key already
+  // exists, `last_used` will be ignored.
   void GetOrCreateBoundKeyForPasskey(
       std::vector<uint8_t> credential_id,
       std::string relying_party,
       const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
+      std::optional<base::Time> last_used,
       base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
           callback);
 
   // Stores the association of the `key` to a `credential_id` and
   // `relying_party`. The UnboundKey must be std::moved and is thus
   // intentionally no longer available to the caller. If the BrowserBoundKey is
-  // needed thereafter, then retrieve it using BoundKeyForPasskey().
+  // needed thereafter, then retrieve it using BoundKeyForPasskey(). An optional
+  // `last_used` timestamp can be provided to record when the browser bound key
+  // was last used.
   void BindKey(UnboundKey key,
                const std::vector<uint8_t>& credential_id,
-               const std::string& relying_party);
+               const std::string& relying_party,
+               std::optional<base::Time> last_used);
+
+  // Updates the browser bound key's `last_used` timestamp to the current
+  // system time.
+  void UpdateKeyLastUsedToNow(const std::vector<uint8_t>& credential_id,
+                              const std::string& relying_party);
 
   // Deletes all unknown browser bound keys, querying using the provided
   // `get_matching_credential_ids_callback` to find credentials matching each
@@ -203,6 +215,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       std::vector<uint8_t> credential_id,
       std::string relying_party,
       BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
+      std::optional<base::Time> last_used,
       base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
           callback,
       std::vector<uint8_t> existing_browser_bound_key_id);

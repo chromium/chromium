@@ -61,6 +61,7 @@ struct SecurePaymentConfirmationCredential;
 //   credential_id         The WebAuthn credential identifier blob.
 //   relying_party_id      The relying party identifier string.
 //   browser_bound_key_id  The identifier of the browser bound key.
+//   last_used             The last used timestamp.
 class WebPaymentsTable : public WebDatabaseTable {
  public:
   WebPaymentsTable();
@@ -138,13 +139,14 @@ class WebPaymentsTable : public WebDatabaseTable {
       const std::string& relying_party_id);
 
   // Sets a browser bound key identifier for the credential id, relying party id
-  // pair. If a browser bound key exists, no updates are performed and false is
-  // returned.
+  // pair. A last used timestamp can be optionally provided and set. If a
+  // browser bound key exists, no updates are performed and false is returned.
   //
   // Returns whether the browser bound key id was set.
   bool SetBrowserBoundKey(std::vector<uint8_t> credential_id,
                           std::string_view relying_party_id,
-                          std::vector<uint8_t> browser_bound_key_id);
+                          std::vector<uint8_t> browser_bound_key_id,
+                          std::optional<base::Time> last_used);
 
   // Gets the browser bound key id for the given credential id, relying party id
   // pair.
@@ -160,6 +162,14 @@ class WebPaymentsTable : public WebDatabaseTable {
   // Returns the possibly empty vector of entries or an empty vector when a read
   // error occurs.
   std::vector<BrowserBoundKeyMetadata> GetAllBrowserBoundKeys();
+
+  // Updates the `last_used` column of the browser bound key entry identified by
+  // the given credential id and relying party id.
+  //
+  // Returns whether the `last_used` column was updated.
+  bool UpdateBrowserBoundKeyLastUsedColumn(std::vector<uint8_t> credential_id,
+                                           std::string_view relying_party_id,
+                                           base::Time last_used);
 
   // Deletes the given browser bound key entries by relying_party_id and
   // credential_id.

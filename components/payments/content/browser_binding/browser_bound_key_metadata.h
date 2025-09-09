@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
+
 namespace payments {
 
 // Describes the metadata stored about browser bound keys.
@@ -42,6 +44,8 @@ struct BrowserBoundKeyMetadata {
   RelyingPartyAndCredentialId passkey;
   // The platform-specific id of the browser bound key.
   std::vector<uint8_t> browser_bound_key_id;
+  // The last time the browser bound key was used.
+  base::Time last_used;
 
   BrowserBoundKeyMetadata();
 

@@ -26,7 +26,8 @@ using ::testing::_;
 testing::Matcher<BrowserBoundKeyMetadata> EqualBrowserBoundKeyMetadata(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
-    std::vector<uint8_t> bbk_id) {
+    std::vector<uint8_t> bbk_id,
+    base::Time last_used) {
   return testing::AllOf(
       testing::Field(
           "passkey", &BrowserBoundKeyMetadata::passkey,
@@ -40,7 +41,9 @@ testing::Matcher<BrowserBoundKeyMetadata> EqualBrowserBoundKeyMetadata(
                                  RelyingPartyAndCredentialId::relying_party_id,
                              relying_party_id))),
       testing::Field("browser_bound_key_id",
-                     &BrowserBoundKeyMetadata::browser_bound_key_id, bbk_id));
+                     &BrowserBoundKeyMetadata::browser_bound_key_id, bbk_id),
+      testing::Field("last_used", &BrowserBoundKeyMetadata::last_used,
+                     last_used));
 }
 
 class MockWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -136,7 +139,8 @@ TEST_F(WebPaymentsWebDataServiceTest, BrowserBoundKey) {
   std::unique_ptr<WDTypedResult> set_bbk_result = RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
-            credential_id, relying_party_id, browser_bound_key_id, consumer);
+            credential_id, relying_party_id, browser_bound_key_id,
+            /*last_used=*/std::nullopt, consumer);
       }));
   ASSERT_TRUE(set_bbk_result);
   ASSERT_EQ(set_bbk_result->GetType(), WDResultType::BOOL_RESULT);
@@ -164,17 +168,20 @@ TEST_F(WebPaymentsWebDataServiceTest, GetAllBrowserBoundKey) {
   const std::vector<uint8_t> credential_id_2({0x21, 0x22, 0x23, 0x24});
   const std::string relying_party_id_2("another-relying-party.example");
   const std::vector<uint8_t> browser_bound_key_id_2({0x31, 0x32, 0x33, 0x34});
+  base::Time last_used;
+  ASSERT_TRUE(base::Time::FromUTCString("24 Oct 2025 10:30", &last_used));
+
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
-            consumer);
+            /*last_used=*/std::nullopt, consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
-            consumer);
+            last_used, consumer);
       }));
 
   std::unique_ptr<WDTypedResult> result =
@@ -191,9 +198,85 @@ TEST_F(WebPaymentsWebDataServiceTest, GetAllBrowserBoundKey) {
           ->GetValue(),
       testing::UnorderedElementsAre(
           EqualBrowserBoundKeyMetadata(credential_id_1, relying_party_id_1,
-                                       browser_bound_key_id_1),
+                                       browser_bound_key_id_1, base::Time()),
           EqualBrowserBoundKeyMetadata(credential_id_2, relying_party_id_2,
-                                       browser_bound_key_id_2)));
+                                       browser_bound_key_id_2, last_used)));
+}
+
+TEST_F(WebPaymentsWebDataServiceTest, UpdateBrowserBoundKeyLastUsed) {
+  const std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
+  const std::string relying_party_id("relying-party.example");
+  const std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
+  base::Time initial_last_used;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("24 Oct 2025 10:30", &initial_last_used));
+  RunAndWaitForConsumer(
+      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+        return web_payments_web_data_service_->SetBrowserBoundKey(
+            credential_id, relying_party_id, browser_bound_key_id,
+            initial_last_used, consumer);
+      }));
+
+  base::Time updated_last_used;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("04 Dec 2025 10:30", &updated_last_used));
+
+  std::unique_ptr<WDTypedResult> update_result;
+  bool update_result_data;
+  ASSERT_TRUE(base::test::RunUntil([this, credential_id, relying_party_id,
+                                    updated_last_used, &update_result,
+                                    &update_result_data]() -> bool {
+    update_result = RunAndWaitForCallback(base::BindLambdaForTesting(
+        [&](WebDataServiceRequestCallback request_callback) {
+          return web_payments_web_data_service_->UpdateBrowserBoundKeyLastUsed(
+              credential_id, relying_party_id, updated_last_used,
+              std::move(request_callback));
+        }));
+    if (!update_result ||
+        update_result->GetType() != WDResultType::BOOL_RESULT) {
+      // Bail if the return types are not correct, and let assertions below
+      // fail the test.
+      return true;
+    }
+    update_result_data =
+        static_cast<WDResult<bool>*>(update_result.get())
+            ->GetValue();  // GetValue() moves the value out of result.
+    return true;
+  })) << "Timeout waiting for UpdateBrowserBoundKeyLastUsed to complete.";
+  ASSERT_TRUE(update_result);
+  ASSERT_EQ(update_result->GetType(), WDResultType::BOOL_RESULT);
+  EXPECT_TRUE(update_result_data);
+
+  std::unique_ptr<WDTypedResult> get_all_result;
+  std::vector<BrowserBoundKeyMetadata> get_all_result_data;
+  ASSERT_TRUE(base::test::RunUntil([this, &get_all_result,
+                                    &get_all_result_data]() -> bool {
+    get_all_result = RunAndWaitForCallback(base::BindLambdaForTesting(
+        [&](WebDataServiceRequestCallback request_callback) {
+          return web_payments_web_data_service_->GetAllBrowserBoundKeys(
+              std::move(request_callback));
+        }));
+    if (!get_all_result ||
+        get_all_result->GetType() != WDResultType::BROWSER_BOUND_KEY_METADATA) {
+      // Bail if the return types are not correct, and let assertions below
+      // fail the test.
+      return true;
+    }
+    get_all_result_data =
+        static_cast<WDResult<std::vector<BrowserBoundKeyMetadata>>*>(
+            get_all_result.get())
+            ->GetValue();  // GetValue() moves the value out of result.
+    // Wait until there is only 1 element being returned.
+    return get_all_result_data.size() == 1;
+  })) << "Timeout waiting for only 1 element to be present.";
+  ASSERT_TRUE(get_all_result);
+  ASSERT_EQ(get_all_result->GetType(),
+            WDResultType::BROWSER_BOUND_KEY_METADATA);
+
+  EXPECT_THAT(get_all_result_data,
+              testing::UnorderedElementsAre(EqualBrowserBoundKeyMetadata(
+                  credential_id, relying_party_id, browser_bound_key_id,
+                  updated_last_used)));
 }
 
 TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
@@ -210,19 +293,19 @@ TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
-            consumer);
+            /*last_used=*/std::nullopt, consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
-            consumer);
+            /*last_used=*/std::nullopt, consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_3, relying_party_id_3, browser_bound_key_id_3,
-            consumer);
+            /*last_used=*/std::nullopt, consumer);
       }));
   base::MockCallback<base::OnceClosure> mock_callback;
 
@@ -259,10 +342,10 @@ TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
   })) << "Timeout waiting for only 1 element to be present.";
   ASSERT_TRUE(result);
   ASSERT_EQ(result->GetType(), WDResultType::BROWSER_BOUND_KEY_METADATA);
-  EXPECT_THAT(
-      result_data,
-      testing::UnorderedElementsAre(EqualBrowserBoundKeyMetadata(
-          credential_id_2, relying_party_id_2, browser_bound_key_id_2)));
+  EXPECT_THAT(result_data,
+              testing::UnorderedElementsAre(EqualBrowserBoundKeyMetadata(
+                  credential_id_2, relying_party_id_2, browser_bound_key_id_2,
+                  base::Time())));
 }
 
 }  // namespace

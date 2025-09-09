@@ -39,4 +39,10 @@ void RecordBrowserBoundKeyRetrieval(
       result);
 }
 
+void RecordBrowserBoundKeyMetadataUpdated(bool success) {
+  base::UmaHistogramBoolean(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetdataUpdate",
+      success);
+}
+
 }  // namespace payments

@@ -105,6 +105,18 @@ bool WebPaymentsTable::CreateTablesIfNecessary() {
     return false;
   }
 
+  if (!db()->DoesColumnExist("secure_payment_confirmation_browser_bound_key",
+                             "last_used")) {
+    if (!db()->Execute(
+            "ALTER TABLE secure_payment_confirmation_browser_bound_key ADD "
+            "COLUMN "
+            "last_used TIMESTAMP")) {
+      LOG(ERROR) << "Cannot alter the "
+                    "secure_payment_confirmation_browser_bound_key table";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -313,19 +325,26 @@ WebPaymentsTable::GetSecurePaymentConfirmationCredentials(
 bool WebPaymentsTable::SetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string_view relying_party_id,
-    std::vector<uint8_t> browser_bound_key_id) {
+    std::vector<uint8_t> browser_bound_key_id,
+    std::optional<base::Time> last_used) {
   if (credential_id.empty() || relying_party_id.empty() ||
       browser_bound_key_id.empty()) {
     return false;
   }
+
   sql::Statement s(db()->GetUniqueStatement(
       "INSERT INTO secure_payment_confirmation_browser_bound_key ( "
-      "credential_id, relying_party_id, browser_bound_key_id) "
-      "VALUES (?, ?, ?)"));
+      "credential_id, relying_party_id, browser_bound_key_id, last_used) "
+      "VALUES (?, ?, ?, ?)"));
   int index = 0;
   s.BindBlob(index++, std::move(credential_id));
   s.BindString(index++, relying_party_id);
   s.BindBlob(index++, browser_bound_key_id);
+  if (last_used) {
+    s.BindTime(index++, last_used.value());
+  } else {
+    s.BindNull(index++);
+  }
   return s.Run();
 }
 
@@ -353,7 +372,7 @@ std::optional<std::vector<uint8_t>> WebPaymentsTable::GetBrowserBoundKey(
 std::vector<BrowserBoundKeyMetadata>
 WebPaymentsTable::GetAllBrowserBoundKeys() {
   sql::Statement s(db()->GetUniqueStatement(
-      "SELECT relying_party_id, credential_id, browser_bound_key_id "
+      "SELECT relying_party_id, credential_id, browser_bound_key_id, last_used "
       "FROM secure_payment_confirmation_browser_bound_key"));
   std::vector<BrowserBoundKeyMetadata> browser_bound_keys;
   while (s.Step()) {
@@ -361,8 +380,24 @@ WebPaymentsTable::GetAllBrowserBoundKeys() {
     entry.passkey.relying_party_id = s.ColumnString(0);
     s.ColumnBlobAsVector(1, &entry.passkey.credential_id);
     s.ColumnBlobAsVector(2, &entry.browser_bound_key_id);
+    entry.last_used = s.ColumnTime(3);
   }
   return browser_bound_keys;
+}
+
+bool WebPaymentsTable::UpdateBrowserBoundKeyLastUsedColumn(
+    std::vector<uint8_t> credential_id,
+    std::string_view relying_party_id,
+    base::Time last_used) {
+  sql::Statement s(db()->GetUniqueStatement(
+      "UPDATE secure_payment_confirmation_browser_bound_key "
+      "SET last_used = ? "
+      "WHERE credential_id = ? AND relying_party_id = ?"));
+  int index = 0;
+  s.BindTime(index++, last_used);
+  s.BindBlob(index++, std::move(credential_id));
+  s.BindString(index++, relying_party_id);
+  return s.Run();
 }
 
 bool WebPaymentsTable::DeleteBrowserBoundKeys(

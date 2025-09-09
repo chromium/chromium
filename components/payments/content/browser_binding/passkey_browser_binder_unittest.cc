@@ -5,6 +5,7 @@
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -16,6 +17,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
@@ -45,11 +47,13 @@ EqRelyingPartyAndCredentialId(std::string relying_party_id,
 BrowserBoundKeyMetadata MakeBrowserBoundKeyMetadata(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
-    std::vector<uint8_t> bbk_id) {
+    std::vector<uint8_t> bbk_id,
+    base::Time last_used) {
   BrowserBoundKeyMetadata meta;
   meta.passkey = BrowserBoundKeyMetadata::RelyingPartyAndCredentialId(
       std::move(relying_party_id), std::move(credential_id));
   meta.browser_bound_key_id = std::move(bbk_id);
+  meta.last_used = std::move(last_used);
   return meta;
 }
 
@@ -73,6 +77,12 @@ using ::testing::SaveArg;
 static const int32_t kCoseEs256 = -7;
 
 class PasskeyBrowserBinderTest : public ::testing::Test {
+ public:
+  PasskeyBrowserBinderTest() {
+    EXPECT_TRUE(
+        base::Time::FromUTCString("24 Oct 2025 10:30", &fake_last_used_));
+  }
+
  protected:
   std::unique_ptr<PasskeyBrowserBinder> CreatePasskeyBrowserBinder(
       bool is_new_bbk = true) {
@@ -95,8 +105,10 @@ class PasskeyBrowserBinderTest : public ::testing::Test {
   const std::vector<uint8_t> fake_credential_id_ = {21, 22, 23, 24};
   const std::vector<uint8_t> fake_public_key_ = {31, 32, 33, 34};
   const std::string fake_relying_party_ = "relying.test";
+  base::Time fake_last_used_;
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
   scoped_refptr<MockWebPaymentsWebDataService> mock_web_data_service_ =
@@ -184,14 +196,42 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
 
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
-  EXPECT_CALL(*mock_web_data_service_,
-              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 fake_bbk_id_, /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<3>(&web_data_service_consumer_),
+  EXPECT_CALL(
+      *mock_web_data_service_,
+      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
+                         Eq(fake_last_used_), /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
                       Return(web_data_service_handle)));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
-                  fake_relying_party_);
+                  fake_relying_party_, fake_last_used_);
+  ASSERT_TRUE(web_data_service_consumer_);
+  web_data_service_consumer_->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+
+  key.reset();
+  EXPECT_TRUE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
+}
+
+TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKeyWithoutLastUsedTimestamp) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  std::optional<PasskeyBrowserBinder::UnboundKey> key =
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
+          device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
+                                                                kCoseEs256}});
+
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
+  EXPECT_CALL(
+      *mock_web_data_service_,
+      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
+                         /*last_used=*/Eq(std::nullopt), /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
+                      Return(web_data_service_handle)));
+
+  binder->BindKey(std::move(key.value()), fake_credential_id_,
+                  fake_relying_party_, /*last_used=*/std::nullopt);
   ASSERT_TRUE(web_data_service_consumer_);
   web_data_service_consumer_->OnWebDataServiceRequestDone(
       web_data_service_handle,
@@ -210,14 +250,15 @@ TEST_F(PasskeyBrowserBinderTest, DeletesBrowserBoundKeyIfBindingFails) {
 
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
-  EXPECT_CALL(*mock_web_data_service_,
-              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 fake_bbk_id_, /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<3>(&web_data_service_consumer_),
+  EXPECT_CALL(
+      *mock_web_data_service_,
+      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
+                         Eq(fake_last_used_), /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
                       Return(web_data_service_handle)));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
-                  fake_relying_party_);
+                  fake_relying_party_, fake_last_used_);
   ASSERT_TRUE(web_data_service_consumer_);
   web_data_service_consumer_->OnWebDataServiceRequestDone(
       web_data_service_handle,
@@ -255,7 +296,7 @@ TEST_F(PasskeyBrowserBinderTest,
       fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
-      mock_callback.Get());
+      fake_last_used_, mock_callback.Get());
   ASSERT_TRUE(web_data_service_consumer);
   web_data_service_consumer->OnWebDataServiceRequestDone(
       web_data_service_handle,
@@ -318,11 +359,11 @@ TEST_F(PasskeyBrowserBinderTest,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
                                  /*consumer=*/_))
       .WillOnce(DoAll(SaveArg<2>(&get_consumer), Return(get_handle)));
-  EXPECT_CALL(
-      *mock_web_data_service_,
-      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<3>(&set_consumer), Return(set_handle)));
+  EXPECT_CALL(*mock_web_data_service_,
+              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 fake_bbk_id_, Eq(fake_last_used_),
+                                 /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<4>(&set_consumer), Return(set_handle)));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -334,7 +375,7 @@ TEST_F(PasskeyBrowserBinderTest,
       fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
-      mock_callback.Get());
+      fake_last_used_, mock_callback.Get());
   ASSERT_TRUE(get_consumer);
   get_consumer->OnWebDataServiceRequestDone(
       get_handle,
@@ -368,11 +409,11 @@ TEST_F(PasskeyBrowserBinderTest,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
                                  /*consumer=*/_))
       .WillOnce(DoAll(SaveArg<2>(&get_consumer), Return(get_handle)));
-  EXPECT_CALL(
-      *mock_web_data_service_,
-      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<3>(&set_consumer), Return(set_handle)));
+  EXPECT_CALL(*mock_web_data_service_,
+              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 fake_bbk_id_, Eq(fake_last_used_),
+                                 /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<4>(&set_consumer), Return(set_handle)));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -384,7 +425,7 @@ TEST_F(PasskeyBrowserBinderTest,
       fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
-      mock_callback.Get());
+      fake_last_used_, mock_callback.Get());
   ASSERT_TRUE(get_consumer);
   get_consumer->OnWebDataServiceRequestDone(
       get_handle,
@@ -417,10 +458,10 @@ TEST_F(PasskeyBrowserBinderTest,
                                  /*consumer=*/_))
       .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
                       Return(web_data_service_handle)));
-  EXPECT_CALL(
-      *mock_web_data_service_,
-      SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*consumer=*/NotNull()));
+  EXPECT_CALL(*mock_web_data_service_,
+              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 fake_bbk_id_, Eq(fake_last_used_),
+                                 /*consumer=*/NotNull()));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -432,7 +473,7 @@ TEST_F(PasskeyBrowserBinderTest,
       fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
-      mock_callback.Get());
+      fake_last_used_, mock_callback.Get());
   ASSERT_TRUE(web_data_service_consumer);
   web_data_service_consumer->OnWebDataServiceRequestDone(
       web_data_service_handle,
@@ -473,6 +514,31 @@ TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyReturnsNullWhenNullOpt) {
   histograms.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate",
       /*expected_count=*/0);
+}
+
+TEST_F(PasskeyBrowserBinderTest, UpdateKeyLastUsedToNow) {
+  base::HistogramTester histograms;
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  WebDataServiceRequestCallback web_data_service_callback;
+
+  EXPECT_CALL(
+      *mock_web_data_service_,
+      UpdateBrowserBoundKeyLastUsed(fake_credential_id_, fake_relying_party_,
+                                    base::Time::NowFromSystemTime(),
+                                    /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<3>(&web_data_service_callback,
+                                    web_data_service_handle));
+
+  binder->UpdateKeyLastUsedToNow(fake_credential_id_, fake_relying_party_);
+  EXPECT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+
+  histograms.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetdataUpdate",
+      true, 1);
 }
 
 class PasskeyBrowserBinderDeletionTest : public PasskeyBrowserBinderTest {
@@ -543,7 +609,7 @@ TEST_F(PasskeyBrowserBinderDeletionTest,
   base::MockOnceClosure mock_callback;
   std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
   bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
-      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_, fake_last_used_));
   // This test does not insert any entries into `fake_matching_credential_ids_`
 
   testing::Sequence sequence;
@@ -570,7 +636,7 @@ TEST_F(PasskeyBrowserBinderDeletionTest,
   base::MockOnceClosure mock_callback;
   std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
   bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
-      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_, fake_last_used_));
   fake_matching_credential_ids_[fake_relying_party_].push_back(
       fake_credential_id_);
 
@@ -591,7 +657,7 @@ TEST_F(
   base::MockOnceClosure mock_callback;
   std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
   bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
-      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_, fake_last_used_));
   fake_matching_credential_ids_["another." + fake_relying_party_].push_back(
       fake_credential_id_);
 
@@ -616,7 +682,7 @@ TEST_F(PasskeyBrowserBinderDeletionTest,
   base::MockOnceClosure mock_callback;
   std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
   bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
-      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_, fake_last_used_));
   fake_matching_credential_ids_["another." + fake_relying_party_].push_back(
       fake_credential_id_);
 

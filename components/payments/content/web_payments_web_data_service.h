@@ -87,10 +87,13 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
   // Set the `browser_bound_key_id` for the given `credential_id` and
   // `relying_party_id`, and returns a boolean status to the `consumer`, which
   // must outlive the DB operation, because DB tasks cannot be cancelled.
+  // An optional `last_used` timestamp can be provided to record when the
+  // browser bound key was last used.
   virtual WebDataServiceBase::Handle SetBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string relying_party_id,
       std::vector<uint8_t> browser_bound_key_id,
+      std::optional<base::Time> last_used,
       WebDataServiceConsumer* consumer);
 
   // Get the browser bound key id given the `credential_id` and
@@ -104,6 +107,15 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
   // Get all browser bound keys. Returns the BrowserBoundKeyMetadata structs in
   // a vector to the `callback`.
   virtual WebDataServiceBase::Handle GetAllBrowserBoundKeys(
+      WebDataServiceRequestCallback callback);
+
+  // Updates the `last_used` column of the browser bound key entry
+  // identified by the given `credential_id` and `relying_party_id`, and returns
+  // a boolean status to the `callback`.
+  virtual WebDataServiceBase::Handle UpdateBrowserBoundKeyLastUsed(
+      const std::vector<uint8_t> credential_id,
+      std::string relying_party_id,
+      base::Time last_used,
       WebDataServiceRequestCallback callback);
 
   // Deletes the browser bound keys associated to `passkeys` - the list of the
@@ -155,12 +167,18 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
       std::vector<uint8_t> credential_id,
       std::string relying_party_id,
       std::vector<uint8_t> browser_bound_key_id,
+      std::optional<base::Time> last_used,
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetBrowserBoundKeyImpl(
       std::vector<uint8_t> credential_id,
       std::string relying_party_id,
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetAllBrowserBoundKeysImpl(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> UpdateBrowserBoundKeyLastUsedImpl(
+      std::vector<uint8_t> credential_id,
+      std::string relying_party_id,
+      base::Time last_used,
+      WebDatabase* db);
   WebDatabase::State DeleteBrowserBoundKeysImpl(
       std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
           passkeys,

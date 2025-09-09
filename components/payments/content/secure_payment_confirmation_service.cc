@@ -225,9 +225,9 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
       response->payment =
           blink::mojom::AuthenticationExtensionsPaymentResponse::New();
       response->payment->browser_bound_signature = std::move(signature_output);
-      passkey_browser_binder_->BindKey(std::move(*browser_bound_key),
-                                       response->info->raw_id,
-                                       std::move(relying_party));
+      passkey_browser_binder_->BindKey(
+          std::move(*browser_bound_key), response->info->raw_id,
+          std::move(relying_party), /*last_used=*/std::nullopt);
     }
   }
 #endif

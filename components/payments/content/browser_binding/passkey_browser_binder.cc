@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
@@ -55,16 +57,26 @@ static CallbackType RemoveHandler(
 // Converts a generic `result` of unique_ptr<WDTypedResult> to
 // the vector of BrowserBoundKeyMetadata.
 static std::vector<BrowserBoundKeyMetadata>
-ConvertBrowserBoundKeyMetadataResult(WebDataServiceBase::Handle handle,
-                                     std::unique_ptr<WDTypedResult> result) {
+ConvertWDTypedResultToBrowserBoundKeyMetadata(
+    WebDataServiceBase::Handle handle,
+    std::unique_ptr<WDTypedResult> result) {
   if (result) {
     CHECK(result->GetType() == BROWSER_BOUND_KEY_METADATA);
     return static_cast<WDResult<std::vector<BrowserBoundKeyMetadata>>*>(
                result.get())
         ->GetValue();
-  } else {
-    return {};
   }
+  return {};
+}
+
+// Converts a generic `result` of unique_ptr<WDTypedResult> to a boolean.
+static bool ConvertWDTypedResultToBool(WebDataServiceBase::Handle handle,
+                                       std::unique_ptr<WDTypedResult> result) {
+  if (result) {
+    CHECK(result->GetType() == WDResultType::BOOL_RESULT);
+    return static_cast<WDResult<bool>*>(result.get())->GetValue();
+  }
+  return false;
 }
 
 static RelyingPartyToBkkMetadata GroupByRelyingPartyId(
@@ -192,9 +204,11 @@ PasskeyBrowserBinder::CreateUnboundKey(
 
 void PasskeyBrowserBinder::BindKey(UnboundKey key,
                                    const std::vector<uint8_t>& credential_id,
-                                   const std::string& relying_party) {
+                                   const std::string& relying_party,
+                                   std::optional<base::Time> last_used) {
   WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
       credential_id, relying_party, key.browser_bound_key_id_,
+      std::move(last_used),
       /*consumer=*/this);
   set_browser_bound_key_handlers_[handle] = base::BindOnce(
       [](UnboundKey key, bool success) {
@@ -204,6 +218,15 @@ void PasskeyBrowserBinder::BindKey(UnboundKey key,
         }
       },
       std::move(key));
+}
+
+void PasskeyBrowserBinder::UpdateKeyLastUsedToNow(
+    const std::vector<uint8_t>& credential_id,
+    const std::string& relying_party) {
+  web_data_service_->UpdateBrowserBoundKeyLastUsed(
+      credential_id, relying_party, base::Time::NowFromSystemTime(),
+      base::BindOnce(&ConvertWDTypedResultToBool)
+          .Then(base::BindOnce(RecordBrowserBoundKeyMetadataUpdated)));
 }
 
 void PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys(
@@ -216,7 +239,7 @@ void PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys(
           base::BindOnce(&PasskeyBrowserBinder::DeleteBrowserBoundKeys,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   web_data_service_->GetAllBrowserBoundKeys(
-      base::BindOnce(&ConvertBrowserBoundKeyMetadataResult)
+      base::BindOnce(&ConvertWDTypedResultToBrowserBoundKeyMetadata)
           .Then(base::BindOnce(
               &FindDeletedPasskeys, get_matching_credential_ids_callback,
               std::move(delete_browser_bound_keys_and_finish))));
@@ -249,6 +272,7 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
+    std::optional<base::Time> last_used,
     base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback) {
   auto handle = web_data_service_->GetBrowserBoundKey(
       credential_id, relying_party, /*consumer=*/this);
@@ -258,7 +282,7 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
       base::BindOnce(&PasskeyBrowserBinder::GetOrCreateBrowserBoundKey,
                      weak_ptr_factory_.GetWeakPtr(), std::move(credential_id),
                      std::move(relying_party), std::move(allowed_algorithms),
-                     std::move(callback));
+                     std::move(last_used), std::move(callback));
 }
 
 void PasskeyBrowserBinder::OnWebDataServiceRequestDone(
@@ -323,6 +347,7 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
+    std::optional<base::Time> last_used,
     base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback,
     std::vector<uint8_t> browser_bound_key_id) {
   bool needs_to_be_created = browser_bound_key_id.empty();
@@ -336,7 +361,8 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
   if (needs_to_be_created && browser_bound_key) {
     BindKey(UnboundKey(std::move(browser_bound_key_id),
                        /*browser_bound_key=*/{}, key_store_),
-            std::move(credential_id), std::move(relying_party));
+            std::move(credential_id), std::move(relying_party),
+            std::move(last_used));
   }
   RecordCreationOrRetrieval(/*is_creation=*/needs_to_be_created,
                             /*did_succeed=*/!!browser_bound_key);

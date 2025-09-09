@@ -142,4 +142,5 @@ source_set("browser_bound_key_metadata") {
     "browser_bound_key_metadata.cc",
     "browser_bound_key_metadata.h",
   ]
+  deps = [ "//base" ]
 }

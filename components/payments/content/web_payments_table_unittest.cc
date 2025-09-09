@@ -494,6 +494,37 @@ TEST_F(WebPaymentsTableTest, CredentialTableUserIdMigration) {
                     .size());
 }
 
+// Test migrating an existing browser bound key table that didn't have the
+// `last_used` column.
+TEST_F(WebPaymentsTableTest, BrowserBoundKeyTableLastUsedMigration) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(web_payments_table->RazeForTest());
+  // Create the BBK table as it would have been prior to storing the last used.
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
+      "CREATE TABLE IF NOT EXISTS "
+      "secure_payment_confirmation_browser_bound_key ( "
+      "credential_id BLOB NOT NULL, "
+      "relying_party_id TEXT NOT NULL, "
+      "browser_bound_key_id BLOB, "
+      "PRIMARY KEY (credential_id, relying_party_id))"));
+
+  // Insert a legacy BBK.
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
+      ("INSERT INTO secure_payment_confirmation_browser_bound_key "
+       "(credential_id, relying_party_id, browser_bound_key_id) "
+       "VALUES ("
+       " x'00012345',"
+       " 'relying-party.example',"
+       " x'00054321')")));
+
+  EXPECT_FALSE(web_payments_table->DoesColumnExistForTest(
+      "secure_payment_confirmation_browser_bound_key", "last_used"));
+  EXPECT_TRUE(web_payments_table->CreateTablesIfNecessary());
+  EXPECT_TRUE(web_payments_table->DoesColumnExistForTest(
+      "secure_payment_confirmation_browser_bound_key", "last_used"));
+}
+
 // Tests that a browser bound key can be added and retrieved using the
 // credential id and relying party id.
 TEST_F(WebPaymentsTableTest, SetBrowserBoundKey) {
@@ -503,7 +534,8 @@ TEST_F(WebPaymentsTableTest, SetBrowserBoundKey) {
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
 
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
-                                        browser_bound_key_id));
+                                        browser_bound_key_id,
+                                        /*last_used=*/std::nullopt));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id =
       table->GetBrowserBoundKey(credential_id, relying_party_id);
 
@@ -545,15 +577,18 @@ TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenEmptyArguments) {
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
 
   EXPECT_FALSE(table->SetBrowserBoundKey(/*credential_id=*/{}, relying_party_id,
-                                         browser_bound_key_id));
+                                         browser_bound_key_id,
+                                         /*last_used=*/std::nullopt));
   EXPECT_EQ(std::nullopt,
             table->GetBrowserBoundKey(/*credential_id=*/{}, relying_party_id));
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, /*relying_party_id=*/"",
-                                         browser_bound_key_id));
+                                         browser_bound_key_id,
+                                         /*last_used=*/std::nullopt));
   EXPECT_EQ(std::nullopt,
             table->GetBrowserBoundKey(credential_id, /*relying_party_id=*/{}));
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, relying_party_id,
-                                         /*browser_bound_key_id=*/{}));
+                                         /*browser_bound_key_id=*/{},
+                                         /*last_used=*/std::nullopt));
   EXPECT_EQ(std::nullopt,
             table->GetBrowserBoundKey(credential_id, relying_party_id));
 }
@@ -569,9 +604,11 @@ TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenSameCredentialId) {
   std::vector<uint8_t> browser_bound_key_id_2({0x21, 0x22, 0x23, 0x24});
 
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id_1,
-                                        browser_bound_key_id_1));
+                                        browser_bound_key_id_1,
+                                        /*last_used=*/std::nullopt));
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id_2,
-                                        browser_bound_key_id_2));
+                                        browser_bound_key_id_2,
+                                        /*last_used=*/std::nullopt));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_1 =
       table->GetBrowserBoundKey(credential_id, relying_party_id_1);
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_2 =
@@ -592,9 +629,11 @@ TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenSameRelyingParty) {
   std::vector<uint8_t> browser_bound_key_id_2({0x31, 0x32, 0x33, 0x34});
 
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id_1, relying_party_id,
-                                        browser_bound_key_id_1));
+                                        browser_bound_key_id_1,
+                                        /*last_used=*/std::nullopt));
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id_2, relying_party_id,
-                                        browser_bound_key_id_2));
+                                        browser_bound_key_id_2,
+                                        /*last_used=*/std::nullopt));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_1 =
       table->GetBrowserBoundKey(credential_id_1, relying_party_id);
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_2 =
@@ -614,15 +653,86 @@ TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenDuplicateEntry) {
   std::vector<uint8_t> browser_bound_key_id_2({0x21, 0x22, 0x23, 0x24});
 
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
-                                        browser_bound_key_id_1));
+                                        browser_bound_key_id_1,
+                                        /*last_used=*/std::nullopt));
   // Expect a false return value since the primary key already exists.
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, relying_party_id,
-                                         browser_bound_key_id_2));
+                                         browser_bound_key_id_2,
+                                         /*last_used=*/std::nullopt));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id =
       table->GetBrowserBoundKey(credential_id, relying_party_id);
 
   // Expect the first browser bound key id stored to be unaffected.
   EXPECT_EQ(browser_bound_key_id_1, actual_browser_bound_key_id);
+}
+
+// Tests that setting a browser bound key with the last used timestamp will be
+// returned when getting all browser bound keys.
+TEST_F(WebPaymentsTableTest, GetAllBrowserBoundKeysWithLastUsedTimestamp) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
+  std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
+  std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
+  base::Time last_used;
+  ASSERT_TRUE(base::Time::FromUTCString("24 Oct 2025 10:30", &last_used));
+
+  EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
+                                        browser_bound_key_id, last_used));
+  std::vector<BrowserBoundKeyMetadata> browser_bound_keys =
+      table->GetAllBrowserBoundKeys();
+
+  EXPECT_EQ(browser_bound_keys.size(), 1U);
+  EXPECT_EQ(browser_bound_keys[0].passkey.credential_id, credential_id);
+  EXPECT_EQ(browser_bound_keys[0].passkey.relying_party_id, relying_party_id);
+  EXPECT_EQ(browser_bound_keys[0].browser_bound_key_id, browser_bound_key_id);
+  EXPECT_EQ(browser_bound_keys[0].last_used, last_used);
+}
+
+// Tests that setting a browser bound key without the last used timestamp will
+// be returned when getting all browser bound keys.
+TEST_F(WebPaymentsTableTest, GetAllBrowserBoundKeysWithoutLastUsedTimestamp) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
+  std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
+  std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
+
+  EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
+                                        browser_bound_key_id, std::nullopt));
+  std::vector<BrowserBoundKeyMetadata> browser_bound_keys =
+      table->GetAllBrowserBoundKeys();
+
+  EXPECT_EQ(browser_bound_keys.size(), 1U);
+  EXPECT_EQ(browser_bound_keys[0].passkey.credential_id, credential_id);
+  EXPECT_EQ(browser_bound_keys[0].passkey.relying_party_id, relying_party_id);
+  EXPECT_EQ(browser_bound_keys[0].browser_bound_key_id, browser_bound_key_id);
+  // If no last used timestamp was provided, the value should be null.
+  EXPECT_TRUE(browser_bound_keys[0].last_used.is_null());
+}
+
+// Tests that the `last_used` column on the browser bound key can be updated.
+TEST_F(WebPaymentsTableTest, UpdateBrowserBoundKeyLastUsedColumn) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
+  std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
+  std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
+  base::Time initial_last_used;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("24 Oct 2025 10:30", &initial_last_used));
+  EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
+                                        browser_bound_key_id,
+                                        initial_last_used));
+
+  base::Time updated_last_used;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("04 Dec 2025 10:30", &updated_last_used));
+  EXPECT_TRUE(table->UpdateBrowserBoundKeyLastUsedColumn(
+      credential_id, relying_party_id, updated_last_used));
+
+  std::vector<BrowserBoundKeyMetadata> browser_bound_keys =
+      table->GetAllBrowserBoundKeys();
+
+  EXPECT_EQ(browser_bound_keys.size(), 1U);
+  EXPECT_EQ(browser_bound_keys[0].last_used, updated_last_used);
 }
 
 }  // namespace

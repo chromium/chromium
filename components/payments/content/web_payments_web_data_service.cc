@@ -4,6 +4,7 @@
 
 #include "components/payments/content/web_payments_web_data_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -159,12 +160,13 @@ WebDataServiceBase::Handle WebPaymentsWebDataService::SetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     std::vector<uint8_t> browser_bound_key_id,
+    std::optional<base::Time> last_used,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&WebPaymentsWebDataService::SetBrowserBoundKeyImpl, this,
                      std::move(credential_id), std::move(relying_party_id),
-                     std::move(browser_bound_key_id)),
+                     std::move(browser_bound_key_id), std::move(last_used)),
       consumer);
 }
 
@@ -173,11 +175,12 @@ WebPaymentsWebDataService::SetBrowserBoundKeyImpl(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     std::vector<uint8_t> browser_bound_key_id,
+    std::optional<base::Time> last_used,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
       BOOL_RESULT, WebPaymentsTable::FromWebDatabase(db)->SetBrowserBoundKey(
                        std::move(credential_id), std::move(relying_party_id),
-                       std::move(browser_bound_key_id)));
+                       std::move(browser_bound_key_id), std::move(last_used)));
 }
 
 WebDataServiceBase::Handle WebPaymentsWebDataService::GetBrowserBoundKey(
@@ -216,6 +219,34 @@ WebPaymentsWebDataService::GetAllBrowserBoundKeysImpl(WebDatabase* db) {
   return std::make_unique<WDResult<std::vector<BrowserBoundKeyMetadata>>>(
       BROWSER_BOUND_KEY_METADATA,
       WebPaymentsTable::FromWebDatabase(db)->GetAllBrowserBoundKeys());
+}
+
+WebDataServiceBase::Handle
+WebPaymentsWebDataService::UpdateBrowserBoundKeyLastUsed(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    base::Time last_used,
+    WebDataServiceRequestCallback callback) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &WebPaymentsWebDataService::UpdateBrowserBoundKeyLastUsedImpl, this,
+          std::move(credential_id), std::move(relying_party_id),
+          std::move(last_used)),
+      std::move(callback));
+}
+
+std::unique_ptr<WDTypedResult>
+WebPaymentsWebDataService::UpdateBrowserBoundKeyLastUsedImpl(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    base::Time last_used,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT, WebPaymentsTable::FromWebDatabase(db)
+                       ->UpdateBrowserBoundKeyLastUsedColumn(
+                           std::move(credential_id),
+                           std::move(relying_party_id), std::move(last_used)));
 }
 
 void WebPaymentsWebDataService::DeleteBrowserBoundKeys(

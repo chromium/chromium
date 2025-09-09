@@ -252,6 +252,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate"
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether updating the browser bound key metadata was successful or not.
+    Recorded after a browser bound key metadata update is attempted.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
     expires_after="2025-12-04">

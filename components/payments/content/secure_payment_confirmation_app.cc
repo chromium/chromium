@@ -159,6 +159,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
       passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
           credential_id_, effective_relying_party_identity_,
           credential_parameters,
+          /*last_used=*/std::nullopt,
           base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
                          weak_ptr_factory_.GetWeakPtr(), delegate,
                          std::move(options)));
