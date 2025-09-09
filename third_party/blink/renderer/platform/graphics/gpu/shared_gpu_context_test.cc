@@ -101,6 +101,15 @@ class SharedGpuContextTest : public Test {
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
             task_runner_);
     test_context_provider_ = viz::TestContextProvider::Create();
+
+    // These tests require a GLES2 context as that is what
+    // SharedGPUContext::IsValidWithoutRestoring() checks. However, they also
+    // create CanvasResourceProviderSharedImage instances, which we are in the
+    // process of changing to always require GPU rasterization. Just set GPU
+    // rasterization enabled on the GLES context to satisfy both requirements
+    // (note that the tests here don't actually *do* any canvas 2D
+    // rasterization).
+    test_context_provider_->UnboundTestContextGL()->set_gpu_rasterization(true);
     InitializeSharedGpuContextGLES2(test_context_provider_.get(),
                                     /*cache = */ nullptr,
                                     SetIsContextLost::kSetToFalse);
