@@ -57,7 +57,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
     profile_ = std::move(builder).Build();
