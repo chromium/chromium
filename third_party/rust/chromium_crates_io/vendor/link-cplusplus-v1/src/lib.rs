@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `link-cplusplus-1.0.11` crate.
+// `link-cplusplus-1.0.12` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
