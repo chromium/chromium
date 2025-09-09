@@ -23,15 +23,11 @@ body {
 
     finishOnElementTiming(t);
 
-    // Add the image during onload to be sure that the observer is registered
-    // in time.
-    window.onload = () => {
-      const div = document.createElement('div');
-      div.setAttribute('containertiming', 'div_ct');
-      document.body.appendChild(div);
+    const div = document.createElement('div');
+    div.setAttribute('containertiming', 'div_ct');
+    document.body.appendChild(div);
 
-      addPaintingElementTimingAfterDoubleRAF(document.body);
-    };
+    addPaintingElementTimingAfterDoubleRAF(document.body);
   }, 'Container timing did not report paints when there was nothing to paint.');
 </script>
 
