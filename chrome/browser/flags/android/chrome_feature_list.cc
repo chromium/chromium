@@ -1491,10 +1491,9 @@ BASE_FEATURE(kToolbarTabletResizeRefactor,
              "ToolbarTabletResizeRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of the refactored Top Controls approach on Android.
 BASE_FEATURE(kTopControlsRefactor,
              "TopControlsRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTouchToSearchCallout,
              "TouchToSearchCallout",

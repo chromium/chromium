@@ -25235,21 +25235,6 @@
             ]
         }
     ],
-    "TopControlsRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TopControlsRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
     "TouchToSearchCallout": [
         {
             "platforms": [

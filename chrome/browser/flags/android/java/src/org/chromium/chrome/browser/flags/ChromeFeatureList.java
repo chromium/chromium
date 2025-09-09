@@ -1095,10 +1095,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTopControlsRefactor =
-            newCachedFlag(
-                    TOP_CONTROLS_REFACTOR,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TOP_CONTROLS_REFACTOR, true);
     public static final CachedFlag sTouchToSearchCallout =
             newCachedFlag(
                     TOUCH_TO_SEARCH_CALLOUT,
