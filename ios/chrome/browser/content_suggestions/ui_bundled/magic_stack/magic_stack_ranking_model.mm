@@ -828,9 +828,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
     } else if (label == segmentation_platform::kParcelTracking) {
       // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-    } else if (label == segmentation_platform::kPriceTrackingPromo) {
-      [magicStackOrder
-          addObject:@(int(ContentSuggestionsModuleType::kPriceTrackingPromo))];
     } else if (label == segmentation_platform::kShopCard) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kShopCard))];
