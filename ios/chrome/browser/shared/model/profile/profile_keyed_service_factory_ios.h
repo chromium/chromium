@@ -59,10 +59,10 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // A callback that returns the instance of a KeyedService for a given
   // ProfileIOS instance. This is used for testing where the test wants
   // to create a specific test double for a service.
-  using ProfileTestingFactory =
+  using TestingFactory =
       base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS* profile)>;
 
-  using TestingFactory = ProfileTestingFactory;
+  using ProfileTestingFactory = TestingFactory;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>
@@ -82,8 +82,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // used to create the KeyedService when requested.  `testing_factory` can be
   // empty to signal that KeyedService should be null. Multiple calls to
   // SetTestingFactory() are allowed; previous services will be shut down.
-  void SetTestingFactory(ProfileIOS* profile,
-                         ProfileTestingFactory testing_factory);
+  void SetTestingFactory(ProfileIOS* profile, TestingFactory testing_factory);
 
  protected:
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the
