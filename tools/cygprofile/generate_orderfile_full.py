@@ -117,27 +117,18 @@ class StepRecorder:
     return process
 
 
-def _MakePublicTarget(internal_target):
-  if 'google' in internal_target:
-    return internal_target.replace('_google', '')
-  return internal_target.replace('_apk', '_public_apk')
-
-
 def _GetApkFromTarget(target):
   _camel_case = ''.join(x.capitalize() for x in target.lower().split('_'))
   _camel_case = _camel_case.replace('Webview', 'WebView')
   return _camel_case.replace('Apk', '.apk')
 
 
-def _GetWebViewTargetAndApk(public, arch):
-  target = 'trichrome_webview_google_apk'
-  if public:
-    target = _MakePublicTarget(target)
+def _GetWebViewTargetAndApk(arch):
+  # Always use public targets since the bots only use public targets.
+  target = 'system_webview_apk'
   apk = _GetApkFromTarget(target)
-  if 'Trichrome' in apk and '64' in arch:
-    # Trichrome has a 6432.apk suffix for arm64 and x64 builds.
-    apk = apk.replace('.apk', '6432.apk')
-    target = target.replace('_apk', '_64_32_apk')
+  if '64' in arch:
+    target = target.replace('_apk', '_32_64_apk')
   return target, apk
 
 
@@ -179,7 +170,7 @@ class ClankCompiler:
 
     # WebView targets
     self._webview_target, webview_apk = _GetWebViewTargetAndApk(
-        options.public, options.arch)
+        options.arch)
     self.webview_apk_path = str(out_dir / 'apks' / webview_apk)
     self.webview_installer_path = str(self._out_dir / 'bin' /
                                       self._webview_target)

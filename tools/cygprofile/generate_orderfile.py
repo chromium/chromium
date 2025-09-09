@@ -93,11 +93,13 @@ def GenerateOrderfile(options, device):
       else:
         webview_target = 'system_webview_apk'
       webview_installer_path = str(options.out_dir / 'bin' / webview_target)
+      apk_or_browser = str(options.out_dir / 'apks' / 'SystemWebView.apk')
     else:
+      apk_or_browser = options.android_browser
       webview_installer_path = None
     files = orderfile_shared.CollectProfiles(profiler, options.profile_webview,
                                              options.arch,
-                                             options.android_browser,
+                                             apk_or_browser,
                                              str(options.out_dir),
                                              webview_installer_path)
     ordered_symbols, _ = orderfile_shared.ProcessProfiles(files, lib_chrome_so)
