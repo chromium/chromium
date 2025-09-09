@@ -456,6 +456,9 @@ class BrowserWindow : public ui::BaseWindow {
                                bool show_signin_button) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Returns the PageActionIconView for the Sharing Hub.
+  virtual views::Button* GetSharingHubIconButton() = 0;
+
   // Toggles the multitask menu on the browser frame size button.
   virtual void ToggleMultitaskMenu() const = 0;
 #else

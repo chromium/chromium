@@ -1637,15 +1637,7 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
   }
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-#if BUILDFLAG(IS_MAC)
-    return omnibox::kShareMacChromeRefreshIcon;
-#elif BUILDFLAG(IS_WIN)
-    return omnibox::kShareWinChromeRefreshIcon;
-#elif BUILDFLAG(IS_LINUX)
-    return omnibox::kShareLinuxChromeRefreshIcon;
-#else
-    return omnibox::kShareChromeRefreshIcon;
-#endif
+    return GetSharingHubVectorIcon();
   }
 
   bool IsReadyToTrigger(
@@ -1966,6 +1958,18 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // =============================================================================
+
+const gfx::VectorIcon& GetSharingHubVectorIcon() {
+#if BUILDFLAG(IS_MAC)
+  return omnibox::kShareMacChromeRefreshIcon;
+#elif BUILDFLAG(IS_WIN)
+  return omnibox::kShareWinChromeRefreshIcon;
+#elif BUILDFLAG(IS_LINUX)
+  return omnibox::kShareLinuxChromeRefreshIcon;
+#else
+  return omnibox::kShareChromeRefreshIcon;
+#endif
+}
 
 // NOTE: When `testing` is true, all platform-appropriate pedals should be
 // instantiated so that realbox icon checks can detect missing icons for
