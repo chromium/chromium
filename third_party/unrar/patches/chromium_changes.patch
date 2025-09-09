@@ -236,9 +236,9 @@ index 601c7eafb676a..413bb0354b2cd 100644
      SetFileTime(hNewFile,NULL,&ft,NULL);
    }
 +#endif  // defined(CHROMIUM_UNRAR)
- 
-+#else
 +
++#else
+ 
 +#if defined(CHROMIUM_UNRAR)
 +  // Do not open a file handle since the sandbox doesn't allow it. Use the
 +  // handle provided by the caller.
@@ -333,6 +333,28 @@ index a95cc398fab32..e7868bbafe4c9 100644
  #ifdef _UNIX
      int GetFD()
      {
+diff --git a/third_party/unrar/src/filefn.cpp b/third_party/unrar/src/filefn.cpp
+index d600c06b05a4d..d994640d4321f 100644
+--- a/third_party/unrar/src/filefn.cpp
++++ b/third_party/unrar/src/filefn.cpp
+@@ -303,6 +303,9 @@ uint GetFileAttr(const std::wstring &Name)
+ 
+ bool SetFileAttr(const std::wstring &Name,uint Attr)
+ {
++#if defined(CHROMIUM_UNRAR)
++  return true;
++#else
+ #ifdef _WIN_ALL
+   bool Success=SetFileAttributes(Name.c_str(),Attr)!=0;
+   if (!Success)
+@@ -319,6 +322,7 @@ bool SetFileAttr(const std::wstring &Name,uint Attr)
+ #else
+   return false;
+ #endif
++#endif
+ }
+ 
+ 
 diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
 index b89b2ce54d825..9322a1d1b3d54 100644
 --- a/third_party/unrar/src/isnt.cpp
@@ -397,7 +419,7 @@ index 69d9267f7c428..e3ef5b7a8c90d 100644
    {
      MinContext->U.Stats[i].Symbol=i;      
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index f7e841b098b41..18b755c394ecb 100644
+index bb9eb0b0d0f11..aa7c52f4b5520 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
 @@ -30,6 +30,7 @@
@@ -448,7 +470,7 @@ index f7e841b098b41..18b755c394ecb 100644
  
  #include <stdio.h>
  #include <stdlib.h>
-@@ -147,6 +153,7 @@
+@@ -148,6 +154,7 @@
  #include <utime.h>
  #include <locale.h>
  
@@ -456,7 +478,7 @@ index f7e841b098b41..18b755c394ecb 100644
  #ifdef __GNUC__
    #if defined(__i386__) || defined(__x86_64__)
      #include <x86intrin.h>
-@@ -155,6 +162,7 @@
+@@ -156,6 +163,7 @@
      #define SSE_ALIGNMENT 16
    #endif
  #endif
@@ -464,7 +486,7 @@ index f7e841b098b41..18b755c394ecb 100644
  
  #if defined(__aarch64__) && (defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_CRC32))
  #include <arm_neon.h>
-@@ -263,9 +271,16 @@
+@@ -264,9 +272,16 @@
    #endif
  #endif
  

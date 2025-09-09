@@ -303,6 +303,9 @@ uint GetFileAttr(const std::wstring &Name)
 
 bool SetFileAttr(const std::wstring &Name,uint Attr)
 {
+#if defined(CHROMIUM_UNRAR)
+  return true;
+#else
 #ifdef _WIN_ALL
   bool Success=SetFileAttributes(Name.c_str(),Attr)!=0;
   if (!Success)
@@ -318,6 +321,7 @@ bool SetFileAttr(const std::wstring &Name,uint Attr)
   return chmod(NameA.c_str(),(mode_t)Attr)==0;
 #else
   return false;
+#endif
 #endif
 }
 
