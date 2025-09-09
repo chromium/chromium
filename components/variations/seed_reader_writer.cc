@@ -446,18 +446,15 @@ void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
     std::string base64_compressed_data,
     std::string base64_signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ShouldUseSeedFile()) {
-    std::string decoded_seed_data;
-    CHECK(base::Base64Decode(base64_compressed_data, &decoded_seed_data));
-    seed_info_.set_data(std::move(decoded_seed_data));
-    seed_info_.set_signature(std::move(base64_signature));
-    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  } else {
-    local_state_->SetString(fields_prefs_->seed,
-                            std::move(base64_compressed_data));
-    local_state_->SetString(fields_prefs_->signature,
-                            std::move(base64_signature));
-  }
+  std::string decoded_seed_data;
+  CHECK(base::Base64Decode(base64_compressed_data, &decoded_seed_data))
+      << "Failed to decode base64 compressed data";
+  std::string uncompressed_seed_data;
+  CHECK(compression::GzipUncompress(decoded_seed_data, &uncompressed_seed_data))
+      << "Failed to uncompress seed data";
+  StoreValidatedSeedInfo(
+      ValidatedSeedInfo{.seed_data = std::move(uncompressed_seed_data),
+                        .signature = std::move(base64_signature)});
 }
 
 bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
