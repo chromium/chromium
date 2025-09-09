@@ -471,8 +471,6 @@ uint8_t Backend::GetEntryInMemoryData(const std::string& key) {
 
 void Backend::SetEntryInMemoryData(const std::string& key, uint8_t data) {}
 
-void Backend::OnBrowserIdle() {}
-
 EntryResult::EntryResult() = default;
 EntryResult::~EntryResult() = default;
 

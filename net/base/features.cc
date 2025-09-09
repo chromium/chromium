@@ -630,19 +630,6 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
     &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kDefault,
     &kDiskCacheBackendOptions};
 
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-BASE_FEATURE_PARAM(int,
-                   kSqlDiskCacheForceCheckpointThreshold,
-                   &kDiskCacheBackendExperiment,
-                   "SqlDiskCacheForceCheckpointThreshold",
-                   20000);
-BASE_FEATURE_PARAM(int,
-                   kSqlDiskCacheIdleCheckpointThreshold,
-                   &kDiskCacheBackendExperiment,
-                   "SqlDiskCacheIdleCheckpointThreshold",
-                   1000);
-#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
-
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSimpleCachePrioritizedCaching, base::FEATURE_ENABLED_BY_DEFAULT);

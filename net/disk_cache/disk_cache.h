@@ -320,9 +320,6 @@ class NET_EXPORT Backend {
   // Returns the maximum length an individual stream can have.
   virtual int64_t MaxFileSize() const = 0;
 
-  // Called when the browser is detected to be idle.
-  virtual void OnBrowserIdle();
-
  private:
   const net::CacheType cache_type_;
 };

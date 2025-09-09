@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,13 +22,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
-#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "net/base/cache_type.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
@@ -39,10 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using performance_scenarios::InputScenario;
-using performance_scenarios::LoadingScenario;
-using performance_scenarios::PerformanceScenarioTestHelper;
-using performance_scenarios::ScenarioScope;
 using testing::ElementsAre;
 
 namespace disk_cache {
@@ -538,23 +530,6 @@ class SqlPersistentStoreTest : public testing::Test {
     statement.BindInt64(2, token.GetHighForSerialization());
     statement.BindInt64(3, token.GetLowForSerialization());
     ASSERT_TRUE(statement.Run());
-  }
-
-  // Returns the number of writes required for a checkpoint.
-  int GetNumberForWritesRequiredForCheckpoint(const CacheEntryKey& entry_key,
-                                              std::string_view data);
-
-  void MaybeRunCheckpoint(bool expected_result) {
-    base::test::TestFuture<bool> future;
-    base::HistogramTester histogram_tester;
-    store_->MaybeRunCheckpoint(future.GetCallback());
-    EXPECT_EQ(future.Get(), expected_result);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.IdleEventCheckpoint.SuccessTime",
-        expected_result ? 1 : 0);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.IdleEventCheckpoint.SuccessPages",
-        expected_result ? 1 : 0);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -3775,157 +3750,6 @@ TEST_F(SqlPersistentStoreTest, ShouldStartEvictionReturnsFalseWhileInProgress) {
 
   // After eviction, size is below watermark, so it should still be false.
   EXPECT_FALSE(store_->ShouldStartEviction());
-}
-
-int64_t CheckedGetFileSize(const base::FilePath& file_path) {
-  return base::GetFileSize(file_path).value();
-}
-
-int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
-    const CacheEntryKey& entry_key,
-    std::string_view data) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  store_ = SqlPersistentStore::Create(temp_dir.GetPath(), kDefaultMaxBytes,
-                                      net::CacheType::DISK_CACHE,
-                                      background_task_runner_);
-  CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
-
-  const base::FilePath db_path =
-      temp_dir.GetPath().Append(kSqlBackendDatabaseFileName);
-  const base::FilePath wal_path = sql::Database::WriteAheadLogPath(db_path);
-
-  int64_t db_size = CheckedGetFileSize(db_path);
-  int64_t previous_db_size = db_size;
-  int64_t wal_size = CheckedGetFileSize(wal_path);
-  int64_t previous_wal_size = wal_size;
-
-  int number_of_writes = 0;
-  const CacheEntryKey kKey("my-key");
-  const auto token = CreateEntryAndGetToken(kKey);
-  while (true) {
-    WriteDataAndAssertSuccess(entry_key, token,
-                              /*old_body_end=*/number_of_writes,
-                              /*offset=*/number_of_writes, data,
-                              /*truncate=*/false);
-    number_of_writes++;
-    FlushPendingTask();
-    db_size = CheckedGetFileSize(db_path);
-    wal_size = CheckedGetFileSize(wal_path);
-    if (db_size != previous_db_size) {
-      // Checkpoint has been executed
-      EXPECT_GT(db_size, previous_db_size);
-      break;
-    }
-    // Until the checkpoint is executed, the wal size should monotonically
-    // increase.
-    EXPECT_GT(wal_size, previous_wal_size);
-    previous_wal_size = wal_size;
-  }
-  store_.reset();
-  FlushPendingTask();
-  return number_of_writes;
-}
-
-TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
-  // Set small thresholds to shorten the test execution time.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{net::features::kDiskCacheBackendExperiment,
-        {{net::features::kDiskCacheBackendParam.name, "sql"},
-         {net::features::kSqlDiskCacheForceCheckpointThreshold.name, "200"},
-         {net::features::kSqlDiskCacheIdleCheckpointThreshold.name, "100"}}}},
-      {});
-
-  auto test_helper = PerformanceScenarioTestHelper::Create();
-
-  // Set the state to idle.
-  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
-                                  LoadingScenario::kNoPageLoading);
-  test_helper->SetInputScenario(ScenarioScope::kGlobal,
-                                InputScenario::kNoInput);
-
-  const CacheEntryKey kKey("my-key");
-  const std::string_view kData = "a";
-  int idle_checkpoint_write_count = 0;
-  int non_idle_checkpoint_write_count = 0;
-  {
-    base::HistogramTester histogram_tester;
-    idle_checkpoint_write_count =
-        GetNumberForWritesRequiredForCheckpoint(kKey, kData);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.IdleCheckpoint.SuccessTime", 1);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.IdleCheckpoint.SuccessPages", 1);
-  }
-
-  // Set the state to non-idle.
-  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
-                                  LoadingScenario::kVisiblePageLoading);
-  {
-    base::HistogramTester histogram_tester;
-    non_idle_checkpoint_write_count =
-        GetNumberForWritesRequiredForCheckpoint(kKey, kData);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.ForceCheckpoint.SuccessTime", 1);
-    histogram_tester.ExpectTotalCount(
-        "Net.SqlDiskCache.Backend.ForceCheckpoint.SuccessPages", 1);
-  }
-
-  // The number of writes required for a checkpoint in a non-idle state is
-  // greater than in an idle state.
-  EXPECT_GT(non_idle_checkpoint_write_count, idle_checkpoint_write_count);
-
-  store_ = SqlPersistentStore::Create(GetTempPath(), kDefaultMaxBytes,
-                                      net::CacheType::DISK_CACHE,
-                                      background_task_runner_);
-  CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
-  const base::FilePath db_path = GetDatabaseFilePath();
-  int64_t previous_db_size = CheckedGetFileSize(db_path);
-
-  const auto token = CreateEntryAndGetToken(kKey);
-
-  // Write one less time than the number of writes required to trigger a
-  // checkpoint in the idle state.
-  for (int i = 0; i < idle_checkpoint_write_count - 1; ++i) {
-    WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/i,
-                              /*offset=*/i, kData,
-                              /*truncate=*/false);
-    FlushPendingTask();
-
-    ASSERT_EQ(CheckedGetFileSize(db_path), previous_db_size);
-  }
-
-  // Calling MaybeRunCheckpoint should not trigger a checkpoint.
-  MaybeRunCheckpoint(/*expected_result=*/false);
-
-  // Even in an idle state, calling MaybeRunCheckpoint should not trigger a
-  // checkpoint.
-  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
-                                  LoadingScenario::kNoPageLoading);
-  MaybeRunCheckpoint(/*expected_result=*/false);
-
-  // Set the state to non-idle.
-  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
-                                  LoadingScenario::kVisiblePageLoading);
-  // Write data again. This exceeds the number of writes required for a
-  // checkpoint in the idle state.
-  WriteDataAndAssertSuccess(kKey, token,
-                            /*old_body_end=*/idle_checkpoint_write_count - 1,
-                            /*offset=*/idle_checkpoint_write_count - 1, kData,
-                            /*truncate=*/false);
-  FlushPendingTask();
-  // Since it's in a non-idle state, a checkpoint is not yet performed.
-  ASSERT_EQ(CheckedGetFileSize(db_path), previous_db_size);
-
-  // Calling MaybeRunCheckpoint should not trigger a checkpoint.
-  MaybeRunCheckpoint(/*expected_result=*/false);
-
-  // After setting the state to idle, calling MaybeRunCheckpoint should
-  // trigger a checkpoint.
-  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
-                                  LoadingScenario::kNoPageLoading);
-  MaybeRunCheckpoint(/*expected_result=*/true);
 }
 
 }  // namespace disk_cache
