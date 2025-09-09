@@ -728,7 +728,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 };
 
         mSessionId =
-                mDataSharingTabManager.showManageSharingWithManageCallback(
+                mDataSharingTabManager.showManageSharing(
                         mActivity, assumeNonNull(existingGroup.collaborationId), manageCallback);
 
         mCloseScreenRunnable =

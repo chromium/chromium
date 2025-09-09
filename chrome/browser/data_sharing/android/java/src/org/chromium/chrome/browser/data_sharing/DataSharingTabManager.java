@@ -50,7 +50,6 @@ import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEn
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.FlowType;
-import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -755,6 +754,22 @@ public class DataSharingTabManager {
             String collaborationId,
             DataSharingManageUiConfig.ManageCallback manageCallback) {
         assert mProfile != null;
+        return showManageSharing(activity, collaborationId, manageCallback);
+    }
+
+    /**
+     * Shows UI for manage sharing.
+     *
+     * @param activity The activity to show the UI for.
+     * @param collaborationId The collaboration ID to show the UI for.
+     * @param manageCallback The callbacks for user actions in the manage UI.
+     * @return The session id associated with the UI instance.
+     */
+    public @Nullable String showManageSharing(
+            Activity activity,
+            String collaborationId,
+            DataSharingManageUiConfig.ManageCallback manageCallback) {
+        assert mProfile != null;
 
         assumeNonNull(mDataSharingService);
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
@@ -782,119 +797,6 @@ public class DataSharingTabManager {
                         .build();
         String sessionId = uiDelegate.showManageFlow(manageConfig);
         return sessionId;
-    }
-
-    /**
-     * Shows UI for manage sharing.
-     *
-     * @param activity The activity to show the UI for.
-     * @param collaborationId The collaboration ID to show the UI for.
-     * @param finishRunnable The runnable to run when the session is finished.
-     * @return The session id associated with the UI instance.
-     */
-    public @Nullable String showManageSharing(
-            Activity activity,
-            String collaborationId,
-            @Nullable Callback<@Outcome Integer> outcomeCallback) {
-        assert mProfile != null;
-
-        assumeNonNull(mDataSharingService);
-        DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(mProfile);
-        assumeNonNull(tabGroupSyncService);
-        String tabGroupName =
-                DataSharingTabGroupUtils.getTabGroupTitle(
-                        activity, collaborationId, tabGroupSyncService);
-
-        DataSharingStringConfig stringConfig = createManageSharingStringConfig();
-
-        DataSharingManageUiConfig.ManageCallback manageCallback =
-                new DataSharingManageUiConfig.ManageCallback() {
-                    private @Nullable Callback<@Outcome Integer> mOutcomeCallback;
-
-                    {
-                        mOutcomeCallback = outcomeCallback;
-                    }
-
-                    @Override
-                    public void onShareInviteLinkClicked(GroupToken groupToken) {
-                        onShareInviteLinkClickedWithWait(groupToken, null);
-                    }
-
-                    @Override
-                    public void onShareInviteLinkClickedWithWait(
-                            GroupToken groupToken, @Nullable Callback<Boolean> onFinished) {
-                        GURL url =
-                                mDataSharingService.getDataSharingUrl(
-                                        new GroupData(
-                                                groupToken.collaborationId,
-                                                assumeNonNull(tabGroupName),
-                                                /* members= */ null,
-                                                assumeNonNull(groupToken.accessToken)));
-                        if (url == null) {
-                            Callback.runNullSafe(onFinished, false);
-                            DataSharingMetrics.recordShareActionFlowState(
-                                    DataSharingMetrics.ShareActionStateAndroid.URL_CREATION_FAILED);
-                            return;
-                        }
-                        showShareSheet(activity, groupToken.collaborationId, null, url, onFinished);
-                    }
-
-                    @Override
-                    public void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {
-                        SavedTabGroup existingGroup =
-                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                        collaborationId, tabGroupSyncService);
-                        assumeNonNull(existingGroup);
-                        tabGroupSyncService.aboutToUnShareTabGroup(
-                                assumeNonNull(existingGroup.localId), readyToStopSharing);
-                    }
-
-                    @Override
-                    public void onStopSharingCompleted(boolean success) {
-                        SavedTabGroup existingGroup =
-                                assumeNonNull(
-                                        DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                                collaborationId, tabGroupSyncService));
-                        tabGroupSyncService.onTabGroupUnShareComplete(
-                                assumeNonNull(existingGroup.localId), success);
-                    }
-
-                    @Override
-                    public void onLeaveGroup() {
-                        Callback<@Outcome Integer> callback = mOutcomeCallback;
-                        mOutcomeCallback = null;
-
-                        // TODO(haileywang): remove assert if we don't observe any crash
-                        assert callback != null;
-                        if (callback != null) {
-                            callback.onResult(Outcome.GROUP_LEFT_OR_DELETED);
-                        }
-                    }
-
-                    @Override
-                    public void onSessionFinished() {
-                        if (mOutcomeCallback != null) {
-                            mOutcomeCallback.onResult(Outcome.SUCCESS);
-                        }
-                    }
-                };
-
-        boolean isSharingDisabled =
-                mCollaborationService != null
-                        && mCollaborationService.getServiceStatus().collaborationStatus
-                                == CollaborationStatus.DISABLED_FOR_POLICY;
-        DataSharingManageUiConfig manageConfig =
-                new DataSharingManageUiConfig.Builder()
-                        .setGroupToken(new GroupToken(collaborationId, null))
-                        .setManageCallback(manageCallback)
-                        .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
-                        .setActivityLogsUrl(getActivityLogsUrl())
-                        .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
-                        .setIsSharingDisabled(isSharingDisabled)
-                        .build();
-        return uiDelegate.showManageFlow(manageConfig);
     }
 
     public GURL getDataSharingUrl(GroupData groupData) {

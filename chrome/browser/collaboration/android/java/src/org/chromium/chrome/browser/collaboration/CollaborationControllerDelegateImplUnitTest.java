@@ -408,7 +408,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                 ArgumentCaptor.forClass(DataSharingManageUiConfig.ManageCallback.class);
 
         verify(mDataSharingTabManager)
-                .showManageSharingWithManageCallback(
+                .showManageSharing(
                         eq(mActivity), eq(collaborationId), manageCallbackCaptor.capture());
 
         manageCallbackCaptor.getValue().onSessionFinished();
