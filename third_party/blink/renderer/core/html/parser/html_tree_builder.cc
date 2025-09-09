@@ -763,16 +763,27 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
                             WebFeature::kInputParsedParentOptionOrOptgroup);
         }
 
+        bool add_select_end_tag =
+            !RuntimeEnabledFeatures::InputInSelectEnabled();
+
         if (parent_select || parent_option_optgroup) {
           if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
-            ProcessFakeEndTag(HTMLTag::kSelect);
+            add_select_end_tag = true;
           }
         } else {
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kInputParsedAncestorSelect);
         }
 
-        if (!RuntimeEnabledFeatures::InputInSelectEnabled()) {
+        if (add_select_end_tag) {
+          tree_.OpenElements()->TopNode()->AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "An <input> tag was parsed within an open <select> tag which "
+              "caused a </select> end tag to automatically be inserted. Please "
+              "add the missing </select> end tag, since this behavior may "
+              "change in future versions of this browser, possibly causing "
+              "breakage on this page.");
           ProcessFakeEndTag(HTMLTag::kSelect);
         }
       }
