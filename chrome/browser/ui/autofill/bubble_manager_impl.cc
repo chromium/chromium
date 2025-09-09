@@ -48,9 +48,9 @@ int GetPriorityForBubbleType(BubbleType type) {
 // existing pending bubble of the same type in the queue.
 bool ShouldAlwaysPreemptSameType(BubbleType bubble_type) {
   switch (bubble_type) {
+    case BubbleType::kFilledCardInformation:
     case BubbleType::kPassword:
       return true;
-    case BubbleType::kFilledCardInformation:
     case BubbleType::kSaveUpdateAutofillAi:
     case BubbleType::kSaveUpdateCard:
     case BubbleType::kVirtualCardEnrollConfirmation:
@@ -240,9 +240,8 @@ bool BubbleManagerImpl::HasPendingBubble(
     return false;
   }
 
-  if ((now - it->time_added) > kPendingRequestTimeout) {
-    // A bubble of the given type was found and has timed out, remove it from
-    // the queue.
+  if (ShouldAlwaysPreemptSameType(bubble_type) ||
+      (now - it->time_added) > kPendingRequestTimeout) {
     pending_bubbles_queue_.erase(it);
     return false;
   }

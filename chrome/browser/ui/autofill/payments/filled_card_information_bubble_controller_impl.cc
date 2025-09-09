@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 
-#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -17,7 +15,6 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -68,14 +65,10 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
     HideBubble();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
-    auto* manager = BubbleManager::GetForWebContents(web_contents());
-    if (!manager || manager->HasPendingBubble(*this)) {
-      // Early return if a pre-existing of similar type is in the queue or the
-      // manager does not exist.
-      return;
-    }
+  if (!MaySetUpBubble()) {
+    // This will early return when bubble manager is enabled but doesn't exist
+    // for the tab.
+    return;
   }
 
   SetupBubbleState(options);
@@ -86,20 +79,9 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &FilledCardInformationBubbleControllerImpl::RequestShowBubble,
-          weak_ptr_factory_.GetWeakPtr()),
+          &FilledCardInformationBubbleControllerImpl::QueueOrShowBubble,
+          weak_ptr_factory_.GetWeakPtr(), /*force_show=*/false),
       kFilledCardInformationBubbleDelay);
-}
-
-void FilledCardInformationBubbleControllerImpl::RequestShowBubble() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->RequestShowController(*this, /*force_show=*/false);
-    }
-  } else {
-    ShowBubble();
-  }
 }
 
 void FilledCardInformationBubbleControllerImpl::SetupBubbleState(
@@ -118,7 +100,7 @@ void FilledCardInformationBubbleControllerImpl::ReshowBubble() {
 
   is_user_gesture_ = true;
   should_icon_be_visible_ = true;
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 AutofillBubbleBase* FilledCardInformationBubbleControllerImpl::GetBubble()

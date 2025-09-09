@@ -83,10 +83,6 @@ class FilledCardInformationBubbleControllerImpl
       FilledCardInformationBubbleControllerImpl>;
   friend class FilledCardInformationBubbleViewsInteractiveUiTest;
 
-  // If the bubble manager is enabled, requests the manager to show the bubble
-  // or if it is disabled, shows the bubble.
-  void RequestShowBubble();
-
   // Initializes the state for the filled card information bubble. This includes
   // setting the bubble's content options and resetting flags related to user
   // interaction and visibility.
