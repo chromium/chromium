@@ -1040,9 +1040,6 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
 TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
   ResetControllerWithTestProviders(false, nullptr, nullptr);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kCategoricalSuggestions);
-
   {
     omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     SCOPED_TRACE("No matches");

@@ -104,8 +104,7 @@ AutocompleteMatchType::Type GetAutocompleteMatchType(
       return AutocompleteMatchType::NAVSUGGEST_PERSONALIZED;
     default: {
       // Use `ACMatchType::SEARCH_SUGGEST_ENTITY` for categorical suggestions.
-      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
-          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY) {
         return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
       }
       return AutocompleteMatchType::SEARCH_SUGGEST;

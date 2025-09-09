@@ -206,10 +206,6 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
 }
 
 TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
-  // Ensure categorical suggestions are enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kCategoricalSuggestions);
-
   TemplateURLData data;
   data.SetURL("http://foo.com/url?bar={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
@@ -296,10 +292,6 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
 }
 
 TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
-  // Ensure categorical suggestions are enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({omnibox::kCategoricalSuggestions}, {});
-
   TemplateURLData data;
   data.SetURL("http://foo.com/url?bar={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);

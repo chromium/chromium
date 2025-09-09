@@ -741,11 +741,9 @@ void BaseSearchProvider::AddMatchToMap(
     // entirety so it can be carried over when deduplicating the matches here or
     // later in the Autocomplete process.
     // TODO(crbug.com/40276602): rework how `entity_info` is used in the match.
-    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
-      if (!less_relevant_duplicate_match.image_url.is_empty() &&
-          existing_match.image_url.is_empty()) {
-        existing_match.image_url = less_relevant_duplicate_match.image_url;
-      }
+    if (!less_relevant_duplicate_match.image_url.is_empty() &&
+        existing_match.image_url.is_empty()) {
+      existing_match.image_url = less_relevant_duplicate_match.image_url;
     }
     // This is to avoid having shopping categorical queries lose their subtypes
     // to higher-relevance local history and verbatim matches. The subtypes are
@@ -754,11 +752,9 @@ void BaseSearchProvider::AddMatchToMap(
     // identify what the user selected so they can be suggested the next time,
     // i.e., if the user selects a decorated suggestion - which is accompanied
     // by specific subtypes - we want to show a decorated suggestion next time.
-    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
-      existing_match.subtypes.insert(
-          less_relevant_duplicate_match.subtypes.begin(),
-          less_relevant_duplicate_match.subtypes.end());
-    }
+    existing_match.subtypes.insert(
+        less_relevant_duplicate_match.subtypes.begin(),
+        less_relevant_duplicate_match.subtypes.end());
     // This is to avoid having `stripped_destination_url` being later set by
     // `AutocompleteResult::ComputeStrippedDestinationURL()` which strips away
     // the additional query params from `destination_url` leaving only the

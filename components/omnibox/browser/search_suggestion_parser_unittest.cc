@@ -1282,9 +1282,7 @@ TEST(SearchSuggestionParserTest, ParseValidTypes) {
   {
     const auto& suggestion_result = results.suggest_results[2];
     ASSERT_EQ(u"three", suggestion_result.suggestion());
-    ASSERT_EQ(base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)
-                  ? AutocompleteMatchType::SEARCH_SUGGEST_ENTITY
-                  : AutocompleteMatchType::SEARCH_SUGGEST,
+    ASSERT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
               suggestion_result.type());
     ASSERT_EQ(omnibox::TYPE_CATEGORICAL_QUERY,
               suggestion_result.suggest_type());

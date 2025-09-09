@@ -272,11 +272,6 @@ BASE_FEATURE(kAnimateSuggestionsListAppearance,
 
 BASE_FEATURE(kOmniboxAnswerActions, "OmniboxAnswerActions", DISABLED);
 
-// If enabled, treats categorical suggestions just like the entity suggestions
-// by reusing the `ACMatchType::SEARCH_SUGGEST_ENTITY` and reports the original
-// `omnibox::TYPE_CATEGORICAL_QUERY` to the server.
-BASE_FEATURE(kCategoricalSuggestions, "CategoricalSuggestions", ENABLED);
-
 // If enabled, sends a signal when a user touches down on a search suggestion to
 // |SearchPrefetchService|. |SearchPrefetchService| will then prefetch
 // suggestion iff the SearchNavigationPrefetch feature and "touch_down" param
