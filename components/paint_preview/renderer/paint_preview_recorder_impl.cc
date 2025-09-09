@@ -328,14 +328,13 @@ void PaintPreviewRecorderImpl::CapturePaintPreview(
   // might happen due to it being tied to a RenderFrame rather than
   // RenderWidget and we don't want to crash the renderer as this is
   // recoverable.
-  auto response = mojom::PaintPreviewCaptureResponse::New();
   if (is_painting_preview_) {
     std::move(callback).Run(
         base::unexpected(mojom::PaintPreviewStatus::kAlreadyCapturing));
     return;
   }
   const base::AutoReset<bool> resetter(&is_painting_preview_, true);
-  CapturePaintPreviewInternal(params, std::move(response), std::move(callback));
+  CapturePaintPreviewInternal(params, std::move(callback));
 }
 
 void PaintPreviewRecorderImpl::OnDestruct() {
@@ -354,7 +353,6 @@ void PaintPreviewRecorderImpl::BindPaintPreviewRecorder(
 
 void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     const mojom::PaintPreviewCaptureParamsPtr& params,
-    mojom::PaintPreviewCaptureResponsePtr response,
     CapturePaintPreviewCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Ensure the a frame actually exists to avoid a possible crash.
@@ -380,6 +378,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
                      return;
                    });
 
+  auto response = mojom::PaintPreviewCaptureResponse::New();
   response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->geometry_metadata->scroll_offsets = geometry.scroll_offsets;
   response->geometry_metadata->frame_offsets = geometry.frame_offsets;
