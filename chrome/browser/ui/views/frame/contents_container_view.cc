@@ -212,16 +212,13 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
                    ? content_upper_rounded_corners
                    : content_rounded_corners;
 
+  contents_view_->SetBackgroundRadii(radii);
   contents_view_->holder()->SetCornerRadii(radii);
+  contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
 
   if (new_tab_footer_view_) {
     new_tab_footer_view_->holder()->SetCornerRadii(
         content_lower_rounded_corners);
-  }
-
-  if (contents_scrim_view_->layer()->rounded_corner_radii() !=
-      kContentRoundedCorners) {
-    contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
