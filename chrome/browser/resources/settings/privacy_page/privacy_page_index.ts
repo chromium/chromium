@@ -215,7 +215,10 @@ export class SettingsPrivacyPageIndexElement extends
         (route.hasMigratedToPlugin === hasMigratedToPlugin);
   }
 
-  private getViewIdsForRoute_(route: Route): string[] {
+  // Return the list of view IDs to be displayed, or null if a view should
+  // exist but was not found. Caller is responsible for re-querying the DOM
+  // after any conditional elements have been stamped.
+  private getViewIdsForRoute_(route: Route): string[]|null {
     switch (route) {
       case routes.PRIVACY:
         return this.getDefaultViews_();
@@ -237,8 +240,7 @@ export class SettingsPrivacyPageIndexElement extends
         if (this.isPrivacyRoute_(route, /*hasMigratedToPlugin*/ true)) {
           const view = this.$.viewManager.querySelector(
               `[slot='view'][route-path='${route.path}']`);
-          assert(view);
-          return [view.id];
+          return view ? [view.id] : null;
         }
 
         // Handle case where Privacy child route has not migrated to the new
@@ -266,18 +268,18 @@ export class SettingsPrivacyPageIndexElement extends
     // Need to wait for currentRouteChanged observers on child views to run
     // first, before switching views.
     queueMicrotask(async () => {
-      const viewIds = this.getViewIdsForRoute_(newRoute);
+      let viewIds = this.getViewIdsForRoute_(newRoute);
 
-      if (viewIds.length === 0) {
+      if (viewIds !== null && viewIds.length === 0) {
         // Nothing to do. Other parent elements are responsible for updating
         // the displayed contents.
         this.pendingViewSwitching_.resolve();
         return;
       }
 
-      const allViewsExist =
+      const allViewsExist = viewIds !== null &&
           this.$.viewManager.querySelectorAll(viewIds.join(',')).length ===
-          viewIds.length;
+              viewIds.length;
       if (!allViewsExist) {
         // Wait once for any lazy render <dom-if>s to render.
         await this.beforeNextRenderPromise_();
@@ -288,8 +290,12 @@ export class SettingsPrivacyPageIndexElement extends
           this.pendingViewSwitching_.resolve();
           return;
         }
+
+        // Re-query for the elements to be displayed, as they must exist.
+        viewIds = this.getViewIdsForRoute_(newRoute);
       }
 
+      assert(viewIds !== null);
       await this.$.viewManager.switchViews(
           viewIds, 'no-animation', 'no-animation');
       this.pendingViewSwitching_.resolve();
