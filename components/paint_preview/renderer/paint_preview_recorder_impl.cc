@@ -328,6 +328,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreview(
   // RenderWidget and we don't want to crash the renderer as this is
   // recoverable.
   auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   if (is_painting_preview_) {
     std::move(callback).Run(mojom::PaintPreviewStatus::kAlreadyCapturing,
                             std::move(response));
@@ -380,7 +381,6 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
         return;
       });
 
-  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->geometry_metadata->scroll_offsets = geometry.scroll_offsets;
   response->geometry_metadata->frame_offsets = geometry.frame_offsets;
 
