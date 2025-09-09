@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
@@ -155,31 +156,33 @@ bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
 
 // TODO(crbug.com/433877973): Execute in background thread if sync is not
 // required.
-LoadSeedResult ProcessStoredSeedData(StoredSeed stored_seed,
+LoadSeedResult ProcessStoredSeedData(StoredSeed::StorageFormat storage_format,
+                                     std::string_view stored_seed_data,
+                                     std::string_view stored_seed_signature,
                                      std::string* seed_data,
                                      std::string* signature = nullptr) {
-  if (stored_seed.data.empty()) {
+  if (stored_seed_data.empty()) {
     return LoadSeedResult::kEmpty;
   }
 
   // As a space optimization, the latest seed might not be stored directly, but
   // rather aliased to the safe seed. We don't need to store the signature,
   // since it is the same as the safe seed.
-  if (stored_seed.data == kIdenticalToSafeSeedSentinel) {
-    *seed_data = stored_seed.data;
+  if (stored_seed_data == kIdenticalToSafeSeedSentinel) {
+    *seed_data = stored_seed_data;
     return LoadSeedResult::kSuccess;
   }
 
   std::string_view compressed_data;
   std::string decoded_data;
-  switch (stored_seed.storage_format) {
+  switch (storage_format) {
     case StoredSeed::StorageFormat::kCompressed:
-      compressed_data = stored_seed.data;
+      compressed_data = stored_seed_data;
       break;
     // Because clients not using a seed file get seed data from local state
     // instead, they need to decode the base64-encoded seed data first.
     case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
-      if (!base::Base64Decode(stored_seed.data, &decoded_data)) {
+      if (!base::Base64Decode(stored_seed_data, &decoded_data)) {
         return LoadSeedResult::kCorruptBase64;
       }
       compressed_data = decoded_data;
@@ -199,10 +202,19 @@ LoadSeedResult ProcessStoredSeedData(StoredSeed stored_seed,
   }
 
   if (signature) {
-    *signature = stored_seed.signature;
+    *signature = stored_seed_signature;
   }
 
   return LoadSeedResult::kSuccess;
+}
+
+std::string ReadSeedFromFile(base::FilePath file_path) {
+  std::string seed_data;
+  bool success = base::ReadFileToString(file_path, &seed_data);
+  if (!success) {
+    return "";
+  }
+  return seed_data;
 }
 
 }  // namespace
@@ -230,7 +242,6 @@ const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
 };
 
 StoredSeed::StoredSeed(StorageFormat storage_format,
-                       std::string_view data,
                        std::string_view signature,
                        int milestone,
                        base::Time seed_date,
@@ -239,7 +250,6 @@ StoredSeed::StoredSeed(StorageFormat storage_format,
                        std::string_view permanent_country_code,
                        std::string_view permanent_country_version)
     : storage_format(storage_format),
-      data(data),
       signature(signature),
       milestone(milestone),
       seed_date(seed_date),
@@ -331,7 +341,6 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
   if (ShouldUseSeedFile()) {
     return StoredSeed(
         /*storage_format=*/StoredSeed::StorageFormat::kCompressed,
-        /*data=*/seed_info_.data(),
         /*signature=*/seed_info_.signature(),
         /*milestone=*/seed_info_.milestone(),
         /*seed_date=*/ProtoTimeToTime(seed_info_.seed_date()),
@@ -346,7 +355,6 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
     return StoredSeed(
         /*storage_format=*/StoredSeed::StorageFormat::
             kCompressedAndBase64Encoded,
-        /*data=*/local_state_->GetString(fields_prefs_->seed),
         /*signature=*/local_state_->GetString(fields_prefs_->signature),
         /*milestone=*/local_state_->GetInteger(fields_prefs_->milestone),
         /*seed_date=*/local_state_->GetTime(fields_prefs_->seed_date),
@@ -417,11 +425,24 @@ void SeedReaderWriter::SetPermanentConsistencyCountryAndVersion(
                              country, version);
 }
 
-LoadSeedResult SeedReaderWriter::ReadSeedData(
+LoadSeedResult SeedReaderWriter::ReadSeedDataOnStartup(
     std::string* seed_data,
     std::string* base64_seed_signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ProcessStoredSeedData(GetSeedData(), seed_data, base64_seed_signature);
+  // On startup, the seed data should always be kept in memory.
+  CHECK(!seed_purgeable_from_memory_)
+      << "Seed data should not be purgeable from memory on startup.";
+  StoredSeed stored_seed = GetSeedData();
+  if (ShouldUseSeedFile()) {
+    return ProcessStoredSeedData(
+        stored_seed.storage_format, stored_seed_data_.value_or(""),
+        stored_seed.signature, seed_data, base64_seed_signature);
+  } else {
+    return ProcessStoredSeedData(
+        stored_seed.storage_format,
+        /*stored_seed_data=*/local_state_->GetString(fields_prefs_->seed),
+        stored_seed.signature, seed_data, base64_seed_signature);
+  }
 }
 
 void SeedReaderWriter::ReadSeedData(
@@ -435,7 +456,7 @@ void SeedReaderWriter::ReadSeedData(
 void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    seed_info_.set_data(std::move(seed_data));
+    stored_seed_data_ = std::move(seed_data);
     seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   } else {
     local_state_->SetString(fields_prefs_->seed, std::move(seed_data));
@@ -460,10 +481,18 @@ void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
 bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    return seed_info_.data() == kIdenticalToSafeSeedSentinel;
+    return stored_seed_data_.value_or("") == kIdenticalToSafeSeedSentinel;
   } else {
     return local_state_->GetString(fields_prefs_->seed) ==
            kIdenticalToSafeSeedSentinel;
+  }
+}
+
+void SeedReaderWriter::AllowToPurgeSeedDataFromMemory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  seed_purgeable_from_memory_ = true;
+  if (ShouldClearSeedDataFromMemory()) {
+    stored_seed_data_ = std::nullopt;
   }
 }
 
@@ -477,9 +506,31 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   // use std::move here as we may attempt to read `seed_info_.data` from memory
   // after a write and before we modify `seed_info_.data` again, in which case
   // unexpected empty data would be read.
-  // TODO(crbug.com/370539202) Potentially use std::move instead of copy if we
-  // are able to move seed data out of memory.
-  return base::BindOnce(&DoSerialize, seed_info_);
+  auto call_clear_seed_cb =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(&SeedReaderWriter::OnSeedWriteComplete,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  seed_writer_->RegisterOnNextWriteCallbacks(base::OnceClosure(),
+                                             std::move(call_clear_seed_cb));
+  StoredSeedInfo seed_info = seed_info_;
+  // TODO(crbug.com/370539202): Potentially use std::move instead of copy if we
+  // are able to move seed data out of memory before the write completes.
+  seed_info.set_data(stored_seed_data_.value_or(""));
+  return base::BindOnce(&DoSerialize, std::move(seed_info));
+}
+
+bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return seed_purgeable_from_memory_ && !HasPendingWrite() &&
+         stored_seed_data_.has_value() && !stored_seed_data_->empty() &&
+         *stored_seed_data_ != kIdenticalToSafeSeedSentinel;
+}
+
+void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldClearSeedDataFromMemory()) {
+    stored_seed_data_ = std::nullopt;
+  }
 }
 
 StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
@@ -497,7 +548,7 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   } else if (!compression::GzipCompress(seed_info.seed_data, &seed_data)) {
     return StoreSeedResult::kFailedGzip;
   }
-  seed_info_.set_data(seed_data);
+  stored_seed_data_ = std::move(seed_data);
   seed_info_.set_signature(seed_info.signature);
   seed_info_.set_milestone(seed_info.milestone);
   seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
@@ -551,7 +602,7 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
   // serialization and can be changed multiple times before a scheduled write
   // completes, in which case the background serializer will use the
   // `seed_info_.data` set at the last call of this function.
-  seed_info_.clear_data();
+  stored_seed_data_ = "";
   seed_info_.clear_signature();
   seed_info_.clear_milestone();
   seed_info_.clear_seed_date();
@@ -589,9 +640,8 @@ void SeedReaderWriter::ReadSeedFile() {
   std::string seed_file_data;
   const bool success =
       base::ReadFileToString(seed_writer_->path(), &seed_file_data);
-
   if (success) {
-    seed_info_.set_data(std::move(seed_file_data));
+    stored_seed_data_ = std::move(seed_file_data);
     // TODO(crbug.com/380465790): Read other SeedInfo fields from the seed file
     // once it's stored there.
     seed_info_.set_signature(local_state_->GetString(fields_prefs_->signature));
@@ -656,6 +706,10 @@ void SeedReaderWriter::ReadSeedFile() {
           base::StrCat(
               {"Variations.SeedFileWriteEmptySeed.", histogram_suffix}),
           decoded_data.empty());
+    } else {
+      // If the seed data cannot be read from the Seed File or Local State,
+      // the seed data is empty.
+      stored_seed_data_ = "";
     }
   }
 
@@ -735,24 +789,52 @@ void SeedReaderWriter::MigrateToLocalState() {
 
 void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(
     ReadSeedDataCallback done_callback,
-    StoredSeed stored_seed) {
+    StoredSeed::StorageFormat stored_seed_storage_format,
+    std::string stored_seed_data,
+    std::string stored_signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string seed_data;
   std::string base64_seed_signature;
   LoadSeedResult result = ProcessStoredSeedData(
-      std::move(stored_seed), &seed_data, &base64_seed_signature);
+      stored_seed_storage_format, stored_seed_data, stored_signature,
+      &seed_data, &base64_seed_signature);
   std::move(done_callback)
       .Run(ReadSeedDataResult{result, std::move(seed_data),
                               base64_seed_signature});
 }
 
-void SeedReaderWriter::GetSeedData(
-    base::OnceCallback<void(StoredSeed)> done_callback) {
+void SeedReaderWriter::GetSeedData(GetSeedDataCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/433877973): If the client is in the treatment group, read
-  // the seed from the seed file in a background thread. For now it's just a
-  // callback version of the existing GetSeedData() method.
-  std::move(done_callback).Run(GetSeedData());
+  if (!ShouldUseSeedFile()) {
+    std::move(done_callback)
+        .Run(StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+             local_state_->GetString(fields_prefs_->seed),
+             local_state_->GetString(fields_prefs_->signature));
+    return;
+  }
+  const std::string signature =
+      local_state_->GetString(fields_prefs_->signature);
+  if (stored_seed_data_.has_value()) {
+    // If the seed data is stored in memory, we can just run the callback
+    // with the stored data. This will copy the data, but can be run on the
+    // main thread.
+    std::move(done_callback)
+        .Run(StoredSeed::StorageFormat::kCompressed, stored_seed_data_.value(),
+             std::move(signature));
+    return;
+  }
+  // If we're not keeping the seed data in memory, we need to read it from the
+  // file. This needs to be done asynchronously.
+  auto read_file_cb = [](GetSeedDataCallback done_callback,
+                         std::string signature, std::string seed_data) {
+    std::move(done_callback)
+        .Run(StoredSeed::StorageFormat::kCompressed, std::move(seed_data),
+             std::move(signature));
+  };
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ReadSeedFromFile, seed_writer_->path()),
+      base::BindOnce(read_file_cb, std::move(done_callback),
+                     std::move(signature)));
 }
 
 }  // namespace variations

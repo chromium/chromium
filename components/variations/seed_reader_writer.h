@@ -47,7 +47,6 @@ struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
   enum class StorageFormat { kCompressed, kCompressedAndBase64Encoded };
 
   StoredSeed(StorageFormat storage_format,
-             std::string_view data,
              std::string_view signature,
              int milestone,
              base::Time seed_date,
@@ -61,8 +60,6 @@ struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
   // The storage format of the seed. Seed-file-based seeds are compressed while
   // local-state-based seeds are compressed and base64 encoded.
   const StorageFormat storage_format;
-  // The seed data.
-  const std::string_view data;
   // base64-encoded signature of the seed.
   const std::string_view signature;
   // The milestone with which the seed was fetched
@@ -198,9 +195,13 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Reads seed data and returns the result of the load. If a pointer for the
   // signature is provided, the signature will be read and stored into
   // `base64_seed_signature`. The value stored into `seed_data` should only be
-  // used if the result is `LoadSeedResult::kSuccess`.
-  LoadSeedResult ReadSeedData(std::string* seed_data,
-                              std::string* base64_seed_signature = nullptr);
+  // used if the result is `LoadSeedResult::kSuccess`. This version of the API
+  // is synchronous and may not be called after
+  // AllowToPurgeSeedDataFromMemory(), since it may block the UI thread. Use the
+  // callback version ReadSeedData() below instead.
+  LoadSeedResult ReadSeedDataOnStartup(
+      std::string* seed_data,
+      std::string* base64_seed_signature = nullptr);
 
   // Reads and processes seed data and calls `done_callback` with the result of
   // the load, the seed data, and the signature. The seed data and signature
@@ -220,11 +221,35 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Returns true if the seed data is the same as the safe seed sentinel.
   bool IsIdenticalToSafeSeedSentinel();
 
+  // After this is called, the seed data will not be kept in memory after
+  // being written to disk, unless it's empty or it's the sentinel value.
+  void AllowToPurgeSeedDataFromMemory();
+
+  std::optional<std::string> stored_seed_data_for_testing() const {
+    return stored_seed_data_;
+  }
+
  private:
+  // Callback for GetSeedData(). The arguments are the storage format, the seed
+  // data, and the signature.
+  using GetSeedDataCallback = base::OnceCallback<
+      void(StoredSeed::StorageFormat, std::string, std::string)>;
+
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
+
+  // Returns true if the seed data should be cleared from memory.
+  // This is true if:
+  // - `seed_purgeable_from_memory_` is false.
+  // - No write is pending.
+  // - The stored seed data is not empty and not the sentinel value.
+  bool ShouldClearSeedDataFromMemory();
+
+  // Called when a seed write is complete. If `seed_purgeable_from_memory_` is
+  // false, the stored seed data will be cleared from memory.
+  void OnSeedWriteComplete(bool write_success);
 
   // Schedules `seed_info` to be written using `seed_writer_`. If a field is
   // empty, it will not be updated. If you want to clear the seed file, use
@@ -264,14 +289,17 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Calls `done_callback` with the result of the load, the seed data, and
   // signature. The seed data and signature should only be used if the result is
   // `LoadSeedResult::kSuccess`.
-  void ProcessStoredSeedDataAndRunCallback(ReadSeedDataCallback done_callback,
-                                           StoredSeed stored_seed);
+  void ProcessStoredSeedDataAndRunCallback(
+      ReadSeedDataCallback done_callback,
+      StoredSeed::StorageFormat storage_format,
+      std::string seed_data,
+      std::string signature);
 
   // Calls `done_callback` with the result of the load. If the seed file needs
   // to be read, the read will be done in a background thread. The seed data
   // won't be processed, if the seed needs to be used, use ReadSeedData()
   // instead.
-  void GetSeedData(base::OnceCallback<void(StoredSeed)> done_callback);
+  void GetSeedData(GetSeedDataCallback done_callback);
 
   // Pref service used to persist seeds and seed-related info.
   raw_ptr<PrefService> local_state_;
@@ -290,6 +318,18 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // setup or a seed fetched from a variations server. Also stores other
   // seed-related info.
   StoredSeedInfo seed_info_;
+
+  // Seed data stored in memory. It will be set to std::nullopt if the seed data
+  // is not stored in memory. In contrast, empty string means the seed data is
+  // empty, so it doesn't need to be read from disk.
+  std::optional<std::string> stored_seed_data_;
+
+  // Whether to keep the seed data in memory. This is used to avoid storing the
+  // seed data in memory when it is not needed. It will be set to true when
+  // AllowToPurgeSeedDataFromMemory() is called.
+  // Note: if the seed data is empty or kIdenticalToSafeSeedSentinel, it
+  // will be kept in memory even if this is true.
+  bool seed_purgeable_from_memory_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

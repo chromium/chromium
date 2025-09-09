@@ -4,12 +4,16 @@
 
 #import "ios/chrome/test/variations_smoke_test/variations_smoke_test_app_interface.h"
 
-#import <string>
 #import <sys/sysctl.h>
+
+#import <string>
 
 #import "base/base64.h"
 #import "base/process/process.h"
+#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/threading/thread.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
@@ -38,9 +42,19 @@ base::Time GetProcessStartTime() {
           ->GetVariationsService()
           ->GetSeedStoreForTesting()
           ->GetSeedReaderWriterForTesting();
-  variations::StoredSeed storedSeed = seedReaderWriter->GetSeedData();
-  return !storedSeed.data.empty() && !storedSeed.signature.empty() &&
-         !seedReaderWriter->HasPendingWrite();
+  if (seedReaderWriter->HasPendingWrite()) {
+    return NO;
+  }
+  BOOL success = NO;
+  base::RunLoop run_loop;
+  seedReaderWriter->ReadSeedData(base::BindLambdaForTesting(
+      [&success,
+       &run_loop](variations::SeedReaderWriter::ReadSeedDataResult result) {
+        success = (result.result == variations::LoadSeedResult::kSuccess);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return success;
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {

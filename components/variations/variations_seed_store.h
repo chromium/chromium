@@ -360,8 +360,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       std::string* base64_seed_signature = nullptr);
 
   // Same as above, but allows for asynchronous reads if the seed has to be read
-  // from the seed file. The |done_callback| will be called when the read is
-  // complete. The result of the read will be handled by
+  // from the seed file. Synchronous reads should only be used on startup, since
+  // it may block the UI thread. The |done_callback| will be called when the
+  // read is complete. The result of the read will be handled by
   // VariationsSeedStore::ReadSeedDataCallback().
   void ReadSeedData(SeedReaderWriter::ReadSeedDataCallback done_callback,
                     SeedType seed_type,

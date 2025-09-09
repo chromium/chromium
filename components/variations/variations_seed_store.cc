@@ -682,7 +682,8 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(
     std::string* base64_seed_signature) {
   LoadSeedResult load_seed_result =
       seed_type == SeedType::LATEST
-          ? seed_reader_writer_->ReadSeedData(seed_data, base64_seed_signature)
+          ? seed_reader_writer_->ReadSeedDataOnStartup(seed_data,
+                                                       base64_seed_signature)
           : safe_seed_store_->ReadSeedData(seed_data, base64_seed_signature);
   if (load_seed_result != LoadSeedResult::kSuccess) {
     ClearPrefs(seed_type);
