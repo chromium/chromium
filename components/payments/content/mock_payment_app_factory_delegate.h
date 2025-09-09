@@ -30,6 +30,8 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
 
   void SetRequestedPaymentMethod(mojom::PaymentMethodDataPtr method_data);
 
+  void ResetSpec();
+
   void set_is_off_the_record() { is_off_the_record_ = true; }
 
   void set_prefs_can_make_payment(bool enabled) {
@@ -54,7 +56,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   bool IsOffTheRecord() const override { return is_off_the_record_; }
   bool PrefsCanMakePayment() const override { return prefs_can_make_payment_; }
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override {
-    return spec_->AsWeakPtr();
+    return spec_ ? spec_->AsWeakPtr() : nullptr;
   }
   MOCK_METHOD1(GetTwaPackageName, void(GetTwaPackageNameCallback));
   MOCK_METHOD0(ShowProcessingSpinner, void());
