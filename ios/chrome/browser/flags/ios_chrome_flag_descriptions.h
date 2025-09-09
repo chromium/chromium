@@ -969,6 +969,9 @@ extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
+extern const char kTabGridEmptyThumbnailName[];
+extern const char kTabGridEmptyThumbnailDescription[];
+
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 

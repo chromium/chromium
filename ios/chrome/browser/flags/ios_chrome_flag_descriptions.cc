@@ -1645,6 +1645,11 @@ const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
     "are used.";
 
+const char kTabGridEmptyThumbnailName[] = "Enable empty thumbnail in TabGrid";
+const char kTabGridEmptyThumbnailDescription[] =
+    "When enabled, the tab grid will show an empty thumbnail for tabs that "
+    "don't have one.";
+
 const char kTabResumptionName[] = "Enable Tab Resumption";
 const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "

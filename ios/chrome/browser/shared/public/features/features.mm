@@ -230,6 +230,8 @@ BASE_FEATURE(kTCRexKillSwitch,
 
 BASE_FEATURE(kTabGridNewTransitions, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridEmptyThumbnail, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNewTabGridTransitionsEnabled() {
   if (IsDiamondPrototypeEnabled()) {
     return false;

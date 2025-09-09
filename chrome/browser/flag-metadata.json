@@ -9608,6 +9608,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-grid-empty-thumbnail",
+    "owners": [ "thegreenfrog@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-grid-new-transitions",
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 142

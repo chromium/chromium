@@ -2921,6 +2921,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"reader-mode-new-css-enabled", flag_descriptions::kReaderModeNewCssName,
      flag_descriptions::kReaderModeNewCssDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(dom_distiller::kEnableReaderModeNewCss)},
+    {"tab-grid-empty-thumbnail", flag_descriptions::kTabGridEmptyThumbnailName,
+     flag_descriptions::kTabGridEmptyThumbnailDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridEmptyThumbnail)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
