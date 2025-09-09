@@ -13,6 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +36,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -49,11 +53,17 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class DeviceDelegateTest {
+    private static final int A2A_TRANSACTION_OUTCOME_SUCCEED = 1;
+    private static final int A2A_TRANSACTION_OUTCOME_CANCELED = 2;
+    private static final int A2A_TRANSACTION_OUTCOME_FAILED = 3;
+    private static final String A2A_TRANSACTION_OUTCOME = "A2A_TRANSACTION_OUTCOME";
     private static final String A2A_INTENT_ACTION_NAME =
             "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     private static final String EMAIL = "user@example.com";
-    private static final GURL PAYMENT_LINK = new GURL("https://www.example.com");
+    private static final GURL PAYMENT_LINK =
+            new GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay");
+    private static final String PAYMENT_LINK_SCHEME = "PromptPay";
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
@@ -278,6 +288,7 @@ public class DeviceDelegateTest {
                 DeviceDelegate.invokePaymentApp(
                         "com.example.app",
                         "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
                         PAYMENT_LINK,
                         /* windowAndroid= */ null));
     }
@@ -290,6 +301,7 @@ public class DeviceDelegateTest {
                 DeviceDelegate.invokePaymentApp(
                         "com.example.app",
                         "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
                         PAYMENT_LINK,
                         mMockWindowAndroid));
 
@@ -311,8 +323,82 @@ public class DeviceDelegateTest {
                 DeviceDelegate.invokePaymentApp(
                         "com.example.app",
                         "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
                         PAYMENT_LINK,
                         mMockWindowAndroid));
         verify(mMockWindowAndroid).showIntent(any(Intent.class), any(), any());
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsSucceeded() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_SUCCEED.
+        testInvokePaymentAppCallback(
+                Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_SUCCEED, "Succeeded");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsCanceled() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_CANCELED.
+        testInvokePaymentAppCallback(
+                Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_CANCELED, "Canceled");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsFailed() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_FAILED.
+        testInvokePaymentAppCallback(Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_FAILED, "Failed");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsUnknown_withInvalidCode() {
+        testInvokePaymentAppCallback(Activity.RESULT_OK, 99, "Unknown");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsUnknown_withNoOutcome() {
+        testInvokePaymentAppCallback(Activity.RESULT_OK, null, "Unknown");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsActivityCanceled() {
+        testInvokePaymentAppCallback(Activity.RESULT_CANCELED, null, "Canceled");
+    }
+
+    private void testInvokePaymentAppCallback(
+            int resultCode, @Nullable Integer transactionOutcome, String expectedOutcome) {
+        ArgumentCaptor<IntentCallback> intentCallbackCaptor =
+                ArgumentCaptor.forClass(IntentCallback.class);
+        when(mMockWindowAndroid.showIntent(
+                        any(Intent.class), intentCallbackCaptor.capture(), any()))
+                .thenReturn(true);
+
+        assertTrue(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+
+        Intent resultIntent = new Intent();
+        if (transactionOutcome != null) {
+            resultIntent.putExtra(A2A_TRANSACTION_OUTCOME, transactionOutcome);
+        }
+
+        String latencyHistogram = "FacilitatedPayments.A2A." + expectedOutcome + ".Latency";
+        String schemeLatencyHistogram = latencyHistogram + ".PromptPay";
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(latencyHistogram)
+                        .expectAnyRecord(schemeLatencyHistogram)
+                        .build();
+
+        // Capture and invoke the callback
+        IntentCallback callback = intentCallbackCaptor.getValue();
+        callback.onIntentCompleted(resultCode, resultIntent);
+
+        // Verifies that the histograms were recorded. We don't assert on the value because
+        // the latency is not deterministic in this test.
+        watcher.assertExpected();
     }
 }

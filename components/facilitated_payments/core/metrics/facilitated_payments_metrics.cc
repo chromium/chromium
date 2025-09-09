@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -62,26 +61,6 @@ std::string PaymentTypeToFopSelectorLatencyString(
   }
 }
 
-std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
-  switch (scheme) {
-    case PaymentLinkValidator::Scheme::kDuitNow:
-      return "DuitNow";
-    case PaymentLinkValidator::Scheme::kShopeePay:
-      return "ShopeePay";
-    case PaymentLinkValidator::Scheme::kTngd:
-      return "Tngd";
-    case PaymentLinkValidator::Scheme::kPromptPay:
-      // TODO(crbug.com/427319124): Add tests for kPromptPay when adding metrics.
-      return "PromptPay";
-    case PaymentLinkValidator::Scheme::kMomo:
-      return "Momo";
-    case PaymentLinkValidator::Scheme::kInvalid:
-      // This case can't happen because `kInvalid` causes an early return in
-      // the PaymentLinkManager.
-      NOTREACHED();
-  }
-}
-
 std::string ResultToString(bool result) {
   return result ? "Success" : "Failure";
 }
@@ -99,6 +78,25 @@ std::string PaymentLinkFopSelectorTypesToString(
 }
 
 }  // namespace
+
+std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
+  switch (scheme) {
+    case PaymentLinkValidator::Scheme::kDuitNow:
+      return "DuitNow";
+    case PaymentLinkValidator::Scheme::kShopeePay:
+      return "ShopeePay";
+    case PaymentLinkValidator::Scheme::kTngd:
+      return "Tngd";
+    case PaymentLinkValidator::Scheme::kPromptPay:
+      return "PromptPay";
+    case PaymentLinkValidator::Scheme::kMomo:
+      return "Momo";
+    case PaymentLinkValidator::Scheme::kInvalid:
+      // This case can't happen because `kInvalid` causes an early return in the
+      // PaymentLinkManager.
+      NOTREACHED();
+  }
+}
 
 void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",

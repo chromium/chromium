@@ -182,6 +182,9 @@ enum class PixAccountLinkingFlowExitedReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.AccountLinking.FlowExitedReason)
 
+// Converts `PaymentLinkValidator::Scheme` to a string for logging.
+std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
+
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
