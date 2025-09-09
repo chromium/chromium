@@ -3211,10 +3211,12 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
                        TestSingleAriaNotification) {
   const std::string url_str(R"HTML(
       <!DOCTYPE html>
+      <body>
       <div aria-label="Container">
         <button aria-label="a" id="a" onclick="notify(this)"></button>
         <button aria-label="b" id="b" onclick="otherNotify(this)"></button>
       </div>
+      </body>
       <script>
       function notify(clickedElement) {
         clickedElement.ariaNotify("hello");
@@ -3297,6 +3299,26 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+  }
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(),
+        ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED);
+
+    ExecuteScript("document.body.ariaNotify('hi');");
+    ASSERT_TRUE(waiter.WaitForNotification());
+
+    const ui::AXTree& tree = GetAXTree();
+    const ui::AXNode* root = tree.root();
+    const ui::AXNode* document = root->GetChildAtIndex(0);
+    const ui::AXNode* body = document->GetChildAtIndex(0);
+    ASSERT_NE(body, nullptr);
+
+    EXPECT_EQ(
+        std::vector<std::string>{"hi"},
+        body->GetStringListAttribute(
+            ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
   }
 }
 
