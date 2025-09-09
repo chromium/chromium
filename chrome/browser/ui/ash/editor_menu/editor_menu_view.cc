@@ -130,7 +130,10 @@ EditorMenuView::EditorMenuView(
       GetEditorMenuAccessibilityName(text_and_image_mode_));
 }
 
-EditorMenuView::~EditorMenuView() = default;
+EditorMenuView::~EditorMenuView() {
+  CHECK(delegate_);
+  delegate_->OnEditorMenuVisibilityChanged(false);
+}
 
 // static
 std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
