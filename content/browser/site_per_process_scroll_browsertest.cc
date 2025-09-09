@@ -1102,8 +1102,16 @@ class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
   raw_ptr<base::RunLoop> run_loop_;
 };
 
+// The test is flaky on Android, see crbug.com/443928502
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ScrollBubblingWithTouchMoveInjection \
+  DISABLED_ScrollBubblingWithTouchMoveInjection
+#else
+#define MAYBE_ScrollBubblingWithTouchMoveInjection \
+  ScrollBubblingWithTouchMoveInjection
+#endif
 IN_PROC_BROWSER_TEST_P(OOPIFScrollBubblingTest,
-                       ScrollBubblingWithTouchMoveInjection) {
+                       MAYBE_ScrollBubblingWithTouchMoveInjection) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/scrollable_page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
