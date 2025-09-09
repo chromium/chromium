@@ -107,29 +107,6 @@ void DesktopCapturerAndroid::Shutdown() {
   finishing_ = true;
 }
 
-namespace {
-
-// TODO(crbug.com/352187279): `DesktopCaptureDevice` expects results in ARGB
-// but Android generally produces results in ABGR. We should add
-// `webrtc::FourCC` info to the `DesktopCapturer` interface to handle this.
-void RgbaToBgra(webrtc::DesktopFrame& frame) {
-  static_assert(webrtc::DesktopFrame::kBytesPerPixel == 4,
-                "kBytesPerPixel must be 4");
-  uint8_t* data = frame.data();
-  for (int r = 0; r < frame.size().height(); ++r) {
-    for (int c = 2; c < frame.stride();
-         c += webrtc::DesktopFrame::kBytesPerPixel) {
-      // SAFETY: `c - 2` is non-negative and c is less than the stride.
-      UNSAFE_BUFFERS(std::swap(data[c - 2], data[c]));
-    }
-    // SAFETY: It's guaranteed that the size of the memory pointed to by
-    // `frame.data()` is at least height * stride.
-    UNSAFE_BUFFERS(data += frame.stride());
-  }
-}
-
-}  // namespace
-
 void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
   // Don't process frames if we are no longer doing anything.
@@ -142,7 +119,7 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
                                  height.ValueOrDie<int32_t>());
   next_frame_ =
-      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
+      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ABGR);
 
   // We don't have access to this information to Android, but this is only
   // used for mouse cursor stuff, which we don't support currently.
@@ -202,8 +179,6 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
       span.get_at(offset.ValueOrDie()),
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
-
-  RgbaToBgra(*next_frame_);
 
   base::android::RunRunnableAndroid(plane.release_cb);
 }

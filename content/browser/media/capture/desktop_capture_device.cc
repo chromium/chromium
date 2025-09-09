@@ -69,6 +69,8 @@ media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
   switch (fourcc) {
     case webrtc::FOURCC_ARGB:
       return media::PIXEL_FORMAT_ARGB;
+    case webrtc::FOURCC_ABGR:
+      return media::PIXEL_FORMAT_ABGR;
     case webrtc::FOURCC_I420:
       return media::PIXEL_FORMAT_I420;
     default:
