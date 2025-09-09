@@ -219,8 +219,10 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     GLint yoffset,
     GLint x,
     GLint y,
-    GLsizei width,
-    GLsizei height,
+    GLsizei src_width,
+    GLsizei src_height,
+    GLsizei dst_width,
+    GLsizei dst_height,
     const volatile GLbyte* mailboxes) {
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(mailboxes)[0]);
@@ -253,7 +255,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   gfx::Size dest_size = dest_shared_image->size();
-  gfx::Rect dest_rect(xoffset, yoffset, width, height);
+  gfx::Rect dest_rect(xoffset, yoffset, dst_width, dst_height);
   if (!gfx::Rect(dest_size).Contains(dest_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
                                     "destination texture bad dimensions."));
@@ -293,7 +295,9 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
          new_cleared_rect.Contains(old_cleared_rect));
 
   // Attempt to upload directly from CPU shared memory to destination texture.
-  if (CopyPixelsToTexture(xoffset, yoffset, x, y, width, height,
+  // Only do this if no scaling is happening.
+  if (src_width == dst_width && src_height == dst_height &&
+      CopyPixelsToTexture(xoffset, yoffset, x, y, src_width, src_height,
                           new_cleared_rect, source_mailbox,
                           dest_shared_image.get(), dest_scoped_access.get(),
                           representation_factory_, shared_context_state_,
@@ -330,7 +334,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   gfx::Size source_size = source_shared_image->size();
-  gfx::Rect source_rect(x, y, width, height);
+  gfx::Rect source_rect(x, y, src_width, src_height);
   if (!gfx::Rect(source_size).Contains(source_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
                                     "source texture bad dimensions."));
@@ -408,7 +412,12 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
       // not a regression. Nonetheless, this behavior should
       // ideally be changed to that described above for correctness.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+      if (dst_width != dest_size.width() || dst_height != dest_size.height()) {
+        dest_rect = gfx::Rect(dest_size);
+      }
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info,
+                           gfx::RectToSkRect(dest_rect), false,
+                           gfx::RectToSkRect(source_rect));
       dest_shared_image->SetCleared();
     }
 

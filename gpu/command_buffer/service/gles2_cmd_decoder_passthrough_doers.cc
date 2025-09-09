@@ -5085,8 +5085,8 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
                                lazy_context_->shared_context_state());
-  auto result =
-      helper.CopySharedImage(xoffset, yoffset, x, y, width, height, mailboxes);
+  auto result = helper.CopySharedImage(xoffset, yoffset, x, y, width, height,
+                                       width, height, mailboxes);
   if (!result.has_value()) {
     InsertError(result.error().gl_error, result.error().msg);
   }

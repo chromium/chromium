@@ -698,8 +698,10 @@ class RasterDecoderImpl final : public RasterDecoder,
                                  GLint yoffset,
                                  GLint x,
                                  GLint y,
-                                 GLsizei width,
-                                 GLsizei height,
+                                 GLsizei src_width,
+                                 GLsizei src_height,
+                                 GLsizei dst_width,
+                                 GLsizei dst_height,
                                  const volatile GLbyte* mailboxes);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
@@ -1923,13 +1925,16 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
     GLint yoffset,
     GLint x,
     GLint y,
-    GLsizei width,
-    GLsizei height,
+    GLsizei src_width,
+    GLsizei src_height,
+    GLsizei dst_width,
+    GLsizei dst_height,
     const volatile GLbyte* mailboxes) {
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
   auto result =
-      helper.CopySharedImage(xoffset, yoffset, x, y, width, height, mailboxes);
+      helper.CopySharedImage(xoffset, yoffset, x, y, src_width, src_height,
+                             dst_width, dst_height, mailboxes);
   if (!result.has_value()) {
     LOCAL_SET_GL_ERROR(result.error().gl_error,
                        result.error().function_name.c_str(),

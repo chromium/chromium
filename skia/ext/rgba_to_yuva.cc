@@ -38,10 +38,12 @@ void BlitRGBAToYUVA(SkImage* src_image,
                     base::span<SkSurface* const> dst_surfaces,
                     const SkYUVAInfo& dst_yuva_info,
                     const SkRect& dst_region,
-                    bool clear_destination) {
+                    bool clear_destination,
+                    const SkRect& src_region) {
   // Rectangle representing the entire destination image:
   const SkRect dst_image_rect = SkRect::Make(dst_yuva_info.dimensions());
-  const SkRect src_rect = SkRect::Make(src_image->bounds());
+  const SkRect src_rect =
+      src_region.isEmpty() ? SkRect::Make(src_image->bounds()) : src_region;
   // Region of destination image that is supposed to be populated:
   const SkRect dst_rect = dst_region.isEmpty() ? dst_image_rect : dst_region;
 
@@ -111,11 +113,14 @@ void BlitRGBAToYUVA(SkImage* src_image,
       plane_canvas->drawPaint(clear_paint);
     }
 
+    SkCanvas::SrcRectConstraint constraint = SkCanvas::kFast_SrcRectConstraint;
+    if (src_rect != SkRect::Make(src_image->bounds())) {
+      constraint = SkCanvas::kStrict_SrcRectConstraint;
+    }
     const SkRect plane_dst_rect =
         GetSubsampledRect(dst_rect, subsampling_factors);
     plane_canvas->drawImageRect(src_image, src_rect, plane_dst_rect,
-                                sampling_options, &paint,
-                                SkCanvas::kFast_SrcRectConstraint);
+                                sampling_options, &paint, constraint);
   }
 }
 

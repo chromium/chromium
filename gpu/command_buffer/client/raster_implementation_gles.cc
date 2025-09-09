@@ -183,6 +183,14 @@ void RasterImplementationGLES::CopySharedImage(
                                mailboxes);
 }
 
+void RasterImplementationGLES::CopySharedImage(
+    const gpu::Mailbox& source_mailbox,
+    const gpu::Mailbox& dest_mailbox,
+    gfx::Rect& source_rect,
+    gfx::Rect& dest_rect) {
+  NOTREACHED();
+}
+
 void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
                                            int dst_x_offset,
                                            int dst_y_offset,

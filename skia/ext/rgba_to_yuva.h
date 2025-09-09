@@ -24,7 +24,8 @@ SK_API void BlitRGBAToYUVA(SkImage* src_image,
                            base::span<SkSurface* const> dst_surfaces,
                            const SkYUVAInfo& dst_yuva_info,
                            const SkRect& dst_region = SkRect::MakeEmpty(),
-                           bool clear_destination = false);
+                           bool clear_destination = false,
+                           const SkRect& src_region = SkRect::MakeEmpty());
 
 }  // namespace skia
 

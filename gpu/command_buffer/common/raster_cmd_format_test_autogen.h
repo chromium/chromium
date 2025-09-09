@@ -387,7 +387,8 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   void* next_cmd =
       cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
               static_cast<GLint>(13), static_cast<GLint>(14),
-              static_cast<GLsizei>(15), static_cast<GLsizei>(16), data);
+              static_cast<GLsizei>(15), static_cast<GLsizei>(16),
+              static_cast<GLsizei>(17), static_cast<GLsizei>(18), data);
   EXPECT_EQ(
       static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
       cmd.header.command);
@@ -397,8 +398,10 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(12), cmd.yoffset);
   EXPECT_EQ(static_cast<GLint>(13), cmd.x);
   EXPECT_EQ(static_cast<GLint>(14), cmd.y);
-  EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
-  EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
+  EXPECT_EQ(static_cast<GLsizei>(15), cmd.src_width);
+  EXPECT_EQ(static_cast<GLsizei>(16), cmd.src_height);
+  EXPECT_EQ(static_cast<GLsizei>(17), cmd.dest_width);
+  EXPECT_EQ(static_cast<GLsizei>(18), cmd.dest_height);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

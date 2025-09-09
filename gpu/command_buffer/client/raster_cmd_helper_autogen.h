@@ -216,8 +216,10 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
                                       GLint yoffset,
                                       GLint x,
                                       GLint y,
-                                      GLsizei width,
-                                      GLsizei height,
+                                      GLsizei src_width,
+                                      GLsizei src_height,
+                                      GLsizei dest_width,
+                                      GLsizei dest_height,
                                       const GLbyte* mailboxes) {
   const uint32_t size =
       raster::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
@@ -225,7 +227,8 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::CopySharedImageINTERNALImmediate>(size);
   if (c) {
-    c->Init(xoffset, yoffset, x, y, width, height, mailboxes);
+    c->Init(xoffset, yoffset, x, y, src_width, src_height, dest_width,
+            dest_height, mailboxes);
   }
 }
 
