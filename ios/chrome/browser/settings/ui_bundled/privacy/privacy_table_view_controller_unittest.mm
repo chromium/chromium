@@ -64,7 +64,7 @@ BOOL DeviceSupportsAuthentication() {
 }
 
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
@@ -80,13 +80,13 @@ class PrivacyTableViewControllerTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindOnce(&BuildFeatureEngagementMockTracker));
     profile_ = std::move(builder).Build();
 
     test_sync_service()->SetSignedOut();

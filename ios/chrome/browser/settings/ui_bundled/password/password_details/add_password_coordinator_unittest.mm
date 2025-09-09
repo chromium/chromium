@@ -52,17 +52,16 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
     builder.AddTestingFactory(
         IOSPasswordRequirementsServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState* /*unused*/) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   password_manager::PasswordRequirementsService>(nil);
             }));

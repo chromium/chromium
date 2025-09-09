@@ -52,8 +52,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   return prefs;
 }
 
-std::unique_ptr<KeyedService> CreateNiceMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateNiceMockSyncService(ProfileIOS* profile) {
   return std::make_unique<NiceMock<syncer::MockSyncService>>();
 }
 

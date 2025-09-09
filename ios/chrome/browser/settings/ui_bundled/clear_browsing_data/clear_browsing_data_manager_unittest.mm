@@ -57,8 +57,7 @@ using TemplateURLPrepopulateData::PrepopulatedEngine;
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateTestSyncService(ProfileIOS* profile) {
   return std::make_unique<syncer::TestSyncService>();
 }
 

@@ -15,12 +15,10 @@
 + (void)setUpMockShoppingService {
   commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
       chrome_test_util::GetOriginalProfile(),
-      base::BindRepeating([](web::BrowserState* state) {
-        std::unique_ptr<KeyedService> service = std::make_unique<
+      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+        auto service = std::make_unique<
             testing::NiceMock<commerce::MockShoppingService>>();
-        commerce::MockShoppingService* shopping_service =
-            static_cast<commerce::MockShoppingService*>(service.get());
-        shopping_service->SetIsShoppingListEligible(true);
+        service->SetIsShoppingListEligible(true);
         return service;
       }));
 }

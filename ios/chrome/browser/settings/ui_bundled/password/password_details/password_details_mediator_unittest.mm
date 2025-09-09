@@ -58,7 +58,7 @@ std::unique_ptr<PasswordForm> CreatePasswordForm(std::string url,
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     password_manager::IsAccountStore is_account_store,
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
       is_account_store);
   store->Init(/*affiliated_match_helper=*/nullptr);
@@ -106,20 +106,19 @@ class PasswordDetailsMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&BuildPasswordStore,
-                            password_manager::IsAccountStore(false)));
+        base::BindOnce(&BuildPasswordStore,
+                       password_manager::IsAccountStore(false)));
 
     builder.AddTestingFactory(
         IOSChromeAccountPasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&BuildPasswordStore,
-                            password_manager::IsAccountStore(true)));
+        base::BindOnce(&BuildPasswordStore,
+                       password_manager::IsAccountStore(true)));
 
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<affiliations::FakeAffiliationService>());
-        })));
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
 
     profile_ = std::move(builder).Build();
 
