@@ -87,7 +87,7 @@ Window* AuraTestBase::CreateNormalWindow(int id, Window* parent,
                                            : test::TestWindowDelegate::
                                                  CreateSelfDestroyingDelegate(),
                            .parent = parent,
-                           .bounds = gfx::Rect(0, 0, 100, 100),
+                           .bounds = {100, 100},
                            .window_type = client::WINDOW_TYPE_UNKNOWN,
                            .window_id = id})
       .release();

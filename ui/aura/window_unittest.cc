@@ -1317,8 +1317,8 @@ TEST_F(WindowTest, GetBoundsInRootWindow) {
 }
 
 TEST_F(WindowTest, GetBoundsInRootWindowWithLayers) {
-  std::unique_ptr<Window> viewport = CreateTestWindow(
-      {.parent = root_window(), .bounds = gfx::Rect(0, 0, 300, 300)});
+  std::unique_ptr<Window> viewport =
+      CreateTestWindow({.parent = root_window(), .bounds = {300, 300}});
 
   std::unique_ptr<Window> widget(
       CreateTestWindow({.parent = viewport.get(), .bounds = {200, 200}}));

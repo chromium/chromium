@@ -1237,9 +1237,9 @@ TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
 // with a real browser the browser here has a transient child window
 // (corresponds to the status bubble).
 TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
-  std::unique_ptr<Window> browser(aura::test::CreateTestWindow(
-      {.bounds = gfx::Rect(5, 6, 7, 8),
-       .window_type = aura::client::WINDOW_TYPE_NORMAL}));
+  std::unique_ptr<Window> browser = aura::test::CreateTestWindow(
+      {.bounds = {5, 6, 7, 8},
+       .window_type = aura::client::WINDOW_TYPE_NORMAL});
   browser->SetName("browser");
   ParentWindowInPrimaryRootWindow(browser.get());
   browser->Show();
@@ -1252,16 +1252,16 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   status_bubble_delegate->set_can_focus(false);
   Window* status_bubble = aura::test::CreateTestWindow(
                               {.delegate = status_bubble_delegate,
-                               .bounds = gfx::Rect(5, 6, 7, 8),
+                               .bounds = {5, 6, 7, 8},
                                .window_type = aura::client::WINDOW_TYPE_POPUP})
                               .release();
   ::wm::AddTransientChild(browser.get(), status_bubble);
   ParentWindowInPrimaryRootWindow(status_bubble);
   status_bubble->SetName("status_bubble");
 
-  std::unique_ptr<Window> app(aura::test::CreateTestWindow(
-      {.bounds = gfx::Rect(5, 6, 7, 8),
-       .window_type = aura::client::WINDOW_TYPE_NORMAL}));
+  std::unique_ptr<Window> app = aura::test::CreateTestWindow(
+      {.bounds = {5, 6, 7, 8},
+       .window_type = aura::client::WINDOW_TYPE_NORMAL});
   app->SetName("app");
   ParentWindowInPrimaryRootWindow(app.get());
 
@@ -1363,10 +1363,10 @@ TEST_F(WorkspaceControllerTest, SwitchFromModal) {
 TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
   aura::test::TestWindowDelegate delegate;
   delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
+  std::unique_ptr<Window> window = aura::test::CreateTestWindow(
       {.delegate = &delegate,
-       .bounds = gfx::Rect(5, 5, 100, 50),
-       .window_type = aura::client::WINDOW_TYPE_NORMAL}));
+       .bounds = {5, 5, 100, 50},
+       .window_type = aura::client::WINDOW_TYPE_NORMAL});
   ParentWindowInPrimaryRootWindow(window.get());
 
   Shelf* shelf = GetPrimaryShelf();
@@ -1390,17 +1390,13 @@ TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
 // Verifies that events are targeted properly just outside the window edges.
 TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
   aura::test::TestWindowDelegate d_first, d_second;
-  std::unique_ptr<Window> first(
-      aura::test::CreateTestWindow({.delegate = &d_first,
-                                    .bounds = gfx::Rect(20, 10, 100, 50),
-                                    .window_id = 123}));
+  std::unique_ptr<Window> first = aura::test::CreateTestWindow(
+      {.delegate = &d_first, .bounds = {20, 10, 100, 50}, .window_id = 123});
   ParentWindowInPrimaryRootWindow(first.get());
   first->Show();
 
-  std::unique_ptr<Window> second(
-      aura::test::CreateTestWindow({.delegate = &d_second,
-                                    .bounds = gfx::Rect(30, 40, 40, 10),
-                                    .window_id = 234}));
+  std::unique_ptr<Window> second = aura::test::CreateTestWindow(
+      {.delegate = &d_second, .bounds = {30, 40, 40, 10}, .window_id = 234});
   ParentWindowInPrimaryRootWindow(second.get());
   second->Show();
 

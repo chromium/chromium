@@ -323,7 +323,7 @@ TEST_F(WmGestureHandlerTest, EnterOverviewWithPopupCaptureWindow) {
       {.delegate =
            aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
        .parent = normal_window.get(),
-       .bounds = gfx::Rect(100, 100),
+       .bounds = {100, 100},
        .window_type = aura::client::WINDOW_TYPE_POPUP,
        .window_id = 1});
   popup_window->SetCapture();
