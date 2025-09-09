@@ -113,7 +113,6 @@ GlicKeyedService::GlicKeyedService(
                                                 this,
                                                 enabling_.get(),
                                                 contextual_cueing_service)),
-      screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
@@ -348,7 +347,13 @@ void GlicKeyedService::CreateTab(
 
 void GlicKeyedService::ClosePanel() {
   window_controller().Close();
-  screenshot_capturer_->CloseScreenPicker();
+  if (!UseDefaultWindowController()) {
+    NOTIMPLEMENTED();
+  }
+  static_cast<GlicWindowControllerImpl&>(window_controller())
+      .glic_instance_components()
+      .screenshot_capturer()
+      .CloseScreenPicker();
 }
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {
@@ -593,8 +598,14 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 }
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  screenshot_capturer_->CaptureScreenshot(
-      window_controller().GetHostNativeWindow(), std::move(callback));
+  if (!UseDefaultWindowController()) {
+    NOTIMPLEMENTED();
+  }
+  static_cast<GlicWindowControllerImpl&>(window_controller())
+      .glic_instance_components()
+      .screenshot_capturer()
+      .CaptureScreenshot(window_controller().GetHostNativeWindow(),
+                         std::move(callback));
 }
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(

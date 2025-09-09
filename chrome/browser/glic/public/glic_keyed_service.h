@@ -48,7 +48,6 @@ class GlicFreController;
 class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
-class GlicScreenshotCapturer;
 class GlicWindowController;
 class Host;
 class HostManager;
@@ -263,7 +262,6 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicFreController> fre_controller_;
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
