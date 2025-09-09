@@ -2040,11 +2040,6 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
-      base::WeakPtr<CanvasResourceDispatcher> dispatcher =
-          Host()->GetOrCreateResourceDispatcher()
-              ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
-              : nullptr;
-
       const SkAlphaType alpha_type = GetAlphaType();
       const viz::SharedImageFormat format = GetSharedImageFormat();
       const gfx::ColorSpace color_space = GetColorSpace();
