@@ -201,9 +201,12 @@ CanvasResourceProvider* GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
       if (SharedGpuContext::IsGpuCompositingEnabled()) {
+        // This code path could be used for compositing so add the necessary
+        // shared image usage flags.
         resource_provider_ = CanvasResourceProvider::CreateWebGPUImageProvider(
             Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
-            GetColorSpace(), gpu::SharedImageUsageSet(), Host());
+            GetColorSpace(), swap_buffers_->GetSharedImageUsagesForDisplay(),
+            Host());
       }
       Host()->UpdateMemoryUsage();
       provider = resource_provider_.get();
