@@ -5,6 +5,7 @@
 #import "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_command_line.h"
+#import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -147,6 +148,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedInline}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
   }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInOmnibox)]) {
@@ -154,6 +156,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedSingleButton}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
   }
   if ([self isRunningTest:@selector
             (testNewTabShowsMIAEntryPointInEnlargedFakebox)]) {
@@ -161,6 +164,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
   }
   if ([self
           isRunningTest:@selector(testIncognitoButtonNotShownInQuickActions)]) {
@@ -168,6 +172,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}}}});
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
   }
 
   return config;

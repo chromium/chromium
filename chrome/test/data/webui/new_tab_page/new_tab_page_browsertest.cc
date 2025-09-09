@@ -7,6 +7,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -14,7 +15,13 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
  protected:
   NewTabPageBrowserTest() {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabledEn});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using NewTabPageTest = NewTabPageBrowserTest;

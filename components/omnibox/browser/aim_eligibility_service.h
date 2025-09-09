@@ -9,21 +9,19 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
-class AimEligibilityServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
 class TemplateURLService;
@@ -32,9 +30,6 @@ namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
-
-// If enabled, uses the server response for AIM eligibility for all locales.
-BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 
 // Utility service to check if the profile is eligible for AI mode features.
 class AimEligibilityService : public KeyedService,
@@ -57,9 +52,9 @@ class AimEligibilityService : public KeyedService,
   // Checks if the application language matches the given language.
   bool IsLanguage(const std::string& language) const;
 
-  // Registers an observer to be notified when eligibility has changed.
-  void AddObserver(AimEligibilityServiceObserver* observer);
-  void RemoveObserver(AimEligibilityServiceObserver* observer);
+  // Registers a callback to be called when eligibility has changed.
+  [[nodiscard]] base::CallbackListSubscription
+  RegisterEligibilityChangedCallback(base::RepeatingClosure callback);
 
   // Checks if server eligibility checking is enabled.
   // Virtual for testing purposes.
@@ -160,7 +155,6 @@ class AimEligibilityService : public KeyedService,
   // Record histograms for eligibility response change.
   void LogEligibilityResponseChange() const;
 
-  base::ObserverList<AimEligibilityServiceObserver> observers_;
   const raw_ref<PrefService> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<TemplateURLService> template_url_service_;
@@ -173,6 +167,8 @@ class AimEligibilityService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::RepeatingClosureList eligibility_changed_callbacks_;
 
   // Updated on service initialization and on successful server response.
   omnibox::AimEligibilityResponse most_recent_response_;

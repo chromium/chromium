@@ -126,7 +126,7 @@ source_set("coordinator") {
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/image_fetcher/ios",
-    "//components/omnibox/browser",
+    "//components/omnibox/browser:aim_eligibility_service_features",
     "//components/omnibox/common",
     "//components/policy:policy_code_generate",
     "//components/pref_registry",
@@ -437,6 +437,7 @@ source_set("eg2_tests") {
   sources = [ "new_tab_page_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/omnibox/browser:aim_eligibility_service_features",
     "//components/policy:generated",
     "//components/policy/core/common:test_support",
     "//components/signin/public/base:signin_switches",

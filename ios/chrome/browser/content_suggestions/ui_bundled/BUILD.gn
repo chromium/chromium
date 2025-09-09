@@ -423,6 +423,7 @@ source_set("eg2_tests") {
     "//components/feature_engagement/public",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/omnibox/browser:aim_eligibility_service_features",
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/segmentation_platform/public",
