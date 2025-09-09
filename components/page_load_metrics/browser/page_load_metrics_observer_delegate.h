@@ -121,6 +121,9 @@ class PageLoadMetricsObserverDelegate {
   // Page's visibility at activation.
   virtual PageVisibility GetVisibilityAtActivation() const = 0;
 
+  // True if the page load is a reload of a page that was discarded.
+  virtual bool IsReloadAfterDiscard() const = 0;
+
   // True if the page load was a prerender, that was later activated by a
   // navigation that started in the foreground.
   virtual bool WasPrerenderedThenActivatedInForeground() const = 0;

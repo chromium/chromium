@@ -59,6 +59,9 @@ extern const char kBackgroundHistogramDomContentLoaded[];
 extern const char kBackgroundHistogramLoad[];
 extern const char kBackgroundHistogramFirstPaint[];
 
+extern const char kHistogramFirstContentfulPaintExcludeReloadAfterDiscard[];
+extern const char kHistogramLargestContentfulPaintExcludeReloadAfterDiscard[];
+
 extern const char kHistogramLoadTypeFirstContentfulPaintReload[];
 extern const char kHistogramLoadTypeFirstContentfulPaintForwardBack[];
 extern const char kHistogramLoadTypeFirstContentfulPaintNewNavigation[];

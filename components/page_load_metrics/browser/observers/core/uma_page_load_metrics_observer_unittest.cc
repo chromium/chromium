@@ -1781,6 +1781,72 @@ TEST_P(UmaPageLoadMetricsObserverTest, LCPSpeculationRulesPrerender) {
   TestHistogram(kHistogram, {{kExpected, 1}});
 }
 
+TEST_P(UmaPageLoadMetricsObserverTest, ReloadAfterDiscard_ExcludeHistograms) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.paint_timing->first_contentful_paint = base::Milliseconds(30);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 120u;
+  PopulateRequiredTimingFields(&timing);
+
+  // Set the WebContents as discarded.
+  web_contents()->SetWasDiscarded(true);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaint, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaintExcludeReloadAfterDiscard, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaint, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaintExcludeReloadAfterDiscard, 0);
+}
+
+TEST_P(UmaPageLoadMetricsObserverTest,
+       NotReloadAfterDiscard_IncludeHistograms) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.paint_timing->first_contentful_paint = base::Milliseconds(30);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 120u;
+  PopulateRequiredTimingFields(&timing);
+
+  // Unlike the previous test, do *not* set the WebContents as discarded.
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFirstContentfulPaintExcludeReloadAfterDiscard,
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramLargestContentfulPaintExcludeReloadAfterDiscard,
+      timing.paint_timing->largest_contentful_paint->largest_text_paint.value()
+          .InMilliseconds(),
+      1);
+}
+
 class UmaPageLoadMetricsObserverIncognitoTest
     : public UmaPageLoadMetricsObserverTest {
  protected:

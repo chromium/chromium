@@ -4330,6 +4330,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.ExcludeReloadAfterDiscard"
+    units="ms" expires_after="2026-02-28">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    This is recorded at the same time and with the same value as
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but only if the
+    navigation isn't a post-discard reload.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Incognito"
     units="ms" expires_after="2025-12-28">
   <owner>kjarosz@google.com</owner>
@@ -4543,6 +4555,18 @@ chromium-metrics-reviews@google.com.
     the time in milliseconds from navigation timing's navigation start to the
     time when the page first paints the largest content (text or image) in the
     cross-site subframe which is the top candidate of largest contentful paint.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.ExcludeReloadAfterDiscard"
+    units="ms" expires_after="2026-02-28">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    This is recorded at the same time and with the same value as
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but only if the
+    navigation isn't a post-discard reload.
   </summary>
 </histogram>
 
