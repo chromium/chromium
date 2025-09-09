@@ -143,8 +143,11 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
                                 Window* parent = nullptr,
                                 ui::LayerType layer_type = ui::LAYER_TEXTURED) {
     if (layer_type == ui::LAYER_TEXTURED) {
-      return test::CreateTestWindow(SK_ColorWHITE, 1, bounds,
-                                    parent ? parent : root_window());
+      return test::CreateTestWindow({.parent = parent ? parent : root_window(),
+                                     .bounds = bounds,
+                                     .window_id = 1},
+                                    SK_ColorWHITE)
+          .release();
     }
     DCHECK_EQ(ui::LAYER_SOLID_COLOR, layer_type);
     Window* window = new Window(nullptr);

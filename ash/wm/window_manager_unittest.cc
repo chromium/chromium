@@ -110,14 +110,18 @@ TEST_F(WindowManagerTest, Focus) {
                                          .SetColorWindowDelegate(SK_ColorWHITE)
                                          .SetBounds(gfx::Rect(10, 10, 500, 500))
                                          .Build();
-  std::unique_ptr<aura::Window> w11(aura::test::CreateTestWindow(
-      SK_ColorGREEN, -11, gfx::Rect(5, 5, 100, 100), w1.get()));
-  std::unique_ptr<aura::Window> w111(aura::test::CreateTestWindow(
-      SK_ColorCYAN, -111, gfx::Rect(5, 5, 75, 75), w11.get()));
-  std::unique_ptr<aura::Window> w1111(aura::test::CreateTestWindow(
-      SK_ColorRED, -1111, gfx::Rect(5, 5, 50, 50), w111.get()));
-  std::unique_ptr<aura::Window> w12(aura::test::CreateTestWindow(
-      SK_ColorMAGENTA, -12, gfx::Rect(10, 420, 25, 25), w1.get()));
+  std::unique_ptr<aura::Window> w11 = aura::test::CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 5, 100, 100}, .window_id = -11},
+      SK_ColorGREEN);
+  std::unique_ptr<aura::Window> w111 = aura::test::CreateTestWindow(
+      {.parent = w11.get(), .bounds = {5, 5, 75, 75}, .window_id = -111},
+      SK_ColorCYAN);
+  std::unique_ptr<aura::Window> w1111 = aura::test::CreateTestWindow(
+      {.parent = w111.get(), .bounds = {5, 5, 50, 50}, .window_id = -1111},
+      SK_ColorRED);
+  std::unique_ptr<aura::Window> w12 = aura::test::CreateTestWindow(
+      {.parent = w1.get(), .bounds = {10, 420, 25, 25}, .window_id = -12},
+      SK_ColorMAGENTA);
   aura::test::ColorTestWindowDelegate* w121delegate =
       new aura::test::ColorTestWindowDelegate(SK_ColorYELLOW);
   std::unique_ptr<aura::Window> w121(aura::test::CreateTestWindowWithDelegate(
@@ -130,8 +134,9 @@ TEST_F(WindowManagerTest, Focus) {
       new aura::test::ColorTestWindowDelegate(SK_ColorRED);
   std::unique_ptr<aura::Window> w123(aura::test::CreateTestWindowWithDelegate(
       w123delegate, -123, gfx::Rect(15, 5, 5, 5), w12.get()));
-  std::unique_ptr<aura::Window> w13(aura::test::CreateTestWindow(
-      SK_ColorGRAY, -13, gfx::Rect(5, 470, 50, 50), w1.get()));
+  std::unique_ptr<aura::Window> w13 = aura::test::CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 470, 50, 50}, .window_id = -13},
+      SK_ColorGRAY);
 
   // Click on a sub-window (w121) to focus it.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w121.get());

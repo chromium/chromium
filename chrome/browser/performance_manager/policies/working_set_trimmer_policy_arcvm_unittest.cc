@@ -272,12 +272,18 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   container_window.Init(ui::LAYER_NOT_DRAWN);
 
   // Create two fake windows.
-  aura::Window* arc_window = aura::test::CreateTestWindow(
-      SK_ColorGREEN, 0, gfx::Rect(), &container_window);
+  aura::Window* arc_window =
+      aura::test::CreateTestWindow(
+          {.parent = &container_window, .bounds = {}, .window_id = 0},
+          SK_ColorGREEN)
+          .release();
   arc_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(ash::IsArcWindow(arc_window));
-  aura::Window* chrome_window = aura::test::CreateTestWindow(
-      SK_ColorRED, 0, gfx::Rect(), &container_window);
+  aura::Window* chrome_window =
+      aura::test::CreateTestWindow(
+          {.parent = &container_window, .bounds = {}, .window_id = 0},
+          SK_ColorRED)
+          .release();
   ASSERT_FALSE(ash::IsArcWindow(chrome_window));
 
   bool is_first_trim_post_boot = true;

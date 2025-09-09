@@ -442,8 +442,10 @@ TEST_F(WindowTest, Contains) {
 }
 
 TEST_F(WindowTest, ContainsPointInRoot) {
-  std::unique_ptr<Window> w(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 5, 5), root_window()));
+  std::unique_ptr<Window> w(CreateTestWindow({.parent = root_window(),
+                                              .bounds = gfx::Rect(10, 10, 5, 5),
+                                              .window_id = 1},
+                                             SK_ColorWHITE));
   EXPECT_FALSE(w->ContainsPointInRoot(gfx::Point(9, 9)));
   EXPECT_TRUE(w->ContainsPointInRoot(gfx::Point(10, 10)));
   EXPECT_TRUE(w->ContainsPointInRoot(gfx::Point(14, 14)));
@@ -452,8 +454,10 @@ TEST_F(WindowTest, ContainsPointInRoot) {
 }
 
 TEST_F(WindowTest, ContainsPoint) {
-  std::unique_ptr<Window> w(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 5, 5), root_window()));
+  std::unique_ptr<Window> w(CreateTestWindow({.parent = root_window(),
+                                              .bounds = gfx::Rect(10, 10, 5, 5),
+                                              .window_id = 1},
+                                             SK_ColorWHITE));
   EXPECT_TRUE(w->ContainsPoint(gfx::Point(0, 0)));
   EXPECT_TRUE(w->ContainsPoint(gfx::Point(4, 4)));
   EXPECT_FALSE(w->ContainsPoint(gfx::Point(5, 5)));
@@ -578,14 +582,18 @@ TEST_F(WindowTest, ConvertPointToWindow) {
 }
 
 TEST_F(WindowTest, MoveCursorTo) {
-  std::unique_ptr<Window> w1(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 500, 500), root_window()));
-  std::unique_ptr<Window> w11(
-      CreateTestWindow(SK_ColorGREEN, 11, gfx::Rect(5, 5, 100, 100), w1.get()));
-  std::unique_ptr<Window> w111(
-      CreateTestWindow(SK_ColorCYAN, 111, gfx::Rect(5, 5, 75, 75), w11.get()));
-  std::unique_ptr<Window> w1111(
-      CreateTestWindow(SK_ColorRED, 1111, gfx::Rect(5, 5, 50, 50), w111.get()));
+  std::unique_ptr<Window> w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 500, 500}, .window_id = 1},
+      SK_ColorWHITE);
+  std::unique_ptr<Window> w11 = CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 5, 100, 100}, .window_id = 11},
+      SK_ColorGREEN);
+  std::unique_ptr<Window> w111 = CreateTestWindow(
+      {.parent = w11.get(), .bounds = {5, 5, 75, 75}, .window_id = 111},
+      SK_ColorCYAN);
+  std::unique_ptr<Window> w1111 = CreateTestWindow(
+      {.parent = w111.get(), .bounds = {5, 5, 50, 50}, .window_id = 1111},
+      SK_ColorRED);
 
   Window* root = root_window();
   root->MoveCursorTo(gfx::Point(10, 10));
@@ -601,8 +609,9 @@ TEST_F(WindowTest, MoveCursorTo) {
 }
 
 TEST_F(WindowTest, ContainsMouse) {
-  std::unique_ptr<Window> w(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 500, 500), root_window()));
+  std::unique_ptr<Window> w = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 500, 500}, .window_id = 1},
+      SK_ColorWHITE);
   w->Show();
   WindowTestApi w_test_api(w.get());
   Window* root = root_window();
@@ -618,8 +627,9 @@ TEST_F(WindowTest, RootWindowHasValidLocalSurfaceId) {
 }
 
 TEST_F(WindowTest, WindowEmbeddingClientHasValidLocalSurfaceId) {
-  std::unique_ptr<Window> window(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 300, 200), root_window()));
+  std::unique_ptr<Window> window = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 300, 200}, .window_id = 1},
+      SK_ColorWHITE);
   test::WindowTestApi(window.get()).DisableFrameSinkRegistration();
   window->SetEmbedFrameSinkId(viz::FrameSinkId(0, 1));
   EXPECT_TRUE(window->GetLocalSurfaceId().is_valid());
@@ -644,8 +654,9 @@ TEST_F(WindowTest, MoveCursorToWithTransformRootWindow) {
 
 // Tests Window::ConvertPointToWindow() with transform to non-root windows.
 TEST_F(WindowTest, MoveCursorToWithTransformWindow) {
-  std::unique_ptr<Window> w1(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 500, 500), root_window()));
+  std::unique_ptr<Window> w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 500, 500}, .window_id = 1},
+      SK_ColorWHITE);
 
   gfx::Transform transform1;
   transform1.Scale(2, 2);
@@ -683,14 +694,18 @@ TEST_F(WindowTest, MoveCursorToWithTransformWindow) {
 // non-root windows.
 // Test Window::ConvertPointToWindow() with transform to root_window.
 TEST_F(WindowTest, MoveCursorToWithComplexTransform) {
-  std::unique_ptr<Window> w1(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 500, 500), root_window()));
-  std::unique_ptr<Window> w11(
-      CreateTestWindow(SK_ColorGREEN, 11, gfx::Rect(5, 5, 100, 100), w1.get()));
-  std::unique_ptr<Window> w111(
-      CreateTestWindow(SK_ColorCYAN, 111, gfx::Rect(5, 5, 75, 75), w11.get()));
-  std::unique_ptr<Window> w1111(
-      CreateTestWindow(SK_ColorRED, 1111, gfx::Rect(5, 5, 50, 50), w111.get()));
+  std::unique_ptr<Window> w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 500, 500}, .window_id = 1},
+      SK_ColorWHITE);
+  std::unique_ptr<Window> w11 = CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 5, 100, 100}, .window_id = 11},
+      SK_ColorGREEN);
+  std::unique_ptr<Window> w111 = CreateTestWindow(
+      {.parent = w11.get(), .bounds = {5, 5, 75, 75}, .window_id = 111},
+      SK_ColorCYAN);
+  std::unique_ptr<Window> w1111 = CreateTestWindow(
+      {.parent = w111.get(), .bounds = {5, 5, 50, 50}, .window_id = 1111},
+      SK_ColorRED);
 
   // The root window expects transforms that produce integer rects.
   gfx::Transform root_transform;
@@ -730,20 +745,27 @@ TEST_F(WindowTest, NoCrashOnWindowDelete) {
 }
 
 TEST_F(WindowTest, GetEventHandlerForPoint) {
-  std::unique_ptr<Window> w1(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 10, 500, 500), root_window()));
-  std::unique_ptr<Window> w11(
-      CreateTestWindow(SK_ColorGREEN, 11, gfx::Rect(5, 5, 100, 100), w1.get()));
-  std::unique_ptr<Window> w111(
-      CreateTestWindow(SK_ColorCYAN, 111, gfx::Rect(5, 5, 75, 75), w11.get()));
-  std::unique_ptr<Window> w1111(
-      CreateTestWindow(SK_ColorRED, 1111, gfx::Rect(5, 5, 50, 50), w111.get()));
-  std::unique_ptr<Window> w12(CreateTestWindow(
-      SK_ColorMAGENTA, 12, gfx::Rect(10, 420, 25, 25), w1.get()));
-  std::unique_ptr<Window> w121(
-      CreateTestWindow(SK_ColorYELLOW, 121, gfx::Rect(5, 5, 5, 5), w12.get()));
-  std::unique_ptr<Window> w13(
-      CreateTestWindow(SK_ColorGRAY, 13, gfx::Rect(5, 470, 50, 50), w1.get()));
+  std::unique_ptr<Window> w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 500, 500}, .window_id = 1},
+      SK_ColorWHITE);
+  std::unique_ptr<Window> w11 = CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 5, 100, 100}, .window_id = 11},
+      SK_ColorGREEN);
+  std::unique_ptr<Window> w111 = CreateTestWindow(
+      {.parent = w11.get(), .bounds = {5, 5, 75, 75}, .window_id = 111},
+      SK_ColorCYAN);
+  std::unique_ptr<Window> w1111 = CreateTestWindow(
+      {.parent = w111.get(), .bounds = {5, 5, 50, 50}, .window_id = 1111},
+      SK_ColorRED);
+  std::unique_ptr<Window> w12 = CreateTestWindow(
+      {.parent = w1.get(), .bounds = {10, 420, 25, 25}, .window_id = 12},
+      SK_ColorMAGENTA);
+  std::unique_ptr<Window> w121 = CreateTestWindow(
+      {.parent = w12.get(), .bounds = {5, 5, 5, 5}, .window_id = 121},
+      SK_ColorYELLOW);
+  std::unique_ptr<Window> w13 = CreateTestWindow(
+      {.parent = w1.get(), .bounds = {5, 470, 50, 50}, .window_id = 13},
+      SK_ColorGRAY);
 
   Window* root = root_window();
   w1->parent()->SetBounds(gfx::Rect(500, 500));
@@ -760,10 +782,12 @@ TEST_F(WindowTest, GetEventHandlerForPoint) {
 TEST_F(WindowTest, GetEventHandlerForPointInCornerOfChildBounds) {
   // If our child is flush to our top-left corner it gets events just inside the
   // window edges.
-  std::unique_ptr<Window> parent(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(10, 20, 400, 500), root_window()));
-  std::unique_ptr<Window> child(
-      CreateTestWindow(SK_ColorRED, 2, gfx::Rect(0, 0, 60, 70), parent.get()));
+  std::unique_ptr<Window> parent = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 20, 400, 500}, .window_id = 1},
+      SK_ColorWHITE);
+  std::unique_ptr<Window> child = CreateTestWindow(
+      {.parent = parent.get(), .bounds = {0, 0, 60, 70}, .window_id = 2},
+      SK_ColorRED);
   EXPECT_EQ(child.get(), parent->GetEventHandlerForPoint(gfx::Point(0, 0)));
   EXPECT_EQ(child.get(), parent->GetEventHandlerForPoint(gfx::Point(1, 1)));
 }
@@ -773,8 +797,9 @@ TEST_F(WindowTest, GetEventHandlerForPointWithOverrideDescendingOrder) {
       new SelfEventHandlingWindowDelegate);
   std::unique_ptr<Window> parent(CreateTestWindowWithDelegate(
       parent_delegate.get(), 1, gfx::Rect(10, 20, 400, 500), root_window()));
-  std::unique_ptr<Window> child(CreateTestWindow(
-      SK_ColorRED, 2, gfx::Rect(0, 0, 390, 480), parent.get()));
+  std::unique_ptr<Window> child = CreateTestWindow(
+      {.parent = parent.get(), .bounds = {0, 0, 390, 480}, .window_id = 2},
+      SK_ColorRED);
 
   // We can override ShouldDescendIntoChildForEventHandling to make the parent
   // grab all events.
@@ -2605,8 +2630,9 @@ TEST_F(WindowTest, RecreateLayer) {
 // Verify that RecreateLayer() stacks the old layer above the newly creatd
 // layer.
 TEST_F(WindowTest, RecreateLayerZOrder) {
-  std::unique_ptr<Window> w(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> w = CreateTestWindow(
+      {.parent = root_window(), .bounds = {0, 0, 100, 100}, .window_id = 1},
+      SK_ColorWHITE);
   std::unique_ptr<ui::Layer> old_layer(w->RecreateLayer());
 
   const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers =
@@ -2619,8 +2645,9 @@ TEST_F(WindowTest, RecreateLayerZOrder) {
 // Ensure that acquiring a layer then recreating a layer does not crash
 // and that RecreateLayer returns null.
 TEST_F(WindowTest, AcquireThenRecreateLayer) {
-  std::unique_ptr<Window> w(CreateTestWindow(
-      SK_ColorWHITE, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> w = CreateTestWindow(
+      {.parent = root_window(), .bounds = {0, 0, 100, 100}, .window_id = 1},
+      SK_ColorWHITE);
   std::unique_ptr<ui::Layer> acquired_layer(w->AcquireLayer());
   std::unique_ptr<ui::Layer> doubly_acquired_layer(w->RecreateLayer());
   EXPECT_FALSE(doubly_acquired_layer);
