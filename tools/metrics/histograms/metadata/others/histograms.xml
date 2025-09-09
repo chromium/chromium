@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.AddSinkResult.Remembered"
-    enum="AccessCodeCastAddSinkResult" expires_after="2026-01-01">
+    enum="AccessCodeCastAddSinkResult" expires_after="2026-03-08">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes"
-    units="KB" expires_after="2026-01-04">
+    units="KB" expires_after="2026-03-08">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -7965,7 +7965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sanitize.SanitizeEvent" enum="SanitizeEvent"
-    expires_after="2026-01-01">
+    expires_after="2026-03-08">
   <owner>behnoodm@chromium.org</owner>
   <owner>cryptohome-core@google.com</owner>
   <summary>

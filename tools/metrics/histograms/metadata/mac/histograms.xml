@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.LocationBarViewScreenY" units="px"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OmniboxPopupTargetScreenY" units="px"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>

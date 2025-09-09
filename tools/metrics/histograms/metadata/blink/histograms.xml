@@ -907,7 +907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
@@ -2772,7 +2772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLFastPathParser.TotalParseTime2" units="microseconds"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
@@ -3336,7 +3336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.BoostImagePriorityReason"
-    enum="BoostImagePriorityReason" expires_after="2026-01-04">
+    enum="BoostImagePriorityReason" expires_after="2026-03-08">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -4549,7 +4549,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4573,7 +4573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4596,7 +4596,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4620,7 +4620,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationToLastProcessingEnd.NoFramePresented.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4645,7 +4645,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4668,7 +4668,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToCommit.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4691,7 +4691,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4714,7 +4714,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.FirstProcessingStartToLastProcessingEnd.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4738,7 +4738,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4763,7 +4763,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4786,7 +4786,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4809,7 +4809,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.TotalUnaccountedEventProcessingTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-03-08">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -5238,7 +5238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>

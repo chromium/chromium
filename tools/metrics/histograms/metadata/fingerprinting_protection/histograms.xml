@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="FingerprintingProtection.WKContentRuleListComponent.InstallationResult"
     enum="FingerprintingProtectionWKComponentInstallationResult"
-    expires_after="2025-12-30">
+    expires_after="2026-03-08">
   <owner>rsailer@google.com</owner>
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>

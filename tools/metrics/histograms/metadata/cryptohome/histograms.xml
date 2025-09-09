@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MaskedDownloadsItems" units="items"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>benreich@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

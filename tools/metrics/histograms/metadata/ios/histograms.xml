@@ -1052,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.CredentialProviderExtension.TurnOnPromptOutcome.{PromptSource}"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-03-08">
   <owner>noemies@google.com</owner>
   <owner>tmartino@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -2146,7 +2146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame2" units="ms"
-    expires_after="2025-12-08">
+    expires_after="2026-03-08">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2558,7 +2558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Incognito.GridStatus" enum="IOSIncognitoGridStatus"
-    expires_after="2025-12-14">
+    expires_after="2026-03-08">
   <owner>ddac@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -3505,7 +3505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MiniMap.Link.Outcome" enum="IOSMiniMapOutcome"
-    expires_after="2025-12-14">
+    expires_after="2026-03-08">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>Outcome of the MiniMap screen when showing a link.</summary>
@@ -4724,7 +4724,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -4900,7 +4900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.FontScale" units="count"
-    expires_after="2025-11-24">
+    expires_after="2026-03-08">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>

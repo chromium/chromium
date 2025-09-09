@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.Short.{NamedThread}"
-    units="%" expires_after="2026-01-04">
+    units="%" expires_after="2026-03-08">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>

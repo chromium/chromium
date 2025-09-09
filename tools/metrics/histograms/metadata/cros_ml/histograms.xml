@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.DocumentScanner.{RequestName}.Event"
     enum="MachineLearningServiceDocumentScannerResultEvent"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <owner>ml-service-team@google.com</owner>
