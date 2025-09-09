@@ -88,6 +88,7 @@ class AllPasswordsBottomSheetMediator {
     /**
      * Returns true if no substring in the passed credential matches the searchQuery ignoring the
      * characters case.
+     *
      * @param searchQuery the text to check if passed credential has it.
      * @param credential its username and origin will be checked for matching string.
      * @return Returns whether the entry with the passed credential should be filtered.

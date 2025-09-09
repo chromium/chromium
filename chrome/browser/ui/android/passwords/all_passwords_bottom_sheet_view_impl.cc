@@ -20,8 +20,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/features/keyboard_accessory/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
-#include "chrome/android/features/keyboard_accessory/internal/jni/Credential_jni.h"
+#include "chrome/browser/keyboard_accessory/android/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
+#include "chrome/browser/keyboard_accessory/android/internal/jni/Credential_jni.h"
 
 using autofill::mojom::FocusedFieldType;
 using base::android::AttachCurrentThread;

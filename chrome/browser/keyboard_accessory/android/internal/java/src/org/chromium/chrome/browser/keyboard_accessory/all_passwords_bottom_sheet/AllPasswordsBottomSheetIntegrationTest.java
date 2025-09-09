@@ -11,9 +11,14 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.ANA;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.TEST_CREDENTIALS;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.createBottomSheetController;
+import static org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport.waitForState;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -25,85 +30,59 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Integration tests for the AllPasswordsBottomSheet check that the calls to the
  * AllPasswordsBottomSheet controller end up rendering a View and triggers the right native calls.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AllPasswordsBottomSheetIntegrationTest {
     private static final String EXAMPLE_URL = "https://www.example.xyz";
-    private static final Credential ANA =
-            new Credential(
-                    /* username= */ "ana@gmail.com",
-                    /* password= */ "S3cr3t",
-                    /* formattedUsername= */ "ana@gmail.com",
-                    /* originUrl= */ "https://m.domain.xyz/",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ true);
-    private static final Credential BOB =
-            new Credential(
-                    /* username= */ "Bob",
-                    /* password= */ "*****",
-                    /* formattedUsername= */ "Bob",
-                    /* originUrl= */ "https://subdomain.example.xyz",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ false);
-    private static final Credential CARL =
-            new Credential(
-                    /* username= */ "Carl",
-                    /* password= */ "G3h3!m",
-                    /* formattedUsername= */ "Carl",
-                    /* originUrl= */ "https://www.origin.xyz",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ false);
-    private static final List<Credential> TEST_CREDENTIALS = List.of(BOB, CARL, ANA);
     private static final boolean IS_PASSWORD_FIELD = true;
 
-    private WebPageStation mPage;
-    private AllPasswordsBottomSheetCoordinator mCoordinator;
-
     private BottomSheetController mBottomSheetController;
+    private AllPasswordsBottomSheetCoordinator mCoordinator;
+    private BottomSheetTestSupport mBottomSheetSupport;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Mock private Profile mProfile;
     @Mock private AllPasswordsBottomSheetCoordinator.Delegate mDelegate;
 
     @Before
     public void setUp() {
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.launchActivity(null);
         runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController =
-                            BottomSheetControllerProvider.from(
-                                    mActivityTestRule.getActivity().getWindowAndroid());
+                            createBottomSheetController(mActivityTestRule.getActivity());
+                    mBottomSheetSupport = new BottomSheetTestSupport(mBottomSheetController);
                     mCoordinator = new AllPasswordsBottomSheetCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
-                            mActivityTestRule.getProfile(false),
+                            mProfile,
                             mBottomSheetController,
                             mDelegate,
                             EXAMPLE_URL);
@@ -118,11 +97,11 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator.showCredentials(
                             new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        waitForState(mBottomSheetController, SheetState.FULL);
 
-        Espresso.pressBack();
+        runOnUiThreadBlocking(mBottomSheetSupport::handleBackPress);
 
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+        waitForState(mBottomSheetController, SheetState.HIDDEN);
 
         verify(mDelegate).onDismissed();
     }
@@ -135,13 +114,13 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator.showCredentials(
                             new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        waitForState(mBottomSheetController, SheetState.FULL);
 
-        pollUiThread(() -> getCredentialNameAt(1) != null);
-        TouchCommon.singleClickView(getCredentialNameAt(1));
+        pollUiThread(() -> getCredentialNameAt(0) != null);
+        TouchCommon.singleClickView(getCredentialNameAt(0));
 
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
-        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(BOB, false)));
+        waitForState(mBottomSheetController, SheetState.HIDDEN);
+        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(ANA, false)));
     }
 
     @Test
@@ -152,13 +131,13 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator.showCredentials(
                             new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
                 });
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        waitForState(mBottomSheetController, SheetState.FULL);
 
-        pollUiThread(() -> getCredentialNameAt(1) != null);
-        TouchCommon.singleClickView(getCredentialNameAt(1));
+        pollUiThread(() -> getCredentialNameAt(0) != null);
+        TouchCommon.singleClickView(getCredentialNameAt(0));
 
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
-        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(BOB, false)));
+        waitForState(mBottomSheetController, SheetState.HIDDEN);
+        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(ANA, false)));
     }
 
     @Test
@@ -169,7 +148,7 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator.showCredentials(
                             new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        waitForState(mBottomSheetController, SheetState.FULL);
 
         pollUiThread(() -> getCredentialPasswordAt(1) != null);
         TouchCommon.singleClickView(getCredentialPasswordAt(1));
@@ -185,21 +164,19 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator.showCredentials(
                             new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
                 });
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        waitForState(mBottomSheetController, SheetState.FULL);
 
-        pollUiThread(() -> getCredentialPasswordAt(1) != null);
-        TouchCommon.singleClickView(getCredentialPasswordAt(1));
+        pollUiThread(() -> getCredentialPasswordAt(0) != null);
+        TouchCommon.singleClickView(getCredentialPasswordAt(0));
 
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
-        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(BOB, true)));
+        waitForState(mBottomSheetController, SheetState.HIDDEN);
+        verify(mDelegate).onCredentialSelected(argThat(matchesCredentialFillRequest(ANA, true)));
     }
 
     private RecyclerView getCredentials() {
-        return (RecyclerView)
-                mBottomSheetController
-                        .getCurrentSheetContent()
-                        .getContentView()
-                        .findViewById(R.id.sheet_item_list);
+        BottomSheetContent content = assumeNonNull(mBottomSheetController).getCurrentSheetContent();
+        assertNonNull(content);
+        return (RecyclerView) content.getContentView().findViewById(R.id.sheet_item_list);
     }
 
     private ChipView getCredentialNameAt(int index) {
@@ -208,10 +185,6 @@ public class AllPasswordsBottomSheetIntegrationTest {
 
     private ChipView getCredentialPasswordAt(int index) {
         return ((ChipView) getCredentials().getChildAt(index).findViewById(R.id.password_text));
-    }
-
-    private @SheetState int getBottomSheetState() {
-        return mBottomSheetController.getSheetState();
     }
 
     private ArgumentMatcher<CredentialFillRequest> matchesCredentialFillRequest(

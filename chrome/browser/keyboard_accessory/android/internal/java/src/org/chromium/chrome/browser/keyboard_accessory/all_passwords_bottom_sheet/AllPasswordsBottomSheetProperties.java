@@ -75,6 +75,7 @@ class AllPasswordsBottomSheetProperties {
 
     /**
      * Returns the sheet item type for a given item.
+     *
      * @param item An {@link MVCListAdapter.ListItem}.
      * @return The {@link ItemType} of the given list item.
      */

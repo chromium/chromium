@@ -64,11 +64,11 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     /**
      * Constructs an AllPasswordsBottomSheetView which creates, modifies, and shows the bottom
      * sheet.
+     *
      * @param context A {@link Context} used to load resources and inflate the sheet.
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
-    public AllPasswordsBottomSheetView(
-            Context context, BottomSheetController bottomSheetController) {
+    AllPasswordsBottomSheetView(Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
         mContentView =
                 (LinearLayout)
@@ -101,6 +101,7 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
 
     /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
      * @param isVisible A boolean describing whether to show or hide the sheet.
      */
     void setVisible(boolean isVisible) {

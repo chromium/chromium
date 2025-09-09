@@ -33,9 +33,10 @@ class AllPasswordsBottomSheetViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * Called whenever an item is bound to this view holder. Please note that this method
-     * might be called on the same list entry repeatedly, so make sure to always set a default
-     * for unused fields.
+     * Called whenever an item is bound to this view holder. Please note that this method might be
+     * called on the same list entry repeatedly, so make sure to always set a default for unused
+     * fields.
+     *
      * @param model The {@link PropertyModel} whose data needs to be displayed.
      */
     void setupModelChangeProcessor(PropertyModel model) {

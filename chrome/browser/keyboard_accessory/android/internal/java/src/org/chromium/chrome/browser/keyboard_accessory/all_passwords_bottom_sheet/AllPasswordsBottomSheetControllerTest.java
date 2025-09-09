@@ -16,6 +16,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.ANA;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.BOB;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.NO_ONE;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetTestHelper.TEST_CREDENTIALS;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -37,40 +42,12 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /** Controller tests for the all passwords bottom sheet. */
+@NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
-    private static final Credential ANA =
-            new Credential(
-                    /* username= */ "ana@gmail.com",
-                    /* password= */ "S3cr3t",
-                    /* formattedUsername= */ "ana@gmail.com",
-                    /* originUrl= */ "https://m.domain.xyz/",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ true);
-    private static final Credential BOB =
-            new Credential(
-                    /* username= */ "Bob",
-                    /* password= */ "*****",
-                    /* formattedUsername= */ "Bob",
-                    /* originUrl= */ "https://subdomain.example.xyz",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ false);
-    private static final Credential CARL =
-            new Credential(
-                    /* username= */ "Carl",
-                    /* password= */ "G3h3!m",
-                    /* formattedUsername= */ "Carl",
-                    /* originUrl= */ "https://www.origin.xyz",
-                    /* isAndroidCredential= */ false,
-                    /* appDisplayName= */ "",
-                    /* isPlusAddressUsername= */ false);
-    private static final List<Credential> TEST_CREDENTIALS = List.of(BOB, CARL, ANA);
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
@@ -81,7 +58,6 @@ public class AllPasswordsBottomSheetControllerTest {
     private AllPasswordsBottomSheetMediator mMediator;
     private PropertyModel mModel;
     private ListModel<ListItem> mListModel;
-    private PropertyModel mModalDialogModel;
 
     @Before
     public void setUp() {
@@ -112,11 +88,11 @@ public class AllPasswordsBottomSheetControllerTest {
         assertThat(itemList.size(), is(3));
 
         assertThat(itemList.get(0).type, is(ItemType.CREDENTIAL));
-        assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
+        assertThat(itemList.get(0).model.get(CREDENTIAL), is(NO_ONE));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
         assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
-        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
     }
 
     @Test
@@ -146,7 +122,7 @@ public class AllPasswordsBottomSheetControllerTest {
     @Test
     public void testSearchFilterByURL() {
         mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
-        mMediator.onQueryTextChange("subdomain");
+        mMediator.onQueryTextChange("facebook");
         assertThat(mListModel.size(), is(1));
     }
 
@@ -156,9 +132,9 @@ public class AllPasswordsBottomSheetControllerTest {
 
         ListModel<ListItem> itemList = mListModel;
 
-        assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
+        assertThat(itemList.get(0).model.get(CREDENTIAL), is(NO_ONE));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
-        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
     }
 
     /**
