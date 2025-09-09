@@ -15,4 +15,12 @@ specific_include_rules = {
     "+third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h",
     "+third_party/blink/renderer/platform/heap/thread_state.h",
   ],
+  "compositor_thread_scheduler_impl.h": [
+    "+base/threading/scoped_thread_priority.h",
+  ],
+  "compositor_thread_scheduler_impl.cc": [
+    "+base/features.h",
+    "+components/performance_manager/public/features.h",
+    "+components/performance_manager/scenario_api/performance_scenarios.h",
+  ],
 }
