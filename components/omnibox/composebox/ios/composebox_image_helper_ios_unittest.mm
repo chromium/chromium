@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #include "base/memory/ref_counted_memory.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
@@ -43,7 +43,7 @@ class ComposeboxImageHelperIosTest : public PlatformTest {
 
   lens::ImageData DownscaleAndEncodeUiImage(UIImage* ui_image,
                                             bool enable_webp_encoding = true) {
-    ImageEncodingOptions image_options{
+    lens::ImageEncodingOptions image_options{
         .enable_webp_encoding = enable_webp_encoding,
         .max_size = kImageMaxArea,
         .max_height = kImageMaxHeight,

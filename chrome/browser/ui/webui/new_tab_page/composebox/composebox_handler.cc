@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -22,11 +23,25 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/url_constants.h"
 
 using composebox::SessionState;
+
+namespace {
+
+std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
+  auto image_upload_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
+  return lens::ImageEncodingOptions{
+      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
+      .max_size = image_upload_config.downscale_max_image_size(),
+      .max_height = image_upload_config.downscale_max_image_height(),
+      .max_width = image_upload_config.downscale_max_image_width(),
+      .compression_quality = image_upload_config.image_compression_quality()};
+}
+
+}  // namespace
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -122,21 +137,14 @@ void ComposeboxHandler::AddFileContext(
     AddFileContextCallback callback) {
   base::UnguessableToken file_token = base::UnguessableToken::Create();
 
-  std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
+  std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
   lens::MimeType mime_type;
 
   if ((file_info_mojom->mime_type).find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
-    auto image_upload_config =
-        ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
-    image_options = composebox::ImageEncodingOptions{
-        .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
-        .max_size = image_upload_config.downscale_max_image_size(),
-        .max_height = image_upload_config.downscale_max_image_height(),
-        .max_width = image_upload_config.downscale_max_image_width(),
-        .compression_quality = image_upload_config.image_compression_quality()};
+    image_options = CreateImageEncodingOptions();
   } else {
     NOTREACHED();
   }
@@ -162,11 +170,14 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
                                       AddTabContextCallback callback) {
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
-  lens::TabContextualizationController* controller =
+  if (!tab) {
+    return;
+  }
+
+  lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
-  DCHECK(controller);
   auto token = base::UnguessableToken::Create();
-  controller->GetPageContext(
+  tab_contextualization_controller->GetPageContext(
       base::BindOnce(&ComposeboxHandler::OnGetTabPageContext,
                      weak_ptr_factory_.GetWeakPtr(), token));
 
@@ -194,8 +205,9 @@ void ComposeboxHandler::DeleteContext(
 void ComposeboxHandler::OnGetTabPageContext(
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  query_controller_->StartFileUploadFlow(
-      context_token, std::move(page_content_data), std::nullopt);
+  query_controller_->StartFileUploadFlow(context_token,
+                                         std::move(page_content_data),
+                                         CreateImageEncodingOptions());
 }
 
 void ComposeboxHandler::ClearFiles() {

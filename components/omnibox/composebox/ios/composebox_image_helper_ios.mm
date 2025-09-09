@@ -44,7 +44,7 @@ namespace composebox {
 lens::ImageData DownscaleAndEncodeImage(
     UIImage* image,
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
-    const composebox::ImageEncodingOptions& image_options) {
+    const lens::ImageEncodingOptions& image_options) {
   lens::ImageData image_data;
   if (!image) {
     return image_data;

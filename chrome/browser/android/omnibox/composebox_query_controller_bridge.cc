@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
 
 static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
                                                       Profile* profile) {
@@ -55,19 +56,18 @@ void ComposeboxQueryControllerBridge::AddFile(
     const jni_zero::JavaParamRef<jobject>& file_data) {
   base::UnguessableToken file_token = base::UnguessableToken::Create();
 
-  std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
+  std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
   lens::MimeType mime_type;
 
   if (file_type.find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;
   } else if (file_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
-    image_options =
-        composebox::ImageEncodingOptions{.enable_webp_encoding = false,
-                                         .max_size = 1500000,
-                                         .max_height = 1600,
-                                         .max_width = 1600,
-                                         .compression_quality = 40};
+    image_options = lens::ImageEncodingOptions{.enable_webp_encoding = false,
+                                               .max_size = 1500000,
+                                               .max_height = 1600,
+                                               .max_width = 1600,
+                                               .compression_quality = 40};
   } else {
     NOTREACHED();
   }

@@ -10,7 +10,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/task_runner.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
@@ -48,8 +51,12 @@ class TabContextualizationController : public content::WebContentsObserver {
       bool page_context_eligible,
       std::optional<optimization_guide::AIPageContentResult> apc)>;
 
+  // Callback type alias for when the annotated page content is retrieved.
   using GetAnnotatedPageContentCallback = base::OnceCallback<void(
       std::optional<optimization_guide::AIPageContentResult> result)>;
+
+  // Callback type alias for when the screenshot is captured.
+  using CaptureScreenshotCallback = base::OnceCallback<void(const SkBitmap&)>;
 
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
@@ -73,6 +80,12 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   // Starts the steps needed to update the page context eligibility.
   void UpdatePageContextEligibility(GetApcResultCallback callback);
+
+  // Captures a screenshot of the current tab's viewport, downscales it if
+  // necessary, and calls the callback with the screenshot.
+  void CaptureScreenshot(
+      std::optional<lens::ImageEncodingOptions> image_options,
+      CaptureScreenshotCallback callback);
 
  private:
   // content::WebContentsObserver:
@@ -109,11 +122,15 @@ class TabContextualizationController : public content::WebContentsObserver {
                           uint32_t page_count);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  // Captures the screenshot of the tab and returns it to the callback.
-  void CaptureScreenshot(base::OnceCallback<void(const SkBitmap&)> callback);
+  // Downscales the screenshot if it exceeds the max dimension and calls the
+  // callback with the downscaled screenshot.
+  void DownscaleScreenshotAndContinue(
+      const lens::ImageEncodingOptions& image_options,
+      CaptureScreenshotCallback callback,
+      const SkBitmap& screenshot);
 
-  // Callback for when the screenshot is captured. Adds the screenshot to the
-  // contextual input data and returns it to the callback.
+  // Called when screenshot is captured. Calls the callback with the supplied
+  // contextual input data including the screenshot.
   void OnScreenshotCaptured(GetPageContextCallback callback,
                             std::unique_ptr<lens::ContextualInputData> data,
                             const SkBitmap& screenshot);
@@ -124,6 +141,9 @@ class TabContextualizationController : public content::WebContentsObserver {
   raw_ptr<tabs::TabInterface> tab_;
 
   base::CallbackListSubscription tab_subscription_;
+
+  // Task runner used to downscale the tab screenshot in the background.
+  scoped_refptr<base::TaskRunner> screenshot_task_runner_;
 
   bool is_page_context_eligible_ = false;
 

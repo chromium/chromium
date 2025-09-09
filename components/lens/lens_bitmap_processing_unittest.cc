@@ -24,6 +24,9 @@
 
 namespace lens {
 constexpr int kImageCompressionQuality = 30;
+constexpr int kImageMaxArea = 1000000;
+constexpr int kImageMaxHeight = 1000;
+constexpr int kImageMaxWidth = 1000;
 
 class LensBitmapProcessingTest : public testing::Test {
  public:
@@ -36,6 +39,21 @@ class LensBitmapProcessingTest : public testing::Test {
     bitmap.eraseColor(SK_ColorGREEN);
     bitmap.setAlphaType(kOpaque_SkAlphaType);
     return bitmap;
+  }
+
+  lens::ImageData DownscaleAndEncodeBitmap(
+      SkBitmap bitmap,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      bool enable_webp_encoding = true) {
+    ImageEncodingOptions image_options{
+        .enable_webp_encoding = enable_webp_encoding,
+        .max_size = kImageMaxArea,
+        .max_height = kImageMaxHeight,
+        .max_width = kImageMaxWidth,
+        .compression_quality = kImageCompressionQuality,
+    };
+    return lens::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs,
+                                          image_options);
   }
 
   std::string GetJpegBytesForBitmap(const SkBitmap& bitmap) {
@@ -182,6 +200,124 @@ TEST_F(LensBitmapProcessingTest, EncodeImage_Transparent) {
                    .phase(0)
                    .image_encode_data()
                    .encoded_image_size_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapMaxSize) {
+  const SkBitmap bitmap = CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+  std::string expected_output = GetJpegBytesForBitmap(bitmap);
+
+  EXPECT_EQ(kImageMaxWidth, image_data.image_metadata().width());
+  EXPECT_EQ(kImageMaxHeight, image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapSmallSize) {
+  const SkBitmap bitmap = CreateOpaqueBitmap(/*width=*/100, /*height=*/100);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+  std::string expected_output = GetJpegBytesForBitmap(bitmap);
+
+  EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
+  EXPECT_EQ(bitmap.height(), image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapLargeSize) {
+  const int scale = 2;
+  const SkBitmap bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth * scale, kImageMaxHeight * scale);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+
+  const SkBitmap expected_bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // The image should have been resized and scaled down.
+  EXPECT_EQ(kImageMaxWidth, image_data.image_metadata().width());
+  EXPECT_EQ(kImageMaxHeight, image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapHeightTooLarge) {
+  const int scale = 2;
+  const SkBitmap bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight * scale);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+
+  const SkBitmap expected_bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth / scale, kImageMaxHeight);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // The image should have been resized and scaled down.
+  EXPECT_EQ(kImageMaxWidth / scale, image_data.image_metadata().width());
+  EXPECT_EQ(kImageMaxHeight, image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapWidthTooLarge) {
+  const int scale = 2;
+  const SkBitmap bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth * scale, kImageMaxHeight);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+
+  const SkBitmap expected_bitmap =
+      CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight / scale);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // The image should have been resized and scaled down.
+  EXPECT_EQ(kImageMaxWidth, image_data.image_metadata().width());
+  EXPECT_EQ(kImageMaxHeight / scale, image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest, DownscaleAndEncodeBitmapTransparent) {
+  // Create a bitmap. Since it isn't marked with kOpaque_SkAlphaType the
+  // output should be WebP instead of JPEG.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(/*width=*/100, /*height=*/100);
+  bitmap.eraseColor(SK_ColorGREEN);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+  std::string expected_output = GetWebpBytesForBitmap(bitmap);
+
+  EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
+  EXPECT_EQ(bitmap.height(), image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensBitmapProcessingTest,
+       DownscaleAndEncodeBitmapTransparentWebpDisabled) {
+  // Create a bitmap. Since it isn't marked with kOpaque_SkAlphaType the
+  // output should be WebP instead of JPEG.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(/*width=*/100, /*height=*/100);
+  bitmap.eraseColor(SK_ColorGREEN);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data = DownscaleAndEncodeBitmap(
+      bitmap, ref_counted_logs, /*enable_webp_encoding=*/false);
+  std::string expected_output = GetJpegBytesForBitmap(bitmap);
+
+  EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
+  EXPECT_EQ(bitmap.height(), image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
 }
 
 }  // namespace lens

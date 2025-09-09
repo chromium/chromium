@@ -5,11 +5,12 @@
 #include "components/lens/tab_contextualization_controller.h"
 
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,6 +18,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -25,6 +27,19 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace lens {
+
+namespace {
+
+// Returns the viewport size in physical pixels.
+gfx::Size GetViewportPhysicalSize(Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  return gfx::ScaleToCeiledSize(
+      web_contents->GetViewBounds().size(),
+      web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+}
+
+}  // namespace
 
 class TabContextualizationControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -52,12 +67,12 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   controller->UpdatePageContextEligibility(
       base::BindOnce(&TabContextualizationController::OnEligibilityChecked,
                      base::Unretained(controller))
-          .Then(run_loop.QuitClosure()));
-  run_loop.Run();
+          .Then(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
   EXPECT_TRUE(controller->GetCurrentPageContextEligibility());
 }
@@ -69,12 +84,12 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   controller->UpdatePageContextEligibility(
       base::BindOnce(&TabContextualizationController::OnEligibilityChecked,
                      base::Unretained(controller))
-          .Then(run_loop.QuitClosure()));
-  run_loop.Run();
+          .Then(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
   controller->OnEligibilityChecked(false, std::nullopt);
 
@@ -89,24 +104,28 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   GURL url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  // Get the viewport size to compare with the screenshot.
+  gfx::Size viewport_size = GetViewportPhysicalSize(browser());
+
   content::RenderFrameHost* primary_main_frame =
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(primary_main_frame));
 
-  base::RunLoop run_loop;
-  controller->GetPageContext(base::BindLambdaForTesting(
-      [&](std::unique_ptr<lens::ContextualInputData> data) {
-        EXPECT_EQ(data->page_url, url);
-        EXPECT_TRUE(data->page_title.has_value());
-        EXPECT_EQ(data->primary_content_type, lens::MimeType::kPdf);
-        EXPECT_EQ(data->context_input->size(), 1u);
-        EXPECT_EQ(data->context_input->at(0).content_type_,
-                  lens::MimeType::kPdf);
-        EXPECT_FALSE(data->context_input->at(0).bytes_.empty());
-        EXPECT_TRUE(data->viewport_screenshot.has_value());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+  auto data = future.Take();
+
+  EXPECT_EQ(data->page_url, url);
+  EXPECT_TRUE(data->page_title.has_value());
+  EXPECT_EQ(data->primary_content_type, lens::MimeType::kPdf);
+  EXPECT_EQ(data->context_input->size(), 1u);
+  EXPECT_EQ(data->context_input->at(0).content_type_, lens::MimeType::kPdf);
+  EXPECT_FALSE(data->context_input->at(0).bytes_.empty());
+
+  EXPECT_TRUE(data->viewport_screenshot.has_value());
+  EXPECT_FALSE(data->viewport_screenshot->drawsNothing());
+  EXPECT_EQ(data->viewport_screenshot->width(), viewport_size.width());
+  EXPECT_EQ(data->viewport_screenshot->height(), viewport_size.height());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -117,22 +136,69 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::RunLoop run_loop;
-  controller->GetPageContext(base::BindLambdaForTesting(
-      [&](std::unique_ptr<lens::ContextualInputData> data) {
-        EXPECT_EQ(data->page_url, url);
-        EXPECT_TRUE(data->page_title.has_value());
-        EXPECT_EQ(data->primary_content_type,
-                  lens::MimeType::kAnnotatedPageContent);
-        EXPECT_EQ(data->context_input->size(), 1u);
-        EXPECT_EQ(data->context_input->at(0).content_type_,
-                  lens::MimeType::kAnnotatedPageContent);
-        EXPECT_FALSE(data->context_input->at(0).bytes_.empty());
-        EXPECT_TRUE(data->viewport_screenshot.has_value());
-        EXPECT_TRUE(data->is_page_context_eligible);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  // Get the viewport size to compare with the screenshot.
+  gfx::Size viewport_size = GetViewportPhysicalSize(browser());
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+  auto data = future.Take();
+
+  EXPECT_EQ(data->page_url, url);
+  EXPECT_TRUE(data->page_title.has_value());
+  EXPECT_EQ(data->primary_content_type, lens::MimeType::kAnnotatedPageContent);
+  EXPECT_EQ(data->context_input->size(), 1u);
+  EXPECT_EQ(data->context_input->at(0).content_type_,
+            lens::MimeType::kAnnotatedPageContent);
+  EXPECT_FALSE(data->context_input->at(0).bytes_.empty());
+
+  EXPECT_TRUE(data->is_page_context_eligible);
+
+  EXPECT_TRUE(data->viewport_screenshot.has_value());
+  EXPECT_FALSE(data->viewport_screenshot->drawsNothing());
+  EXPECT_EQ(data->viewport_screenshot->width(), viewport_size.width());
+  EXPECT_EQ(data->viewport_screenshot->height(), viewport_size.height());
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       CaptureScreenshot) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Get the viewport size to compare with the screenshot.
+  gfx::Size viewport_size = GetViewportPhysicalSize(browser());
+
+  base::test::TestFuture<const SkBitmap&> future;
+  controller->CaptureScreenshot(/*image_options=*/std::nullopt,
+                                future.GetCallback());
+  auto screenshot = future.Get();
+
+  EXPECT_FALSE(screenshot.drawsNothing());
+  EXPECT_EQ(screenshot.width(), viewport_size.width());
+  EXPECT_EQ(screenshot.height(), viewport_size.height());
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       CaptureScreenshotWithImageOptions) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Downscale the screenshot to half of the viewport size.
+  gfx::Size viewport_size = GetViewportPhysicalSize(browser());
+  lens::ImageEncodingOptions image_options{
+      .max_height = viewport_size.height() / 2,
+      .max_width = viewport_size.width() / 2};
+
+  base::test::TestFuture<const SkBitmap&> future;
+  controller->CaptureScreenshot(image_options, future.GetCallback());
+  auto screenshot = future.Get();
+
+  EXPECT_FALSE(screenshot.drawsNothing());
+  EXPECT_LE(screenshot.width(), image_options.max_width);
+  EXPECT_LE(screenshot.height(), image_options.max_height);
 }
 
 }  // namespace lens

@@ -38,17 +38,6 @@ source_set("composebox") {
     "//third_party/icu:icuuc_public",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
-
-  if (!is_ios) {
-    sources += [
-      "composebox_image_helper.cc",
-      "composebox_image_helper.h",
-    ]
-    deps += [
-      "//skia",
-      "//ui/gfx",
-    ]
-  }
 }
 
 source_set("test_support") {
@@ -95,13 +84,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
-
-  if (!is_ios) {
-    sources += [ "composebox_image_helper_unittest.cc" ]
-    deps += [
-      "//components/search",
-      "//skia",
-      "//ui/gfx",
-    ]
-  }
 }

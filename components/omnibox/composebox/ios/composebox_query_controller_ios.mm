@@ -11,6 +11,7 @@
 
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "components/lens/lens_bitmap_processing.h"
 #import "components/lens/ref_counted_lens_overlay_client_logs.h"
 #import "components/omnibox/composebox/ios/composebox_image_helper_ios.h"
 #import "third_party/lens_server_proto/lens_overlay_server.pb.h"
@@ -18,7 +19,7 @@
 void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     const base::UnguessableToken& file_token,
     const std::vector<uint8_t>& image_data,
-    std::optional<composebox::ImageEncodingOptions> image_options,
+    std::optional<lens::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
   FileInfo* file_info = GetFileInfo(file_token);
   if (!file_info) {

@@ -18,6 +18,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/lens/contextual_input.h"
+#import "components/lens/lens_bitmap_processing.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -320,7 +321,7 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
       lens::ContextualInput(std::move(vector_data), lens::MimeType::kImage));
 
   // TODO(crbug.com/40280872): Plumb encoding options from a central config.
-  composebox::ImageEncodingOptions image_options;
+  lens::ImageEncodingOptions image_options;
   image_options.max_width = 1024;
   image_options.max_height = 1024;
   image_options.compression_quality = 80;

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -163,10 +164,10 @@ class ComposeboxQueryControllerTest
                                      /*image_options=*/std::nullopt);
   }
 
-  void StartImageFileUploadFlow(const base::UnguessableToken& file_token,
-                                const std::vector<uint8_t>& file_data,
-                                std::optional<composebox::ImageEncodingOptions>
-                                    image_options = std::nullopt) {
+  void StartImageFileUploadFlow(
+      const base::UnguessableToken& file_token,
+      const std::vector<uint8_t>& file_data,
+      std::optional<lens::ImageEncodingOptions> image_options = std::nullopt) {
     std::unique_ptr<lens::ContextualInputData> input_data =
         std::make_unique<lens::ContextualInputData>();
     input_data->primary_content_type = lens::MimeType::kImage;
@@ -420,10 +421,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
-  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
-                                                 .max_height = 1000,
-                                                 .max_width = 1000,
-                                                 .compression_quality = 30};
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
   StartImageFileUploadFlow(file_token, image_bytes, image_options);
 
   // Assert: Validate file upload request and status changes.
@@ -508,10 +509,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   std::vector<uint8_t> image_bytes = std::vector<uint8_t>();
-  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
-                                                 .max_height = 1000,
-                                                 .max_width = 1000,
-                                                 .compression_quality = 30};
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
   StartImageFileUploadFlow(file_token, image_bytes, image_options);
 
   // Assert: Validate file upload request and status changes.
@@ -770,10 +771,10 @@ TEST_F(ComposeboxQueryControllerTest,
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
   input_data->viewport_screenshot = bitmap;
-  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
-                                                 .max_height = 1000,
-                                                 .max_width = 1000,
-                                                 .compression_quality = 30};
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
   controller().StartFileUploadFlow(file_token, std::move(input_data),
                                    image_options);
 
@@ -917,10 +918,10 @@ TEST_F(ComposeboxQueryControllerTest,
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
   input_data->viewport_screenshot = bitmap;
-  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
-                                                 .max_height = 1000,
-                                                 .max_width = 1000,
-                                                 .compression_quality = 30};
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
   controller().StartFileUploadFlow(file_token, std::move(input_data),
                                    image_options);
 
@@ -1446,10 +1447,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
-  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
-                                                 .max_height = 1000,
-                                                 .max_width = 1000,
-                                                 .compression_quality = 30};
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
   StartImageFileUploadFlow(file_token, image_bytes, image_options);
 
   // Assert: Validate file upload request and status changes.

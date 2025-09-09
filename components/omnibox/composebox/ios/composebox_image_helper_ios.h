@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 
 namespace composebox {
@@ -18,7 +18,7 @@ namespace composebox {
 lens::ImageData DownscaleAndEncodeImage(
     UIImage* image,
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
-    const composebox::ImageEncodingOptions& image_options);
+    const lens::ImageEncodingOptions& image_options);
 
 }  // namespace composebox
 
