@@ -1,6 +1,9 @@
 include_rules = [
   "+components/autofill/core/common",
   "+components/autofill/ios/common",
+  # TODO(crbug.com/415273270) Delete this once the one time_token_dependency
+  # of the password_manager is fully removed.
+  "+components/one_time_tokens/core/browser",
   "+components/os_crypt/sync",
   "+components/prefs",
   "+components/strings/grit",

@@ -228,12 +228,14 @@ TEST_F(OtpFormManagerTestWithSmsBackend, SmsOtpBackendUsedForSmsOtpRetrieval) {
 TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingWithOtpValueRetrieved) {
   std::string otp_value = "123456";
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
-      .WillOnce(
-          [&otp_value](
-              base::OnceCallback<void(const OtpFetchReply&)> callback) {
-            std::move(callback).Run(OtpFetchReply(otp_value,
-                                                  /*request_complete=*/true));
-          });
+      .WillOnce([&otp_value](
+                    base::OnceCallback<void(const OtpFetchReply&)> callback) {
+        std::move(callback).Run(
+            OtpFetchReply(one_time_tokens::OneTimeToken(
+                              one_time_tokens::OneTimeTokenType::kSmsOtp,
+                              otp_value, base::Time::Now()),
+                          /*request_complete=*/true));
+      });
   FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
   OtpFormManager form_manager(form_data_, {otp_field_id}, &client_);
 

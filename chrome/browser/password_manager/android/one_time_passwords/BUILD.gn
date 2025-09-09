@@ -23,6 +23,7 @@ source_set("backend") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/one_time_tokens/core/browser",
     "//components/password_manager/core/browser",
     "//content/public/browser",
   ]
@@ -79,5 +80,6 @@ source_set("unit_tests") {
   deps = [
     ":backend",
     "//base/test:test_support",
+    "//components/one_time_tokens/core/browser",
   ]
 }

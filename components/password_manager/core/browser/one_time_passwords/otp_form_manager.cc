@@ -5,7 +5,9 @@
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 
 #include <algorithm>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -55,6 +57,11 @@ OtpSource DetermineWhereOtpWasLikelySent(FieldInfoManager* field_info_manager,
     }
   }
   return OtpSource::kUnknown;
+}
+
+std::vector<std::string> OtpsToSuggestionStrings(
+    const std::vector<one_time_tokens::OneTimeToken>& otp_values) {
+  return base::ToVector(otp_values, &one_time_tokens::OneTimeToken::value);
 }
 
 }  // namespace
@@ -138,7 +145,7 @@ void OtpFormManager::GetOtpSuggestions(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   CHECK(IsFieldEligibleForOtpFilling(field_id));
   if (!sms_otp_retrieval_in_progress_) {
-    std::move(callback).Run(otp_suggestions_);
+    std::move(callback).Run(OtpsToSuggestionStrings(otp_suggestions_));
   } else {
     pending_suggestion_callback_ = std::move(callback);
   }
@@ -192,8 +199,14 @@ autofill::OtpFillData OtpFormManager::GetFillDataForOtpSuggestion(
 
 void OtpFormManager::UpdateManualTestingDebuggingDataIfNeeded() {
   if (base::FeatureList::IsEnabled(features::kDebugUiForOtps)) {
-    otp_suggestions_ = {"Identified OTP field. OTP is delivered via: " +
-                        OtpSourceToString(otp_source_)};
+    otp_suggestions_ = {one_time_tokens::OneTimeToken(
+        // TODO(crbug.com/41527327) kSmsOtp is just a dummy value at the
+        // moment. It's unclear if otp_source_ will remain in the current form.
+        // Depending on that we may want to fix this or not.
+        one_time_tokens::OneTimeTokenType::kSmsOtp,
+        "Identified OTP field. OTP is delivered via: " +
+            OtpSourceToString(otp_source_),
+        base::Time::Now())};
   }
 }
 
@@ -213,7 +226,8 @@ void OtpFormManager::OnOtpRetrievalComplete(const OtpFetchReply& reply) {
   }
 
   if (pending_suggestion_callback_) {
-    std::move(pending_suggestion_callback_).Run(otp_suggestions_);
+    std::move(pending_suggestion_callback_)
+        .Run(OtpsToSuggestionStrings(otp_suggestions_));
   }
 
   // TODO(crbug.com/415272524): Record metrics on how often the retrieval

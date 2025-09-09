@@ -8,14 +8,19 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
+using one_time_tokens::OneTimeToken;
+using one_time_tokens::OneTimeTokenType;
 using password_manager::OtpFetchReply;
 using testing::AllOf;
+using testing::Eq;
 using testing::Field;
+using testing::Property;
 using testing::Return;
 using testing::StrictMock;
 
@@ -133,12 +138,16 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchSucceeds) {
       mock_otp_callback;
   backend.RetrieveSmsOtp(mock_otp_callback.Get());
 
-  std::string otp_value = "123456";
   EXPECT_CALL(
       mock_otp_callback,
-      Run(AllOf(Field(&OtpFetchReply::otp_value, testing::Optional(otp_value)),
-                Field(&OtpFetchReply::request_complete, true))));
-  backend.OnOtpValueRetrieved(otp_value);
+      Run(AllOf(
+          Field(&OtpFetchReply::otp_value,
+                testing::Optional(AllOf(Property("type", &OneTimeToken::type,
+                                                 Eq(OneTimeTokenType::kSmsOtp)),
+                                        Property("value", &OneTimeToken::value,
+                                                 Eq(std::string("123456")))))),
+          Field(&OtpFetchReply::request_complete, true))));
+  backend.OnOtpValueRetrieved("123456");
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
@@ -151,7 +160,7 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
   backend.RetrieveSmsOtp(mock_otp_callback.Get());
 
   EXPECT_CALL(mock_otp_callback,
-              Run(AllOf(Field(&OtpFetchReply::otp_value, std::nullopt),
+              Run(AllOf(Field(&OtpFetchReply::otp_value, Eq(std::nullopt)),
                         Field(&OtpFetchReply::request_complete, true))));
   backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiErrorCode::kTimeout);
 }
@@ -166,7 +175,7 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
   backend.RetrieveSmsOtp(mock_otp_callback.Get());
 
   EXPECT_CALL(mock_otp_callback,
-              Run(AllOf(Field(&OtpFetchReply::otp_value, std::nullopt),
+              Run(AllOf(Field(&OtpFetchReply::otp_value, Eq(std::nullopt)),
                         Field(&OtpFetchReply::request_complete, false))));
   backend.OnOtpValueRetrievalError(
       SmsOtpRetrievalApiErrorCode::kApiNotAvailable);

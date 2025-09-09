@@ -9,16 +9,18 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 
 namespace password_manager {
 
 struct OtpFetchReply {
-  OtpFetchReply(std::optional<std::string> otp_value, bool request_complete);
+  OtpFetchReply(std::optional<one_time_tokens::OneTimeToken> otp_value,
+                bool request_complete);
   OtpFetchReply(const OtpFetchReply& rhs);
   OtpFetchReply& operator=(const OtpFetchReply& rhs);
   ~OtpFetchReply();
 
-  std::optional<std::string> otp_value;
+  std::optional<one_time_tokens::OneTimeToken> otp_value;
   // True if the request completed successfully. True if OTP value could be
   // fetched, or if the OTP value was not found within teh allowed timeframe.
   // False if the request is not complete (e.g. due to fetching backend API

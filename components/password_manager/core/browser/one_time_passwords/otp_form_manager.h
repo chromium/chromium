@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/integrators/password_manager/otp_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 
 namespace password_manager {
 
@@ -102,7 +103,7 @@ class OtpFormManager {
   bool sms_otp_retrieval_in_progress_ = false;
 
   // Fetched OTP values.
-  std::vector<std::string> otp_suggestions_;
+  std::vector<one_time_tokens::OneTimeToken> otp_suggestions_;
 
   // A callback stored when suggestions are queried before the OTP retrieval is
   // finished.

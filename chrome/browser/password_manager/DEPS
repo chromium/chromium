@@ -1,5 +1,8 @@
 include_rules = [
   "+components/device_reauth",
+  # TODO(crbug.com/415273270) Delete this once the one_time_token dependency
+   # of password_manager is fully removed.
+  "+components/one_time_tokens",
   "+components/webauthn/android",
 ]
 

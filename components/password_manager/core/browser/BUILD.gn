@@ -181,6 +181,7 @@ static_library("browser") {
     ":passkey_credential",
     "//base",
     "//components/affiliations/core/browser:affiliations",
+    "//components/one_time_tokens/core/browser",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/browser/password_store:password_store_impl",

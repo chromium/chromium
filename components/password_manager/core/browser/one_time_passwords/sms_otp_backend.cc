@@ -6,9 +6,10 @@
 
 namespace password_manager {
 
-OtpFetchReply::OtpFetchReply(std::optional<std::string> otp_value,
-                             bool request_complete)
-    : otp_value(otp_value), request_complete(request_complete) {}
+OtpFetchReply::OtpFetchReply(
+    std::optional<one_time_tokens::OneTimeToken> otp_value,
+    bool request_complete)
+    : otp_value(std::move(otp_value)), request_complete(request_complete) {}
 
 OtpFetchReply::OtpFetchReply(const OtpFetchReply&) = default;
 OtpFetchReply& OtpFetchReply::operator=(const OtpFetchReply&) = default;
