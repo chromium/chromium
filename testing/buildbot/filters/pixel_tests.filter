@@ -14,6 +14,7 @@ AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
 BatchUploadDialogViewPixelTest.*
+BookmarkAccountStorageMoveDialogPixelTest*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BookmarkEditorViewBrowserTestMoveDialog.*
@@ -80,8 +81,8 @@ LocalCardMigrationBrowserUiTest.*
 *MemorySaverFaviconTreatmentTest.*
 *MemorySaverImprovedFaviconTreatmentTest.*
 Mv2DeprecationReEnableDialogBrowserTest.*
-BookmarkAccountStorageMoveDialogPixelTest*
 NewTabPageTest.*
+NtpPromoVisualUiTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageActionPixelIconsHiddenTest.*

@@ -22,8 +22,12 @@
   --ntp-promo-text-width: 345px;
   --ntp-promo-spacing: 8px;
 
+  align-items: center;
   /* Display is set to block on promo loaded. */
   display: none;
+  justify-content: center;
+  margin-block-start: 30px;
+  margin-inline: 40px;
   position: relative;
 }
 
@@ -34,8 +38,6 @@
   flex-wrap: wrap;
   gap: var(--ntp-promo-spacing);
   justify-content: center;
-  margin-block-start: 30px;
-  margin-inline: 40px;
 }
 
 /* This styling includes overriding default <button> properties. */
