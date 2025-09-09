@@ -80,16 +80,8 @@ class SharedGpuContextTestBase : public Test {
       accelerated_compositing_scope_;
 };
 
-class TestGLES2Interface : public FakeGLES2Interface {
- public:
-  GLuint CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte*) override {
-    return ++texture_id;
-  }
-  GLuint texture_id = 0u;
-};
-
 class SharedGpuContextTest
-    : public SharedGpuContextTestBase<TestGLES2Interface> {};
+    : public SharedGpuContextTestBase<FakeGLES2Interface> {};
 
 // Test fixure that simulate a graphics context creation failure, when using gpu
 // compositing.
