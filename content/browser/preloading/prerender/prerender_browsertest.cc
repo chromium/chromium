@@ -2329,12 +2329,6 @@ class PrerenderTargetAgnosticBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<std::string> {
  public:
-  PrerenderTargetAgnosticBrowserTest() {
-    // Explicitly enables blink::features::kPrerender2InNewTab to override
-    // SpeculationRulesTargetHint.
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2InNewTab);
-  }
-
   // Activates a prerendered page for `url` hosted on `prerender_web_contents`.
   void ActivatePrerenderedPage(WebContents& prerender_web_contents,
                                const GURL& url) {
@@ -2352,9 +2346,6 @@ class PrerenderTargetAgnosticBrowserTest
 
  protected:
   std::string GetTargetHint() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2821,12 +2812,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick_TargetBlank) {
 
 class PrerenderTargetHintEnabledBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderTargetHintEnabledBrowserTest() {
-    // Explicitly enables blink::features::kPrerender2InNewTab to override
-    // SpeculationRulesTargetHint.
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2InNewTab);
-  }
-
   void TestActivateOnWindowOpen(std::string_view window_features);
 
   std::string SpeculationRulesInsertionScriptWithBothTargetHint(GURL url) {
@@ -2883,9 +2868,6 @@ class PrerenderTargetHintEnabledBrowserTest : public PrerenderBrowserTest {
         add_speculationrules_with_id_and_target_hint,
         {id, target_hint, url.spec()}, nullptr);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that clicking a link annotated with "target=_blank" can activate a

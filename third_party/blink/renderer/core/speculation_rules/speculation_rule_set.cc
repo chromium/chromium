@@ -327,8 +327,6 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   std::optional<mojom::blink::SpeculationTargetHint> target_hint;
 
   // If input["target_hint"] exists:
-
-  if (RuntimeEnabledFeatures::SpeculationRulesTargetHintEnabled(context)) {
     JSONValue* target_hint_value = input->Get("target_hint");
     if (target_hint_value) {
       // If input["target_hint"] is not a valid browsing context name or
@@ -347,7 +345,6 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       target_hint =
           SpeculationRuleSet::SpeculationTargetHintFromString(target_hint_str);
     }
-  }
 
   // Let referrerPolicy be the empty string.
   std::optional<network::mojom::ReferrerPolicy> referrer_policy;

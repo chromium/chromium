@@ -422,19 +422,12 @@ bool PrerendererImpl::MaybePrerender(
     // triggered.
     switch (candidate->target_browsing_context_name_hint) {
       case blink::mojom::SpeculationTargetHint::kBlank: {
-        if (base::FeatureList::IsEnabled(
-                blink::features::kPrerender2InNewTab)) {
-          GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-              &rfhi,
-              blink::mojom::WebFeature::kSpeculationRulesTargetHintBlank);
-          // For the prerender-in-new-tab, PreloadingAttempt will be managed by
-          // a prerender WebContents to be created later.
-          return registry_->CreateAndStartHostForNewTab(
-              attributes, creating_predictor, enacting_predictor, confidence);
-        }
-        // Handle the rule as kNoHint if the prerender-in-new-tab is not
-        // enabled.
-        [[fallthrough]];
+        GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+            &rfhi, blink::mojom::WebFeature::kSpeculationRulesTargetHintBlank);
+        // For the prerender-in-new-tab, PreloadingAttempt will be managed by a
+        // prerender WebContents to be created later.
+        return registry_->CreateAndStartHostForNewTab(
+            attributes, creating_predictor, enacting_predictor, confidence);
       }
       case blink::mojom::SpeculationTargetHint::kNoHint:
       case blink::mojom::SpeculationTargetHint::kSelf: {

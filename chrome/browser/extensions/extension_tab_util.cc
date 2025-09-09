@@ -925,51 +925,48 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
-    // Prerendering tab is not visible and it cannot be in `TabStripModel`, if
-    // the tab id exists as a prerendering tab, and the API will returns
-    // `api::tabs::TAB_INDEX_NONE` for `out_tab_index` and a valid
-    // `WebContents`.
-    for (auto rph_iterator = content::RenderProcessHost::AllHostsIterator();
-         !rph_iterator.IsAtEnd(); rph_iterator.Advance()) {
-      content::RenderProcessHost* rph = rph_iterator.GetCurrentValue();
+  // Prerendering tab is not visible and it cannot be in `TabStripModel`, if the
+  // tab id exists as a prerendering tab, and the API will returns
+  // `api::tabs::TAB_INDEX_NONE` for `out_tab_index` and a valid `WebContents`.
+  for (auto rph_iterator = content::RenderProcessHost::AllHostsIterator();
+       !rph_iterator.IsAtEnd(); rph_iterator.Advance()) {
+    content::RenderProcessHost* rph = rph_iterator.GetCurrentValue();
 
-      // Ignore renderers that aren't ready.
-      if (!rph->IsInitializedAndNotDead()) {
-        continue;
+    // Ignore renderers that aren't ready.
+    if (!rph->IsInitializedAndNotDead()) {
+      continue;
+    }
+    // Ignore renderers that aren't from a valid profile. This is either the
+    // same profile or the incognito profile if `include_incognito` is true.
+    Profile* process_profile =
+        Profile::FromBrowserContext(rph->GetBrowserContext());
+    if (process_profile != profile &&
+        !(include_incognito && profile->IsSameOrParent(process_profile))) {
+      continue;
+    }
+
+    content::WebContents* found_prerender_contents = nullptr;
+    rph->ForEachRenderFrameHost([&found_prerender_contents,
+                                 tab_id](content::RenderFrameHost* rfh) {
+      CHECK(rfh);
+      WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+      CHECK(web_contents);
+      if (sessions::SessionTabHelper::IdForTab(web_contents).id() != tab_id) {
+        return;
       }
-      // Ignore renderers that aren't from a valid profile. This is either the
-      // same profile or the incognito profile if `include_incognito` is true.
-      Profile* process_profile =
-          Profile::FromBrowserContext(rph->GetBrowserContext());
-      if (process_profile != profile &&
-          !(include_incognito && profile->IsSameOrParent(process_profile))) {
-        continue;
+      // We only consider prerendered frames in this loop. Otherwise, we could
+      // end up returning a tab for a different web contents that shouldn't be
+      // exposed to extensions.
+      if (!web_contents->IsPrerenderedFrame(rfh->GetFrameTreeNodeId())) {
+        return;
       }
 
-      content::WebContents* found_prerender_contents = nullptr;
-      rph->ForEachRenderFrameHost([&found_prerender_contents,
-                                   tab_id](content::RenderFrameHost* rfh) {
-        CHECK(rfh);
-        WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
-        CHECK(web_contents);
-        if (sessions::SessionTabHelper::IdForTab(web_contents).id() != tab_id) {
-          return;
-        }
-        // We only consider prerendered frames in this loop. Otherwise, we could
-        // end up returning a tab for a different web contents that shouldn't be
-        // exposed to extensions.
-        if (!web_contents->IsPrerenderedFrame(rfh->GetFrameTreeNodeId())) {
-          return;
-        }
+      found_prerender_contents = web_contents;
+    });
 
-        found_prerender_contents = web_contents;
-      });
-
-      if (found_prerender_contents && out_contents) {
-        *out_contents = found_prerender_contents;
-        return true;
-      }
+    if (found_prerender_contents && out_contents) {
+      *out_contents = found_prerender_contents;
+      return true;
     }
   }
 

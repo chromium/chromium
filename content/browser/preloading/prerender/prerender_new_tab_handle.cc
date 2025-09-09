@@ -20,7 +20,6 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
     const PrerenderAttributes& attributes,
     BrowserContext& browser_context)
     : attributes_(attributes), web_contents_create_params_(&browser_context) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
   CHECK(!attributes.IsBrowserInitiated());
 
   auto* initiator_render_frame_host = RenderFrameHostImpl::FromFrameToken(

@@ -77,8 +77,7 @@ void OnPrerenderCanceled(WeakDocumentPtr document, const GURL& url) {
 
 bool PredictionOccursInOtherWebContents(
     const blink::mojom::SpeculationCandidate& candidate) {
-  return base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab) &&
-         candidate.action == blink::mojom::SpeculationAction::kPrerender &&
+  return candidate.action == blink::mojom::SpeculationAction::kPrerender &&
          candidate.target_browsing_context_name_hint ==
              blink::mojom::SpeculationTargetHint::kBlank;
 }

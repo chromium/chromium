@@ -37,7 +37,6 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
         {
             {blink::features::kPreloadingHeuristicsMLModel,
              {{"enact_candidates", "true"}}},
-            {blink::features::kPrerender2InNewTab, {}},
         },
         {
             // Disable the memory requirement of Prerender2 so the test can run

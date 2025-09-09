@@ -563,10 +563,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
   }
 
-  if (trial_name == "SpeculationRulesTargetHint") {
-    return base::FeatureList::IsEnabled(features::kPrerender2InNewTab);
-  }
-
   if (trial_name == "TranslationAPI") {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     return base::FeatureList::IsEnabled(features::kTranslationAPI);
