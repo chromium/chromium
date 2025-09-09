@@ -464,7 +464,7 @@ namespace autotestPrivate {
     long id;
 
     // The name of the window object -- typically internal class name of the
-    // window (like 'BrowserFrame').
+    // window (like 'BrowserWidget').
     DOMString name;
 
     AppWindowType windowType;
