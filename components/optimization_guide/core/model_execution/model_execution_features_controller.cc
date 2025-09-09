@@ -30,55 +30,6 @@ namespace optimization_guide {
 
 namespace {
 
-enum class FeatureCurrentlyEnabledResult {
-  kUnknown = 0,
-  // Not enabled because user is not signed-in.
-  kNotEnabledUnsignedUser = 1,
-  // Returned result as enabled because feature was enabled at startup.
-  kEnabledAtStartup = 2,
-  // Returned result as not enabled because feature was not enabled at startup.
-  kNotEnabledAtStartup = 3,
-  // Returned result as not enabled because feature was disabled by enterprise
-  // policy.
-  kNotEnabledEnterprisePolicy = 4,
-  // Returned result as not enabled because model execution capability was
-  // disabled for the user account.
-  kNotEnabledModelExecutionCapability = 5,
-  // Returned result as enabled because the feature has graduated from
-  // experimental AI settings.
-  kEnabledByGraduation = 6,
-  // Updates should match with FeatureCurrentlyEnabledResult enum in enums.xml.
-  kMaxValue = kEnabledByGraduation
-};
-
-// Util class for recording the construction and validation of Settings
-// Visibility histogram.
-class ScopedFeatureCurrentlyEnabledHistogramRecorder {
- public:
-  explicit ScopedFeatureCurrentlyEnabledHistogramRecorder() = default;
-
-  ~ScopedFeatureCurrentlyEnabledHistogramRecorder() {
-    CHECK(is_valid_);
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.",
-             GetStringNameForModelExecutionFeature(feature_)}),
-        result_);
-  }
-
-  void SetResult(UserVisibleFeatureKey feature,
-                 FeatureCurrentlyEnabledResult result) {
-    is_valid_ = true;
-    feature_ = feature;
-    result_ = result;
-  }
-
- private:
-  bool is_valid_ = false;
-  UserVisibleFeatureKey feature_;
-  FeatureCurrentlyEnabledResult result_;
-};
-
 // Returns whether the model execution capability is enabled. Use this whenever
 // the `AccountInfo` is available which has more recent data, instead of
 // querying via the `IdentityManager` that could be having stale information.
@@ -148,39 +99,17 @@ ModelExecutionFeaturesController::~ModelExecutionFeaturesController() = default;
 bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
     UserVisibleFeatureKey feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ScopedFeatureCurrentlyEnabledHistogramRecorder metrics_recorder;
 
-  if (features::internal::IsGraduatedFeature(feature)) {
-    UserValidityResult user_validity =
-        GetCurrentUserValidityResult(feature, /*skip_enterprise_check=*/false);
-    // TODO(b/328523679): also report the FeatureCurrentlyEnabledResult values
-    // below for non-graduated features.
-    FeatureCurrentlyEnabledResult fcer;
-    switch (user_validity) {
-      case UserValidityResult::kValid:
-        fcer = FeatureCurrentlyEnabledResult::kEnabledByGraduation;
-        break;
-      case UserValidityResult::kInvalidUnsignedUser:
-        fcer = FeatureCurrentlyEnabledResult::kNotEnabledUnsignedUser;
-        break;
-      case UserValidityResult::kInvalidEnterprisePolicy:
-        fcer = FeatureCurrentlyEnabledResult::kNotEnabledEnterprisePolicy;
-        break;
-      case UserValidityResult::kInvalidModelExecutionCapability:
-        fcer =
-            FeatureCurrentlyEnabledResult::kNotEnabledModelExecutionCapability;
-        break;
-    };
-    metrics_recorder.SetResult(feature, fcer);
-    return user_validity == UserValidityResult::kValid;
-  }
+  const FeatureCurrentlyEnabledResult result = GetFeatureEnabledState(feature);
 
-  bool is_enabled = GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
-  metrics_recorder.SetResult(
-      feature, is_enabled
-                   ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
-                   : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup);
-  return is_enabled;
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      result);
+
+  return result == FeatureCurrentlyEnabledResult::kEnabledByGraduation ||
+         result == FeatureCurrentlyEnabledResult::kEnabledAtStartup;
 }
 
 bool ModelExecutionFeaturesController::
@@ -223,6 +152,30 @@ prefs::FeatureOptInState ModelExecutionFeaturesController::GetPrefState(
   return static_cast<prefs::FeatureOptInState>(
       browser_context_profile_service_->GetInteger(
           prefs::GetSettingEnabledPrefName(feature)));
+}
+
+ModelExecutionFeaturesController::FeatureCurrentlyEnabledResult
+ModelExecutionFeaturesController::GetFeatureEnabledState(
+    UserVisibleFeatureKey feature) const {
+  if (features::internal::IsGraduatedFeature(feature)) {
+    UserValidityResult user_validity =
+        GetCurrentUserValidityResult(feature, /*skip_enterprise_check=*/false);
+    switch (user_validity) {
+      case UserValidityResult::kValid:
+        return FeatureCurrentlyEnabledResult::kEnabledByGraduation;
+      case UserValidityResult::kInvalidUnsignedUser:
+        return FeatureCurrentlyEnabledResult::kNotEnabledUnsignedUser;
+      case UserValidityResult::kInvalidEnterprisePolicy:
+        return FeatureCurrentlyEnabledResult::kNotEnabledEnterprisePolicy;
+      case UserValidityResult::kInvalidModelExecutionCapability:
+        return FeatureCurrentlyEnabledResult::
+            kNotEnabledModelExecutionCapability;
+    };
+  }
+
+  return GetPrefState(feature) == prefs::FeatureOptInState::kEnabled
+             ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
+             : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup;
 }
 
 ModelExecutionFeaturesController::UserValidityResult
