@@ -32,6 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kFullscreenSignInPromoUseDate,
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
+    &switches::kSkipRefreshTokenCheckInIdentityManager,
 };
 
 // static

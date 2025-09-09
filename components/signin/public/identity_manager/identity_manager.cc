@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/android/jni_headers/IdentityManagerImpl_jni.h"
@@ -342,10 +343,13 @@ AccountInfo IdentityManager::FindExtendedAccountInfo(
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByAccountId(
     const CoreAccountId& account_id) const {
-  if (!HasAccountWithRefreshToken(account_id)) {
+  // Skip the the token check if the switch is enabled, for consistency with the
+  // behavior of FindExtendedAccountInfoByEmailAddress
+  if (!HasAccountWithRefreshToken(account_id) &&
+      !base::FeatureList::IsEnabled(
+          switches::kSkipRefreshTokenCheckInIdentityManager)) {
     return AccountInfo();
   }
-
   // AccountTrackerService returns an empty AccountInfo if the account is not
   // found.
   return account_tracker_service_->GetAccountInfo(account_id);
@@ -355,6 +359,14 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByEmailAddress(
     const std::string& email_address) const {
   AccountInfo account_info =
       account_tracker_service_->FindAccountInfoByEmail(email_address);
+  // Skip the the token check if the switch is enabled.
+  // This prevents a crash that occurs when the account info is retrieved before
+  // the account's refresh token is available, causing the check to fail.
+  // See https://crbug.com/366252188 and https://crbug.com/40183609
+  if (base::FeatureList::IsEnabled(
+          switches::kSkipRefreshTokenCheckInIdentityManager)) {
+    return account_info;
+  }
   // AccountTrackerService always returns an AccountInfo, even on failure. In
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.
@@ -366,6 +378,12 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
     const GaiaId& gaia_id) const {
   AccountInfo account_info =
       account_tracker_service_->FindAccountInfoByGaiaId(gaia_id);
+  // Skip the the token check if the switch is enabled, for consistency with the
+  // behavior of FindExtendedAccountInfoByEmailAddress
+  if (base::FeatureList::IsEnabled(
+          switches::kSkipRefreshTokenCheckInIdentityManager)) {
+    return account_info;
+  }
   // AccountTrackerService always returns an AccountInfo, even on failure. In
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.

@@ -229,21 +229,22 @@ class InlineLoginHandlerTest
 
     embedded_test_server_.StartAcceptingConnections();
 
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    AccountInfo account_info =
+        identity_test_env_profile_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
+                                          signin::ConsentLevel::kSignin);
+
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                       GetDeviceAccountInfo().id);
+                                       supervised_user::kChildAccountSUID);
       // This is required for Child users, otherwise an account cannot be added.
       edu_handler_ =
           std::make_unique<EduCoexistenceLoginHandler>(base::DoNothing());
       edu_handler_->set_web_ui_for_test(web_ui());
       edu_handler_->RegisterMessages();
     }
-
-    identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-    identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
-                                      signin::ConsentLevel::kSignin);
 
     // Setup web ui with cookies.
     web_ui_.set_web_contents(web_contents());

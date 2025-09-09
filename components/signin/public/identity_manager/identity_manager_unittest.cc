@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -2247,12 +2248,8 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
   ASSERT_EQ(account_info.account_id, account_id);
 
-  // The refresh token is not available.
-  EXPECT_TRUE(
-      identity_manager()->FindExtendedAccountInfo(account_info).IsEmpty());
-
   // FindExtendedAccountInfo() returns extended account information if the
-  // account is known and the token is available.
+  // account is known.
   SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
                             "token");
   const AccountInfo extended_account_info =
@@ -2278,16 +2275,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
           account_info.account_id);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
-      account_info.account_id);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
       account_info.account_id);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
@@ -2311,17 +2301,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByEmailAddress) {
           account_info.email);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info =
-      identity_manager()->FindExtendedAccountInfoByEmailAddress(
-          account_info.email);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(
           account_info.email);
@@ -2345,16 +2327,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByGaiaId) {
       identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
   EXPECT_TRUE(maybe_account_info.IsEmpty());
 
-  // Refresh token is not available.
+  // Account is known.
   const CoreAccountId account_id =
       account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
-  maybe_account_info =
-      identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
-  EXPECT_TRUE(maybe_account_info.IsEmpty());
-
-  // Account with refresh token.
-  SetRefreshTokenForAccount(identity_manager(), account_info.account_id,
-                            "token");
   maybe_account_info =
       identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
