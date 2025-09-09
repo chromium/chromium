@@ -22,7 +22,7 @@ namespace ui {
 class OSExchangeData;
 }
 
-// RootView implementation used by BrowserFrame. This forwards drop events to
+// RootView implementation used by BrowserWidget. This forwards drop events to
 // the TabStrip. Visually the tabstrip extends to the top of the frame, but in
 // actually it doesn't. The tabstrip is only as high as a tab. To enable
 // dropping above the tabstrip BrowserRootView forwards drop events to the

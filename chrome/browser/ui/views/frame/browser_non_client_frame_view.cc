@@ -113,7 +113,7 @@ gfx::Rect BrowserNonClientFrameView::BoundsAndMargins::ToEnclosingRect() const {
   return gfx::ToEnclosingRect(temp);
 }
 
-BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
+BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserWidget* frame,
                                                      BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
   DCHECK(frame_);

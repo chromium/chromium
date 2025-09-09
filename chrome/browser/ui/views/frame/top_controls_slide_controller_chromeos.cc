@@ -731,8 +731,8 @@ void TopControlsSlideControllerChromeOS::OnBeginSliding() {
 
   is_sliding_in_progress_ = true;
 
-  BrowserFrame* browser_frame = browser_view_->frame();
-  views::View* root_view = browser_frame->GetRootView();
+  BrowserWidget* browser_widget = browser_view_->frame();
+  views::View* root_view = browser_widget->GetRootView();
   // We paint to layer to be able to efficiently translate the browser
   // top-controls without having to adjust the bounds of the views which trigger
   // re-layouts and re-paints, which makes scrolling feel laggy.
@@ -747,9 +747,9 @@ void TopControlsSlideControllerChromeOS::OnBeginSliding() {
   // We need to fix the order of the layers after making the root view paint to
   // layer. Otherwise, the root view's layer will show on top of the contents'
   // native view's layer and cover it.
-  browser_frame->ReorderNativeViews();
+  browser_widget->ReorderNativeViews();
 
-  ui::Layer* widget_layer = browser_frame->GetLayer();
+  ui::Layer* widget_layer = browser_widget->GetLayer();
 
   // OnBeginSliding() means we are in a transient state (i.e. the top controls
   // didn't reach its final state of either fully shown or fully hidden). During
@@ -810,11 +810,11 @@ void TopControlsSlideControllerChromeOS::OnEndSliding() {
         identity_transform);
   }
 
-  BrowserFrame* browser_frame = browser_view_->frame();
-  views::View* root_view = browser_frame->GetRootView();
+  BrowserWidget* browser_widget = browser_view_->frame();
+  views::View* root_view = browser_widget->GetRootView();
   root_view->DestroyLayer();
 
-  ui::Layer* widget_layer = browser_frame->GetLayer();
+  ui::Layer* widget_layer = browser_widget->GetLayer();
 
   // Note the difference between the below root view resize, and the
   // corresponding one in OnBeginSliding() above. Here we have reached a steady

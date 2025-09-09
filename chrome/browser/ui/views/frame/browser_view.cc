@@ -122,10 +122,10 @@
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
@@ -580,7 +580,7 @@ void GetAnyTabAudioStates(const Browser* browser,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
-// OverlayWidget is a child Widget of BrowserFrame used during immersive
+// OverlayWidget is a child Widget of BrowserWidget used during immersive
 // fullscreen on macOS that hosts the top container. Its native Window and View
 // interface with macOS fullscreen APIs allowing separation of the top container
 // and web contents.
@@ -598,8 +598,8 @@ class OverlayWidget : public ThemeCopyingWidget {
 
   // OverlayWidget hosts the top container. Views within the top container look
   // up accelerators by asking their hosting Widget. In non-immersive fullscreen
-  // that would be the BrowserFrame. Give top chrome what it expects and forward
-  // GetAccelerator() calls to OverlayWidget's parent (BrowserFrame).
+  // that would be the BrowserWidget. Give top chrome what it expects and
+  // forward GetAccelerator() calls to OverlayWidget's parent (BrowserWidget).
   bool GetAccelerator(int cmd_id, ui::Accelerator* accelerator) const override {
     DCHECK(parent());
     return parent()->GetAccelerator(cmd_id, accelerator);
@@ -1490,7 +1490,7 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
   ExitFullscreen();
 
   // If the BrowserNonClientFrameView has been created, give it a chance to
-  // handle the BrowserFrame's bounds change.
+  // handle the BrowserWidget's bounds change.
   if (frame_->GetFrameView()) {
     frame_->GetFrameView()->SetFrameBounds(bounds);
   } else {
@@ -4456,7 +4456,7 @@ views::View* BrowserView::CreateMacOverlayView() {
   // Create a new TopContainerOverlayView. The tab strip, omnibox, bookmarks
   // etc. will be contained within this view. Right clicking on the blank space
   // that is not taken up by the child views should show the context menu. Set
-  // the BrowserFrame as the context menu controller to handle displaying the
+  // the BrowserWidget as the context menu controller to handle displaying the
   // top container context menu.
   std::unique_ptr<TopContainerOverlayView> overlay_view =
       std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
@@ -4602,12 +4602,12 @@ void BrowserView::DeleteBrowserWindow() {
 
   // Window placement is expected to be saved when the window closes.
   // Determination for whether placement should be saved depends on the
-  // BrowserFrame object. `SaveWindowPlacementIfNeeded()` must be called here
+  // BrowserWidget object. `SaveWindowPlacementIfNeeded()` must be called here
   // before the frame is destroyed to mitigate UAF risk.
   frame_->SaveWindowPlacementIfNeeded();
 
   frame_.reset();
-  // BrowserFrame owns BrowserView in its views::View hierarchy and `this` will
+  // BrowserWidget owns BrowserView in its views::View hierarchy and `this` will
   // not be valid after this returns.
 }
 

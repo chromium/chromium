@@ -27,7 +27,7 @@ constexpr int kResizeTopBorderThickness = 4;
 }  // namespace
 
 BrowserFrameViewLinux::BrowserFrameViewLinux(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout)
     : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {

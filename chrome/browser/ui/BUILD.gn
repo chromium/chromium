@@ -3759,7 +3759,9 @@ static_library("ui") {
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/app_menu_button_observer.h",
-      "views/frame/browser_frame.cc",
+
+      # TODO(https://crbug.com/443281722): Remove browser_frame.h a couple weeks
+      # after the refactor of BrowserFrame => BrowserWindow lands.
       "views/frame/browser_frame.h",
       "views/frame/browser_native_widget.h",
       "views/frame/browser_native_widget_factory.cc",
@@ -3773,6 +3775,8 @@ static_library("ui") {
       "views/frame/browser_view_layout.cc",
       "views/frame/browser_view_layout.h",
       "views/frame/browser_view_layout_delegate.h",
+      "views/frame/browser_widget.cc",
+      "views/frame/browser_widget.h",
       "views/frame/browser_window_factory.cc",
       "views/frame/caption_button_placeholder_container.cc",
       "views/frame/caption_button_placeholder_container.h",

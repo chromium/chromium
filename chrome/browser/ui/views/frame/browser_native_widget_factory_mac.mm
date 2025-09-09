@@ -7,7 +7,7 @@
 #import "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 
 BrowserNativeWidget* BrowserNativeWidgetFactory::Create(
-    BrowserFrame* browser_frame,
+    BrowserWidget* browser_widget,
     BrowserView* browser_view) {
-  return new BrowserNativeWidgetMac(browser_frame, browser_view);
+  return new BrowserNativeWidgetMac(browser_widget, browser_view);
 }

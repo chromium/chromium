@@ -34,7 +34,7 @@ namespace {
 
 #if BUILDFLAG(IS_LINUX)
 std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view) {
   auto* profile = browser_view->browser()->profile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
@@ -76,7 +76,7 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
 }
 
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewLinux(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
     return std::make_unique<PictureInPictureBrowserFrameViewLinux>(
@@ -93,7 +93,7 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewLinux(
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewWin(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
     return std::make_unique<PictureInPictureBrowserFrameView>(frame,
@@ -115,7 +115,7 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewWin(
 }  // anonymous namespace
 
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view) {
 #if BUILDFLAG(IS_WIN)
   return CreateBrowserNonClientFrameViewWin(frame, browser_view);

@@ -9,7 +9,7 @@
 namespace chrome {
 
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
     return std::make_unique<PictureInPictureBrowserFrameViewAsh>(frame,

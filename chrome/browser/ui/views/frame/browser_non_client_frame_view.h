@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -128,14 +128,14 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   METADATA_HEADER(BrowserNonClientFrameView, views::NonClientFrameView)
 
  public:
-  BrowserNonClientFrameView(BrowserFrame* frame, BrowserView* browser_view);
+  BrowserNonClientFrameView(BrowserWidget* frame, BrowserView* browser_view);
   BrowserNonClientFrameView(const BrowserNonClientFrameView&) = delete;
   BrowserNonClientFrameView& operator=(const BrowserNonClientFrameView&) =
       delete;
   ~BrowserNonClientFrameView() override;
 
   BrowserView* browser_view() const { return browser_view_; }
-  BrowserFrame* frame() const { return frame_; }
+  BrowserWidget* frame() const { return frame_; }
 
   // Called after BrowserView has initialized its child views. This is a useful
   // hook for performing final setup that depends on other child views, like
@@ -321,8 +321,8 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   int GetSystemMenuY() const override;
 #endif  // BUILDFLAG(IS_WIN)
 
-  // The BrowserFrame that owns this view.
-  const raw_ptr<BrowserFrame, DanglingUntriaged> frame_;
+  // The BrowserWidget that owns this view.
+  const raw_ptr<BrowserWidget, DanglingUntriaged> frame_;
 
   // The BrowserView hosted within `frame_`.
   const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
@@ -341,7 +341,7 @@ namespace chrome {
 // implementations should define this in their respective
 // browser_non_client_view_factor_*.cc files.
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view);
 
 }  // namespace chrome

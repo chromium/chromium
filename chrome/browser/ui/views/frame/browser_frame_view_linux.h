@@ -22,7 +22,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   METADATA_HEADER(BrowserFrameViewLinux, OpaqueBrowserFrameView)
 
  public:
-  BrowserFrameViewLinux(BrowserFrame* frame,
+  BrowserFrameViewLinux(BrowserWidget* frame,
                         BrowserView* browser_view,
                         BrowserFrameViewLayoutLinux* layout);
 

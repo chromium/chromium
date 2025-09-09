@@ -29,8 +29,8 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -146,13 +146,13 @@ class BrowserView : public BrowserWindow,
   BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
 
-  void set_frame(std::unique_ptr<BrowserFrame> frame) {
+  void set_frame(std::unique_ptr<BrowserWidget> frame) {
     frame_ = std::move(frame);
     paint_as_active_subscription_ =
         frame_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
             &BrowserView::PaintAsActiveChanged, base::Unretained(this)));
   }
-  BrowserFrame* frame() const { return frame_.get(); }
+  BrowserWidget* frame() const { return frame_.get(); }
 
   // Returns a pointer to the BrowserView* interface implementation (an
   // instance of this object, typically) for a given native window, or null if
@@ -365,7 +365,7 @@ class BrowserView : public BrowserWindow,
   float GetTopControlsSlideBehaviorShownRatio() const;
 
   // Returns the widget for anchoring bubbles and dialogs.
-  // This returns BrowserFrame except on fullscreen macOS where the toolbar is
+  // This returns BrowserWidget except on fullscreen macOS where the toolbar is
   // hosted in an OverlayWidget.
   views::Widget* GetWidgetForAnchoring();
 
@@ -1110,8 +1110,8 @@ class BrowserView : public BrowserWindow,
   bool ShouldUseBrowserContentMinimumSize() const;
   bool IsBrowserAWebApp() const;
 
-  // The BrowserFrame that owns this view.
-  std::unique_ptr<BrowserFrame> frame_;
+  // The BrowserWidget that owns this view.
+  std::unique_ptr<BrowserWidget> frame_;
 
   // The owning Browser object. `browser_` will outlive this.
   const raw_ptr<Browser> browser_;

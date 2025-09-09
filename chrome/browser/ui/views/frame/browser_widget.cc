@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 
 #include <memory>
 #include <utility>
@@ -122,9 +122,9 @@ ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// BrowserFrame, public:
+// BrowserWidget, public:
 
-BrowserFrame::BrowserFrame(BrowserView* browser_view)
+BrowserWidget::BrowserWidget(BrowserView* browser_view)
     : browser_native_widget_(nullptr),
       root_view_(nullptr),
       browser_frame_view_(nullptr),
@@ -134,11 +134,11 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
   set_focus_on_creation(false);
 }
 
-BrowserFrame::~BrowserFrame() {
+BrowserWidget::~BrowserWidget() {
   set_widget_closed();
 
   // Synchronously destroy owned Widgets, which are typically owned by the
-  // BrowserFrame's NativeWidget, to mitigate the risk of dangling pointers to
+  // BrowserWidget's NativeWidget, to mitigate the risk of dangling pointers to
   // Browser and related objects during destruction.
   views::Widget::ForEachOwnedWidget(GetNativeView(),
                                     [this](views::Widget* widget) {
@@ -150,18 +150,18 @@ BrowserFrame::~BrowserFrame() {
   // Invoke the pre-window-destruction lifecycle hook before the owned
   // BrowserView is destroyed.
   // Do this here and not in ~BrowserView() as BrowserWindowFeatures may attempt
-  // to read state on the BrowserFrame as they undergo destruction, and
-  // BrowserFrame state is destroyed at the end of this scope.
+  // to read state on the BrowserWidget as they undergo destruction, and
+  // BrowserWidget state is destroyed at the end of this scope.
   browser_view_->browser()->GetFeatures().TearDownPreBrowserWindowDestruction();
 }
 
-void BrowserFrame::InitBrowserFrame() {
+void BrowserWidget::InitBrowserWidget() {
   browser_native_widget_ =
       BrowserNativeWidgetFactory::CreateBrowserNativeWidget(this,
                                                             browser_view_);
   views::Widget::InitParams params = browser_native_widget_->GetWidgetParams(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  params.name = "BrowserFrame";
+  params.name = "BrowserWidget";
   params.delegate = browser_view_;
   params.headless_mode = headless::IsHeadlessMode();
 
@@ -228,13 +228,13 @@ void BrowserFrame::InitBrowserFrame() {
   }
 }
 
-int BrowserFrame::GetMinimizeButtonOffset() const {
+int BrowserWidget::GetMinimizeButtonOffset() const {
   return browser_native_widget_
              ? browser_native_widget_->GetMinimizeButtonOffset()
              : 0;
 }
 
-gfx::Rect BrowserFrame::GetBoundsForTabStripRegion(
+gfx::Rect BrowserWidget::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   // This can be invoked before |browser_frame_view_| has been set.
   return browser_frame_view_ ? browser_frame_view_->GetBoundsForTabStripRegion(
@@ -242,7 +242,7 @@ gfx::Rect BrowserFrame::GetBoundsForTabStripRegion(
                              : gfx::Rect();
 }
 
-gfx::Rect BrowserFrame::GetBoundsForWebAppFrameToolbar(
+gfx::Rect BrowserWidget::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
   // This can be invoked before |browser_frame_view_| has been set.
   return browser_frame_view_
@@ -251,7 +251,7 @@ gfx::Rect BrowserFrame::GetBoundsForWebAppFrameToolbar(
              : gfx::Rect();
 }
 
-void BrowserFrame::LayoutWebAppWindowTitle(
+void BrowserWidget::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {
   if (!browser_frame_view_) {
@@ -313,28 +313,28 @@ void BrowserFrame::LayoutWebAppWindowTitle(
 #endif
 }
 
-int BrowserFrame::GetTopInset() const {
+int BrowserWidget::GetTopInset() const {
   return browser_frame_view_->GetTopInset(false);
 }
 
-void BrowserFrame::UpdateThrobber(bool running) {
+void BrowserWidget::UpdateThrobber(bool running) {
   browser_frame_view_->UpdateThrobber(running);
 }
 
-BrowserNonClientFrameView* BrowserFrame::GetFrameView() const {
+BrowserNonClientFrameView* BrowserWidget::GetFrameView() const {
   return browser_frame_view_;
 }
 
-bool BrowserFrame::UseCustomFrame() const {
+bool BrowserWidget::UseCustomFrame() const {
   return browser_native_widget_ && browser_native_widget_->UseCustomFrame();
 }
 
-bool BrowserFrame::ShouldSaveWindowPlacement() const {
+bool BrowserWidget::ShouldSaveWindowPlacement() const {
   return browser_native_widget_ &&
          browser_native_widget_->ShouldSaveWindowPlacement();
 }
 
-void BrowserFrame::GetWindowPlacement(
+void BrowserWidget::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   if (browser_native_widget_) {
@@ -342,24 +342,24 @@ void BrowserFrame::GetWindowPlacement(
   }
 }
 
-content::KeyboardEventProcessingResult BrowserFrame::PreHandleKeyboardEvent(
+content::KeyboardEventProcessingResult BrowserWidget::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return browser_native_widget_
              ? browser_native_widget_->PreHandleKeyboardEvent(event)
              : content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool BrowserFrame::HandleKeyboardEvent(
+bool BrowserWidget::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return browser_native_widget_ &&
          browser_native_widget_->HandleKeyboardEvent(event);
 }
 
-void BrowserFrame::OnBrowserViewInitViewsComplete() {
+void BrowserWidget::OnBrowserViewInitViewsComplete() {
   browser_frame_view_->OnBrowserViewInitViewsComplete();
 }
 
-void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
+void BrowserWidget::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // kWebAppTheme is triggered by web apps and will only change colors, not the
   // frame type; just refresh the theme on all views in the browser window.
   if (theme_change_type == BrowserThemeChangeType::kWebAppTheme) {
@@ -382,7 +382,7 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
     // When the browser theme changes, the NativeTheme may also change.
     SelectNativeTheme();
 
-    // Browser theme changes are directly observed by the BrowserFrame. However
+    // Browser theme changes are directly observed by the BrowserWidget. However
     // the other Widgets in the frame's hierarchy may inherit this new theme
     // information in their ColorProviderKeys and thus should also be forwarded
     // theme change notifications.
@@ -398,27 +398,27 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrame, views::Widget overrides:
+// BrowserWidget, views::Widget overrides:
 
-views::internal::RootView* BrowserFrame::CreateRootView() {
+views::internal::RootView* BrowserWidget::CreateRootView() {
   root_view_ = new BrowserRootView(browser_view_, this);
   return root_view_;
 }
 
 std::unique_ptr<views::NonClientFrameView>
-BrowserFrame::CreateNonClientFrameView() {
+BrowserWidget::CreateNonClientFrameView() {
   auto browser_frame_view =
       chrome::CreateBrowserNonClientFrameView(this, browser_view_);
   browser_frame_view_ = browser_frame_view.get();
   return browser_frame_view;
 }
 
-bool BrowserFrame::GetAccelerator(int command_id,
-                                  ui::Accelerator* accelerator) const {
+bool BrowserWidget::GetAccelerator(int command_id,
+                                   ui::Accelerator* accelerator) const {
   return browser_view_->GetAccelerator(command_id, accelerator);
 }
 
-const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
+const ui::ThemeProvider* BrowserWidget::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
   // Ignore the system theme for web apps with window-controls-overlay as the
@@ -432,7 +432,7 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
-ui::ColorProviderKey::ThemeInitializerSupplier* BrowserFrame::GetCustomTheme()
+ui::ColorProviderKey::ThemeInitializerSupplier* BrowserWidget::GetCustomTheme()
     const {
   // Do not return any custom theme if this is an incognito browser.
   if (IsIncognitoBrowser()) {
@@ -454,7 +454,7 @@ ui::ColorProviderKey::ThemeInitializerSupplier* BrowserFrame::GetCustomTheme()
                                            : theme_service->GetThemeSupplier();
 }
 
-void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
+void BrowserWidget::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
   chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
                                            IsVisibleOnAllWorkspaces());
@@ -472,7 +472,7 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   Widget::OnNativeWidgetWorkspaceChanged();
 }
 
-void BrowserFrame::OnNativeWidgetDestroyed() {
+void BrowserWidget::OnNativeWidgetDestroyed() {
   browser_native_widget_ = nullptr;
   Browser* const browser = browser_view_->browser();
 
@@ -487,7 +487,7 @@ void BrowserFrame::OnNativeWidgetDestroyed() {
   browser->SynchronouslyDestroyBrowser();
 }
 
-void BrowserFrame::ShowContextMenuForViewImpl(
+void BrowserWidget::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& p,
     ui::mojom::MenuSourceType source_type) {
@@ -517,7 +517,7 @@ void BrowserFrame::ShowContextMenuForViewImpl(
     menu_runner_ = std::make_unique<views::MenuRunner>(
         GetSystemMenuModel(),
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-        base::BindRepeating(&BrowserFrame::OnMenuClosed,
+        base::BindRepeating(&BrowserWidget::OnMenuClosed,
                             base::Unretained(this)));
     menu_runner_->RunMenuAt(source->GetWidget(), nullptr,
                             gfx::Rect(p, gfx::Size(0, 0)),
@@ -526,11 +526,11 @@ void BrowserFrame::ShowContextMenuForViewImpl(
   }
 }
 
-bool BrowserFrame::IsMenuRunnerRunningForTesting() const {
+bool BrowserWidget::IsMenuRunnerRunningForTesting() const {
   return menu_runner_ ? menu_runner_->IsRunning() : false;
 }
 
-ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
+ui::MenuModel* BrowserWidget::GetSystemMenuModel() {
   // TODO(b/271137301): Refactor this class to remove chromeos specific code to
   // subclasses.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -568,7 +568,7 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
   return menu_model_builder_->menu_model();
 }
 
-void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
+void BrowserWidget::SetTabDragKind(TabDragKind tab_drag_kind) {
   if (tab_drag_kind_ == tab_drag_kind) {
     return;
   }
@@ -586,11 +586,11 @@ void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
   tab_drag_kind_ = tab_drag_kind;
 }
 
-void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+void BrowserWidget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   UserChangedTheme(BrowserThemeChangeType::kNativeTheme);
 }
 
-ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
+ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
 
   key.app_controller = browser_view_->browser()->app_controller();
@@ -667,11 +667,11 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   return key;
 }
 
-void BrowserFrame::OnMenuClosed() {
+void BrowserWidget::OnMenuClosed() {
   menu_runner_.reset();
 }
 
-void BrowserFrame::SelectNativeTheme() {
+void BrowserWidget::SelectNativeTheme() {
 #if BUILDFLAG(IS_LINUX)
   // Use the regular NativeTheme instance if running incognito mode, regardless
   // of system theme (gtk, qt etc).
@@ -694,7 +694,7 @@ void BrowserFrame::SelectNativeTheme() {
 #endif
 }
 
-void BrowserFrame::OnTouchUiChanged() {
+void BrowserWidget::OnTouchUiChanged() {
   client_view()->InvalidateLayout();
 
   // For standard browser frame, if we do not invalidate the NonClientFrameView
@@ -710,7 +710,7 @@ void BrowserFrame::OnTouchUiChanged() {
   GetRootView()->InvalidateLayout();
 }
 
-bool BrowserFrame::RegenerateFrameOnThemeChange(
+bool BrowserWidget::RegenerateFrameOnThemeChange(
     BrowserThemeChangeType theme_change_type) {
   bool need_regenerate = false;
 #if BUILDFLAG(IS_LINUX)
@@ -745,6 +745,6 @@ bool BrowserFrame::RegenerateFrameOnThemeChange(
   return false;
 }
 
-bool BrowserFrame::IsIncognitoBrowser() const {
+bool BrowserWidget::IsIncognitoBrowser() const {
   return browser_view_->browser()->profile()->IsIncognitoProfile();
 }
