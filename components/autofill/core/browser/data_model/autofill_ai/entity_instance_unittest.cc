@@ -250,6 +250,32 @@ TEST(
   EXPECT_TRUE(result.is_subset);
 }
 
+TEST(AutofillEntityInstanceTest, IsSubsetOf_IdenticalEntities) {
+  EntityInstance entity1 = test::GetPassportEntityInstance();
+  EntityInstance entity2 = test::GetPassportEntityInstance();
+  EXPECT_TRUE(entity1.IsSubsetOf(entity2));
+}
+
+TEST(AutofillEntityInstanceTest, IsSubsetOf_ProperSubset) {
+  EntityInstance entity1 =
+      test::GetPassportEntityInstance({.expiry_date = nullptr});
+  EntityInstance entity2 = test::GetPassportEntityInstance();
+  EXPECT_TRUE(entity1.IsSubsetOf(entity2));
+}
+
+TEST(AutofillEntityInstanceTest, IsSubsetOf_NotASubset) {
+  EntityInstance entity1 = test::GetPassportEntityInstance();
+  EntityInstance entity2 =
+      test::GetPassportEntityInstance({.expiry_date = nullptr});
+  EXPECT_FALSE(entity1.IsSubsetOf(entity2));
+}
+
+TEST(AutofillEntityInstanceTest, IsSubsetOf_DifferentEntityTypes) {
+  EntityInstance entity1 = test::GetPassportEntityInstance();
+  EntityInstance entity2 = test::GetVehicleEntityInstance();
+  EXPECT_FALSE(entity1.IsSubsetOf(entity2));
+}
+
 // Tests that valid entities that don't share any attribute in common are not
 // merged, as we cannot verify that they represent the same real-world object.
 TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {

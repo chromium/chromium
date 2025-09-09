@@ -21,7 +21,8 @@ namespace autofill {
 class EntityDataManager;
 
 // EntityInstanceCleaner is responsible for applying cleanups on browser
-// startup, after sync is ready (if applicable).
+// startup, after sync is ready (if applicable). Note that only local entities
+// are cleaned up.
 class EntityInstanceCleaner : public syncer::SyncServiceObserver {
  public:
   EntityInstanceCleaner(EntityDataManager* entity_data_manager,
@@ -38,7 +39,7 @@ class EntityInstanceCleaner : public syncer::SyncServiceObserver {
   // runs them if applicable. Ensures that the cleanups are run at most once
   // over multiple invocations of the functions. It also runs only once per
   // milestone.
-  void MaybeCleanupEntityInstanceData();
+  void MaybeCleanupLocalEntityInstancesData();
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;

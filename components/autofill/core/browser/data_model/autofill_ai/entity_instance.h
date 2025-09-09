@@ -324,6 +324,10 @@ class EntityInstance final {
   // dates.
   EntityMergeability GetEntityMergeability(const EntityInstance& newer) const;
 
+  // Returns true if all attributes of `this` are present in `other` with the
+  // same values or if `this` is a proper subset of `other`.
+  bool IsSubsetOf(const EntityInstance& other) const;
+
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;
 

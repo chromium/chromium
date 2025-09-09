@@ -17,8 +17,8 @@ class EntityInstanceCleanerTestApi {
 
   bool AreCleanupsPending() const { return cleaner_->are_cleanups_pending_; }
 
-  void MaybeCleanupEntityInstanceData() {
-    cleaner_->MaybeCleanupEntityInstanceData();
+  void MaybeCleanupLocalEntityInstancesData() {
+    cleaner_->MaybeCleanupLocalEntityInstancesData();
   }
 
  private:

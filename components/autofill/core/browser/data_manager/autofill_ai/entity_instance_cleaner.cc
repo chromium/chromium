@@ -5,9 +5,11 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 
 #include "base/check_deref.h"
+#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -56,7 +58,7 @@ EntityInstanceCleaner::EntityInstanceCleaner(
 
 EntityInstanceCleaner::~EntityInstanceCleaner() = default;
 
-void EntityInstanceCleaner::MaybeCleanupEntityInstanceData() {
+void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
   if (!are_cleanups_pending_ || ShouldWaitForSync(sync_service_)) {
     return;
   }
@@ -68,12 +70,37 @@ void EntityInstanceCleaner::MaybeCleanupEntityInstanceData() {
       chrome_version_major) {
     pref_service_->SetInteger(prefs::kAutofillAiLastVersionDeduped,
                               chrome_version_major);
-    // TODO(crbug.com/436548962): Implement deduplication logic.
+
+    base::span<const EntityInstance> entities =
+        entity_data_manager_->GetEntityInstances();
+    base::flat_set<EntityInstance::EntityId> to_be_removed;
+
+    for (size_t i = 0; i < entities.size(); i++) {
+      const EntityInstance& entity_a = entities[i];
+      if (to_be_removed.contains(entity_a.guid())) {
+        continue;
+      }
+      for (size_t j = i + 1; j < entities.size(); j++) {
+        const EntityInstance& entity_b = entities[j];
+        if (entity_a.IsSubsetOf(entity_b) &&
+            entity_a.record_type() == EntityInstance::RecordType::kLocal) {
+          to_be_removed.insert(entity_a.guid());
+        } else if (entity_b.IsSubsetOf(entity_a) &&
+                   entity_b.record_type() ==
+                       EntityInstance::RecordType::kLocal) {
+          to_be_removed.insert(entity_b.guid());
+        }
+      }
+    }
+
+    for (const auto& guid : to_be_removed) {
+      entity_data_manager_->RemoveEntityInstance(guid);
+    }
   }
 }
 
 void EntityInstanceCleaner::OnStateChanged(syncer::SyncService* sync_service) {
-  MaybeCleanupEntityInstanceData();
+  MaybeCleanupLocalEntityInstancesData();
 }
 
 }  // namespace autofill
