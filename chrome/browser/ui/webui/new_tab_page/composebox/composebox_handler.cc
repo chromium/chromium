@@ -12,14 +12,19 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_omnibox_client.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/common/url_constants.h"
 
 using composebox::SessionState;
 
@@ -195,6 +200,41 @@ void ComposeboxHandler::OnGetTabPageContext(
 
 void ComposeboxHandler::ClearFiles() {
   query_controller_->ClearFiles();
+}
+
+void ComposeboxHandler::GetTabs(GetTabsCallback callback) {
+  std::vector<composebox::mojom::TabInfoPtr> tabs;
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    std::move(callback).Run(std::move(tabs));
+    return;
+  }
+
+  // Iterate through the tab strip model, getting the data for each tab
+  // TODO(crbug.com/442881833): Limit the number of tabs returned.
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  for (int i = 0; i < tab_strip_model->count(); i++) {
+    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
+    TabRendererData tab_renderer_data =
+        TabRendererData::FromTabInModel(tab_strip_model, i);
+    const auto& last_committed_url = tab_renderer_data.last_committed_url;
+    // Skip tabs that are still loading, and skip webui.
+    if (!last_committed_url.is_valid() || last_committed_url.is_empty() ||
+        last_committed_url.SchemeIs(content::kChromeUIScheme) ||
+        last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+      continue;
+    }
+    auto tab_data = composebox::mojom::TabInfo::New();
+    tab_data->tab_id = tab->GetHandle().raw_value();
+    tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
+    tab_data->url = last_committed_url;
+    tabs.push_back(std::move(tab_data));
+  }
+
+  // Invoke the callback with the results.
+  std::move(callback).Run(std::move(tabs));
 }
 
 void ComposeboxHandler::OnFileUploadStatusChanged(

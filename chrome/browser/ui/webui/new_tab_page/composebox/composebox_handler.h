@@ -74,6 +74,7 @@ class ComposeboxHandler
   void AddTabContext(int32_t tab_id, AddTabContextCallback) override;
   void DeleteContext(const base::UnguessableToken& file_token) override;
   void ClearFiles() override;
+  void GetTabs(GetTabsCallback callback) override;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
