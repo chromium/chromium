@@ -91,6 +91,9 @@ id<GREYMatcher> MenuButtonMatcher(int accessibility_label_id) {
 // Displays the tab cell context menu by long pressing at the tab cell at
 // `tab_cell_index`.
 void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(tab_cell_index)];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
       performAction:grey_longPress()];
 }
@@ -99,6 +102,12 @@ void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
 // when no group is in the grid.
 void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
   DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))];
   [[EarlGrey
       selectElementWithMatcher:
           ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
