@@ -72,6 +72,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.MENU,
                 ToolbarComponentId.BACK,
                 ToolbarComponentId.TAB_SWITCHER,
+                ToolbarComponentId.PADDING,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
                 ToolbarComponentId.RELOAD,
                 ToolbarComponentId.FORWARD,
@@ -86,6 +87,7 @@ public class ToolbarUtils {
         ToolbarComponentId.ADAPTIVE_BUTTON,
         ToolbarComponentId.TAB_SWITCHER,
         ToolbarComponentId.MENU,
+        ToolbarComponentId.PADDING,
         ToolbarComponentId.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -97,7 +99,8 @@ public class ToolbarUtils {
         int ADAPTIVE_BUTTON = 4;
         int TAB_SWITCHER = 5;
         int MENU = 6;
-        int COUNT = 7;
+        int PADDING = 7;
+        int COUNT = 8;
     }
 
     /**

@@ -403,6 +403,8 @@ public class ToolbarTablet extends ToolbarLayout {
                 new OptionalButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
+                new ToolbarPaddingWidthConsumer(this, mStartPaddingWithButtons);
     }
 
     @Override
@@ -455,8 +457,6 @@ public class ToolbarTablet extends ToolbarLayout {
                 (int)
                         (MINIMUM_LOCATION_BAR_WIDTH_DP
                                 * getContext().getResources().getDisplayMetrics().density);
-        // Account for padding on the start and end of the toolbar.
-        width += 2 * mStartPaddingWithButtons;
         return width;
     }
 
@@ -466,11 +466,6 @@ public class ToolbarTablet extends ToolbarLayout {
             int width = MeasureSpec.getSize(widthMeasureSpec);
             allocateAvailableToolbarWidth(
                     mToolbarWidthConsumers, width - getWidthForStaticComponents());
-            this.setPaddingRelative(
-                    mStartPaddingWithButtons,
-                    getPaddingTop(),
-                    mStartPaddingWithButtons,
-                    getPaddingBottom());
         } else {
             // Hide or show toolbar buttons if needed. With the introduction of multi-window on
             // Android N, the Activity can be < 600dp, in which case the toolbar buttons need to be
@@ -572,6 +567,31 @@ public class ToolbarTablet extends ToolbarLayout {
     private void setOptionalButtonVisibility(boolean isVisible) {
         if (mOptionalButton == null) return;
         mOptionalButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private class ToolbarPaddingWidthConsumer implements ToolbarWidthConsumer {
+        private final View mToolbarView;
+        private final int mHorizontalPadding;
+
+        ToolbarPaddingWidthConsumer(View toolbarView, int horizontalPadding) {
+            mToolbarView = toolbarView;
+            mHorizontalPadding = horizontalPadding;
+        }
+
+        @Override
+        public int updateVisibility(int availableWidth) {
+            assert availableWidth >= 0;
+            int paddingWidth = Math.min(availableWidth, 2 * mHorizontalPadding);
+            mToolbarView.setPaddingRelative(
+                    paddingWidth / 2, getPaddingTop(), paddingWidth / 2, getPaddingBottom());
+            return paddingWidth;
+        }
+
+        @Override
+        public int updateVisibilityWithAnimation(
+                int availableWidth, Collection<Animator> animators) {
+            return updateVisibility(availableWidth);
+        }
     }
 
     private class OptionalButtonToolbarWidthConsumer implements ToolbarWidthConsumer {
@@ -768,5 +788,10 @@ public class ToolbarTablet extends ToolbarLayout {
     void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator coordinator) {
         mMenuButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = coordinator;
+    }
+
+    void ensurePaddingWidthConsumer() {
+        mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
+                new ToolbarPaddingWidthConsumer(this, mStartPaddingWithButtons);
     }
 }
