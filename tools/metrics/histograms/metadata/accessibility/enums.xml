@@ -1607,6 +1607,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Success"/>
   <int value="1" label="Parse Failure"/>
   <int value="2" label="No Data"/>
+  <int value="3" label="Content Too Short"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/dom_distiller/core/distiller_page.cc:DistillationParseResult) -->

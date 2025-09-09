@@ -27,6 +27,7 @@ enum class DistillationParseResult {
   kSuccess = 0,
   kParseFailure = 1,
   kNoResult = 2,
+  kContentTooShort = 3,
 };
 
 constexpr char kReadabilityTitle[] = "title";
@@ -104,8 +105,13 @@ class TestDistillerPage : public DistillerPage {
 
 class DistillerPageTest : public testing::Test {
  protected:
-  DistillerPageTest() = default;
+  DistillerPageTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kReaderModeUseReadability});
+  }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 };
@@ -168,7 +174,7 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}}}},
+                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
       /*disabled_features=*/{});
 
   base::Value::Dict readability_result;
@@ -210,7 +216,7 @@ TEST_F(DistillerPageTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}}}},
+                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
       /*disabled_features=*/{});
 
   base::Value::Dict readability_result;
@@ -250,7 +256,7 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}}}},
+                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
       /*disabled_features=*/{});
 
   base::Value readability_result("undefined");
@@ -274,6 +280,48 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
                                        DistillationParseResult::kParseFailure,
                                        1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
+                             {{"use_distiller", "true"}, {"min_content_length", "1000"}}}},
+      /*disabled_features=*/{});
+
+  base::Value::Dict readability_result;
+  const std::string title = "test_title";
+  readability_result.Set(kReadabilityTitle, title);
+  const std::string content = "test content";
+  readability_result.Set(kReadabilityContent, content);
+  const std::string dir = "ltr";
+  readability_result.Set(kReadabilityDir, dir);
+  const std::string text_content =
+      "one two; three. four!  fivefive six, seven, eight nine ten";
+  readability_result.Set(kReadabilityTextContent, text_content);
+  TestDistillerPage distiller_page;
+  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+
+  base::RunLoop run_loop;
+  DistillerPage::DistillerPageCallback cb =
+      base::BindOnce(
+          [](std::string title, std::string content, std::string dir,
+             int word_count,
+             std::unique_ptr<proto::DomDistillerResult> distilled_page,
+             bool distillation_successful) {
+            EXPECT_FALSE(distillation_successful);
+          },
+          title, content, dir, 10)
+          .Then(run_loop.QuitClosure());
+  distiller_page.DistillPage(GURL("http://example.com/success"),
+                             dom_distiller::proto::DomDistillerOptions(),
+                             std::move(cb));
+  run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      "DomDistiller.Distillation.Result",
+      DistillationParseResult::kContentTooShort, 1);
+}
+#endif
 
 }  // namespace
 

@@ -96,7 +96,8 @@ enum class DistillationParseResult {
   kSuccess = 0,
   kParseFailure = 1,
   kNoData = 2,
-  kMaxValue = kNoData,
+  kContentTooShort = 3,
+  kMaxValue = kContentTooShort,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:DistillationParseResult)
 
@@ -159,7 +160,17 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
     }
 
     if (found_content) {
-      result = DistillationParseResult::kSuccess;
+      bool content_long_enough = true;
+      if (distiller_result->has_statistics_info() &&
+          distiller_result->statistics_info().has_word_count()) {
+        content_long_enough =
+            distiller_result->statistics_info().word_count() >=
+            GetMinimumAllowableDistilledContentLength();
+      }
+
+      result = content_long_enough ? DistillationParseResult::kSuccess
+                                   : DistillationParseResult::kContentTooShort;
+      found_content = found_content && content_long_enough;
     } else {
       DVLOG(1) << "Unable to parse DomDistillerResult.";
       result = DistillationParseResult::kParseFailure;
