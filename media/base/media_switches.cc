@@ -292,6 +292,15 @@ const char kCastStreamingForceEnableHardwareVp9[] =
 
 namespace media {
 
+// Controls whether the new, AudioDecoder interface backed AudioFileReader is
+// used, instead of the LegacyAudioFileReader that manually uses an
+// FFmpegDecodingLoop.
+// For more information, see crbug.com/440616500.
+#if BUILDFLAG(ENABLE_FFMPEG)
+BASE_FEATURE(kAudioDecoderAudioFileReader,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",

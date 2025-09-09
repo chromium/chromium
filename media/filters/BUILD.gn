@@ -136,6 +136,8 @@ source_set("filters") {
       "ffmpeg_glue.h",
       "in_memory_url_protocol.cc",
       "in_memory_url_protocol.h",
+      "legacy_audio_file_reader.cc",
+      "legacy_audio_file_reader.h",
       "media_file_checker.cc",
       "media_file_checker.h",
     ]
@@ -371,6 +373,7 @@ source_set("unit_tests") {
       "ffmpeg_demuxer_unittest.cc",
       "ffmpeg_glue_unittest.cc",
       "in_memory_url_protocol_unittest.cc",
+      "legacy_audio_file_reader_unittest.cc",
     ]
 
     deps += [
