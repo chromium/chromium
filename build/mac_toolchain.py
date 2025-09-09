@@ -55,7 +55,6 @@ MAC_MINIMUM_OS_VERSION = [19, 4]
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TOOLCHAIN_ROOT = os.path.join(BASE_DIR, 'mac_files')
-TOOLCHAIN_BUILD_DIR = os.path.join(TOOLCHAIN_ROOT, 'Xcode.app')
 
 # Always integrity-check the entire SDK. Mac SDK packages are complex and often
 # hit edge cases in cipd (eg https://crbug.com/1033987,
