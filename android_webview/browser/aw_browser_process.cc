@@ -15,6 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
 #include "base/base_paths_posix.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -29,6 +30,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
+#include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
@@ -75,6 +78,8 @@ enum class CacheQuotaFreshness {
 void recordCacheQuotaFreshness(CacheQuotaFreshness state) {
   base::UmaHistogramEnumeration("Android.WebView.CacheQuotaFreshness", state);
 }
+
+bool g_did_early_perfetto_initialization = false;
 
 }  // namespace
 
@@ -350,6 +355,21 @@ JNI_AwBrowserProcess_GetComponentLoaderPolicies(JNIEnv* env) {
   return component_updater::AndroidComponentLoaderPolicy::
       ToJavaArrayOfAndroidComponentLoaderPolicy(env,
                                                 GetComponentLoaderPolicies());
+}
+
+static void JNI_AwBrowserProcess_InitPerfetto(JNIEnv* env,
+                                              bool enable_system_backend) {
+  tracing::InitTracing(/*enable_consumer=*/true,
+                       /*will_trace_thread_restart=*/false,
+                       /*enable_system_backend=*/enable_system_backend ||
+                           tracing::ShouldSetupSystemTracing(),
+                       base::NullCallback());
+  g_did_early_perfetto_initialization = true;
+}
+
+// static
+bool AwBrowserProcess::DidEarlyPerfettoInitialization() {
+  return g_did_early_perfetto_initialization;
 }
 
 }  // namespace android_webview

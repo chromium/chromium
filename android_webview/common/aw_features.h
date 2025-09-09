@@ -70,6 +70,7 @@ BASE_DECLARE_FEATURE(kWebViewUseBackgroundThreadForGms);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
 BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
+BASE_DECLARE_FEATURE(kWebViewEarlyPerfettoInit);
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

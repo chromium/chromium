@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
@@ -395,4 +396,14 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
                                process_type)
       .Initialize(memory_system_);
 }
+
+bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
+  const bool is_browser_process =
+      std::holds_alternative<InvokedInBrowserProcess>(invoked_in);
+  if (!is_browser_process) {
+    return true;
+  }
+  return !AwBrowserProcess::DidEarlyPerfettoInitialization();
+}
+
 }  // namespace android_webview

@@ -43,19 +43,19 @@ using base::trace_event::TraceLog;
 
 }  // namespace
 
-bool g_tracing_initialized_after_featurelist = false;
+bool g_tracing_initialized = false;
 
 bool IsTracingInitialized() {
-  return g_tracing_initialized_after_featurelist;
+  return g_tracing_initialized;
 }
 
-void InitTracingPostFeatureList(
+void InitTracing(
     bool enable_consumer,
     bool will_trace_thread_restart,
-    base::RepeatingCallback<bool()> should_allow_system_tracing) {
-  DCHECK(base::FeatureList::GetInstance());
-  DCHECK(!g_tracing_initialized_after_featurelist);
-  g_tracing_initialized_after_featurelist = true;
+    bool enable_system_backend,
+    base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
+  DCHECK(!g_tracing_initialized);
+  g_tracing_initialized = true;
 
   std::optional<uint64_t> maybe_process_track_uuid;
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -71,11 +71,12 @@ void InitTracingPostFeatureList(
   // Create the PerfettoTracedProcess.
   auto& traced_process =
       PerfettoTracedProcess::MaybeCreateInstance(will_trace_thread_restart);
-  if (should_allow_system_tracing) {
+  if (allow_system_tracing_consumer) {
     traced_process.SetAllowSystemTracingConsumerCallback(
-        std::move(should_allow_system_tracing));
+        std::move(allow_system_tracing_consumer));
   }
-  traced_process.InitPostFeatureList(enable_consumer, maybe_process_track_uuid);
+  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend,
+                                    maybe_process_track_uuid);
 
   RegisterTracedValueProtoWriter();
 
@@ -100,6 +101,16 @@ void InitTracingPostFeatureList(
 
     perfetto::Tracing::SetupStartupTracingBlocking(perfetto_config, opts);
   }
+}
+
+void InitTracingPostFeatureList(
+    bool enable_consumer,
+    bool will_trace_thread_restart,
+    base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
+  DCHECK(base::FeatureList::GetInstance());
+  InitTracing(enable_consumer, will_trace_thread_restart,
+              ShouldSetupSystemTracing(),
+              std::move(allow_system_tracing_consumer));
 }
 
 base::ReadOnlySharedMemoryRegion CreateTracingConfigSharedMemory() {

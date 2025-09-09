@@ -174,6 +174,13 @@ class CONTENT_EXPORT ContentMainDelegate {
   virtual bool ShouldHandleConsoleControlEvents();
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  // Called during `ContentMainRunnerImpl::RunBrowser` to determine if Perfetto
+  // should be initialized. Embedders can return `false` to indicate that they
+  // have already initialized Perfetto.
+  virtual bool ShouldInitializePerfetto(InvokedIn invoked_in);
+#endif
+
  protected:
   friend class ContentClientCreator;
   friend class ContentClientInitializer;

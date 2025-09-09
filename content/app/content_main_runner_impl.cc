@@ -1207,9 +1207,19 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       base::HangWatcher::GetInstance()->Start();
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    // WebView may have already initialized perfetto, so check if we should do
+    // it here.
+    if (delegate_->ShouldInitializePerfetto(invoked_in_browser)) {
+      tracing::InitTracingPostFeatureList(
+          /*enable_consumer=*/true, /*will_trace_thread_restart=*/false,
+          base::BindRepeating(&ShouldAllowSystemTracingConsumer));
+    }
+#else
     tracing::InitTracingPostFeatureList(
         /*enable_consumer=*/true, /*will_trace_thread_restart=*/false,
         base::BindRepeating(&ShouldAllowSystemTracingConsumer));
+#endif
 
     // The FeatureList needs to be created before starting the ThreadPool.
     StartBrowserThreadPool();

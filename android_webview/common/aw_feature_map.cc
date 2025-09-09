@@ -13,6 +13,7 @@
 #include "components/sensitive_content/features.h"
 #include "components/viz/common/features.h"
 #include "content/public/common/content_features.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/blink/public/common/features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,6 +31,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     // keep-sorted start allow_yaml_lists=yes by_regex=['\w+,']
     &features::kAndroidMetricsAsyncMetricLogging,
     &base::features::kCollectAndroidFrameTimelineMetrics,
+    &::features::kEnablePerfettoSystemTracing,
     &blink::features::kForceOffTextAutosizing,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &base::features::kPostGetMyMemoryStateToBackground,
@@ -40,6 +42,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDisableCHIPS,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewDrainPrefetchQueueDuringInit,
+    &features::kWebViewEarlyPerfettoInit,
     &features::kWebViewEarlyStartupTracing,
     &features::kWebViewEnableCrash,
     &features::kWebViewFileSystemAccess,

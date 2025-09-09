@@ -286,8 +286,7 @@ void PerfettoTracedProcess::SetupForTesting(
   DataSourceBase::ResetTaskRunner(task_runner_);
 
   tracing_backend_ = std::make_unique<PerfettoTracingBackend>();
-  InitPostFeatureList(
-      /* enable_consumer */ true);
+  SetupClientLibrary(/*enable_consumer=*/true, ShouldSetupSystemTracing());
   // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -333,8 +332,9 @@ void PerfettoTracedProcess::DeferOrConnectProducerSocket(
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-void PerfettoTracedProcess::InitPostFeatureList(
+void PerfettoTracedProcess::SetupClientLibrary(
     bool enable_consumer,
+    bool enable_system_backend,
     std::optional<uint64_t> process_track_uuid) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
@@ -347,7 +347,7 @@ void PerfettoTracedProcess::InitPostFeatureList(
   init_args.disallow_merging_with_system_tracks = true;
   init_args.process_uuid = process_track_uuid;
 #if BUILDFLAG(IS_POSIX)
-  if (ShouldSetupSystemTracing()) {
+  if (enable_system_backend) {
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)

@@ -55,6 +55,7 @@ class AwMainDelegate : public content::ContentMainDelegate {
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentGpuClient* CreateContentGpuClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
+  bool ShouldInitializePerfetto(InvokedIn invoked_in) override;
 
   void InitializeMemorySystem(const bool is_browser_process);
 

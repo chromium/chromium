@@ -17,6 +17,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.services.tracing.TracingServiceFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -81,6 +82,8 @@ public class WebViewCachedFlags {
                                     // Add new CachedFlags here along with their default state.
                                     AwFeatures.WEBVIEW_DISABLE_CHIPS,
                                     DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT,
+                                    DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
@@ -94,6 +97,8 @@ public class WebViewCachedFlags {
                                     AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD,
+                                    DefaultState.DISABLED,
+                                    TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                                     DefaultState.DISABLED));
         }
     }

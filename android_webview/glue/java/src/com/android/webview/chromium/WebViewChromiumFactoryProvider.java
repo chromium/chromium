@@ -79,6 +79,7 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
+import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.support_lib_boundary.ProcessGlobalConfigConstants;
 
 import java.io.File;
@@ -520,6 +521,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     String dataDirectorySuffix = webViewDelegate.getDataDirectorySuffix();
                     AwBrowserProcess.loadLibrary(
                             dataDirectoryBasePath, cacheDirectoryBasePath, dataDirectorySuffix);
+                }
+
+                if (WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT)) {
+                    AwBrowserProcess.initPerfetto(
+                            WebViewCachedFlags.get()
+                                    .isCachedFeatureEnabled(
+                                            TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING));
                 }
 
                 try (DualTraceEvent e2 =

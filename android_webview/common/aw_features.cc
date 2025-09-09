@@ -286,4 +286,11 @@ BASE_FEATURE(kWebViewEarlyStartupTracing,
              "WebViewEarlyStartupTracing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables early Perfetto init. This will initialize Perfetto as soon as the
+// native library is loaded, which should make it available by the time we start
+// calling content code.
+BASE_FEATURE(kWebViewEarlyPerfettoInit,
+             "WebViewEarlyPerfettoInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

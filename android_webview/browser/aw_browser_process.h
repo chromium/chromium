@@ -117,6 +117,9 @@ class AwBrowserProcess {
   GetOriginTrialsSettingsStorage();
   AwContentBrowserClient* GetBrowserClient();
 
+  // Returns true if we manually initialized Perfetto early during startup.
+  static bool DidEarlyPerfettoInitialization();
+
  private:
   void CreateSafeBrowsingUIManager();
   void CreateSafeBrowsingAllowlistManager();

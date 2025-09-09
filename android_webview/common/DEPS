@@ -15,6 +15,7 @@ specific_include_rules = {
     "+components/safe_browsing/core/common/features.h",
     "+components/sensitive_content/features.h",
     "+components/viz/common/features.h",
+    "+services/tracing/public/cpp/tracing_features.h",
     "+third_party/blink/public/common/features.h",
   ]
 }

@@ -25,6 +25,7 @@ android_library("glue_java") {
     "//content/public/android:content_java",
     "//content/public/android:content_util_java",
     "//net/android:net_java",
+    "//services/tracing/public:features_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
     "//third_party/jni_zero:jni_zero_java",
