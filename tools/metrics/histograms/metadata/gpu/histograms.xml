@@ -1877,7 +1877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.BeginFrameSource.Accuracy.AverageDelta2"
-    units="microseconds" expires_after="2025-08-24">
+    units="microseconds" expires_after="2026-09-10">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1888,6 +1888,8 @@ chromium-metrics-reviews@google.com.
     called. The max delta is capped to 33 ms.
 
     This metric is only for Mac clients with high-resolution clocks.
+
+    Expired on 2025-08-24 and restarted on 2025-09-09.
   </summary>
 </histogram>
 
