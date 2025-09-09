@@ -266,6 +266,13 @@ BASE_FEATURE(kLocalNetworkAccessChecksWebRTC,
              "LocalNetworkAccessChecksWebRTC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, local network access checks will only apply for loopback addresses.
+BASE_FEATURE_PARAM(bool,
+                   kLocalNetworkAccessChecksWebRTCLoopbackOnly,
+                   &kLocalNetworkAccessChecksWebRTC,
+                   /*name=*/"LocalNetworkAccessChecksWebRTCLoopbackOnly",
+                   /*default_value=*/false);
+
 // Enables Local Network Access checks for WebSockets.
 // Blocks local network requests without user permission to prevent exploitation
 // of vulnerable local devices.

@@ -11,6 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -86,60 +87,95 @@ TEST_F(PeerConnectionDependencyFactoryTest, CreateRTCPeerConnectionHandler) {
   EXPECT_TRUE(pc_handler);
 }
 
-struct TestCase {
+struct ShouldRequestPermissionTestCase {
   IPAddressSpace originator_address_space;
   IPAddressSpace candidate_address_space;
-  bool should_request_permission;
+  bool result;
+  // Result of ShouldRequestPermission() when the
+  // kLocalNetworkAccessChecksWebRTCLoopbackOnly feature param is true.
+  bool result_when_loopback_only;
 };
 
 class LocalNetworkAccessPeerConnectionDependencyFactoryTest
     : public PeerConnectionDependencyFactoryTest,
-      public testing::WithParamInterface<TestCase> {};
+      public testing::WithParamInterface<
+          std::tuple<bool, ShouldRequestPermissionTestCase>> {
+ public:
+  LocalNetworkAccessPeerConnectionDependencyFactoryTest() {
+    const bool loopback_only = std::get<0>(GetParam());
 
-constexpr TestCase kTestCases[] = {
-    {.originator_address_space = IPAddressSpace::kLoopback,
-     .candidate_address_space = IPAddressSpace::kLoopback,
-     .should_request_permission = false},
-    {.originator_address_space = IPAddressSpace::kLoopback,
-     .candidate_address_space = IPAddressSpace::kLocal,
-     .should_request_permission = false},
-    {.originator_address_space = IPAddressSpace::kLoopback,
-     .candidate_address_space = IPAddressSpace::kPublic,
-     .should_request_permission = false},
-    {.originator_address_space = IPAddressSpace::kLocal,
-     .candidate_address_space = IPAddressSpace::kLoopback,
-     .should_request_permission = true},
-    {.originator_address_space = IPAddressSpace::kLocal,
-     .candidate_address_space = IPAddressSpace::kLocal,
-     .should_request_permission = false},
-    {.originator_address_space = IPAddressSpace::kLocal,
-     .candidate_address_space = IPAddressSpace::kPublic,
-     .should_request_permission = false},
-    {.originator_address_space = IPAddressSpace::kPublic,
-     .candidate_address_space = IPAddressSpace::kLoopback,
-     .should_request_permission = true},
-    {.originator_address_space = IPAddressSpace::kPublic,
-     .candidate_address_space = IPAddressSpace::kLocal,
-     .should_request_permission = true},
-    {.originator_address_space = IPAddressSpace::kPublic,
-     .candidate_address_space = IPAddressSpace::kPublic,
-     .should_request_permission = false},
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{network::features::kLocalNetworkAccessChecksWebRTC,
+          {{network::features::kLocalNetworkAccessChecksWebRTCLoopbackOnly.name,
+            loopback_only ? "true" : "false"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    LocalNetworkAccessPeerConnectionDependencyFactoryTest,
-    testing::ValuesIn(kTestCases),
-    [](const testing::TestParamInfo<TestCase>& info) {
-      return base::StrCat({base::ToString(info.param.originator_address_space),
-                           "_",
-                           base::ToString(info.param.candidate_address_space)});
-    });
+constexpr ShouldRequestPermissionTestCase kTestCases[] = {
+    {.originator_address_space = IPAddressSpace::kLoopback,
+     .candidate_address_space = IPAddressSpace::kLoopback,
+     .result = false,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kLoopback,
+     .candidate_address_space = IPAddressSpace::kLocal,
+     .result = false,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kLoopback,
+     .candidate_address_space = IPAddressSpace::kPublic,
+     .result = false,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kLocal,
+     .candidate_address_space = IPAddressSpace::kLoopback,
+     .result = true,
+     .result_when_loopback_only = true},
+    {.originator_address_space = IPAddressSpace::kLocal,
+     .candidate_address_space = IPAddressSpace::kLocal,
+     .result = false,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kLocal,
+     .candidate_address_space = IPAddressSpace::kPublic,
+     .result = false,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kPublic,
+     .candidate_address_space = IPAddressSpace::kLoopback,
+     .result = true,
+     .result_when_loopback_only = true},
+    {.originator_address_space = IPAddressSpace::kPublic,
+     .candidate_address_space = IPAddressSpace::kLocal,
+     .result = true,
+     .result_when_loopback_only = false},
+    {.originator_address_space = IPAddressSpace::kPublic,
+     .candidate_address_space = IPAddressSpace::kPublic,
+     .result = false,
+     .result_when_loopback_only = false},
+};
+
+std::string PrintTestName(
+    const testing::TestParamInfo<
+        std::tuple<bool, ShouldRequestPermissionTestCase>>& info) {
+  const bool loopback_only = std::get<0>(info.param);
+  const auto& [originator_address_space, candidate_address_space, unused1,
+               unused2] = std::get<1>(info.param);
+  return base::StrCat({loopback_only ? "LoopbackOnly_" : "",
+                       base::ToString(originator_address_space), "_",
+                       base::ToString(candidate_address_space)});
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LocalNetworkAccessPeerConnectionDependencyFactoryTest,
+                         testing::Combine(testing::Values(false, true),
+                                          testing::ValuesIn(kTestCases)),
+                         &PrintTestName);
 
 TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
        ShouldRequestPermission) {
-  const auto [originator_address_space, candidate_address_space,
-              should_request_permission] = GetParam();
+  const auto [originator_address_space, candidate_address_space, result,
+              result_with_loopback_only] = std::get<1>(GetParam());
 
   WebRuntimeFeatures::EnableLocalNetworkAccessWebRTC(true);
 
@@ -158,9 +194,12 @@ TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
       dependency_factory.CreateLocalNetworkAccessPermissionFactoryForTesting();
   auto lna_permission = lna_permission_factory->Create();
 
-  EXPECT_EQ(should_request_permission,
-            lna_permission->ShouldRequestPermission(
-                AddressForSpace(candidate_address_space)));
+  const bool loopback_only_enabled = std::get<0>(GetParam());
+  const bool expected =
+      loopback_only_enabled ? result_with_loopback_only : result;
+
+  EXPECT_EQ(expected, lna_permission->ShouldRequestPermission(
+                          AddressForSpace(candidate_address_space)));
 }
 
 }  // namespace blink

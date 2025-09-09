@@ -33,6 +33,7 @@ include_rules = [
     "+net/quic/chromium",
     "+net/quic",
     "+net/test",
+    "+services/network/public/cpp/features.h",
     "+services/network/public/cpp/ip_address_space_util.h",
     "+services/metrics/public/cpp/ukm_builders.h",
 ]

@@ -36,6 +36,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/net_buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
@@ -198,8 +199,14 @@ class LocalNetworkAccessPermission final
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
 
-    return network::IsLessPublicAddressSpace(
+    const bool is_less_public = network::IsLessPublicAddressSpace(
         FromSocketAddress(candidate_address), originator_address_space_);
+
+    if (network::features::kLocalNetworkAccessChecksWebRTCLoopbackOnly.Get()) {
+      return candidate_address.IsLoopbackIP() && is_less_public;
+    }
+
+    return is_less_public;
   }
 
   void RequestPermission(
