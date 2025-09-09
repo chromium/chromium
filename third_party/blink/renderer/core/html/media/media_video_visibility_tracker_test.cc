@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -33,8 +34,8 @@ class RequestVisibilityCallback {
     meets_visibility_ = std::nullopt;
     // base::Unretained() is safe since no further tasks can run after
     // RunLoop::Run() returns.
-    return base::BindOnce(&RequestVisibilityCallback::RequestVisibility,
-                          base::Unretained(this));
+    return BindOnce(&RequestVisibilityCallback::RequestVisibility,
+                    Unretained(this));
   }
 
   void WaitUntilDone() {

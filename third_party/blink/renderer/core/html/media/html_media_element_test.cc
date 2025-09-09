@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -154,8 +155,8 @@ class RequestVisibilityWaiter {
   HTMLMediaElement::RequestVisibilityCallback VisibilityCallback() {
     // base::Unretained() is safe since no further tasks can run after
     // RunLoop::Run() returns.
-    return base::BindOnce(&RequestVisibilityWaiter::RequestVisibility,
-                          base::Unretained(this));
+    return BindOnce(&RequestVisibilityWaiter::RequestVisibility,
+                    Unretained(this));
   }
 
   void WaitUntilDone() {
