@@ -77,7 +77,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new AtomicReference<>();
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
-    private final Promise<AccountCapabilities> mAccountCapabilitiesPromise = new Promise<>();
     private Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
     private @Nullable AsyncTask<@Nullable List<GaiaId>> mFetchGaiaIdsTask;
@@ -319,6 +318,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
         // TODO(crbug.com/436520680): Remove non signin uses of getAccountCapabilities.
         ThreadUtils.assertOnUiThread();
+
+        Promise<AccountCapabilities> accountCapabilitiesPromise = new Promise<>();
         if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
             new AsyncTask<AccountCapabilities>() {
                 @Override
@@ -338,21 +339,24 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
                 @Override
                 protected void onPostExecute(AccountCapabilities result) {
-                    mAccountCapabilitiesPromise.fulfill(result);
+                    accountCapabilitiesPromise.fulfill(result);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return mAccountCapabilitiesPromise;
+
+            return accountCapabilitiesPromise;
         }
 
         getAccounts()
                 .then(
                         unused -> {
-                            fetchCapabilitiesHelper(coreAccountInfo);
+                            fetchCapabilitiesHelper(coreAccountInfo, accountCapabilitiesPromise);
                         });
-        return mAccountCapabilitiesPromise;
+        return accountCapabilitiesPromise;
     }
 
-    private void fetchCapabilitiesHelper(CoreAccountInfo coreAccountInfo) {
+    private void fetchCapabilitiesHelper(
+            CoreAccountInfo coreAccountInfo,
+            Promise<AccountCapabilities> accountCapabilitiesPromise) {
         assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
 
         @Nullable PlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
@@ -379,7 +383,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(AccountCapabilities result) {
-                mAccountCapabilitiesPromise.fulfill(result);
+                accountCapabilitiesPromise.fulfill(result);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
