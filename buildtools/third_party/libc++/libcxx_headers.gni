@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "954086abf1216d110534fb3e21d8e86d6703cefb",
+    libcxx_revision == "b87b2bb112f841df8b79cf36ddbba6bf9dcec926",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -928,6 +928,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__utility/cmp.h",
   "//third_party/libc++/src/include/__utility/convert_to_integral.h",
   "//third_party/libc++/src/include/__utility/declval.h",
+  "//third_party/libc++/src/include/__utility/default_three_way_comparator.h",
   "//third_party/libc++/src/include/__utility/element_count.h",
   "//third_party/libc++/src/include/__utility/empty.h",
   "//third_party/libc++/src/include/__utility/exception_guard.h",
@@ -938,6 +939,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__utility/integer_sequence.h",
   "//third_party/libc++/src/include/__utility/is_pointer_in_range.h",
   "//third_party/libc++/src/include/__utility/is_valid_range.h",
+  "//third_party/libc++/src/include/__utility/lazy_synth_three_way_comparator.h",
   "//third_party/libc++/src/include/__utility/move.h",
   "//third_party/libc++/src/include/__utility/no_destroy.h",
   "//third_party/libc++/src/include/__utility/pair.h",
