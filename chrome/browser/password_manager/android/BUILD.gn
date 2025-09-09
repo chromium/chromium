@@ -386,6 +386,7 @@ android_library("settings_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryUpstreamImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessor.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryUpstreamImpl.java",
