@@ -30,6 +30,7 @@
           et décochez l'option « <ph name="NO_PREFETCH_DESCRIPTION" /> ».
           Si le problème persiste, nous vous conseillons de sélectionner
           de nouveau cette option pour améliorer les performances.</translation>
+<translation id="6581867098636731226">Accédez au menu Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Réseau et Internet &gt; Serveur mandataire et désélectionnez « Détecter automatiquement les paramètres ».</translation>
 <translation id="7230956101631259640">Vous consultez une page Chrome sécurisée</translation>
 <translation id="8232971017369963250">Chrome est rendu possible par le projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>

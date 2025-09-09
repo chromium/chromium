@@ -472,6 +472,7 @@ Cette fonctionnalité est disponible à partir de <ph name="MAC_OS_NAME" /> 10.
       Inversement, si elle est activée, ils le sont aussi.
       Si elle n'est pas configurée, elle est désactivée pour les appareils gérés et activée pour les appareils non gérés.
       Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
+<translation id="1357214899305978790">Définir des raccourcis sur la page "Nouvel onglet" (bêta)</translation>
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
 <translation id="1363839375295535439">Si cette règle est activée ou qu'elle n'est pas configurée, le bac à sable LPAC est activé pour les services d'impression lorsque la configuration du système le permet.
@@ -3424,7 +3425,6 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
       Si vous désactivez ce paramètre ou si vous ne le configurez pas, la nouvelle procédure de connexion intégrée sera utilisée par défaut. Les utilisateurs pourront toujours activer la procédure de connexion basée sur le Web à l'aide du flag de ligne de commande --enable-web-based-signin.
 
       Ce paramètre expérimental sera supprimé lorsque la procédure de connexion intégrée sera entièrement compatible avec l'ensemble des procédures de connexion SSO.</translation>
-<translation id="3435178885391813398">Ne pas autoriser Scanner.</translation>
 <translation id="3435796032110614169">Autoriser la suppression de l'historique des tâches d'impression</translation>
 <translation id="3436217793443508863">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur batterie).</translation>
 <translation id="3437924696598384725">Autoriser l'utilisateur à gérer les connexions VPN</translation>
@@ -5244,6 +5244,17 @@ L'utilisateur restera connecté à son compte Google lorsqu'il supprimera les co
 Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
 <translation id="4694138212536142867">Activer les rapports sur l'état du matériel de l'appareil</translation>
 <translation id="4697581738794063407">Contrôler la fonctionnalité de filtrage des paramètres d'URL</translation>
+<translation id="4698488381632756664">En développement : en preview anticipée uniquement.
+
+Cette règle permet de préconfigurer jusqu'à 10 raccourcis personnalisés sur la page "Nouvel onglet" de <ph name="PRODUCT_NAME" />.
+
+Si elle est configurée, les utilisateurs verront ces raccourcis par défaut. Ils pourront passer de "Mes raccourcis" à "Sites les plus consultés" ou "Raccourcis de mon organisation" dans le panneau "Personnaliser Chrome". Si elle est vide ou n'est pas définie, l'utilisateur ne pourra basculer qu'entre "Mes raccourcis" et "Sites les plus consultés" dans le panneau "Personnaliser Chrome".
+
+Les URL de raccourci doivent être uniques.
+
+Si <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> est défini sur "True", les utilisateurs peuvent modifier le nom du raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas modifier le nom.
+
+Si <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> est défini sur "True", les utilisateurs peuvent supprimer le raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas supprimer le raccourci.</translation>
 <translation id="4698895924806859508">Ne pas signaler les événements réseau</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4699592681017489215">Cette règle configure un interrupteur local pouvant être utilisé pour désactiver les contrôles d'interception des requêtes DNS. Ces contrôles ont pour but de déterminer si le navigateur est situé derrière un proxy qui redirige les noms d'hôte inconnus.
@@ -7148,7 +7159,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle est désactivée, l'utilisation du protocole QUIC n'est pas autorisée.</translation>
 <translation id="5916855682471300200">Prioriser les règles de cloud liées à la machine par rapport à celles liées à la plate-forme</translation>
-<translation id="5917092644305650513">Paramètres de la fonctionnalité Scanner</translation>
 <translation id="5917425424971710623">Ne pas signaler d'informations sur les événements de détection et réponse étendues (XDR)</translation>
 <translation id="5917897389577978190">Gmail (compatible depuis la version 135)</translation>
 <translation id="592036544845479336">Réactiver les événements de mutation obsolètes/supprimés</translation>
@@ -7548,7 +7558,6 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne sont pas transmises. Si cette règle est définie sur "True", ces informations sont transmises.</translation>
 <translation id="624219423122512710">Actions si le navigateur est inactif</translation>
-<translation id="6243061183100681514">Autoriser Scanner et améliorer les modèles d'IA.</translation>
 <translation id="6244061205361004687">Autoriser l'utilisateur à déconnecter ou modifier manuellement un VPN</translation>
 <translation id="6244210204546589761">URL à ouvrir au démarrage</translation>
 <translation id="624595269193747921">Limiter ou non la recherche d'une imprimante correspondant aux critères spécifiés à un groupe d'imprimantes spécifique.</translation>
@@ -8271,7 +8280,6 @@ Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</transla
 <translation id="666203515318060501">Autoriser la saisie automatique améliorée sans améliorer les modèles d'IA.</translation>
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
-<translation id="6667636336079341367">Autoriser Scanner sans améliorer les modèles d'IA.</translation>
 <translation id="6668559639284945695">Cette règle permet de rétablir l'ancien comportement du champ d'application des cookies.
 
 Cela signifie que les cookies définis sur un protocole ou un port spécifique (par exemple, HTTPS) sont accessibles depuis un autre protocole ou port.
@@ -10911,17 +10919,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si la règle est désactivée ou si elle n'est pas configurée, ces informations ne seront pas transmises.
       Si elle est activée, les événements CRD seront signalés si l'utilisateur est affilié.</translation>
 <translation id="85723976805793612">Les journaux d'événements pour les installations d'applis Android sont partagés avec Google</translation>
-<translation id="8573354257711790704">Cette règle contrôle les paramètres de la fonctionnalité Scanner pour <ph name="PRODUCT_OS_NAME" />.
-
-0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les requêtes, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Ne pas autoriser la fonctionnalité.
-
-Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Cette règle est obsolète. Veuillez utiliser "BrowserSignin" à la place.
 
       Si cette règle est définie sur "True", l'utilisateur doit se connecter à <ph name="PRODUCT_NAME" /> avec son propre profil pour utiliser le navigateur. La valeur par défaut de "BrowserGuestModeEnabled" est définie sur "False". Sachez que les profils existants non signés seront verrouillés et inaccessibles une fois cette règle activée. Pour en savoir plus, consultez l'article correspondant du centre d'aide.

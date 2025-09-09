@@ -46,7 +46,7 @@
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
 <translation id="1363028406613469049">التتبّع</translation>
 <translation id="1378727793141957596">‏مرحبًا بك في Google Drive!</translation>
-<translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال بالإنترنت.</translation>
+<translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1388045380422025115">جميع الأنواع</translation>
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
@@ -63,10 +63,10 @@
 <translation id="148466539719134488">سويسري</translation>
 <translation id="1497522201463361063">تعذرت إعادة تسمية "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
-<translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
+<translation id="1515909359182093592">‫<ph name="INPUT_LABEL" /> - المضيف</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
-<translation id="1556189134700913550">تطبيق على الكل</translation>
+<translation id="1556189134700913550">التطبيق على الكل</translation>
 <translation id="1561842594491319104">‏أجهزة Chrome</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
 <translation id="1576937952766665062">تحويل صوتي إلى اللغة البنغالية</translation>
@@ -116,7 +116,7 @@
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
 <translation id="1877377730633446520">سيتم استخدام مساحة تخزين تبلغ <ph name="REQUIRED_SPACE" /> تقريبًا. مساحة التخزين المتوفّرة حاليًا: <ph name="FREE_SPACE" />.</translation>
-<translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، الاتصال</translation>
+<translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، الاتصال</translation>
 <translation id="1920670151694390848">تحويل صوتي إلى اللغة الماليالامية</translation>
 <translation id="1920798810075583923">بطيخ</translation>
 <translation id="1924372192547904021">تم ضبط <ph name="DRIVE_NAME" /></translation>
@@ -172,7 +172,7 @@
 <translation id="2326539130272988168">البلغارية</translation>
 <translation id="233822363739146957">لا تتوفّر مساحة تخزين كافية لمزامنة جميع ملفاتك.</translation>
 <translation id="23721837607121582">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
-<translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
+<translation id="2377319039870049694">التبديل للعرض على شكل قائمة</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
 <translation id="2379576081295865700">جارٍ التحقّق من مساحة التخزين… تم العثور على ملف واحد.</translation>
 <translation id="2383454254762599978">نقل إلى "المهملات"</translation>
@@ -193,7 +193,7 @@
 <translation id="2470939964922472929">‏لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات. لإعداد رقم تعريف شخصي جديد، يُرجى إدخال مفتاح إزالة حظر رقم التعريف الشخصي (PUK) المكوّن من 8 أرقام والمتوفّر من خلال مشغّل شبكة الجوّال.</translation>
 <translation id="2500392669976258912">الغوجاراتية الصوتية</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">فحص</translation>
+<translation id="2517472476991765520">المسح ضوئيًا</translation>
 <translation id="252641322760726369">يرجى النقر مع الاستمرار على ملف ثم النقر على الرمز <ph name="ICON" /> واختيار "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
 <translation id="2534460670861217804">‏خادم وكيل HTTP الآمن</translation>
 <translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
@@ -204,7 +204,7 @@
 <translation id="2578394532502990878">التاميلية الصوتية</translation>
 <translation id="2579959351793446050">الأوديا</translation>
 <translation id="2587195714949534472">يجري الإعداد لمزامنة <ph name="FILE_NAME" />…</translation>
-<translation id="2602810353103180630">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، حجب المشرف هذه الشبكة، التفاصيل</translation>
+<translation id="2602810353103180630">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، حجب المشرف هذه الشبكة، التفاصيل</translation>
 <translation id="2614589611416690597">ملف فيديو <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏لا يمكن الوصول إلى Google Drive في الوقت الحالي.</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
@@ -219,12 +219,12 @@
 <translation id="2732288874651063549">إدارة المشاركة مع "<ph name="VM_NAME" />"</translation>
 <translation id="2732839045120506979">‏الفيتنامية باستخدام لوحة مفاتيح VNI</translation>
 <translation id="2735623501230989521">‏يمكنك منح نظام Parallels Desktop الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" /></translation>
-<translation id="2764206540577097904">‏لقد استهلكت كل مساحة التخزين الشخصية على Google Workspace.</translation>
+<translation id="2764206540577097904">‏لقد تم استهلاك كلّ مساحة التخزين الشخصية على Google Workspace.</translation>
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2802583107108007218">مزيد من المعلومات حول هذه القيود</translation>
-<translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
+<translation id="2803375539583399270">إدخال رقم التعريف الشخصي</translation>
 <translation id="2819519502129272135">تم إيقاف مزامنة الملفات</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="2830077785865012357">‏الصينية باستخدام لوحة مفاتيح Zhuyin</translation>
@@ -235,7 +235,7 @@
 <translation id="2888807692577297075">‏لا توجد عناصر متطابقة مع  &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">المعلومات</translation>
 <translation id="2902734494705624966">أمريكية موسعة</translation>
-<translation id="2904378509913846215">هناك مجلد آخر يحمل الاسم "<ph name="FILENAME" />". هل تريد استبداله بالمجلد الذي تنقله؟</translation>
+<translation id="2904378509913846215">هناك مجلد آخر يحمل الاسم "<ph name="FILENAME" />". هل نستبدله بلمجلد الذي يتم نقله؟</translation>
 <translation id="290843123675549676">المراثية</translation>
 <translation id="2923240520113693977">الإستونية</translation>
 <translation id="2938685643439809023">المنغولية</translation>
@@ -251,7 +251,7 @@
 <translation id="3016566519832145558">تنبيه: هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.</translation>
 <translation id="3029114385395636667">‏يجب تفعيل "مستندات Google بلا إنترنت" لكي تصبح "مستندات Google" و"جداول بيانات Google" و"العروض التقديمية من Google" متاحة من دون الاتصال بالإنترنت.</translation>
 <translation id="303198083543495566">الجغرافيا</translation>
-<translation id="3044404008258011032">لاستعادة هذه العناصر، اسحبها إلى مجلد جديد خارج المهملات. تم حذف المجلد الأصلي "<ph name="PARENT_FOLDER_NAME" />" لهذه العناصر.</translation>
+<translation id="3044404008258011032">لاستعادة هذه العناصر، يُرجى سحبها إلى مجلد جديد خارج المهملات. تم حذف المجلد الأصلي "<ph name="PARENT_FOLDER_NAME" />" لهذه العناصر.</translation>
 <translation id="3047197340186497470">‏الصينية باستخدام نظام Dayi</translation>
 <translation id="3067790092342515856">‏ملفات نظام التشغيل Windows</translation>
 <translation id="3083975830683400843">‏أجهزة Chromebit</translation>
@@ -291,7 +291,7 @@
 <translation id="3307875152560779385">الأوكرانية</translation>
 <translation id="3326821416087822643">جارٍ ضغط <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">عام التسجيل</translation>
-<translation id="3353984535370177728">حدد مجلدًا لتحميله</translation>
+<translation id="3353984535370177728">اختيار مجلّد لتحميله</translation>
 <translation id="3356580349448036450">مكتمل</translation>
 <translation id="3358452157379365236">قيثارة</translation>
 <translation id="3368922792935385530">متصل</translation>
@@ -329,7 +329,7 @@
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3619593063686672873">ما مِن فيديوهات حديثة.</translation>
 <translation id="3634507049637220048">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف، التفاصيل</translation>
-<translation id="36451918667380448">إنّ هاتفك مقفل أمام مزوّد شبكة الجوّال هذا. اتّصِل بمزوّد الخدمة للحصول على الدعم.</translation>
+<translation id="36451918667380448">مزوّد شبكة الجوّال مُقفَل. يمكنك الاتصال بمزوّد الخدمة للحصول على الدعم.</translation>
 <translation id="3645233063072417428">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
 <translation id="3658269352872031728">تم اختيار <ph name="SELECTED_FILE_COUNT" /> ملف.</translation>
 <translation id="3685122418104378273">‏يتم إيقاف مزامنة Google Drive بشكل تلقائي، عند استخدام بيانات الجوّال.</translation>
@@ -384,7 +384,7 @@
 <translation id="4124935795427217608">أحادي القرن</translation>
 <translation id="4131235941541910880">يمكنك نقل العناصر التي لا تحتاج إليها إلى "المهملات".</translation>
 <translation id="4134804435730168042">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
-<translation id="4153015322587141338">انقر بزر الماوس الأيمن على ملف واختَر "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
+<translation id="4153015322587141338">يمكنك النقر بزر الماوس الأيمن على ملف واختيار "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
 <translation id="4157569377477607576">لا تنصح سياسة المشرف بما يلي:</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">إفراغ المهملات الآن</translation>
@@ -419,14 +419,14 @@
 <translation id="4394214039309501350">رابط خارجي</translation>
 <translation id="4394980935660306080">في وقت سابق من هذا الأسبوع</translation>
 <translation id="4397435965699247285">‏لا يتوفّر استخدام OneDrive بلا إنترنت</translation>
-<translation id="4398096759193130964">يمكنك استعادة العناصر أو سحبها إلى مجلد جديد خارج "المهملات".</translation>
+<translation id="4398096759193130964">يمكنك استعادة العناصر أو سحبها إلى مجلد جديد خارج "المهملات"</translation>
 <translation id="4401287888955153199">استخراج الكل</translation>
 <translation id="4410695710508688828">تعذّرت عملية استخراج الملفات. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4414834425328380570">سيتم حذف "<ph name="FILE_NAME" />" وستتعذّر استعادته.</translation>
 <translation id="4418686080762064601">إنشاء اختصار للملفات</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4432921877815220091">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز. يُدير المشرف هذه الشبكة</translation>
-<translation id="4439427728133035643">اتصال الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
+<translation id="4439427728133035643">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الاسم <ph name="NETWORK_NAME" />، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، الاتصال</translation>
 <translation id="4442424173763614572">تعذّر البحث في نظام أسماء النطاقات</translation>
 <translation id="4445896958353114391">تتم حاليًا مزامنة الملفات</translation>
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
@@ -532,14 +532,14 @@
 <translation id="5145331109270917438">تاريخ التعديل</translation>
 <translation id="515594325917491223">شطرنج</translation>
 <translation id="5158983316805876233">استخدام نفس الخادم الوكيل مع جميع البروتوكولات</translation>
-<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />لا تزل جهازك الآن.<ph name="END_BOLD" />
+<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />يُرجى عدم إزالة جهازك الآن.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   قد تؤدي إزالة جهازك أثناء وجوده قيد الاستخدام إلى فقدان البيانات.  يُرجى الانتظار حتى انتهاء العملية، ثم إخراج الجهاز باستخدام تطبيق الملفات.</translation>
+   قد تؤدي إزالة جهازك أثناء استخدامه إلى فقدان البيانات.  الرجاء الانتظار حتى انتهاء العملية، ثم إخراج الجهاز باستخدام تطبيق "الملفات".</translation>
 <translation id="5163869187418756376">تعذّرت المشاركة. يرجى التحقق من اتصالك وإعادة المحاولة لاحقًا.</translation>
 <translation id="516592729076796170">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
 <translation id="5177526793333269655">عرض الصور المصغرة</translation>
 <translation id="5181896909298187506">ما مِن ملفات حديثة.</translation>
-<translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
+<translation id="5194713942430106590">يمكنكَ النقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
 <translation id="5211614973734216083">الفاروية</translation>
 <translation id="5218183485292899140">الفرنسية السويسرية</translation>
 <translation id="5234764350956374838">إغلاق</translation>
@@ -566,7 +566,7 @@
 <translation id="5358764674931277">عدد اللقطات في الثانية</translation>
 <translation id="5363339716524495120">لغة الإدخال هي الصينية</translation>
 <translation id="5364067326287025678">المهملات فارغة</translation>
-<translation id="5368191757080475556">‏مشاركة المجلد مع نظام التشغيل Linux</translation>
+<translation id="5368191757080475556">‏مشاركة المجلد مع Linux</translation>
 <translation id="5402367795255837559">لغة برايل</translation>
 <translation id="5411472733320185105">عدم استخدام إعدادات الخادم الوكيل لهذه المضيفات والنطاقات:</translation>
 <translation id="541890217011173530">السورانية الكردية باستخدام لوحة مفاتيح إنجليزية</translation>
@@ -575,7 +575,7 @@
 <translation id="5438282218546237410">لا توجد نتائج تخص <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">مساحة التخزين غير كافية.</translation>
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
-<translation id="5459064203055649751">هناك ملف آخر يحمل الاسم "<ph name="FILENAME" />". هل تريد استبداله بالملف الذي تنقله؟</translation>
+<translation id="5459064203055649751">ثمّة ملف آخر يحمل الاسم "<ph name="FILENAME" />". هل المطلوب استبداله بالملف الذي يتم نقله؟</translation>
 <translation id="5463231940765244860">إدخال</translation>
 <translation id="5469868506864199649">الإيطالية</translation>
 <translation id="5473333559083690127">إعادة إدخال رقم التعريف الشخصي الجديد</translation>
@@ -672,7 +672,7 @@
 <translation id="6187719147498869044">المجرية</translation>
 <translation id="6198252989419008588">تغيير رقم التعريف الشخصي</translation>
 <translation id="6199801702437275229">في انتظار معلومات المساحة...</translation>
-<translation id="6205710420833115353">تستغرق بعض العمليات وقتًا أطول من المتوقع. هل تريد إيقافها؟</translation>
+<translation id="6205710420833115353">تَستغرق بعض العمليات وقتًا أطول من المتوقع. هل المطلوب إيقافها؟</translation>
 <translation id="6220423280121890987">البنجابية</translation>
 <translation id="6224240818060029162">الدانمركية</translation>
 <translation id="6224253798271602650">تنسيق <ph name="DRIVE_NAME" /></translation>
@@ -735,7 +735,7 @@
 <translation id="6750737795876287924">الدليل الحالي</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
-<translation id="6777029074498310250">‏انتقِل إلى <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> للحصول على مزيد من المعلومات</translation>
+<translation id="6777029074498310250">‏يمكنك الانتقال إلى <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> للحصول على مزيد من المعلومات</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6794539005637808366">يمكنك استعادة العنصر أو سحبه إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="6795884519221689054">باندا</translation>
@@ -745,7 +745,7 @@
 <translation id="6823166707458800069">يتم الاحتفاظ بنسخة احتياطية من جميع الملفات المحفوظة في هذا المجلد تلقائيًا على الإنترنت.</translation>
 <translation id="6825883775269213504">الروسية</translation>
 <translation id="6847101934483209767">تمت إزالة <ph name="ENTRY_NAME" /> من الاختيار.</translation>
-<translation id="6848194403851638089">‏لقد استهلكت المؤسسة <ph name="ORGANIZATION_NAME" /> كل مساحة التخزين المخصَّصة لها على Google Workspace.</translation>
+<translation id="6848194403851638089">‏استهلكت مؤسسة "<ph name="ORGANIZATION_NAME" />" كل مساحة التخزين المخصَّصة لها على Google Workspace.</translation>
 <translation id="6856459657722366306">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="6861394552169064235">الفارسية</translation>
 <translation id="6862635236584086457">جميع الملفات المحفوظة في هذا المجلد يتم الاحتفاظ بنسخة احتياطية منها تلقائيًا على الإنترنت</translation>
@@ -785,7 +785,7 @@
 <translation id="7048024426273850086">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، "<ph name="PHONE_NAME" />"، "<ph name="PROVIDER_NAME" />"، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، بطارية الهاتف %<ph name="BATTERY_STATUS" />، الاتصال</translation>
 <translation id="7070804685954057874">الإدخال المباشر</translation>
 <translation id="7075931588889865715">‏التايلاندية باستخدام لوحة مفاتيح TIS 820-2531</translation>
-<translation id="708278670402572152">قطع الاتصال لتفعيل الفحص</translation>
+<translation id="708278670402572152">قطع الاتصال لتفعيل المسح الضوئي</translation>
 <translation id="7086590977277044826">‏التاميلية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="7088615885725309056">أقدم</translation>
 <translation id="7103992300314999525">المقدونية</translation>
@@ -819,7 +819,7 @@
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7343393116438664539">‏الفيتنامية باستخدام لوحة مفاتيح Telex</translation>
 <translation id="7347346221088620549">ملف مشفَّر</translation>
-<translation id="7357762654218998920">‏هذا النوع من الملفات غير متوافق. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
+<translation id="7357762654218998920">‏هذا النوع من الملفات غير متوافق. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل ChromeOS.</translation>
 <translation id="7359359531237882347">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7375951387215729722">تم ترتيب قائمة الملف تنازليًا حسب <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">تحظر سياسة المشرف إمكانية نسخ هذا الملف.</translation>
@@ -845,19 +845,19 @@
 <translation id="7547811415869834682">الهولندية</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" /></translation>
-<translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات بعدما يتصل جهازك بالإنترنت.</translation>
+<translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات عند اتصال جهازك بالإنترنت</translation>
 <translation id="7589661784326793847">يرجى الانتظار قليلاً</translation>
 <translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
 <translation id="7624010287655004652">تم القفل بواسطة مقدِّم آخر لخدمات شبكة الجوّال</translation>
-<translation id="7627790789328695202">عذرًا، <ph name="FILE_NAME" /> موجود من قبل. يمكنك إعادة تسميته وإعادة المحاولة.</translation>
+<translation id="7627790789328695202">عذرًا، سبق أن تم استخدام <ph name="FILE_NAME" />. يُرجى إعادة تسميته والمحاولة مرة أخرى.</translation>
 <translation id="7628656427739290098">اكتملت العملية بنسبة <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7654209398114106148">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7655441028674523381">‏الوصول بسهولة إلى "صور Google"</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7663224033570512922">الهندية</translation>
-<translation id="7665680517722058469">يُرجى تجربة عبارة بحث أخرى.</translation>
+<translation id="7665680517722058469">يُرجى تجربة عبارة بحث أخرى</translation>
 <translation id="7689532716264131859">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات".</translation>
 <translation id="7693909743393669729">ستؤدي تهيئة محرك أقراص إلى محو جميع البيانات المخزَّنة عليه وإزالة جميع الأقسام الحالية، بما فيها الأقسام التي قد تكون غير مرئية. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7695430100978772476">تعذّر ضبط <ph name="DRIVE_NAME" /></translation>
@@ -871,15 +871,15 @@
 <translation id="7732111077498238432">هناك سياسة تحكم هذه الشبكة</translation>
 <translation id="7736003208887389532">هل تريد حذف هذه الملفات نهائيًا؟</translation>
 <translation id="7740287852186792672">نتائج البحث</translation>
-<translation id="7748626145866214022">‏تتوفر مزيد من الخيارات على شريط الإجراءات. يُرجى الضغط على "Alt + A" لتركيز هذا الشريط.</translation>
+<translation id="7748626145866214022">‏تتوفّر مزيد من الخيارات على شريط الإجراءات. يُمكنك الضغط على "Alt + A" لتركيز هذا الشريط.</translation>
 <translation id="7760449188139285140">‏الصينية باستخدام لوحة مفاتيح Wubi</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7774365994322694683">طائر</translation>
 <translation id="7780322752056734036">تمت استعادة <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
 <translation id="7781829728241885113">أمس</translation>
-<translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" بلا إنترنت، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />احرص على إزالة الملفات التي لم تعد بحاجة إلى الدخول إليها بلا إنترنت<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />احذف الملفات من مجلد "المحتوى الذي تم تنزيله"<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" في وضع عدم الاتصال، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />احرص على إزالة الملفات التي لم تعد بحاجة إلى الدخول إليها في وضع عدم الاتصال<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />احذف الملفات من مجلد التنزيلات<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">تهيئة الجهاز</translation>
 <translation id="7799329977874311193">‏مستند HTML</translation>
 <translation id="7801354353640549019">‏أجهزة Chromebook</translation>
@@ -899,7 +899,7 @@
 <translation id="7903984238293908205">كاتاكانا</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
-<translation id="7920501309908018401">‏ستتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
+<translation id="7920501309908018401">‏ستتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا من أجل الوصول إليها بدون الاتصال بالإنترنت.</translation>
 <translation id="7925247922861151263">‏تعذّر فحص AAA</translation>
 <translation id="7928710562641958568">إخراج الجهاز</translation>
 <translation id="7933875256234974853">‏جارٍ الاستعداد لمزامنة ملفات Google Drive…</translation>
@@ -955,7 +955,7 @@
 <translation id="8297012244086013755">المجموعة رقم 3 الهانغولية (عدم التبديل)</translation>
 <translation id="8299269255470343364">اليابانية</translation>
 <translation id="8300849813060516376">‏تعذّرت OTASP</translation>
-<translation id="8312871300878166382">لصق في مجلد</translation>
+<translation id="8312871300878166382">اللصق في مجلد</translation>
 <translation id="8329978297633540474">نص عادي</translation>
 <translation id="8332007959299458842">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في Google Drive.</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
@@ -988,7 +988,7 @@
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8492972329130824181">الشبكة المنزلية غير متوفّرة. وللاتصال بالشبكة، يجب تفعيل ميزة تجوال بيانات الجوَّال.</translation>
 <translation id="8499098729323186194">جارٍ استخراج <ph name="NUMBER_OF_ITEMS" /> عنصر...</translation>
-<translation id="8502913769543567768">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز، هذه الشبكة يديرها المشرف</translation>
+<translation id="8502913769543567768">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكن تفعيلها بعد إعداد الجهاز، يتولى المشرف إدارة الشبكة</translation>
 <translation id="8512483403832814140">أي وقت</translation>
 <translation id="8521441079177373948">المملكة المتحدة</translation>
 <translation id="853494022971700746">الفرنسية (فرنسا)</translation>
@@ -1010,7 +1010,7 @@
 <translation id="8630384863424041081">‏يرجى إدخال رقم التعريف الشخصي لشريحة SIM أو رقم التعريف الشخصي التلقائي المقدَّم من مشغّل شبكة الجوّال. ويمكنك التواصل مع مشغّل شبكة الجوّال للحصول على الدعم.</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>
-<translation id="8656407365183407932">كان يلزم إزالة الملفات المتاحة بلا اتصال بالإنترنت</translation>
+<translation id="8656407365183407932">كان إزالة الملفات المتاحة بلا بالإنترنت ضرورية.</translation>
 <translation id="8656768832129462377">عدم التحقق</translation>
 <translation id="8688591111840995413">كلمة مرور سيئة</translation>
 <translation id="8698464937041809063">‏رسم Google</translation>

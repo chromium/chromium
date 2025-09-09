@@ -39,18 +39,18 @@
 <translation id="112308213915226829">הסתרה אוטומטית של המדף</translation>
 <translation id="1129383337808748948">רענון של <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">תמונות אחרונות</translation>
-<translation id="114221662579355151">הפעולה הזו תאפשר גישה למצלמה לאפליקציות <ph name="APP1_NAME" />,‏ <ph name="APP2_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
+<translation id="114221662579355151">הפעולה הזו תאפשר לאפליקציות <ph name="APP1_NAME" />,‏ <ph name="APP2_NAME" /> להשתמש במצלמה, כמו גם כל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. צריך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="1148499908455722006">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">יומן</translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
 <translation id="1153918444040990015">לא ניתן להתחבר לצלילים של מצב הריכוז</translation>
 <translation id="1155734730463845512">רמת הטעינה הנוכחית של הסוללה %<ph name="BATTERY_PERCENTAGE" /></translation>
-<translation id="1157514002898505378">‏‫AI גנרטיבי הוא ניסיוני. התוכן עשוי להיות לא מדויק, מטעה או פוגעני. כדי לדווח על בעיה, עליך לפנות לאדמין. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
+<translation id="1157514002898505378">‏‫AI גנרטיבי הוא ניסיוני. התוכן לפעמים לא מדויק, מטעה או פוגעני. כדי לדווח על בעיה, צריך לפנות לאדמין. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">במצב מופעל ובשימוש</translation>
 <translation id="1163437384438183174">‏הסרת Phone Hub מהמדף</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏יכול להיות שכבל ה-USB-C שלך לא יתחבר למסכים כמו שצריך</translation>
-<translation id="1173268871892601910">‏נשלחה בקשה ממנהל הסיסמאות של ChromeOS לאמת את זהותך</translation>
+<translation id="1173268871892601910">‏מנהל הסיסמאות של ChromeOS מבקש לאמת את הזהות שלך</translation>
 <translation id="1175572348579024023">גלילה</translation>
 <translation id="1175944128323889279">רמת הטעינה הנוכחית של הסוללה: %<ph name="BATTERY_PERCENTAGE" />, הזמן שנותר: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">השהיה</translation>
@@ -80,7 +80,7 @@
 <translation id="1242883863226959074">מכשיר</translation>
 <translation id="1245476784081715330">עבודה טובה!</translation>
 <translation id="1245644940275736236">‏מעבר אל Assistant</translation>
-<translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
+<translation id="124678866338384709">סגירה של הכרטיסייה הנוכחית</translation>
 <translation id="1246890715821376239">אפליקציות שאינן נתמכות</translation>
 <translation id="1247372569136754018">מיקרופון (פנימי)</translation>
 <translation id="1247519845643687288">אפליקציות שהיו בשימוש לאחרונה</translation>
@@ -95,7 +95,7 @@
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1276975447697633661">בחירת הקובץ והקשה על <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />‏ (<ph name="ANNOTATION" />)</translation>
-<translation id="1285992161347843613">איתור טלפון</translation>
+<translation id="1285992161347843613">איתור הטלפון</translation>
 <translation id="1287002645302686982">כבר קיים שולחן עבודה וירטואלי בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1288276784862223576">הגדרת הצפייה במדיה ותמונות שבטלפון מהזמן האחרון</translation>
 <translation id="1289185460362160437">אפשר לחזור ביום <ph name="COME_BACK_DAY_OF_WEEK" /> בשעה <ph name="COME_BACK_TIME" />.</translation>
@@ -118,7 +118,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> מחובר</translation>
 <translation id="1340378040547539434">הקטנת התצוגה של הדף</translation>
 <translation id="1341651618736211726">אפשרויות נוספות</translation>
-<translation id="1341926407152459446">שימוש במכשיר '<ph name="DEVICE_NAME" />' לקלט ופלט של אודיו</translation>
+<translation id="1341926407152459446">שימוש במכשיר "<ph name="DEVICE_NAME" />" לקלט ופלט של אודיו</translation>
 <translation id="1346748346194534595">ימין</translation>
 <translation id="1350494136075914725">בתהליך · מעבר לכרטיסייה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
@@ -154,7 +154,7 @@
 <translation id="14648076227129703">הפעולה הזו מאפשרת גישה למצלמה לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="146902737843070955">האדמין שלך ביקש את השינוי הזה</translation>
-<translation id="1469148162491666137">הפעולה הזו תאפשר לאפליקציות <ph name="APP1_NAME" /> ו-<ph name="APP2_NAME" /> גישה למצלמה ולמיקרופון. בנוסף, תתאפשר גישה למצלמה ולמיקרופון גם לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
+<translation id="1469148162491666137">הפעולה הזו תיתן לאפליקציות <ph name="APP1_NAME" /> ו-<ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאות לכך, להשתמש במצלמה ובמיקרופון. צריך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="147310119694673958">טעינת הסוללה של הטלפון: %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1475340220124222168">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="1479685784053141667">יצירת איש קשר</translation>
@@ -175,7 +175,7 @@
 <translation id="1528259147807435347">נערך בשבוע האחרון</translation>
 <translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
-<translation id="1545331255323159851">הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
+<translation id="1545331255323159851">צפייה בתמונות, במדיה ובהתראות שבטלפון מהזמן האחרון</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1546930421365146760">‏צריך לבקש מהאדמין להגדיר את המכשיר במסוף Google Admin</translation>
 <translation id="1549512626801247439">ניהול האחסון</translation>
@@ -195,7 +195,7 @@
 <translation id="1597880963776148053">‏שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. האפליקציות המוצמדות והפתוחות נמצאות על המדף שממוקם בתחתית המסך. כדי להתמקד בפריטים במדף, לוחצים על Alt + Shift + L ואז על Tab.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + חץ למטה</translation>
 <translation id="1604857178818051494">השהיית המדיה</translation>
-<translation id="1607312127821884567">ביוטול ההגדרה של הצגת האפליקציות שבטלפון</translation>
+<translation id="1607312127821884567">ביטול ההגדרה של הצגת האפליקציות שבטלפון</translation>
 <translation id="1610778689852195798">ביטול</translation>
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1612679292338846734">‏כשמפעילים את התכונות האלה, הטקסט שהוזן, התוכן של המסמך וכתובת ה-URL של דף האינטרנט אולי יישלחו לשרתי ה-AI מבית Google. המידע הזה משמש ליצירת הצעות לכתיבה, ליצירת סיכומים, למתן תשובות על שאלות ולשיפור המוצר, בכפוף למדיניות <ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
@@ -315,7 +315,7 @@
 <translation id="1996162290124031907">מעבר לכרטיסייה הבאה</translation>
 <translation id="1998100899771863792">שולחן העבודה הווירטואלי הנוכחי</translation>
 <translation id="2001444736072756133">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד.</translation>
-<translation id="2016340657076538683">כאן מקלידים את ההודעה</translation>
+<translation id="2016340657076538683">כאן מקלידים הודעה</translation>
 <translation id="2017998995161831444">‏פתיחה של "עזרה" באפליקציה "מה חדש ב-Chromebook"</translation>
 <translation id="2018630726571919839">אני רוצה לשמוע בדיחה</translation>
 <translation id="2021864487439853900">יש ללחוץ כדי לבטל את הנעילה</translation>
@@ -336,7 +336,7 @@
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2107581415810719320">כפתור אחר <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏כבל ה-USB-C שחיברת לא תומך ב-Thunderbolt. זה יכול להגביל את ביצועי המכשיר.</translation>
-<translation id="2108303511227308752">‏מקשי הקיצור Alt + ‏Backspace הוחלפו. כדי לדמות את הפעולה של המקש Delete, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + המקש Backspace.</translation>
+<translation id="2108303511227308752">‏מקשי הקיצור Alt + ‏Backspace הוחלפו. כדי לדמות את הפעולה של המקש Delete, יש ללחוץ על המקש <ph name="LAUNCHER_KEY_NAME" /> + המקש Backspace.</translation>
 <translation id="2115680839221566783">רמת הטעינה של הסוללה היא %<ph name="PERCENTAGE" />. הטעינה בהשהיה.</translation>
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
 <translation id="2132302418721800944">הקלטה של מסך מלא</translation>
@@ -378,7 +378,7 @@
 <translation id="229397294990920565">מתבצע כיבוי של הנתונים הסלולריים…</translation>
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
-<translation id="2303600792989757991">החלפת סקירת החולונות</translation>
+<translation id="2303600792989757991">החלפת מצב של סקירת החלונות</translation>
 <translation id="2304702218354340897">בחרת להשבית את התכונה "שליטה באמצעות תנועות פנים". להמשיך?</translation>
 <translation id="2305738328104302723">‏רשימת המשימות של Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: צילומי מסך אחרונים, הורדות וקבצים מוצמדים</translation>
@@ -416,7 +416,7 @@
 <translation id="240545663114741956">כדי לצאת, לוחצים פעמיים על <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">לא מחובר</translation>
 <translation id="2406710117564540804">הפעלה או השבתה של מצב "נא לא להפריע"</translation>
-<translation id="2408955596600435184">יש להזין את קוד האימות</translation>
+<translation id="2408955596600435184">צריך להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
 <translation id="2416438829169535743">לצאת מהתצוגה?</translation>
 <translation id="2417486498593892439">כניסה לרשת</translation>
@@ -432,7 +432,7 @@
 <translation id="2449089818483227734">הסוללה חלשה</translation>
 <translation id="2450205753526923158">מצב צילום מסך</translation>
 <translation id="2453860139492968684">סיום</translation>
-<translation id="2455994958736234930">‏הוספת www.‎ ו-‎.com לסרגל הכתובות, ופתיחת האתר לאחר מכן</translation>
+<translation id="2455994958736234930">‏להוסיף www.‎ ו-‎.com לסרגל הכתובות, ואז לפתוח האתר</translation>
 <translation id="2456008742792828469">יומן, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">הצגת פירוט</translation>
 <translation id="2465145153332031561">תקינות הסוללה: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, מספר המחזורים: <ph name="CYCLE_COUNT" /></translation>
@@ -502,7 +502,7 @@
 <translation id="2683887737780133806">יום <ph name="DAY_OF_WEEK" /> בשבוע שעבר</translation>
 <translation id="2687510499067466116">מקשי הקיצור שונו</translation>
 <translation id="2689613560355655046">שולחן עבודה וירטואלי 8</translation>
-<translation id="2692092709110488417">‏מקישים על Tab כדי להדגיש ולהזיז את האזור שנבחר</translation>
+<translation id="2692092709110488417">‏אפשר ללחוץ על Tab כדי להדגיש ולהזיז את האזור שנבחר</translation>
 <translation id="2695305337569143674">אינטרנט</translation>
 <translation id="2697697418792422688">הצגה של הגדרות המקלדת. בחרת את <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">כדי להעביר את הנתונים מהחשבון הבית ספרי לחשבון האישי, צריך להשתמש באפליקציית "העברת תוכן"</translation>
@@ -531,7 +531,7 @@
 אחרת, לוח המגע המובנה יופעל מחדש בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">יציאה ממצב של צילום מסך</translation>
 <translation id="2785499565474703580">מכשיר אחד מחובר</translation>
-<translation id="2791421900609674576">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ארוכה.</translation>
+<translation id="2791421900609674576">כדי שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת, יוצגו לך המלצות. אפשר להסיר אותן באמצעות לחיצה ארוכה.</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
 <translation id="2798702144670138229">מצב הטאבלט מופעל. מרכז בקרת המשחקים לא זמין.</translation>
 <translation id="2801954693771979815">גודל תצוגה במסך</translation>
@@ -631,7 +631,7 @@
 <translation id="3113492864356515707">הדגשת הפריט הקודם במדף</translation>
 <translation id="311799651966070385">סגירת הנדנוד</translation>
 <translation id="3120421559657122717">לכבות את המכשיר?</translation>
-<translation id="3121411970001795539">לוח המגע המובנה מושבת כי מחובר עכבר. צריך להשתמש בעכבר או במקלדת כדי לאשר את השינוי.
+<translation id="3121411970001795539">לוח המגע המובנה מושבת כי עכבר חיצוני מחובר. צריך להשתמש בעכבר או במקלדת כדי לאשר את השינוי.
 
 אחרת, לוח המגע המובנה יופעל מחדש בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -643,7 +643,7 @@
 <translation id="3139942575505304791">שולחן עבודה 1</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3151786313568798007">כיוון</translation>
-<translation id="3153444934357957346">אפשר לכלול עד <ph name="MULTI_PROFILE_USER_LIMIT" /> חשבונות בכניסה עם מספר חשבונות.</translation>
+<translation id="3153444934357957346">התכונה "כניסה עם מספר חשבונות" מאפשרת עד <ph name="MULTI_PROFILE_USER_LIMIT" /> חשבונות.</translation>
 <translation id="3154351730702813399">יכול להיות שהאדמין של המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
 <translation id="316086887565479535">האפליקציות בתבנית לא נתמכות</translation>
 <translation id="3160929076476941240">שעתיים</translation>
@@ -683,7 +683,7 @@
 <translation id="3290356915286466215">לא מאובטחת</translation>
 <translation id="3291862315280588024">עבור אל תחילת המילה הקודמת</translation>
 <translation id="3294437725009624529">אורח</translation>
-<translation id="3300193645498960160">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
+<translation id="3300193645498960160">כשמדברים בזמן שההשתקה פועלת, נשלחת התראה. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="3306386552969601301">‏<ph name="DEVICECOUNT" /> מכשירים מחוברים לנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">עברת למצב מחשב נייד</translation>
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
@@ -794,7 +794,7 @@
 <translation id="3628323833346754646">הכפתור הקדמי</translation>
 <translation id="3630697955794050612">כבויה</translation>
 <translation id="3631369015426612114">המקורות הבאים יכולים להציג התראות</translation>
-<translation id="3633097874324966332">‏צריך לפתוח את הגדרות Bluetooth כדי להתאים את המכשיר</translation>
+<translation id="3633097874324966332">‏כדי להתאים את המכשיר, צריך לפתוח את ההגדרות של Bluetooth</translation>
 <translation id="3633851487917460983">פתיחת הלוח</translation>
 <translation id="363473492175527493">‏הוגדר מצב פוקוס למשימה בנושא: <ph name="TASK_NAME" />. אפשר ללחוץ על Enter כדי לערוך את המשימה.</translation>
 <translation id="3638400994746983214">‏הפעלה והשבתה של Privacy Screen. <ph name="STATE_TEXT" />.</translation>
@@ -817,7 +817,7 @@
 <translation id="36813544980941320">‏רשתות Wi-Fi ישותפו בין הטלפון שלך לבין <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ואז <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">אתרים</translation>
-<translation id="3697991387880191195">אפשר להקיש על קיצור הדרך לצילום המסך</translation>
+<translation id="3697991387880191195">אפשר ללחוץ על קיצור הדרך לצילום המסך</translation>
 <translation id="3702809606464356667">מוצגים החלונות משולחן העבודה הווירטואלי הנוכחי. אפשר ללחוץ על מקש החץ למעלה כדי להציג חלונות מכל שולחנות העבודה הווירטואליים</translation>
 <translation id="3702846122927433391">אוכלוסיית ניגריה</translation>
 <translation id="3705722231355495246">-</translation>
@@ -869,7 +869,7 @@
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3884007280698606545">‏חיברת את המספר המקסימלי של התקני USB</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
-<translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
+<translation id="3891340733213178823">‏אפשר ללחוץ פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3892148308691398805">העתקת טקסט</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
 <translation id="3897533311200664389">הפעלה של שאילתה בהקלדה</translation>
@@ -913,7 +913,7 @@
 <translation id="4021716437419160885">גלילה למטה</translation>
 <translation id="4022497978915111141">נעילת המכשיר</translation>
 <translation id="4024840464866786680">‏אם שינית לאחרונה את הסיסמה וקוד האימות לחשבון Google או ששכחת אותם, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
-<translation id="4026843240379844265">העברת החלון הפעיל בין צגים</translation>
+<translation id="4026843240379844265">העברה של החלון הפעיל בין מסכים</translation>
 <translation id="4028481283645788203">יש להזין סיסמה כדי לענות על דרישות האבטחה המוגברות</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + חץ שמאלה</translation>
@@ -926,7 +926,7 @@
 <translation id="4059696795118403455">כדי לראות הצעות מותאמות אישית לפעולות הבאות, צריך להקיש על מקש סקירת החלונות</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}one{מושבת ל-# אפליקציות}two{מושבת ל-2 אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
-<translation id="4067635609339702874">‏נשלחה בקשה מההגדרות של ChromeOS לאמת את זהותך</translation>
+<translation id="4067635609339702874">‏נשלחה בקשה מההגדרות של ChromeOS לאמת את הזהות שלך</translation>
 <translation id="4069532248403319695">פתיחת דף ההורדות</translation>
 <translation id="4072264167173457037">אות בינוני</translation>
 <translation id="4072805772816336153">יש לנסות שוב אחר כך</translation>
@@ -955,7 +955,7 @@
 <translation id="4160919062868802509">זוהו מספר מקורות אודיו</translation>
 <translation id="416245495747357243">סיימת!</translation>
 <translation id="4165275524535002941">יכול להיות שהכבל לא תומך במסכים</translation>
-<translation id="4177415338862979658">ניתן ללחוץ כדי לראות פרטים נוספים</translation>
+<translation id="4177415338862979658">אפשר ללחוץ כדי לראות פרטים נוספים</translation>
 <translation id="4177913004758410636">{0,plural, =1{צריך לעדכן את המכשיר תוך יום אחד}one{צריך לעדכן את המכשיר תוך # ימים}two{צריך לעדכן את המכשיר תוך יומיים}other{צריך לעדכן את המכשיר תוך # ימים}}</translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4185671786623711291">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד ימין</translation>
@@ -1109,7 +1109,7 @@
 <translation id="4628757576491864469">מכשירים</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">‏כדי למחוק צריך ללחוץ על Ctrl+W.</translation>
-<translation id="4635501805800894201">{0,plural, =0{עליך לעדכן את המכשיר לגרסה הקודמת עכשיו}=1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שנייה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}}</translation>
+<translation id="4635501805800894201">{0,plural, =0{צריך לעדכן את המכשיר לגרסה הקודמת עכשיו}=1{צריך לעדכן את המכשיר לגרסה הקודמת בתוך שנייה}one{צריך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}two{צריך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}other{צריך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}}</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
@@ -1158,7 +1158,7 @@
 <translation id="4777825441726637019">‏חנות Play</translation>
 <translation id="4778095205580009397">‏Google Assistant לא זמינה בסשן הדגמה.</translation>
 <translation id="4785412405516449976">‏רק אנשי הקשר שלך שיש להם חשבון Google</translation>
-<translation id="4789348252524569426">לא ניתן להתקין את קובצי זיהוי הדיבור. צריך לעדכן את המכשיר. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
+<translation id="4789348252524569426">אי אפשר להתקין את הקבצים של זיהוי הדיבור. צריך לעדכן את המכשיר. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
 <translation id="478959186716341421">מעביר</translation>
 <translation id="4798403412327076414">בכניסה הבאה לחשבון יופיעו חלונות ואפליקציות שפתחת קודם</translation>
 <translation id="4798622944000246716">ברשת הסלולרית שלך אין תמיכה בנקודת אינטרנט</translation>
@@ -1203,14 +1203,14 @@
 <translation id="491504982845934899">הרשת <ph name="NETWORK_NAME" /> תופעל אחרי הגדרת המכשיר</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אישור</translation>
-<translation id="491907188205944472">מחפשים את מה שצריכים ישירות במרכז האפליקציות</translation>
+<translation id="491907188205944472">חיפוש של כל מה שצריך ישירות במרכז האפליקציות</translation>
 <translation id="4919841137949306064">המצלמה מופעלת כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="492453977506755176">מקש של מצב צילום</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="493076006037866439">הקטנת התצוגה במסך</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4936329710968938986">כולם, במצב כבוי</translation>
-<translation id="4937170330762390348">עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. תתבצע הורדה של קובצי דיבור כדי להשתמש בהכתבה במצב אופליין. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
+<translation id="4937170330762390348">התכונה הזו מאפשרת לך להקליד באמצעות הקול. כשנמצאים בתיבת טקסט, לוחצים על כפתור ההכתבה או על סמל המיקרופון שבתחתית המסך. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. קובצי דיבור יורדו כדי לאפשר הכתבה במצב אופליין. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
@@ -1219,7 +1219,7 @@
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4952936045814352993">איתור הטלפון לא זמין כשצלילי ההתראות מושבתים</translation>
 <translation id="4953585991029886728">עריכת הטקסט</translation>
-<translation id="4960324571663582548">בהתאם לבקשה של <ph name="MANAGER" />, עליך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
+<translation id="4960324571663582548">בהתאם לדרישה של <ph name="MANAGER" />, צריך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="4961318399572185831">‏הפעלת Cast של התוכן שמוצג במסך</translation>
 <translation id="4964188651935955085">‏השבתת Bluetooth תנתק את המכשיר החיצוני הבא מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">הגברת עוצמת הקול</translation>
@@ -1238,7 +1238,7 @@
 <translation id="5003993274120026347">המשפט הבא</translation>
 <translation id="5004607513195820459">הרשת מנוהלת</translation>
 <translation id="5009463889040999939">שינוי שם הפרופיל מתבצע. הפעולה עשויה להימשך מספר דקות.</translation>
-<translation id="5013847959275396160">הסתר את סרגל כלים</translation>
+<translation id="5013847959275396160">הסתרת סרגל הכלים</translation>
 <translation id="5016558321564993266">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">קטגוריות החיפוש</translation>
 <translation id="5025389392398927910">אפשר לחפש כדי לערוך טקסט</translation>
@@ -1377,7 +1377,7 @@
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5460938382730614333">כלי הסימון מופעל.</translation>
 <translation id="5463129623250377817">גזירת התוכן שנבחר ללוח</translation>
-<translation id="5465662442746197494">יש צורך בעזרה?</translation>
+<translation id="5465662442746197494">אפשר ללחוץ כאן לעזרה</translation>
 <translation id="547979256943495781">המדף בצד ימין</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> או <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5482873136202102190">, +</translation>
@@ -1392,7 +1392,7 @@
 <translation id="5520229639206813572">‏האדמין שלך הסיר את כל פרופילי ה-eSIM. יש לפנות לאדמין למידע נוסף.</translation>
 <translation id="5520909879404821039">'שלום' בצרפתית</translation>
 <translation id="5523434445161341166">התכונה <ph name="FEATURE_NAME" /> מתחברת.</translation>
-<translation id="5529587891732734495">השהיית ההעברה</translation>
+<translation id="5529587891732734495">‏השהייה של פעולת ה-Cast</translation>
 <translation id="5532994612895037630">כדי להקליט את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="5536723544185013515">האפליקציות האחרונות, אפשר לעבור על כל האפליקציות האחרונות בעזרת החץ שמאלה והחץ ימינה</translation>
 <translation id="553675580533261935">יציאה מההפעלה</translation>
@@ -1415,7 +1415,7 @@
 <translation id="5577281275355252094">‏רוצה להשתמש ב-Phone Hub? צריך לבדוק שה-Bluetooth פועל בטלפון</translation>
 <translation id="5578188167649348993">זיכרון</translation>
 <translation id="5580000943347215299">ספרייה</translation>
-<translation id="5586388332127302891">התכונה 'זכוכית מגדלת במצב מעוגן' מופעלת. אפשר להקיש שוב על <ph name="ACCELERATOR" /> כדי להשבית אותה.</translation>
+<translation id="5586388332127302891">התכונה "זכוכית מגדלת במצב מעוגן" מופעלת. כדי להשבית אותה, אפשר ללחוץ שוב על <ph name="ACCELERATOR" />.</translation>
 <translation id="5587506661873751671">ההורדה מתבצעת <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">יש לגרור כדי לבחור אזור לצילום</translation>
 <translation id="5590609058453685222">התזכורת שהמיקרופון מושתק פועלת. אם מדברים כשההשתקה מופעלת מקבלים התראה.</translation>
@@ -1449,7 +1449,7 @@
 <translation id="5682642926269496722">‏Google Assistant לא זמינה לחשבון המשתמש הנוכחי.</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">‏Alt + מקש Backspace</translation>
-<translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש ללחוץ כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
+<translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש ללחוץ כדי לשנות את השעה שבה מופעלת "תאורת לילה" או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
 <translation id="5699366815052349604">הקצאת חלון פעיל לכל שולחנות העבודה הווירטואליים</translation>
@@ -1540,7 +1540,7 @@
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="5986723678596105470">‏הצטרפות באמצעות Google Meet</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
-<translation id="5990992855591814753">‏פלייליסטים מותאמים אישית עוזרים לך לשמור על מיקוד. נהנים מ-YouTube Music ומ-YouTube ללא פרסומות עם 3 חודשים של YouTube Premium ללא עלות. בכפוף לתנאים.</translation>
+<translation id="5990992855591814753">‏פלייליסטים מותאמים אישית עוזרים לך לשמור על מיקוד. אפשר להנות מ-YouTube Music ומ-YouTube ללא פרסומות עם 3 חודשים שלYouTube Premium ללא עלות. בכפוף לתנאים.</translation>
 <translation id="5998374579424866922">השבתה של פקדי המשחקים</translation>
 <translation id="6000279412553873020">מקשים, כפתורים ועוד</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
@@ -1614,7 +1614,7 @@
 <translation id="6193431488227440296">פיתוח</translation>
 <translation id="6199775032047436064">טען מחדש את הדף הנוכחי</translation>
 <translation id="6200515304866777730">האפליקציה לא תומכת בפעולה</translation>
-<translation id="6210042900243040400">יש לקשר את המכשיר <ph name="NAME" /> שנשמר בעבר בחשבון <ph name="EMAIL" /></translation>
+<translation id="6210042900243040400">רוצה לקשר את המכשיר <ph name="NAME" /> שנשמר בעבר בחשבון <ph name="EMAIL" />?</translation>
 <translation id="6212580734499190393">למשך 10 דקות</translation>
 <translation id="6213808132343683860">יצירת צילום מסך או הקלטת מסך חלקיים</translation>
 <translation id="621606890568890214">‏הרחבה של Google Classroom</translation>
@@ -1625,7 +1625,7 @@
 <translation id="623116199192908855">‏הפעלת Cast של התוכן מהמסך של Chromebook</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
 <translation id="6232416233079464213">המקור: <ph name="SESSION_NAME" /></translation>
-<translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
+<translation id="6232891689835436217">האפליקציה <ph name="APP_NAME" /> משתמשת כרגע במצלמה ובמיקרופון שלך</translation>
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="6240551054644725950">הסיסמה חייבת להכיל תווים תקפים בלבד</translation>
 <translation id="6240603910551255087">הכפתור העליון</translation>
@@ -1641,8 +1641,8 @@
 <translation id="6285871695023807425">הוספה ליומן</translation>
 <translation id="6288235558961782912">ניתן יהיה להוסיף את <ph name="USER_EMAIL_ADDRESS" /> מחדש מאוחר יותר לאחר שיתקבל אישור של הורה.</translation>
 <translation id="6291221004442998378">לא בטעינה</translation>
-<translation id="6298183524022479114">יש אפשרות להתאים אישית את המכשיר הזה באפליקציה</translation>
-<translation id="6304076460080088478">‏כדי לחפש במסך באמצעות Google Lens ,צריך לסגור או למזער חלונות פרטיים</translation>
+<translation id="6298183524022479114">אפשר להתאים אישית את המכשיר הזה באפליקציה</translation>
+<translation id="6304076460080088478">‏כדי לחפש במסך באמצעות Google Lens , צריך לסגור או למזער חלונות פרטיים</translation>
 <translation id="6309219492973062892">לחיצה או לחיצה על הסמלים 1-8 במדף</translation>
 <translation id="6315170314923504164">קול</translation>
 <translation id="6319058840130157106">מעבר אחורה בין הפינה השמאלית התחתונה, מרכז האפליקציות, סרגל הכתובות, סרגל הסימניות, האתר שפתוח וההורדות</translation>
@@ -1715,7 +1715,7 @@
 <translation id="6543942526104794893">בחרת להשבית את האפשרות "תנועות פנים". להמשיך?</translation>
 <translation id="6545382064335350438">לא הצלחנו לאמת את קוד האימות שלך. אפשר לנסות שוב.</translation>
 <translation id="6546062506073634094">חיפוש תמונות לפי תוכן ותצוגות מקדימות של תמונות</translation>
-<translation id="6555373427270923730">הקלדת כתובת אינטרנט בסרגל הכתובות ולחיצה על <ph name="MODIFIER" /><ph name="KEY" /></translation>
+<translation id="6555373427270923730">מקלידים כתובת אינטרנט בסרגל הכתובות ולוחצים על <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 התקנה חדשה</translation>
 <translation id="6559158502366839560">עוד אפליקציות ומשחקים מעניינים</translation>
@@ -1756,14 +1756,14 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="666343722268997814">פתיחת תפריט הקשר של הפריט המודגש</translation>
 <translation id="6665545700722362599">לאפשר לאתרים, לאפליקציות ולתוספים לקבל הרשאה להשתמש במיקום, במצלמה, במיקרופון ובשאר תכונות המכשיר של המשתמש</translation>
-<translation id="6667908387435388584">‏ניתן להתחבר לנקודה לשיתוף אינטרנט (Hotspot) של הטלפון, להשתיק את המכשיר ולאתר אותו וכן להציג את הכרטיסיות האחרונות שפתוחות בטלפון</translation>
+<translation id="6667908387435388584">‏אפשר להתחבר לנקודה לשיתוף אינטרנט (Hotspot) של הטלפון, להשתיק את המכשיר ולאתר אותו, וגם להציג את הכרטיסיות האחרונות שפתוחות בטלפון</translation>
 <translation id="6670153871843998651">שולחן עבודה 3</translation>
 <translation id="6671495933530132209">העתקת התמונה</translation>
 <translation id="6671661918848783005">‏אי אפשר לפתוח את נעילת ה-Chromebook</translation>
 <translation id="6676552993057022464">אפשר להשתמש במקשי החצים למעלה או למטה כדי לשנות את גודל המסך המפוצל</translation>
 <translation id="6682029141988159141">הדבקת התוכן מהלוח</translation>
 <translation id="6683022854667115063">אוזניות</translation>
-<translation id="6686023075541098243">הגדרת ההצגה של ההתראות שבטלפון</translation>
+<translation id="6686023075541098243">הגדרת התצוגה של ההתראות שבטלפון</translation>
 <translation id="6694462491298752106">לוח המגע המובנה מושבת</translation>
 <translation id="6694973220096431421">‏חיפוש ב-Google Drive</translation>
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
@@ -1864,7 +1864,7 @@
 <translation id="7026338066939101231">הפחתה</translation>
 <translation id="7029814467594812963">יציאה מההפעלה</translation>
 <translation id="7031303610220416229">‏להצגת כל המשימות ב-Google Tasks</translation>
-<translation id="7032161822340700104">אפשר ליצור עד 6 תבניות. יש להסיר תבנית כדי ליצור תבנית חדשה.</translation>
+<translation id="7032161822340700104">אפשר ליצור עד 6 תבניות. כדי ליצור תבנית חדשה, יש להסיר תבנית אחת.</translation>
 <translation id="7034025838182392395">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש ב<ph name="DEVICE_NAME" />. צריך להפעיל את <ph name="DEVICE_NAME" /> פיזית.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />,‏ Google Assistant</translation>
 <translation id="7042322267639375032">כיווץ של אזור הסטטוס</translation>
@@ -1983,7 +1983,7 @@
 <translation id="7488762544858401571">ערוך</translation>
 <translation id="7489261257412536105">מעבר למסך מלא או יציאה ממנו</translation>
 <translation id="7490157877815329797">‏כדי להאזין למוזיקה בלי פרסומות ומוזיקה מותאמת אישית שעוזרת להתרכז, כדאי לנסות את YouTube Music Premium</translation>
-<translation id="7490360161041035804">‏ניתן להצמיד קבצים חשובים, כולל קבצים מ-Google Drive. כדי להצמיד, מעבירים את העכבר מעל פריט או פותחים את 'קבצים' ולוחצים לחיצה ימנית על פריט.</translation>
+<translation id="7490360161041035804">‏אפשר להצמיד קבצים חשובים, כולל קבצים מ-Google Drive. כדי להצמיד, צריך להציב את הסמן מעל פריט או לפתוח את "קבצים" וללחוץ לחיצה ימנית על פריט.</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7507162824403726948">צריך לסיים את אימות הזהות</translation>
 <translation id="7508690557411636492">נפתח בחודש האחרון</translation>
@@ -2000,7 +2000,7 @@
 <translation id="7519649142417630956">לאחר הכיבוי, האדמין ינותק מהחשבון ולא יוכל לשלוט במכשיר שלך.
 
 כדי לכבות את המכשיר, יש ללחוץ שוב לחיצה ארוכה על כפתור ההפעלה במכשיר.</translation>
-<translation id="7523420897035067483">הפעלת התכונה 'נא לא להפריע' בזמן מצב ריכוז</translation>
+<translation id="7523420897035067483">הפעלת התכונה "נא לא להפריע" בזמן מצב ריכוז</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">יצירה</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
@@ -2016,7 +2016,7 @@
 <translation id="7564874036684306347">העברת חלונות לשולחן עבודה אחר עלולה לגרום להתנהגות בלתי צפויה.
 
 ייתכן שהודעות, חלונות ותיבות דו-שיח יתפצלו בהמשך בין שולחנות עבודה.</translation>
-<translation id="7568154670718626683">‏רוצה להשתמש במקש Delete? שימוש במקש</translation>
+<translation id="7568154670718626683">מנסה למחוק? צריך להשתמש במקשים</translation>
 <translation id="7568790562536448087">העדכון מתבצע</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
 <translation id="7569886975397378678">ביטול ההגדרה של הצגת האפליקציות מהטלפון וקבלת התראות ממנו</translation>
@@ -2049,7 +2049,7 @@
 <translation id="7654916369822103315">‏‫<ph name="DISPLAY_NAME" /> השתנה לרזולוציה של <ph name="FALLBACK_RESOLUTION" /> (‎<ph name="FALLBACK_REFRESH_RATE" /> Hz). בגלל מגבלות רוחב הפס של היציאה, המסך לא יכול לתמוך ברזולוציה של <ph name="SPECIFIED_RESOLUTION" /> (‎<ph name="SPECIFIED_REFRESH_RATE" /> Hz). בלי אישור, ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659861092419699379">שולחן העבודה הווירטואלי והחלונות שלו נסגרו</translation>
-<translation id="7660160718439869192">המכשיר <ph name="NAME" /> יופיע ברשימת המכשירים המקושרים אל <ph name="EMAIL" /></translation>
+<translation id="7660160718439869192">המכשיר <ph name="NAME" /> יופיע ברשימת המכשירים שמקושרים אל <ph name="EMAIL" /></translation>
 <translation id="7661694115779363471">נבחרה נקודת האחיזה בפינה השמאלית התחתונה. כדי להזיז אותה, אפשר להשתמש במקשי החיצים</translation>
 <translation id="7662283695561029522">יש ללחוץ כדי להגדיר</translation>
 <translation id="7670953955701272011">‏פתיחת התאריך הזה ביומן Google</translation>
@@ -2081,7 +2081,7 @@
 <translation id="7751260505918304024">הצגת הכול</translation>
 <translation id="7762664108390426952">‏התנאים וההגבלות ומדיניות הפרטיות של Google</translation>
 <translation id="7768784765476638775">הקראה</translation>
-<translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
+<translation id="7769299611924763557">‏ה-GIF יהיה מוכן בקרוב</translation>
 <translation id="7773536009433685931">‏הפעלת Wi-Fi בכל זאת</translation>
 <translation id="77747521138552256">היו יותר מדי ניסיונות להזנת קוד האימות. צריך לחכות <ph name="TIME_LEFT" /> ולנסות שוב להזין את קוד האימות, או להזין סיסמה כדי להיכנס מיד.</translation>
 <translation id="7780094051999721182">קיצורי הדרך</translation>
@@ -2090,7 +2090,7 @@
 <translation id="7787212146956232129">הוגדרו מכשירי קלט ופלט. אפשר לשנות את זה בהגדרות.</translation>
 <translation id="7792590255364786396">גלוי</translation>
 <translation id="7796735576426975947">התראה חדשה מוסתרת</translation>
-<translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>
+<translation id="7798302898096527229">‏כדי לבטל, אפשר ללחוץ על Search או Shift .</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
@@ -2127,7 +2127,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">ההתראות מושתקות עד <ph name="TIME" />, כל עוד המכשיר במצב פוקוס</translation>
 <translation id="7901010467630324625">רק מכשירים שמחוברים אל <ph name="EMAIL" /></translation>
-<translation id="7901190436359881020">החלפה בין החלונות</translation>
+<translation id="7901190436359881020">החלפת חלונות</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">צריך לגעת בחיישן טביעות האצבע</translation>
 <translation id="7904094684485781019">מנהל החשבון הזה אסר על כניסה עם מספר חשבונות.</translation>
@@ -2228,7 +2228,7 @@
 <translation id="820256110035940528">‫<ph name="TITLE" /> מצב ריכוז הופעל במשך <ph name="FOCUSED_TIME" />. אפשר לפתוח את ההגדרות המהירות כדי לחזור למצב ריכוז.</translation>
 <translation id="8203224998425013577">‏הצגה של סמלי אמוג'י וקובצי GIF נוספים</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
-<translation id="8205469348819768313">‏רוצה להשתמש במקש Page Down? שימוש במקש</translation>
+<translation id="8205469348819768313">‏רוצה להשתמש במקש Page Down? צריך להשתמש במקש</translation>
 <translation id="8213376797713070611">כפתור עכבר שמאלי</translation>
 <translation id="8214996719228530800">‏ערוץ Canary</translation>
 <translation id="8219451629189078428">‏בפרק הזמן הזה, צריך להשאיר את ה-Chromebook פועל ומחובר לחשמל. חשוב לוודא שהכבלים של המטען או של המתאם מחוברים היטב ל-Chromebook ולשקע החשמל. אין לכבות את ה-Chromebook.</translation>
@@ -2298,7 +2298,7 @@
 <translation id="8468806060683421065">מועד ההגשה: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">הגדרות קנה המידה של התצוגה</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
-<translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
+<translation id="8477270416194247200">‏כדי לבטל, אפשר ללחוץ על Alt+Search או Shift.</translation>
 <translation id="8480418399907765580">הצג את סרגל הכלים</translation>
 <translation id="8487660088084188539">‏כשמפעילים את התכונות האלה, יכול להיות שהטקסט שהוזן, התוכן של המסמך וכתובת ה-URL של דף האינטרנט יישלחו לשרתים של Google. המידע הזה משמש ליצירת הצעות לכתיבה, ליצירת סיכומים, למתן תשובות על שאלות ולשיפור המוצר, בכפוף למדיניות <ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="8487699605742506766">נקודה לשיתוף אינטרנט</translation>
@@ -2306,7 +2306,7 @@
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על "אישור". ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8507563469658346379">כולם, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">יצירת שולחן עבודה וירטואלי חדש</translation>
-<translation id="85123341071060231">‏החיבור של ה-Chromebook ל-Bluetooth כבוי. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
+<translation id="85123341071060231">‏ה-Bluetooth כבוי. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
 <translation id="8513108775083588393">סיבוב אוטומטי</translation>
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, כפתור הבחירה נבחר</translation>
 <translation id="851660987304951246">כדאי להשתמש בכלי 'עזרה בקריאה' כדי לסכם תוכן או לשאול שאלות במהירות</translation>
@@ -2359,7 +2359,7 @@
 <translation id="8676770494376880701">חובר מטען בעל מתח נמוך</translation>
 <translation id="8679158879996532670">הצגת ההגדרות של מצב הריכוז. מצב הריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">מעקב הביצועים פעיל</translation>
-<translation id="8703634754197148428">‏יש להתחיל בהקלטה. לאחר התחלת ההקלטה, יש ללחוץ על Alt ‏+ Shift ‏+ L כדי לעבור למדף ולמצוא את הכפתור להפסקת ההקלטה</translation>
+<translation id="8703634754197148428">‏אפשר ללחוץ כדי להתחיל בהקלטה. אחרי שההקלטה מתחילה, אפשר ללחוץ על Alt ‏+ Shift ‏+ L כדי לעבור למדף ולמצוא את הכפתור להפסקת ההקלטה</translation>
 <translation id="8704155109538237473">התמקדות בחלון "תמונה בתוך תמונה"</translation>
 <translation id="870917907284186124">הפעלה או השבתה של ההכתבה (הקלדה קולית)</translation>
 <translation id="8711169534266271368">אפשרויות במרכז בקרת המשחקים</translation>
@@ -2443,13 +2443,13 @@
 <translation id="8945508919180478719">מיקרופון בסגנון אולפן</translation>
 <translation id="894774083269346314">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> לא מסומנת.</translation>
 <translation id="8949925099261528566">יש חיבור, אין אינטרנט</translation>
-<translation id="8951539504029375108">‏רק מכשירי Thunderbolt מאושרים תואמים ל-Chromebook</translation>
+<translation id="8951539504029375108">‏רק מכשירי Thunderbolt מאושרים תואמים ל-Chromebook שלך</translation>
 <translation id="8956420987536947088">רוצה לפתוח את האפליקציות והחלונות הקודמים?</translation>
 <translation id="8959380109429710384">‏לחצת על מקש הקיצור של "מגדיל למסך מלא". כדי לזוז במסך כשמגדילים את התצוגה, משתמשים ב-Ctrl‏ + Alt + מקשי החיצים.</translation>
 <translation id="8964525410783593407">שעה אחת</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8973885907461690937">העברת המיקוד לסמל התפריט</translation>
-<translation id="8980862970816311842">העברה של סמל אפליקציה אל תיקייה או מחוץ לה בתצוגת האפליקציות</translation>
+<translation id="8980862970816311842">העברה של סמל אפליקציה אל או מחוץ לתיקייה בתצוגת האפליקציות</translation>
 <translation id="8982906748181120328">גישה בסביבה</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
@@ -2502,9 +2502,7 @@
 <translation id="9161053988251441839">אפליקציות מוצעות</translation>
 <translation id="9168436347345867845">מאוחר יותר</translation>
 <translation id="9178475906033259337">מוצגת תוצאה אחת עבור השאילתה: <ph name="QUERY" /></translation>
-<translation id="9179259655489829027">תכונה זו מאפשרת לך לגשת במהירות לכל משתמש המחובר לחשבון, בלי להזין סיסמה.
-
-יש להשתמש בתכונה הזו רק עם חשבונות מהימנים.</translation>
+<translation id="9179259655489829027">הפיצ'ר הזה מאפשר לך לגשת במהירות לכל משתמש ששמור בחשבון, בלי להזין סיסמה. יש להשתמש בתכונה הזו רק עם חשבונות מהימנים.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">הגדלת כל המסך</translation>
 <translation id="9192133205265227850">שימוש במכשיר "<ph name="DEVICE_NAME" />"</translation>
@@ -2524,8 +2522,8 @@
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="921989828232331238">הורה נעל את המכשיר שלך להיום</translation>
 <translation id="9220525904950070496">הסרת החשבון</translation>
-<translation id="923686485342484400">‏יש להקיש פעמיים על Control Shift Q כדי לצאת.</translation>
-<translation id="92580429198593979">הקשת על מקש הקיצור להיפוך צבעים. רוצה להפעיל אותו?</translation>
+<translation id="923686485342484400">‏אפשר ללחוץ פעמיים על Ctrl Shift Q כדי לצאת.</translation>
+<translation id="92580429198593979">לחצת על כפתור הקיצור להיפוך צבעים. רוצה להפעיל אותו?</translation>
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
 <translation id="938407504481277932">שולחן העבודה הווירטואלי הנוכחי: <ph name="DESK_NAME" />. ‫<ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>

@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Non se modificou o PIN. Comproba a túa conexión a Internet e téntao de novo</translation>
 <translation id="1063070031224282617">Escolle onde queres gardar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recensións en función dos teus intereses</translation>
+<translation id="1072679792409426431">Desactivado pola persoa que administra a túa conta</translation>
 <translation id="1074827084851510304">Vas eliminar {password_count} contrasinais e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1081114897601629648">Non se importaron os seguintes contrasinais ao xestor de contrasinais de Google porque non cumpren os requisitos.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Este enderezo eliminarase do dispositivo.}other{Estes enderezos eliminaranse do dispositivo.}}</translation>
 <translation id="2297989278479054870">Cando peches a sesión, os marcadores, os contrasinais e outros datos da túa Conta de Google quitaranse deste dispositivo.</translation>
 <translation id="2299218006564889602">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
+<translation id="2306265833370324042">Mostrar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Pechar pestana</translation>
 <translation id="2311077293164383652">Pechar pestana fixada</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
@@ -671,7 +673,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3631443864840848029">Asegúrate de gardar o teu contrasinal actual deste sitio.</translation>
 <translation id="3642060527569456384">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Hai {count} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
-<translation id="3650299480924308502">Despois de pechar a sesión, os datos que non se gardasen eliminaranse deste dispositivo. Esta información pode incluír contrasinais ou datos do historial, entre outras cousas.</translation>
 <translation id="3659297405161482746">Non se atopou ningún método de pago</translation>
 <translation id="3668816008081204991">A lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1201,6 +1202,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5709005673595820640">{count,plural, =1{Tes {count} contrasinal reutilizado que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais reutilizados que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
 <translation id="57094364128775171">Suxerir contrasinal seguro…</translation>
 <translation id="5718049162805123412">Recomendámosche que os cambies agora</translation>
+<translation id="5721040778297053709">Coloca a tarxeta de crédito neste marco</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5724941645893276623">Para navegar pola Web de forma privada, engade unha nova pestana</translation>
 <translation id="5728072125198221967">Servizos de Google vinculados</translation>
@@ -1568,7 +1570,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7055240621761583113">Autocompletar o contrasinal</translation>
 <translation id="7063811929043357292">A túa conta está xestionada polo teu pai ou pola túa nai.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Para protexer a túa organización, eliminaranse deste dispositivo os datos que non estean gardados. Esta información pode incluír contrasinais ou datos do historial, entre outras cousas.</translation>
 <translation id="7067780033517902110">Todos os ficheiros</translation>
 <translation id="707086654079606593">Xestionar enderezos…</translation>
 <translation id="7080806333218412752">Envía enderezos URL á función Navegación segura para comprobalos. Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas. Vincula temporalmente estes datos coa túa Conta de Google cando inicies sesión para protexerte nas aplicacións de Google.</translation>
@@ -1780,6 +1781,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7889910613639381518">Acceso seguro e sinxelo co widget do xestor de contrasinais de Google.</translation>
 <translation id="7899199123054742721">Marcar todo como non lido</translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
+<translation id="7918999344502274923">Ocultar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Non se atopou ningún problema</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>

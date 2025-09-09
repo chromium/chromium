@@ -26,6 +26,16 @@
           va “proksi-serversiz” yoki “to‘g‘ridan-to‘g‘ri” sozlamalaridan biri
           belgilanganligiga ishonch hosil qiling.</translation>
 <translation id="6341737370356890233">Chrome menyusini ochib, “<ph name="SETTINGS_TITLE" />” &gt; “<ph name="ADVANCED_TITLE" />” bandlarini tanlang va “<ph name="NO_PREFETCH_DESCRIPTION" />” parametrini o‘chirib qo‘ying. Agar muammo qaytarilsa sahifalar tezroq yuklanishi uchun parametrni yana yoqib qo‘ying.</translation>
+<translation id="6581867098636731226">Bularni oching:
+          Chrome menyusi &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Tarmoq va internet &gt; Proksi-server
+          va keyin “Sozlamalarni avtomatik aniqlash” tanlovini bekor qiling.</translation>
 <translation id="7230956101631259640">Xavfsiz Google Chrome sahifasini koʻrmoqdasiz.</translation>
 <translation id="8232971017369963250">Chrome paydo boʻlishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli dastur loyihasining katta oʻrni bor.</translation>
 <translation id="8279509328145658601">Chrome paydo boʻlishida boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dastur<ph name="END_LINK_OSS" /> taʼminotining katta oʻrni bor.</translation>

@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">Scroll and zoom the contents of your shared tab</translation>
+<translation id="108859316315249327">Try again</translation>
 <translation id="1088664500620117635">Typical price for <ph name="PRODUCT_NAME" /> is <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /> but the current price is <ph name="CURRENT_PRICE" /> across the web.</translation>
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1089599132348386324">You can change your mind at any time in Chrome settings.</translation>
@@ -74,6 +75,7 @@
 <translation id="1123753900084781868">Live Caption is not available at the moment</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – to exit full screen, drag from the top and touch the back button</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
 <translation id="1144136880160289237">You don't have any active topics yet</translation>
@@ -454,6 +456,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expires <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
+<translation id="1740404923954980840">To exit full screen, drag from the top and touch the back button</translation>
 <translation id="1741474054575634405">Manage loyalty cards…</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Bedding and Bed Linen</translation>
@@ -636,7 +639,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2066969741541525119">The site ahead is blocked by your organisation</translation>
 <translation id="2069913043427250781">Vehicle and traffic safety</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
-<translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
 <translation id="2071852865256799872">Your browser is managed by your organisation and your profile is managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2074733626795553847">Unblock <ph name="TOPIC" /></translation>
@@ -927,7 +929,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2515761554693942801">You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">This card is not available. Please contact your card provider.</translation>
-<translation id="2519250377986324805">See how</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Create form</translation>
 <translation id="2524461107774643265">Add More Information</translation>
@@ -936,7 +937,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2527451058878391043">Your CVC is on the front of your card. It’s the four-digit code at the top right above your card number.</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
 <translation id="2530042584066815841">Mouse lock and use</translation>
-<translation id="2533649878691950253">This site was blocked from knowing your precise location because you usually don't allow this</translation>
 <translation id="253493526287553278">See promo code details</translation>
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
@@ -1154,6 +1154,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2933624813161016821">Embossing foil</translation>
 <translation id="293796669683825859">Comments</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – to show your cursor, switch apps, reload the page or go back</translation>
 <translation id="2940418897281183211">PNG image</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is from <ph name="DOMAIN2" />. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -1323,6 +1324,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208701679386778924">Please send a report so that we can improve further ChromeOS updates.</translation>
 <translation id="3209034400446768650">Page may charge money</translation>
+<translation id="3212468046572043669">Download started. To see it, drag from the top and touch the back button</translation>
 <translation id="3212581601480735796">Your activity on <ph name="HOSTNAME" /> is being monitored</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
 <translation id="3215311088819828484">Result updated</translation>
@@ -1860,6 +1862,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4085326869263783566">Help me write. Tab and press enter to open</translation>
 <translation id="4085769736382018559">Compare products</translation>
 <translation id="4085778582400064057">Blue 2</translation>
+<translation id="4085859451613666999">Your card is saved in your Google Account so that you can autofill it for future purchases</translation>
 <translation id="4088981014127559358">Side 1 image Y shift</translation>
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4092349052316400070">Fill address</translation>
@@ -2409,6 +2412,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4995474875135717171">Modified:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage Site Search and your default search engine</translation>
 <translation id="4998950033665438990">Single face</translation>
+<translation id="5001338033791319371">To exit full screen and see download, drag from the top and touch the back button</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="5007344584818503324">Shared tab groups activity</translation>
@@ -2469,6 +2473,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Press Tab then Enter to ask AI Mode</translation>
 <translation id="510644072453496781">Cardboard (end)</translation>
 <translation id="5106648964679263509">Virtual card for <ph name="BNPL_ISSUER_NAME" /> filled</translation>
 <translation id="5108567515277121477">Loyalty card</translation>
@@ -3477,6 +3482,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787094689637422836">We’re launching new privacy features that give you more choice over the ads that you see.</translation>
+<translation id="6788615780749001893">AI Mode button, press Enter to ask AI Mode</translation>
 <translation id="6789062271869667677">Continuous (long)</translation>
 <translation id="678982761784843853">Protected content IDs</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -3542,7 +3548,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">You're signed out</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
-<translation id="6905163627763043954">Try it</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Download multiple files</translation>
 <translation id="691046363691324218">Redress number</translation>
@@ -3971,6 +3976,7 @@ Additional details:
 <translation id="7582602800368606489">Create a new event in Google Calendar quickly</translation>
 <translation id="7586676035079382730">Notifications not allowed</translation>
 <translation id="7588707273764747927">Transfer</translation>
+<translation id="7589062909165841767">Your Google Account may have your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Share confidential content?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wants to use cookies and site data on <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Server's certificate violates name constraints.</translation>
@@ -4256,6 +4262,7 @@ Additional details:
 <translation id="8075736640322370409">Create a new Google Sheet quickly</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
 <translation id="8076492880354921740">Tabs</translation>
+<translation id="8076880883123051368">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Envelope Chinese no.8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
 <translation id="8079031581361219619">Reload site?</translation>
@@ -4389,6 +4396,7 @@ Additional details:
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Card saved on device only</translation>
 <translation id="8301894345671534559">Enter code</translation>
 <translation id="8304912090860925649">New comparison table</translation>
 <translation id="830498451218851433">Fold half</translation>
@@ -4909,6 +4917,7 @@ Additional details:
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
 <translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
+<translation id="9198613052465150219">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9201904868909900493">Opening survey…</translation>
 <translation id="9204089334327209740">Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER" />. Local storage, including any files in Trash, will be automatically removed.</translation>

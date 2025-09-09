@@ -33,6 +33,16 @@
           y anula la selección de "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Si esto no resuelve el problema, vuelve a habilitar esta opción
           para obtener un mejor desempeño.</translation>
+<translation id="6581867098636731226">Ve al
+          menú de Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Red e Internet &gt; Proxy
+          y anula la selección de la opción "Detectar la configuración automáticamente".</translation>
 <translation id="7230956101631259640">Estás viendo una página segura de Chrome</translation>
 <translation id="8232971017369963250">Chrome funciona gracias al proyecto de código abierto de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome también funciona gracias a otros <ph name="BEGIN_LINK_OSS" />software de código abierto<ph name="END_LINK_OSS" />.</translation>

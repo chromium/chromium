@@ -114,9 +114,6 @@
 <translation id="1069814191880976658">Aukeratu beste pantaila bat</translation>
 <translation id="107022587824771715">Fitxa taldeen iradokizunak ez daude erabilgarri une honetan. <ph name="BEGIN_LINK" />Freskatu orain<ph name="END_LINK" /> edo saiatu berriro geroago</translation>
 <translation id="1070357312245925724">Nabigazio-lasterbidea</translation>
-<translation id="1070377999570795893">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen luzapen bat gehitu du.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Beste arakatzaile batean irekiko da <ph name="COUNTDOWN_SECONDS" /> segundo barru</translation>
 <translation id="1071661533099313342">Bereizi ikuspegiak</translation>
 <translation id="1071917609930274619">Datuak zifratzea</translation>
@@ -855,9 +852,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1583082742220286248">Saioari berrekiten</translation>
 <translation id="1583127975413389276">Gailuan bertan prozesatzen da <ph name="LANGUAGE" />, eta konexiorik gabe funtzionatzen du</translation>
 <translation id="1584990664401018068">Baliteke darabilzun wifi-sarea (<ph name="NETWORK_ID" />) autentifikatu behar izatea.</translation>
-<translation id="1585717515139318619">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen gai bat gehitu du.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587275751631642843">&amp;JavaScript kontsola</translation>
 <translation id="1587907146729660231">Sakatu etengailua hatzarekin</translation>
 <translation id="1588438908519853928">Arrunta</translation>
@@ -1564,7 +1558,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2066700471214517561">Beamforming teknologiarekin bateragarria den mikrofonoa, Chromebook-a darabilen pertsonaren ahotsa argi eta garbi entzun dadin.</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> aplikazioak <ph name="PRINTER_NAME" /> inprimagailuan inprimatzen amaitu du</translation>
 <translation id="2071393345806050157">Ez dago erregistro lokalik.</translation>
-<translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Sakatu luzapena instalatzeko}other{Sakatu luzapen horiek instalatzeko}}</translation>
 <translation id="2073496667646280609">Baliteke gailuan edo babeskopiak egiteko tokian behar adina toki libre ez izatea. Egin tokia gailuan edo hautatu babeskopiak egiteko beste toki bat.</translation>
 <translation id="2073505299004274893">Erabili <ph name="CHARACTER_LIMIT" /> karaktere gehienez</translation>
@@ -2269,7 +2262,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2532146950330687938">Gailua prestatzen…</translation>
 <translation id="2532198298278778531">Kudeatu DNS segurua ChromeOS Flex-en ezarpenetan</translation>
 <translation id="2532589005999780174">Kontraste handiko modua</translation>
-<translation id="2533649878691950253">Webgune honi blokeatu egin zaio zure kokapen zehatza hautemateko aukera, normalean ez duzulako ematen</translation>
 <translation id="253434972992662860">&amp;Pausatu</translation>
 <translation id="253498598929009420">Webguneak pantailan agertzen dena ikusi ahal izango du</translation>
 <translation id="253557089021624350">Aktibo mantentzen dutenak</translation>
@@ -3352,6 +3344,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="331080746368555063">Webgune pribatuetan, zure enpresaren intraneta eta antzekoak sartzen dira, adibidez</translation>
 <translation id="3311007761540106761">Sistemaren balio lehenetsia</translation>
 <translation id="3311445899360743395">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik.</translation>
+<translation id="3312300514034250578">Arakatze seguru hobetua</translation>
 <translation id="3312470654018965389">Linux-en edukiontzia konfiguratzen</translation>
 <translation id="3312883087018430408">Bilaketak webgune zehatz batean edo Chrome-ren zati batean egiteko, idatzi atal horren lasterbidea helbide-barran eta, ondoren, sakatu erabili ohi duzun lasterbidea. Adibidez, emaitzak laster-marken atalean soilik bilatzeko, idatzi "@laster-markak", eta sakatu tabuladorea edo zuriune-barra.</translation>
 <translation id="3313622045786997898">Ziurtagiriaren sinaduraren balioa</translation>
@@ -3659,6 +3652,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3522088408596898827">Oso toki gutxi geratzen da diskoan. Egin tokia eta saiatu berriro.</translation>
 <translation id="3522979239100719575">Erabilgarri dauden profilak bilatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="3523447078673133727">Ez eman zure eskuen jarraipena egiteko baimenik webguneei</translation>
+<translation id="3523789730715594198">Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3524518036046613664">Aurkitu sare lokaleko gailuak, hala nola inprimagailuak</translation>
 <translation id="3524965460886318643">Esportatu jarduerak</translation>
 <translation id="3525606571546393707">Ireki fitxategia beste karpeta batetik, edo aukeratu "Ireki oinarrizko editorean" ikusteko eta editatzeko aukera mugatuak erabiltzeko.</translation>
@@ -6618,6 +6612,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5595307023264033512">Webguneek erabilitako memoria, guztira: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
+<translation id="5596808802173376270">Arazo bat dago leheneratzeko eman den fitxategiarekin. Litekeena da ordenagailu ostalarian exekutatzen den Linux-eko makina birtual mota zuzena ez izatea. Informazio gehiago lortzeko, ikusi /var/log/messages.</translation>
 <translation id="5600348067066185292">Urrats erraz gutxi batzuetan instalatzen da. Ordenagailuan aldaketak egin aurretik, beste aukera bat izango duzu berresteko.</translation>
 <translation id="5600706100022181951">Datu-konexioaren <ph name="UPDATE_SIZE_MB" /> MB erabilita deskargatuko da eguneratzea. Aurrera egin nahi duzu?</translation>
 <translation id="5601503069213153581">PINa</translation>
@@ -8074,6 +8069,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6657240842932274095">Zure kokapena erabiltzeko baimena eman nahi diezu sistemaren zerbitzuei?</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" luzapenak aplikatu dio zooma orriari</translation>
+<translation id="6659594942844771486">Fitxa</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: kamera grabatzen</translation>
 <translation id="6660301751798595791">Ahotsaren hautapena</translation>
 <translation id="6660819301598582123">Vaudeville itxurako filmean yogi ñaño bat jipoitzen dute whiski truk Quebec-en.</translation>
@@ -9706,10 +9702,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
     <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> gisa dago ikusgai inguruko gailuetarako…</translation>
 <translation id="7786889348652477777">Kar&amp;gatu berriro aplikazioa</translation>
 <translation id="7787308148023287649">Erakutsi beste pantaila batean</translation>
-<translation id="7788298548579301890">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen aplikazio bat gehitu du.
-
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7789895198197042595">Etxeko helbideak gauzak erraztuko dizkizu Google-ren zerbitzuetan; adibidez, egokiagoak izango dira bilaketa-emaitzak eta Google Maps-eko jarraibideak. Helbidea editatzeko edo ezabatzeko, joan <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google-ko kontura<ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Idazketa-metodoa</translation>
 <translation id="7791429245559955092">Aplikazio hau orain darabilzun Chrome-ko profilean instalatuko da</translation>
@@ -9813,6 +9805,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="786073089922909430">Zerbitzua: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Deskargak</translation>
 <translation id="7861846108263890455">Google-ko kontuaren hizkuntza</translation>
+<translation id="7863211248337747225">Lortu aplikazioa</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> min barru</translation>
 <translation id="7864539943188674973">Desgaitu Bluetootha</translation>
 <translation id="7864825798076155402">Google-ko kontuan gorde nahi duzu?</translation>

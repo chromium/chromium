@@ -8,7 +8,7 @@
 <translation id="1311894908970423688">הערך חייב להיות <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1591562245178063882">החודש</translation>
-<translation id="1637811476055996098">יש לבחור קבצים</translation>
+<translation id="1637811476055996098">בחירת קבצים</translation>
 <translation id="1729654308190250600">יש להזין ערך בשדה של כתובת האימייל.</translation>
 <translation id="1758486001363313524">אחר...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -49,7 +49,7 @@
 <translation id="5164977714490026579">הערך חייב להיות גדול מ-<ph name="MINIMUM" /> או שווה לו.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
-<translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
+<translation id="5307600278924710095">צריך להזין חלק ואחריו "<ph name="ATSIGN" />"‏. השדה "<ph name="INVALIDADDRESS" />" לא מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5466621249238537318">צריך לבחור קובץ אחד או יותר.</translation>

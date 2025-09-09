@@ -177,6 +177,9 @@
 <translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
 <translation id="3161522574479303604">Wszystkie języki</translation>
 <translation id="3179665906251668410">Otwórz link w oknie inco&amp;gnito Chromium</translation>
+<translation id="3183357154200327217">Inny program na Twoim komputerze dodał motyw, który może zmienić działanie Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Dostosuj swój nowy profil Chromium</translation>
 <translation id="3224847870593914902">Aby usunąć konto Google z Chromium, wyloguj się z Chromium na stronie Ustawienia</translation>
 <translation id="3234316605225071811">Później Chromium może zapytać, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
@@ -239,6 +242,9 @@
 <translation id="4036079820698952681">Pomóż ulepszyć Chromium, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4055805654398742145">Menedżer &amp;haseł</translation>
+<translation id="4061696872429826774">Inny program na Twoim komputerze dodał rozszerzenie, które może zmieniać sposób działania Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez minutę. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}few{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}many{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minut. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}other{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}}</translation>
 <translation id="4118474109249235144">Tryb incognito w Chromium</translation>
 <translation id="4122186850977583290">Otwórz stronę Chromium – informacje</translation>
@@ -398,6 +404,9 @@
 <translation id="6174920971222007286">Ten plik może być niebezpieczny<ph name="LINE_BREAK" />Chromium może go sprawdzić, jeśli podasz hasło. Informacje o pliku są wysyłane do Bezpiecznego przeglądania Google, ale zawartość pliku i hasło pozostają na urządzeniu.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
+<translation id="6204922163963157461">Inny program na Twoim komputerze dodał aplikację, która może zmienić działanie Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
 <translation id="6239161312595354541">Zapytaj o ten film w usłudze wyszukiwania obrazów</translation>
@@ -614,6 +623,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="8818550178040858407">Chcesz zalogować się w Chromium?</translation>
+<translation id="8823401858233292222">Ustaw Chromium jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
 <translation id="8826492472752484139">Kliknij „Menedżer haseł”</translation>
 <translation id="8833697763442816810">System operacyjny Chromium</translation>
 <translation id="8852026904190808918">Ten język jest używany do wyświetlania menu, ustawień, alertów i innego tekstu w Chromium</translation>

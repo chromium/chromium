@@ -12,7 +12,7 @@
 <translation id="1257458525759135959">‏כדי לשמור תמונות לחצו על "הגדרות" על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1260702988262336471">‏פתיחת תפריט Chromium</translation>
 <translation id="12739128458173458">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chromium בשני המכשירים.</translation>
-<translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
+<translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, יכול להיות שהמכשיר שלך לא תומך בגרסאות החדשות של Chromium.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1423007117030725713">‏חיפוש בכרטיסיית Chromium חדשה.</translation>
 <translation id="1431818719585918472">‏דפדפן Chromium ינעל את הכרטיסיות שלך במצב הפרטי.</translation>
@@ -45,8 +45,8 @@
 <translation id="1867772173333403444">‏4. בוחרים באפשרות Chromium</translation>
 <translation id="2006345422933397527">‏חיפוש העדכונים ב-Chromium לא הצליח. צריך לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2042889939382983733">‏הצגת ההיסטוריה ב-Chromium</translation>
-<translation id="2052320862053429062">‏Chromium בודק מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
-<translation id="2059365270911640413">‏לא סיימת להגדיר את Chromium</translation>
+<translation id="2052320862053429062">‏Chromium בודק מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאף אחד לא יכול לקרוא אותם, כולל Google.</translation>
+<translation id="2059365270911640413">‏סיום הגדרת Chromium</translation>
 <translation id="2168108852149185974">‏תוספים מסוימים גורמים ל-Chromium לקרוס. יש להסיר אותם:</translation>
 <translation id="2168593389981132306">‏משפרים את Chromium</translation>
 <translation id="2178608107313874732">‏‫Chromium לא יכול להשתמש עכשיו במצלמה</translation>
@@ -65,12 +65,12 @@
 <translation id="2340423701577464731">‏הוספת פריט מרשימת הקריאה ל-Chromium</translation>
 <translation id="2374627437126809292">‏‫Chromium משתמש במפות Google כדי לספק מסלולים ומידע מקומי על כתובות שהמערכת מזהה.</translation>
 <translation id="2386292341327187942">‏בתיבה לחיפוש ווידג'טים, צריך להזין "Chromium"</translation>
-<translation id="2426113998523353159">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium.</translation>
+<translation id="2426113998523353159">‏לפי דרישת הארגון שלך, צריך להיכנס לחשבון כדי להשתמש ב-Chromium.</translation>
 <translation id="2450140762465183767">‏מעכשיו אפשר להשתמש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2459183986985456602">‏פתיחת הכרטיסייה האחרונה שלי ב-Chromium</translation>
 <translation id="2476409803017965813">‏תמיד אפשר לבחור אפשרויות אחרות בהגדרות של Chromium.</translation>
-<translation id="2478931088402984578">‏בוחרים באפשרות<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
-<translation id="2485774047568879945">‏אפשר להגדיר את Chromium כדפדפן ברירת המחדל כדי לשתף ולפתוח קישורים בקלות</translation>
+<translation id="2478931088402984578">‏לוחצים על <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">‏כדי לשתף ולפתוח קישורים בקלות, אפשר להגדיר את Chromium כדפדפן ברירת המחדל</translation>
 <translation id="2512597191798760956">‏לוחצים לחיצה ארוכה על סמל Chromium ואז לוחצים על "עריכה של מסך הבית"</translation>
 <translation id="2517624234762908348">‏סנכרון את הנתונים שלך מ-Chromium</translation>
 <translation id="2592940277904433508">‏המשך השימוש ב-Chromium</translation>
@@ -98,7 +98,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD}). זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}}</translation>
 <translation id="3410395242749598859">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון <ph name="EMAIL" />.
 כדאי לחכות כמה דקות לפני שמחליפים חשבונות. אם החשבונות יוחלפו עכשיו, הנתונים האלה יימחקו.</translation>
-<translation id="3440830787838130530">‏אפשר לשתף עותק של סיסמה עם הקבוצה המשפחתית באופן קל ומאובטח ב"מנהל הסיסמאות של Google"</translation>
+<translation id="3440830787838130530">‏אפשר לשתף עותק של סיסמה עם הקבוצה המשפחתית בקלות ובאופן מאובטח ב"מנהל הסיסמאות של Google"</translation>
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
 <translation id="347967311580159871">‏כדי לראות אילו הגדרות נוספות משתמשות בנתונים כדי לשפר את חוויית השימוש ב-Chromium, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">‏הסיסמה שלך לא שותפה. כדאי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chromium. אחר כך אפשר לנסות שוב.</translation>
@@ -184,13 +184,13 @@
 <translation id="5415273218238091735">‏טיפ ל-Chromium</translation>
 <translation id="5427571867875391349">‏הגדרת Chromium כדפדפן ברירת המחדל שלך</translation>
 <translation id="5434562575369834882">‏פתיחת הקישור במצב פרטי ב-Chromium</translation>
-<translation id="5453478652154926037">‏Chromium לא יכול לבדוק את הסיסמאות שלך.</translation>
+<translation id="5453478652154926037">‏דפדפן Chromium לא יכול לבדוק את הסיסמאות שלך.</translation>
 <translation id="5479292367402350143">‏כדי להגדיר את Chromium כדפדפן ברירת המחדל:
 1. פותחים את ההגדרות
 2. לוחצים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים באפשרות Chromium</translation>
 <translation id="5482686278086727777">‏כדי לקבל תזכורות לגבי כרטיסיות מ-Chromium, צריך להפעיל התראות בהגדרות iOS.</translation>
-<translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
+<translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="5534584691915394889">‏הנתונים מ-Chromium ומ-Google Lens ישמשו ליצירת אירועים ב-Apple Calendar.</translation>
 <translation id="5571094606370987472">‏ייפתחו הכרטיסיות האחרונות ב-Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
@@ -269,15 +269,15 @@
 <translation id="7504829997542308412">‏פתיחת Chromium</translation>
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי לך להעביר את Chromium ל-Dock</translation>
-<translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>
+<translation id="7576863740961052505">‏ניהול ההגדרות של Chromium</translation>
 <translation id="7674213385180944843">‏עברו אל הגדרות &gt; פרטיות &gt; מצלמה &gt; Chromium והפעילו את המצלמה.</translation>
 <translation id="7733418656985455268">‏טיפ ל-Chromium: חיפוש באמצעות Lens</translation>
 <translation id="7747820849741499258">‏חיפוש ב-Chromium</translation>
 <translation id="7753923083404296545">‏נפתח במצב פרטי ב-Chromium</translation>
 <translation id="7762622637388462191">‏ניתן לנעול את הכרטיסיות הפרטיות כשיוצאים מ-Chromium או עוברים לאפליקציה אחרת.</translation>
-<translation id="7763454117143368771">‏כדאי להשתמש ב-Chromium כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
+<translation id="7763454117143368771">‏כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות, כדאי להשתמש ב-Chromium כדפדפן ברירת המחדל</translation>
 <translation id="7784950022329154821">‏נעילת הכרטיסיות הפרטיות לאחר סגירת Chromium</translation>
-<translation id="78025249032851484">‏Chromium לא מעודכן.</translation>
+<translation id="78025249032851484">‏דפדפן Chromium לא מעודכן.</translation>
 <translation id="7859018312476869945">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="7890287942691234100">‏התחלת השימוש בסורק של Chromium</translation>
 <translation id="7905064834449738336">‏אם השתמשת בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chromium. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כדי שאף אחד לא יוכל לקרוא אותם, כולל Google.</translation>
@@ -288,7 +288,7 @@
 <translation id="7980860476903281594">‏המיקום שלך ישותף על ידי Chromium עם אתרים שיאושרו על ידך.</translation>
 <translation id="7994322153108931467">‏כדי לקבל טיפים מועילים ל-Chromium, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="7997159823054171568">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
-<translation id="800380310260616129">‏כאן אפשר להוריד את Chromium.</translation>
+<translation id="800380310260616129">‏מכאן מורידים את Chromium.</translation>
 <translation id="8013573822802650211">‏כדי לגשת לכרטיסיות שלך מכל מקום, צריך להתחבר ל-Chromium בכל המכשירים שלך</translation>
 <translation id="8014091604604659473">‏יצאת מהחשבון ב-Chromium</translation>
 <translation id="8104697640054703121">‏נהנים מרמת האבטחה הכי יעילה של Chromium מפני אתרים מסוכנים</translation>
@@ -317,7 +317,7 @@
 <translation id="8826789549860004832">‏רוצה ליהנות מכל מה ש-Chromium מציע? כדאי להמשיך להגדיר את הדפדפן.</translation>
 <translation id="88376265765385899">‏פתיחת הסימניות ב-Chromium.</translation>
 <translation id="8860548555286245440">‏פתיחת כתובות URL ב-Chromium במצב אנונימי</translation>
-<translation id="8880024619507699923">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="8880024619507699923">‏לפי הדרישה של הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="8925569192291721236">‏אפשר לקבל עדכונים לגבי מעקב אחר מחירים וטיפים לגבי Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD})}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}}</translation>

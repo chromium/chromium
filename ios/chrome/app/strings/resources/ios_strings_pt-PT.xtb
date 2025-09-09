@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">O PIN não foi alterado. Verifique a ligação à Internet e tente novamente</translation>
 <translation id="1063070031224282617">Escolha onde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Críticas com base nos seus interesses</translation>
+<translation id="1072679792409426431">Desativado pelo seu administrador</translation>
 <translation id="1074827084851510304">Está prestes a eliminar {password_count} palavras-passe e a lista de sites e apps para os quais optou por nunca guardar o início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1081114897601629648">As seguintes palavras-passe não foram importadas para o Gestor de Palavras-passe da Google porque não correspondem aos requisitos.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Esta morada vai ser eliminada deste dispositivo.}other{Estas moradas vão ser eliminadas deste dispositivo.}}</translation>
 <translation id="2297989278479054870">Depois de terminar sessão, os marcadores, as palavras-passe e muito mais na sua Conta Google são removidos deste dispositivo.</translation>
 <translation id="2299218006564889602">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
+<translation id="2306265833370324042">Mostrar detalhes do <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fechar separador</translation>
 <translation id="2311077293164383652">Fechar separador fixo</translation>
 <translation id="2316129865977710310">Não</translation>
@@ -671,7 +673,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3631443864840848029">Certifique-se de que está a guardar a sua palavra-passe atual para este site.</translation>
 <translation id="3642060527569456384">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {email}.}other{{count} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {email}.}}</translation>
-<translation id="3650299480924308502">Depois de terminar sessão, os dados não guardados são eliminados deste dispositivo. Estes podem incluir palavras-passe, o histórico e muito mais.</translation>
 <translation id="3659297405161482746">Não foram encontrados métodos de pagamento</translation>
 <translation id="3668816008081204991">A Lista de leitura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1201,6 +1202,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5709005673595820640">{count,plural, =1{Tem {count} palavra-passe reutilizada que pode pôr a sua segurança em risco. Corrija-a agora para manter a sua segurança.}other{Tem {count} palavras-passe reutilizadas que podem pôr a sua segurança em risco. Corrija-as agora para manter a sua segurança.}}</translation>
 <translation id="57094364128775171">Sugerir palavra-passe forte…</translation>
 <translation id="5718049162805123412">Deve alterá-las agora</translation>
+<translation id="5721040778297053709">Posicione o cartão de crédito nesta moldura</translation>
 <translation id="572328651809341494">Separadores recentes</translation>
 <translation id="5724941645893276623">Para navegar na Web em privado, adicione um novo separador.</translation>
 <translation id="5728072125198221967">Serviços Google associados</translation>
@@ -1568,7 +1570,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7055240621761583113">Preencher automaticamente a palavra-passe</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Para proteger a segurança da sua organização, os dados não guardados vão ser eliminados deste dispositivo. Estes podem incluir palavras-passe, o histórico e muito mais.</translation>
 <translation id="7067780033517902110">Todos os ficheiros</translation>
 <translation id="707086654079606593">Gerir moradas…</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
@@ -1780,6 +1781,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gestor de Palavras-passe da Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
+<translation id="7918999344502274923">Ocultar detalhes do <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nenhum problema encontrado</translation>
 <translation id="7925108652071887026">Dados de preenchimento automático</translation>
 <translation id="7926975587469166629">Alcunha do cartão</translation>

@@ -24,6 +24,16 @@
           e verifica che la configurazione sia impostata su "nessun proxy" o "diretta".</translation>
 <translation id="6341737370356890233">Seleziona il menu Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> e deseleziona "<ph name="NO_PREFETCH_DESCRIPTION" />".
 Se il problema non si risolve, dovresti riselezionare questa opzione per ottenere prestazioni migliori.</translation>
+<translation id="6581867098636731226">Vai al
+          menu Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Rete e internet &gt; Proxy
+          e deseleziona "Rileva automaticamente impostazioni".</translation>
 <translation id="7230956101631259640">Stai visualizzando una pagina protetta di Chrome</translation>
 <translation id="8232971017369963250">La realizzazione di Chrome è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">La realizzazione di Chrome è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>

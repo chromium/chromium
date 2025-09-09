@@ -31,6 +31,16 @@
 и премахнете отметката от „<ph name="NO_PREFETCH_DESCRIPTION" />“.
 Ако това не реши проблема, препоръчваме ви да изберете отново тази опция,
 за да подобрите ефективността.</translation>
+<translation id="6581867098636731226">Отворете
+менюто на Chrome &gt;
+<ph name="SETTINGS_TITLE" />
+&gt;
+<ph name="SYSTEM_TITLE" />
+&gt;
+<ph name="PROXIES_TITLE" />
+&gt;
+„Мрежа и интернет &gt; Прокси сървър“
+и премахнете избора от опцията за автоматично установяване на настройките.</translation>
 <translation id="7230956101631259640">Преглеждате защитена страница в Chrome</translation>
 <translation id="8232971017369963250">Браузърът Chrome е възможен благодарение на проекта с отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Браузърът Chrome е възможен и благодарение на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>

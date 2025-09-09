@@ -632,6 +632,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4042941173059740150">Haltu áfram á <ph name="SITE_ETLD_PLUS_ONE" /> með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Blað neðst</translation>
 <translation id="4045441967987592849">Opna aftur</translation>
+<translation id="4049920046559074950">Fleiri valkostir fyrir <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> staðlaður flipi með nýrri virkni í sameiginlegum flipahópum}one{<ph name="TABS_COUNT_MANY" /> staðlaður flipi með nýrri virkni í sameiginlegum flipahópum}other{<ph name="TABS_COUNT_MANY" /> staðlaðir flipar með nýrri virkni í sameiginlegum flipahópum}}</translation>
 <translation id="405365679581583349">Uppfærðu þjónustu Google Play</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>

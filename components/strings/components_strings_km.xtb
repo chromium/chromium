@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">តម្រឹមទទឹង</translation>
 <translation id="1081061862829655580">ទម្រទី 19</translation>
 <translation id="1082026381988252344">អូស និងពង្រីកបង្រួមខ្លឹមសារនៃផ្ទាំងដែលបានចែករំលែករបស់អ្នក</translation>
+<translation id="108859316315249327">ព្យាយាមម្ដងទៀត</translation>
 <translation id="1088664500620117635">តម្លៃធម្មតាសម្រាប់ <ph name="PRODUCT_NAME" /> គឺ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> ប៉ុន្តែតម្លៃបច្ចុប្បន្នគឺ <ph name="CURRENT_PRICE" /> នៅលើបណ្ដាញ។</translation>
 <translation id="1089439967362294234">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="1089599132348386324">អ្នកអាចប្ដូរចិត្តរបស់អ្នកនៅពេលណាក៏បាននៅក្នុងការកំណត់ Chrome។</translation>
@@ -74,6 +75,7 @@
 <translation id="1123753900084781868">មិន​អាចប្រើអក្សររត់ក្នុងពេលជាក់ស្ដែងនៅពេលនេះបានទេ</translation>
 <translation id="112840717907525620">ស្ថានភាពឃ្លាំងសម្ងាត់គោលការណ៍មានភាពប្រក្រតី</translation>
 <translation id="1131264053432022307">រូបភាព​ដែលអ្នកបានចម្លង</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="1138458427267715730">ទទួលបានការជូនដំណឹង នៅពេលដែលតម្លៃធ្លាក់ចុះនៅលើគេហទំព័រណាមួយលើបណ្ដាញ</translation>
 <translation id="1142713751288681188">ប្រភេទក្រដាស</translation>
 <translation id="1144136880160289237">អ្នកមិនទាន់មានប្រធានបទសកម្មនៅឡើយទេ</translation>
@@ -455,6 +457,7 @@
 <translation id="1734878702283171397">សូមសាកល្បងទាក់ទងទៅអ្នកគ្រប់គ្រងប្រព័ន្ធ</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ផុតកំណត់នៅខែ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">កុំព្យូទ័រ</translation>
+<translation id="1740404923954980840">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="1741474054575634405">គ្រប់គ្រង​កាត​សមាជិក...</translation>
 <translation id="1741613555002899862">ត្រូវតែ​បានបញ្ជាក់ និងជា​ជួរអក្សរ​ដែលត្រឹមត្រូវ​នៅពេល DnsOverHttpsMode គឺ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
 <translation id="1743393865165844832">សម្ភារ​គ្រែ​ដេក និង​កម្រាល​ពូក​ខ្នើយ</translation>
@@ -638,7 +641,6 @@
 <translation id="2066969741541525119">គេហទំព័រ​ដែលទៅកាន់ ត្រូវបានទប់ស្កាត់ដោយស្ថាប័នរបស់អ្នក</translation>
 <translation id="2069913043427250781">សុវត្ថិភាពយានជំនិះ និងចរាចរណ៍</translation>
 <translation id="2071156619270205202">កាតនេះ​មិនមានសិទ្ធិ​សម្រាប់លេខកាត​និម្មិតទេ។</translation>
-<translation id="2071692954027939183">ការជូនដំណឹងត្រូវបានទប់ស្កាត់ដោយស្វ័យប្រវត្តិ ដោយសារជាធម្មតា អ្នកមិនអនុញ្ញាតការជូនដំណឹងទេ</translation>
 <translation id="2071852865256799872">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់​ស្ថាប័នអ្នក ហើយកម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2074733626795553847">ឈប់ទប់ស្កាត់ <ph name="TOPIC" /></translation>
@@ -930,7 +932,6 @@
 <translation id="2515629240566999685">ពិនិត្យសេវានៅក្នុងតំបន់របស់អ្នក</translation>
 <translation id="2515761554693942801">អ្នក​បាន​ជ្រើសរើស​ផ្ទៀងផ្ទាត់​ដោយប្រើ Touch ID នៅលើ​គេហទំព័រ​ដែល​ប្រើប្រាស់ <ph name="PROVIDER_ORIGIN" />។ ក្រុមហ៊ុន​ផ្ដល់​សេវា​នេះ​ប្រហែលជា​បានរក្សាទុក​ព័ត៌មាន​អំពី​វិធីបង់ប្រាក់​របស់អ្នក ដែល​អ្នក​អាច​<ph name="LINK_TEXT" />។</translation>
 <translation id="2518584823165598232">មិនអាច​ប្រើ​កាតនេះ​បានទេ។ សូម​ទាក់ទង​ទៅក្រុមហ៊ុនផ្ដល់​សេវាកាត​របស់អ្នក។</translation>
-<translation id="2519250377986324805">មើលរបៀប</translation>
 <translation id="2521385132275182522">កិប​ខាងក្រោម​ផ្នែកខាង​ស្ដាំ</translation>
 <translation id="2521736961081452453">បង្កើត​ទម្រង់បែបបទ</translation>
 <translation id="2524461107774643265">បញ្ចូល​ព័ត៌មាន​បន្ថែម</translation>
@@ -939,7 +940,6 @@
 <translation id="2527451058878391043">CVC របស់អ្នកស្ថិតនៅផ្នែកខាងមុខនៃកាតរបស់អ្នក។ វាជាកូដ 4 ខ្ទង់នៅខាងស្ដាំផ្នែកខាងលើពីលើលេខកាតរបស់អ្នក។</translation>
 <translation id="2529899080962247600">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់​ដែលលើសពីនេះ​នឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="2530042584066815841">ការចាក់សោ និងការប្រើម៉ៅស៍</translation>
-<translation id="2533649878691950253">គេហទំព័រនេះ​ត្រូវបានទប់ស្កាត់​មិនឱ្យដឹង​ទីតាំងជាក់លាក់​របស់អ្នក ដោយសារ​ជាធម្មតា​អ្នកមិនអនុញ្ញាត​ឱ្យដឹង</translation>
 <translation id="253493526287553278">មើល​ព័ត៌មាន​លម្អិត​អំពី​កូដផ្ដល់ជូន​ពិសេស</translation>
 <translation id="2535585790302968248">បើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករក​ជាលក្ខណៈឯកជន</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{និង 1 ​ទៀត}other{និង # ទៀត}}</translation>
@@ -1157,6 +1157,7 @@
 <translation id="2933624813161016821">សន្លឹកអាលុយមីញ៉ូមសម្រាប់ការបោះពុម្ពផុស</translation>
 <translation id="293796669683825859">មតិ</translation>
 <translation id="2938225289965773019">បើកតំណ <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – ដើម្បី​បង្ហាញ​ទស្សន៍ទ្រនិច​របស់អ្នក សូមប្ដូរ​កម្មវិធី ផ្ទុក​ទំព័រ​ឡើងវិញ ឬ​ថយក្រោយ</translation>
 <translation id="2940418897281183211">រូបភាព PNG</translation>
 <translation id="2941878205777356567">ស្រោមសំបុត្រ 9 x 12 អ៊ីង</translation>
 <translation id="2941952326391522266">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វាមកពី <ph name="DOMAIN2" />។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
@@ -1326,6 +1327,7 @@
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3208701679386778924">សូម​ផ្ញើ​របាយការណ៍​ ដើម្បីឱ្យយើងអាច​កែលម្អ​បច្ចុប្បន្នភាព ChromeOS បន្ថែម​ទៀតបាន។</translation>
 <translation id="3209034400446768650">ទំព័រអាច​នឹង​គិតប្រាក់</translation>
+<translation id="3212468046572043669">បាន​ចាប់ផ្ដើម​ការទាញយក។ ដើម្បី​ឃើញវា សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="3212581601480735796">សកម្មភាព​របស់អ្នក​នៅលើ <ph name="HOSTNAME" /> កំពុងត្រូវ​បានឃ្លាំមើល</translation>
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
 <translation id="3215311088819828484">បានធ្វើបច្ចុប្បន្នភាពលទ្ធផល</translation>
@@ -1863,6 +1865,7 @@
 <translation id="4085326869263783566">ជួយខ្ញុំ​ក្នុងការ​សរសេរ។ ចុច Tab ហើយចុច enter ដើម្បី​បើក</translation>
 <translation id="4085769736382018559">ប្រៀបធៀប​ផលិតផល</translation>
 <translation id="4085778582400064057">ខៀវទី 2</translation>
+<translation id="4085859451613666999">កាត​របស់អ្នក​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក ដើម្បី​ឱ្យអ្នកអាច​បំពេញវា​ដោយ​ស្វ័យប្រវត្តិ​សម្រាប់​ការទិញ​នាពេល​អនាគត</translation>
 <translation id="4088981014127559358">ការប្ដូរ​រូបភាព Y នៃចំហៀងទី 1</translation>
 <translation id="4089152113577680600">ទម្រទី 14</translation>
 <translation id="4092349052316400070">បំពេញអាសយដ្ឋាន</translation>
@@ -2413,6 +2416,7 @@
 <translation id="4995474875135717171">បាន​កែប្រែ៖</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រង​ការស្វែងរក​នៅលើគេហទំព័រ និងម៉ាស៊ីនស្វែងរក​លំនាំដើមរបស់អ្នក</translation>
 <translation id="4998950033665438990">ម្ខាង</translation>
+<translation id="5001338033791319371">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ និង​ឃើញ​ការទាញ​យក សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="5001526427543320409">ខូគី​ភាគីទីបី</translation>
 <translation id="5002932099480077015">បើបើកដំណើរការ នោះ Chrome នឹងផ្ទុកច្បាប់ចម្លងកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទលឿនជាងមុន។</translation>
 <translation id="5007344584818503324">សកម្មភាព​ក្រុមផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
@@ -2473,6 +2477,7 @@
 <translation id="5097099694988056070">ស្ថិតិឧបករណ៍​ដូចជាការប្រើប្រាស់ CPU/RAM ជាដើម</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">ចុច tab បន្ទាប់មក enter ដើម្បីសួរ​មុខងារ AI</translation>
 <translation id="510644072453496781">កាតុង (ចុង)</translation>
 <translation id="5106648964679263509">បានបំពេញ​កាតនិម្មិត​សម្រាប់ <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108567515277121477">កាត​សមាជិក</translation>
@@ -3481,6 +3486,7 @@
 <translation id="6786145470008421571">ស្រោមសំបុត្រ 6 x 9 អ៊ីង</translation>
 <translation id="6786747875388722282">កម្មវិធីបន្ថែម</translation>
 <translation id="6787094689637422836">យើងកំពុងដាក់ចេញមុខងារឯកជនភាពថ្មីៗដែលផ្ដល់ជម្រើសដល់អ្នកកាន់តែច្រើនអំពីការផ្សាយពាណិជ្ជកម្មដែលអ្នកមើលឃើញ។</translation>
+<translation id="6788615780749001893">ប៊ូតុង​មុខងារ AI, ចុច Enter ដើម្បីសួរ​មុខងារ AI</translation>
 <translation id="6789062271869667677">បន្តបន្ទាប់ (ខាងវែង)</translation>
 <translation id="678982761784843853">លេខសម្គាល់​ខ្លឹមសារ​ដែលមាន​ការការពារ</translation>
 <translation id="6790428901817661496">លេង</translation>
@@ -3546,7 +3552,6 @@
 <translation id="6898699227549475383">អង្គភាព (O)</translation>
 <translation id="6900702165119149418">អ្នក​បានចេញ​ពី​គណនី</translation>
 <translation id="6903907808598579934">បើកសមកាលកម្ម</translation>
-<translation id="6905163627763043954">សាកល្បងវា</translation>
 <translation id="6907458757809079309">សម្បទា</translation>
 <translation id="691024665142758461">ទាញយកឯកសារច្រើន</translation>
 <translation id="691046363691324218">លេខកែតម្រូវ</translation>
@@ -3975,6 +3980,7 @@
 <translation id="7582602800368606489">បង្កើត​ព្រឹត្តិការណ៍ថ្មី​នៅក្នុង Google ប្រតិទិន​បានរហ័ស</translation>
 <translation id="7586676035079382730">មិនបានអនុញ្ញាតឱ្យមានការជូនដំណឹងទេ</translation>
 <translation id="7588707273764747927">ផ្ទេរ</translation>
+<translation id="7589062909165841767">គណនី Google របស់អ្នក​អាចមាន<ph name="BEGIN_LINK_GAA" />សកម្មភាព​កម្មវិធី Gemini<ph name="END_LINK_GAA" /> របស់អ្នក</translation>
 <translation id="7591288787774558753">ចែករំលែក​ខ្លឹមសារ​សម្ងាត់ឬ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ចង់ប្រើ​ទិន្នន័យ​គេហទំព័រ និង​ខូគី​នៅលើ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេបំពានលើឧបសគ្គឈ្មោះ។</translation>
@@ -4261,6 +4267,7 @@
 <translation id="8075736640322370409">បង្កើត​បញ្ជី Google ថ្មីបានរហ័ស</translation>
 <translation id="8075898834294118863">គ្រប់គ្រងការកំណត់គេហទំព័រ</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
+<translation id="8076880883123051368">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ដូចជា<ph name="BEGIN_LINK_GAA" />សកម្មភាព​កម្មវិធី Gemini<ph name="END_LINK_GAA" /> របស់អ្នក​ជាដើម</translation>
 <translation id="8077669823243888800">ស្រោមសំបុត្រចិន #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{បង្ហោះ​ឯកសារសម្ងាត់ឬ?}other{បង្ហោះ​ឯកសារសម្ងាត់ឬ?}}</translation>
 <translation id="8079031581361219619">ផ្ទុក​ទំព័រឡើង​វិញ?</translation>
@@ -4394,6 +4401,7 @@
 <translation id="8294431847097064396">ប្រភព</translation>
 <translation id="8297545700510100061">ខូគី និងទិន្នន័យគេហទំព័រផ្សេងទៀតត្រូវបានប្រើ ដើម្បីចងចាំអ្នក ឧទាហរណ៍ ដើម្បីនាំអ្នកចូលគណនី ឬដើម្បីកំណត់​ការផ្សាយ​ពាណិជ្ជកម្ម​ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ដើម្បី​គ្រប់គ្រង​ខូគី​សម្រាប់​គេហទំព័រ​ទាំងអស់ សូម​មើល<ph name="SETTINGS" />។</translation>
 <translation id="8298115750975731693">Wi-Fi ដែលអ្នកកំពុងប្រើ (<ph name="WIFI_NAME" />) អាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
+<translation id="8298399736867690281">កាត​ត្រូវបាន​រក្សាទុក​នៅលើ​ឧបករណ៍​តែប៉ុណ្ណោះ</translation>
 <translation id="8301894345671534559">បញ្ចូល​​​កូដ</translation>
 <translation id="8304912090860925649">តារាងប្រៀបធៀបថ្មី</translation>
 <translation id="830498451218851433">បត់​ពាក់កណ្ដាល</translation>
@@ -4913,6 +4921,7 @@
 <translation id="9192361865877479444">លោហៈ (គ្រើម)</translation>
 <translation id="9192947025498305328">គ្រឿងថែរក្សាសម្ផស្សគ្មានសារធាតុគ្រោះថ្នាក់</translation>
 <translation id="9195969368671142407">នៅពេល​ស្ថាប័ន​របស់អ្នក​ដាក់កំហិតលើ​ការរក្សាទុក​ទៅគណនី Google របស់អ្នក អ្នក​មិនអាច​ចែករំលែក ឬ​ចូលរួម​ក្រុមផ្ទាំង​បានទេ</translation>
+<translation id="9198613052465150219">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">ការបោះពុម្ពត្រូវបានទប់ស្កាត់។</translation>
 <translation id="9201904868909900493">កំពុងបើក​ការស្ទង់មតិ…</translation>
 <translation id="9204089334327209740">នៅពេលការបង្ហោះចប់ អ្នកអាចកែប្រែឯកសាររបស់អ្នកនៅក្នុង <ph name="CLOUD_PROVIDER" />។ ទំហំ​ផ្ទុកក្នុងឧបករណ៍ រួមទាំងឯកសារទាំងឡាយនៅក្នុងធុង​សំរាម នឹងត្រូវបានលុបដោយស្វ័យប្រវត្តិ។</translation>

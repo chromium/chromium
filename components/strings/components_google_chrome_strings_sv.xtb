@@ -33,6 +33,16 @@
         och avmarkera <ph name="NO_PREFETCH_DESCRIPTION" />.
         Om det inte hjälper rekommenderar vi att du markerar det
         här alternativet igen så att funktionaliteten förbättras.</translation>
+<translation id="6581867098636731226">Öppna
+          Chrome-menyn &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Nätverk och internet &gt; Proxy
+          och avmarkera Identifiera inställningar automatiskt.</translation>
 <translation id="7230956101631259640">Du visar en säker Chrome-sida</translation>
 <translation id="8232971017369963250">Chrome finns tack vare det öppna källkodsprojektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome möjliggörs även av andra <ph name="BEGIN_LINK_OSS" />program med öppen källkod<ph name="END_LINK_OSS" />.</translation>

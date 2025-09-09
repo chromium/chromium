@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Deine PIN wurde nicht geändert. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="1063070031224282617">Wähle einen Speicherort für die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />) aus</translation>
 <translation id="1072476005125066234">Rezensionen, die auf deinen Interessen basieren</translation>
+<translation id="1072679792409426431">Von deinem Administrator deaktiviert</translation>
 <translation id="1074827084851510304">Du bist im Begriff, {password_count} Passwörter und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
 <translation id="1081114897601629648">Die folgenden Passwörter wurden nicht in den Google Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Diese Adresse wird von diesem Gerät gelöscht.}other{Diese Adressen werden von diesem Gerät gelöscht.}}</translation>
 <translation id="2297989278479054870">Nach der Abmeldung werden Lesezeichen, Passwörter und weitere Daten in deinem Google-Konto von diesem Gerät entfernt.</translation>
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
+<translation id="2306265833370324042">Details für <ph name="SEARCH_ENGINE_NAME" /> anzeigen</translation>
 <translation id="2309265394777270359">Tab schließen</translation>
 <translation id="2311077293164383652">Angepinnten Tab schließen</translation>
 <translation id="2316129865977710310">Nein, danke</translation>
@@ -438,7 +440,7 @@
 <translation id="2664621323652615289">Beenden</translation>
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
-<translation id="2671423594960767771">Gruppe teilen</translation>
+<translation id="2671423594960767771">Gruppe freigeben</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
@@ -671,7 +673,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3631443864840848029">Speichere dein aktuelles Passwort für diese Website.</translation>
 <translation id="3642060527569456384">Tabgruppen werden automatisch auf allen deinen Geräten gespeichert und aktualisiert.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
-<translation id="3650299480924308502">Nachdem du dich abmeldest, werden nicht gespeicherte Daten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="3659297405161482746">Keine Zahlungsmethoden gefunden</translation>
 <translation id="3668816008081204991">Leseliste ist ausgeblendet</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -1201,6 +1202,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5709005673595820640">{count,plural, =1{Du nutzt {count} mehrfach verwendetes Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} mehrfach verwendete Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
 <translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
+<translation id="5721040778297053709">Positioniere die Kreditkarte in diesem Bereich</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5724941645893276623">Füge einen neuen Tab hinzu, um privat im Web zu surfen</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
@@ -1568,7 +1570,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7055240621761583113">Passwort automatisch ausfüllen</translation>
 <translation id="7063811929043357292">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Nicht gespeicherte Daten werden von diesem Gerät gelöscht, um zum Schutz deiner Organisation beizutragen. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="7067780033517902110">Alle Dateien</translation>
 <translation id="707086654079606593">Adressen verwalten…</translation>
 <translation id="7080806333218412752">Sendet URLs an Safe Browsing, um sie zu prüfen. Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern. Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen.</translation>
@@ -1609,7 +1610,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7241135764990439166">Inkognitomodus ist nicht verfügbar</translation>
 <translation id="7248046129087111453">Der <ph name="BEGIN_LINK" />Suchverlauf<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />andere Arten von Aktivitäten<ph name="END_LINK" /> könnten in deinem Google-Konto gespeichert sein.</translation>
 <translation id="7253951228444156601">Passwörter werden geprüft…</translation>
-<translation id="7261217796641151584">Gruppe teilen</translation>
+<translation id="7261217796641151584">Gruppe freigeben</translation>
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="728025568708172005">Tour starten</translation>
@@ -1780,6 +1781,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7889910613639381518">Einfacher und sicherer Zugriff mit dem Google Passwortmanager-Widget.</translation>
 <translation id="7899199123054742721">Alle als ungelesen markieren</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
+<translation id="7918999344502274923">Details für <ph name="SEARCH_ENGINE_NAME" /> ausblenden</translation>
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
 <translation id="7925108652071887026">Autofill-Daten</translation>
 <translation id="7926975587469166629">Kartenalias</translation>

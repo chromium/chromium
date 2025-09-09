@@ -32,6 +32,16 @@
         og taktu valið af „<ph name="NO_PREFETCH_DESCRIPTION" />“.
         Ef þetta leysir ekki málið mælum við með að gera þennan valkost
         virkan á ný til að auka afköst.</translation>
+<translation id="6581867098636731226">Farðu í
+          valmynd Chrome&gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Netkerfi og internet &gt; Proxy
+          og afveldu „Greina stillingar sjálfkrafa“.</translation>
 <translation id="7230956101631259640">Þú ert að skoða örugga Chrome síðu</translation>
 <translation id="8232971017369963250">Chrome virkar í krafti verkefnis <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> um opinn kóða.</translation>
 <translation id="8279509328145658601">Chrome virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>

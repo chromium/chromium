@@ -13,6 +13,9 @@
 <translation id="1065672644894730302">ບໍ່ສາມາດອ່ານຄວາມມັກຂອງທ່ານໄດ້.
 
 ບາງຄຸນສົມບັດ​ອາດຈະບໍ່ມີໃຫ້ ແລະການປ່ຽນແປງຕໍ່ຄວາມມັກຈະບໍ່ຖືກບັນທຶກ.</translation>
+<translation id="1070377999570795893">ໂປຣແກຣມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່{ານໄດ້ເພີ່ມສ່ວນ​ຂະ​ຫຍາຍທີ່ອາດຈະປ່ຽນແປງວິທີການເຮັດວຽກຂອງ Chrome ແລ້ວ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ເຄີຍໃຊ້ Chrome ໃນເມື່ອກ່ອນ</translation>
 <translation id="110877069173485804">ນີ້​ແມ່ນ Chrome ຂອງ​ທ່ານ</translation>
@@ -48,6 +51,9 @@
 <translation id="1547295885616600893">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="1547469039832541117">ສິ້ນສຸດໜ້າວຽກທີ່ໄຮໄລ້.</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
+<translation id="1585717515139318619">ໂປຣແກຣມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່ານ​ໄດ້​ເພີ່ມ​ທີມ​ທີ່​ອາດ​ຈະ​ປ່ຽນ​ແປງວິ​ທີ Chrome ເຮັດ​ວຽກ​ແລ້ວ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="1597911401261118146">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
@@ -455,6 +461,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6321592572353357376">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6326175484149238433">ເອົາ​ອອກ​ໄປຈາກ Chrome</translation>
 <translation id="6327105987658262776">ບໍ່ມີອັບເດດເທື່ອ.</translation>
+<translation id="6334815226785304306">ຕັ້ງ Google Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ ແລະ ປັກໝຸດໄວ້ຢູ່ແຖບໜ້າວຽກ</translation>
 <translation id="6360449101159168105">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ມີການນຳໃຊ້, ລະບົບຈະເພີ່ມພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໃຊ້ Chrome ໄດ້ຢ່າງວ່ອງໄວຢູ່ຕະຫຼອດ. ທ່ານສາມາດເລືອກຍົກເວັ້ນໃຫ້ເວັບໄຊນີ້ເຮັດວຽກຕະຫຼອດເວລາໄດ້.</translation>
 <translation id="6388799252195623474">ຊ່ວຍຂ້ອຍໃນເລື່ອງນີ້</translation>
 <translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
@@ -553,6 +560,9 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7572537927358445944">ປິດ • Chrome ບໍ່ສາມາດຢັ້ງຢືນໄດ້ວ່າສ່ວນຂະຫຍາຍນີ້ມາຈາກໃສ</translation>
 <translation id="7583399374488819119">ຕົວຕິດຕັ້ງ <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">ຖາມ Google ກ່ຽວກັບໜ້ານີ້</translation>
+<translation id="760353356052806707">ໂປຣແກຣມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່ານໄດ້ເພີ່ມແອັບທີ່ອາດຈະປ່ຽນແປງວິທີການເຮັດວຽກຂອງ Chrome ແລ້ວ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS.</translation>
 <translation id="7627609214560473136">ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ກະລຸນາອະນຸຍາດໃຫ້ Chrome ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້.</translation>

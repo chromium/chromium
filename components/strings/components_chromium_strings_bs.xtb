@@ -2,6 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="130631256467250065">Vaše promjene će stupiti na snagu kada sljedeći put ponovo pokrenete uređaj.</translation>
+<translation id="261308610302996111">Idite u
+          meni Chromiuma&gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          i provjerite je li vaša konfiguracija postavljena na "bez proksi servera" ili "direktno".</translation>
 <translation id="275588974610408078">Izrada izvještaja o padovima aplikacije nije dostupna na Chromiumu.</translation>
 <translation id="3064346599913645280">Prikazana vam je sigurna stranica Chromiuma</translation>
 <translation id="3255926992597692024">Chromium pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
@@ -14,6 +22,16 @@
 <translation id="4949828774841497663">Idite u Aplikacije &gt; Postavke sistema &gt; Mreža, odaberite
           aktivnu mrežu, kliknite na dugme Detalji… i poništite odabir svih proksi servera
           koji su možda odabrani.</translation>
+<translation id="6480456350195404966">Idite u
+          meni Chromiuma &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Mreža i internet &gt; Proksi server
+          i poništite odabir opcije "Automatski otkrivaj postavke".</translation>
 <translation id="648062525172759633">Ove stranice su namijenjene za korištenje programerima Chromiuma i možda se neće aktivno održavati ili testirati. Da ih omogućite, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da omogućite stranice za otklanjanje grešaka, zatim se vratite na ovu stranicu.</translation>
 <translation id="6549378540556750549">Chromium su omogućili i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vaše promjene će stupiti na snagu kada sljedeći put budete ponovo pokrenuli Chromium.</translation>

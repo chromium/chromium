@@ -33,6 +33,16 @@
         и поништете го изборот на „<ph name="NO_PREFETCH_DESCRIPTION" />“.
         Доколку со ова не се реши проблемот, препорачуваме повторно да ја изберете опцијата
         за подобрена изведба.</translation>
+<translation id="6581867098636731226">Одете во
+          менито на Chrome, па во
+          „<ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Мрежа и интернет &gt; Прокси“
+          и поништете го изборот на „Автоматско откривање поставки“.</translation>
 <translation id="7230956101631259640">Вие сте на безбедна страница на Chrome</translation>
 <translation id="8232971017369963250">Chrome го овозможува проектот за софтвер со отворен код на <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome го овозможува и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>

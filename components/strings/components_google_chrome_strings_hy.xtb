@@ -31,6 +31,16 @@
           և ապանշեք «<ph name="NO_PREFETCH_DESCRIPTION" />»-ը:
           Եթե խնդիրը չվերանա, խորհուրդ ենք տալիս կրկին ընտրել այս տարբերակը՝
           արդյունավետությունը բարձրացնելու համար:</translation>
+<translation id="6581867098636731226">Բացեք
+          Chrome-ի ընտրացանկը &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Ցանց և ինտերնետ &gt; Պրոքսի սերվեր
+          և անջատեք «Ավտոմատ որոշել կարգավորումները» պարամետրը։</translation>
 <translation id="7230956101631259640">Դուք դիտում եք Chrome-ի անվտանգ էջ</translation>
 <translation id="8232971017369963250">Chrome-ը ստեղծվել է <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ի բաց կոդով նախագծի հիման վրա։</translation>
 <translation id="8279509328145658601">Chrome-ը նաև աշխատում է այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_OSS" /> շնորհիվ։</translation>

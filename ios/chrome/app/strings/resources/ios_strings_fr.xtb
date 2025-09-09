@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Votre code n'a pas été modifié. Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="1063070031224282617">Choisissez où enregistrer "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Avis basés sur vos centres d'intérêt</translation>
+<translation id="1072679792409426431">Désactivé par votre administrateur</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le Gestionnaire de mots de passe de Google, car ils ne répondent pas aux exigences.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Cette adresse sera supprimée de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2297989278479054870">Une fois que vous serez déconnecté, les favoris, les mots de passe et d'autres données de votre compte Google seront supprimés de cet appareil.</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google.</translation>
+<translation id="2306265833370324042">Afficher les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fermer l'onglet</translation>
 <translation id="2311077293164383652">Fermer l'onglet épinglé</translation>
 <translation id="2316129865977710310">Non merci</translation>
@@ -671,7 +673,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3631443864840848029">Veillez à enregistrer votre mot de passe actuel pour ce site.</translation>
 <translation id="3642060527569456384">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}one{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}other{{count} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
-<translation id="3650299480924308502">Lorsque vous vous déconnectez, les données non enregistrées sont supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
 <translation id="3659297405161482746">Aucun mode de paiement trouvé</translation>
 <translation id="3668816008081204991">La liste de lecture est masquée</translation>
 <translation id="3670030362669914947">Numéro</translation>
@@ -1201,6 +1202,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5709005673595820640">{count,plural, =1{Vous avez {count} mot de passe réutilisé pouvant compromettre votre sécurité. Modifiez-le maintenant pour vous protéger.}one{Vous avez {count} mot de passe réutilisé pouvant compromettre votre sécurité. Modifiez-le maintenant pour vous protéger.}other{Vous avez {count} mots de passe réutilisés pouvant compromettre votre sécurité. Modifiez-les maintenant pour vous protéger.}}</translation>
 <translation id="57094364128775171">Suggérer un mot de passe sécurisé…</translation>
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
+<translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
@@ -1568,7 +1570,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7055240621761583113">Saisir automatiquement le mot de passe</translation>
 <translation id="7063811929043357292">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
 <translation id="7067780033517902110">Tous les fichiers</translation>
 <translation id="707086654079606593">Gérer les adresses…</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
@@ -1780,6 +1781,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7889910613639381518">Un accès simple et sécurisé avec le widget Gestionnaire de mots de passe de Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>
+<translation id="7918999344502274923">Masquer les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7925108652071887026">Données de saisie automatique</translation>
 <translation id="7926975587469166629">Nom donné à la carte</translation>

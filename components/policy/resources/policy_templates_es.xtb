@@ -472,6 +472,7 @@ Esta función está disponible a partir de <ph name="MAC_OS_NAME" /> 10.15.</tra
       Si se habilita esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no se le asigna ningún valor, esta política estará habilitada en dispositivos gestionados y en dispositivos propiedad de consumidores.
       Ten en cuenta que esta política es temporal y su objetivo es permitir que los usuarios gestionados puedan usar combinaciones de teclas antiguas y obsoletas. Esta política quedará obsoleta cuando estén disponibles las combinaciones de teclas personalizadas.</translation>
+<translation id="1357214899305978790">Configurar accesos directos en la página Nueva pestaña (beta)</translation>
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
 <translation id="1363839375295535439">Si se habilita esta política o no se define, se habilitará el entorno aislado de LPAC para los servicios de impresión siempre que la configuración del sistema lo admita.
@@ -3432,7 +3433,6 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
       Si inhabilitas esta opción o no se establece, se utilizará el nuevo flujo de inicio de sesión insertado de forma predeterminada. Los usuarios pueden seguir habilitando el flujo de inicio de sesión anterior basado en la Web a través del indicador de línea de comandos "--enable-web-based-signin".
 
       La opción experimental se eliminará en el futuro cuando el inicio de sesión insertado sea totalmente compatible con todos los flujos de SSO.</translation>
-<translation id="3435178885391813398">No permitir Escáner.</translation>
 <translation id="3435796032110614169">Permitir eliminar el historial de trabajos de impresión</translation>
 <translation id="3436217793443508863">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se bloquee la pantalla cuando el dispositivo funcione con la batería</translation>
 <translation id="3437924696598384725">Permitir que el usuario gestione conexiones VPN</translation>
@@ -5259,6 +5259,17 @@ Se mantendrá la sesión iniciada del usuario en su cuenta de Google al eliminar
 Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los tipos de datos correspondientes si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="4694138212536142867">Habilitar los informes sobre el estado del hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlar la función para filtrar parámetros de URL</translation>
+<translation id="4698488381632756664">En desarrollo: solo para la versión preliminar.
+
+Si se establece esta política, se preconfigurarán hasta 10 accesos directos personalizados en la página Nueva pestaña de <ph name="PRODUCT_NAME" />.
+
+Si se establece esta política, los usuarios verán estos accesos directos de forma predeterminada y podrán alternar entre "Mis accesos directos", "Sitios web más visitados" o "Accesos directos de mi organización" en el panel Personalizar Chrome. Si se deja vacía o no se establece, el usuario solo podrá alternar entre "Mis accesos directos" y "Sitios web más visitados" en el panel Personalizar Chrome.
+
+Las URLs de acceso directo deben ser únicas.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, los usuarios podrán cambiar el nombre del acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán cambiar el nombre.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, los usuarios podrán quitar el acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán quitar el acceso directo.</translation>
 <translation id="4698895924806859508">No informar de eventos de red</translation>
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699592681017489215">Esta política configura un interruptor local que puede usarse para inhabilitar las comprobaciones de interceptación de DNS. Con las comprobaciones, se intenta averiguar si el navegador está detrás de un proxy que redirige nombres de host desconocidos.
@@ -7176,7 +7187,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si se inhabilita la política, no se permitirá el uso del protocolo QUIC.</translation>
 <translation id="5916855682471300200">Las políticas basadas en la nube tienen prioridad sobre las políticas basadas en la plataforma del equipo</translation>
-<translation id="5917092644305650513">Configuración de la función Escáner</translation>
 <translation id="5917425424971710623">No informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="5917897389577978190">Gmail (compatible desde la versión 135)</translation>
 <translation id="592036544845479336">Volver a habilitar eventos de mutación obsoletos/retirados</translation>
@@ -7579,7 +7589,6 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
       de informes sobre fallos. Si se le asigna el valor "true", se proporcionará información
       de informes sobre fallos.</translation>
 <translation id="624219423122512710">Acciones que se ejecutarán cuando el navegador esté inactivo</translation>
-<translation id="6243061183100681514">Permitir Escáner y mejorar los modelos de IA.</translation>
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
 <translation id="624595269193747921">Especifica si se limitará la búsqueda de la impresora coincidente a un conjunto de impresoras concreto.</translation>
@@ -8315,7 +8324,6 @@ En <ph name="MS_WIN_NAME" />, la política del KDC se respeta siempre.</translat
 <translation id="666203515318060501">Permitir la función Autocompletar mejorada sin mejorar los modelos de IA.</translation>
 <translation id="6665670272107384733">Definir la frecuencia con la que el usuario debe introducir la contraseña para utilizar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para mostrar la contraseña en las pantallas de inicio de sesión y bloqueo</translation>
-<translation id="6667636336079341367">Permitir Escáner sin mejorar los modelos de IA.</translation>
 <translation id="6668559639284945695">Esta política permite volver al comportamiento anterior de alcance de las cookies.
 
 Eso significa que se puede acceder a las cookies definidas en un protocolo o puerto específicos (por ejemplo, HTTPS) desde otro.
@@ -10972,17 +10980,6 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       Si la política se inhabilita o no se establece, no se proporcionará esta información.
       Si se habilita, se informará de los eventos de CRD si los usuarios son afiliados.</translation>
 <translation id="85723976805793612">Los registros de eventos de instalación de aplicaciones Android se comparten con Google</translation>
-<translation id="8573354257711790704">Esta política controla la configuración de la función Escáner de <ph name="PRODUCT_OS_NAME" />.
-
-Si se asigna el valor 0, permite que se use la función y que Google utilice datos pertinentes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2, no se permite la función.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="857369585509260201">Esta política está obsoleta, pero puedes utilizar BrowserSignin en su lugar.
 
       Si se asigna el valor "True" a esta política, el usuario deberá iniciar sesión en <ph name="PRODUCT_NAME" /> con su perfil antes de usar el navegador. El valor predeterminado que se asignará a BrowserGuestModeEnabled es "False". Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta el artículo del Centro de Ayuda.

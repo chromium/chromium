@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN-koden ble ikke endret. Sjekk internettilkoblingen, og prøv på nytt</translation>
 <translation id="1063070031224282617">Velg hvor du vil lagre «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Anmeldelser basert på interessene dine</translation>
+<translation id="1072679792409426431">Deaktivert av administratoren din</translation>
 <translation id="1074827084851510304">Du er i ferd med å slette {password_count} passord samt listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1081114897601629648">Følgende passord ble ikke importert til Google Passordlagring fordi de ikke oppfyller kravene.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
 <translation id="2297989278479054870">Når du logger av, fjernes blant annet bokmerkene og passordene i Google-kontoen din fra denne enheten.</translation>
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
+<translation id="2306265833370324042">Vis <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
 <translation id="2309265394777270359">Lukk fane</translation>
 <translation id="2311077293164383652">Lukk festet fane</translation>
 <translation id="2316129865977710310">Nei takk</translation>
@@ -671,7 +673,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3631443864840848029">Sørg for at du lagrer det nåværende passordet ditt for dette nettstedet.</translation>
 <translation id="3642060527569456384">Fanegrupper lagres og oppdateres automatisk på alle enhetene dine.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
-<translation id="3650299480924308502">Når du logger av, slettes data som ikke er lagret, fra denne enheten. Dette kan inkludere blant annet passord og logg.</translation>
 <translation id="3659297405161482746">Fant ingen betalingsmåter</translation>
 <translation id="3668816008081204991">Leselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -1201,6 +1202,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5709005673595820640">{count,plural, =1{Du har {count} gjenbrukt passord som kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} gjenbrukte passord som kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
 <translation id="5718049162805123412">Du bør endre disse nå</translation>
+<translation id="5721040778297053709">Plasser kredittkortet i denne rammen</translation>
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>
 <translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
@@ -1568,7 +1570,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7055240621761583113">Autofyll passordet</translation>
 <translation id="7063811929043357292">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">For å ivareta organisasjonens sikkerhet blir data som ikke er lagret, slettet fra denne enheten. Dette kan inkludere blant annet passord og logg.</translation>
 <translation id="7067780033517902110">Alle filer</translation>
 <translation id="707086654079606593">Administrer adresser…</translation>
 <translation id="7080806333218412752">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
@@ -1780,6 +1781,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7889910613639381518">Enkel og sikker tilgang med Google Passordlagring-modulen.</translation>
 <translation id="7899199123054742721">Merk alle som ulest</translation>
 <translation id="7911190106180361398">Organisasjonen din lar deg ikke synkronisere alt.</translation>
+<translation id="7918999344502274923">Skjul <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
 <translation id="792357691529995513">Fant ingen problemer</translation>
 <translation id="7925108652071887026">Autofyll data</translation>
 <translation id="7926975587469166629">Kallenavn på kortet</translation>

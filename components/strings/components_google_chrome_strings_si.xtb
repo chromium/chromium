@@ -31,6 +31,15 @@
         <ph name="ADVANCED_TITLE" />
         තෝරා "<ph name="NO_PREFETCH_DESCRIPTION" />." තේරීම ඉවත් කරන්න
         මෙයින් නිරාකරණය නොවුන හොත්, වඩා දියුණු ක්‍රියාකාරීත්වයක් සඳහා මෙම අභිප්‍රේතය නැවත තෝරන්න.</translation>
+<translation id="6581867098636731226">Chrome මෙනුව &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          ජාලය සහ අන්තර්ජාලය &gt; ප්‍රොක්සිය
+          සහ "ස්වයංක්‍රීයව සැකසීම් හඳුනා ගන්න" වෙත ගොස් තේරීම ඉවත් කරන්න.</translation>
 <translation id="7230956101631259640">ඔබගේ ආරක්ෂිත Google Chrome පිටුවක් බලමින් සිටී</translation>
 <translation id="8232971017369963250">Chrome හට <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර මෘදුකාංගය මගින් හැකියාව සලසා ඇත</translation>
 <translation id="8279509328145658601">Chrome හට වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගින් ද හැකියාව සලසා ඇත</translation>

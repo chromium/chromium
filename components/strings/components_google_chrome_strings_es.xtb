@@ -31,6 +31,7 @@
           y desactiva la opción "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Si esto no soluciona el problema, te recomendamos que vuelvas a seleccionar esta opción
           para conseguir un mejor rendimiento.</translation>
+<translation id="6581867098636731226">Ve al menú de Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Red e Internet &gt; Proxy y desmarca la opción Detectar configuración automáticamente.</translation>
 <translation id="7230956101631259640">Estás viendo una página de Chrome segura</translation>
 <translation id="8232971017369963250">Chrome se ha podido crear gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome también se ha podido crear gracias a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>

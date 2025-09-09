@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN anda tidak ditukar. Periksa sambungan Internet anda, kemudian cuba lagi</translation>
 <translation id="1063070031224282617">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Ulasan berdasarkan minat anda</translation>
+<translation id="1072679792409426431">Dilumpuhkan oleh pentadbir anda</translation>
 <translation id="1074827084851510304">Anda akan memadamkan {password_count} kata laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1081114897601629648">Kata laluan yang berikut tidak diimport kepada Google Password Manager kerana kata laluan tersebut tidak sepadan dengan keperluan.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dipadamkan daripada peranti ini.}other{Alamat ini akan dipadamkan daripada peranti ini.}}</translation>
 <translation id="2297989278479054870">Selepas anda log keluar, penanda halaman, kata laluan dan banyak lagi dalam Google Account anda akan dialih keluar daripada peranti ini.</translation>
 <translation id="2299218006564889602">Kata laluan anda disulitkan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google.</translation>
+<translation id="2306265833370324042">Paparkan butiran <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tutup Tab</translation>
 <translation id="2311077293164383652">Tutup Tab Tersemat</translation>
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
@@ -671,7 +673,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3631443864840848029">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini.</translation>
 <translation id="3642060527569456384">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {email}.}other{{count} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {email}.}}</translation>
-<translation id="3650299480924308502">Selepas anda log keluar, data yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="3659297405161482746">Tiada kaedah pembayaran ditemukan</translation>
 <translation id="3668816008081204991">Senarai bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nombor</translation>
@@ -1201,6 +1202,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5709005673595820640">{count,plural, =1{Anda mempunyai {count} kata laluan yang digunakan semula yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}other{Anda mempunyai {count} kata laluan yang digunakan semula yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}}</translation>
 <translation id="57094364128775171">Cadangkan kata laluan yang kukuh…</translation>
 <translation id="5718049162805123412">Anda patut menukar kata laluan ini sekarang</translation>
+<translation id="5721040778297053709">Letakkan kad kredit dalam bingkai ini</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5724941645893276623">Untuk menyemak imbas web secara sulit, tambah tab baharu</translation>
 <translation id="5728072125198221967">Perkhidmatan Google terpaut</translation>
@@ -1568,7 +1570,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7055240621761583113">Autolengkap kata laluan</translation>
 <translation id="7063811929043357292">Akaun anda diuruskan oleh ibu/bapa anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Untuk melindungi keselamatan organisasi anda, data yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="7067780033517902110">Semua Fail</translation>
 <translation id="707086654079606593">Urus alamat…</translation>
 <translation id="7080806333218412752">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan. Turut menghantar sedikit contoh halaman, muat turun, aktiviti sambungan dan maklumat sistem untuk membantu penemuan ancaman baharu. Memautkan data ini pada Google Account anda secara sementara apabila anda log masuk, untuk melindungi anda merentas apl Google.</translation>
@@ -1780,6 +1781,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7899199123054742721">Tandai semua sebagai belum dibaca</translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>
+<translation id="7918999344502274923">Sembunyikan butiran <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Tiada isu ditemukan</translation>
 <translation id="7925108652071887026">Autolengkap data</translation>
 <translation id="7926975587469166629">Nama panggilan kad</translation>

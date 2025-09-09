@@ -189,7 +189,7 @@
 <translation id="799469866974412355">קבוצת כרטיסיות חדשה מהמכשיר השני שלך</translation>
 <translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
 <translation id="8053770993984522566">רשימת קבוצות הכרטיסיות, שנפתחה בחצי מגובה המסך</translation>
-<translation id="805809603610022708">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לקבוצה}one{הוספת הכרטיסיות לקבוצה}two{הוספת הכרטיסיות לקבוצה}other{הוספת הכרטיסיות לקבוצה}}</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{עודכנה לפני דקה (<ph name="NUM_MINS_ONE" />)}one{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}two{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}other{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}}</translation>

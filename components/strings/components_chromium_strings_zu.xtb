@@ -2,6 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="130631256467250065">Izinguquko zakho zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha idivayisi yakho.</translation>
+<translation id="261308610302996111">Iya
+          kumenyu yeChromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          bese uqinisekisa ukuthi izilungiselelo zakho zisethwe kokuthi "angabibikho ummeleli" noma "okuqondile."</translation>
 <translation id="275588974610408078">Ukubika kokuphahlazeka akutholakali ku-Chromium.</translation>
 <translation id="3064346599913645280">Ubuka ikhasi le-Chromium eliphephile</translation>
 <translation id="3255926992597692024">I-Chromium izama ukulungisa amasethingi okugcwalisa izindlela zokukhokha.</translation>
@@ -13,6 +21,16 @@
 <translation id="4949828774841497663">Iya kuma-Application &gt; Amasethingi Ohlelo &gt; Inethiwekhi, khetha
           inethiwekhi esebenzayo, chofoza inkinobho ethi Imininingwane..., bese uyeka ukukhetha noma yibaphi abameleli
           okungenzeka ukuthi bakhethiwe.</translation>
+<translation id="6480456350195404966">Iya
+          kumenyu yeChromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Inethiwekhi ne-inthanethi &gt; Ummeleli
+          bese ususa ukukhetha kokuthi "Thola amasethingi ngokuzenzekelayo".</translation>
 <translation id="648062525172759633">Lawa makhasi enzelwe ukusetshenziswa onjiniyela beChromium, futhi kungenzeka anganakekelwa noma ahlolwe. Ukuze uzinike amandla, funa kokuthi <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, chofoza inkinobho ukuze unike amandla amakhasi okususa iphutha, bese ufuna kuleli khasi futhi.</translation>
 <translation id="6549378540556750549">I-Chromium iphinda yenziwe enye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izinguquko zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha i-Chromium.</translation>

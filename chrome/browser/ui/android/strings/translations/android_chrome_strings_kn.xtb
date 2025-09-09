@@ -632,6 +632,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗಿನ <ph name="SITE_ETLD_PLUS_ONE" /> ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="4044708993631234325">ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="4045441967987592849">ಪುನಃ ತೆರೆಯಿರಿ</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_ONE" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್}one{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}other{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="405365679581583349">Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>

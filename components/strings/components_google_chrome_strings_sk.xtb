@@ -30,6 +30,15 @@
         a zrušte výber položky <ph name="NO_PREFETCH_DESCRIPTION" />.
          Ak to problém nevyrieši, odporúčame túto možnosť znova vybrať,
         aby ste získali lepšiu výkonnosť.</translation>
+<translation id="6581867098636731226">Prejdite do
+          ponuky Chromu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Sieť a internet &gt; Proxy server a zrušte výber možnosti Automaticky zisťovať nastavenia.</translation>
 <translation id="7230956101631259640">Prezeráte si zabezpečenú stránku Chromu</translation>
 <translation id="8232971017369963250">Chrome je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>

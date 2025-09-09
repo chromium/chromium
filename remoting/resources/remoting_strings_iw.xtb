@@ -9,7 +9,7 @@
 <translation id="1480046233931937785">שותפים לעשייה</translation>
 <translation id="1520828917794284345">שינוי גודל שולחן העבודה</translation>
 <translation id="1546934824884762070">אירעה שגיאה לא צפויה. דיווח על בעיה זו למפתחים.</translation>
-<translation id="1697532407822776718">הכול מוכן!</translation>
+<translation id="1697532407822776718">הכול מוכן</translation>
 <translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
 <translation id="177040763384871009">כדי שקישורים שלוחצים עליהם במכשיר מרוחק ייפתחו בדפדפן הלקוח, צריך להחליף את דפדפן האינטרנט של המערכת ולהתקין במקומו את "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
@@ -18,18 +18,18 @@
 <translation id="2038229918502634450">מתבצע אתחול של המארח כדי להחיל שינוי במדיניות.</translation>
 <translation id="2078880767960296260">תהליך מארח</translation>
 <translation id="20876857123010370">מצב משטח מגע</translation>
-<translation id="2198363917176605566">‏על מנת להשתמש ב-<ph name="PRODUCT_NAME" />, יש להעניק את ההרשאה 'הקלטת מסך' כדי שניתן יהיה לשלוח את תוכן המסך במחשב ה-Mac הזה אל המחשב המרוחק.
+<translation id="2198363917176605566">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, יש להעניק את ההרשאה "הקלטת מסך" בשביל שיהיה אפשר לשלוח את תוכן המסך במחשב ה-Mac הזה אל המחשב המרוחק.
 
-על מנת להעניק את ההרשאה הזו, יש ללחוץ על '<ph name="BUTTON_NAME" />' למטה כדי לפתוח את חלונית ההעדפות של 'הקלטת מסך', ולסמן את התיבה לצד '<ph name="SERVICE_SCRIPT_NAME" />'.
+בשביל להעניק את ההרשאה הזו, יש ללחוץ על <ph name="BUTTON_NAME" /> למטה כדי לפתוח את חלונית ההעדפות של "הקלטת מסך", ולסמן את התיבה לצד <ph name="SERVICE_SCRIPT_NAME" />.
 
-אם האפשרות '<ph name="SERVICE_SCRIPT_NAME" />' כבר מסומנת, יש להסיר את הסימון ואז לסמן מחדש.</translation>
-<translation id="225614027745146050">ברוכים הבאים</translation>
+אם האפשרות <ph name="SERVICE_SCRIPT_NAME" /> כבר מסומנת, יש לבטל את הסימון ואז לסמן מחדש.</translation>
+<translation id="225614027745146050">טוב שבאת!</translation>
 <translation id="2320166752086256636">הסתרה של המקלדת</translation>
 <translation id="2329392777730037872">לא ניתן היה לפתוח את <ph name="URL" /> במכשיר הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2366718077645204424">לא ניתן להשיג את המארח, כנראה בגלל תצורת הרשת שבשימוש.</translation>
 <translation id="242591256144136845">‏זכויות יוצרים 2025‏ Google LLC. כל הזכויות שמורות.</translation>
-<translation id="2504109125669302160">מתן הרשאת 'נגישות' ל-<ph name="PRODUCT_NAME" /></translation>
+<translation id="2504109125669302160">מתן הרשאת "נגישות" ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">מחובר אל <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">האם לשתף מחשב זה כך שמשתמש אחר יוכל לראות אותו ולשלוט בו?</translation>
 <translation id="2579271889603567289">המארח קרס או שלא הופעל.</translation>
@@ -52,25 +52,25 @@
 <translation id="3339299787263251426">גישה אל המחשב שלך באופן מאובטח דרך האינטרנט</translation>
 <translation id="3385242214819933234">בעלים לא חוקי של המארח.</translation>
 <translation id="3423542133075182604">תהליך תקשורת מרוחקת למפתח אבטחה</translation>
-<translation id="3581045510967524389">לא ניתן היה להתחבר לרשת. יש לבדוק שהמכשיר שלך אונליין.</translation>
+<translation id="3581045510967524389">אי אפשר היה להתחבר לרשת. יש לבדוק שהמכשיר שלך אונליין.</translation>
 <translation id="3596628256176442606">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chromoting.</translation>
-<translation id="3695446226812920698">איך עושים זאת</translation>
+<translation id="3695446226812920698">איך עושים את זה</translation>
 <translation id="3776024066357219166">‏הפעילות של Chrome Remote Desktop הסתיימה.</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3905196214175737742">דומיין לא חוקי של בעל המארח.</translation>
 <translation id="3931191050278863510">המארח הופסק.</translation>
 <translation id="3950820424414687140">כניסה</translation>
-<translation id="405887016757208221">המחשב המרוחק לא הצליח לאתחל את ההפעלה. אם הבעיה נמשכת, יש לנסות להגדיר שוב את המארח.</translation>
+<translation id="405887016757208221">המחשב המרוחק לא הצליח להתחיל את הפעולה. אם הבעיה נמשכת, יש לנסות להגדיר שוב את המארח.</translation>
 <translation id="4060747889721220580">הורדת קובץ</translation>
-<translation id="4126409073460786861">כשתהליך ההגדרה יסתיים, צריך יהיה לרענן את הדף ואז אפשר יהיה לבחור את המכשיר שלך ולהזין את קוד האימות כדי לגשת למחשב</translation>
+<translation id="4126409073460786861">‏כדי לגשת למחשב, צריך לרענן את הדף אחרי שתהליך ההגדרה מסתיים. בשלב הזה, אפשר לבחור את המכשיר שלך ולהזין את ה-PIN</translation>
 <translation id="4145029455188493639">נכנסת לחשבון עם <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">חלק מהרכיבים הדרושים חסרים. יש לוודא שהתקנת את הגרסה העדכנית ביותר של התוכנה ולנסות שוב.</translation>
 <translation id="4176825807642096119">קוד גישה</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">‏הסרת ההתקנה של מארח Chromoting מתבצעת</translation>
 <translation id="4257751272692708833">‏כתובת URL להעברה אל <ph name="PRODUCT_NAME" /></translation>
-<translation id="4277736576214464567">קוד הגישה אינו חוקי. יש לנסות שוב.</translation>
+<translation id="4277736576214464567">קוד הגישה אינו חוקי. אפשר לנסות שוב.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4405930547258349619">ספריית ליבה</translation>
 <translation id="443560535555262820">פתיחת העדפות הנגישות</translation>
@@ -80,8 +80,8 @@
 <translation id="4618411825115957973">‏קיימת בעיה בהגדרה של <ph name="URL_FORWARDER_NAME" />. יש להגדיר דפדפן אחר כברירת מחדל ואז להפעיל שוב את העברת כתובות ה-URL.</translation>
 <translation id="4635770493235256822">מכשירים מרוחקים</translation>
 <translation id="4660011489602794167">הצגת מקלדת</translation>
-<translation id="4703799847237267011">‏הפעילות של Chromoting הסתיימה.</translation>
-<translation id="4741792197137897469">‏האימות נכשל. יש להיכנס שוב ל-Chrome.</translation>
+<translation id="4703799847237267011">החיבור המרוחק הסתיים</translation>
+<translation id="4741792197137897469">‏האימות נכשל. צריך להיכנס שוב ל-Chrome.</translation>
 <translation id="4784508858340177375">‏המארח X קרס או שלא הופעל.</translation>
 <translation id="4798680868612952294">אפשרויות עכבר</translation>
 <translation id="4804818685124855865">ניתוק</translation>
@@ -92,7 +92,7 @@
 <translation id="4985296110227979402">צריך להתחיל בהגדרת המחשב לגישה מרחוק</translation>
 <translation id="4987330545941822761">‏ל-Chrome Remote Desktop אין אפשרות לקבוע באיזה דפדפן לפתוח כתובות URL במחשב. עליך לבחור דפדפן מהרשימה הבאה.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (לא מקוון)</translation>
-<translation id="507204348399810022">בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
+<translation id="507204348399810022">רוצה להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
 <translation id="5095424396646120601">דיווח על קריסה</translation>
 <translation id="5170982930780719864">מזהה מארח לא חוקי.</translation>
 <translation id="5204575267916639804">שאלות נפוצות</translation>
@@ -105,7 +105,7 @@
 <translation id="544077782045763683">המארח כבה.</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5708869785009007625">שולחן העבודה שלך משותף כעת עם <ph name="USER" />.</translation>
+<translation id="5708869785009007625">שולחן העבודה שלך משותף עכשיו עם <ph name="USER" />.</translation>
 <translation id="579702532610384533">התחברות מחדש</translation>
 <translation id="5810269635982033450">המסך פועל כמשטח מגע</translation>
 <translation id="5823554426827907568">התקבלה בקשת גישה מאת <ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. צריך ללחוץ על "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" אם לא ציפית לבקשה הזו. אחרת, עליך ללחוץ על "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" כדי לאפשר את החיבור.</translation>
@@ -117,11 +117,11 @@
 <translation id="6099500228377758828">‏שירות Chrome Remote Desktop</translation>
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6178645564515549384">מארח העברת הודעות ייעודי עבור סיוע מרוחק</translation>
-<translation id="618120821413932081">יש לעדכן את הפתרון המרוחק כך שיתאים לגודל החלון</translation>
+<translation id="618120821413932081">התאמת הרזולוציה לגודל החלון</translation>
 <translation id="6223301979382383752">פתיחת ההעדפות להקלטת מסך</translation>
 <translation id="6252344563748670011">התקבלה בקשת גישה מ-<ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. רוצה לשתף את המכשיר שלך?</translation>
 <translation id="6284412385303060032">המארח הפועל במסך הכניסה למסוף כבה כדי לתמוך במצב הסתרה, על ידי מעבר אל מארח הפועל בסשן ספציפי למשתמש.</translation>
-<translation id="6542902059648396432">דיווח על בעיה...</translation>
+<translation id="6542902059648396432">דיווח על בעיה…</translation>
 <translation id="6583902294974160967">תמיכה</translation>
 <translation id="6612717000975622067">‏שליחת Ctrl-Alt-Del</translation>
 <translation id="6625262630437221505">{0,plural, =1{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המידע באופן אוטומטי בעוד שניה אחת.}one{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המיקום באופן אוטומטי בעוד # שניות.}two{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המיקום באופן אוטומטי בעוד # שניות.}other{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המידע באופן אוטומטי בעוד # שניות.}}</translation>
@@ -129,7 +129,7 @@
 <translation id="677755392401385740">המארח הופעל עבור המשתמש: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">‏אפליקציה לעזרה בפתיחת כתובת URL בלקוח של <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">הצגה/הסתרה של המקלדת.</translation>
-<translation id="6963936880795878952">החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם קוד אימות לא חוקי. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="6963936880795878952">החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם קוד אימות לא תקין. כדאי לנסות שוב אחר כך.</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6985691951107243942">בטוח רוצה להשבית את החיבורים מרחוק אל <ph name="HOSTNAME" />? אם משתנה דעתך, צריך להיכנס למחשב הזה ולהפעיל את החיבורים מחדש.</translation>
 <translation id="7019153418965365059">שגיאת מארח לא מזוהה: <ph name="HOST_OFFLINE_REASON" />.</translation>
@@ -155,9 +155,9 @@
 <translation id="7693372326588366043">רענון רשימת המארחים</translation>
 <translation id="7714222945760997814">דיווח על הבעיה</translation>
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
-<translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>
+<translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מאשרת חיבורים מהחשבון שלך.</translation>
 <translation id="7936528439960309876">עגינה לימין</translation>
-<translation id="7970576581263377361">‏האימות נכשל. יש להיכנס שוב ל-Chromium.</translation>
+<translation id="7970576581263377361">‏האימות נכשל. צריך להיכנס ל-Chromium שוב.</translation>
 <translation id="7981525049612125370">פג התוקף של ההפעלה המרוחקת.</translation>
 <translation id="8038111231936746805">(ברירת מחדל)</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
@@ -175,7 +175,7 @@
 <translation id="8383794970363966105">‏כדי להשתמש ב-Chromoting, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="8386846956409881180">‏בהגדרת המארח נעשה שימוש בפרטי כניסת OAuth לא חוקיים.</translation>
 <translation id="8397385476380433240">מתן הרשאה ל-<ph name="PRODUCT_NAME" /></translation>
-<translation id="8406498562923498210">‏יש לבחור את הסשן שברצונך להפעיל בסביבה של Chrome Remote Desktop. (לתשומת ליבך, ייתכן שחלק מסוגי הסשנים לא יתמכו בהפעלה בו-זמנית ב-Chrome Remote Desktop ובמסוף המקומי.)</translation>
+<translation id="8406498562923498210">‏צריך לבחור את הסשן שיופעל בסביבה של Chrome Remote Desktop. (חשוב לזכור שלא בטוח שכל סוגי הסשנים יתמכו בהפעלה בו-זמנית ב-Chrome Remote Desktop ובמסוף המקומי.)</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8445362773033888690">‏הצגה בחנות Google Play</translation>
 <translation id="8509907436388546015">תהליך השילוב של שולחנות עבודה</translation>
@@ -183,7 +183,7 @@
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="858006550102277544">הערה</translation>
 <translation id="8743328882720071828">האם ברצונך לאפשר ל-<ph name="CLIENT_USERNAME" /> לראות את המחשב שלך ולשלוט בו?</translation>
-<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
+<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, צריך לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>
