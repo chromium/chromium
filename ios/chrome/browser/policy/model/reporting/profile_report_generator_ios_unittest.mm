@@ -46,8 +46,7 @@ namespace {
 
 constexpr char kFakeProfileId[] = "fake-profile-id";
 
-std::unique_ptr<KeyedService> CreateProfileIdService(
-    web::BrowserState* browser_state) {
+std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS* profile) {
   return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
 }
 
