@@ -6,39 +6,17 @@
 #include <stdio.h>
 
 #include <limits>
-#include <memory>
-#include <sstream>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "ipc/ipc_test_base.h"
+#include "ipc/ipc_message.h"
+#include "ipc/ipc_message_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// IPC messages for testing ----------------------------------------------------
-
-#define IPC_MESSAGE_IMPL
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_message_start.h"
-
-#define IPC_MESSAGE_START TestMsgStart
-
-// Generic message class that is an int followed by a string16.
-IPC_MESSAGE_CONTROL2(MsgClassIS, int, std::u16string)
-
-// Generic message class that is a string16 followed by an int.
-IPC_MESSAGE_CONTROL2(MsgClassSI, std::u16string, int)
-
-// Message to create a mutex in the IPC server, using the received name.
-IPC_MESSAGE_CONTROL2(MsgDoMutex, std::u16string, int)
-
-// Used to generate an ID for a message that should not exist.
-IPC_MESSAGE_CONTROL0(MsgUnhandled)
-
-// -----------------------------------------------------------------------------
 
 namespace {
 
