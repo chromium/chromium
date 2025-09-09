@@ -820,9 +820,15 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   if (current_soft_navigation_metrics->count == 0) {
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
-  } else {
-    // Even though a soft-nav arrived, we don't flush until the current one
-    // unloads (i.e. next soft nav arrives).  So the very first skips reporting.
+  } else if (current_soft_navigation_metrics->count !=
+             new_soft_navigation_metrics.count) {
+    // We only want to record metrics once for each soft navigation. So we flush
+    // the current soft navigation metrics when the next soft navigation starts.
+    // So the first soft navigation metrics are recorded when the second soft
+    // navigation starts, and the second soft navigation metrics are recorded
+    // when the third soft navigation starts, etc. The final soft navigation
+    // metrics are recorded in `RecordTimingMetrics` at the end of the page
+    // load.
     RecordSoftNavigationMetrics(
         GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
         *current_soft_navigation_metrics);
