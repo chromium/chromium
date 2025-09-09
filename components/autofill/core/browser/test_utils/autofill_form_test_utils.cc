@@ -148,6 +148,12 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   if (fd.placeholder) {
     ff.set_placeholder(*fd.placeholder);
   }
+  if (fd.aria_label) {
+    ff.set_aria_label(*fd.aria_label);
+  }
+  if (fd.aria_description) {
+    ff.set_aria_description(*fd.aria_description);
+  }
   if (fd.max_length) {
     ff.set_max_length(*fd.max_length);
   }

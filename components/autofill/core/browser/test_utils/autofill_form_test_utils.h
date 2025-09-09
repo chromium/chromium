@@ -43,6 +43,8 @@ struct FieldDescription {
   std::optional<std::u16string> id_attribute;
   std::optional<std::u16string> value;
   std::optional<std::u16string> placeholder;
+  std::optional<std::u16string> aria_label;
+  std::optional<std::u16string> aria_description;
   std::optional<uint64_t> max_length;
   const std::string autocomplete_attribute;
   std::optional<AutocompleteParsingResult> parsed_autocomplete;
