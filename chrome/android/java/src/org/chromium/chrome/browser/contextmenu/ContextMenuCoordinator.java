@@ -142,7 +142,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     @Override
     public void dismiss() {
-        dismissDialog();
+        dismissDialogs();
     }
 
     // Calculate true top content offset to be used to compute the AnchorRect used by
@@ -308,6 +308,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         dialog.setOnDismissListener(
                 (dialogInterface) -> {
                     mOnMenuClosed.run();
+                    dismissDialogs();
                 });
 
         mWebContents = webContents;
@@ -359,12 +360,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 new WebContentsObserver(mWebContents) {
                     @Override
                     public void navigationEntryCommitted(LoadCommittedDetails details) {
-                        dismissDialog();
+                        dismissDialogs();
                     }
 
                     @Override
                     public void onVisibilityChanged(@Visibility int visibility) {
-                        if (visibility != Visibility.VISIBLE) dismissDialog();
+                        if (visibility != Visibility.VISIBLE) dismissDialogs();
                     }
                 };
 
@@ -504,7 +505,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         return dialog;
     }
 
-    private void dismissDialog() {
+    private void dismissDialogs() {
         if (mWebContentsObserver != null) {
             mWebContentsObserver.observe(null);
         }
