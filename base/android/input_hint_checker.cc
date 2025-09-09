@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/android/input_hint_checker.h"
 
 #include <jni.h>
@@ -42,8 +40,7 @@ InputHintChecker* g_test_instance;
 
 // Whether to fetch the input hint from the system. When disabled, pretends
 // that no input is ever queued.
-BASE_EXPORT
-BASE_FEATURE(YieldWithInputHint, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kYieldWithInputHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Min time delta between checks for the input hint. Must be a smaller than
 // time to produce a frame, but a bit longer than the time it takes to retrieve

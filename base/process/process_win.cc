@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/process/process.h"
 
 #include <windows.h>
@@ -35,7 +33,7 @@ namespace base {
 // (available on hybrid CPUs).
 // QoS is a scheduling Win API which indicates the desired performance and power
 // efficiency of a process/thread. EcoQoS is introduced since Windows 11.
-BASE_FEATURE(UseEcoQoSForBackgroundProcess, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseEcoQoSForBackgroundProcess, FEATURE_ENABLED_BY_DEFAULT);
 
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {

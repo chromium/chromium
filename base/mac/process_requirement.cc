@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/mac/process_requirement.h"
 
 #include <Kernel/kern/cs_blobs.h>
@@ -571,7 +569,8 @@ bool ProcessRequirement::ValidateProcess(
 
 // static
 void ProcessRequirement::MaybeGatherMetrics() {
-  static BASE_FEATURE(GatherProcessRequirementMetrics,
+  static BASE_FEATURE(kGatherProcessRequirementMetrics,
+                      "GatherProcessRequirementMetrics",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kGatherProcessRequirementMetrics)) {
     base::ThreadPool::PostTask(

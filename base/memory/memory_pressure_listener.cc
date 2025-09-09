@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/memory/memory_pressure_listener.h"
 
 #include <optional>
@@ -27,7 +25,8 @@ namespace {
 // Controls whether or no MemoryPressureListeners are notified synchronously or,
 // in the disabled state, asynchronously. This is only suitable for a listener
 // that only lives on the main thread.
-BASE_FEATURE(MakeMemoryPressureListenerSync, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMakeMemoryPressureListenerSync,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>
 CreateMemoryPressureListenerImpl(

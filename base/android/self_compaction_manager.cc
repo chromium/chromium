@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/android/self_compaction_manager.h"
 
 #include <sys/mman.h>
@@ -21,7 +19,7 @@
 #include "base/trace_event/trace_event.h"
 
 namespace base::android {
-BASE_FEATURE(ShouldFreezeSelf, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kShouldFreezeSelf, FEATURE_ENABLED_BY_DEFAULT);
 
 // Max amount of compaction to do in each chunk, measured in MiB.
 BASE_FEATURE_PARAM(size_t,
@@ -37,7 +35,7 @@ BASE_FEATURE_PARAM(size_t,
                    "delay_after_tasks",
                    30);
 
-BASE_FEATURE(UseRunningCompact, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRunningCompact, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kUseRunningCompactDelayAfterPreFreezeTasks,
                    &kUseRunningCompact,

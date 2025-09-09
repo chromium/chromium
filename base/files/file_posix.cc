@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -64,7 +62,7 @@ namespace {
 // `F_BARRIERFSYNC` or `flush()` is used (depending on the
 // "MacEfficientFileFlushUseBarrier" param). See
 // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-BASE_FEATURE(MacEfficientFileFlush, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMacEfficientFileFlush, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
     &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};

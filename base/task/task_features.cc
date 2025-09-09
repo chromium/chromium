@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/task/task_features.h"
 
 #include <atomic>
@@ -24,7 +22,7 @@ namespace base {
 // must be aware that all tests sharing a process will have the same state,
 // regardless of future ScopedFeatureList instances.
 
-BASE_FEATURE(UseUtilityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseUtilityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
@@ -39,15 +37,15 @@ BASE_FEATURE_PARAM(TimeDelta,
                    "max_precise_delay",
                    kDefaultMaxPreciseDelay);
 
-BASE_FEATURE(AlignWakeUps, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlignWakeUps, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(TimerSlackMac, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTimerSlackMac, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(UIPumpImprovementsWin, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUIPumpImprovementsWin, FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PumpFastToSleepAndroid, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPumpFastToSleepAndroid, FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(RunTasksByBatches,
+BASE_FEATURE(kRunTasksByBatches,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);
 #else

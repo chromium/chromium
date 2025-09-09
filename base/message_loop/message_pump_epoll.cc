@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/message_loop/message_pump_epoll.h"
 
 #include <sys/eventfd.h>
@@ -38,7 +36,7 @@ namespace base {
 namespace {
 
 // Under this feature native work is batched.
-BASE_FEATURE(BatchNativeEventsInMessagePumpEpoll,
+BASE_FEATURE(kBatchNativeEventsInMessagePumpEpoll,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Caches the state of the "BatchNativeEventsInMessagePumpEpoll".

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/system/sys_info.h"
 
 #import <Foundation/Foundation.h>
@@ -63,7 +61,7 @@ std::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
 
 }  // namespace internal
 
-BASE_FEATURE(NumberOfCoresWithCpuSecurityMitigation,
+BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
              FEATURE_ENABLED_BY_DEFAULT);
 
 // static

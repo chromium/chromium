@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 
 #include <algorithm>
@@ -50,7 +48,7 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
   return std::min(next_run_time, lazy_now->Now() + Days(1));
 }
 
-BASE_FEATURE(AvoidScheduleWorkDuringNativeEventProcessing,
+BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::atomic_bool g_run_tasks_by_batches = false;

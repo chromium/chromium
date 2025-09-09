@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 
 #include "base/feature_list.h"
@@ -15,7 +13,7 @@ namespace base::sequence_manager::internal {
 namespace {
 
 // Activate the power management events that affect task scheduling.
-BASE_FEATURE(UsePowerMonitorWithThreadController, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUsePowerMonitorWithThreadController, FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40127966): Remove this when the experiment becomes the
 // default.

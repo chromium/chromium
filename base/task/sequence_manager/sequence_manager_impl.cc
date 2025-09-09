@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -54,7 +52,8 @@ namespace {
 
 // Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
 // for an investigation. Disabled by default to avoid unnecessary overhead.
-BASE_FEATURE(RecordSequenceManagerCrashKeys, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRecordSequenceManagerCrashKeys,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constinit thread_local internal::SequenceManagerImpl*
     thread_local_sequence_manager = nullptr;

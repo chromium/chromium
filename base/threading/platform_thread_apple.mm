@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/threading/platform_thread.h"
 
 #import <Foundation/Foundation.h>
@@ -86,7 +84,7 @@ void PlatformThreadBase::SetName(const std::string& name) {
 }
 
 // Whether optimized real-time thread config should be used for audio.
-BASE_FEATURE(OptimizedRealtimeThreadingMac,
+BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #if BUILDFLAG(IS_MAC)
              FEATURE_ENABLED_BY_DEFAULT
 #else

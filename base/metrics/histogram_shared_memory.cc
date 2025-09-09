@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/metrics/histogram_shared_memory.h"
 
 #include <string_view>
@@ -69,7 +67,7 @@
 // base/metrics/field_trial.cc
 namespace base {
 
-BASE_FEATURE(PassHistogramSharedMemoryOnLaunch,
+BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
 #if BUILDFLAG(IS_ANDROID)
              FEATURE_DISABLED_BY_DEFAULT
 #else

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/features.h"
 
 #include <atomic>
@@ -53,12 +51,12 @@ std::atomic_bool g_is_reduce_ppms_enabled{false};
 
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
 // so that ScopedFeatureList can disable it to turn off caching.
-BASE_FEATURE(FeatureParamWithCache, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureParamWithCache, FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether a fast implementation of FilePath::IsParent is used. This feature
 // exists to ensure that the fast implementation can be disabled quickly if
 // issues are found with it.
-BASE_FEATURE(FastFilePathIsParent, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFastFilePathIsParent, FEATURE_ENABLED_BY_DEFAULT);
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
@@ -73,19 +71,19 @@ BASE_FEATURE(FastFilePathIsParent, FEATURE_ENABLED_BY_DEFAULT);
 // Updated Desktop default threshold to match the Android 2021 definition.
 #define LOW_MEMORY_DEVICE_THRESHOLD_MB 2048
 #endif
-BASE_FEATURE(LowEndMemoryExperiment, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLowEndMemoryExperiment, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kLowMemoryDeviceThresholdMB,
                    &kLowEndMemoryExperiment,
                    "LowMemoryDeviceThresholdMB",
                    LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
-BASE_FEATURE(ReducePPMs, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReducePPMs, FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
 // (see PartialLowEndModeOnMidRangeDevices below)
-BASE_FEATURE(PartialLowEndModeOn3GbDevices, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPartialLowEndModeOn3GbDevices, FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to enable LowEndDeviceMode partially on Android and ChromeOS mid-range
 // devices. Such devices aren't considered low-end, but we'd like experiment
@@ -96,7 +94,7 @@ BASE_FEATURE(PartialLowEndModeOn3GbDevices, FEATURE_DISABLED_BY_DEFAULT);
 // high Stable %, because we will enable the feature only for <8GB 64-bit
 // devices, where we didn't ship yet. However, we first need a larger
 // population to collect data.
-BASE_FEATURE(PartialLowEndModeOnMidRangeDevices,
+BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
 #if BUILDFLAG(IS_ANDROID)
              FEATURE_ENABLED_BY_DEFAULT);
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -107,24 +105,24 @@ BASE_FEATURE(PartialLowEndModeOnMidRangeDevices,
 
 #if BUILDFLAG(IS_ANDROID)
 // Enable not perceptible binding without cpu priority boosting.
-BASE_FEATURE(BackgroundNotPerceptibleBinding, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBackgroundNotPerceptibleBinding, FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to report frame metrics to the Android.FrameTimeline.* histograms.
-BASE_FEATURE(CollectAndroidFrameTimelineMetrics, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCollectAndroidFrameTimelineMetrics, FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, post registering PowerMonitor broadcast receiver to a background
 // thread,
-BASE_FEATURE(PostPowerMonitorBroadcastReceiverInitToBackground,
+BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
              FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, getMyMemoryState IPC will be posted to background.
-BASE_FEATURE(PostGetMyMemoryStateToBackground, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPostGetMyMemoryStateToBackground, FEATURE_ENABLED_BY_DEFAULT);
 
 // Update child process binding state before unbinding.
-BASE_FEATURE(UpdateStateBeforeUnbinding, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpdateStateBeforeUnbinding, FEATURE_DISABLED_BY_DEFAULT);
 
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
-BASE_FEATURE(UseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsReducePPMsEnabled() {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/apple/mach_port_rendezvous_mac.h"
 
 #include <bsm/libbsm.h>
@@ -33,12 +31,12 @@
 namespace base {
 
 // Whether any peer process requirements should be validated.
-BASE_FEATURE(MachPortRendezvousValidatePeerRequirements,
+BASE_FEATURE(kMachPortRendezvousValidatePeerRequirements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether a failure to validate a peer process against a requirement
 // should result in aborting the rendezvous.
-BASE_FEATURE(MachPortRendezvousEnforcePeerRequirements,
+BASE_FEATURE(kMachPortRendezvousEnforcePeerRequirements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

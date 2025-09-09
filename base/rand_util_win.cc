@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/rand_util.h"
 
 #include <windows.h>
@@ -35,7 +33,7 @@ namespace {
 // rand_util_posix.cc.
 std::atomic<bool> g_use_boringssl;
 
-BASE_FEATURE(UseBoringSSLForRandBytes, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseBoringSSLForRandBytes, FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

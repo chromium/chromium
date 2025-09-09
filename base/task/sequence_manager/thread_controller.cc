@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/task/sequence_manager/thread_controller.h"
 
 #include <atomic>
@@ -28,7 +26,7 @@ namespace {
 // Enable sample metadata recording in this class, if it's currently disabled.
 // Note that even if `kThreadControllerSetsProfilerMetadata` is disabled, sample
 // metadata may still be recorded.
-BASE_FEATURE(ThreadControllerSetsProfilerMetadata,
+BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Thread safe copy to be updated once feature list is available. This

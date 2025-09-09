@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/process/process.h"
 
 #include <errno.h>
@@ -48,9 +46,9 @@
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(OneGroupPerRenderer, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOneGroupPerRenderer, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(FlattenCpuCgroups, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFlattenCpuCgroups, FEATURE_ENABLED_BY_DEFAULT);
 
 // If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
 // processes uses /sys/fs/cgroup/cpu/ui cgroup instead of

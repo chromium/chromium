@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include <sys/resource.h>
 
 #include <type_traits>
@@ -28,11 +26,11 @@
 
 namespace base {
 
-BASE_FEATURE(SchedUtilHints, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSchedUtilHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(SetThreadBgForBgProcess, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetThreadBgForBgProcess, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(SetRtForDisplayThreads, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetRtForDisplayThreads, FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 CrossProcessPlatformThreadDelegate* g_cross_process_platform_thread_delegate =

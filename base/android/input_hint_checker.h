@@ -17,7 +17,7 @@
 
 namespace base::android {
 
-BASE_DECLARE_FEATURE(kYieldWithInputHint);
+BASE_EXPORT BASE_DECLARE_FEATURE(kYieldWithInputHint);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

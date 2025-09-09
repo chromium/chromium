@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 
 #include <algorithm>
@@ -26,7 +24,7 @@ namespace base {
 
 namespace {
 
-BASE_FEATURE(HeapProfilerMultiKeyHashSet, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHeapProfilerMultiKeyHashSet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::base::allocator::dispatcher::ReentryGuard;
 
