@@ -38,10 +38,6 @@ constexpr char kTryGetAuthTokensErrorHistogram[] =
     "NetworkService.IpProtection.TryGetAuthTokensErrors";
 constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
-const GeoHint kMountainViewGeo = {.country_code = "US",
-                                  .iso_region = "US-CA",
-                                  .city_name = "MOUNTAIN VIEW"};
-const std::string kMountainViewGeoId = GetGeoIdFromGeoHint(kMountainViewGeo);
 
 // A mock delegate for use in testing the fetcher.
 struct MockIpProtectionTokenDirectFetcherDelegate

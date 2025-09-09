@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -77,15 +78,18 @@ constexpr char kProxyATokenCountRecycledHistogram[] =
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
-const GeoHint kMountainViewGeo = {.country_code = "US",
-                                  .iso_region = "US-CA",
-                                  .city_name = "MOUNTAIN VIEW"};
-const std::string kMountainViewGeoId = GetGeoIdFromGeoHint(kMountainViewGeo);
+const base::NoDestructor<GeoHint> kMountainViewGeoPtr(
+    {.country_code = "US",
+     .iso_region = "US-CA",
+     .city_name = "MOUNTAIN VIEW"});
+const GeoHint& kMountainViewGeo = *kMountainViewGeoPtr;
+constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 
-const GeoHint kSunnyvaleGeo = {.country_code = "US",
-                               .iso_region = "US-CA",
-                               .city_name = "SUNNYVALE"};
-const std::string kSunnyvaleGeoId = GetGeoIdFromGeoHint(kSunnyvaleGeo);
+const base::NoDestructor<GeoHint> kSunnyvaleGeoPtr({.country_code = "US",
+                                                    .iso_region = "US-CA",
+                                                    .city_name = "SUNNYVALE"});
+const GeoHint& kSunnyvaleGeo = *kSunnyvaleGeoPtr;
+constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
 
 struct ExpectedTryGetAuthTokensCall {
   // The expected batch_size argument for the call.

@@ -37,14 +37,14 @@ using ::masked_domain_list::ResourceOwner;
 using ::testing::Eq;
 
 struct MatchTest {
-  std::string name;
-  std::string req;
-  std::string top;
+  std::string_view name;
+  std::string_view req;
+  std::string_view top;
   bool matches;
   bool matches_with_bypass;
 };
 
-const std::vector<MatchTest> kMatchTests = {
+constexpr MatchTest kMatchTests[] = {
     MatchTest{
         "ExcludedFromResource",
         "experiment.com",
@@ -543,6 +543,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          MaskedDomainListManagerMatchTest,
                          testing::ValuesIn(kMatchTests),
                          [](const testing::TestParamInfo<MatchTest>& info) {
-                           return info.param.name;
+                           return std::string(info.param.name);
                          });
 }  // namespace ip_protection
