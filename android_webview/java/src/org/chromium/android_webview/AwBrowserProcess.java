@@ -704,6 +704,16 @@ public final class AwBrowserProcess {
         AwBrowserProcessJni.get().onStartupComplete();
     }
 
+    /**
+     * Start Perfetto initialization.
+     *
+     * <p>This must only be called <em>before</em> Content startup. If Content Main has already been
+     * called, perfetto will already be initialized, and this method will crash.
+     *
+     * @param enableSystemConsumer Set to {@code true} in order to send Perfetto traces to the
+     *     Android system consumer. Equivalent to enabling {@link
+     *     org.chromium.services.tracing.TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING}
+     */
     public static void initPerfetto(boolean enableSystemConsumer) {
         AwBrowserProcessJni.get().initPerfetto(enableSystemConsumer);
     }
