@@ -425,22 +425,19 @@
       </Expand>
   </Type>
 
-<Type Name="std::__Cr::unordered_map&lt;*&gt;">
+  <Type Name="std::__Cr::unordered_map&lt;*&gt;">
     <AlternativeType Name="std::__Cr::unordered_multimap&lt;*&gt;" />
     <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
     <AlternativeType Name="std::__Cr::unordered_set&lt;*&gt;" />
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__table_.__p2_" />
-    <Intrinsic Name="bucket_count"
-        Expression="*(size_type*)&amp;
-                    ((__table::__bucket_list_deleter*)
-                        ((void**)&amp;__table_.__bucket_list_ + 1))
-                        -&gt;__data_" />
+    <Intrinsic Name="size" Expression="__table_.__size_" />
+    <Intrinsic Name="bucket_count" Expression="__table_.__bucket_list_.__deleter_.__size_" />
+    <Intrinsic Name="max_load_factor" Expression="__table_.__max_load_factor_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
+      <Item Name="[size]">size()</Item>
       <Item Name="[bucket_count]">bucket_count()</Item>
-      <Item Name="[load_factor]">
-        bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
-      <Item Name="[max_load_factor]">*(float*)&amp;__table_.__p3_</Item>
+      <Item Name="[load_factor]">bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
+      <Item Name="[max_load_factor]">max_load_factor()</Item>
       <!-- Use CustomListItems instead of LinkedListItems because we
         need to cast to __table::__node_pointer and LinkedListItems
         evaluates <Value> in the context of the node, not of the container,
@@ -448,11 +445,10 @@
         and then we couldn't share this <Type> between unordered_(multi)map
         and unordered_(multi)set. -->
       <CustomListItems>
-        <Variable Name="node"
-            InitialValue="*(__table::__next_pointer*)&amp;__table_.__p1_" />
+        <Variable Name="node" InitialValue="__table_.__first_node_.__next_" />
         <Size>size()</Size>
         <Loop>
-          <Item>(*(__table::__node_pointer*)&amp;node)-&gt;__value_</Item>
+          <Item>((__table::__node_pointer)node)-&gt;__value_</Item>
           <Exec>node = node-&gt;__next_</Exec>
         </Loop>
       </CustomListItems>
@@ -462,9 +458,9 @@
     a separate formatter instead of in the <Item> expression above so that the
     same <Type> works for unordered_(multi)set and unordered_(multi)map. -->
   <Type Name="std::__Cr::__hash_value_type&lt;*&gt;">
-    <DisplayString>{__cc}</DisplayString>
+    <DisplayString>{__cc_}</DisplayString>
     <Expand>
-      <ExpandedItem>__cc</ExpandedItem>
+      <ExpandedItem>__cc_</ExpandedItem>
     </Expand>
   </Type>
 
