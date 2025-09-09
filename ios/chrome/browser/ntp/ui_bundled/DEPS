@@ -68,6 +68,7 @@ include_rules = [
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/push_notification/model/constants.h",
+  "+ios/chrome/browser/web/model/web_navigation_util.h",
   "+third_party/omnibox_proto",
   "+third_party/material_color_utilities/src/cpp"
 ]

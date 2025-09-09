@@ -137,6 +137,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -1980,10 +1981,13 @@
     return;
   }
   [self.NTPMetricsRecorder recordMIATapped];
-  OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:GetUrlForAim(
-                                   self.templateURLService,
-                                   /*query_start_time=*/base::Time::Now())];
+
+  GURL URL = GetUrlForAim(self.templateURLService,
+                          /*query_start_time=*/base::Time::Now());
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  command.extraHeaders =
+      web_navigation_util::VariationHeadersForURL(URL, /*is_incognito=*/false);
+
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler openURLInNewTab:command];
