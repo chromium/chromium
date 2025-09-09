@@ -63,10 +63,6 @@ class TabStripRegionView final : public TabStripViewInterface {
 
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
-  TabSearchContainer* tab_search_container_for_testing() {
-    return tab_search_container_;
-  }
-
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
   }

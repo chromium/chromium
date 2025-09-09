@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -90,9 +91,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->tab_search_container_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+        kTabSearchContainerElementId);
   }
 
   ProductSpecificationsButton* product_specifications_button() {

@@ -48,7 +48,8 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchContainer* tab_search_container() {
-    return tab_strip_region_view()->tab_search_container_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+        kTabSearchContainerElementId);
   }
 
   TabSearchButton* tab_search_button() {

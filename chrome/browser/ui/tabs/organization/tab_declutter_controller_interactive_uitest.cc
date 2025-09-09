@@ -40,6 +40,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 class FakeTabDeclutterObserver : public TabDeclutterObserver {
  public:
@@ -127,10 +128,8 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
           kTabStripActionContainerElementId);
     }
 
-    auto* tab_strip_region_view =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->tab_strip_region_view();
-    return tab_strip_region_view->tab_search_container_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+        kTabSearchContainerElementId);
   }
 
  protected:
@@ -314,9 +313,8 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
                        ->close_button_for_testing();
   } else {
     TabSearchContainer* tab_search_container =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->tab_strip_region_view()
-            ->tab_search_container_for_testing();
+        BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
+            kTabSearchContainerElementId);
     EXPECT_TRUE(tab_search_container->tab_declutter_button()->GetVisible());
     close_button = tab_search_container->tab_declutter_button()
                        ->close_button_for_testing();

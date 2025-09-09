@@ -224,6 +224,7 @@ TabSearchContainer::TabSearchContainer(
       locked_expansion_view_(locked_expansion_view),
       tab_declutter_controller_(tab_declutter_controller),
       tab_strip_model_(tab_strip_model) {
+  SetProperty(views::kElementIdentifierKey, kTabSearchContainerElementId);
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
                                                     gfx::Insets()),
