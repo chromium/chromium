@@ -250,26 +250,17 @@ const PasswordForm* FindFormByUsername(
   return nullptr;
 }
 
-const password_manager::PasswordForm* FindLoginWithChangedPassword(
+const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
     const password_manager::PasswordFormManagerForUI& submitted_manager) {
   const password_manager::PasswordForm* match = FindFormByUsername(
       submitted_manager.GetBestMatches(),
       submitted_manager.GetPendingCredentials().username_value);
-  return match && match->type ==
-                      password_manager::PasswordForm::Type::kChangeSubmission
+  return match &&
+                 match->type ==
+                     password_manager::PasswordForm::Type::kChangeSubmission &&
+                 match->GetPasswordBackup().has_value()
              ? match
              : nullptr;
-}
-
-const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
-    const password_manager::PasswordFormManagerForUI& submitted_manager) {
-  const password_manager::PasswordForm* changed_password_form =
-      FindLoginWithChangedPassword(submitted_manager);
-  if (changed_password_form &&
-      changed_password_form->GetPasswordBackup().has_value()) {
-    return changed_password_form;
-  }
-  return nullptr;
 }
 
 const PasswordForm* GetMatchForUpdating(

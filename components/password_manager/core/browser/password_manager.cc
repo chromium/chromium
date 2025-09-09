@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -117,12 +118,33 @@ bool DidLoginWithBackupChangedPassword(
          change_password_login.GetPasswordBackup();
 }
 
+// Returns true if the form's date_last_used is close-enough to the backup
+// password creation timestamp.
+// date_last_used is updated at the end of the password change flow and the
+// backup password is created slightly earlier - when we fill the password
+// change form. This diff should be very small since we have a timeout for the
+// flow to finish after we start filling the change password form.
+bool IsLikelyFirstLoginAttempAfterPasswordChange(
+    const PasswordForm& change_password_login) {
+  CHECK(change_password_login.GetPasswordBackupDateCreated().has_value());
+
+  // Allow way more time than needed to catch potential edge cases. At the same
+  // time, we don't want to accidentally record multiple successful log-ins.
+  // It's quite unlikely that a user logs in successfully twice within this
+  // delta.
+  const base::TimeDelta first_login_attempt_time_delta = base::Minutes(2);
+  return (change_password_login.date_last_used -
+          change_password_login.GetPasswordBackupDateCreated().value()) <
+         first_login_attempt_time_delta;
+}
+
 void RecordMetricsForLoginWithChangedPassword(
     password_manager::PasswordManagerClient* client,
     const PasswordFormManager& submitted_manager,
     bool login_successful) {
   const PasswordForm* change_password_login =
-      password_manager_util::FindLoginWithChangedPassword(submitted_manager);
+      password_manager_util::FindChangedPasswordLoginWithBackup(
+          submitted_manager);
   if (!change_password_login) {
     return;
   }
@@ -144,7 +166,9 @@ void RecordMetricsForLoginWithChangedPassword(
                   : LogInWithChangedPasswordOutcome::kUnknownPasswordFailed;
   }
 
-  if (auto* password_change_service = client->GetPasswordChangeService()) {
+  if (auto* password_change_service = client->GetPasswordChangeService();
+      password_change_service &&
+      IsLikelyFirstLoginAttempAfterPasswordChange(*change_password_login)) {
     password_change_service->RecordLoginAttemptQuality(
         outcome, client->GetLastCommittedURL());
   }
