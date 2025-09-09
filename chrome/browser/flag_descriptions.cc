@@ -4094,7 +4094,7 @@ const char kTabGroupShorcutsDescription[] =
 const char kTabGroupMenuImprovementsName[] =
     "Add context menu when left-clicking a tab group";
 const char kTabGroupMenuImprovementsDescription[] =
-    "When clicking a tab group in the bookmarks bar, the left click will be"
+    "When clicking a tab group in the bookmarks bar, the left click will be "
     "given a context menu, similar to the one that appears when right clicking "
     "the tab group.";
 
