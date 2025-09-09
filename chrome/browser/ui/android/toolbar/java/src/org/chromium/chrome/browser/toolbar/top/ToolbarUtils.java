@@ -70,9 +70,10 @@ public class ToolbarUtils {
     public static final @ToolbarComponentId int[] RANKED_TOOLBAR_COMPONENTS =
             new int[] {
                 ToolbarComponentId.MENU,
-                ToolbarComponentId.BACK,
                 ToolbarComponentId.TAB_SWITCHER,
+                ToolbarComponentId.LOCATION_BAR_MINIMUM,
                 ToolbarComponentId.PADDING,
+                ToolbarComponentId.BACK,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
                 ToolbarComponentId.RELOAD,
                 ToolbarComponentId.FORWARD,
@@ -84,6 +85,7 @@ public class ToolbarUtils {
         ToolbarComponentId.BACK,
         ToolbarComponentId.FORWARD,
         ToolbarComponentId.RELOAD,
+        ToolbarComponentId.LOCATION_BAR_MINIMUM,
         ToolbarComponentId.ADAPTIVE_BUTTON,
         ToolbarComponentId.TAB_SWITCHER,
         ToolbarComponentId.MENU,
@@ -96,11 +98,12 @@ public class ToolbarUtils {
         int BACK = 1;
         int FORWARD = 2;
         int RELOAD = 3;
-        int ADAPTIVE_BUTTON = 4;
-        int TAB_SWITCHER = 5;
-        int MENU = 6;
-        int PADDING = 7;
-        int COUNT = 8;
+        int LOCATION_BAR_MINIMUM = 4;
+        int ADAPTIVE_BUTTON = 5;
+        int TAB_SWITCHER = 6;
+        int MENU = 7;
+        int PADDING = 8;
+        int COUNT = 9;
     }
 
     /**
