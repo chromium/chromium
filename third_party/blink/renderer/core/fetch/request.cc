@@ -591,18 +591,26 @@ Request* Request::CreateRequestWithRequestOrString(
   if (init->hasTargetAddressSpace()) {
     // 'private' is kept as an alias to 'local'; the previous PNA spec had
     // 'private' for what LNA considers to be 'local'.
-    if (init->targetAddressSpace() == "loopback") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLoopback);
-    } else if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
-    } else if (init->targetAddressSpace() == "private") {
-      UseCounter::Count(execution_context,
-                        WebFeature::kLocalNetworkAccessPrivateAliasUse);
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
-    } else if (init->targetAddressSpace() == "public") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
-    } else if (init->targetAddressSpace() == "unknown") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
+    switch (init->targetAddressSpace().AsEnum()) {
+      case V8IPAddressSpace::Enum::kLoopback:
+        request->SetTargetAddressSpace(
+            network::mojom::IPAddressSpace::kLoopback);
+        break;
+      case V8IPAddressSpace::Enum::kLocal:
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+        break;
+      case V8IPAddressSpace::Enum::kPrivate:
+        UseCounter::Count(execution_context,
+                          WebFeature::kLocalNetworkAccessPrivateAliasUse);
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+        break;
+      case V8IPAddressSpace::Enum::kPublic:
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
+        break;
+      case V8IPAddressSpace::Enum::kUnknown:
+        request->SetTargetAddressSpace(
+            network::mojom::IPAddressSpace::kUnknown);
+        break;
     }
   } else {
     request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
@@ -610,19 +618,25 @@ Request* Request::CreateRequestWithRequestOrString(
 
   // "If |init|'s cache member is present, set |request|'s cache mode to it."
   if (init->hasCache()) {
-    auto&& cache = init->cache();
-    if (cache == "default") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kDefault);
-    } else if (cache == "no-store") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kNoStore);
-    } else if (cache == "reload") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
-    } else if (cache == "no-cache") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kValidateCache);
-    } else if (cache == "force-cache") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
-    } else if (cache == "only-if-cached") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kOnlyIfCached);
+    switch (init->cache().AsEnum()) {
+      case V8RequestCache::Enum::kDefault:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kDefault);
+        break;
+      case V8RequestCache::Enum::kNoStore:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kNoStore);
+        break;
+      case V8RequestCache::Enum::kReload:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
+        break;
+      case V8RequestCache::Enum::kNoCache:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kValidateCache);
+        break;
+      case V8RequestCache::Enum::kForceCache:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
+        break;
+      case V8RequestCache::Enum::kOnlyIfCached:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kOnlyIfCached);
+        break;
     }
   }
 
@@ -638,12 +652,16 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |init|'s redirect member is present, set |request|'s redirect mode
   // to it."
   if (init->hasRedirect()) {
-    if (init->redirect() == "follow") {
-      request->SetRedirect(network::mojom::RedirectMode::kFollow);
-    } else if (init->redirect() == "error") {
-      request->SetRedirect(network::mojom::RedirectMode::kError);
-    } else if (init->redirect() == "manual") {
-      request->SetRedirect(network::mojom::RedirectMode::kManual);
+    switch (init->redirect().AsEnum()) {
+      case V8RequestRedirect::Enum::kFollow:
+        request->SetRedirect(network::mojom::RedirectMode::kFollow);
+        break;
+      case V8RequestRedirect::Enum::kError:
+        request->SetRedirect(network::mojom::RedirectMode::kError);
+        break;
+      case V8RequestRedirect::Enum::kManual:
+        request->SetRedirect(network::mojom::RedirectMode::kManual);
+        break;
     }
   }
 

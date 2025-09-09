@@ -143,14 +143,17 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
       return EmptyPromise();
   }
 
-  if (options->parity() == "none") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::NO_PARITY;
-  } else if (options->parity() == "even") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::EVEN;
-  } else if (options->parity() == "odd") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
-  } else {
-    NOTREACHED();
+  switch (options->parity().AsEnum()) {
+    case V8ParityType::Enum::kNone:
+      mojo_options->parity_bit =
+          device::mojom::blink::SerialParityBit::NO_PARITY;
+      break;
+    case V8ParityType::Enum::kEven:
+      mojo_options->parity_bit = device::mojom::blink::SerialParityBit::EVEN;
+      break;
+    case V8ParityType::Enum::kOdd:
+      mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
+      break;
   }
 
   switch (options->stopBits()) {

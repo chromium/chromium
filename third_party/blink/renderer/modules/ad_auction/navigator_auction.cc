@@ -1415,19 +1415,22 @@ bool CopyAdSignalsFromIdlToMojo(const ExecutionContext& context,
   output.anonymized_proxied_signals.emplace();
 
   for (const auto& signal : input.anonymizedProxiedSignals()) {
-    if (signal == "coarse-geolocation") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kCourseGeolocation);
-    } else if (signal == "coarse-ua") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kCourseUserAgent);
-    } else if (signal == "targeting") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kTargeting);
-    } else if (signal == "user-ad-interests") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kUserAdInterests);
+    mojom::blink::AdSignals mojo_signal;
+    switch (signal.AsEnum()) {
+      case V8AdSignals::Enum::kCoarseGeolocation:
+        mojo_signal = mojom::blink::AdSignals::kCourseGeolocation;
+        break;
+      case V8AdSignals::Enum::kCoarseUa:
+        mojo_signal = mojom::blink::AdSignals::kCourseUserAgent;
+        break;
+      case V8AdSignals::Enum::kTargeting:
+        mojo_signal = mojom::blink::AdSignals::kTargeting;
+        break;
+      case V8AdSignals::Enum::kUserAdInterests:
+        mojo_signal = mojom::blink::AdSignals::kUserAdInterests;
+        break;
     }
+    output.anonymized_proxied_signals->push_back(mojo_signal);
   }
   return true;
 }

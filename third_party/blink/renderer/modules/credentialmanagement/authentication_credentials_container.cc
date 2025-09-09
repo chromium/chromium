@@ -1491,19 +1491,25 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     }
     return promise;
   }
-  if (options->mediation() == "silent") {
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetMediationSilent);
-    requirement = CredentialMediationRequirement::kSilent;
-  } else if (options->mediation() == "optional") {
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetMediationOptional);
-    requirement = CredentialMediationRequirement::kOptional;
-  } else {
-    CHECK_EQ("required", options->mediation());
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetMediationRequired);
-    requirement = CredentialMediationRequirement::kRequired;
+  switch (options->mediation().AsEnum()) {
+    case V8CredentialMediationRequirement::Enum::kSilent:
+      UseCounter::Count(context,
+                        WebFeature::kCredentialManagerGetMediationSilent);
+      requirement = CredentialMediationRequirement::kSilent;
+      break;
+    case V8CredentialMediationRequirement::Enum::kOptional:
+      UseCounter::Count(context,
+                        WebFeature::kCredentialManagerGetMediationOptional);
+      requirement = CredentialMediationRequirement::kOptional;
+      break;
+    case V8CredentialMediationRequirement::Enum::kRequired:
+      UseCounter::Count(context,
+                        WebFeature::kCredentialManagerGetMediationRequired);
+      requirement = CredentialMediationRequirement::kRequired;
+      break;
+    case V8CredentialMediationRequirement::Enum::kConditional:
+    case V8CredentialMediationRequirement::Enum::kImmediate:
+      NOTREACHED();
   }
 
   auto* credential_manager =
@@ -1974,20 +1980,28 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
   }
 
   Mediation mediation = Mediation::MODAL;
-  if (options->mediation() == "conditional") {
-    UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
-    CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
-    mediation = Mediation::CONDITIONAL;
-  } else if (options->mediation() == "immediate") {
-    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
-      mediation = Mediation::IMMEDIATE;
-      EmitImmediateMediationUseCounters(context, options);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation not implemented"));
-      return;
-    }
+  switch (options->mediation().AsEnum()) {
+    case V8CredentialMediationRequirement::Enum::kConditional:
+      UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
+      CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
+      mediation = Mediation::CONDITIONAL;
+      break;
+    case V8CredentialMediationRequirement::Enum::kImmediate:
+      if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
+              context)) {
+        mediation = Mediation::IMMEDIATE;
+        EmitImmediateMediationUseCounters(context, options);
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "Immediate mediation not implemented"));
+        return;
+      }
+      break;
+    case V8CredentialMediationRequirement::Enum::kSilent:
+    case V8CredentialMediationRequirement::Enum::kOptional:
+    case V8CredentialMediationRequirement::Enum::kRequired:
+      break;
   }
   if (mediation == Mediation::IMMEDIATE) {
     if (options->hasPublicKey() &&
@@ -2280,22 +2294,28 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
   CredentialMediationRequirement mediation_requirement;
-  if (options.mediation() == "conditional") {
-    if (RuntimeEnabledFeatures::FedCmAutofillEnabled()) {
-      mediation_requirement = CredentialMediationRequirement::kConditional;
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Conditional mediation is not supported for this credential type"));
-      return;
-    }
-  } else if (options.mediation() == "silent") {
-    mediation_requirement = CredentialMediationRequirement::kSilent;
-  } else if (options.mediation() == "required") {
-    mediation_requirement = CredentialMediationRequirement::kRequired;
-  } else {
-    DCHECK_EQ("optional", options.mediation());
-    mediation_requirement = CredentialMediationRequirement::kOptional;
+  switch (options.mediation().AsEnum()) {
+    case V8CredentialMediationRequirement::Enum::kConditional:
+      if (RuntimeEnabledFeatures::FedCmAutofillEnabled()) {
+        mediation_requirement = CredentialMediationRequirement::kConditional;
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "Conditional mediation is not supported for this credential type"));
+        return;
+      }
+      break;
+    case V8CredentialMediationRequirement::Enum::kSilent:
+      mediation_requirement = CredentialMediationRequirement::kSilent;
+      break;
+    case V8CredentialMediationRequirement::Enum::kRequired:
+      mediation_requirement = CredentialMediationRequirement::kRequired;
+      break;
+    case V8CredentialMediationRequirement::Enum::kOptional:
+      mediation_requirement = CredentialMediationRequirement::kOptional;
+      break;
+    case V8CredentialMediationRequirement::Enum::kImmediate:
+      NOTREACHED();
   }
 
   if (identity_options.hasMediation()) {

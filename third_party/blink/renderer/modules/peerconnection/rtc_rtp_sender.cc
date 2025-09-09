@@ -471,16 +471,18 @@ ToRtpParameters(ExecutionContext* context,
   std::optional<webrtc::DegradationPreference> degradation_preference;
 
   if (parameters->hasDegradationPreference()) {
-    if (parameters->degradationPreference() == "balanced") {
-      degradation_preference = webrtc::DegradationPreference::BALANCED;
-    } else if (parameters->degradationPreference() == "maintain-framerate") {
-      degradation_preference =
-          webrtc::DegradationPreference::MAINTAIN_FRAMERATE;
-    } else if (parameters->degradationPreference() == "maintain-resolution") {
-      degradation_preference =
-          webrtc::DegradationPreference::MAINTAIN_RESOLUTION;
-    } else {
-      NOTREACHED();
+    switch (parameters->degradationPreference().AsEnum()) {
+      case V8RTCDegradationPreference::Enum::kBalanced:
+        degradation_preference = webrtc::DegradationPreference::BALANCED;
+        break;
+      case V8RTCDegradationPreference::Enum::kMaintainFramerate:
+        degradation_preference =
+            webrtc::DegradationPreference::MAINTAIN_FRAMERATE;
+        break;
+      case V8RTCDegradationPreference::Enum::kMaintainResolution:
+        degradation_preference =
+            webrtc::DegradationPreference::MAINTAIN_RESOLUTION;
+        break;
     }
   }
 

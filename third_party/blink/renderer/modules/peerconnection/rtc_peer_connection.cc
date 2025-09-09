@@ -299,22 +299,28 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
         IceTransportPolicyFromEnum(configuration->iceTransports().AsEnum());
   }
 
-  if (configuration->bundlePolicy() == "max-compat") {
-    web_configuration.bundle_policy =
-        webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat;
-  } else if (configuration->bundlePolicy() == "max-bundle") {
-    web_configuration.bundle_policy =
-        webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle;
-  } else {
-    DCHECK_EQ(configuration->bundlePolicy(), "balanced");
+  switch (configuration->bundlePolicy().AsEnum()) {
+    case V8RTCBundlePolicy::Enum::kMaxCompat:
+      web_configuration.bundle_policy =
+          webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat;
+      break;
+    case V8RTCBundlePolicy::Enum::kMaxBundle:
+      web_configuration.bundle_policy =
+          webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle;
+      break;
+    case V8RTCBundlePolicy::Enum::kBalanced:
+      break;
   }
 
-  if (configuration->rtcpMuxPolicy() == "negotiate") {
-    web_configuration.rtcp_mux_policy =
-        webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate;
-    Deprecation::CountDeprecation(context, WebFeature::kRtcpMuxPolicyNegotiate);
-  } else {
-    DCHECK_EQ(configuration->rtcpMuxPolicy(), "require");
+  switch (configuration->rtcpMuxPolicy().AsEnum()) {
+    case V8RTCRtcpMuxPolicy::Enum::kNegotiate:
+      web_configuration.rtcp_mux_policy =
+          webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate;
+      Deprecation::CountDeprecation(context,
+                                    WebFeature::kRtcpMuxPolicyNegotiate);
+      break;
+    case V8RTCRtcpMuxPolicy::Enum::kRequire:
+      break;
   }
 
   if (configuration->hasIceServers()) {
@@ -2010,19 +2016,16 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
     init.id = data_channel_dict->id();
   if (data_channel_dict->hasPriority()) {
     init.priority = [&] {
-      if (data_channel_dict->priority() == "very-low") {
-        return webrtc::PriorityValue(webrtc::Priority::kVeryLow);
+      switch (data_channel_dict->priority().AsEnum()) {
+        case V8RTCPriorityType::Enum::kVeryLow:
+          return webrtc::PriorityValue(webrtc::Priority::kVeryLow);
+        case V8RTCPriorityType::Enum::kLow:
+          return webrtc::PriorityValue(webrtc::Priority::kLow);
+        case V8RTCPriorityType::Enum::kMedium:
+          return webrtc::PriorityValue(webrtc::Priority::kMedium);
+        case V8RTCPriorityType::Enum::kHigh:
+          return webrtc::PriorityValue(webrtc::Priority::kHigh);
       }
-      if (data_channel_dict->priority() == "low") {
-        return webrtc::PriorityValue(webrtc::Priority::kLow);
-      }
-      if (data_channel_dict->priority() == "medium") {
-        return webrtc::PriorityValue(webrtc::Priority::kMedium);
-      }
-      if (data_channel_dict->priority() == "high") {
-        return webrtc::PriorityValue(webrtc::Priority::kHigh);
-      }
-      NOTREACHED();
     }();
   }
   // Checks from WebRTC specification section 6.1
