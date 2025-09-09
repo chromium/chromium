@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/uuid.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -53,6 +54,16 @@ class ContextualTask {
   // Returns the server-side conversation associated with the task.
   std::optional<Chat> GetChat() const;
 
+  // Adds a URL to the task. If the URL already exists, this method does
+  // nothing.
+  void AddUrl(const GURL& url);
+
+  // Returns the URLs relevant to the task.
+  std::vector<GURL> GetUrls() const;
+
+  // Removes a URL from the task.
+  void RemoveUrl(const GURL& url);
+
  private:
   // The unique ID of the task.
   base::Uuid task_id_;
@@ -60,6 +71,9 @@ class ContextualTask {
   // The server-side conversation associated with the task.
   // When we persist this, we need to ensure we support up to N Chats.
   std::optional<Chat> chat_;
+
+  // URLs relevant to the task.
+  std::vector<GURL> urls_;
 };
 
 }  // namespace contextual_tasks

@@ -17,6 +17,7 @@ source_set("internal") {
     "//base",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//url",
   ]
 }
 
@@ -31,6 +32,7 @@ source_set("unit_tests") {
     "//components/contextual_tasks/public",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   visibility = [ "//components/contextual_tasks:unit_tests" ]

@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -29,6 +30,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
   void RemoveServerIdFromTask(const base::Uuid& task_id,
                               ChatType type,
                               const std::string& server_id) override;
+  void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
+  void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
 
  private:
   // The set of all tasks currently managed by the service, indexed by their

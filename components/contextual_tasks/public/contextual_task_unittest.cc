@@ -8,6 +8,7 @@
 
 #include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -15,6 +16,20 @@ TEST(ContextualTaskTest, GetTaskId) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
   EXPECT_EQ(task_id, task.GetTaskId());
+}
+
+TEST(ContextualTaskTest, AddAndRemoveUrl) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  GURL url("https://www.google.com");
+
+  task.AddUrl(url);
+  task.AddUrl(url);
+
+  EXPECT_EQ(1u, task.GetUrls().size());
+
+  task.RemoveUrl(url);
+  EXPECT_EQ(0u, task.GetUrls().size());
 }
 
 TEST(ContextualTaskTest, AddChat) {

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/uuid.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -39,6 +40,20 @@ void ContextualTask::RemoveChat(ChatType type, const std::string& server_id) {
 
 std::optional<Chat> ContextualTask::GetChat() const {
   return chat_;
+}
+
+void ContextualTask::AddUrl(const GURL& url) {
+  if (std::find(urls_.begin(), urls_.end(), url) == urls_.end()) {
+    urls_.push_back(url);
+  }
+}
+
+std::vector<GURL> ContextualTask::GetUrls() const {
+  return urls_;
+}
+
+void ContextualTask::RemoveUrl(const GURL& url) {
+  urls_.erase(std::remove(urls_.begin(), urls_.end(), url), urls_.end());
 }
 
 }  // namespace contextual_tasks

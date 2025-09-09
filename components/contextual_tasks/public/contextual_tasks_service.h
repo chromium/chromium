@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -36,6 +37,11 @@ class ContextualTasksService : public KeyedService {
   virtual void RemoveServerIdFromTask(const base::Uuid& task_id,
                                       ChatType type,
                                       const std::string& server_id) = 0;
+
+  // Methods related to attaching URLs to tasks.
+  virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;
+  virtual void DetachUrlFromTask(const base::Uuid& task_id,
+                                 const GURL& url) = 0;
 };
 
 }  // namespace contextual_tasks

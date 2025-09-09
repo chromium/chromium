@@ -13,6 +13,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//url",
   ]
 }
 
@@ -25,6 +26,7 @@ source_set("unit_tests") {
     ":public",
     "//base/test:test_support",
     "//testing/gtest",
+    "//url",
   ]
 
   visibility = [ "//components/contextual_tasks:unit_tests" ]

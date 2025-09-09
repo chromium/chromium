@@ -9,6 +9,7 @@
 
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -52,6 +53,22 @@ void ContextualTasksServiceImpl::RemoveServerIdFromTask(
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.RemoveChat(type, server_id);
+  }
+}
+
+void ContextualTasksServiceImpl::AttachUrlToTask(const base::Uuid& task_id,
+                                                 const GURL& url) {
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    it->second.AddUrl(url);
+  }
+}
+
+void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
+                                                   const GURL& url) {
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    it->second.RemoveUrl(url);
   }
 }
 

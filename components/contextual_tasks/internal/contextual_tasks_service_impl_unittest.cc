@@ -10,6 +10,7 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -171,6 +172,68 @@ TEST_F(ContextualTasksServiceImplTest, AssignServerIdToTask_TaskDoesNotExist) {
   ASSERT_TRUE(chat.has_value());
   EXPECT_EQ(server_id, chat->server_id);
   EXPECT_EQ(type, chat->type);
+}
+
+TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
+  ContextualTask task = service_.CreateTask();
+  GURL url("https://www.google.com");
+
+  service_.AttachUrlToTask(task.GetTaskId(), url);
+
+  std::vector<ContextualTask> tasks = service_.GetTasks();
+  ASSERT_EQ(1u, tasks.size());
+  std::vector<GURL> urls = tasks[0].GetUrls();
+  ASSERT_EQ(1u, urls.size());
+  EXPECT_EQ(url, urls[0]);
+}
+
+TEST_F(ContextualTasksServiceImplTest, AttachAndDetachUrl_MultipleTasks) {
+  ContextualTask task1 = service_.CreateTask();
+  ContextualTask task2 = service_.CreateTask();
+  GURL url1("https://www.google.com");
+  GURL url2("https://www.youtube.com");
+
+  service_.AttachUrlToTask(task1.GetTaskId(), url1);
+  service_.AttachUrlToTask(task2.GetTaskId(), url2);
+
+  std::vector<ContextualTask> tasks = service_.GetTasks();
+  ASSERT_EQ(2u, tasks.size());
+
+  ContextualTask result_task1 =
+      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
+  ContextualTask result_task2 =
+      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
+
+  std::vector<GURL> urls1 = result_task1.GetUrls();
+  ASSERT_EQ(1u, urls1.size());
+  EXPECT_EQ(url1, urls1[0]);
+
+  std::vector<GURL> urls2 = result_task2.GetUrls();
+  ASSERT_EQ(1u, urls2.size());
+  EXPECT_EQ(url2, urls2[0]);
+
+  service_.DetachUrlFromTask(task1.GetTaskId(), url1);
+  tasks = service_.GetTasks();
+  ASSERT_EQ(2u, tasks.size());
+
+  result_task1 =
+      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
+  result_task2 =
+      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
+
+  EXPECT_TRUE(result_task1.GetUrls().empty());
+  EXPECT_EQ(1u, result_task2.GetUrls().size());
+}
+
+TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
+  ContextualTask task = service_.CreateTask();
+  GURL url("https://www.google.com");
+
+  service_.AttachUrlToTask(task.GetTaskId(), url);
+  EXPECT_EQ(1u, service_.GetTasks()[0].GetUrls().size());
+
+  service_.DetachUrlFromTask(task.GetTaskId(), url);
+  EXPECT_TRUE(service_.GetTasks()[0].GetUrls().empty());
 }
 
 }  // namespace contextual_tasks
