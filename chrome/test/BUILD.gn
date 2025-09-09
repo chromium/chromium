@@ -6556,8 +6556,6 @@ test("unit_tests") {
     "../browser/profiles/profile_keyed_service_factory_unittest.cc",
     "../browser/profiles/profile_manager_unittest.cc",
     "../browser/profiles/profile_selections_unittest.cc",
-    "../browser/profiles/profile_testing_helper.cc",
-    "../browser/profiles/profile_testing_helper.h",
     "../browser/profiles/profiles_state_unittest.cc",
     "../browser/profiling_host/chrome_client_connection_manager_unittest.cc",
     "../browser/push_messaging/budget_database_unittest.cc",
@@ -6929,6 +6927,7 @@ test("unit_tests") {
     "//chrome/browser/profiles:profile_downloader",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profiles_extra_parts",
+    "//chrome/browser/profiles:test_support",
     "//chrome/browser/profiles:unit_tests",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/profiling_host",
@@ -7402,10 +7401,6 @@ test("unit_tests") {
   if (enable_server_based_recognition) {
     deps += [ "//chrome/services/speech/internal:unit_tests" ]
   }
-
-  # TODO(crbug.com/353332589): Remove this circular dependency when
-  # c/b/profiles/profile_testing_helper.h gets componentized.
-  allow_circular_includes_from = [ "//chrome/browser/autocomplete:unit_tests" ]
 
   if (enable_compose) {
     sources += [
@@ -9591,7 +9586,7 @@ test("unit_tests") {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    allow_circular_includes_from += [
+    allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
     ]

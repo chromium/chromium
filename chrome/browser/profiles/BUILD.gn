@@ -481,3 +481,21 @@ source_set("unit_tests") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "profile_testing_helper.cc",
+    "profile_testing_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+  deps = [ "//testing/gtest" ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+}

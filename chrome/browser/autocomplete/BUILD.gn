@@ -258,6 +258,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/history",
+    "//chrome/browser/profiles:test_support",
     "//chrome/browser/search_engines",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
