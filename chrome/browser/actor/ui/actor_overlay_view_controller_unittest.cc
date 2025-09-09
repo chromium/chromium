@@ -31,22 +31,20 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // mojom::ActorOverlayPage
-  void SetHandoffButtonHoverStatus(bool is_hovering) override {
-    is_handoff_button_hovering_ = is_hovering;
-    handoff_button_hover_call_count_++;
+  void SetScrimBackground(bool is_visible) override {
+    is_scrim_background_visible_ = is_visible;
+    set_scrim_background_call_count_++;
   }
 
   // Test accessors
-  bool is_handoff_button_hovering() { return is_handoff_button_hovering_; }
+  bool is_scrim_background_visible() { return is_scrim_background_visible_; }
 
-  int handoff_button_hover_call_count() {
-    return handoff_button_hover_call_count_;
-  }
+  int scrim_background_call_count() { return set_scrim_background_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
-  bool is_handoff_button_hovering_ = false;
-  int handoff_button_hover_call_count_ = 0;
+  bool is_scrim_background_visible_ = false;
+  int set_scrim_background_call_count_ = 0;
 };
 
 // This test suite focuses solely on verifying the ActorOverlayViewController's
@@ -85,24 +83,24 @@ TEST_F(ActorOverlayViewControllerTest, OnHoverStatusChanged) {
   overlay_view_controller_->OnHoverStatusChanged(false);
 }
 
-TEST_F(ActorOverlayViewControllerTest, SetHandoffButtonHoverStatus) {
+TEST_F(ActorOverlayViewControllerTest, SetScrimBackground) {
   FakeActorOverlayPage fake_page;
   mojo::Remote<mojom::ActorOverlayPageHandler> handler_remote;
   overlay_view_controller_->BindOverlay(
       fake_page.BindAndGetRemote(),
       handler_remote.BindNewPipeAndPassReceiver());
 
-  overlay_view_controller_->SetHandoffButtonHoverStatus(true);
+  overlay_view_controller_->SetScrimBackground(true);
   fake_page.FlushForTesting();
 
-  EXPECT_TRUE(fake_page.is_handoff_button_hovering());
-  EXPECT_EQ(fake_page.handoff_button_hover_call_count(), 1);
+  EXPECT_TRUE(fake_page.is_scrim_background_visible());
+  EXPECT_EQ(fake_page.scrim_background_call_count(), 1);
 
-  overlay_view_controller_->SetHandoffButtonHoverStatus(false);
+  overlay_view_controller_->SetScrimBackground(false);
   fake_page.FlushForTesting();
 
-  EXPECT_FALSE(fake_page.is_handoff_button_hovering());
-  EXPECT_EQ(fake_page.handoff_button_hover_call_count(), 2);
+  EXPECT_FALSE(fake_page.is_scrim_background_visible());
+  EXPECT_EQ(fake_page.scrim_background_call_count(), 2);
 }
 
 }  // namespace

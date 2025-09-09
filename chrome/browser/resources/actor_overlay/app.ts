@@ -31,48 +31,36 @@ export class ActorOverlayAppElement extends CrLitElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
-  private setHandoffButtonHoverStatusListenerId_: number|null = null;
+  private setScrimBackgroundListenerId_: number|null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
-  private isHoveringOverlay_: boolean = false;
-  private isHoveringButton_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
     const proxy = ActorOverlayBrowserProxy.getInstance();
     this.eventTracker_.add(this, 'pointerenter', () => {
-      this.isHoveringOverlay_ = true;
       proxy.handler.onHoverStatusChanged(true);
-      this.updateScrimBackground();
     });
     this.eventTracker_.add(this, 'pointerleave', () => {
-      this.isHoveringOverlay_ = false;
       proxy.handler.onHoverStatusChanged(false);
-      this.updateScrimBackground();
     });
-    this.setHandoffButtonHoverStatusListenerId_ =
-        proxy.callbackRouter.setHandoffButtonHoverStatus.addListener(
-            this.setHandoffButtonHoverStatus.bind(this));
+    this.setScrimBackgroundListenerId_ =
+        proxy.callbackRouter.setScrimBackground.addListener(
+            this.setScrimBackground.bind(this));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-    assert(this.setHandoffButtonHoverStatusListenerId_);
+    assert(this.setScrimBackgroundListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
-        this.setHandoffButtonHoverStatusListenerId_);
+        this.setScrimBackgroundListenerId_);
   }
 
-  private setHandoffButtonHoverStatus(isHovering: boolean) {
-    this.isHoveringButton_ = isHovering;
-    this.updateScrimBackground();
-  }
-
-  private updateScrimBackground() {
-    const isHovering = this.isHoveringOverlay_ || this.isHoveringButton_;
-    isHovering ? this.classList.add('background-visible') :
-                 this.classList.remove('background-visible');
+  private setScrimBackground(isVisible: boolean) {
+    isVisible ? this.classList.add('background-visible') :
+                this.classList.remove('background-visible');
   }
 
   // TODO(crbug.com/422539773): Make function private once it's called via the

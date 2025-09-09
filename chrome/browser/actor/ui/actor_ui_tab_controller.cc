@@ -270,11 +270,19 @@ void ActorUiTabController::BindActorOverlay(
   }
 }
 
+void ActorUiTabController::UpdateScrimBackground() {
+  if (features::kGlicActorUiOverlay.Get()) {
+    actor_overlay_view_controller_->SetScrimBackground(is_hovering_overlay_ ||
+                                                       is_hovering_button_);
+  }
+}
+
 void ActorUiTabController::SetOverlayHoverStatus(bool is_hovering) {
   if (is_hovering_overlay_ == is_hovering) {
     return;
   }
   is_hovering_overlay_ = is_hovering;
+  UpdateScrimBackground();
   update_ui_debounce_timer_.Reset();
 }
 
@@ -283,10 +291,7 @@ void ActorUiTabController::SetHandoffButtonHoverStatus(bool is_hovering) {
     return;
   }
   is_hovering_button_ = is_hovering;
-  if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->SetHandoffButtonHoverStatus(
-        is_hovering_button_);
-  }
+  UpdateScrimBackground();
   update_ui_debounce_timer_.Reset();
 }
 

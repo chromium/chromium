@@ -55,8 +55,8 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   void OnHoverStatusChanged(bool is_hovering) override;
 
   // mojom::ActorOverlayPage
-  // Forwards the handoff button hover status to WebUI.
-  virtual void SetHandoffButtonHoverStatus(bool is_hovering);
+  // Forwards the scrim background visibility to WebUI.
+  virtual void SetScrimBackground(bool is_visible);
 
  private:
   // Tab subscriptions:

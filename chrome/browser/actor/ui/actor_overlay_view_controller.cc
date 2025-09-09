@@ -47,8 +47,8 @@ void ActorOverlayViewController::OnHoverStatusChanged(bool is_hovering) {
       ->SetOverlayHoverStatus(is_hovering);
 }
 
-void ActorOverlayViewController::SetHandoffButtonHoverStatus(bool is_hovering) {
-  page_->SetHandoffButtonHoverStatus(is_hovering);
+void ActorOverlayViewController::SetScrimBackground(bool is_visible) {
+  page_->SetScrimBackground(is_visible);
 }
 
 void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,

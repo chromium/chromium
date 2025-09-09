@@ -94,6 +94,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Sets the Border Glow visibility.
   void SetBorderGlowVisibility();
 
+  // Updates the visibility of the scrim background. This is determined by the
+  // hover status of the overlay and the handoff button.
+  void UpdateScrimBackground();
+
   // Initialize and start observing ImmersiveModeController.
   void InitializeImmersiveModeObserver();
 
