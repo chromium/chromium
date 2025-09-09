@@ -21,7 +21,7 @@ class IOSChromeSafetyCheckManagerFactory
  public:
   static IOSChromeSafetyCheckManager* GetForProfile(ProfileIOS* profile);
   static IOSChromeSafetyCheckManagerFactory* GetInstance();
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSChromeSafetyCheckManagerFactory>;

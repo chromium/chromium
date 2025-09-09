@@ -20,7 +20,7 @@ class ManagedBookmarkServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static ManagedBookmarkServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<ManagedBookmarkServiceFactory>;

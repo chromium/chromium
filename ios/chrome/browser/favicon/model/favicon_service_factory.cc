@@ -49,7 +49,7 @@ FaviconServiceFactory* FaviconServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+FaviconServiceFactory::TestingFactory
 FaviconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconService);
 }

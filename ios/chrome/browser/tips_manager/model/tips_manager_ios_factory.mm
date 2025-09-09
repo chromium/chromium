@@ -51,7 +51,7 @@ TipsManagerIOSFactory::TipsManagerIOSFactory()
 TipsManagerIOSFactory::~TipsManagerIOSFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+TipsManagerIOSFactory::TestingFactory
 TipsManagerIOSFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }

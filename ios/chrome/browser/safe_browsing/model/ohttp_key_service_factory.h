@@ -25,7 +25,7 @@ class OhttpKeyServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory. Can be used to force instantiation during
   // testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<OhttpKeyServiceFactory>;

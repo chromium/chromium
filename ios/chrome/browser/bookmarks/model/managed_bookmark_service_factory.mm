@@ -57,7 +57,7 @@ ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+ManagedBookmarkServiceFactory::TestingFactory
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildManagedBookmarkModel);
 }

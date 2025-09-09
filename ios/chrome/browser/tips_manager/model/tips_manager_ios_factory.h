@@ -30,7 +30,7 @@ class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build `TipsManagerIOS`. Can be
   // registered with `SetTestingFactory()` to use real instances during testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TipsManagerIOSFactory>;

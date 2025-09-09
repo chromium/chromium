@@ -66,7 +66,7 @@ class WebDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static WebDataServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;

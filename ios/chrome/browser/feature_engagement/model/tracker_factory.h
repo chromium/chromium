@@ -21,7 +21,7 @@ class TrackerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static Tracker* GetForProfile(ProfileIOS* profile);
   static TrackerFactory* GetInstance();
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TrackerFactory>;

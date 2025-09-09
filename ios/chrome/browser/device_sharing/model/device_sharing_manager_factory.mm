@@ -28,7 +28,7 @@ DeviceSharingManagerFactory* DeviceSharingManagerFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+DeviceSharingManagerFactory::TestingFactory
 DeviceSharingManagerFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildDeviceSharingManager);
 }

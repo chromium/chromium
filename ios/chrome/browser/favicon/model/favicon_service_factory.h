@@ -25,7 +25,7 @@ class FaviconServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static FaviconServiceFactory* GetInstance();
   // Returns the default factory used to build FaviconService. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<FaviconServiceFactory>;

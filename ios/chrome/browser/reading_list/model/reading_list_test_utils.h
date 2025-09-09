@@ -16,7 +16,7 @@
 // ReadingListModel instance that uses a fake persistency layer. The
 // constructed model starts loaded and initially contains the entries
 // provided in `initial_entries`.
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 ReadingListModelTestingFactoryWithFakeStorage(
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries);
 

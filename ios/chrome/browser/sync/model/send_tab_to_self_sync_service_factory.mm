@@ -52,7 +52,7 @@ SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+SendTabToSelfSyncServiceFactory::TestingFactory
 SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSendTabToSelfService);
 }

@@ -43,7 +43,7 @@ AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+AutocompleteClassifierFactory::TestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAutocompleteClassifier);
 }

@@ -53,7 +53,7 @@ OhttpKeyServiceFactory* OhttpKeyServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+OhttpKeyServiceFactory::TestingFactory
 OhttpKeyServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOhttpKeyService);
 }

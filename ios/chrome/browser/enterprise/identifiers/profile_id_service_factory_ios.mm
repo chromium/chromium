@@ -31,7 +31,7 @@ ProfileIdService* ProfileIdServiceFactoryIOS::GetForProfile(
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+ProfileIdServiceFactoryIOS::TestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildProfileIdService);
 }

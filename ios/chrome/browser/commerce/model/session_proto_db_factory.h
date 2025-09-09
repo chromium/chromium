@@ -60,7 +60,7 @@ class SessionProtoDBFactory : public ProfileKeyedServiceFactoryIOS {
   static SessionProtoDBFactory<T>* GetInstance();
   static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
 
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<SessionProtoDBFactory<T>>;
@@ -81,7 +81,7 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
 }
 
 template <typename T>
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+SessionProtoDBFactory<T>::TestingFactory
 SessionProtoDBFactory<T>::GetDefaultFactory() {
   return base::BindOnce(&session_proto_db::internal::BuildSessionProtoDB<T>);
 }

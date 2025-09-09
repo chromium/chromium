@@ -40,8 +40,7 @@ TrackerFactory::TrackerFactory()
 TrackerFactory::~TrackerFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-TrackerFactory::GetDefaultFactory() {
+TrackerFactory::TestingFactory TrackerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }
 

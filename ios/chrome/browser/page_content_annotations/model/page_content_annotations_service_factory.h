@@ -26,7 +26,7 @@ class PageContentAnnotationsServiceFactory
   // Returns the default factory used to build PageContentAnnotationsService.
   // Can be registered with AddTestingFactory to use real instances during
   // testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<PageContentAnnotationsServiceFactory>;

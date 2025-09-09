@@ -39,7 +39,7 @@ PlaceholderServiceFactory* PlaceholderServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+PlaceholderServiceFactory::TestingFactory
 PlaceholderServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPlaceholderService);
 }

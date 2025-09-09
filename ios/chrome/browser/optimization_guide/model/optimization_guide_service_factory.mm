@@ -96,7 +96,7 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+OptimizationGuideServiceFactory::TestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOptimizationGuideService);
 }

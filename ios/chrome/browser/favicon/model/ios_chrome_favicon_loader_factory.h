@@ -21,7 +21,7 @@ class IOSChromeFaviconLoaderFactory : public ProfileKeyedServiceFactoryIOS {
   static IOSChromeFaviconLoaderFactory* GetInstance();
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSChromeFaviconLoaderFactory>;

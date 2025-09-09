@@ -21,7 +21,7 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static TabGroupSyncServiceFactory* GetInstance();
 
   // Return the default factory.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TabGroupSyncServiceFactory>;

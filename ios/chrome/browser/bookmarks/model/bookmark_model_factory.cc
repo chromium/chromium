@@ -57,8 +57,7 @@ BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-BookmarkModelFactory::GetDefaultFactory() {
+BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBookmarkModel);
 }
 

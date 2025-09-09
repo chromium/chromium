@@ -33,7 +33,7 @@ BrowserDownloadServiceFactory* BrowserDownloadServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+BrowserDownloadServiceFactory::TestingFactory
 BrowserDownloadServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBrowserDownloadService);
 }

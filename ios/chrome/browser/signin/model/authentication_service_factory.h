@@ -34,12 +34,12 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate instance (needs to be constructible before the profile).
-  static ProfileTestingFactory GetFactoryWithDelegate(
+  static TestingFactory GetFactoryWithDelegate(
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate factory.
-  static ProfileTestingFactory GetFactoryWithDelegateFactory(
+  static TestingFactory GetFactoryWithDelegateFactory(
       AuthenticationServiceDelegateFactory delegate_factory);
 
  private:

@@ -23,7 +23,7 @@ class PlaceholderServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build PlaceholderServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<PlaceholderServiceFactory>;

@@ -39,7 +39,7 @@ class SegmentationPlatformServiceFactory
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with AddTestingFactory to use real instances during testing.
-  static ProfileTestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<SegmentationPlatformServiceFactory>;

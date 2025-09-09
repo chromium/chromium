@@ -38,12 +38,11 @@ class TestProfileIOS final : public ProfileIOS {
   struct TestingFactory {
     TestingFactory(
         ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
 
-    TestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-            testing_factory);
+    TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+                   RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
+                       testing_factory);
 
     TestingFactory(TestingFactory&&);
     TestingFactory& operator=(TestingFactory&&);
@@ -52,10 +51,9 @@ class TestProfileIOS final : public ProfileIOS {
 
     std::variant<
         std::pair<ProfileKeyedServiceFactoryIOS*,
-                  ProfileKeyedServiceFactoryIOS::ProfileTestingFactory>,
-        std::pair<
-            RefcountedProfileKeyedServiceFactoryIOS*,
-            RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory>>
+                  ProfileKeyedServiceFactoryIOS::TestingFactory>,
+        std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
+                  RefcountedProfileKeyedServiceFactoryIOS::TestingFactory>>
         service_factory_and_testing_factory;
   };
 
@@ -160,10 +158,10 @@ class TestProfileIOS final : public ProfileIOS {
     // are installed before the Profile's KeyedServices are created.
     Builder& AddTestingFactory(
         ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
     Builder& AddTestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+        RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
             testing_factory);
 
     // Adds multiple testing factories to TestProfileIOS. These testing

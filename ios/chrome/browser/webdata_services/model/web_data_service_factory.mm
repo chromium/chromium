@@ -108,7 +108,7 @@ WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+WebDataServiceFactory::TestingFactory
 WebDataServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildWebDataService);
 }

@@ -39,7 +39,7 @@ IOSChromeFaviconLoaderFactory* IOSChromeFaviconLoaderFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+IOSChromeFaviconLoaderFactory::TestingFactory
 IOSChromeFaviconLoaderFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconLoader);
 }

@@ -47,8 +47,7 @@ BwgServiceFactory::BwgServiceFactory()
 BwgServiceFactory::~BwgServiceFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-BwgServiceFactory::GetDefaultFactory() {
+BwgServiceFactory::TestingFactory BwgServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBwgService);
 }
 

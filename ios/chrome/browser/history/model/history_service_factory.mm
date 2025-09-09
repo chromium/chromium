@@ -81,7 +81,7 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+HistoryServiceFactory::TestingFactory
 HistoryServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildHistoryService);
 }

@@ -69,7 +69,7 @@ TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+TemplateURLServiceFactory::TestingFactory
 TemplateURLServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildTemplateURLService);
 }

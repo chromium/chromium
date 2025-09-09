@@ -58,7 +58,7 @@ ShortcutsBackendFactory* ShortcutsBackendFactory::GetInstance() {
 }
 
 // static
-ShortcutsBackendFactory::ProfileTestingFactory
+ShortcutsBackendFactory::TestingFactory
 ShortcutsBackendFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildShortcutsBackend);
 }

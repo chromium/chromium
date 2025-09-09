@@ -59,7 +59,7 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegate(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
   return GetFactoryWithDelegateFactory(base::IgnoreArgs<ProfileIOS*>(
@@ -67,7 +67,7 @@ AuthenticationServiceFactory::GetFactoryWithDelegate(
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegateFactory(
     AuthenticationServiceDelegateFactory delegate_factory) {
   return base::BindOnce(&BuildAuthenticationService,

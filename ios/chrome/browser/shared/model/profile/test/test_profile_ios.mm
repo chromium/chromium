@@ -53,14 +53,13 @@ void AssignTestingFactories(
 
 TestProfileIOS::TestingFactory::TestingFactory(
     ProfileKeyedServiceFactoryIOS* service_factory,
-    ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory)
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(
     RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-        testing_factory)
+    RefcountedProfileKeyedServiceFactoryIOS::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, std::move(testing_factory))) {}
 
@@ -329,15 +328,14 @@ TestProfileIOS::Builder::~Builder() = default;
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
     ProfileKeyedServiceFactoryIOS* service_factory,
-    ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory) {
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
     RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-        testing_factory) {
+    RefcountedProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }

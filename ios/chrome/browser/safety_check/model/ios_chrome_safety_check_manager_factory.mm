@@ -43,7 +43,7 @@ IOSChromeSafetyCheckManagerFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+IOSChromeSafetyCheckManagerFactory::TestingFactory
 IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }
