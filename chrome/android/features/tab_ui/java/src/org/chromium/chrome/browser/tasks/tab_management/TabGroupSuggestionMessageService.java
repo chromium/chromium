@@ -166,8 +166,8 @@ public class TabGroupSuggestionMessageService extends MessageService<@MessageTyp
     private void onAcceptMessage(
             List<@TabId Integer> tabIdsSortedByIndex,
             SuggestionLifecycleObserver responseListener) {
-        Runnable onAnimationEnd =
-                () -> groupTabs(tabIdsSortedByIndex, responseListener::onSuggestionAccepted);
+        responseListener.onSuggestionAccepted();
+        Runnable onAnimationEnd = () -> groupTabs(tabIdsSortedByIndex);
 
         int numTabs = tabIdsSortedByIndex.size();
         List<@TabId Integer> shiftedTabIds = new ArrayList<>(numTabs);
@@ -178,10 +178,9 @@ public class TabGroupSuggestionMessageService extends MessageService<@MessageTyp
         }
     }
 
-    private void groupTabs(List<@TabId Integer> tabIds, Runnable onAcceptMessageListener) {
+    private void groupTabs(List<@TabId Integer> tabIds) {
         assert !tabIds.isEmpty();
 
-        onAcceptMessageListener.run();
         TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(tabGroupModelFilter);
         TabModel tabModel = tabGroupModelFilter.getTabModel();
