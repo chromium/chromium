@@ -29,7 +29,7 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
 
-EXPIRY_DATE_PATTERN = "%Y-%m-%d"
+EXPIRY_DATE_PATTERN = '%Y-%m-%d'
 EXPIRY_MILESTONE_RE = re.compile(r'M[0-9]{2,3}\Z')
 
 
@@ -272,7 +272,7 @@ def ExtractEnumsFromXmlTree(
   return enums, errors
 
 
-def _ExtractOwners(node: xml.dom.minidom.Element, ) -> tuple[list[str], bool]:
+def _ExtractOwners(node: xml.dom.minidom.Element) -> tuple[list[str], bool]:
   """Extracts owners information from the given node, if exists.
 
   Args:
