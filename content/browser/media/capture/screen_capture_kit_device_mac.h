@@ -20,7 +20,9 @@ namespace content {
 
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
-    SCContentFilter* filter) API_AVAILABLE(macos(13.2));
+    SCContentFilter* filter,
+    base::OnceCallback<void(content::DesktopMediaID::Id, SCStream*)>
+        stream_created_callback) API_AVAILABLE(macos(13.2));
 
 }  // namespace content
 

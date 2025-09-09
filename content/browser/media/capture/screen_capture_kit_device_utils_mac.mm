@@ -14,7 +14,8 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
   // Although ScreenCaptureKit is available in 12.3 there were some bugs that
   // were not fixed until 13.2.
   if (@available(macOS 13.2, *)) {
-    return CreateScreenCaptureKitDeviceMac(source, nullptr);
+    return CreateScreenCaptureKitDeviceMac(source, /*filter=*/nullptr,
+                                           /*callback=*/base::DoNothing());
   } else {
     return nullptr;
   }

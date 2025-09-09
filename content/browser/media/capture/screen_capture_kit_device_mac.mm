@@ -212,10 +212,15 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     : public IOSurfaceCaptureDeviceBase,
       public ScreenCaptureKitResetStreamInterface {
  public:
+  using StreamCallback =
+      base::OnceCallback<void(content::DesktopMediaID::Id, SCStream*)>;
+
   explicit ScreenCaptureKitDeviceMac(const DesktopMediaID& source,
-                                     SCContentFilter* filter)
+                                     SCContentFilter* filter,
+                                     StreamCallback stream_created_callback)
       : source_(source),
         filter_(filter),
+        stream_created_callback_(std::move(stream_created_callback)),
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
     SampleCallback sample_callback = base::BindPostTask(
         device_task_runner_,
@@ -327,6 +332,9 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
             FROM_HERE, "Failed addStreamOutput");
         return;
       }
+    }
+    if (stream_created_callback_) {
+      std::move(stream_created_callback_).Run(source_.id, stream_);
     }
 
     auto stream_started_callback = base::BindPostTask(
@@ -569,6 +577,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
  private:
   const DesktopMediaID source_;
   SCContentFilter* const filter_;
+  StreamCallback stream_created_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
 
   // The actual format of the video frames that are sent to `client`.
@@ -603,7 +612,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 API_AVAILABLE(macos(13.2))
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
-    SCContentFilter* filter) {
+    SCContentFilter* filter,
+    ScreenCaptureKitDeviceMac::StreamCallback callback) {
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN:
       // ScreenCaptureKitDeviceMac only supports a single display at a time.
@@ -632,7 +642,8 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
                                      ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
                                      : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
 
-  return std::make_unique<ScreenCaptureKitDeviceMac>(source, filter);
+  return std::make_unique<ScreenCaptureKitDeviceMac>(source, filter,
+                                                     std::move(callback));
 }
 
 }  // namespace content
