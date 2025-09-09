@@ -160,8 +160,6 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
 
   bool BindElementArray(GLuint id);
 
-  bool HaveEnabledClientSideBuffers() const;
-
   void SetAttribEnable(GLuint index, bool enabled);
 
   void SetAttribPointer(
@@ -186,8 +184,6 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
  private:
   const VertexAttrib* GetAttrib(GLuint index) const;
 
-  int num_client_side_pointers_enabled_;
-
   // The currently bound element array buffer.
   GLuint bound_element_array_buffer_id_;
 
@@ -195,8 +191,7 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
 };
 
 VertexArrayObject::VertexArrayObject(GLuint max_vertex_attribs)
-    : num_client_side_pointers_enabled_(0),
-      bound_element_array_buffer_id_(0) {
+    : bound_element_array_buffer_id_(0) {
   vertex_attribs_.resize(max_vertex_attribs);
 }
 
@@ -208,9 +203,6 @@ void VertexArrayObject::UnbindBuffer(GLuint id) {
     VertexAttrib& attrib = vertex_attribs_[ii];
     if (attrib.buffer_id() == id) {
       attrib.set_buffer_id(0);
-      if (attrib.enabled()) {
-        ++num_client_side_pointers_enabled_;
-      }
     }
   }
   if (bound_element_array_buffer_id_ == id) {
@@ -225,18 +217,11 @@ bool VertexArrayObject::BindElementArray(GLuint id) {
   bound_element_array_buffer_id_ = id;
   return true;
 }
-bool VertexArrayObject::HaveEnabledClientSideBuffers() const {
-  return num_client_side_pointers_enabled_ > 0;
-}
 
 void VertexArrayObject::SetAttribEnable(GLuint index, bool enabled) {
   if (index < vertex_attribs_.size()) {
     VertexAttrib& attrib = vertex_attribs_[index];
     if (attrib.enabled() != enabled) {
-      if (attrib.IsClientSide()) {
-        num_client_side_pointers_enabled_ += enabled ? 1 : -1;
-        DCHECK_GE(num_client_side_pointers_enabled_, 0);
-      }
       attrib.set_enabled(enabled);
     }
   }
@@ -253,16 +238,7 @@ void VertexArrayObject::SetAttribPointer(
     GLboolean integer) {
   if (index < vertex_attribs_.size()) {
     VertexAttrib& attrib = vertex_attribs_[index];
-    if (attrib.IsClientSide() && attrib.enabled()) {
-      --num_client_side_pointers_enabled_;
-      DCHECK_GE(num_client_side_pointers_enabled_, 0);
-    }
-
     attrib.SetInfo(buffer_id, size, type, normalized, stride, ptr, integer);
-
-    if (attrib.IsClientSide() && attrib.enabled()) {
-      ++num_client_side_pointers_enabled_;
-    }
   }
 }
 
@@ -396,10 +372,6 @@ bool VertexArrayObjectManager::BindVertexArray(GLuint array, bool* changed) {
   return true;
 }
 
-bool VertexArrayObjectManager::HaveEnabledClientSideBuffers() const {
-  return bound_vertex_array_object_->HaveEnabledClientSideBuffers();
-}
-
 void VertexArrayObjectManager::SetAttribEnable(GLuint index, bool enabled) {
   bound_vertex_array_object_->SetAttribEnable(index, enabled);
 }
@@ -425,7 +397,7 @@ bool VertexArrayObjectManager::SetAttribPointer(
     const void* ptr,
     GLboolean integer) {
   // Client side arrays are not allowed in vaos.
-  if (buffer_id == 0 && !IsDefaultVAOBound() && ptr) {
+  if (buffer_id == 0 && ptr) {
     return false;
   }
   bound_vertex_array_object_->SetAttribPointer(
@@ -457,10 +429,6 @@ GLsizei VertexArrayObjectManager::CollectData(
     UNSAFE_TODO(memcpy(dst, src, bytes_per_element));
   }
   return bytes_needed;
-}
-
-bool VertexArrayObjectManager::IsDefaultVAOBound() const {
-  return bound_vertex_array_object_ == default_vertex_array_object_.get();
 }
 
 }  // namespace gpu::gles2

@@ -47,8 +47,6 @@ class GLES2_IMPL_EXPORT VertexArrayObjectManager {
   // Returns false if array is an unknown id.
   bool BindVertexArray(GLuint array, bool* changed);
 
-  bool HaveEnabledClientSideBuffers() const;
-
   void SetAttribEnable(GLuint index, bool enabled);
 
   bool GetVertexAttrib(GLuint index, GLenum pname, uint32_t* param);
@@ -73,8 +71,6 @@ class GLES2_IMPL_EXPORT VertexArrayObjectManager {
  private:
   typedef std::unordered_map<GLuint, std::unique_ptr<VertexArrayObject>>
       VertexArrayObjectMap;
-
-  bool IsDefaultVAOBound() const;
 
   GLsizei CollectData(const void* data,
                       GLsizei bytes_per_element,
