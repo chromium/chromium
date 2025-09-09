@@ -61,6 +61,13 @@ If you’re behind a corporate network or network proxy, your system’s auto
 configured timezone might be incorrect. If this is the case, go to your system’s
 settings and set timezone and/or time manually.
 
+### Latest Git
+
+Ensure you have the latest version of Git (or at least later than 2.46.0). Use
+the package manager for your system or download from the [Git
+website](https://git-scm.com/downloads). (Note: if you are on Ubuntu LTS you may
+need to follow the instructions on the Git website to install from PPA)
+
 ### Latest depot_tools
 
 Ensure you
