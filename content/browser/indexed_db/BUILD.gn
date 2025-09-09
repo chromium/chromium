@@ -86,8 +86,6 @@ source_set("indexed_db") {
     "instance/sqlite/blob_writer.h",
     "instance/sqlite/database_connection.cc",
     "instance/sqlite/database_connection.h",
-    "instance/sqlite/record_iterator.cc",
-    "instance/sqlite/record_iterator.h",
     "instance/transaction.cc",
     "instance/transaction.h",
     "list_set.h",

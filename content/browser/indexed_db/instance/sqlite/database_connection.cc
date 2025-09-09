@@ -25,7 +25,6 @@
 #include "content/browser/indexed_db/instance/sqlite/backing_store_cursor_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
-#include "content/browser/indexed_db/instance/sqlite/record_iterator.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -327,24 +326,17 @@ int BindRecordRangeQueryParams(sql::Statement& statement,
   return param_index;
 }
 
-class ObjectStoreRecordIterator : public RecordIterator {
+class ObjectStoreCursorImpl : public BackingStoreCursorImpl {
  public:
-  ObjectStoreRecordIterator(base::WeakPtr<DatabaseConnection> db, bool key_only)
-      : db_(db), key_only_(key_only) {}
-
-  ~ObjectStoreRecordIterator() override {
-    if (db_) {
-      db_->ReleaseLongLivedStatement(statement_id_);
-    }
-  }
-
-  // If Initialize() returns an error or nullptr, `this` should be discarded.
-  StatusOr<std::unique_ptr<Record>> Initialize(
+  // Returns null if no record exists in the supplied range.
+  static StatusOr<std::unique_ptr<ObjectStoreCursorImpl>> Create(
+      base::WeakPtr<DatabaseConnection> db,
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
+      bool key_only,
       bool ascending_order) {
     std::vector<std::string_view> query_pieces = StartRecordRangeQuery(
-        key_only_ ? "SELECT key" : "SELECT key, value, row_id", key_range);
+        key_only ? "SELECT key" : "SELECT key, value, row_id", key_range);
     if (ascending_order) {
       query_pieces.push_back(
           " AND (@is_first_seek = 1 OR key > @position)"
@@ -356,50 +348,48 @@ class ObjectStoreRecordIterator : public RecordIterator {
           " AND (@target_key IS NULL OR key <= @target_key)"
           " ORDER BY key DESC");
     }
-    // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
-    // number of rows returned:
-    // https://www.sqlite.org/lang_select.html#the_limit_clause.
-    query_pieces.push_back(" LIMIT -1 OFFSET @offset");
 
-    sql::Statement* statement;
-    std::tie(statement_id_, statement) =
-        db_->CreateLongLivedStatement(base::StrCat(query_pieces));
+    auto [statement_id, statement] = db->CreateCursorStatement(
+        PassKey(), base::StrCat(query_pieces), object_store_id);
+    auto cursor =
+        base::WrapUnique(new ObjectStoreCursorImpl(db, statement_id, key_only));
+
+    // Bind the fixed parameters.
     int param_index =
         BindRecordRangeQueryParams(*statement, object_store_id, key_range);
 
-    // Store the variable parameter indexes and attempt to find the initial
-    // record in the range.
-    statement->BindBool(is_first_seek_index_ = param_index++, true);
-    statement->BindNull(position_index_ = param_index++);
-    statement->BindNull(target_key_index_ = param_index++);
-    statement->BindInt64(offset_index_ = param_index++, 0);
-    if (statement->Step()) {
-      return ReadRow(*statement);
-    }
-    if (statement->Succeeded()) {
+    // Store the variable parameter indexes and attempt to update the record to
+    // the initial one in the range.
+    statement->BindBool(cursor->is_first_seek_index_ = param_index++, true);
+    statement->BindNull(cursor->position_index_ = param_index++);
+    statement->BindNull(cursor->target_key_index_ = param_index++);
+    if (!statement->Step()) {
+      if (!statement->Succeeded()) {
+        return base::unexpected(db->GetStatusOfLastOperation(PassKey()));
+      }
       // Empty range.
       return nullptr;
     }
-    return base::unexpected(db_->GetStatusOfLastOperation());
+    Status s = cursor->UpdateRecord(*statement);
+    if (!s.ok()) {
+      return base::unexpected(s);
+    }
+    return std::move(cursor);
   }
 
   void SavePosition() override { saved_position_ = position_; }
 
   bool TryResetToLastSavedPosition() override {
-    if (!saved_position_) {
-      return false;
-    }
+    TRANSIENT_CHECK(saved_position_);
     position_ = *std::move(saved_position_);
     saved_position_.reset();
-    return true;
+    return BackingStoreCursorImpl::TryResetToLastSavedPosition();
   }
 
  protected:
-  // RecordIterator:
   void BindParameters(sql::Statement& statement,
                       const blink::IndexedDBKey& target_key,
-                      const blink::IndexedDBKey& target_primary_key,
-                      uint32_t offset) override {
+                      const blink::IndexedDBKey& target_primary_key) override {
     // `target_primary_key` is not expected when iterating over object store
     // records.
     CHECK(!target_primary_key.IsValid());
@@ -410,7 +400,6 @@ class ObjectStoreRecordIterator : public RecordIterator {
     } else {
       statement.BindNull(target_key_index_);
     }
-    statement.BindInt64(offset_index_, offset);
   }
 
   StatusOr<std::unique_ptr<Record>> ReadRow(
@@ -424,7 +413,7 @@ class ObjectStoreRecordIterator : public RecordIterator {
     IndexedDBValue value;
     statement.ColumnBlobAsVector(1, &value.bits);
     int64_t record_row_id = statement.ColumnInt64(2);
-    return db_
+    return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
         .transform([&](IndexedDBValue value_with_metadata) {
           return std::make_unique<ObjectStoreRecord>(
@@ -432,24 +421,18 @@ class ObjectStoreRecordIterator : public RecordIterator {
         });
   }
 
-  sql::Statement* GetStatement() override {
-    if (!db_) {
-      return nullptr;
-    }
-    return db_->GetLongLivedStatement(statement_id_);
-  }
-
  private:
-  base::WeakPtr<DatabaseConnection> db_;
+  ObjectStoreCursorImpl(base::WeakPtr<DatabaseConnection> db,
+                        uint64_t statement_id,
+                        bool key_only)
+      : BackingStoreCursorImpl(std::move(db), statement_id),
+        key_only_(key_only) {}
 
-  uint64_t statement_id_ = 0;
-
-  bool key_only_ = false;
+  bool key_only_;
 
   int is_first_seek_index_ = 0;
   int position_index_ = 0;
   int target_key_index_ = 0;
-  int offset_index_ = 0;
 
   // Encoded key from the current record, tracking the position in the range.
   std::string position_;
@@ -457,39 +440,30 @@ class ObjectStoreRecordIterator : public RecordIterator {
   std::optional<std::string> saved_position_;
 };
 
-class IndexRecordIterator : public RecordIterator {
+class IndexCursorImpl : public BackingStoreCursorImpl {
  public:
   // If `first_primary_keys_only` is true, `this` will iterate over only the
   // first (i.e., smallest) primary key for each index key in `key_range` (this
   // correlates to the nextunique/prevunique IndexedDB cursor direction). Else,
   // all the primary keys are iterated over for each index key in the range.
-  IndexRecordIterator(base::WeakPtr<DatabaseConnection> db,
-                      bool key_only,
-                      bool first_primary_keys_only)
-      : db_(db),
-        key_only_(key_only),
-        first_primary_keys_only_(first_primary_keys_only) {}
-
-  ~IndexRecordIterator() override {
-    if (db_) {
-      db_->ReleaseLongLivedStatement(statement_id_);
-    }
-  }
-
-  // If Initialize() returns an error or nullptr, `this` should be discarded.
-  StatusOr<std::unique_ptr<Record>> Initialize(
+  //
+  // Returns null if no record exists in the supplied range.
+  static StatusOr<std::unique_ptr<IndexCursorImpl>> Create(
+      base::WeakPtr<DatabaseConnection> db,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
+      bool key_only,
+      bool first_primary_keys_only,
       bool ascending_order) {
     std::vector<std::string_view> query_pieces{
         "SELECT index_references.key AS index_key"};
-    if (first_primary_keys_only_) {
+    if (first_primary_keys_only) {
       query_pieces.push_back(", MIN(record_key)");
     } else {
       query_pieces.push_back(", record_key");
     }
-    if (key_only_) {
+    if (key_only) {
       query_pieces.push_back(" FROM index_references");
     } else {
       query_pieces.push_back(
@@ -512,7 +486,7 @@ class IndexRecordIterator : public RecordIterator {
                                  : " AND index_key <= @upper");
     }
     if (ascending_order) {
-      if (first_primary_keys_only_) {
+      if (first_primary_keys_only) {
         query_pieces.push_back(
             " AND (@is_first_seek = 1 OR index_key > @position)"
             " AND (@target_key IS NULL OR index_key >= @target_key)"
@@ -538,7 +512,7 @@ class IndexRecordIterator : public RecordIterator {
             " ORDER BY index_key ASC, record_key ASC");
       }
     } else {
-      if (first_primary_keys_only_) {
+      if (first_primary_keys_only) {
         query_pieces.push_back(
             " AND (@is_first_seek = 1 OR index_key < @position)"
             " AND (@target_key IS NULL OR index_key <= @target_key)"
@@ -564,14 +538,13 @@ class IndexRecordIterator : public RecordIterator {
             " ORDER BY index_key DESC, record_key DESC");
       }
     }
-    // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
-    // number of rows returned:
-    // https://www.sqlite.org/lang_select.html#the_limit_clause.
-    query_pieces.push_back(" LIMIT -1 OFFSET @offset");
 
-    sql::Statement* statement;
-    std::tie(statement_id_, statement) =
-        db_->CreateLongLivedStatement(base::StrCat(query_pieces));
+    auto [statement_id, statement] = db->CreateCursorStatement(
+        PassKey(), base::StrCat(query_pieces), object_store_id);
+    auto cursor = base::WrapUnique(new IndexCursorImpl(
+        db, statement_id, key_only, first_primary_keys_only));
+
+    // Bind the fixed parameters.
     int param_index = 0;
     statement->BindInt64(param_index++, object_store_id);
     statement->BindInt64(param_index++, index_id);
@@ -584,30 +557,31 @@ class IndexRecordIterator : public RecordIterator {
                           EncodeSortableIDBKey(key_range.upper()));
     }
 
-    // Store the variable parameter indexes and attempt to find the initial
-    // record in the range.
-    statement->BindBool(is_first_seek_index_ = param_index++, true);
-    statement->BindNull(position_index_ = param_index++);
-    if (!first_primary_keys_only_) {
-      object_store_position_index_ = param_index++;
-      statement->BindNull(object_store_position_index_.value());
+    // Store the variable parameter indexes and attempt to update the record to
+    // the initial one in the range.
+    statement->BindBool(cursor->is_first_seek_index_ = param_index++, true);
+    statement->BindNull(cursor->position_index_ = param_index++);
+    if (!first_primary_keys_only) {
+      cursor->object_store_position_index_ = param_index++;
+      statement->BindNull(cursor->object_store_position_index_.value());
     }
-    statement->BindNull(target_key_index_ = param_index++);
-    if (!first_primary_keys_only_) {
-      target_primary_key_index_ = param_index++;
-      statement->BindNull(target_primary_key_index_.value());
+    statement->BindNull(cursor->target_key_index_ = param_index++);
+    if (!first_primary_keys_only) {
+      cursor->target_primary_key_index_ = param_index++;
+      statement->BindNull(cursor->target_primary_key_index_.value());
     }
-    statement->BindInt64(offset_index_ = param_index++, 0);
-    if (statement->Step()) {
-      return ReadRow(*statement);
-    }
-
-    if (statement->Succeeded()) {
+    if (!statement->Step()) {
+      if (!statement->Succeeded()) {
+        return base::unexpected(db->GetStatusOfLastOperation(PassKey()));
+      }
       // Empty range.
       return nullptr;
     }
-
-    return base::unexpected(db_->GetStatusOfLastOperation());
+    Status s = cursor->UpdateRecord(*statement);
+    if (!s.ok()) {
+      return base::unexpected(s);
+    }
+    return std::move(cursor);
   }
 
   void SavePosition() override {
@@ -615,20 +589,16 @@ class IndexRecordIterator : public RecordIterator {
   }
 
   bool TryResetToLastSavedPosition() override {
-    if (!saved_position_) {
-      return false;
-    }
+    TRANSIENT_CHECK(saved_position_);
     std::tie(position_, object_store_position_) = *std::move(saved_position_);
     saved_position_.reset();
-    return true;
+    return BackingStoreCursorImpl::TryResetToLastSavedPosition();
   }
 
  protected:
-  // RecordIterator:
   void BindParameters(sql::Statement& statement,
                       const blink::IndexedDBKey& target_key,
-                      const blink::IndexedDBKey& target_primary_key,
-                      uint32_t offset) override {
+                      const blink::IndexedDBKey& target_primary_key) override {
     // `target_primary_key` is not expected when iterating over only the
     // first primary keys.
     CHECK(!first_primary_keys_only_ || !target_primary_key.IsValid());
@@ -639,7 +609,6 @@ class IndexRecordIterator : public RecordIterator {
     } else {
       statement.BindNull(target_key_index_);
     }
-    statement.BindInt64(offset_index_, offset);
     if (!first_primary_keys_only_) {
       statement.BindBlob(object_store_position_index_.value(),
                          object_store_position_);
@@ -668,7 +637,7 @@ class IndexRecordIterator : public RecordIterator {
     IndexedDBValue value;
     statement.ColumnBlobAsVector(2, &value.bits);
     int64_t record_row_id = statement.ColumnInt64(3);
-    return db_
+    return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
         .transform([&](IndexedDBValue value_with_metadata) {
           return std::make_unique<IndexRecord>(std::move(key),
@@ -677,25 +646,21 @@ class IndexRecordIterator : public RecordIterator {
         });
   }
 
-  sql::Statement* GetStatement() override {
-    if (!db_) {
-      return nullptr;
-    }
-    return db_->GetLongLivedStatement(statement_id_);
-  }
-
  private:
-  base::WeakPtr<DatabaseConnection> db_;
+  IndexCursorImpl(base::WeakPtr<DatabaseConnection> db,
+                  uint64_t statement_id,
+                  bool key_only,
+                  bool first_primary_keys_only)
+      : BackingStoreCursorImpl(std::move(db), statement_id),
+        key_only_(key_only),
+        first_primary_keys_only_(first_primary_keys_only) {}
 
-  uint64_t statement_id_ = 0;
-
-  bool key_only_ = false;
-  bool first_primary_keys_only_ = false;
+  bool key_only_;
+  bool first_primary_keys_only_;
 
   int is_first_seek_index_ = 0;
   int position_index_ = 0;
   int target_key_index_ = 0;
-  int offset_index_ = 0;
   // Set iff `first_primary_keys_only_` is false.
   std::optional<int> object_store_position_index_;
   std::optional<int> target_primary_key_index_;
@@ -1547,6 +1512,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
                                       std::move(external_object));
     CHECK(rv.second);
   }
+  OnRecordsModified(object_store_id);
   return BackingStore::RecordIdentifier{record_row_id, std::move(encoded_key)};
 }
 
@@ -1559,6 +1525,7 @@ Status DatabaseConnection::DeleteRange(
   sql::Statement statement(db_->GetUniqueStatement(base::StrCat(query_pieces)));
   BindRecordRangeQueryParams(statement, object_store_id, key_range);
   RETURN_STATUS_ON_ERROR(statement.Run());
+  OnRecordsModified(object_store_id);
   return Status::OK();
 }
 
@@ -1569,6 +1536,7 @@ Status DatabaseConnection::ClearObjectStore(
       SQL_FROM_HERE, "DELETE FROM records WHERE object_store_id = ?"));
   statement.BindInt64(0, object_store_id);
   RETURN_STATUS_ON_ERROR(statement.Run());
+  OnRecordsModified(object_store_id);
   return Status::OK();
 }
 
@@ -1745,8 +1713,8 @@ void DatabaseConnection::DeleteIdbDatabase(
     return;
   }
 
-  record_iterator_weak_factory_.InvalidateWeakPtrs();
-  statements_.clear();
+  cursor_weak_factory_.InvalidateWeakPtrs();
+  cursor_statements_.clear();
 
   // Since blobs are still active, reset to zygotic state instead of destroying.
   bool success =
@@ -1825,18 +1793,9 @@ DatabaseConnection::OpenObjectStoreCursor(
   bool ascending_order =
       (direction == blink::mojom::IDBCursorDirection::Next ||
        direction == blink::mojom::IDBCursorDirection::NextNoDuplicate);
-  auto record_iterator = std::make_unique<ObjectStoreRecordIterator>(
-      record_iterator_weak_factory_.GetWeakPtr(), key_only);
-  return record_iterator
-      ->Initialize(object_store_id, key_range, ascending_order)
-      .transform([&](std::unique_ptr<Record> first_record)
-                     -> std::unique_ptr<BackingStore::Cursor> {
-        if (!first_record) {
-          return nullptr;
-        }
-        return std::make_unique<BackingStoreCursorImpl>(
-            std::move(record_iterator), std::move(first_record));
-      });
+  return ObjectStoreCursorImpl::Create(cursor_weak_factory_.GetWeakPtr(),
+                                       object_store_id, key_range, key_only,
+                                       ascending_order);
 }
 
 StatusOr<std::unique_ptr<BackingStore::Cursor>>
@@ -1853,43 +1812,50 @@ DatabaseConnection::OpenIndexCursor(base::PassKey<BackingStoreTransactionImpl>,
   bool first_primary_keys_only =
       (direction == blink::mojom::IDBCursorDirection::NextNoDuplicate ||
        direction == blink::mojom::IDBCursorDirection::PrevNoDuplicate);
-  auto record_iterator = std::make_unique<IndexRecordIterator>(
-      record_iterator_weak_factory_.GetWeakPtr(), key_only,
-      first_primary_keys_only);
-  return record_iterator
-      ->Initialize(object_store_id, index_id, key_range, ascending_order)
-      .transform([&](std::unique_ptr<Record> first_record)
-                     -> std::unique_ptr<BackingStore::Cursor> {
-        if (!first_record) {
-          return nullptr;
-        }
-        return std::make_unique<BackingStoreCursorImpl>(
-            std::move(record_iterator), std::move(first_record));
-      });
+  return IndexCursorImpl::Create(cursor_weak_factory_.GetWeakPtr(),
+                                 object_store_id, index_id, key_range, key_only,
+                                 first_primary_keys_only, ascending_order);
 }
 
-std::tuple<uint64_t, sql::Statement*>
-DatabaseConnection::CreateLongLivedStatement(std::string query) {
-  auto it = statements_.emplace(
-      ++next_statement_id_,
-      std::make_unique<sql::Statement>(db_->GetUniqueStatement(query)));
-  CHECK(it.second);
-  return {next_statement_id_, it.first->second.get()};
+std::tuple<uint64_t, sql::Statement*> DatabaseConnection::CreateCursorStatement(
+    base::PassKey<BackingStoreCursorImpl>,
+    std::string query,
+    int64_t object_store_id) {
+  auto [it, inserted] = cursor_statements_.emplace(
+      ++next_statement_id_, std::make_tuple(std::make_unique<sql::Statement>(
+                                                db_->GetUniqueStatement(query)),
+                                            object_store_id));
+  CHECK(inserted);
+  return {next_statement_id_, std::get<0>(it->second).get()};
 }
 
-void DatabaseConnection::ReleaseLongLivedStatement(uint64_t id) {
-  CHECK_EQ(1U, statements_.erase(id));
+void DatabaseConnection::ReleaseCursorStatement(
+    base::PassKey<BackingStoreCursorImpl>,
+    uint64_t id) {
+  CHECK_EQ(1U, cursor_statements_.erase(id));
 }
 
-sql::Statement* DatabaseConnection::GetLongLivedStatement(uint64_t id) {
-  auto it = statements_.find(id);
-  if (it == statements_.end()) {
+sql::Statement* DatabaseConnection::GetCursorStatement(
+    base::PassKey<BackingStoreCursorImpl>,
+    uint64_t id) {
+  auto it = cursor_statements_.find(id);
+  if (it == cursor_statements_.end()) {
     return nullptr;
   }
-  return it->second.get();
+  return std::get<0>(it->second).get();
 }
 
-Status DatabaseConnection::GetStatusOfLastOperation() {
+void DatabaseConnection::OnRecordsModified(int64_t object_store_id) {
+  for (const auto& [_, statement_holder] : cursor_statements_) {
+    const auto& [statement, cursor_object_store_id] = statement_holder;
+    if (cursor_object_store_id == object_store_id) {
+      BackingStoreCursorImpl::InvalidateStatement(*statement);
+    }
+  }
+}
+
+Status DatabaseConnection::GetStatusOfLastOperation(
+    base::PassKey<BackingStoreCursorImpl>) {
   return Status(*db_);
 }
 

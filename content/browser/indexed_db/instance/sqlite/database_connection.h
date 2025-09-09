@@ -42,6 +42,7 @@ namespace content::indexed_db {
 struct IndexedDBValue;
 
 namespace sqlite {
+class BackingStoreCursorImpl;
 class BackingStoreDatabaseImpl;
 class BackingStoreTransactionImpl;
 
@@ -210,21 +211,28 @@ class DatabaseConnection {
   // keep `this` alive.
   void DeleteIdbDatabase(base::PassKey<BackingStoreDatabaseImpl>);
 
-  // These are exposed for `RecordIterator`s to access `Statement` resources
-  // associated with `db_`.
+  // These are exposed for cursors to access `Statement` resources associated
+  // with `db_`.
+  //
   // Returns a unique ID and a pointer to a `Statement` whose lifetime is
   // managed by `this`.
-  std::tuple<uint64_t, sql::Statement*> CreateLongLivedStatement(
-      std::string query);
-  // Called when a statement is no longer needed by a `RecordIterator`.
-  void ReleaseLongLivedStatement(uint64_t id);
+  std::tuple<uint64_t, sql::Statement*> CreateCursorStatement(
+      base::PassKey<BackingStoreCursorImpl>,
+      std::string query,
+      int64_t object_store_id);
+  // Called when a statement is no longer needed by the cursor that created it.
+  void ReleaseCursorStatement(base::PassKey<BackingStoreCursorImpl>,
+                              uint64_t id);
   // May return `nullptr` if the statement has been destroyed.
-  sql::Statement* GetLongLivedStatement(uint64_t id);
+  sql::Statement* GetCursorStatement(base::PassKey<BackingStoreCursorImpl>,
+                                     uint64_t id);
 
   // Returns a `Status` for the last operation on `db_`.
-  Status GetStatusOfLastOperation();
+  // This is exposed for cursor implementations which `Step()` statements
+  // outside of this class.
+  Status GetStatusOfLastOperation(base::PassKey<BackingStoreCursorImpl>);
 
-  // Also for internal use only; exposed for RecordIterator implementations.
+  // Also for internal use only; exposed for cursor implementations.
   // This adds external objects to `value` which should later be further hooked
   // up via `CreateAllExternalObjects()`.
   StatusOr<IndexedDBValue> AddExternalObjectMetadataToValue(
@@ -286,6 +294,10 @@ class DatabaseConnection {
   // database for deletion.
   Status Fatal(Status s);
 
+  // Called when the records of an object store have been modified (inserted or
+  // deleted). This invalidates all cursor statements operating on that store.
+  void OnRecordsModified(int64_t object_store_id);
+
   // The expected path for `db_`, or empty for in-memory DBs.
   const base::FilePath path_;
 
@@ -306,10 +318,18 @@ class DatabaseConnection {
   // database at a time.
   std::unique_ptr<sql::Transaction> active_rw_transaction_;
 
-  // Long-lived statements (those used for cursor iteration) are owned by `this`
-  // to ensure that database resources are freed before closing `db_`.
+  // Cursor statements are owned by `this` to ensure that database resources are
+  // freed before closing `db_`. See `BackingStoreImpl::GetStatement()` for why
+  // cursor statements are not ephemeral (unlike other statements).
+  //
+  // The object store ID is also stored alongside the `sql::Statement` so that
+  // the statement can be invalidated when records change.
+  // TODO(crbug.com/436880910): Consider also storing the `IndexedDBKeyRange` of
+  // the statement for more precise invalidation.
+  using CursorStatementHolder =
+      std::tuple<std::unique_ptr<sql::Statement>, int64_t>;
   uint64_t next_statement_id_ = 0;
-  std::map<uint64_t, std::unique_ptr<sql::Statement>> statements_;
+  std::map<uint64_t, CursorStatementHolder> cursor_statements_;
 
   // Only set while a version change transaction is active.
   std::optional<blink::IndexedDBDatabaseMetadata> metadata_snapshot_;
@@ -359,7 +379,7 @@ class DatabaseConnection {
 
   // TODO(crbug.com/419203257): this should invalidate its weak pointers when
   // `db_` is closed.
-  base::WeakPtrFactory<DatabaseConnection> record_iterator_weak_factory_{this};
+  base::WeakPtrFactory<DatabaseConnection> cursor_weak_factory_{this};
 
   // Only used for the callbacks passed to `blob_writers_`.
   base::WeakPtrFactory<DatabaseConnection> blob_writers_weak_factory_{this};
