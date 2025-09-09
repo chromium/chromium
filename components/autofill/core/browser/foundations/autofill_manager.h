@@ -486,8 +486,10 @@ class AutofillManager
   // Steps 2-4 described above ParseFormsAsync(), which are shared with
   // ParseFormAsync().
   void ParseFormsAsyncCommon(
-      std::vector<std::unique_ptr<FormStructure>> form_structures,
-      base::OnceCallback<void(AutofillManager&)> callback);
+      bool force_reparse,
+      std::vector<FormData> forms,
+      base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
+          callback);
 
   // Step 2 described above ParseFormsAsync().
   void RunMlModels(AsyncContext context,
