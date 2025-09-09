@@ -979,6 +979,9 @@ void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
     return;
   }
 
+  // If arc sideloading is enabled, configure the guest for that.
+  crostini_manager_->ConfigureForArcSideload();
+
   // Wait for Baguette's 'services are ready' signals
   WaitUntilBaguetteReady(result, kBaguetteVmReadyWaitTimeout);
 }
