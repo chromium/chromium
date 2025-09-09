@@ -57,13 +57,8 @@ const char* kAsanDefaultOptions =
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
     BUILDFLAG(IS_WIN)
-// Allow NaCl to override the default asan options.
-extern const char* kAsanDefaultOptionsNaCl;
-__attribute__((weak)) const char* kAsanDefaultOptionsNaCl = nullptr;
 
 SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_options() {
-  if (kAsanDefaultOptionsNaCl)
-    return kAsanDefaultOptionsNaCl;
   return kAsanDefaultOptions;
 }
 
