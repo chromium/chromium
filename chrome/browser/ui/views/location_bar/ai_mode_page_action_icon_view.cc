@@ -153,8 +153,19 @@ bool AiModePageActionIconView::ShouldShow() {
     return false;
   }
   const views::FocusManager* const focus_manager = GetFocusManager();
-  return focus_manager &&
-         location_bar_view->Contains(focus_manager->GetFocusedView());
+  const bool has_focus = focus_manager && location_bar_view->Contains(
+                                              focus_manager->GetFocusedView());
+
+  // ...unless the user triggers the following edge-case in the Omnibox. In this
+  // case, we suppress the AIM page action in order to ensure that it doesn't
+  // get visually "sandwiched" in between the other page actions that show up in
+  // this state.
+  if (has_focus && !omnibox_view->model()->user_input_in_progress() &&
+      !omnibox_view->model()->PopupIsOpen()) {
+    return false;
+  }
+
+  return has_focus;
 }
 
 OmniboxView* AiModePageActionIconView::GetOmniboxView() {
