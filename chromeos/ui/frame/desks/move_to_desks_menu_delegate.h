@@ -39,7 +39,7 @@ class MoveToDesksMenuDelegate : public ui::SimpleMenuModel::Delegate {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  // This is indirectly owned by BrowserFrame, and guaranteed to be destroyed
+  // This is indirectly owned by BrowserWidget, and guaranteed to be destroyed
   // before Widget.
   const raw_ptr<views::Widget> widget_;
 };

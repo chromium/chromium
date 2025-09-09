@@ -1691,9 +1691,9 @@ bool CaptureModeController::ShouldBlockRecordingForContentProtection(
   //     |window_being_recorded| in this case is the root window, and a
   //     protected window on this root will be a descendant.
   //   - When recording a browser window showing a page with protected content,
-  //     the |window_being_recorded| in this case is the BrowserFrame, while the
-  //     protected window will be the RenderWidgetHostViewAura, which is also a
-  //     descendant.
+  //     the |window_being_recorded| in this case is the BrowserWidget, while
+  //     the protected window will be the RenderWidgetHostViewAura, which is
+  //     also a descendant.
   for (const auto& iter : protected_windows_) {
     if (window_being_recorded->Contains(iter.first))
       return true;

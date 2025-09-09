@@ -3161,7 +3161,7 @@ class CaptureModeHdcpTest : public CaptureModeTestBase,
     // Create a child window with protected content. This simulates the real
     // behavior of a browser window hosting a page with protected content, where
     // the window that has a protection mask is the RenderWidgetHostViewAura,
-    // which is a descendant of the BrowserFrame window which can get recorded.
+    // which is a descendant of the BrowserWidget window which can get recorded.
     protected_content_window_ = CreateTestWindow(gfx::Rect(150, 150));
     window_->AddChild(protected_content_window_.get());
     protection_delegate_ = std::make_unique<OutputProtectionDelegate>(
