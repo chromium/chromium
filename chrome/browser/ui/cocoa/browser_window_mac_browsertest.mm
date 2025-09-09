@@ -147,19 +147,26 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
               [window accessibilityDocument]);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
-                       BookmarkAllTabsUpdatesOnSheetAttached) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
   NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
-  // IDC_BOOKMARK_ALL_TABS should be enabled when the number of
-  // tabs exceeds 1
+  ASSERT_FALSE([AppController.sharedController keyWindowIsModal]);
+
+  // Retrieve and initialize the menu items for
+  // IDC_BOOKMARK_ALL_TABS / IDC_PRINT.
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   NSMenuItem* bookmark_all_tabs_item =
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
           itemWithTag:IDC_BOOKMARK_ALL_TABS];
   ASSERT_TRUE(bookmark_all_tabs_item);
-  EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
-  EXPECT_FALSE([AppController.sharedController keyWindowIsModal]);
+  NSMenuItem* print_item = [[[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU]
+      submenu] itemWithTag:IDC_PRINT];
+  ASSERT_TRUE(print_item);
 
+  // These commands should be enabled when the sheet is not attached.
+  EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
+  EXPECT_TRUE([window validateUserInterfaceItem:print_item]);
+
+  // Open bookmark sheet dialog.
   auto* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   auto editor = std::make_unique<BookmarkEditorView>(
@@ -171,14 +178,17 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
       BookmarkEditor::SHOW_TREE, base::DoNothing());
   editor->Show(browser()->window()->GetNativeWindow());
   auto* editor_raw = editor.release();
+  ASSERT_TRUE([AppController.sharedController keyWindowIsModal]);
 
-  // IDC_BOOKMARK_ALL_TABS should be disabled when the sheet is attached.
-  EXPECT_TRUE([AppController.sharedController keyWindowIsModal]);
+  // These commands should be disabled when the sheet is attached.
   EXPECT_FALSE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
-  editor_raw->GetWidget()->CloseNow();
+  EXPECT_FALSE([window validateUserInterfaceItem:print_item]);
 
-  // IDC_BOOKMARK_ALL_TABS should be enabled again when the sheet is
-  // removed.
-  EXPECT_FALSE([AppController.sharedController keyWindowIsModal]);
+  // Close the sheet dialog.
+  editor_raw->GetWidget()->CloseNow();
+  ASSERT_FALSE([AppController.sharedController keyWindowIsModal]);
+
+  // These commands should be enabled again when the sheet is removed.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
+  EXPECT_TRUE([window validateUserInterfaceItem:print_item]);
 }

@@ -229,9 +229,10 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
           !media_router::MediaRouterEnabled(browser->profile());
       break;
     }
-    case IDC_BOOKMARK_ALL_TABS: {
-      // Disable bookmark sheet dialog when browser window already
-      // has an attached sheet.
+    case IDC_BOOKMARK_ALL_TABS:
+    case IDC_PRINT: {
+      // Disable these commands when browser window already has an attached
+      // sheet.
       result->enable &= ![AppController.sharedController keyWindowIsModal];
       break;
     }
