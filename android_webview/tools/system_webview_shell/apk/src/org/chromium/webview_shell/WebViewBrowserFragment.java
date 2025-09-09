@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Browser;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -655,6 +656,14 @@ public class WebViewBrowserFragment extends Fragment {
         setUrlFail(false);
         loadUrl(url);
         hideKeyboard(mUrlBar);
+    }
+
+    @Nullable
+    public String getUrlFromUrlBar() {
+        String url = mUrlBar.getText().toString();
+
+        if (TextUtils.isEmpty(url)) return null;
+        return url;
     }
 
     @Override

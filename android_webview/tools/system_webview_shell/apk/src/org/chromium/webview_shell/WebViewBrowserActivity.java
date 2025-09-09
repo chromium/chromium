@@ -273,6 +273,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 mWebView.setVisibility(View.VISIBLE);
             }
             return true;
+        } else if (itemId == R.id.menu_preconnect) {
+            String url = mFragment.getUrlFromUrlBar();
+            if (url == null || url.equals("about:blank")) {
+                Toast.makeText(this, "Please enter URL in URL bar.", Toast.LENGTH_SHORT).show();
+            } else {
+                WebViewCompat.getProfile(mWebView).preconnect(url);
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
