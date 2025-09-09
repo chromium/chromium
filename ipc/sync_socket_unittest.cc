@@ -26,45 +26,18 @@
 #include "base/threading/thread.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
-#include "ipc/ipc_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #endif
 
-// IPC messages for testing ----------------------------------------------------
-
-#define IPC_MESSAGE_IMPL
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_message_start.h"
-
-#define IPC_MESSAGE_START TestMsgStart
-
-// Message class to pass a base::SyncSocket::Handle to another process.  This
-// is not as easy as it sounds, because of the differences in transferring
-// Windows HANDLEs versus posix file descriptors.
-#if BUILDFLAG(IS_WIN)
-IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::SyncSocket::Handle)
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::FileDescriptor)
-#endif
-
-// Message class to pass a response to the server.
-IPC_MESSAGE_CONTROL1(MsgClassResponse, std::string)
-
-// Message class to tell the server to shut down.
-IPC_MESSAGE_CONTROL0(MsgClassShutdown)
-
-// -----------------------------------------------------------------------------
-
 namespace {
 
 const char kHelloString[] = "Hello, SyncSocket Client";
 const size_t kHelloStringLength = std::size(kHelloString);
 
-using SyncSocketTest = IPCChannelMojoTestBase;
-
+using SyncSocketTest = ::testing::Test;
 
 // A blocking read operation that will block the thread until it receives
 // |buffer|'s length bytes of packets or Shutdown() is called on another thread.
