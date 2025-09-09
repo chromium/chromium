@@ -23,6 +23,12 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
   ContextualTask CreateTask() override;
   std::vector<ContextualTask> GetTasks() const override;
   void DeleteTask(const base::Uuid& task_id) override;
+  void AssignServerIdToTask(const base::Uuid& task_id,
+                            ChatType type,
+                            const std::string& server_id) override;
+  void RemoveServerIdFromTask(const base::Uuid& task_id,
+                              ChatType type,
+                              const std::string& server_id) override;
 
  private:
   // The set of all tasks currently managed by the service, indexed by their

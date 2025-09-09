@@ -4,6 +4,8 @@
 
 #include "components/contextual_tasks/public/contextual_task.h"
 
+#include <string>
+
 #include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,6 +15,40 @@ TEST(ContextualTaskTest, GetTaskId) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
   EXPECT_EQ(task_id, task.GetTaskId());
+}
+
+TEST(ContextualTaskTest, AddChat) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ChatType type = ChatType::kAiMode;
+  std::string server_id = "server_id";
+
+  task.AddChat(type, server_id);
+  EXPECT_TRUE(task.GetChat().has_value());
+  EXPECT_EQ(task.GetChat()->type, type);
+  EXPECT_EQ(task.GetChat()->server_id, server_id);
+
+  std::string server_id_2 = "server_id_2";
+  task.AddChat(type, server_id_2);
+  EXPECT_TRUE(task.GetChat().has_value());
+  EXPECT_EQ(task.GetChat()->type, type);
+  EXPECT_EQ(task.GetChat()->server_id, server_id_2);
+}
+
+TEST(ContextualTaskTest, RemoveChat) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ChatType type = ChatType::kAiMode;
+  std::string server_id = "server_id";
+
+  task.AddChat(type, server_id);
+  EXPECT_TRUE(task.GetChat().has_value());
+
+  task.RemoveChat(type, "wrong_server_id");
+  EXPECT_TRUE(task.GetChat().has_value());
+
+  task.RemoveChat(type, server_id);
+  EXPECT_FALSE(task.GetChat().has_value());
 }
 
 }  // namespace contextual_tasks

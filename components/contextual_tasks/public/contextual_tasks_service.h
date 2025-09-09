@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXTUAL_TASKS_SERVICE_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXTUAL_TASKS_SERVICE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/uuid.h"
@@ -24,6 +25,17 @@ class ContextualTasksService : public KeyedService {
   virtual ContextualTask CreateTask() = 0;
   virtual std::vector<ContextualTask> GetTasks() const = 0;
   virtual void DeleteTask(const base::Uuid& task_id) = 0;
+
+  // Methods related to server-side conversations.
+  // When assigning a server ID to a task_id that does not have a registered
+  // task, the ContextualTask is created on the fly. We do not automatically
+  // create tasks when removing server IDs.
+  virtual void AssignServerIdToTask(const base::Uuid& task_id,
+                                    ChatType type,
+                                    const std::string& server_id) = 0;
+  virtual void RemoveServerIdFromTask(const base::Uuid& task_id,
+                                      ChatType type,
+                                      const std::string& server_id) = 0;
 };
 
 }  // namespace contextual_tasks

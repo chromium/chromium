@@ -17,9 +17,8 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() = default;
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ContextualTask task(task_id);
-  tasks_.emplace(task_id, task);
-  return task;
+  auto it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+  return it->second;
 }
 
 std::vector<ContextualTask> ContextualTasksServiceImpl::GetTasks() const {
@@ -32,6 +31,28 @@ std::vector<ContextualTask> ContextualTasksServiceImpl::GetTasks() const {
 
 void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
   tasks_.erase(task_id);
+}
+
+void ContextualTasksServiceImpl::AssignServerIdToTask(
+    const base::Uuid& task_id,
+    ChatType type,
+    const std::string& server_id) {
+  auto it = tasks_.find(task_id);
+  if (it == tasks_.end()) {
+    // Task not found, but we have a task ID. Create the task on the fly.
+    it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+  }
+  it->second.AddChat(type, server_id);
+}
+
+void ContextualTasksServiceImpl::RemoveServerIdFromTask(
+    const base::Uuid& task_id,
+    ChatType type,
+    const std::string& server_id) {
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    it->second.RemoveChat(type, server_id);
+  }
 }
 
 }  // namespace contextual_tasks
