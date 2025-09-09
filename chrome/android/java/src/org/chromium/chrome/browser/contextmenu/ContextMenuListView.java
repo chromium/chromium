@@ -12,6 +12,7 @@ import android.widget.ListView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
+import org.chromium.ui.UiUtils;
 
 /**
  * A custom ListView to be able to set width and height using the contents. Width and height are
@@ -21,10 +22,19 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 public class ContextMenuListView extends ListView {
     // Whether the max width of this list view is limited by screen width.
     private final boolean mLimitedByScreenWidth;
+    private boolean mIsFlyout;
 
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLimitedByScreenWidth = ContextMenuUtils.isPopupSupported(context);
+    }
+
+    /**
+     * Whether the {@link ListView} is a flyout. For flyout popups, the width has to wrap the
+     * content up to the maximum width.
+     */
+    public void setIsFlyout(boolean isFlyout) {
+        mIsFlyout = isFlyout;
     }
 
     @Override
@@ -58,10 +68,22 @@ public class ContextMenuListView extends ListView {
                 frameWidth == 0 ? maxWidthFromRes : Math.min(maxWidthFromRes, frameWidth);
 
         // When context menu is a popup, the max width with windowWidth - 2 * lateralMargin does not
-        // applied since it is presented in a popup window. See https://crbug.com/1314675.
+        // apply since it is presented in a popup window. See https://crbug.com/1314675.
+        int calculatedWidth;
         if (mLimitedByScreenWidth) {
-            return maxWidth - 2 * parentLateralPadding;
+            if (mIsFlyout) {
+                int maxFlyoutWidth =
+                        getResources().getDimensionPixelSize(R.dimen.context_menu_small_width);
+                int contentWidth =
+                        UiUtils.computeListAdapterContentDimensions(getAdapter(), this)[0];
+                calculatedWidth = Math.min(maxFlyoutWidth, contentWidth);
+            } else {
+                calculatedWidth = maxWidth;
+            }
+        } else {
+            calculatedWidth = windowWidthPx - 2 * lateralMargin;
         }
-        return Math.min(maxWidth, windowWidthPx - 2 * lateralMargin) - 2 * parentLateralPadding;
+
+        return Math.min(calculatedWidth, maxWidth) - 2 * parentLateralPadding;
     }
 }

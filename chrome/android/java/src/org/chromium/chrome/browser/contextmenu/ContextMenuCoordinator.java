@@ -404,10 +404,9 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         ModelListAdapter adapter = createAdapter(listItems);
 
         ContextMenuListView listView = menu.findViewById(R.id.context_menu_list_view);
-        // TODO(crbug.com/440978637): Make sure that flyout popups have correct width. It should
-        // wrap content with a maximum width set.
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(true);
+        listView.setIsFlyout(true);
         mListViews.add(listView);
 
         // TODO(crbug.com/438712903): Tell `ContextMenuDialog` that this should be positioned as a
