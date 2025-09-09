@@ -11,14 +11,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/test/browser_view_visibility_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -270,6 +273,22 @@ const char kSecondURLText[] = "You've arrived";
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 }
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+// Tests that the Search Widget URL loads the NTP with the Omnibox focused and
+// switches to the correct account.
+- (void)testOpenSearchWidgetForMultiprofile {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://search-widget/search?gaia_id=No account")];
+
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+}
+
+#endif
 
 #pragma mark - Multiwindow
 
