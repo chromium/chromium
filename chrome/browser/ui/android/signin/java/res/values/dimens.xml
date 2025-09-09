@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Default height of the logo in fullscreen signin -->
     <dimen name="fullscreen_signin_logo_default_height">110dp</dimen>
     <!-- Signin promo dimensions -->
@@ -23,6 +23,4 @@ found in the LICENSE file.
     <item type="dimen" name="dialog_fixed_width_minor_automotive">100%</item>
     <item type="dimen" name="dialog_fixed_height_major_automotive">100%</item>
     <item type="dimen" name="dialog_fixed_height_minor_automotive">100%</item>
-    <dimen name="signout_button_top_margin">16dp</dimen>
-    <dimen name="signout_button_bottom_margin">32dp</dimen>
 </resources>

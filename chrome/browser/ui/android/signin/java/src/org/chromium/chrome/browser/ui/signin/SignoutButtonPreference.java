@@ -19,7 +19,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -40,13 +39,7 @@ public class SignoutButtonPreference extends Preference implements CustomStyledP
 
     public SignoutButtonPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            setLayoutResource(R.layout.signout_button_view_containment);
-        } else {
-            // TODO (crbug.com/439911511): Remove unused resource
-            setLayoutResource(R.layout.signout_button_view);
-        }
+        setLayoutResource(R.layout.signout_button_view);
     }
 
     @Initializer
@@ -97,22 +90,6 @@ public class SignoutButtonPreference extends Preference implements CustomStyledP
 
     @Override
     public @BackgroundStyle int getCustomBackgroundStyle() {
-        return BackgroundStyle.CARD;
-    }
-
-    /**
-     * @return The custom top margin for the preference in pixels.
-     */
-    @Override
-    public int getCustomTopMargin() {
-        return mContext.getResources().getDimensionPixelSize(R.dimen.signout_button_top_margin);
-    }
-
-    /**
-     * @return The custom bottom margin for the preference in pixels.
-     */
-    @Override
-    public int getCustomBottomMargin() {
-        return mContext.getResources().getDimensionPixelSize(R.dimen.signout_button_bottom_margin);
+        return BackgroundStyle.NONE;
     }
 }

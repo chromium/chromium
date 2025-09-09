@@ -165,7 +165,6 @@ android_resources("java_resources") {
     "java/res/layout/history_sync_portrait_view.xml",
     "java/res/layout/signin_settings_card_view.xml",
     "java/res/layout/signout_button_view.xml",
-    "java/res/layout/signout_button_view_containment.xml",
     "java/res/layout/signout_wipe_storage_dialog.xml",
     "java/res/layout/sync_promo_view.xml",
     "java/res/layout/sync_promo_view_bookmarks.xml",
