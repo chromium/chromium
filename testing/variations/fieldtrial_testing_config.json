@@ -25784,6 +25784,21 @@
             ]
         }
     ],
+    "UseEncryptedReportingPipelineToReportArcAppInstallEvents": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseEncryptedReportingPipelineToReportArcAppInstallEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseFinchPermanentCountyForFetchCountryId": [
         {
             "platforms": [
