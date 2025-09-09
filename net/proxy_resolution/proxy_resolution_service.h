@@ -15,6 +15,7 @@
 #include "net/base/proxy_server.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -95,6 +96,15 @@ class NET_EXPORT ProxyResolutionService {
   [[nodiscard]] virtual bool CastToConfiguredProxyResolutionService(
       ConfiguredProxyResolutionService**
           configured_proxy_resolution_service) = 0;
+
+ protected:
+  // Helper method to handle the common logic for ReportSuccess implementations.
+  // This method processes proxy retry information and delegates to proxy
+  // delegate callbacks. Derived classes can call this static method to reuse
+  // the core logic while providing their own logging or other customizations.
+  static void ProcessProxyRetryInfo(const ProxyRetryInfoMap& new_retry_info,
+                                    ProxyRetryInfoMap& proxy_retry_info,
+                                    ProxyDelegate* proxy_delegate);
 };
 
 }  // namespace net

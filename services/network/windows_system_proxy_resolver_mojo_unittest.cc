@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
@@ -54,6 +55,7 @@ class MockWindowsSystemProxyResolutionRequest
       : net::WindowsSystemProxyResolutionRequest(nullptr,
                                                  GURL(),
                                                  std::string(),
+                                                 net::NetworkAnonymizationKey(),
                                                  nullptr,
                                                  base::DoNothing(),
                                                  net::NetLogWithSource(),

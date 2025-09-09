@@ -1175,28 +1175,9 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const ProxyRetryInfoMap& new_retry_info = result.proxy_retry_info();
-  if (new_retry_info.empty())
-    return;
-
-  if (proxy_delegate_) {
-    proxy_delegate_->OnSuccessfulRequestAfterFailures(new_retry_info);
-  }
-
-  for (const auto& iter : new_retry_info) {
-    auto existing = proxy_retry_info_.find(iter.first);
-    if (existing == proxy_retry_info_.end()) {
-      proxy_retry_info_[iter.first] = iter.second;
-      if (proxy_delegate_) {
-        const ProxyChain& bad_proxy = iter.first;
-        DCHECK(!bad_proxy.is_direct());
-        const ProxyRetryInfo& proxy_retry_info = iter.second;
-        proxy_delegate_->OnFallback(bad_proxy, proxy_retry_info.net_error);
-      }
-    } else if (existing->second.bad_until < iter.second.bad_until) {
-      existing->second.bad_until = iter.second.bad_until;
-    }
-  }
-  if (net_log_) {
+  ProxyResolutionService::ProcessProxyRetryInfo(
+      new_retry_info, proxy_retry_info_, proxy_delegate_);
+  if (!new_retry_info.empty() && net_log_) {
     net_log_->AddGlobalEntry(NetLogEventType::BAD_PROXY_LIST_REPORTED, [&] {
       return NetLogBadProxyListParams(&new_retry_info);
     });

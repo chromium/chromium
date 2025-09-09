@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
@@ -40,6 +41,7 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
       WindowsSystemProxyResolutionService* service,
       const GURL& url,
       const std::string& method,
+      const NetworkAnonymizationKey& network_anonymization_key,
       ProxyInfo* results,
       const CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log,
@@ -84,6 +86,7 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   raw_ptr<ProxyInfo> results_;
   const GURL url_;
   const std::string method_;
+  const NetworkAnonymizationKey network_anonymization_key_;
   NetLogWithSource net_log_;
   // Time when the request was created.  Stored here rather than in |results_|
   // because the time in |results_| will be cleared.

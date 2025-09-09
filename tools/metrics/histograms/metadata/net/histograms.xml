@@ -3507,6 +3507,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpProxy.WindowsSystemResolver.WinError"
+    units="win32 error code" expires_after="2026-07-15">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records Windows error codes returned by the Windows System Proxy Resolver
+    when proxy resolution fails. This histogram is only recorded when a non-zero
+    Windows error code is returned, indicating a Windows API failure during
+    proxy resolution.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpRequestSSLUpgradeDecision"
     enum="HttpRequestSSLUpgradeDecision" expires_after="2026-01-18">
   <owner>cthomp@chromium.org</owner>
