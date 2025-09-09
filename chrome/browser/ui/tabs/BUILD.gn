@@ -651,6 +651,7 @@ if (!is_android) {
       "tab_dialog_manager_browsertest.cc",
       "tab_list_bridge_browsertest.cc",
       "tab_menu_model_browsertest.cc",
+      "tab_renderer_data_browsertest.cc",
       "tab_strip_model_browsertest.cc",
     ]
 
@@ -674,8 +675,10 @@ if (!is_android) {
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/thumbnails",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:prevent_close_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -746,7 +749,6 @@ if (!is_android) {
       "tab_menu_model_unittest.cc",
       "tab_metrics_provider_unittest.cc",
       "tab_model_unittest.cc",
-      "tab_renderer_data_unittest.cc",
       "tab_strip_model_context_menu_unittest.cc",
       "tab_strip_model_selection_adapter_unittest.cc",
       "tab_strip_model_selection_state_unittest.cc",
