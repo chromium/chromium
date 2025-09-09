@@ -167,8 +167,12 @@ struct AiMode : Config<AiMode> {
 struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
   AiModeOmniboxEntryPoint();
   bool enabled;
+
   // Whether to hide the AIM hint text on NTP open.
   bool hide_aim_hint_text_on_ntp_open;
+
+  // Whether to hide the other (non-AIM) page actions on NTP.
+  bool hide_other_page_actions_on_ntp;
 };
 
 // A config struct for features related to contextual search in omnibox.
