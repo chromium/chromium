@@ -1609,12 +1609,14 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
         // the amount of port churn in the system, as many port-carrying
         // events are routed at least 1 or 2 intra-node hops before (if ever)
         // being routed externally.
-        Event::PortDescriptor* port_descriptors = message->port_descriptors();
+        Event::PortDescriptor* port_descriptors =
+            message->port_descriptors().data();
         for (size_t i = 0; i < message->num_ports(); ++i) {
           auto* port = locker.GetPort(attached_port_refs[i]);
           PendingUpdatePreviousPeer update_event = {
               .from_port = attached_port_refs[i].name()};
-          ConvertToProxy(port, target_node_name, message->ports() + i,
+          ConvertToProxy(port, target_node_name,
+                         message->ports().subspan(i).data(),
                          port_descriptors + i, &update_event);
           peer_update_events.push(update_event);
         }

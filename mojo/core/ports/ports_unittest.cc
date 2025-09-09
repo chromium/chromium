@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <map>
 #include <sstream>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -260,9 +258,9 @@ class TestNode : public NodeDelegate {
       return;
 
     UserMessageEvent* message_event = static_cast<UserMessageEvent*>(event);
-    for (size_t i = 0; i < message_event->num_ports(); ++i) {
+    for (const auto& port_name : message_event->ports()) {
       PortRef port;
-      ASSERT_EQ(OK, node_.GetPort(message_event->ports()[i], &port));
+      ASSERT_EQ(OK, node_.GetPort(port_name, &port));
       EXPECT_EQ(OK, node_.ClosePort(port));
     }
   }
@@ -865,16 +863,17 @@ TEST_F(PortsTest, GetMessage3) {
   PortRef a0, a1;
   EXPECT_EQ(OK, node.node().CreatePortPair(&a0, &a1));
 
-  const char* kStrings[] = {"1", "2", "3"};
+  const std::array<const char*, 3> kStrings = {"1", "2", "3"};
 
-  for (size_t i = 0; i < sizeof(kStrings) / sizeof(kStrings[0]); ++i)
-    EXPECT_EQ(OK, node.SendStringMessage(a1, kStrings[i]));
+  for (const char* s : kStrings) {
+    EXPECT_EQ(OK, node.SendStringMessage(a1, s));
+  }
 
   ScopedMessage message;
-  for (size_t i = 0; i < sizeof(kStrings) / sizeof(kStrings[0]); ++i) {
+  for (const char* s : kStrings) {
     EXPECT_EQ(OK, node.node().GetMessage(a0, &message, nullptr));
     ASSERT_TRUE(message);
-    EXPECT_TRUE(MessageEquals(message, kStrings[i]));
+    EXPECT_TRUE(MessageEquals(message, s));
   }
 
   EXPECT_EQ(OK, node.node().ClosePort(a0));

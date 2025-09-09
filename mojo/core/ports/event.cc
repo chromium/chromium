@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <algorithm>
-
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
@@ -246,12 +245,12 @@ ScopedEvent UserMessageEvent::Deserialize(const PortName& port_name,
   event->ReservePorts(data->num_ports);
   const auto* in_descriptors =
       reinterpret_cast<const PortDescriptor*>(data + 1);
-  std::copy(in_descriptors, in_descriptors + data->num_ports,
-            event->port_descriptors());
+  base::span(event->port_descriptors())
+      .copy_from(base::span(in_descriptors, data->num_ports));
 
   const auto* in_names =
       reinterpret_cast<const PortName*>(in_descriptors + data->num_ports);
-  std::copy(in_names, in_names + data->num_ports, event->ports());
+  base::span(event->ports()).copy_from(base::span(in_names, data->num_ports));
   return std::move(event);
 }
 

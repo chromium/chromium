@@ -232,7 +232,7 @@ MojoResult CreateOrExtendSerializedEventMessage(
       if (g_always_fail_handle_serialization ||
           !d->EndSerialize(
               static_cast<void*>(new_dispatcher_data),
-              event->ports() + port_index,
+              event->ports().subspan(port_index).data(),
               !handles.empty() ? handles.data() + handle_index : nullptr)) {
         fail = true;
         break;
@@ -683,8 +683,8 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
                              : nullptr;
     dispatchers[i].dispatcher = Dispatcher::Deserialize(
         type, dispatcher_data, dh.num_bytes,
-        message_event_->ports() + port_index, dh.num_ports, out_handles,
-        dh.num_platform_handles);
+        message_event_->ports().subspan(port_index).data(), dh.num_ports,
+        out_handles, dh.num_platform_handles);
     if (!dispatchers[i].dispatcher &&
         bad_handle_policy == ExtractBadHandlePolicy::kAbort) {
       return MOJO_RESULT_ABORTED;
