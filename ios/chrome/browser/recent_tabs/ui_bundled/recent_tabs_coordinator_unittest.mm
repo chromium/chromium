@@ -85,15 +85,13 @@ class SessionSyncServiceMockForRecentTabsTableCoordinator
 };
 
 std::unique_ptr<KeyedService>
-BuildMockSessionSyncServiceForRecentTabsTableCoordinator(
-    web::BrowserState* context) {
+BuildMockSessionSyncServiceForRecentTabsTableCoordinator(ProfileIOS* profile) {
   return std::make_unique<
       testing::NiceMock<SessionSyncServiceMockForRecentTabsTableCoordinator>>();
 }
 
 // Returns a TestSyncService.
-std::unique_ptr<KeyedService> BuildFakeSyncServiceFactory(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildFakeSyncServiceFactory(ProfileIOS* profile) {
   return std::make_unique<syncer::TestSyncService>();
 }
 
