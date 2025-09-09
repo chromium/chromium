@@ -5,10 +5,6 @@
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(
-    use_blink,
-    "//components/input can't be built without blink and shouldn't be included if use_blink is false")
-
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
