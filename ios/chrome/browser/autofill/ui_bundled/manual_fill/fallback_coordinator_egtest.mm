@@ -256,6 +256,13 @@ void OpenAddressManualFillView() {
 #define MAYBE_testOpeningIncognitoTabsDoNotLeak testOpeningIncognitoTabsDoNotLeak
 #endif  // TARGET_OS_SIMULATOR
 - (void)MAYBE_testOpeningIncognitoTabsDoNotLeak {
+  // TODO(crbug.com/443950620): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   [AutofillAppInterface saveExampleProfile];
 
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
