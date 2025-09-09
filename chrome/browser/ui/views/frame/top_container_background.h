@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/background.h"
 
 class BrowserView;
@@ -70,12 +67,6 @@ class TopContainerBackground : public views::Background {
   static void PaintBackground(gfx::Canvas* canvas,
                               const views::View* view,
                               const BrowserView* browser_view);
-
-  // Returns the theme-aware solid background color painted when
-  // IDR_THEME_TOOLBAR does not exist; otherwise returns a nullptr.
-  static std::optional<SkColor> GetBackgroundColor(
-      const views::View* view,
-      const BrowserView* browser_view);
 
  private:
   // views::Background:

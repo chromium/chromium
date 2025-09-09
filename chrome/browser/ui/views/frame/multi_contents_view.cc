@@ -8,7 +8,6 @@
 #include <cstdlib>
 
 #include "base/check_deref.h"
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
@@ -34,72 +33,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
-
-// BackgroundView prioritizes using a `ui::LAYER_SOLID_COLOR` for background
-// painting whenever possible (or `ui::LAYER_TEXTURED`). This method is more
-// efficient than painting directly onto the widget's texture layer.
-class MultiContentsView::BackgroundView : public views::View {
-  METADATA_HEADER(BackgroundView, views::View)
- public:
-  explicit BackgroundView(BrowserView* browser_view)
-      : browser_view_(browser_view) {
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetName("MultiContentsView/background");
-    SetVisible(false);
-  }
-
-  BackgroundView(const BackgroundView&) = delete;
-  BackgroundView& operator=(const BackgroundView&) = delete;
-
-  ~BackgroundView() override = default;
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    if (auto new_type = CalculateLayerType(); new_type != layer()->type()) {
-      SetPaintToLayer(new_type);
-    }
-
-    if (layer()->type() == ui::LAYER_SOLID_COLOR) {
-      UpdateSolidLayerColor();
-    } else {
-      SchedulePaint();
-    }
-  }
-
-  void OnPaint(gfx::Canvas* canvas) override {
-    CHECK_EQ(layer()->type(), ui::LAYER_TEXTURED);
-    TopContainerBackground::PaintBackground(canvas, this, browser_view_);
-  }
-
- private:
-  ui::LayerType CalculateLayerType() const {
-    const bool has_custom_image =
-        !TopContainerBackground::GetBackgroundColor(this, browser_view_)
-             .has_value();
-    return has_custom_image ? ui::LAYER_TEXTURED : ui::LAYER_SOLID_COLOR;
-  }
-
-  void UpdateSolidLayerColor() {
-    CHECK_EQ(layer()->type(), ui::LAYER_SOLID_COLOR);
-    if (auto color =
-            TopContainerBackground::GetBackgroundColor(this, browser_view_)) {
-      layer()->SetColor(*color);
-    }
-  }
-
-  const raw_ptr<BrowserView> browser_view_;
-};
-
-BEGIN_METADATA(MultiContentsView, BackgroundView)
-END_METADATA
 
 void MultiContentsView::ContentsSeparators::Reset() {
   top_separator = nullptr;
@@ -118,9 +55,6 @@ MultiContentsView::MultiContentsView(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
       end_contents_view_inset_(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
-  background_view_ =
-      AddChildView(std::make_unique<BackgroundView>(browser_view));
-
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
 
@@ -207,7 +141,6 @@ MultiContentsView::~MultiContentsView() {
   drop_target_view_ = nullptr;
   resize_area_ = nullptr;
   contents_separators_.Reset();
-  background_view_ = nullptr;
   RemoveAllChildViews();
 }
 
@@ -227,15 +160,6 @@ ContentsContainerView* MultiContentsView::GetActiveContentsContainerView()
 ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView()
     const {
   return contents_container_views_[GetInactiveIndex()];
-}
-
-const gfx::RoundedCornersF& MultiContentsView::background_radii() const {
-  return background_view_->layer()->rounded_corner_radii();
-}
-
-void MultiContentsView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
-  background_view_->layer()->SetRoundedCornerRadius(radii);
-  background_view_->layer()->SetIsFastRoundedCorner(!radii.IsEmpty());
 }
 
 ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
@@ -285,7 +209,6 @@ void MultiContentsView::SetWebContentsAtIndex(
 
   if (index == 1 && !contents_container_views_[1]->GetVisible()) {
     contents_container_views_[1]->SetVisible(true);
-    background_view_->SetVisible(true);
     resize_area_->SetVisible(true);
     UpdateContentsBorderAndOverlay();
   }
@@ -297,7 +220,6 @@ void MultiContentsView::ShowSplitView(double ratio) {
     // visibility.
     start_ratio_ = ratio;
     contents_container_views_[1]->SetVisible(true);
-    background_view_->SetVisible(true);
     resize_area_->SetVisible(true);
     UpdateContentsBorderAndOverlay();
   } else if (start_ratio_ != ratio) {
@@ -335,7 +257,6 @@ void MultiContentsView::CloseSplitView() {
   contents_container_views_[1]->contents_view()->SetWebContents(nullptr);
   contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
-  background_view_->SetVisible(false);
   UpdateContentsBorderAndOverlay();
 }
 
@@ -441,6 +362,11 @@ double MultiContentsView::CalculateRatioWithSnapPoints(
   return end_width / total_width;
 }
 
+void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
+  // Paint the multi contents area background to match the toolbar.
+  TopContainerBackground::PaintBackground(canvas, this, browser_view_);
+}
+
 void MultiContentsView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateContentsBorderAndOverlay();
@@ -499,7 +425,6 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 
   gfx::Rect start_rect(available_space.origin(),
                        gfx::Size(widths.start_width, available_space.height()));
-  gfx::Rect background_rect(available_space);
   gfx::Rect resize_rect(
       start_rect.top_right(),
       gfx::Size(widths.resize_width, available_space.height()));
@@ -510,9 +435,6 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
     start_rect.Inset(start_contents_view_inset_);
     end_rect.Inset(end_contents_view_inset_);
   }
-
-  layouts.child_layouts.emplace_back(
-      background_view_.get(), background_view_->GetVisible(), background_rect);
 
   layouts.child_layouts.emplace_back(contents_container_views_[0],
                                      contents_container_views_[0]->GetVisible(),
