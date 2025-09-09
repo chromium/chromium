@@ -7,6 +7,7 @@ include_rules = [
   "+components/tabs",
   "+components/variations",
   "+components/unified_consent",
+  "+content/public/browser",
   "+google_apis",
   "+net",
   "+services/metrics/public/cpp",

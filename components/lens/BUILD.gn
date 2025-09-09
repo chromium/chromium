@@ -68,7 +68,6 @@ static_library("lens") {
     ":features",
     ":mime_type",
   ]
-
   sources += [
     "lens_bitmap_processing.cc",
     "lens_bitmap_processing.h",
@@ -84,6 +83,7 @@ static_library("lens") {
       "tab_contextualization_controller.h",
     ]
     public_deps += [ "//ui/base/unowned_user_data" ]
+    deps += [ "//content/public/browser" ]
   }
 
   if (!is_android) {
