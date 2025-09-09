@@ -2792,8 +2792,15 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
   bool resize = false;
   if (will_build_tree != has_view_tree) {
     if (has_view_tree) {
-      view_.RemoveObserver(this);
-      view_.RemoveFromParent();
+      // TODO(crbug.com/440324557): Unconditionally remove parent before
+      // removing `this` as an observer.
+      if (input_transfer_handler_) {
+        view_.RemoveFromParent();
+        view_.RemoveObserver(this);
+      } else {
+        view_.RemoveObserver(this);
+        view_.RemoveFromParent();
+      }
       view_.GetLayer()->RemoveFromParent();
     }
     if (will_build_tree) {
