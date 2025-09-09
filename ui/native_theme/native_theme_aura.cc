@@ -29,9 +29,8 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
-#include "ui/native_theme/native_theme_fluent.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 
 namespace ui {
@@ -58,41 +57,6 @@ BASE_FEATURE(kNewScrollbarArrowRadius,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// NativeTheme:
-
-#if !BUILDFLAG(IS_APPLE)
-// static
-NativeTheme* NativeTheme::GetInstanceForWeb() {
-  static const bool use_fluent = IsFluentScrollbarEnabled();
-  if (use_fluent) {
-    static base::NoDestructor<NativeThemeFluent> s_web_theme;
-    return s_web_theme.get();
-  }
-  static base::NoDestructor<NativeThemeAura> s_web_theme(
-#if BUILDFLAG(IS_CHROMEOS)
-      true
-#else
-      IsOverlayScrollbarEnabledByFeatureFlag()
-#endif
-  );
-  return s_web_theme.get();
-}
-
-#if !BUILDFLAG(IS_WIN)
-// static
-NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeAura> s_native_theme;
-  static bool initialized = false;
-  if (!initialized) {
-    s_native_theme->ConfigureWebInstance();
-    initialized = true;
-  }
-  return s_native_theme.get();
-}
-#endif  // !BUILDFLAG(IS_WIN)
-#endif  // !BUILDFLAG(IS_APPLE)
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeThemeAura:

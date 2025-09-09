@@ -33,7 +33,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_aura.h"
 
 namespace {
 
@@ -61,10 +60,10 @@ bool InvertedColors() {
 }  // namespace
 
 // Helper object to respond to light mode/dark mode changeovers.
-@interface NativeThemeEffectiveAppearanceObserver : NSObject
+@interface EffectiveAppearanceObserver : NSObject
 @end
 
-@implementation NativeThemeEffectiveAppearanceObserver {
+@implementation EffectiveAppearanceObserver {
   void (^_handler)() __strong;
 }
 
@@ -107,26 +106,15 @@ struct EnumArray {
 namespace ui {
 
 // static
-NativeTheme* NativeTheme::GetInstanceForWeb() {
-  static base::NoDestructor<NativeThemeAura> s_web_theme;
-  return s_web_theme.get();
-}
-
-// static
-NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeMac> s_native_theme;
-  static bool initialized = false;
-  if (!initialized) {
-    s_native_theme->ConfigureWebInstance();
-    initialized = true;
-  }
-  return s_native_theme.get();
-}
-
-// static
 bool NativeTheme::SystemDarkModeSupported() {
   return true;
 }
+
+struct NativeThemeMac::ObjCMembers {
+  id __strong non_blinking_cursor_token;
+  id __strong display_accessibility_notification_token;
+  EffectiveAppearanceObserver* __strong appearance_observer;
+};
 
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
     const {
@@ -533,6 +521,8 @@ static void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
 }
 
 NativeThemeMac::NativeThemeMac() {
+  objc_members_ = std::make_unique<ObjCMembers>();
+
   InitializeDarkModeStateAndObserver();
 
   set_prefers_reduced_transparency(PrefersReducedTransparency());
@@ -541,7 +531,7 @@ NativeThemeMac::NativeThemeMac() {
     SetPreferredContrast(CalculatePreferredContrast());
   }
   __block auto theme = this;
-  display_accessibility_notification_token_ =
+  objc_members_->display_accessibility_notification_token =
       [NSWorkspace.sharedWorkspace.notificationCenter
           addObserverForName:
               NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
@@ -557,23 +547,24 @@ NativeThemeMac::NativeThemeMac() {
                     theme->NotifyOnNativeThemeUpdated();
                   }];
   if (@available(macOS 15.0, *)) {
-    non_blinking_cursor_token_ = [[NSNotificationCenter defaultCenter]
-        addObserverForName:
-            AXPrefersNonBlinkingTextInsertionIndicatorDidChangeNotification
-                    object:nil
-                     queue:nil
-                usingBlock:^(NSNotification* notification) {
-                  theme->NotifyOnNativeThemeUpdated();
-                }];
+    objc_members_->non_blinking_cursor_token =
+        [[NSNotificationCenter defaultCenter]
+            addObserverForName:
+                AXPrefersNonBlinkingTextInsertionIndicatorDidChangeNotification
+                        object:nil
+                         queue:nil
+                    usingBlock:^(NSNotification* notification) {
+                      theme->NotifyOnNativeThemeUpdated();
+                    }];
   }
 }
 
 NativeThemeMac::~NativeThemeMac() {
   [NSNotificationCenter.defaultCenter
-      removeObserver:display_accessibility_notification_token_];
+      removeObserver:objc_members_->display_accessibility_notification_token];
   if (@available(macOS 15.0, *)) {
     [NSNotificationCenter.defaultCenter
-        removeObserver:non_blinking_cursor_token_];
+        removeObserver:objc_members_->non_blinking_cursor_token];
   }
 }
 
@@ -618,8 +609,8 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
   __block auto theme = this;
   set_use_dark_colors(IsDarkMode());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  appearance_observer_ =
-      [[NativeThemeEffectiveAppearanceObserver alloc] initWithHandler:^{
+  objc_members_->appearance_observer =
+      [[EffectiveAppearanceObserver alloc] initWithHandler:^{
         theme->set_use_dark_colors(IsDarkMode());
         theme->set_preferred_color_scheme(CalculatePreferredColorScheme());
         theme->NotifyOnNativeThemeUpdated();

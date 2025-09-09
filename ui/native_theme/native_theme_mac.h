@@ -11,8 +11,6 @@
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 
-@class NativeThemeEffectiveAppearanceObserver;
-
 namespace ui {
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
@@ -105,6 +103,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
 
  private:
+  // Because this header is #included from C++ source, we can't use Obj-C here.
+  // Instead the Obj-C members are defined entirely in the .mm.
+  struct ObjCMembers;
+
   // Returns true if the user prefers a non blinking cursor.
   bool PrefersNonBlinkingCursor() const;
 
@@ -158,15 +160,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
     return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
 
-  NativeThemeEffectiveAppearanceObserver* __strong appearance_observer_;
-  id __strong display_accessibility_notification_token_;
-  id __strong non_blinking_cursor_token_;
   bool prefers_non_blinking_cursor_for_testing_ = false;
 
   // Used to notify the web native theme of changes to dark mode and high
   // contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
+
+  std::unique_ptr<ObjCMembers> objc_members_;
 };
 
 }  // namespace ui

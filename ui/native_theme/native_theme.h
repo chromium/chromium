@@ -433,6 +433,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
       bool use_custom_frame = true) const;
 
+  // Returns a shared instance of the default native theme for native UI.
+  static NativeTheme* GetInstanceForNativeUi();
+
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).
   // The returned object should not be deleted by the caller. This function is
@@ -440,9 +443,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // NativeTheme should provide its own implementation of this function,
   // returning the port's subclass.
   static NativeTheme* GetInstanceForWeb();
-
-  // Returns a shared instance of the default native theme for native UI.
-  static NativeTheme* GetInstanceForNativeUi();
 
   // Whether OS-level dark mode is available in the current OS.
   static bool SystemDarkModeSupported();

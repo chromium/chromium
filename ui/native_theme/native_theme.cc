@@ -36,6 +36,20 @@
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_observer.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/native_theme/native_theme_aura.h"
+#include "ui/native_theme/native_theme_mac.h"
+#elif defined(USE_AURA)
+#include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme_aura.h"
+#include "ui/native_theme/native_theme_fluent.h"
+#if BUILDFLAG(IS_WIN)
+#include "ui/native_theme/native_theme_win.h"
+#endif
+#else
+#include "ui/native_theme/native_theme_mobile.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -56,6 +70,54 @@ NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
     const NativeTheme::MenuListExtraParams&) = default;
 NativeTheme::TextFieldExtraParams& NativeTheme::TextFieldExtraParams::operator=(
     const NativeTheme::TextFieldExtraParams&) = default;
+
+#if BUILDFLAG(IS_MAC)
+using NativeUiTheme = NativeThemeMac;
+using WebUiTheme = NativeThemeAura;
+#elif defined(USE_AURA)
+#if BUILDFLAG(IS_WIN)
+using NativeUiTheme = NativeThemeWin;
+#else
+using NativeUiTheme = NativeThemeAura;
+#endif
+NativeTheme* GetInstanceForWebImpl() {
+  static const bool use_fluent = IsFluentScrollbarEnabled();
+  if (use_fluent) {
+    static base::NoDestructor<NativeThemeFluent> s_web_theme;
+    return s_web_theme.get();
+  }
+  static base::NoDestructor<NativeThemeAura> s_web_theme(
+#if BUILDFLAG(IS_CHROMEOS)
+      true
+#else
+      IsOverlayScrollbarEnabledByFeatureFlag()
+#endif
+  );
+  return s_web_theme.get();
+}
+#else
+using NativeUiTheme = NativeThemeMobile;
+using WebUiTheme = NativeThemeMobile;
+#endif
+
+NativeTheme* NativeTheme::GetInstanceForNativeUi() {
+  static base::NoDestructor<NativeUiTheme> s_native_theme;
+  static bool initialized = false;
+  if (!initialized) {
+    s_native_theme->ConfigureWebInstance();
+    initialized = true;
+  }
+  return s_native_theme.get();
+}
+
+NativeTheme* NativeTheme::GetInstanceForWeb() {
+#if defined(USE_AURA)
+  return GetInstanceForWebImpl();
+#else
+  static base::NoDestructor<WebUiTheme> s_web_theme;
+  return s_web_theme.get();
+#endif
+}
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 // static

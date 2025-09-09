@@ -173,16 +173,6 @@ base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
 
 }  // namespace
 
-NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeWin> s_native_theme;
-  static bool initialized = false;
-  if (!initialized) {
-    s_native_theme->ConfigureWebInstance();
-    initialized = true;
-  }
-  return s_native_theme.get();
-}
-
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   static bool system_supports_dark_mode =

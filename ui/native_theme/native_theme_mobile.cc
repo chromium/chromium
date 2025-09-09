@@ -8,22 +8,9 @@
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
-
-// static
-NativeTheme* NativeTheme::GetInstanceForWeb() {
-  static base::NoDestructor<NativeThemeMobile> s_web_theme;
-  return s_web_theme.get();
-}
-
-// static
-NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeMobile> s_native_theme;
-  return s_native_theme.get();
-}
 
 gfx::Size NativeThemeMobile::GetPartSize(Part part,
                                          State state,
