@@ -23,7 +23,7 @@ class PlaceholderServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build PlaceholderServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<PlaceholderServiceFactory>;
@@ -31,9 +31,9 @@ class PlaceholderServiceFactory : public ProfileKeyedServiceFactoryIOS {
   PlaceholderServiceFactory();
   ~PlaceholderServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios
