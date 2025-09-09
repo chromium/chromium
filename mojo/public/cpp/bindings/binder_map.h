@@ -12,9 +12,11 @@
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
+#include "base/containers/variant_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/lib/binder_map_internal.h"
 
@@ -39,6 +41,8 @@ namespace mojo {
 template <typename ContextType>
 class BinderMapWithContext {
  public:
+  using PassKey = base::PassKey<BinderMapWithContext>;
+
   using Traits = internal::BinderContextTraits<ContextType>;
   using ContextValueType = typename Traits::ValueType;
   using GenericBinderType = typename Traits::GenericBinderType;
@@ -49,7 +53,8 @@ class BinderMapWithContext {
   template <typename Interface>
   using FuncType = typename Traits::template FuncType<Interface>;
 
-  BinderMapWithContext() = default;
+  BinderMapWithContext() : binders_(PassKey()) {}
+
   BinderMapWithContext(const BinderMapWithContext&) = default;
   BinderMapWithContext(BinderMapWithContext&&) = default;
   ~BinderMapWithContext() = default;
@@ -169,8 +174,8 @@ class BinderMapWithContext {
     binders_.try_emplace(key, std::move(binder));
   }
 
-  std::map<std::string_view,
-           internal::GenericCallbackBinderWithContext<ContextType>>
+  base::VariantMap<std::string_view,
+                   internal::GenericCallbackBinderWithContext<ContextType>>
       binders_;
   DefaultBinder default_binder_;
 };
