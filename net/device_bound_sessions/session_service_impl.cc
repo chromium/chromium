@@ -609,10 +609,13 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     RegistrationResult registration_result) {
   RemoveFetcher(fetcher);
 
-  if (!registration_result.is_session()) {
+  if (registration_result.is_error()) {
     // We failed to create a new session, so there's nothing to clean
     // up.
     return registration_result.error().type;
+  } else if (registration_result.is_no_session_config_change()) {
+    // No config changes is not allowed at registration.
+    return SessionError::ErrorType::kInvalidConfigJson;
   }
 
   std::unique_ptr<Session> session = registration_result.TakeSession();
@@ -643,6 +646,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     AddSession(new_site, std::move(new_session));
     // The session has been refreshed, restart the request.
     UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
+  } else if (registration_result.is_no_session_config_change()) {
+    UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
   } else if (std::optional<DeletionReason> deletion_reason =
                  registration_result.error().GetDeletionReason();
              deletion_reason.has_value()) {
@@ -656,8 +661,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                                 : RefreshResult::kUnreachable);
   }
 
-  return registration_result.is_session() ? SessionError::ErrorType::kSuccess
-                                          : registration_result.error().type;
+  return registration_result.is_error() ? registration_result.error().type
+                                        : SessionError::ErrorType::kSuccess;
 }
 
 void SessionServiceImpl::OnSessionKeyRestored(
