@@ -16,6 +16,14 @@
 @implementation DefaultBrowserMediator {
 }
 
+- (instancetype)init {
+  if ((self = [super init])) {
+    self.config = [[DefaultBrowserConfig alloc] init];
+    self.config.commandHandler = self;
+  }
+  return self;
+}
+
 - (void)disconnect {
   self.config = nil;
 }

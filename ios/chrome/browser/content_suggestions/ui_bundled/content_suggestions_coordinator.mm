@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -700,20 +701,7 @@ using segmentation_platform::TipIdentifier;
 
   if (variation ==
       DefaultBrowserMagicStackIosVariationType::kTapToDeviceSettings) {
-    NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
-    if (@available(iOS 18.3, *)) {
-      if (IsDefaultAppsDestinationAvailable() &&
-          IsUseDefaultAppsDestinationForPromosEnabled()) {
-        url = [NSURL URLWithString:
-                         UIApplicationOpenDefaultApplicationsSettingsURLString];
-      }
-    }
-#endif
-    [[UIApplication sharedApplication] openURL:url
-                                       options:{}
-                             completionHandler:nil];
-
+    OpenIOSDefaultBrowserSettingsPage();
   } else if (variation ==
              DefaultBrowserMagicStackIosVariationType::kTapToAppSettings) {
     id<SettingsCommands> settings_handler = HandlerForProtocol(
@@ -863,6 +851,11 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kAppBundlePromo: {
       registry->NotifyCardShown(
           segmentation_platform::kAppBundlePromoEphemeralModule);
+      break;
+    }
+    case ContentSuggestionsModuleType::kDefaultBrowser: {
+      registry->NotifyCardShown(
+          segmentation_platform::kDefaultBrowserPromoEphemeralModule);
       break;
     }
     default:

@@ -71,6 +71,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
     "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/docking_promo/ui",

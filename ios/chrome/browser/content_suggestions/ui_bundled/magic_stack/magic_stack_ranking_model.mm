@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/features.h"
@@ -565,6 +566,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
               static_cast<float>(
                   _appStoreBundleService->GetInstalledAppCount())));
     }
+    if (base::FeatureList::IsEnabled(
+            segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kIsDefaultBrowserChromeIos,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              IsChromeLikelyDefaultBrowser()));
+    }
   }
 
   __weak MagicStackRankingModel* weakSelf = self;
@@ -642,9 +650,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         card = _appBundlePromoMediator.config;
         break;
       }
-    } else if (label == segmentation_platform::kDefaultBrowserPromo) {
-      if (GetDefaultBrowserMagicStackIosVariation() !=
-          DefaultBrowserMagicStackIosVariationType::kDisabled) {
+    } else if (label ==
+               segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
+      if (base::FeatureList::IsEnabled(
+              segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
         card = _defaultBrowserMediator.config;
         break;
