@@ -598,6 +598,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.OverflowX() == b.OverflowX();
     case CSSPropertyID::kOverflowY:
       return a.OverflowY() == b.OverflowY();
+    case CSSPropertyID::kOverscrollAnchorName:
+      return base::ValuesEquivalent(a.OverscrollAnchorName(),
+                                    b.OverscrollAnchorName());
     case CSSPropertyID::kOverscrollBehaviorX:
       return a.OverscrollBehaviorX() == b.OverscrollBehaviorX();
     case CSSPropertyID::kOverscrollBehaviorY:

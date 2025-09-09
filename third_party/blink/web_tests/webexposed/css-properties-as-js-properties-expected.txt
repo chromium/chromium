@@ -365,6 +365,7 @@ overflowX
 overflowY
 overlay
 overrideColors
+overscrollAnchorName
 overscrollBehavior
 overscrollBehaviorBlock
 overscrollBehaviorInline

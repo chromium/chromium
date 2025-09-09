@@ -7630,6 +7630,35 @@ void OverflowY::ApplyValue(StyleResolverState& state,
   }
 }
 
+// overscroll-anchor-name: none | <dashed-ident>#
+const CSSValue* OverscrollAnchorName::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeDashedIdent, stream, context);
+}
+
+const CSSValue* OverscrollAnchorName::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (!style.OverscrollAnchorName()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const Member<const ScopedCSSName>& name :
+       style.OverscrollAnchorName()->GetNames()) {
+    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
+  }
+  return list;
+}
+
 const CSSValue* OverscrollBehaviorX::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
