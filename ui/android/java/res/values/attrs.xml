@@ -76,6 +76,7 @@ found in the LICENSE file.
     <attr name="minInteractTargetSize" format="dimension" />
     <attr name="listItemHeight" format="dimension" />
     <attr name="listItemIconSize" format="dimension" />
+    <attr name="listItemIconPadding" format="dimension" />
     <attr name="listItemIconTextSpacing" format="dimension" />
 
     <attr name="textLargeSize" format="dimension"/>

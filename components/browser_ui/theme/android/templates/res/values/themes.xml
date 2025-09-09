@@ -145,6 +145,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- List item dimensions. -->
         <item name="listItemHeight">?attr/minInteractTargetSize</item>
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
+        <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
 
         <!-- Text dimensions. -->
@@ -324,6 +325,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
         <!-- List item dimensions. -->
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size_desktop</item>
+        <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding_desktop</item>
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin_desktop</item>
     </style>
 

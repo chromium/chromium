@@ -492,7 +492,7 @@ found in the LICENSE file.
     <!-- Context menu -->
     <style name="ContextMenuItemText">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+        <item name="android:minHeight">?attr/minInteractTargetSize</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
     </style>

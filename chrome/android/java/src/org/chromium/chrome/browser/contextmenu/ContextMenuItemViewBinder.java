@@ -90,16 +90,6 @@ class ContextMenuItemViewBinder {
         } else if (propertyKey == END_BUTTON_IMAGE) {
             Drawable drawable = model.get(END_BUTTON_IMAGE);
             setIcon(shareIconView, drawable, false);
-            final int padding =
-                    view.getResources()
-                            .getDimensionPixelSize(R.dimen.context_menu_list_lateral_padding);
-            // We don't need extra end padding for the item/ text if the share icon is visible as
-            // the icon already has padding.
-            itemView.setPaddingRelative(
-                    /* start= */ padding,
-                    /* top= */ 0,
-                    /* end= */ drawable != null ? 0 : padding,
-                    /* bottom= */ 0);
         } else if (propertyKey == END_BUTTON_CONTENT_DESC) {
             shareIconView.setContentDescription(
                     view.getContext()

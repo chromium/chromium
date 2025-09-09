@@ -103,12 +103,14 @@ found in the LICENSE file.
     <dimen name="list_menu_popup_min_width">112dp</dimen>
     <dimen name="list_menu_popup_max_width">280dp</dimen>
     <dimen name="list_menu_item_icon_size">24dp</dimen>
+    <dimen name="list_menu_item_icon_padding">12dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
     <dimen name="list_menu_item_horizontal_padding">16dp</dimen>
     <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
 
     <dimen name="list_menu_item_icon_size_desktop">20dp</dimen>
+    <dimen name="list_menu_item_icon_padding_desktop">8dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin_desktop">12dp</dimen>
 
     <!-- Automotive -->
