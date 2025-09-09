@@ -57,28 +57,29 @@ COMMIT_FOOTER = \
 Bug: TODO. Remove the Tricium: line below when filling this in.
 Tricium: skip
 Disable-Rts: True
+Cq-Include-Trybots: chromium/try:android-cronet-riscv64-dbg
+Cq-Include-Trybots: chromium/try:android-cronet-riscv64-rel
 Cq-Include-Trybots: chromium/try:chromeos-amd64-generic-cfi-thin-lto-rel
 Cq-Include-Trybots: chromium/try:dawn-win10-x86-deps-rel
+Cq-Include-Trybots: chromium/try:fuchsia-arm64-cast-receiver-rel
+Cq-Include-Trybots: chromium/try:ios-catalyst,win-asan,android-official
+Cq-Include-Trybots: chromium/try:linux-cast-x64-rel
 Cq-Include-Trybots: chromium/try:linux-chromeos-dbg
+Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
+Cq-Include-Trybots: chromium/try:linux-v4l2-codec-rel
+Cq-Include-Trybots: chromium/try:linux-wayland-mutter-rel
 Cq-Include-Trybots: chromium/try:linux_chromium_cfi_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
-Cq-Include-Trybots: chromium/try:mac12-arm64-rel,mac_chromium_asan_rel_ng
-Cq-Include-Trybots: chromium/try:ios-catalyst,win-asan,android-official
-Cq-Include-Trybots: chromium/try:fuchsia-arm64-cast-receiver-rel
 Cq-Include-Trybots: chromium/try:mac-official,linux-official
-Cq-Include-Trybots: chromium/try:win-official,win32-official
+Cq-Include-Trybots: chromium/try:mac12-arm64-rel,mac_chromium_asan_rel_ng
 Cq-Include-Trybots: chromium/try:win-arm64-rel
-Cq-Include-Trybots: chromium/try:linux-v4l2-codec-rel
-Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
-Cq-Include-Trybots: chromium/try:android-cronet-riscv64-dbg
-Cq-Include-Trybots: chromium/try:android-cronet-riscv64-rel
+Cq-Include-Trybots: chromium/try:win-official,win32-official
 Cq-Include-Trybots: chrome/try:android-x64-rel-ready
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
-Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
-Cq-Include-Trybots: luci.chromium.try:linux-cast-x64-rel'''
+Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome'''
 
 RUST_BOTS = \
 '''Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
