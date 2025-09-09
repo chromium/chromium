@@ -77,10 +77,10 @@ void AwContentRendererClient::RenderThreadStarted() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
   if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
       features::kWebViewPrefetchFromRenderer.Get()) {
-    base::ThreadPool::PostTask(FROM_HERE, base::BindOnce([] {
-                                 base::android::NativeLibraryPrefetcher::
-                                     ForkAndPrefetchNativeLibrary();
-                               }));
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindOnce([] {
+          base::android::NativeLibraryPrefetcher::PrefetchNativeLibrary();
+        }));
   }
 #endif
 

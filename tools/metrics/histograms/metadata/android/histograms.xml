@@ -2906,6 +2906,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.LibraryLoader.Prefetch.Madvise" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    True iff madvise MADV_WILLNEED is supported (and will be used to prefetch
+    the native library). Does not state whether madvise was successful for the
+    actual prefetch (see Android.LibraryLoader.Prefetch.Status instead.)
+
+    Emitted during native library prefetch (normally in renderer process init),
+    only for Android WebView and only when the LibraryPrefetcherMadvise feature
+    is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.LibraryLoader.Prefetch.Status" enum="PrefetchStatus"
     expires_after="2026-01-30">
   <owner>ziadyoussef@chromium.org</owner>

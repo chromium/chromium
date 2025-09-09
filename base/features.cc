@@ -129,6 +129,26 @@ BASE_FEATURE(kUpdateStateBeforeUnbinding, FEATURE_DISABLED_BY_DEFAULT);
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
 BASE_FEATURE(kUseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);
+
+// Use madvise MADV_WILLNEED to prefetch the native library. This replaces the
+// default mechanism of pre-reading the memory from a forked process.
+BASE_FEATURE(kLibraryPrefetcherMadvise, FEATURE_DISABLED_BY_DEFAULT);
+
+// If > 0, split the madvise range into chunks of this many bytes, rounded up to
+// a page size. The default of 1 therefore rounds to a whole page.
+BASE_FEATURE_PARAM(size_t,
+                   kLibraryPrefetcherMadviseLength,
+                   &kLibraryPrefetcherMadvise,
+                   "length",
+                   1);
+
+// Whether to fall back to the fork-and-read method if madvise is not supported.
+// Does not trigger fork-and-read if madvise failed during the actual prefetch.
+BASE_FEATURE_PARAM(bool,
+                   kLibraryPrefetcherMadviseFallback,
+                   &kLibraryPrefetcherMadvise,
+                   "fallback",
+                   true);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsReducePPMsEnabled() {

@@ -1487,6 +1487,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ForkFailed"/>
   <int value="3" label="ChildProcessCrashed"/>
   <int value="4" label="ChildProcessKilled"/>
+  <int value="5" label="MadviseFailed"/>
 </enum>
 
 <enum name="PrimaryCpuAbiBitness">
