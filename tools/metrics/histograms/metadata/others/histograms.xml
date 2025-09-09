@@ -6045,11 +6045,10 @@ chromium-metrics-reviews@google.com.
   <summary>The size of a message written to a channel.</summary>
 </histogram>
 
-<histogram name="Mojo.Channel.WriteQueuePendingMessages" units="count"
-    expires_after="2023-11-19">
-  <owner>amistry@chromium.org</owner>
+<histogram name="Mojo.Channel.WriteQueuePendingMessages2" units="count"
+    expires_after="2026-03-09">
+  <owner>pasko@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
   <summary>
     The number queued messages waiting to be written, measured when a channel
     flush is attempted.

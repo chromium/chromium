@@ -442,7 +442,7 @@ bool ChannelPosix::FlushOutgoingMessagesNoLock() {
   std::swap(outgoing_messages_, messages);
 
   if (!messages.empty()) {
-    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages",
+    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages2",
                               messages.size());
   }
 
