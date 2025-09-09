@@ -1038,7 +1038,7 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if ((merge_mode_ & (kReplaceSubset | kReplaceSuperset)) &&
+  if ((merge_mode_ & kReplaceSubset) &&
       (token_comparison_result.OneIsSubset() ||
        token_comparison_result.status == SortedTokenComparisonStatus::kMatch)) {
     return true;
@@ -1140,18 +1140,8 @@ bool AddressComponent::MergeWithComponent(
     return true;
   }
 
-  // Replace the superset with the subset if the corresponding mode is active.
-  if ((merge_mode_ & kReplaceSuperset) &&
-      token_comparison_result.OneIsSubset()) {
-    if (token_comparison_result.status ==
-        SortedTokenComparisonStatus::kSuperset) {
-      CopyFrom(newer_component);
-    }
-    return true;
-  }
-
   // If the tokens are already equivalent, use the more recently used one.
-  if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
+  if ((merge_mode_ & kReplaceSubset) &&
       token_comparison_result.status == SortedTokenComparisonStatus::kMatch) {
     if (newer_was_more_recently_used &&
         newer_component_has_better_or_equal_status) {

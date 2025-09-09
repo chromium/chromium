@@ -1623,17 +1623,6 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   TestCompoundNameMerging(not_a_subset, superset, not_a_subset, false,
                           MergeMode::kReplaceSubset);
 
-  // Test the merging of supersets.
-  TestCompoundNameMerging(superset, subset, subset, true,
-                          MergeMode::kReplaceSuperset);
-  TestCompoundNameMerging(subset, superset, subset, true,
-                          MergeMode::kReplaceSuperset);
-
-  TestCompoundNameMerging(superset, not_a_subset, superset, false,
-                          MergeMode::kReplaceSuperset);
-  TestCompoundNameMerging(not_a_subset, superset, not_a_subset, false,
-                          MergeMode::kReplaceSuperset);
-
   // Test the replacement of empty components.
   TestCompoundNameMerging(superset, empty, superset, true,
                           MergeMode::kReplaceEmpty);

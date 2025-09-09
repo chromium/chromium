@@ -84,19 +84,17 @@ enum MergeMode {
   // If both tokens have the same normalized value, use the one with the better
   // verification status. If both statuses are the same, use the newer one.
   kUseBetterOrNewerForSameValue = 1 << 2,
-  // If one component is a superset of the other, use the subset.
-  kReplaceSuperset = 1 << 3,
   // If one component is a subset of the other, use the superset.
-  kReplaceSubset = 1 << 4,
+  kReplaceSubset = 1 << 3,
   // If one is a substring of the other use the most recent one.
-  kUseMostRecentSubstring = 1 << 5,
+  kUseMostRecentSubstring = 1 << 4,
   // If the tokens match or one is a subset of the other, pick the shorter one.
-  kPickShorterIfOneContainsTheOther = 1 << 6,
+  kPickShorterIfOneContainsTheOther = 1 << 5,
   // Merge the child nodes and reformat the node from its children after merge
   // if the value has changed.
-  kMergeChildrenAndReformatIfNeeded = 1 << 7,
+  kMergeChildrenAndReformatIfNeeded = 1 << 6,
   // Make a merge decision based on canonicalized values.
-  kMergeBasedOnCanonicalizedValues = 1 << 8,
+  kMergeBasedOnCanonicalizedValues = 1 << 7,
   // Defines the default merging behavior.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
