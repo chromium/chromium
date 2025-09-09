@@ -48,7 +48,7 @@
           } else if (paint_entries.length > 2) {
             reject();
           }
-        }).observe({ type: 'paint', includeSoftNavigationObservations: true });
+        }).observe({ type: 'paint' });
       });
     };
 
@@ -66,8 +66,7 @@
       return new Promise(resolve => {
         new PerformanceObserver(resolve).observe(
           {
-            type: 'largest-contentful-paint', buffered: true,
-            includeSoftNavigationObservations: true
+            type: 'largest-contentful-paint', buffered: true
           });
       })
     }
@@ -91,8 +90,7 @@
             resolve(soft_nav_entries);
           }
         })).observe({
-          type: 'largest-contentful-paint', buffered: true,
-          includeSoftNavigationObservations: true
+          type: 'largest-contentful-paint', buffered: true
         });
       });
 

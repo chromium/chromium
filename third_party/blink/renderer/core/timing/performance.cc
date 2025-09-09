@@ -423,12 +423,10 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
 }
 
 PerformanceEntryVector Performance::getBufferedEntriesByType(
-    const AtomicString& entry_type,
-    bool include_soft_navigation_observations) {
+    const AtomicString& entry_type) {
   PerformanceEntry::EntryType type =
       PerformanceEntry::ToEntryTypeEnum(entry_type);
-  return getEntriesByTypeInternal(type, /*maybe_name=*/g_null_atom,
-                                  include_soft_navigation_observations);
+  return getEntriesByTypeInternal(type, /*maybe_name=*/g_null_atom);
 }
 
 PerformanceEntryVector Performance::getEntriesByType(
@@ -456,8 +454,7 @@ PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
 
 PerformanceEntryVector Performance::getEntriesByTypeInternal(
     PerformanceEntry::EntryType type,
-    const AtomicString& maybe_name,
-    bool include_soft_navigation_observations) {
+    const AtomicString& maybe_name) {
   // This vector may be used by any cases below which require local storage.
   // Cases which refer to pre-existing vectors may simply set `entries` instead.
   PerformanceEntryVector entries_storage;
@@ -546,11 +543,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kInteractionContentfulPaint:
-      // TODO(crbug.com/424433918): Change to expose this without
-      // soft-navigation requirement.
-      if (include_soft_navigation_observations) {
-        entries = &interaction_contentful_paint_buffer_;
-      }
+      entries = &interaction_contentful_paint_buffer_;
       break;
 
     case PerformanceEntry::kVisibilityState:
@@ -1169,8 +1162,6 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   bool observer_found = false;
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
-        (!entry.IsTriggeredBySoftNavigation() ||
-         observer->IncludeSoftNavigationObservations()) &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
       observer_found = true;

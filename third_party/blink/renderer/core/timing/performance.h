@@ -162,8 +162,7 @@ class CORE_EXPORT Performance : public EventTarget {
   // getEntriesByType will only return all entries for existing types in
   // PerformanceEntry.IsValidTimelineEntryType.
   PerformanceEntryVector getBufferedEntriesByType(
-      const AtomicString& entry_type,
-      bool include_triggered_by_soft_navigation = false);
+      const AtomicString& entry_type);
 
   // Get performance entries of the current frame by type, and optionally,
   // nested same-origin iframes.
@@ -358,8 +357,7 @@ class CORE_EXPORT Performance : public EventTarget {
 
   PerformanceEntryVector getEntriesByTypeInternal(
       PerformanceEntry::EntryType type,
-      const AtomicString& maybe_name = g_null_atom,
-      bool include_triggered_by_soft_navigation = false);
+      const AtomicString& maybe_name = g_null_atom);
 
   // Get performance entries of the current frame, with an optional name filter.
   PerformanceEntryVector GetEntriesForCurrentFrame(

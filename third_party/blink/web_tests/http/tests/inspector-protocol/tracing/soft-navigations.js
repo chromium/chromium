@@ -71,7 +71,6 @@
               resolve(list.getEntries()[0].element.innerHTML);
             }).observe({
               type: 'interaction-contentful-paint',
-              includeSoftNavigationObservations: true,
               buffered: true
             });
           })

@@ -36,10 +36,9 @@
     });
   }
 
-  async function firstEntryAfter(
-      timeStamp, entryType, includeSoftNavigationObservations = false) {
+  async function firstEntryAfter(timeStamp, entryType) {
     return session.evaluateAsync(
-        function(timeStamp, entryType, includeSoftNavigationObservations) {
+      function (timeStamp, entryType) {
           return new Promise(resolve => {
             new PerformanceObserver((list, observer) => {
               const e =
@@ -50,13 +49,11 @@
               }
             }).observe({
               type: entryType,
-              includeSoftNavigationObservations:
-                  includeSoftNavigationObservations,
               buffered: true
             });
           });
         },
-        timeStamp, entryType, includeSoftNavigationObservations);
+      timeStamp, entryType);
   }
 
   // Start tracing and observe the devtools.timeline category.

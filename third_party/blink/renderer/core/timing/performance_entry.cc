@@ -51,28 +51,24 @@ PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
                                    DOMWindow* source,
-                                   uint32_t navigation_id,
-                                   bool is_triggered_by_soft_navigation)
+                                   uint32_t navigation_id)
     : PerformanceEntry(finish_time - start_time,
                        name,
                        start_time,
                        source,
-                       navigation_id,
-                       is_triggered_by_soft_navigation) {}
+                       navigation_id) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
                                    DOMWindow* source,
-                                   uint32_t navigation_id,
-                                   bool is_triggered_by_soft_navigation)
+                                   uint32_t navigation_id)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
       source_(source),
-      navigation_id_(navigation_id),
-      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {}
+      navigation_id_(navigation_id) {}
 
 PerformanceEntry::~PerformanceEntry() = default;
 

@@ -2875,7 +2875,6 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
           }).observe({
             type: 'interaction-contentful-paint',
             buffered: true,
-            includeSoftNavigationObservations: true
           });
         }))();
       )";
