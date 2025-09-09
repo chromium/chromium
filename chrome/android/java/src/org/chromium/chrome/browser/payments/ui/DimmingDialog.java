@@ -59,7 +59,7 @@ import java.util.Collection;
     /** Length of the animation to hide the bottom sheet UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
-    private final Dialog mDialog;
+    private final AlwaysDismissedDialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
     private @Nullable OnDismissListener mDismissListener;
@@ -116,13 +116,17 @@ import java.util.Collection;
                 !ColorUtils.shouldUseLightForegroundOnBackground(window.getStatusBarColor()));
     }
 
-    /** @param bottomSheetView The view to show in the bottom sheet. */
-    /* package */ void addBottomSheetView(View bottomSheetView) {
+    /**
+     * @param bottomSheetView The view to show in the bottom sheet.
+     * @param backgroundColor The color for the bottom sheet view. Used to color navigation bar.
+     */
+    /* package */ void addBottomSheetView(View bottomSheetView, int backgroundColor) {
         FrameLayout.LayoutParams bottomSheetParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         bottomSheetParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         mFullContainer.addView(bottomSheetView, bottomSheetParams);
         bottomSheetView.addOnLayoutChangeListener(new FadeInAnimator());
+        mDialog.setNavBarColor(backgroundColor);
     }
 
     /**
