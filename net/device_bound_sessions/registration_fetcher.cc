@@ -174,7 +174,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           key_id) {
     if (!key_id.has_value()) {
       RunCallback(
-          base::unexpected(SessionError{SessionError::ErrorType::kKeyError}));
+          RegistrationResult(SessionError{SessionError::ErrorType::kKeyError}));
       // `this` may be deleted.
       return;
     }
@@ -195,7 +195,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         AttemptChallengeSigning();
         return;
       } else {
-        RunCallback(base::unexpected(
+        RunCallback(RegistrationResult(
             SessionError{SessionError::ErrorType::kTooManyChallenges}));
         // `this` may be deleted.
         return;
@@ -297,7 +297,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (!key_id.has_value()) {
       std::move(callback).Run(
           nullptr,
-          base::unexpected(SessionError{SessionError::ErrorType::kKeyError}));
+          RegistrationResult(SessionError{SessionError::ErrorType::kKeyError}));
       return;
     }
 
@@ -317,7 +317,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     SessionError::ErrorType error =
         OnProviderWellKnownRequestCompleteInternal();
     if (error != SessionError::ErrorType::kSuccess) {
-      RunCallback(base::unexpected(SessionError{error}));
+      RunCallback(RegistrationResult(SessionError{error}));
       // `this` may be deleted.
       return;
     }
@@ -384,7 +384,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     SessionError::ErrorType error =
         OnRelyingPartyWellKnownRequestCompleteInternal();
     if (error != SessionError::ErrorType::kSuccess) {
-      RunCallback(base::unexpected(SessionError{error}));
+      RunCallback(RegistrationResult(SessionError{error}));
       // `this` may be deleted.
       return;
     }
@@ -446,7 +446,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         AttemptChallengeSigning();
         return;
       } else {
-        RunCallback(base::unexpected(
+        RunCallback(RegistrationResult(
             SessionError{SessionError::ErrorType::kSigningError}));
         // `this` may be deleted.
         return;
@@ -484,7 +484,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void OnChallengeNeeded(
       std::optional<std::vector<SessionChallengeParam>> challenge_params) {
     if (!challenge_params || challenge_params->empty()) {
-      RunCallback(base::unexpected(
+      RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kInvalidChallenge}));
       // `this` may be deleted.
       return;
@@ -508,7 +508,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     if (url_fetcher_->net_error() != OK) {
       RunCallback(
-          base::unexpected(SessionError{SessionError::ErrorType::kNetError}));
+          RegistrationResult(SessionError{SessionError::ErrorType::kNetError}));
       // *this is deleted here.
       return;
     }
@@ -523,23 +523,23 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     if (response_code < 200) {
-      RunCallback(base::unexpected(
+      RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kPersistentHttpError}));
       // *this is deleted here
       return;
     } else if (response_code == 407) {
       // Proxy errors are treated as network errors
       RunCallback(
-          base::unexpected(SessionError{SessionError::ErrorType::kNetError}));
+          RegistrationResult(SessionError{SessionError::ErrorType::kNetError}));
       // *this is deleted here
       return;
     } else if (300 <= response_code && response_code < 500) {
-      RunCallback(base::unexpected(
+      RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kPersistentHttpError}));
       // *this is deleted here
       return;
     } else if (response_code >= 500) {
-      RunCallback(base::unexpected(
+      RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kTransientHttpError}));
       // *this is deleted here
       return;
@@ -550,7 +550,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                                     session_identifier_,
                                     url_fetcher_->data_received());
     if (!params_or_error.has_value()) {
-      RunCallback(base::unexpected(std::move(params_or_error).error()));
+      RunCallback(RegistrationResult(std::move(params_or_error).error()));
       // *this is deleted here.
       return;
     }
@@ -558,7 +558,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     base::expected<std::unique_ptr<Session>, SessionError> session_or_error =
         Session::CreateIfValid(params_or_error.value());
     if (!session_or_error.has_value()) {
-      RunCallback(base::unexpected(std::move(session_or_error).error()));
+      RunCallback(RegistrationResult(std::move(session_or_error).error()));
       // *this is deleted here
       return;
     }
@@ -595,7 +595,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    RunCallback(std::move(session_or_error));
+    RunCallback(RegistrationResult(std::move(session_or_error)));
     // *this is deleted here
   }
 
@@ -606,8 +606,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // *this is deleted here.
   }
 
-  base::expected<std::unique_ptr<Session>, SessionError>
-  OnSubdomainRegistrationWellKnownRequestCompleteInternal(
+  RegistrationResult OnSubdomainRegistrationWellKnownRequestCompleteInternal(
       std::unique_ptr<Session> session) {
     HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
     const int response_code = headers ? headers->response_code() : 0;
@@ -616,40 +615,38 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         url_fetcher_->net_error(), response_code);
 
     if (url_fetcher_->net_error() != OK) {
-      return base::unexpected(SessionError{
+      return RegistrationResult(SessionError{
           SessionError::ErrorType::kSubdomainRegistrationWellKnownUnavailable});
     }
 
     if (!headers || headers->response_code() != 200) {
-      return base::unexpected(SessionError{
+      return RegistrationResult(SessionError{
           SessionError::ErrorType::kSubdomainRegistrationWellKnownUnavailable});
     }
 
     std::optional<WellKnownParams> maybe_params =
         ParseWellKnownJson(url_fetcher_->data_received());
     if (!maybe_params.has_value()) {
-      return base::unexpected(SessionError{
+      return RegistrationResult(SessionError{
           SessionError::ErrorType::kSubdomainRegistrationWellKnownMalformed});
     }
 
     if (!maybe_params->registering_origins.has_value() ||
         !base::Contains(*maybe_params->registering_origins,
                         url::Origin::Create(fetcher_endpoint_).Serialize())) {
-      return base::unexpected(SessionError{
+      return RegistrationResult(SessionError{
           SessionError::ErrorType::kSubdomainRegistrationUnauthorized});
     }
 
-    return std::move(session);
+    return RegistrationResult(std::move(session));
   }
 
-  void RunCallback(
-      base::expected<std::unique_ptr<Session>, SessionError> params_or_error) {
-    AddNetLogResult(params_or_error);
-    std::move(callback_).Run(this, std::move(params_or_error));
+  void RunCallback(RegistrationResult registration_result) {
+    AddNetLogResult(registration_result);
+    std::move(callback_).Run(this, std::move(registration_result));
   }
 
-  void AddNetLogResult(const base::expected<std::unique_ptr<Session>,
-                                            SessionError>& session_or_error) {
+  void AddNetLogResult(const RegistrationResult& registration_result) {
     if (!url_fetcher_) {
       return;
     }
@@ -658,10 +655,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
     url_fetcher_->request().net_log().AddEvent(result_event_type, [&]() {
       std::string result;
-      if (session_or_error.has_value()) {
+      if (registration_result.is_session()) {
         result = IsForRefreshRequest() ? "refreshed" : "registered";
       } else {
-        const SessionError& error = session_or_error.error();
+        const SessionError& error = registration_result.error();
         if (error.GetDeletionReason().has_value()) {
           result = "session_ended";
         } else {

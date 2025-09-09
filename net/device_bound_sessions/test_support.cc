@@ -335,12 +335,11 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
         SessionParams::Scope scope;
         scope.include_site = true;
         scope.origin = origin_string;
-        return base::expected<std::unique_ptr<Session>, SessionError>(
-            Session::CreateIfValid(SessionParams(
-                session_id, GURL(refresh_url_string), refresh_url_string,
-                std::move(scope), std::move(cookie_credentials),
-                unexportable_keys::UnexportableKeyId(),
-                /*allowed_refresh_initiators=*/{})));
+        return RegistrationResult(Session::CreateIfValid(SessionParams(
+            session_id, GURL(refresh_url_string), refresh_url_string,
+            std::move(scope), std::move(cookie_credentials),
+            unexportable_keys::UnexportableKeyId(),
+            /*allowed_refresh_initiators=*/{})));
       },
       std::string(session_id), std::string(refresh_url_string),
       std::string(origin_string)));
@@ -352,8 +351,7 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](SessionError::ErrorType error_type, const GURL& refresh_url) {
-        return base::expected<std::unique_ptr<Session>, SessionError>(
-            base::unexpected(SessionError{error_type}));
+        return RegistrationResult(SessionError{error_type});
       },
       error_type, GURL(refresh_url_string)));
 }
@@ -365,9 +363,8 @@ ScopedTestRegistrationFetcher::CreateWithTermination(
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](const std::string& session_id, const std::string& refresh_url_string) {
-        return base::expected<std::unique_ptr<Session>, SessionError>(
-            base::unexpected(SessionError{
-                SessionError::ErrorType::kServerRequestedTermination}));
+        return RegistrationResult(
+            SessionError{SessionError::ErrorType::kServerRequestedTermination});
       },
       std::string(session_id), std::string(refresh_url_string)));
 }

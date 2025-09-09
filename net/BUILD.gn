@@ -1252,6 +1252,8 @@ component("net") {
       "device_bound_sessions/registration_fetcher_param.h",
       "device_bound_sessions/registration_request_param.cc",
       "device_bound_sessions/registration_request_param.h",
+      "device_bound_sessions/registration_result.cc",
+      "device_bound_sessions/registration_result.h",
       "device_bound_sessions/session.cc",
       "device_bound_sessions/session.h",
       "device_bound_sessions/session_binding_utils.cc",

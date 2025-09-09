@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/types/expected.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_result.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/http/http_response_headers.h"
@@ -38,15 +38,13 @@ class RegistrationRequestParam;
 // registration endpoint with this signed JWT to get the registration
 // instructions. It is also used for calling the refresh endpoint. It delegates
 // most of the validation to `Session::CreateIfValid`, and returns a full
-// `Session` or an error.
+// `Session`, a request to leave the session config unchanged, or an error.
 class NET_EXPORT RegistrationFetcher {
  public:
-  using RegistrationCompleteCallback = base::OnceCallback<void(
-      RegistrationFetcher*,
-      base::expected<std::unique_ptr<Session>, SessionError>)>;
+  using RegistrationCompleteCallback =
+      base::OnceCallback<void(RegistrationFetcher*, RegistrationResult)>;
 
-  using FetcherType = base::RepeatingCallback<
-      base::expected<std::unique_ptr<Session>, SessionError>()>;
+  using FetcherType = base::RepeatingCallback<RegistrationResult()>;
 
   using RegistrationToken = std::string;
 

@@ -119,15 +119,14 @@ class TestRegistrationCallback {
     run_loop.Run();
   }
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& outcome() {
+  const RegistrationResult& outcome() {
     EXPECT_TRUE(outcome_.has_value());
     return *outcome_;
   }
 
  private:
-  void OnRegistrationComplete(
-      RegistrationFetcher* fetcher,
-      base::expected<std::unique_ptr<Session>, SessionError> params) {
+  void OnRegistrationComplete(RegistrationFetcher* fetcher,
+                              RegistrationResult params) {
     EXPECT_FALSE(outcome_.has_value());
 
     outcome_ = std::move(params);
@@ -138,8 +137,7 @@ class TestRegistrationCallback {
     }
   }
 
-  std::optional<base::expected<std::unique_ptr<Session>, SessionError>>
-      outcome_ = std::nullopt;
+  std::optional<RegistrationResult> outcome_ = std::nullopt;
 
   bool waiting_ = false;
   base::OnceClosure closure_;
@@ -185,14 +183,11 @@ class RegistrationTest : public TestWithTaskEnvironment {
     return *future.Take();
   }
 
-  base::expected<std::unique_ptr<Session>, SessionError> FetchWithFederatedKey(
+  RegistrationResult FetchWithFederatedKey(
       RegistrationRequestParam param,
       const unexportable_keys::UnexportableKeyId& key,
       const GURL& provider_url) {
-    base::test::TestFuture<
-        RegistrationFetcher*,
-        base::expected<std::unique_ptr<Session>, SessionError>>
-        future;
+    base::test::TestFuture<RegistrationFetcher*, RegistrationResult> future;
     std::unique_ptr<RegistrationFetcher> fetcher =
         RegistrationFetcher::CreateFetcher(
             param, unexportable_key_service(), context_.get(),
@@ -387,10 +382,9 @@ TEST_F(RegistrationTest, BasicSuccess) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
@@ -432,9 +426,8 @@ TEST_F(RegistrationTest, NoScopeJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kMissingScope);
 }
 
@@ -463,9 +456,8 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidSessionId);
 }
@@ -503,9 +495,8 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kInvalidScopeRule);
 }
@@ -552,10 +543,9 @@ TEST_F(RegistrationTest, MissingPathDefaults) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
       ElementsAre(
@@ -607,10 +597,9 @@ TEST_F(RegistrationTest, MissingDomainDefaults) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
       ElementsAre(
@@ -661,10 +650,9 @@ TEST_F(RegistrationTest, MissingRefreshUrlDefault) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  EXPECT_EQ((*out_session)->refresh_url(), GetBaseURL());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  EXPECT_EQ(out_session.session().refresh_url(), GetBaseURL());
 }
 
 TEST_F(RegistrationTest, OneSpecTypeInvalid) {
@@ -709,9 +697,8 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidScopeRule);
 }
@@ -748,10 +735,9 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(session.session_inclusion_rules().url_rules(),
               ElementsAre(EqualsInclusionRule(proto::RuleType::EXCLUDE,
@@ -788,9 +774,8 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidCredentials);
 }
@@ -832,9 +817,8 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidCredentials);
 }
@@ -876,9 +860,8 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidCredentials);
 }
@@ -914,9 +897,8 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidCredentials);
 }
@@ -937,7 +919,7 @@ TEST_F(RegistrationTest, ReturnTextFile) {
   fetcher->StartCreateTokenAndFetch(params, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  ASSERT_FALSE(callback.outcome().has_value());
+  ASSERT_TRUE(callback.outcome().is_error());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kInvalidConfigJson);
 }
@@ -960,7 +942,7 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kInvalidConfigJson);
 }
@@ -983,7 +965,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kInvalidSessionId);
 }
@@ -1007,7 +989,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kNetError);
   histogram_tester.ExpectUniqueSample(
@@ -1032,7 +1014,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kNetError);
 }
@@ -1055,7 +1037,7 @@ TEST_F(RegistrationTest, ServerError407) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kNetError);
 }
@@ -1078,7 +1060,7 @@ TEST_F(RegistrationTest, ServerError400) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kPersistentHttpError);
 }
@@ -1101,7 +1083,7 @@ TEST_F(RegistrationTest, ServerError500) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kTransientHttpError);
 }
@@ -1126,10 +1108,9 @@ TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
@@ -1194,7 +1175,7 @@ TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
   callback.WaitForCall();
 
   EXPECT_TRUE(followed);
-  EXPECT_TRUE(callback.outcome().has_value());
+  EXPECT_TRUE(callback.outcome().is_session());
 }
 
 TEST_F(RegistrationTest, FailOnSslErrorExpired) {
@@ -1216,7 +1197,7 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
                                     callback.callback());
 
   callback.WaitForCall();
-  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kNetError);
 }
@@ -1274,10 +1255,9 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
@@ -1314,10 +1294,9 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
@@ -1351,10 +1330,9 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
@@ -1389,9 +1367,8 @@ TEST_F(RegistrationTest,
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kInvalidChallenge);
 }
@@ -1418,9 +1395,8 @@ TEST_F(RegistrationTest, ContinueFalse) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   const SessionError& error = out_session.error();
   EXPECT_EQ(error.type, SessionError::ErrorType::kServerRequestedTermination);
 }
@@ -1464,9 +1440,8 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
 }
 
 TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
@@ -1504,9 +1479,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
 }
 
@@ -1545,9 +1519,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
 }
 
@@ -1628,9 +1601,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
 }
@@ -1657,9 +1629,8 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kMismatchedSessionId);
 }
@@ -1706,9 +1677,8 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
   EXPECT_EQ(session_error.type,
             SessionError::ErrorType::kInvalidRefreshInitiators);
@@ -1748,10 +1718,9 @@ TEST_F(RegistrationTest, IncludeSiteDefaultFalse) {
                                      callback.callback());
   callback.WaitForCall();
 
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
-  proto::Session session = (*out_session)->ToProto();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
   EXPECT_FALSE(session.session_inclusion_rules().do_include_site());
 }
 
@@ -1810,9 +1779,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -1842,9 +1810,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_TRUE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -1871,9 +1838,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(
       out_session.error().type,
       SessionError::ErrorType::kSubdomainRegistrationWellKnownUnavailable);
@@ -1903,9 +1869,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kSubdomainRegistrationWellKnownMalformed);
 }
@@ -1935,9 +1900,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kSubdomainRegistrationWellKnownMalformed);
 }
@@ -1969,9 +1933,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-      callback.outcome();
-  ASSERT_FALSE(out_session.has_value());
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
             SessionError::ErrorType::kSubdomainRegistrationUnauthorized);
 }
@@ -2008,9 +1971,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
                                       callback.callback());
 
     callback.WaitForCall();
-    const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
-        callback.outcome();
-    ASSERT_TRUE(out_session.has_value());
+    const RegistrationResult& out_session = callback.outcome();
+    ASSERT_TRUE(out_session.is_session());
   }
 
   {
@@ -2028,7 +1990,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
     fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                       callback.callback());
     callback.WaitForCall();
-    ASSERT_TRUE(callback.outcome().has_value());
+    ASSERT_TRUE(callback.outcome().is_session());
   }
 }
 
@@ -2057,8 +2019,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedSuccess) {
       server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
-  ASSERT_TRUE(session_or_error.has_value());
-  EXPECT_EQ((*session_or_error)->unexportable_key_id(), key);
+  ASSERT_TRUE(session_or_error.is_session());
+  EXPECT_EQ(session_or_error.session().unexportable_key_id(), key);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderHasProvider) {
@@ -2088,7 +2050,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderHasProvider) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kSessionProviderWellKnownMalformed);
 }
@@ -2116,7 +2078,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnvailable) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kSessionProviderWellKnownUnavailable);
 }
@@ -2147,7 +2109,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnauthorized) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kFederatedNotAuthorized);
 }
@@ -2175,7 +2137,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingUnavailable) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kRelyingPartyWellKnownUnavailable);
 }
@@ -2207,7 +2169,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingHasRelying) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kRelyingPartyWellKnownMalformed);
 }
@@ -2238,7 +2200,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingNotAuthorized) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kFederatedNotAuthorized);
 }
@@ -2275,7 +2237,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedTooManyRelying) {
       server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
-  ASSERT_FALSE(session_or_error.has_value());
+  ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::ErrorType::kTooManyRelyingOriginLabels);
 }
@@ -2314,8 +2276,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
-  ASSERT_TRUE(session_or_error.has_value());
-  EXPECT_EQ((*session_or_error)->unexportable_key_id(), key);
+  ASSERT_TRUE(session_or_error.is_session());
+  EXPECT_EQ(session_or_error.session().unexportable_key_id(), key);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2351,8 +2313,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
-  ASSERT_TRUE(session_or_error.has_value());
-  EXPECT_EQ((*session_or_error)->unexportable_key_id(), key);
+  ASSERT_TRUE(session_or_error.is_session());
+  EXPECT_EQ(session_or_error.session().unexportable_key_id(), key);
 }
 
 class RegistrationTokenHelperTest : public testing::Test {
