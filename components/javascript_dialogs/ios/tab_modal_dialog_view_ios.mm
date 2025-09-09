@@ -8,7 +8,7 @@
 #import "content/public/browser/browser_thread.h"
 #import "content/public/browser/web_contents.h"
 #import "content/public/common/javascript_dialog_type.h"
-#import "ui/gfx/native_window_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 namespace javascript_dialogs {
 
