@@ -63,12 +63,36 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/keyboard_accessory_shadow_shape.xml",
+    "java/res/layout/accessory_sheet_header.xml",
+    "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",
+    "java/res/layout/credit_card_accessory_sheet.xml",
+    "java/res/layout/keyboard_accessory.xml",
+    "java/res/layout/keyboard_accessory_action.xml",
+    "java/res/layout/keyboard_accessory_buttons.xml",
+    "java/res/layout/keyboard_accessory_dismiss.xml",
+    "java/res/layout/keyboard_accessory_sheet.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_iban_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_loyalty_card_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_password_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
+    "java/res/layout/password_accessory_passkey_chip.xml",
+    "java/res/layout/password_accessory_sheet.xml",
+    "java/res/layout/password_accessory_sheet_option.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android/shared_with_webview:java_resources",
   ]
   visibility = [
     ":*",

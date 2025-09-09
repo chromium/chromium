@@ -16,7 +16,6 @@ generate_jni("jni") {
 
 android_library("internal_java") {
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
     "//components/favicon/android:java",
@@ -30,6 +29,7 @@ android_library("internal_java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/keyboard_accessory/android/internal:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java_resources",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
@@ -120,37 +120,4 @@ android_library("internal_java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
-}
-
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/keyboard_accessory_shadow_shape.xml",
-    "java/res/layout/accessory_sheet_header.xml",
-    "java/res/layout/address_accessory_sheet.xml",
-    "java/res/layout/credit_card_accessory_sheet.xml",
-    "java/res/layout/keyboard_accessory.xml",
-    "java/res/layout/keyboard_accessory_action.xml",
-    "java/res/layout/keyboard_accessory_buttons.xml",
-    "java/res/layout/keyboard_accessory_dismiss.xml",
-    "java/res/layout/keyboard_accessory_sheet.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_iban_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_loyalty_card_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
-    "java/res/layout/password_accessory_passkey_chip.xml",
-    "java/res/layout/password_accessory_sheet.xml",
-    "java/res/layout/password_accessory_sheet_option.xml",
-    "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
-  ]
-  deps = [
-    "//chrome/android:chrome_app_java_resources",
-    "//chrome/browser/keyboard_accessory/android/internal:java_resources",
-    "//components/browser_ui/strings/android:browser_ui_strings_grd",
-    "//components/browser_ui/widget/android/shared_with_webview:java_resources",
-  ]
 }
