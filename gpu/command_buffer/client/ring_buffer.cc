@@ -27,7 +27,7 @@ RingBuffer::RingBuffer(scoped_refptr<gpu::Buffer> buffer,
       base_offset_(base_offset),
       size_(buffer->size() - base_offset),
       alignment_(alignment),
-      base_(static_cast<int8_t*>(buffer->memory())) {}
+      base_(buffer->as_byte_span()) {}
 
 RingBuffer::~RingBuffer() {
   DCHECK_EQ(num_used_blocks_, 0u);

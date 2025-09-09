@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the definition of the RingBuffer class.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_RING_BUFFER_H_
@@ -16,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/buffer.h"
 
@@ -100,12 +96,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT RingBuffer {
 
   // Gets a pointer to a memory block given the base memory and the offset.
   void* GetPointer(RingBuffer::Offset offset) const {
-    return static_cast<int8_t*>(base_) + offset;
+    return base_.get_at(offset);
   }
 
   // Gets the offset to a memory block given the base memory and the address.
   RingBuffer::Offset GetOffset(void* pointer) const {
-    return static_cast<int8_t*>(pointer) - static_cast<int8_t*>(base_);
+    return static_cast<uint8_t*>(pointer) - base_.data();
   }
 
   // Rounds the given size to the alignment in use.
@@ -167,7 +163,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT RingBuffer {
   uint32_t num_used_blocks_ = 0;
 
   // The physical address that corresponds to base_offset.
-  raw_ptr<void, AcrossTasksDanglingUntriaged> base_;
+  base::raw_span<uint8_t, AcrossTasksDanglingUntriaged> base_;
 };
 
 }  // namespace gpu
