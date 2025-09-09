@@ -456,4 +456,13 @@ void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
   }
   OnCloneCompleted();
 }
+
+bool ServiceWorkerSyntheticResponseManager::dry_run_mode_for_testing_ = false;
+void ServiceWorkerSyntheticResponseManager::SetDryRunMode(bool enabled) {
+  dry_run_mode_for_testing_ = enabled;
+}
+bool ServiceWorkerSyntheticResponseManager::IsDryRunModeEnabledForTesting() {
+  return dry_run_mode_for_testing_;
+}
+
 }  // namespace content

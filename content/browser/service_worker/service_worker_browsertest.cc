@@ -54,6 +54,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -7612,7 +7613,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test class for synthetic response (crbug.com/352578800) browsertest.
 class ServiceWorkerSyntheticResponseBrowserTest
-    : public ServiceWorkerBrowserTest {
+    : public ServiceWorkerBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   static constexpr char kHostname[] = "synthetic-response.test";
   static constexpr char kTargetPath[] =
@@ -7640,6 +7642,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
     ASSERT_TRUE(https_server_->InitializeAndListen());
     https_server_->StartAcceptingConnections();
     ServiceWorkerBrowserTest::SetUpOnMainThread();
+    ServiceWorkerSyntheticResponseManager::SetDryRunMode(IsDryRunMode());
   }
 
   RenderFrameHost* GetPrimaryMainFrame() {
@@ -7677,6 +7680,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
     mock_content_browser_client = std::make_unique<MockContentBrowserClient>();
     mock_content_browser_client->set_synthetic_response_enabled(true);
   }
+  bool IsDryRunMode() { return GetParam(); }
 
   std::unique_ptr<MockContentBrowserClient> mock_content_browser_client;
 
@@ -7756,7 +7760,11 @@ class ServiceWorkerSyntheticResponseBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerSyntheticResponseBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        FakeRegistration) {
   GURL::Replacements replacements;
   replacements.ClearQuery();
@@ -7791,7 +7799,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
             blink::ServiceWorkerStatusCode::kErrorNotFound);
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        MatchedPageIsServiceWorkerControlled) {
   SetUpMockContentBrowserClient();
   // Navigated URL matched with the URL in the allowlist is controlled by
@@ -7804,7 +7812,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
   EXPECT_EQ("[SyntheticResponse] Response from the network", GetInnerText());
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        ResponseHeaderIsStored) {
   SetUpMockContentBrowserClient();
   // Navigate and store the response header.
@@ -7823,8 +7831,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
       static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
                            kNotEligibleByNoHeaderStored),
       1);
+  // If dry run mode, `IsHeaderStored` is not recorded.
   histogram_tester().ExpectBucketCount(
-      "ServiceWorker.SyntheticResponse.IsHeaderStored", true, 1);
+      "ServiceWorker.SyntheticResponse.IsHeaderStored", true,
+      IsDryRunMode() ? 0 : 1);
 
   // The second navigation. The browser should have stored the response header
   // from the previous navigation, and receive the response header locally.
@@ -7845,7 +7855,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        InlineScriptIsNotAllowedUntilMetaCSPScriptSrc) {
   SetUpMockContentBrowserClient();
   // Navigate and store the response header.
@@ -7875,7 +7885,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                          "window.is_inline_script_executed"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        HeaderMismatch) {
   SetUpMockContentBrowserClient();
   // Navigate and store the response header.
@@ -7899,7 +7909,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
           kHostname,
           base::StrCat(
               {kTargetPath, "foo&echo=bar&server_slow&header_mismatch"})),
-      /*number_of_navigations=*/2, /*ignore_uncommitted_navigations=*/false);
+      /*number_of_navigations=*/IsDryRunMode() ? 1 : 2,
+      /*ignore_uncommitted_navigations=*/false);
   EXPECT_EQ("[SyntheticResponse] bar", GetInnerText());
   // After the reload, synthetic response is not enabled. `responseStart` is
   // 2000ms due to the server delay.
@@ -7915,7 +7926,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
       0);
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        HeaderMismatch_DuplicatedHeader) {
   SetUpMockContentBrowserClient();
   // Navigate and store the response header.
@@ -7939,7 +7950,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                              base::StrCat({kTargetPath,
                                            "foo&echo=bar&server_slow&header_"
                                            "mismatch_with_duplicated_header"})),
-      /*number_of_navigations=*/2, /*ignore_uncommitted_navigations=*/false);
+      /*number_of_navigations=*/IsDryRunMode() ? 1 : 2,
+      /*ignore_uncommitted_navigations=*/false);
   EXPECT_EQ("[SyntheticResponse] bar", GetInnerText());
   // After the reload, synthetic response is not enabled. `responseStart` is
   // 2000ms due to the server delay.
@@ -7948,7 +7960,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                      "responseStart) >= 2000"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        HeaderMismatch_IgnoredHeader) {
   SetUpMockContentBrowserClient();
   // Navigate and store the response header.
