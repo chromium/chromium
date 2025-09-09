@@ -768,7 +768,7 @@ void AddressFieldParserNG::ParseRecursively() {
     // Revert new assignment.
     if (field_type != UNKNOWN_TYPE) {
       partial_classification_.contained_types.erase(field_type);
-      partial_classification_.assignments[field_type] = nullptr;
+      partial_classification_.assignments.erase(field_type);
       partial_classification_.last_classified_field_index =
           old_last_classified_field_index;
     }
