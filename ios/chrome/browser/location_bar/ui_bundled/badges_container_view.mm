@@ -198,7 +198,8 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
     return;
   }
 
-  if ([_placeholderView superview] == _containerStackView) {
+  if (_placeholderView && [_placeholderView superview] == _containerStackView) {
+    [_containerStackView removeArrangedSubview:_placeholderView];
     [_placeholderView removeFromSuperview];
   }
 
