@@ -10858,7 +10858,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(second_shell_instance->IsRelatedSiteInstance(
       root->current_frame_host()->GetSiteInstance()));
   RenderProcessHost* bar_process = second_shell_instance->GetProcess();
-  EXPECT_EQ(ProcessReusePolicy::DEFAULT,
+  EXPECT_EQ(ProcessReusePolicy::kDefault,
             second_shell_instance->process_reuse_policy());
 
   // Now navigate the first tab's subframe to bar.com.  Confirm that it reuses
@@ -10867,7 +10867,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(bar_url, child->current_url());
   EXPECT_EQ(bar_process, child->current_frame_host()->GetProcess());
   EXPECT_EQ(
-      ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+      ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe,
       child->current_frame_host()->GetSiteInstance()->process_reuse_policy());
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
@@ -10959,7 +10959,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessNoSharingBrowserTest,
   EXPECT_EQ(foo_url, second_child->current_url());
   scoped_refptr<SiteInstanceImpl> second_child_foo_instance =
       second_child->current_frame_host()->GetSiteInstance();
-  EXPECT_EQ(ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+  EXPECT_EQ(ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe,
             second_child_foo_instance->process_reuse_policy());
   EXPECT_NE(foo_instance, second_child_foo_instance);
   EXPECT_EQ(foo_instance->GetProcess(),
@@ -14072,9 +14072,9 @@ IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
 
   scoped_refptr<SiteInstanceImpl> second_shell_instance =
       second_child->current_frame_host()->GetSiteInstance();
-  EXPECT_NE(ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER,
+  EXPECT_NE(ProcessReusePolicy::kReusePendingOrCommittedSiteWorker,
             second_shell_instance->process_reuse_policy());
-  EXPECT_NE(ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+  EXPECT_NE(ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe,
             second_shell_instance->process_reuse_policy());
 
   EXPECT_NE(child->current_frame_host()->GetProcess(),

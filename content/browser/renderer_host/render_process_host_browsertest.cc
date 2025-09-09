@@ -2254,7 +2254,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
   const GURL kModifiedSiteUrl("custom-scheme://custom");
 
   // At first, trying to get a RenderProcessHost with the
-  // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
+  // kReusePendingOrCommittedSite policy should return a new process.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
@@ -2265,7 +2265,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
             site_instance->GetProcess());
 
   // Have the main frame navigate to the first url. Getting a RenderProcessHost
-  // with the REUSE_PENDING_OR_COMMITTED_SITE policy should now return the
+  // with the kReusePendingOrCommittedSite policy should now return the
   // process of the main RFH.
   EXPECT_TRUE(NavigateToURL(shell(), kUrl));
   site_instance =
@@ -2274,7 +2274,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
             site_instance->GetProcess());
 
   // Install the custom ContentBrowserClient. Site URLs are now modified.
-  // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
+  // Getting a RenderProcessHost with the kReusePendingOrCommittedSite policy
   // should no longer return the process of the main RFH, as the RFH is
   // registered with the normal site URL.
   {
@@ -2287,7 +2287,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
               site_instance->GetProcess());
 
     // Reload. Getting a RenderProcessHost with the
-    // REUSE_PENDING_OR_COMMITTED_SITE policy should now return the process of
+    // kReusePendingOrCommittedSite policy should now return the process of
     // the main RFH, as it is now registered with the modified site URL.
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -2298,7 +2298,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
   }
 
   // Remove the custom ContentBrowserClient. Site URLs are back to normal.
-  // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
+  // Getting a RenderProcessHost with the kReusePendingOrCommittedSite policy
   // should no longer return the process of the main RFH, as it is registered
   // with the modified site URL.
   site_instance =
@@ -2307,7 +2307,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
             site_instance->GetProcess());
 
   // Reload. Getting a RenderProcessHost with the
-  // REUSE_PENDING_OR_COMMITTED_SITE policy should now return the process of the
+  // kReusePendingOrCommittedSite policy should now return the process of the
   // main RFH, as it is now registered with the regular site URL.
   shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));

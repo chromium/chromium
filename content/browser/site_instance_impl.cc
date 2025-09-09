@@ -113,7 +113,7 @@ SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
                      .browser_or_resource_context()
                      .ToBrowserContext()),
       has_site_(false),
-      process_reuse_policy_(ProcessReusePolicy::DEFAULT),
+      process_reuse_policy_(ProcessReusePolicy::kDefault),
       is_for_service_worker_(false),
       process_assignment_(SiteInstanceProcessAssignment::UNKNOWN) {
   DCHECK(browsing_instance);
@@ -210,12 +210,13 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   // Attempt to reuse a renderer process if possible. Note that in the
   // <webview> case, process reuse isn't currently supported and a new
   // process will always be created (https://crbug.com/752667).
-  DCHECK(site_instance->process_reuse_policy() == ProcessReusePolicy::DEFAULT ||
+  DCHECK(site_instance->process_reuse_policy() ==
+             ProcessReusePolicy::kDefault ||
          site_instance->process_reuse_policy() ==
-             ProcessReusePolicy::PROCESS_PER_SITE);
+             ProcessReusePolicy::kProcessPerSite);
   if (can_reuse_process) {
     site_instance->set_process_reuse_policy(
-        ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER);
+        ProcessReusePolicy::kReusePendingOrCommittedSiteWorker);
   }
   return site_instance;
 }
@@ -317,7 +318,7 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
-      ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+      ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe);
   // Proactively create a process since many callers of this function in tests
   // rely on site_instance->GetProcess().
   site_instance->GetOrCreateProcess(
@@ -460,9 +461,9 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
   if (!has_group()) {
     // Check if the ProcessReusePolicy should be updated.
     if (ShouldUseProcessPerSite()) {
-      process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
-    } else if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE) {
-      process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
+      process_reuse_policy_ = ProcessReusePolicy::kProcessPerSite;
+    } else if (process_reuse_policy_ == ProcessReusePolicy::kProcessPerSite) {
+      process_reuse_policy_ = ProcessReusePolicy::kDefault;
     }
     ProcessAllocationContext allocation_context = context;
     if (allocation_context.navigation_context.has_value()) {
@@ -560,7 +561,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   // If we are using process-per-site, we need to register this process
   // for the current site so that we can find it again.  (If no site is set
   // at this time, we will register it in SetSite().)
-  if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE &&
+  if (process_reuse_policy_ == ProcessReusePolicy::kProcessPerSite &&
       has_site_) {
     RenderProcessHostImpl::RegisterSoleProcessHostForSite(
         site_instance_group_->process(), this);
@@ -698,7 +699,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // Update the process reuse policy based on the site.
   bool should_use_process_per_site = ShouldUseProcessPerSite();
   if (should_use_process_per_site)
-    process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
+    process_reuse_policy_ = ProcessReusePolicy::kProcessPerSite;
 
   if (has_group()) {
     LockProcessIfNeeded();

@@ -544,14 +544,14 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
                                     ProcessReusePolicy process_reuse_policy) {
   if (process_reuse_policy !=
           ProcessReusePolicy::
-              REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD &&
+              kReusePendingOrCommittedSiteWithMainFrameThreshold &&
       process_reuse_policy !=
-          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME) {
+          ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe) {
     return true;
   }
 
   if (process_reuse_policy ==
-          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME &&
+          ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe &&
       !base::FeatureList::IsEnabled(
           features::kSubframeProcessReuseThresholds)) {
     return true;
@@ -576,8 +576,7 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
       });
 
   if (process_reuse_policy ==
-      ProcessReusePolicy::
-          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
+      ProcessReusePolicy::kReusePendingOrCommittedSiteWithMainFrameThreshold) {
     // If a threshold is specified, don't reuse `host` if it already hosts more
     // main frames (including BFCached and prerendered) than the threshold.
     size_t main_frame_threshold = base::checked_cast<size_t>(
@@ -600,7 +599,7 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
   }
 
   DCHECK_EQ(process_reuse_policy,
-            ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+            ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe);
 
   // For subframe process reuse, simply check if the `host` has already exceeded
   // the memory threshold to decide whether it should be reused for a new
@@ -770,7 +769,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       }
 
       if (process_reuse_policy ==
-          ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME) {
+          ProcessReusePolicy::kReusePrerenderingProcessForMainFrame) {
         // TODO(crbug.com/434845948): Avoid downcasting to
         // RenderProcessHostImpl. This policy should not be used with
         // MockRenderProcessHost.
@@ -1289,7 +1288,7 @@ static RenderProcessHost* FindEmptyBackgroundHostForReuse(
   }
 
   tracker->FindRenderProcessesForSiteInstance(
-      site_instance, ProcessReusePolicy::DEFAULT, &eligible_foreground_hosts,
+      site_instance, ProcessReusePolicy::kDefault, &eligible_foreground_hosts,
       &eligible_background_hosts);
 
   CHECK(eligible_foreground_hosts.empty());
@@ -4922,13 +4921,13 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   BrowserContext* browser_context = site_instance->GetBrowserContext();
   // First, attempt to reuse an existing RenderProcessHost if necessary.
   switch (process_reuse_policy) {
-    case ProcessReusePolicy::PROCESS_PER_SITE: {
+    case ProcessReusePolicy::kProcessPerSite: {
       render_process_host = GetSoleProcessHostForSite(
           site_instance->GetIsolationContext(), site_info);
       break;
     }
-    case ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME:
-    case ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER: {
+    case ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe:
+    case ProcessReusePolicy::kReusePendingOrCommittedSiteWorker: {
       render_process_host = FindReusableProcessHostForSiteInstance(
           site_instance, process_reuse_policy);
       UMA_HISTOGRAM_BOOLEAN(
@@ -4941,12 +4940,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       break;
     }
     case ProcessReusePolicy::
-        REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD: {
+        kReusePendingOrCommittedSiteWithMainFrameThreshold: {
       CHECK(base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold));
       [[fallthrough]];
     }
-    case ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME: {
+    case ProcessReusePolicy::kReusePrerenderingProcessForMainFrame: {
       render_process_host = FindReusableProcessHostForSiteInstance(
           site_instance, process_reuse_policy);
       if (render_process_host) {
@@ -4965,7 +4964,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // site instance is for a service worker. We use DEFAULT when we have failed
   // to start the service worker before and want to use a new process.
   if (!render_process_host &&
-      !(process_reuse_policy == ProcessReusePolicy::DEFAULT &&
+      !(process_reuse_policy == ProcessReusePolicy::kDefault &&
         site_instance->is_for_service_worker())) {
     render_process_host =
         UnmatchedServiceWorkerProcessTracker::MatchWithSite(site_instance);

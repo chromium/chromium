@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
   <owner>clamy@chromium.org</owner>
   <summary>
     Whether SiteInstances with a ProcessReusePolicy of
-    REUSE_PENDING_OR_COMMITTED_SITE could reuse an existing RenderProcessHost or
+    kReusePendingOrCommittedSite could reuse an existing RenderProcessHost or
     they had to create a new one. True when they reused an existing process,
     false when they created a new one.
 
