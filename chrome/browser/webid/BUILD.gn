@@ -174,3 +174,10 @@ if (!is_android) {
     ]
   }
 }
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("fedcm_clickthrough_rate_metadata_proto") {
+  sources = [ "proto/fedcm_clickthrough_rate_metadata.proto" ]
+  cc_generator_options = "lite=true:"
+}

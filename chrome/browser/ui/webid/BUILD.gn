@@ -16,8 +16,8 @@ source_set("webid") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//chrome/browser:fedcm_clickthrough_rate_metadata_proto",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/webid:fedcm_clickthrough_rate_metadata_proto",
     "//components/segmentation_platform/public",
     "//content/public/browser",
     "//ui/gfx",
