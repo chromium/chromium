@@ -217,8 +217,6 @@ MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSource(
   EchoCanceller echo_canceller =
       EchoCanceller::From(properties_aec_only, platform_effects);
 
-  CHECK(!echo_canceller.IsChromeProvided());
-
   if (echo_canceller.IsPlatformProvided()) {
     CHECK(platform_effects & media::AudioParameters::ECHO_CANCELLER);
   } else {
