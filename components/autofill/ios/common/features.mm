@@ -40,7 +40,7 @@ BASE_FEATURE(kAutofillFixXhrForXframe,
 
 BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
              "AutofillFormSubmissionEventsInCaptureMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // LINT.IfChange(autofill_isolated_content_world)
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
