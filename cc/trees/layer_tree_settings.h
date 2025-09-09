@@ -233,8 +233,6 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether to use variable refresh rates when generating begin frames.
   bool enable_variable_refresh_rate = false;
-
-  bool dynamic_safe_area_insets_on_scroll_enabled = false;
 };
 
 }  // namespace cc

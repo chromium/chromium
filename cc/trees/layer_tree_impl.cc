@@ -483,17 +483,12 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   // The delta to be added to transform matrix if dynamic safe area is
   // supported.
   auto* property_trees = this->property_trees();
-  float blink_bottom_content_offset;
-  if (settings().dynamic_safe_area_insets_on_scroll_enabled) {
-    // Blink SAI is based on bottom controls shown ratio. Subtract the delta
-    // added by Blink SAI.
-    blink_bottom_content_offset =
-        bottom_content_offset -
-        bottom_controls_height() * bottom_controls_shown_ratio_->Delta();
-  } else {
-    // Blink did NOT update SAI based on bottom controls shown ratio.
-    blink_bottom_content_offset = bottom_controls_layout_height;
-  }
+
+  // Blink SAI is based on bottom controls shown ratio. Subtract the delta
+  // added by Blink SAI.
+  const float blink_bottom_content_offset =
+      bottom_content_offset -
+      bottom_controls_height() * bottom_controls_shown_ratio_->Delta();
 
   const float real_saib =
       std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
