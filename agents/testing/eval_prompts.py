@@ -190,11 +190,12 @@ class WorkDir(contextlib.AbstractContextManager):
     checkout state (staging, untracked files, `//.gemini/extensions/`).
     """
 
-    def __init__(self, name: str, clean: bool, verbose: bool):
+    def __init__(self, name: str, clean: bool, verbose: bool, force: bool):
         self.name = name
         self.path = None
         self.clean = clean
         self.verbose = verbose
+        self.force = force
 
     def __enter__(self) -> 'WorkDir':
         # TODO(crbug.com/436274253): Consider some optimizations once the test
@@ -209,6 +210,15 @@ class WorkDir(contextlib.AbstractContextManager):
         )
         root_path = pathlib.Path(result.stdout.strip())
         self.path = root_path.parent.joinpath(self.name)
+        if self.path.exists():
+            if self.force:
+                logging.info('Removing existing workdir: %s', self.path)
+                shutil.rmtree(self.path)
+            else:
+                raise FileExistsError(
+                    f'Workdir already exists at: {self.path}. Remove it '
+                    'manually or use --force to remove it.')
+
         logging.info('Creating new workdir: %s', self.path)
         subprocess.check_call(
             ['gclient-new-workdir.py', root_path, self.path],
@@ -232,6 +242,11 @@ def main() -> int:
     parser.add_argument('--no-clean',
                         action='store_true',
                         help='Do not clean up the workdir after evaluation.')
+    parser.add_argument('--force',
+                        '-f',
+                        action='store_true',
+                        help='Force execution, deleting existing workdirs if '
+                        'they exist.')
     parser.add_argument('--verbose',
                         '-v',
                         action='store_true',
@@ -279,6 +294,7 @@ def main() -> int:
                 'workdir',
                 not args.no_clean,
                 args.verbose,
+                args.force,
         ) as workdir:
             command = [
                 'eval',
