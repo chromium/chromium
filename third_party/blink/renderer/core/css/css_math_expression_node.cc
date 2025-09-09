@@ -2997,13 +2997,6 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       // As per
       // https://drafts.csswg.org/css-values-4/#sort-a-calculations-children
       // we should sort the dimensions of the sum node.
-      const CSSMathExpressionOperation* operation = this;
-      // Note: we can hit here, since CSS Typed OM doesn't currently follow
-      // the same simplifications as CSS Values spec.
-      // https://github.com/w3c/csswg-drafts/issues/9451
-      if (!operation->IsOperation()) {
-        return operation->CustomCSSText();
-      }
       UnitsVector terms = CollectSumOrProductInOrder(this);
 
       // https://drafts.csswg.org/css-values-4/#serialize-a-calculation-tree
