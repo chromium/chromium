@@ -172,34 +172,6 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
   return Vector<PermissionDescriptorPtr>();
 }
 
-uint16_t GetTranslatedMessageID(uint16_t message_id,
-                                const AtomicString& language_string) {
-  DCHECK(language_string.IsLowerASCII());
-  if (language_string.empty()) {
-    return message_id;
-  }
-
-  StringUtf8Adaptor lang_adaptor(language_string);
-  std::string_view lang_utf8 = lang_adaptor.AsStringView();
-  if (auto mapped_id = GetPermissionElementMessageId(lang_utf8, message_id);
-      mapped_id.has_value()) {
-    return *mapped_id;
-  }
-
-  auto parts = base::SplitStringOnce(lang_utf8, '-');
-  if (!parts) {
-    return message_id;
-  }
-  // This is to support locales with unknown combination of languages and
-  // countries. If the combination of language and country is not known,
-  // the code will fallback to strings just from the language part of the
-  // locale.
-  // Eg: en-au is a unknown combination, in this case we will fall back to
-  // en strings.
-  return GetPermissionElementMessageId(parts->first, message_id)
-      .value_or(message_id);
-}
-
 // Helper to get permission text resource ID for the given map which has only
 // one element.
 uint16_t GetUntranslatedMessageIDSinglePermission(PermissionName name,
@@ -426,7 +398,7 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
 void HTMLPermissionElement::OnPermissionStatusInitialized(
     PermissionStatusMap initilized_map) {
   permission_status_map_ = std::move(initilized_map);
-  UpdatePermissionStatusAndAppearance();
+  HTMLPermissionElement::UpdatePermissionStatusAndAppearance();
 }
 
 Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
@@ -583,6 +555,102 @@ void HTMLPermissionElement::setType(const AtomicString& type) {
 
   CHECK_LE(permission_descriptors_.size(), 2U)
       << "Unexpected permissions size " << permission_descriptors_.size();
+}
+
+uint16_t HTMLPermissionElement::GetTranslatedMessageID(
+    uint16_t message_id,
+    const AtomicString& language_string) {
+  DCHECK(language_string.IsLowerASCII());
+  if (language_string.empty()) {
+    return message_id;
+  }
+
+  StringUtf8Adaptor lang_adaptor(language_string);
+  std::string_view lang_utf8 = lang_adaptor.AsStringView();
+  if (auto mapped_id = GetPermissionElementMessageId(lang_utf8, message_id);
+      mapped_id.has_value()) {
+    return *mapped_id;
+  }
+
+  auto parts = base::SplitStringOnce(lang_utf8, '-');
+  if (!parts) {
+    return message_id;
+  }
+  // This is to support locales with unknown combination of languages and
+  // countries. If the combination of language and country is not known,
+  // the code will fallback to strings just from the language part of the
+  // locale.
+  // Eg: en-au is a unknown combination, in this case we will fall back to
+  // en strings.
+  return GetPermissionElementMessageId(parts->first, message_id)
+      .value_or(message_id);
+}
+
+void HTMLPermissionElement::UpdateText() {
+  bool permission_granted;
+  PermissionName permission_name;
+  wtf_size_t permission_count;
+  if (permission_status_map_.size() == 0U) {
+    // Use |permission_descriptors_| instead and assume a "not granted" state.
+    if (permission_descriptors_.size() == 0U) {
+      return;
+    }
+    permission_granted = false;
+    permission_name = permission_descriptors_[0]->name;
+    permission_count = permission_descriptors_.size();
+  } else {
+    CHECK_LE(permission_status_map_.size(), 2u);
+    permission_granted = PermissionsGranted();
+    permission_name = permission_status_map_.begin()->key;
+    permission_count = permission_status_map_.size();
+  }
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        BindOnce(&HTMLPermissionIconElement::SetIcon,
+                 WrapWeakPersistent(permission_internal_icon_.Get()),
+                 permission_count == 1 ? permission_name
+                                       : PermissionName::VIDEO_CAPTURE,
+                 is_precise_location_));
+  }
+  AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
+
+  uint16_t untranslated_message_id =
+      permission_count == 1
+          ? GetUntranslatedMessageIDSinglePermission(
+                permission_name, permission_granted, is_precise_location_)
+          : GetUntranslatedMessageIDMultiplePermissions(permission_granted);
+  uint16_t translated_message_id =
+      GetTranslatedMessageID(untranslated_message_id, language_string);
+  CHECK(translated_message_id);
+  permission_text_span_->setInnerText(
+      GetLocale().QueryString(translated_message_id));
+}
+
+void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
+  UpdatePermissionStatus();
+  PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
+  UpdateText();
+}
+
+void HTMLPermissionElement::UpdatePermissionStatus() {
+  if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
+        return status.value == MojoPermissionStatus::DENIED;
+      })) {
+    aggregated_permission_status_ = MojoPermissionStatus::DENIED;
+  } else if (std::ranges::any_of(
+                 permission_status_map_, [](const auto& status) {
+                   return status.value == MojoPermissionStatus::ASK;
+                 })) {
+    aggregated_permission_status_ = MojoPermissionStatus::ASK;
+  } else {
+    aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
+  }
+
+  if (!initial_aggregated_permission_status_.has_value()) {
+    initial_aggregated_permission_status_ = aggregated_permission_status_;
+  }
 }
 
 // static
@@ -1362,70 +1430,6 @@ void HTMLPermissionElement::RefreshDisableReasonsAndUpdateTimer() {
 
   clicking_disabled_reasons_.swap(swap_clicking_disabled_reasons);
   MaybeDispatchValidationChangeEvent();
-}
-
-void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
-  if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
-        return status.value == MojoPermissionStatus::DENIED;
-      })) {
-    aggregated_permission_status_ = MojoPermissionStatus::DENIED;
-  } else if (std::ranges::any_of(
-                 permission_status_map_, [](const auto& status) {
-                   return status.value == MojoPermissionStatus::ASK;
-                 })) {
-    aggregated_permission_status_ = MojoPermissionStatus::ASK;
-  } else {
-    aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
-  }
-
-  if (!initial_aggregated_permission_status_.has_value()) {
-    initial_aggregated_permission_status_ = aggregated_permission_status_;
-  }
-
-  PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
-  UpdateText();
-}
-
-void HTMLPermissionElement::UpdateText() {
-  bool permission_granted;
-  PermissionName permission_name;
-  wtf_size_t permission_count;
-  if (permission_status_map_.size() == 0U) {
-    // Use |permission_descriptors_| instead and assume a "not granted" state.
-    if (permission_descriptors_.size() == 0U) {
-      return;
-    }
-    permission_granted = false;
-    permission_name = permission_descriptors_[0]->name;
-    permission_count = permission_descriptors_.size();
-  } else {
-    CHECK_LE(permission_status_map_.size(), 2u);
-    permission_granted = PermissionsGranted();
-    permission_name = permission_status_map_.begin()->key;
-    permission_count = permission_status_map_.size();
-  }
-  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
-          GetDocument().GetExecutionContext())) {
-    GetTaskRunner()->PostTask(
-        FROM_HERE,
-        BindOnce(&HTMLPermissionIconElement::SetIcon,
-                 WrapWeakPersistent(permission_internal_icon_.Get()),
-                 permission_count == 1 ? permission_name
-                                       : PermissionName::VIDEO_CAPTURE,
-                 is_precise_location_));
-  }
-  AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
-
-  uint16_t untranslated_message_id =
-      permission_count == 1
-          ? GetUntranslatedMessageIDSinglePermission(
-                permission_name, permission_granted, is_precise_location_)
-          : GetUntranslatedMessageIDMultiplePermissions(permission_granted);
-  uint16_t translated_message_id =
-      GetTranslatedMessageID(untranslated_message_id, language_string);
-  CHECK(translated_message_id);
-  permission_text_span_->setInnerText(
-      GetLocale().QueryString(translated_message_id));
 }
 
 void HTMLPermissionElement::AddConsoleError(String error) {
