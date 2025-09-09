@@ -139,7 +139,7 @@ class AffiliationFetcherManagerTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   network::TestURLLoaderFactory test_url_loader_factory_;

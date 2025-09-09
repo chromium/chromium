@@ -209,7 +209,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ModelQualityLogsUploaderService>

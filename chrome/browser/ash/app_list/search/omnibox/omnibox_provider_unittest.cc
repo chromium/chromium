@@ -168,7 +168,7 @@ class OmniboxProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 

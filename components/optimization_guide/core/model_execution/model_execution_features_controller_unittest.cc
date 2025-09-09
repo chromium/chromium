@@ -114,7 +114,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<ModelExecutionFeaturesController> controller_;
   base::HistogramTester histogram_tester_;

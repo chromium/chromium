@@ -154,7 +154,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   raw_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_ = nullptr;

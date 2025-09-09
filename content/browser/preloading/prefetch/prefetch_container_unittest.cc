@@ -194,7 +194,7 @@ class PrefetchContainerTest
   PrefetchContainerTest() : PrefetchContainerTestBase(GetParam()) {}
 
  private:
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 
@@ -208,7 +208,7 @@ class PrefetchContainerXClientDataHeaderTest
       : PrefetchContainerTestBase(std::get<0>(GetParam())) {}
 
  private:
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 
  protected:

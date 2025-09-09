@@ -717,7 +717,7 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 

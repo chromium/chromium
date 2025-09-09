@@ -212,7 +212,7 @@ class TranslateManagerTest : public ::testing::Test {
   // uses ObserverListThreadSafe.
   base::test::TaskEnvironment task_environment_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   sync_preferences::TestingPrefServiceSyncable prefs_;

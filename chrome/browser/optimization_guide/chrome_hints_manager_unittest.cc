@@ -178,7 +178,7 @@ class ChromeHintsManagerFetchingTest
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestingProfile testing_profile_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;

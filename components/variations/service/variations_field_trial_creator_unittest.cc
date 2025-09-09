@@ -498,7 +498,7 @@ class FieldTrialCreatorTest : public ::testing::Test {
   base::test::ScopedCommandLine scoped_command_line_;
   TestingPrefServiceSimple local_state_;
   base::ScopedTempDir temp_dir_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 

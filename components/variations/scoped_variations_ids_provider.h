@@ -7,7 +7,7 @@
 
 #include "components/variations/variations_ids_provider.h"
 
-namespace variations {
+namespace variations::test {
 
 class ScopedVariationsIdsProvider {
  public:
@@ -18,6 +18,14 @@ class ScopedVariationsIdsProvider {
   ~ScopedVariationsIdsProvider();
 };
 
-}  // namespace variations
+}  // namespace variations::test
+
+namespace variations {
+// TODO: crbug.com/442849530 - There are some uses in other repos that can't be
+// changed atomically. Thus, a compatibility alias is needed for now. This can
+// go away once all uses in other repos are migrated to the new namespace.
+using ScopedVariationsIdsProvider =
+    ::variations::test::ScopedVariationsIdsProvider;
+}  //  namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_SCOPED_VARIATIONS_IDS_PROVIDER_H_

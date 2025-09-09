@@ -116,7 +116,7 @@ class DefaultSearchManagerTest : public testing::Test {
   }
 
  private:
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };

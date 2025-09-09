@@ -268,7 +268,7 @@ class ZeroSuggestProviderTest : public testing::Test,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ZeroSuggestProvider> provider_;

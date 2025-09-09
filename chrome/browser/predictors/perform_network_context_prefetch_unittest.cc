@@ -161,7 +161,7 @@ class PerformNetworkContextPrefetchRecorderTest
   // IO_MAINLOOP is needed for the EmbeddedTestServer.
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingProfile> profile_;
   base::test::TestFuture<const HttpRequest&> request_future_;

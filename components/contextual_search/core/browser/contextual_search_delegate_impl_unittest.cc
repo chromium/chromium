@@ -331,7 +331,7 @@ class ContextualSearchDelegateImplTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;

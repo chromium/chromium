@@ -268,7 +268,7 @@ class FeedNetworkTest : public testing::Test {
  protected:
   signin::IdentityTestEnvironment identity_test_env_;
   TestDelegate delegate_{&identity_test_env_};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FeedNetwork> feed_network_;
   RequestMetadata request_metadata_;

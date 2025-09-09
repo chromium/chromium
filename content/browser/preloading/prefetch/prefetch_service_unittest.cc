@@ -1194,7 +1194,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 

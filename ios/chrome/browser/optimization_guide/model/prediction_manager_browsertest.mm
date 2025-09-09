@@ -270,7 +270,7 @@ class PredictionManagerTestBase : public PlatformTest {
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

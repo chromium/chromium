@@ -349,7 +349,7 @@ class VariationsServiceTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;

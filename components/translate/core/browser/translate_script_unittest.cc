@@ -70,7 +70,7 @@ class TranslateScriptTest : public testing::Test {
   // Sets up the task scheduling/task-runner environment for each test.
   base::test::TaskEnvironment task_environment_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // The translate script.

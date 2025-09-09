@@ -218,7 +218,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestAutofillClient autofill_client_;
   TestAutofillDriver autofill_driver_{&autofill_client_};

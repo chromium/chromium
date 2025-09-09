@@ -269,7 +269,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
   base::test::ScopedFeatureList feature_list_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FakeDiagnosticsAppProfileHelperDelegate>
       fake_diagnostics_app_profile_helper_delegate_;

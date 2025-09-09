@@ -219,7 +219,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::RunLoop run_loop_;
   FakeSnapshotGeneratorDelegate* delegate_;

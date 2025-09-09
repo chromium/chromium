@@ -265,7 +265,7 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_environment_;
   ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -1237,7 +1237,7 @@ class AutofillServerCommunicationTest
   base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_1_;
   base::test::ScopedFeatureList scoped_feature_list_2_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   EmbeddedTestServer server_;
   std::unique_ptr<base::RunLoop> run_loop_;

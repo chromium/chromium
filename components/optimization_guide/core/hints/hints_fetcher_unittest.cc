@@ -167,7 +167,7 @@ class HintsFetcherTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   bool hints_fetched_ = false;
   base::test::ScopedFeatureList scoped_list_;

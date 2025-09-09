@@ -95,7 +95,7 @@ class PredictionModelFetcherTest : public testing::Test {
 
   bool models_fetched_ = false;
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<PredictionModelFetcherImpl> prediction_model_fetcher_;

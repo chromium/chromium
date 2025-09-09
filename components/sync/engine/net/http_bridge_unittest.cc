@@ -103,7 +103,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
   raw_ptr<HttpBridge> bridge_for_race_test_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // Separate thread for IO used by the HttpBridge.
   base::Thread io_thread_;

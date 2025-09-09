@@ -4,7 +4,7 @@
 
 #include "components/variations/scoped_variations_ids_provider.h"
 
-namespace variations {
+namespace variations::test {
 
 ScopedVariationsIdsProvider::ScopedVariationsIdsProvider(
     VariationsIdsProvider::Mode mode) {
@@ -15,4 +15,4 @@ ScopedVariationsIdsProvider::~ScopedVariationsIdsProvider() {
   VariationsIdsProvider::DestroyInstanceForTesting();
 }
 
-}  // namespace variations
+}  // namespace variations::test

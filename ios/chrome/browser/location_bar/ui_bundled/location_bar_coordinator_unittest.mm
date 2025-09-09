@@ -182,7 +182,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
   std::unique_ptr<TestProfileIOS> profile_;

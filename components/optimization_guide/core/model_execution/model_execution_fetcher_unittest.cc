@@ -160,7 +160,7 @@ class ModelExecutionFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<ModelExecutionFetcher> model_execution_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

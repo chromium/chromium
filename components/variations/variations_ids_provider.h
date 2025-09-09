@@ -32,6 +32,10 @@ inline constexpr int kLowEntropySourceVariationIdRangeMin = 3320978;
 inline constexpr int kLowEntropySourceVariationIdRangeMax = 3328977;
 }  // namespace internal
 
+namespace test {
+class ScopedVariationsIdsProvider;
+}  // namespace test
+
 class VariationsClient;
 
 // The key for a VariationsIdsProvider's `variations_headers_map_`. A
@@ -176,7 +180,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   using VariationIDEntry = std::pair<VariationID, IDCollectionKey>;
   using VariationIDEntrySet = absl::flat_hash_set<VariationIDEntry>;
 
-  friend class ScopedVariationsIdsProvider;
+  friend class ::variations::test::ScopedVariationsIdsProvider;
 
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, ForceVariationIds_Valid);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,

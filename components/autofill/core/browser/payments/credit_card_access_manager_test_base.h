@@ -199,7 +199,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 
   std::unique_ptr<TestAccessor> accessor_;
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;

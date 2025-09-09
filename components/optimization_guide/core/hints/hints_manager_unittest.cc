@@ -1738,7 +1738,7 @@ class HintsManagerFetchingTest : public HintsManagerTest {
 
  private:
   size_t batch_concurrency_limit_ = 2;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_list_;
 };
@@ -3789,7 +3789,7 @@ class HintsManagerProactivePersonalizationFetchingTest
   }
 
  private:
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_list_;

@@ -171,7 +171,7 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
   GURL latest_loaded_url_;
   NSString* latest_loaded_omnibox_text_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
