@@ -408,11 +408,14 @@ class SessionRestorationServiceImplTest : public PlatformTest {
 
       web_state_observer.Observe(web_state.get());
 
+      // The URL needs to be typed for the navigation to succeed.
+      auto params = web::NavigationManager::WebLoadParams(GURL(url));
+      params.transition_type = ui::PAGE_TRANSITION_TYPED;
+
       // The view of the WebState needs to be created before the navigation
       // is really executed.
       std::ignore = web_state->GetView();
-      web_state->GetNavigationManager()->LoadURLWithParams(
-          web::NavigationManager::WebLoadParams(GURL(url)));
+      web_state->GetNavigationManager()->LoadURLWithParams(params);
 
       web_state_list->InsertWebState(
           std::move(web_state),
