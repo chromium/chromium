@@ -954,6 +954,17 @@ BrowserView::BrowserView(Browser* browser)
   tab_strip_region_view_ =
       top_container_->AddChildView(std::make_unique<TabStripRegionView>(this));
 
+  if (tabs::AreVerticalTabsEnabled()) {
+    auto vertical_tab_strip_container =
+        std::make_unique<VerticalTabStripRegionView>(
+            browser_->GetFeatures()
+                .tab_strip_service_feature()
+                ->GetTabStripService(),
+            browser_->GetFeatures().vertical_tab_strip_state_controller());
+    vertical_tab_strip_container_ =
+        AddChildView(std::move(vertical_tab_strip_container));
+  }
+
   auto contents_container = std::make_unique<views::View>();
 
   views::View* contents_view;
@@ -996,17 +1007,6 @@ BrowserView::BrowserView(Browser* browser)
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
-
-  if (tabs::AreVerticalTabsEnabled()) {
-    auto vertical_tab_strip_container =
-        std::make_unique<VerticalTabStripRegionView>(
-            browser_->GetFeatures()
-                .tab_strip_service_feature()
-                ->GetTabStripService(),
-            browser_->GetFeatures().vertical_tab_strip_state_controller());
-    vertical_tab_strip_container_ =
-        AddChildView(std::move(vertical_tab_strip_container));
-  }
 
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
