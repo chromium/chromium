@@ -35,7 +35,6 @@
 namespace chromeos {
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 namespace {
@@ -130,10 +129,10 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
             testing_profile_));
     EXPECT_CALL(*mock, DeleteAllPrintJobs(_))
         .WillOnce(WithArg<0>(
-            Invoke([success](ash::printing::print_management::PrintingManager::
-                                 DeleteAllPrintJobsCallback callback) {
+            [success](ash::printing::print_management::PrintingManager::
+                          DeleteAllPrintJobsCallback callback) {
               std::move(callback).Run(success);
-            })));
+            }));
   }
 
   content::BrowserTaskEnvironment task_environment_;

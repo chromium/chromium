@@ -93,7 +93,7 @@ class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
             ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
                 browser()->profile()));
     EXPECT_CALL(*print_job_history_service, GetPrintJobs(testing::_))
-        .WillOnce(testing::Invoke(callback));
+        .WillOnce(callback);
   }
 };
 

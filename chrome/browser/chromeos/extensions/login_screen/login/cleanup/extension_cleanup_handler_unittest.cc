@@ -39,7 +39,6 @@
 using extensions::Extension;
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 constexpr char kExemptExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
