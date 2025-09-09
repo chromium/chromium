@@ -163,3 +163,12 @@ export function generateRandomId(): string {
   return components.reduce(
       (id = '', component) => id + component.toString(16).padStart(8, '0'), '');
 }
+
+/**
+ * Casts a function to a Listener according to the ListenerFunction type.
+ */
+export type ListenerFunction = (this: EventTarget, event: Event) => void;
+
+export function functionAsListener(func: Function): ListenerFunction {
+  return func as ListenerFunction;
+}
