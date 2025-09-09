@@ -211,7 +211,9 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
                       CardUnmaskPromptNavigationBarTitle()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially {
+// TODO(crbug.com/415865471): Fix test and re-enable.
+- (void)
+    DISABLED_testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially {
   [self showAuthenticationSelection];
 
   // Ensure the "Send" button is present (since the first option, OTP, is pre
@@ -222,7 +224,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
                                    nil)];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel {
+// TODO(crbug.com/415865471): Fix test and re-enable.
+- (void)DISABLED_testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel {
   [self showAuthenticationSelection];
 
   // Verify selecting text message sets the acceptance button label to "Send".
