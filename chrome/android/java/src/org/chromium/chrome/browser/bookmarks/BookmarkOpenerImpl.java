@@ -147,6 +147,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
         recordTypeOpened(item, "Bookmarks.OpenBookmarkType");
         recordTimeSinceAdded(item, "Bookmarks.OpenBookmarkTimeInterval2.");
+        recordBookmarkURLOpened();
     }
 
     private void recordMetricsForOpenBookmarksInNewTabs(List<BookmarkItem> items) {
@@ -155,6 +156,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         for (BookmarkItem item : items) {
             recordTypeOpened(item, "Bookmarks.MultipleOpened.OpenBookmarkType");
             recordTimeSinceAdded(item, "Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.");
+            recordBookmarkURLOpened();
         }
     }
 
@@ -183,5 +185,9 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
                 1,
                 DateUtils.DAY_IN_MILLIS * 30,
                 50);
+    }
+
+    private void recordBookmarkURLOpened() {
+        RecordHistogram.recordBooleanHistogram("Bookmarks.MobileBookmarkManager.OpenedURL", true);
     }
 }

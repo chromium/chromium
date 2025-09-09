@@ -436,6 +436,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.MobileBookmarkManager.OpenedURL" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted whenever a user has opened a bookmark via any method within the
+    application. This histogram provides a raw count of the amount of usage
+    bookmarks has on mobile.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.MobileBookmarkManager.SortOptionUsed"
     enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
