@@ -79,6 +79,8 @@ constexpr char kChromeosFamilyLinkUserMetricsProviderName[] =
 constexpr char kEnterpriseIdentityServiceName[] = "enterprise_identity_service";
 constexpr char kPromotionEligibilityCheckerName[] =
     "promotion_eligibility_checker";
+constexpr char kPasswordManagerLeakDetectionName[] =
+    "password_manager_leak_detection";
 
 }  // namespace
 
@@ -332,6 +334,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kPromotionEligibilityCheckerName,
           /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth,
                       GaiaConstants::kGoogleUserInfoEmail});
+    case OAuthConsumerId::kPasswordManagerLeakDetection:
+      return OAuthConsumer(
+          /*name=*/kPasswordManagerLeakDetectionName,
+          /*scopes=*/{GaiaConstants::kPasswordsLeakCheckOAuth2Scope});
   }
   NOTREACHED();
 }
