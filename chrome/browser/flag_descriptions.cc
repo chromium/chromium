@@ -1539,6 +1539,11 @@ const char kDevToolsIndividualRequestThrottlingDescription[] =
     "conditions to individual requests, extending the per-request blocking "
     "behavior.";
 
+const char kDevToolsLiveEditName[] = "Enable JavaScript live editing in DevTools";
+const char kDevToolsLiveEditDescription[] =
+    "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
+    "edits to the target page live.";
+
 const char kDesktopPWAsScopeExtensionsName[] = "Desktop PWA Scope Extensions";
 const char kDesktopPWAsScopeExtensionsDescription[] =
     "Enable web app manifests to declare scope extensions to extend app scope "

@@ -11527,6 +11527,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsIndividualRequestThrottlingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsIndividualRequestThrottling)},
 
+    {"devtools-live-edit",
+     flag_descriptions::kDevToolsLiveEditName,
+     flag_descriptions::kDevToolsLiveEditDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsLiveEdit)},
+
     {"permissions-ai-v1", flag_descriptions::kPermissionsAIv1Name,
      flag_descriptions::kPermissionsAIv1Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv1)},

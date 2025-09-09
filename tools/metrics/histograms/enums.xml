@@ -11444,6 +11444,7 @@ from previous Chrome versions.
   <int value="-1015006759" label="ImportantSitesInCBD:disabled"/>
   <int value="-1014936248" label="SyncUSSBookmarks:enabled"/>
   <int value="-1014649471" label="committed-interstitials"/>
+  <int value="-1014240624" label="DevToolsLiveEdit:disabled"/>
   <int value="-1014147857"
       label="ReportNotificationContentDetectionData:enabled"/>
   <int value="-1013986101" label="FirstScrollLatencyMeasurement:disabled"/>
@@ -18212,6 +18213,7 @@ from previous Chrome versions.
   <int value="1433706192" label="FileSystemObserver:disabled"/>
   <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
+  <int value="1435236849" label="DevToolsLiveEdit:enabled"/>
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
   <int value="1436115897" label="OsSettingsSearchFeedback:enabled"/>
   <int value="1436409565" label="FedCmWithoutThirdPartyCookies:enabled"/>

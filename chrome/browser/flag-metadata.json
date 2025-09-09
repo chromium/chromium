@@ -2289,6 +2289,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "devtools-live-edit",
+    "owners": [ "bmeurer@chromium.org", "szuend@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.org", "shuuran@chromium.org", "masnoble@chromium.org" ],
     "expiry_milestone": 150
