@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_backend.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
@@ -16,7 +16,7 @@ namespace {
 
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenType;
-using password_manager::OtpFetchReply;
+using one_time_tokens::OtpFetchReply;
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;

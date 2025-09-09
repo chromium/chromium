@@ -12,9 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 
@@ -219,7 +219,8 @@ void OtpFormManager::RetrieveOtpValue() {
   }
 }
 
-void OtpFormManager::OnOtpRetrievalComplete(const OtpFetchReply& reply) {
+void OtpFormManager::OnOtpRetrievalComplete(
+    const one_time_tokens::OtpFetchReply& reply) {
   sms_otp_retrieval_in_progress_ = false;
   if (reply.otp_value.has_value()) {
     otp_suggestions_.push_back(reply.otp_value.value());

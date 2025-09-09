@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_BACKEND_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_BACKEND_H_
+#ifndef COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
+#define COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
 
 #include <optional>
 
@@ -13,15 +13,15 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_dispatcher_bridge.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_receiver_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 
 // This class processes SMS OTP requests and propagates back the replies
 // with OTP values, 1 per profile.
 class AndroidSmsOtpBackend : public KeyedService,
-                             public password_manager::SmsOtpBackend,
+                             public one_time_tokens::SmsOtpBackend,
                              public AndroidSmsOtpFetchReceiverBridge::Consumer {
  public:
   AndroidSmsOtpBackend();
@@ -35,9 +35,9 @@ class AndroidSmsOtpBackend : public KeyedService,
   AndroidSmsOtpBackend& operator=(const AndroidSmsOtpBackend&) = delete;
   ~AndroidSmsOtpBackend() override;
 
-  // password_manager::SmsOtpBackend
+  // one_time_tokens::SmsOtpBackend
   void RetrieveSmsOtp(
-      base::OnceCallback<void(const password_manager::OtpFetchReply&)> callback)
+      base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)> callback)
       override;
 
   // AndroidSmsOtpFetchReceiverBridge::Consumer
@@ -75,7 +75,7 @@ class AndroidSmsOtpBackend : public KeyedService,
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 
   // Callbacks that needs to be invoked after the OTP retrieval is complete.
-  base::queue<base::OnceCallback<void(const password_manager::OtpFetchReply&)>>
+  base::queue<base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>>
       pending_callbacks_;
 
   // All methods should be called on the main thread.
@@ -84,4 +84,4 @@ class AndroidSmsOtpBackend : public KeyedService,
   base::WeakPtrFactory<AndroidSmsOtpBackend> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_BACKEND_H_
+#endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_

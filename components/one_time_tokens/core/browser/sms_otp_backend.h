@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ONE_TIME_PASSWORDS_SMS_OTP_BACKEND_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ONE_TIME_PASSWORDS_SMS_OTP_BACKEND_H_
+#ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_BACKEND_H_
+#define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_BACKEND_H_
 
 #include <optional>
 #include <string>
@@ -11,8 +11,10 @@
 #include "base/functional/callback.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
-namespace password_manager {
+namespace one_time_tokens {
 
+// TODO(crbug.com/415273270) Remove one_time_tokens:: namespace below.
+// Do this later to help git recognize the move operation.
 struct OtpFetchReply {
   OtpFetchReply(std::optional<one_time_tokens::OneTimeToken> otp_value,
                 bool request_complete);
@@ -33,10 +35,10 @@ class SmsOtpBackend {
  public:
   // Queries the backend for recently received OTPs.
   virtual void RetrieveSmsOtp(
-      base::OnceCallback<void(const password_manager::OtpFetchReply&)>
+      base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
           callback) = 0;
 };
 
-}  // namespace password_manager
+}  // namespace one_time_tokens
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ONE_TIME_PASSWORDS_SMS_OTP_BACKEND_H_
+#endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_BACKEND_H_

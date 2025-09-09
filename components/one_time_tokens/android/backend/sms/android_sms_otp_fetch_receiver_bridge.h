@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
+#ifndef COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
+#define COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
 
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/sms_otp_retrieval_api_error_codes.h"
+#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
 
 // A bridge to communicate Java OTP fetcher replies back to the native code.
 class AndroidSmsOtpFetchReceiverBridge {
@@ -69,4 +69,4 @@ class AndroidSmsOtpFetchReceiverBridge {
   base::WeakPtrFactory<AndroidSmsOtpFetchReceiverBridge> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
+#endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_

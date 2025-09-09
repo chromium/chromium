@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_backend.h"
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
-using password_manager::OtpFetchReply;
+using one_time_tokens::OtpFetchReply;
 
 AndroidSmsOtpBackend::AndroidSmsOtpBackend()
     : receiver_bridge_(AndroidSmsOtpFetchReceiverBridge::Create()),

@@ -7,9 +7,9 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
@@ -20,6 +20,8 @@ namespace {
 using autofill::FieldGlobalId;
 using autofill::FormData;
 using autofill::FormGlobalId;
+using one_time_tokens::OtpFetchReply;
+using one_time_tokens::SmsOtpBackend;
 using testing::Return;
 using testing::ReturnRef;
 

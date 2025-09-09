@@ -160,9 +160,9 @@
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
@@ -1411,7 +1411,7 @@ void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
   }
 }
 
-password_manager::SmsOtpBackend* ChromePasswordManagerClient::GetSmsOtpBackend()
+one_time_tokens::SmsOtpBackend* ChromePasswordManagerClient::GetSmsOtpBackend()
     const {
   return AndroidSmsOtpBackendFactory::GetForProfile(profile_);
 }

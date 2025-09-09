@@ -14,10 +14,14 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
+namespace one_time_tokens {
+struct OtpFetchReply;
+class SmsOtpBackend;
+}  // namespace one_time_tokens
+
 namespace password_manager {
 
 class PasswordManagerClient;
-class SmsOtpBackend;
 
 // Various options to where an OTP value can be sent.
 enum class OtpSource {
@@ -25,8 +29,6 @@ enum class OtpSource {
   kSms = 1,
   kEmail = 2,
 };
-
-struct OtpFetchReply;
 
 // A class in charge of handling individual OTP forms, one instance per form.
 class OtpFormManager {
@@ -86,7 +88,7 @@ class OtpFormManager {
   void RetrieveOtpValue();
 
   // Called when the OTP fetching request is complete.
-  void OnOtpRetrievalComplete(const OtpFetchReply& reply);
+  void OnOtpRetrievalComplete(const one_time_tokens::OtpFetchReply& reply);
 
   const autofill::FormData form_data_;
 
@@ -99,7 +101,7 @@ class OtpFormManager {
   // Tracks where the OTP is sent to.
   OtpSource otp_source_;
 
-  raw_ptr<SmsOtpBackend> sms_otp_backend_ = nullptr;
+  raw_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend_ = nullptr;
   bool sms_otp_retrieval_in_progress_ = false;
 
   // Fetched OTP values.

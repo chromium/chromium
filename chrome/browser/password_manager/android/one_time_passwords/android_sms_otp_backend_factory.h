@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_backend.h"
 #include "content/public/browser/browser_context.h"
 
 // Creates the `AndroidSmsOtpBackend` for a profile.

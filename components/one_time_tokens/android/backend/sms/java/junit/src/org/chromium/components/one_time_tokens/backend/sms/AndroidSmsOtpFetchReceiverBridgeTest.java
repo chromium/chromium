@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.one_time_passwords;
+package org.chromium.components.one_time_tokens.backend.sms;
 
 import static org.mockito.Mockito.verify;
 

@@ -7,6 +7,8 @@ static_library("browser") {
     "one_time_token.cc",
     "one_time_token.h",
     "one_time_token_type.h",
+    "sms_otp_backend.cc",
+    "sms_otp_backend.h",
   ]
   public_deps = [ "//base" ]
 }

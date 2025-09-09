@@ -75,8 +75,6 @@ static_library("browser") {
     "one_time_passwords/otp_form_manager.h",
     "one_time_passwords/otp_manager.cc",
     "one_time_passwords/otp_manager.h",
-    "one_time_passwords/sms_otp_backend.cc",
-    "one_time_passwords/sms_otp_backend.h",
     "origin_credential_store.cc",
     "origin_credential_store.h",
     "password_autofill_manager.cc",
@@ -233,6 +231,7 @@ static_library("browser") {
       "password_credential_filler_impl.h",
     ]
     deps += [
+      "//components/one_time_tokens/android/backend/sms:backend",
       "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
     ]

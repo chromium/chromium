@@ -99,9 +99,12 @@ namespace password_manager {
 class CredManController;
 class FieldInfoManager;
 class KeyboardReplacingSurfaceVisibilityController;
-class SmsOtpBackend;
 class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
+
+namespace one_time_tokens {
+class SmsOtpBackend;
+}
 
 namespace webauthn {
 #if BUILDFLAG(IS_ANDROID)
@@ -321,7 +324,7 @@ class ChromePasswordManagerClient
   webauthn::WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
   void MarkSharedCredentialsAsNotified(const GURL& url) override;
-  password_manager::SmsOtpBackend* GetSmsOtpBackend() const override;
+  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;

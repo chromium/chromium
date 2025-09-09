@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
+#ifndef COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
+#define COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
 
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_receiver_bridge.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge.h"
 
 // A bridge to send OTP fetch requests to Java. Lives on the background thread.
 class AndroidSmsOtpFetchDispatcherBridge {
@@ -41,4 +41,4 @@ class AndroidSmsOtpFetchDispatcherBridge {
   THREAD_CHECKER(thread_checker_);
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
+#endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_

@@ -9,9 +9,9 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
 namespace password_manager {
@@ -35,7 +35,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
 #if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(SmsOtpBackend*, GetSmsOtpBackend, (), (const, override));
+  MOCK_METHOD(one_time_tokens::SmsOtpBackend*,
+              GetSmsOtpBackend,
+              (),
+              (const, override));
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
@@ -188,13 +191,13 @@ TEST_F(OtpFormManagerTest, GetFillDataForOtpSuggestion) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-class MockSmsOtpBackend : public SmsOtpBackend {
+class MockSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
  public:
   MockSmsOtpBackend() = default;
 
   MOCK_METHOD(void,
               RetrieveSmsOtp,
-              (base::OnceCallback<void(const OtpFetchReply&)>),
+              (base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>),
               (override));
 };
 
@@ -228,14 +231,16 @@ TEST_F(OtpFormManagerTestWithSmsBackend, SmsOtpBackendUsedForSmsOtpRetrieval) {
 TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingWithOtpValueRetrieved) {
   std::string otp_value = "123456";
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
-      .WillOnce([&otp_value](
-                    base::OnceCallback<void(const OtpFetchReply&)> callback) {
-        std::move(callback).Run(
-            OtpFetchReply(one_time_tokens::OneTimeToken(
-                              one_time_tokens::OneTimeTokenType::kSmsOtp,
-                              otp_value, base::Time::Now()),
-                          /*request_complete=*/true));
-      });
+      .WillOnce(
+          [&otp_value](
+              base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+                  callback) {
+            std::move(callback).Run(one_time_tokens::OtpFetchReply(
+                one_time_tokens::OneTimeToken(
+                    one_time_tokens::OneTimeTokenType::kSmsOtp, otp_value,
+                    base::Time::Now()),
+                /*request_complete=*/true));
+          });
   FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
   OtpFormManager form_manager(form_data_, {otp_field_id}, &client_);
 
@@ -257,9 +262,11 @@ TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingEligibilityOtpValueMissing) {
   // Simulate OTP retieval request not providing a value.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
       .WillOnce(
-          [](base::OnceCallback<void(const OtpFetchReply&)> callback) {
-            std::move(callback).Run(OtpFetchReply(/*otp_value=*/std::nullopt,
-                                                  /*request_complete=*/true));
+          [](base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+                 callback) {
+            std::move(callback).Run(
+                one_time_tokens::OtpFetchReply(/*otp_value=*/std::nullopt,
+                                               /*request_complete=*/true));
           });
   FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
   OtpFormManager form_manager(form_data_, {otp_field_id}, &client_);

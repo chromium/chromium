@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_dispatcher_bridge.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge.h"
 
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/password_manager/android/one_time_passwords/jni_headers/AndroidSmsOtpFetchDispatcherBridge_jni.h"
+#include "components/one_time_tokens/android/backend/sms/jni_headers/AndroidSmsOtpFetchDispatcherBridge_jni.h"
 
 // static
 std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge>

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 
-namespace password_manager {
+namespace one_time_tokens {
 
 OtpFetchReply::OtpFetchReply(
     std::optional<one_time_tokens::OneTimeToken> otp_value,
@@ -16,4 +16,4 @@ OtpFetchReply& OtpFetchReply::operator=(const OtpFetchReply&) = default;
 
 OtpFetchReply::~OtpFetchReply() = default;
 
-}  // namespace password_manager
+}  // namespace one_time_tokens
