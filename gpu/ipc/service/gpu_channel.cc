@@ -453,8 +453,15 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
   gfx::GpuMemoryBufferHandle handle;
 
   if (IsNativeBufferSupported(buffer_format, buffer_usage)) {
+#if BUILDFLAG(IS_ANDROID)
+    // Creation of native buffer handles is not supported on Android (the
+    // only way that a non-null GpuMemoryBufferHandle can be created on
+    // Android is by importing an external AHB).
+    std::move(callback).Run(std::move(handle));
+#else
     handle = gpu_memory_buffer_factory_->CreateNativeGmbHandle(size, format,
                                                                buffer_usage);
+#endif
   } else {
     if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
         SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {
