@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/config/skia_limits.h"
 
 #include <inttypes.h>
@@ -16,7 +14,7 @@ namespace gpu {
 
 namespace {
 
-BASE_FEATURE(GrCacheLimitsFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrCacheLimitsFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
 MIRACLE_PARAMETER_FOR_INT(GetMaxGaneshResourceCacheBytes,
                           kGrCacheLimitsFeature,

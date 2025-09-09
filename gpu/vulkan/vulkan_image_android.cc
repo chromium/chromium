@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/vulkan/vulkan_image.h"
 
 #include "base/android/android_hardware_buffer_compat.h"
@@ -16,7 +14,7 @@
 namespace gpu {
 
 namespace {
-BASE_FEATURE(LimitVkImageUsageToFormatFeaturesForAHB,
+BASE_FEATURE(kLimitVkImageUsageToFormatFeaturesForAHB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {

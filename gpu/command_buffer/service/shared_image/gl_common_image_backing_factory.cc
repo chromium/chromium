@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 
 #include <algorithm>
@@ -27,7 +25,7 @@ namespace gpu {
 
 namespace {
 // Kill switch for allowing using core ES3 format types for half float format.
-BASE_FEATURE(AllowEs3F16CoreTypeForGlSi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,

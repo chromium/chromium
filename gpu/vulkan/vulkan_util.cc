@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -111,8 +109,8 @@ bool IsBlockedByBuildInfo() {
   return false;
 }
 
-BASE_FEATURE(VulkanV2, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(VulkanV3, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVulkanV2, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVulkanV3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
                                     const base::Feature* feature) {

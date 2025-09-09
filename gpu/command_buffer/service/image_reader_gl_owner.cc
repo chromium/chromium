@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 
 #include <android/native_window_jni.h>
@@ -36,10 +34,10 @@ namespace gpu {
 
 namespace {
 
-BASE_FEATURE(DiscardDroppedEarlyRenderedFrames,
+BASE_FEATURE(kDiscardDroppedEarlyRenderedFrames,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(AlwaysRequestSampledImageFromImageReader,
+BASE_FEATURE(kAlwaysRequestSampledImageFromImageReader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSurfaceControl(TextureOwner::Mode mode) {

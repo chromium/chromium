@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 
 #include <inttypes.h>
@@ -28,7 +26,7 @@ namespace {
 
 // TODO(b/375264422): Temporary to debug potential shader cache entries
 // mismatch.
-BASE_FEATURE(GrShaderCacheLoad, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrShaderCacheLoad, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string MakeString(const SkData* data) {
   return std::string(static_cast<const char*>(data->data()), data->size());

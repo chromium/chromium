@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 
 #include <memory>
@@ -64,7 +62,7 @@ namespace gpu {
 namespace {
 
 // Used as a flag to test dawn initialization failure.
-BASE_FEATURE(ForceDawnInitializeFailure, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceDawnInitializeFailure, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Sets crash key in thread safe manner. This should be used for any crash keys
 // set from dawn error or device lost callbacks that may run on multiple
