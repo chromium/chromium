@@ -102,6 +102,7 @@ include_rules = [
   "+components/content_settings/core/browser",
   "+components/content_settings/core/test",
   "+components/contextual_search/core/browser",
+  "+components/contextual_tasks/public",
   "+components/cookie_config",
   "+components/country_codes",
   "+components/crash/content/browser",

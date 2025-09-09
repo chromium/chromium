@@ -240,6 +240,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",

@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser/contextual_tasks",
+  ]
+
+  sources = [
+    "contextual_tasks_service_impl.cc",
+    "contextual_tasks_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/contextual_tasks/public",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "contextual_tasks_service_impl_unittest.cc" ]
+
+  deps = [
+    ":internal",
+    "//base/test:test_support",
+    "//components/contextual_tasks/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  visibility = [ "//components/contextual_tasks:unit_tests" ]
+}

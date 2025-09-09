@@ -1,0 +1,4 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/contextual_tasks/internal/contextual_tasks_service_impl.h",
+]

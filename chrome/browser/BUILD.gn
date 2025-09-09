@@ -1913,6 +1913,7 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/data_saver",
     "//chrome/browser/devtools",

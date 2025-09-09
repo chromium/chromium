@@ -215,6 +215,7 @@ test("components_unittests") {
     "//components/content_capture/common:unit_tests",
     "//components/content_settings/core/browser:unit_tests",
     "//components/content_settings/core/common:unit_tests",
+    "//components/contextual_tasks:unit_tests",
     "//components/country_codes:unit_tests",
     "//components/crash/core/common:unit_tests",
     "//components/cross_device/logging:unit_tests",
