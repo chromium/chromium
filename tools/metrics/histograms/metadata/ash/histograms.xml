@@ -1406,7 +1406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.TokenRetrievalIsValidation" enum="Boolean"
-    expires_after="2025-10-28">
+    expires_after="2026-04-28">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1415,7 +1415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.{Request}.ErrorCode" enum="ApiErrorCode"
-    expires_after="2025-10-23">
+    expires_after="2026-04-23">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
