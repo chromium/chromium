@@ -224,21 +224,32 @@ packager_builder(
             },
             {
                 "sdk_package_name": "cmdline-tools;latest",
-                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools/linux.yaml",
+            },
+            {
+                "sdk_package_name": "cmdline-tools;latest",
+                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools/mac.yaml",
+                "target_os": "mac",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
                 "sdk_channel": "BETA",
             },
             {
                 "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/linux-amd64.yaml",
                 "sdk_channel": "CANARY",
+            },
+            {
+                "sdk_package_name": "emulator",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator/mac-arm64.yaml",
+                "target_os": "mac",
+                "target_arch": "arm64",
             },
             {
                 "sdk_package_name": "platforms;android-34",
@@ -348,6 +359,10 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-35;google_apis_tablet;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis_tablet/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-36;google_apis;arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/arm64-v8a.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-36;google_apis;x86_64",
