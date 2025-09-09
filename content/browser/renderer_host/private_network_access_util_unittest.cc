@@ -614,7 +614,10 @@ void TestPolicyMap(
   }
 }
 
-TEST(PrivateNetworkAccessUtilTest, DerivePolicy) {
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessDiabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kLocalNetworkAccessChecks);
   TestPolicyMap(DefaultPolicyMap());
 }
 

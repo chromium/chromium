@@ -307,4 +307,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // there. crbug.com/438910961
   aw_feature_overrides.DisableFeature(
       features::kAndroidEnableBackgroundMediaLargeFormFactors);
+
+  // Local Network Access restrictions should not be enforced in WebView.
+  // The LNA permission is auto-granted in WebView, but the permission
+  // policy currently blocks iframes from using it. crbug.com/442879527
+  aw_feature_overrides.DisableFeature(
+      network::features::kLocalNetworkAccessChecks);
 }

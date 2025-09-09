@@ -344,27 +344,6 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedNoLessPublic) {
                                       Result::kAllowedNoLessPublic, 1);
 }
 
-// PNA doesn't collapse local and loopback address spaces, so local ->
-// loopback should be blocked.
-TEST(PrivateNetworkAccessCheckerTest,
-     CheckBlockedPNADoesNotCollapseLocalLoopback) {
-  base::HistogramTester histogram_tester;
-
-  mojom::ClientSecurityState client_security_state;
-  client_security_state.ip_address_space = mojom::IPAddressSpace::kLocal;
-  client_security_state.private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kBlock;
-
-  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
-                                      mojom::kURLLoadOptionNone);
-
-  EXPECT_EQ(checker.Check(DirectTransport(LoopbackEndpoint())),
-            Result::kBlockedByPolicyBlock);
-
-  histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,
-                                      Result::kBlockedByPolicyBlock, 1);
-}
-
 // LNA collapses local and loopback address spaces so local -> loopback should
 // be allowed.
 TEST(PrivateNetworkAccessCheckerTest,

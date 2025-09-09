@@ -244,14 +244,14 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
 // Spec: https://wicg.github.io/local-network-access/
 BASE_FEATURE(kLocalNetworkAccessChecks,
              "LocalNetworkAccessChecks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, local network access checks will only be warnings.
 BASE_FEATURE_PARAM(bool,
                    kLocalNetworkAccessChecksWarn,
                    &kLocalNetworkAccessChecks,
                    /*name=*/"LocalNetworkAccessChecksWarn",
-                   /*default_value=*/true);
+                   /*default_value=*/false);
 
 // Enables Local Network Access checks for WebRTC.
 // Blocks local network requests without user permission to prevent exploitation
