@@ -133,6 +133,7 @@ public class ReaderModeToolbarButtonControllerTest {
         assertEquals(
                 R.string.reader_mode_cpa_button_text,
                 controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
+        assertEquals(R.string.show_reading_mode_text, controller.getButtonDataForTesting().getButtonSpec().getHoverTooltipTextId());
 
         // Simulate the url changing to reader mode, and verify that the button was swapped.
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
@@ -141,6 +142,7 @@ public class ReaderModeToolbarButtonControllerTest {
         assertEquals(
                 "Hide Reading Mode",
                 controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
+        assertEquals(R.string.hide_reading_mode_text, controller.getButtonDataForTesting().getButtonSpec().getHoverTooltipTextId());
         assertTrue(controller.getButtonDataForTesting().getButtonSpec().isChecked());
 
         // Simulate the url changing to something else, and verify that the button was swapped back.

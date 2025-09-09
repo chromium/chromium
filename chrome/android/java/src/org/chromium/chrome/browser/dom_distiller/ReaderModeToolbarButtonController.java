@@ -68,7 +68,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.READER_MODE,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                /* tooltipTextResId= */ R.string.show_reading_mode_text);
 
         mContext = context;
         mActivityTabProvider = activityTabProvider;
@@ -102,7 +102,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                         /* iphCommandBuilder= */ null,
                         AdaptiveToolbarButtonVariant.READER_MODE,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* tooltipTextResId= */ R.string.hide_reading_mode_text,
                         /* hasErrorBadge= */ false,
                         /* isChecked= */ true);
     }
