@@ -7,13 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check.h"
-#import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
-#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -133,15 +130,12 @@ void ScriptBlockingRuleApplierService::BuildAndApplyRules(
       timer.Elapsed());
 
   if (final_rules_json.has_value()) {
-    content_rule_list_manager_->UpdateRuleList(
-        kScriptBlockingRuleListKey, std::move(*final_rules_json),
-        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
-                       weak_factory_.GetWeakPtr()));
+    content_rule_list_manager_->UpdateRuleList(kScriptBlockingRuleListKey,
+                                               std::move(*final_rules_json),
+                                               base::DoNothing());
   } else {
-    content_rule_list_manager_->RemoveRuleList(
-        kScriptBlockingRuleListKey,
-        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
-                       weak_factory_.GetWeakPtr()));
+    content_rule_list_manager_->RemoveRuleList(kScriptBlockingRuleListKey,
+                                               base::DoNothing());
   }
 }
 
@@ -215,12 +209,4 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
   std::string rules_json;
   base::JSONWriter::Write(rules_list, &rules_json);
   return rules_json;
-}
-
-void ScriptBlockingRuleApplierService::OnRuleUpdateCompleted(NSError* error) {
-  if (error) {
-    SCOPED_CRASH_KEY_STRING256("SBRuleApplierService", "error",
-                               base::SysNSStringToUTF8(error.description));
-    base::debug::DumpWithoutCrashing();
-  }
 }
