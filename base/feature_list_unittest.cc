@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "base/feature_list.h"
 
 #include <stddef.h>
@@ -45,8 +43,8 @@ BASE_FEATURE(kFeatureOffByDefault,
              FEATURE_DISABLED_BY_DEFAULT);
 
 // For testing the 2-argument BASE_FEATURE macro.
-BASE_FEATURE(Feature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(Feature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
 
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
@@ -56,6 +54,9 @@ std::string SortFeatureListString(const std::string& feature_list) {
 }
 
 }  // namespace
+
+// A feature outside the anonymous namespace.
+BASE_FEATURE(kFeatureOutsideAnonymousNamespace, FEATURE_DISABLED_BY_DEFAULT);
 
 class FeatureListTest : public testing::Test {
  public:
@@ -82,6 +83,12 @@ TEST_F(FeatureListTest, TwoArgMacro) {
   EXPECT_FALSE(FeatureList::IsEnabled(kFeature2ArgsOff));
   EXPECT_STREQ("Feature2ArgsOn", kFeature2ArgsOn.name);
   EXPECT_STREQ("Feature2ArgsOff", kFeature2ArgsOff.name);
+}
+
+TEST_F(FeatureListTest, OutsideAnonymousNamespace) {
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOutsideAnonymousNamespace));
+  EXPECT_STREQ("FeatureOutsideAnonymousNamespace",
+               kFeatureOutsideAnonymousNamespace.name);
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {

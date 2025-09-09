@@ -106,14 +106,14 @@ enum FeatureState {
   BASE_FEATURE_INTERNAL_3_ARGS(k##name, #name, default_state)
 #else
 //    BASE_FEATURE_2(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)              \
-  namespace base_feature_internal {                                       \
-  static_assert(#feature[0] == 'k');                                      \
-  static constexpr base::internal::StringStorage feature##Name(#feature); \
-  }                                                                       \
-  constinit const base::Feature feature(                                  \
-      base_feature_internal::feature##Name.storage.data(), default_state, \
-      base::internal::FeatureMacroHandshake::kSecret)
+#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)                \
+  namespace base_feature_internal_##feature {                               \
+    static_assert(#feature[0] == 'k');                                      \
+    static constexpr base::internal::StringStorage feature##Name(#feature); \
+  }                                                                         \
+  constinit const base::Feature feature(                                    \
+      base_feature_internal_##feature::feature##Name.storage.data(),        \
+      default_state, base::internal::FeatureMacroHandshake::kSecret)
 #endif  // TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
 
 #define GET_BASE_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME
