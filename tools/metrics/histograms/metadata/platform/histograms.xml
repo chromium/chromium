@@ -1101,6 +1101,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Platform.FlexUefiCapsuleUpdateResult"
+    enum="FlexFwupdUpdateResult" expires_after="2026-07-17">
+  <owner>andrebraga@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    The result of each `uefi_plugin` update on Flex devices.
+
+    This metric is only recorded on ChromeOS Flex devices. Once per boot, any
+    `uefi_plugin` updates in the fwupd history are recorded.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
     expires_after="2026-03-01">
   <owner>rishbhagr@google.com</owner>

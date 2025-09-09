@@ -589,6 +589,23 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="x86-64-v4"/>
 </enum>
 
+<enum name="FlexFwupdUpdateResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Needs Reboot"/>
+  <int value="4" label="Transient"/>
+  <int value="5" label="Generic Failure"/>
+  <int value="6" label="Unsuccessful"/>
+  <int value="7" label="Insufficient Resources"/>
+  <int value="8" label="Incorrect Version"/>
+  <int value="9" label="Invalid Format"/>
+  <int value="10" label="Auth Error"/>
+  <int value="11" label="AC Not Connected"/>
+  <int value="12" label="Battery Too Low"/>
+  <int value="13" label="Unsatisfied Dependencies"/>
+</enum>
+
 <enum name="FlexInstallMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Flexor"/>
