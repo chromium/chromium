@@ -177,11 +177,7 @@ export class SpeechController {
 
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
-    const readAloudNode = ReadAloudNode.create(contextNode);
-    if (!readAloudNode) {
-      return;
-    }
-    this.readAloudModel_.init(readAloudNode);
+    this.readAloudModel_.init(contextNode);
   }
 
   onSelectionChange() {

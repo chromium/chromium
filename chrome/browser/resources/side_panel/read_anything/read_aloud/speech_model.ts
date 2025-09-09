@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ReadAloudNode} from './read_aloud_types.js';
+import {ReadAloudNode} from './read_aloud_types.js';
 import type {WordBoundaryState} from './word_boundaries.js';
 
 export enum PauseActionSource {
@@ -78,7 +78,7 @@ export class SpeechModel {
   // not been set. When TS-based segmentation is enabled, this is the root
   // node, and when V8-based segmentation is enabled, this is the first text
   // node.
-  private readAloudContextNode_: Node|null = null;
+  private readAloudContextNode_: ReadAloudNode|null|undefined = null;
 
   private resumeSpeechOnVoiceMenuClose_: boolean = false;
   private speechVolume_: number = 1.0;
@@ -115,12 +115,17 @@ export class SpeechModel {
     this.resumeSpeechOnVoiceMenuClose_ = shouldResume;
   }
 
-  getContextNode(): Node|null {
+  getContextNode(): ReadAloudNode|null|undefined {
     return this.readAloudContextNode_;
   }
 
   setContextNode(node: Node|null) {
-    this.readAloudContextNode_ = node;
+    if (!node) {
+      this.readAloudContextNode_ = node;
+      return;
+    }
+
+    this.readAloudContextNode_ = ReadAloudNode.create(node);
   }
 
   getPlaySessionStartTime(): number|null {
