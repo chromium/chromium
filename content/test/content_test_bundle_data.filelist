@@ -8147,6 +8147,7 @@ data/page_with_blur.html
 data/page_with_cached_subresource.html
 data/page_with_click_handler.html
 data/page_with_credentialless_iframe.html
+data/page_with_custom_lazy_image.html
 data/page_with_data_iframe_and_allow.html
 data/page_with_frameset.html
 data/page_with_hidden_iframe.html
@@ -8156,6 +8157,7 @@ data/page_with_iframe_and_link.html
 data/page_with_image.html
 data/page_with_image_redirect.html
 data/page_with_input_field.html
+data/page_with_lazy_image.html
 data/page_with_meta_refresh_frame.html
 data/page_with_multiple_cached_subresources.html
 data/page_with_multiple_iframes.html

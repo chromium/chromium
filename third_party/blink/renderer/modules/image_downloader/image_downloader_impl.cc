@@ -239,8 +239,19 @@ void ImageDownloaderImpl::DownloadImageFromAxNode(
     return;
   }
 
-  // Use the data url since the src attribute may not contain the scheme.
+  // First, try the data url since the src attribute may not contain the scheme.
   KURL url(obj->ImageDataUrl(gfx::Size()));
+  // If there is no data url (e.g. the image is lazy loaded, try using the
+  // regular url).
+  if (url.IsNull() && obj->IsImage()) {
+    url = obj->Url();
+  }
+  // If the url is still null, return not found.
+  if (url.IsNull()) {
+    std::move(callback).Run(NOT_FOUND, {}, {});
+    return;
+  }
+
   DownloadImage(url, /*is_favicon=*/false, preferred_size, max_bitmap_size,
                 bypass_cache, std::move(callback));
 }

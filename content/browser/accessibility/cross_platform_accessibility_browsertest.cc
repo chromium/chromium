@@ -208,6 +208,46 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         ax::mojom::StringAttribute::kName);
   }
 
+  class DownloadImageObserver {
+   public:
+    MOCK_METHOD5(OnFinishDownloadImage,
+                 void(int id,
+                      int status_code,
+                      const GURL& image_url,
+                      const std::vector<SkBitmap>& bitmap,
+                      const std::vector<gfx::Size>& sizes));
+    ~DownloadImageObserver() = default;
+  };
+
+  void DownloadImageFromAxNodeTestInternal(Shell* shell,
+                                           ui::AXTreeID tree_id,
+                                           ui::AXNodeID node_id,
+                                           int expected_http_status,
+                                           int expected_number_of_images) {
+    using ::testing::_;
+    using ::testing::InvokeWithoutArgs;
+    using ::testing::SizeIs;
+
+    // Set up everything.
+    DownloadImageObserver download_image_observer;
+    base::RunLoop run_loop;
+
+    // Set up expectation and stub.
+    EXPECT_CALL(download_image_observer,
+                OnFinishDownloadImage(_, expected_http_status, _,
+                                      SizeIs(expected_number_of_images), _));
+    ON_CALL(download_image_observer, OnFinishDownloadImage(_, _, _, _, _))
+        .WillByDefault(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+    shell->web_contents()->DownloadImageFromAxNode(
+        tree_id, node_id, gfx::Size(), 1024, false,
+        base::BindOnce(&DownloadImageObserver::OnFinishDownloadImage,
+                       base::Unretained(&download_image_observer)));
+
+    // Wait for response.
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -268,6 +308,84 @@ ui::BrowserAccessibility* FindNodeByRole(ui::BrowserAccessibility* root,
 }
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DownloadImageFromAxNode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/single_face.jpg"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ASSERT_TRUE(web_contents);
+  WaitForAccessibilityTreeToChange(web_contents);
+
+  ui::BrowserAccessibility* image =
+      FindFirstNodeWithRole(ax::mojom::Role::kImage);
+  ASSERT_TRUE(image);
+
+  DownloadImageFromAxNodeTestInternal(shell(), GetAXTree().GetAXTreeID(),
+                                      image->GetId(), 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DownloadImageFromAxNode_NodeNotFound) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/page_with_lazy_image.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ASSERT_TRUE(web_contents);
+  WaitForAccessibilityTreeToChange(web_contents);
+
+  ui::BrowserAccessibility* image =
+      FindFirstNodeWithRole(ax::mojom::Role::kParagraph);
+  ASSERT_TRUE(image);
+
+  DownloadImageFromAxNodeTestInternal(shell(), GetAXTree().GetAXTreeID(),
+                                      image->GetId(), 404, 0);
+}
+
+// TODO(crbug.com/40844856): This test is flaky
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DISABLED_DownloadImageFromAxNode_LazyLoaded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/page_with_lazy_image.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ASSERT_TRUE(web_contents);
+  WaitForAccessibilityTreeToChange(web_contents);
+
+  ui::BrowserAccessibility* image =
+      FindFirstNodeWithRole(ax::mojom::Role::kImage);
+  ASSERT_TRUE(image);
+
+  DownloadImageFromAxNodeTestInternal(shell(), GetAXTree().GetAXTreeID(),
+                                      image->GetId(), 200, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DownloadImageFromAxNode_NoUrl) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/page_with_custom_lazy_image.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ASSERT_TRUE(web_contents);
+  WaitForAccessibilityTreeToChange(web_contents);
+
+  ui::BrowserAccessibility* image =
+      FindFirstNodeWithRole(ax::mojom::Role::kImage);
+  ASSERT_TRUE(image);
+
+  DownloadImageFromAxNodeTestInternal(shell(), GetAXTree().GetAXTreeID(),
+                                      image->GetId(), 404, 0);
+}
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        WebpageAccessibility) {
