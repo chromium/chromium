@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -477,15 +479,14 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 // Creates a large button for the BWG entry point.
 - (UIButton*)createBWGButton {
+  ChromeButton* button = PrimaryActionButton();
+
   // Create the background config.
-  UIBackgroundConfiguration* backgroundConfig =
-      [UIBackgroundConfiguration clearConfiguration];
+  UIBackgroundConfiguration* backgroundConfig = button.configuration.background;
   backgroundConfig.backgroundColor = [UIColor colorNamed:kBlue600Color];
-  backgroundConfig.cornerRadius = kButtonsCornerRadius;
 
   // Create the button config.
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
   buttonConfiguration.background = backgroundConfig;
   buttonConfiguration.image = [self askGeminiIcon];
   buttonConfiguration.imagePlacement = NSDirectionalRectEdgeLeading;
@@ -502,9 +503,8 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
       initWithString:l10n_util::GetNSString(IDS_IOS_AI_HUB_GEMINI_LABEL)];
   [string addAttributes:titleAttributes range:NSMakeRange(0, string.length)];
   buttonConfiguration.attributedTitle = string;
+  button.configuration = buttonConfiguration;
 
-  UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
-                                         primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
                 action:@selector(handleBWGTapped:)
@@ -638,6 +638,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // image.
   button.userInteractionEnabled = enabled;
   button.alpha = enabled ? 1.0 : 0.5;
+  button.enabled = enabled;
 }
 
 @end
