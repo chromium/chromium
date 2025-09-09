@@ -141,7 +141,6 @@ void DataTypeController::InitDataTypeController(
                                                  WORKSPACE_DESK,
                                                  HISTORY,
                                                  PRINTERS_AUTHORIZATION_SERVERS,
-                                                 POWER_BOOKMARK,
                                                  NIGORI,
                                                  COOKIES};
     CHECK(kLegacyTypes.Has(type()))

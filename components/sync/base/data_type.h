@@ -134,10 +134,6 @@ enum DataType {
   // (Linux, Mac, Windows, ChromeOS) and Android.
   SAVED_TAB_GROUP,
 
-  // Power bookmarks are features associated with bookmarks(i.e. notes, price
-  // tracking). Their life cycle are synced with bookmarks.
-  POWER_BOOKMARK,
-
   // WebAuthn credentials, more commonly known as passkeys.
   WEBAUTHN_CREDENTIAL,
 
@@ -402,7 +398,7 @@ constexpr DataTypeSet SharedTypes() {
 // any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      56 == GetNumDataTypes(),
+      55 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
       "data. The warning offers the user to either proceed with sign-out "

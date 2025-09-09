@@ -58,7 +58,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".PASSWORD" summary="PASSWORD"/>
   <variant name=".PLUS_ADDRESS" summary="PLUS_ADDRESS"/>
   <variant name=".PLUS_ADDRESS_SETTING" summary="PLUS_ADDRESS_SETTING"/>
-  <variant name=".POWER_BOOKMARK" summary="POWER_BOOKMARK"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>
   <variant name=".PRINTER" summary="PRINTER"/>
   <variant name=".PRINTERS_AUTHORIZATION_SERVER"

@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -88,7 +88,6 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
          PRINTERS_AUTHORIZATION_SERVERS},
         {sync_pb::EntitySpecifics::kContactInfoFieldNumber, CONTACT_INFO},
         {sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber, SAVED_TAB_GROUP},
-        {sync_pb::EntitySpecifics::kPowerBookmarkFieldNumber, POWER_BOOKMARK},
         {sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber,
          WEBAUTHN_CREDENTIAL},
         {sync_pb::EntitySpecifics::
@@ -249,9 +248,6 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case SAVED_TAB_GROUP:
       specifics->mutable_saved_tab_group();
       break;
-    case POWER_BOOKMARK:
-      specifics->mutable_power_bookmark();
-      break;
     case WEBAUTHN_CREDENTIAL:
       specifics->mutable_webauthn_credential();
       break;
@@ -386,8 +382,6 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kContactInfoFieldNumber;
     case SAVED_TAB_GROUP:
       return sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber;
-    case POWER_BOOKMARK:
-      return sync_pb::EntitySpecifics::kPowerBookmarkFieldNumber;
     case WEBAUTHN_CREDENTIAL:
       return sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber;
     case INCOMING_PASSWORD_SHARING_INVITATION:
@@ -432,7 +426,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -558,9 +552,6 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_saved_tab_group()) {
     return SAVED_TAB_GROUP;
   }
-  if (specifics.has_power_bookmark()) {
-    return POWER_BOOKMARK;
-  }
   if (specifics.has_webauthn_credential()) {
     return WEBAUTHN_CREDENTIAL;
   }
@@ -622,7 +613,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -747,8 +738,6 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Contact Info";
     case SAVED_TAB_GROUP:
       return "Saved Tab Group";
-    case POWER_BOOKMARK:
-      return "Power Bookmark";
     case WEBAUTHN_CREDENTIAL:
       return "WebAuthn Credentials";
     case INCOMING_PASSWORD_SHARING_INVITATION:
@@ -866,8 +855,6 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "CONTACT_INFO";
     case SAVED_TAB_GROUP:
       return "SAVED_TAB_GROUP";
-    case POWER_BOOKMARK:
-      return "POWER_BOOKMARK";
     case WEBAUTHN_CREDENTIAL:
       return "WEBAUTHN_CREDENTIAL";
     case INCOMING_PASSWORD_SHARING_INVITATION:
@@ -985,8 +972,6 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kContactInfo;
     case SAVED_TAB_GROUP:
       return DataTypeForHistograms::kSavedTabGroups;
-    case POWER_BOOKMARK:
-      return DataTypeForHistograms::kPowerBookmark;
     case WEBAUTHN_CREDENTIAL:
       return DataTypeForHistograms::kWebAuthnCredentials;
     case INCOMING_PASSWORD_SHARING_INVITATION:
@@ -1121,8 +1106,6 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "contact_info";
     case SAVED_TAB_GROUP:
       return "saved_tab_group";
-    case POWER_BOOKMARK:
-      return "power_bookmark";
     case WEBAUTHN_CREDENTIAL:
       return "webauthn_credential";
     case INCOMING_PASSWORD_SHARING_INVITATION:

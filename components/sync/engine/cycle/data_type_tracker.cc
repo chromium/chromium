@@ -103,7 +103,6 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
-    case POWER_BOOKMARK:
     case WEBAUTHN_CREDENTIAL:
     case PLUS_ADDRESS:
     case PLUS_ADDRESS_SETTING:
@@ -169,7 +168,6 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case WORKSPACE_DESK:
     case NIGORI:
     case SAVED_TAB_GROUP:
-    case POWER_BOOKMARK:
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARED_TAB_GROUP_DATA:

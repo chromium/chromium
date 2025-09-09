@@ -48,7 +48,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
     // TODO(crbug.com/412602018): Remove this parameter once the feature is
     // launched.
     bool skip_feature_checks_if_early = false) {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -58,7 +58,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
   // changed without updating js part.
   switch (type) {
     case UserSelectableType::kBookmarks:
-      return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS, POWER_BOOKMARK}};
+      return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS}};
     case UserSelectableType::kPreferences: {
       DataTypeSet types = {PREFERENCES, DICTIONARY, SEARCH_ENGINES};
       // `skip_feature_checks_if_early` is used to avoid checking the feature

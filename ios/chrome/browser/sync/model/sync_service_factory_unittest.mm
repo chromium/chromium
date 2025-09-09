@@ -53,7 +53,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(56 == syncer::GetNumDataTypes(),
+    static_assert(55 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 

@@ -68,7 +68,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");

@@ -1089,7 +1089,7 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
 
 #if BUILDFLAG(IS_ANDROID)
