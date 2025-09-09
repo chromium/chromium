@@ -7,6 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
@@ -142,11 +144,20 @@ class CollaborationMessagingPageActionControllerTest : public testing::Test {
 
     tab_interface_ =
         std::make_unique<FakeTabInterface>(std::move(web_contents));
+
     EXPECT_CALL(*tab_interface_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(data_host_));
 
-    tab_data_ =
-        std::make_unique<tab_groups::CollaborationMessagingTabData>(profile());
+    EXPECT_CALL(*tab_interface_, GetBrowserWindowInterface())
+        .Times(1)
+        .WillRepeatedly(testing::Return(&mock_browser_window_interface_));
+
+    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+        .Times(1)
+        .WillRepeatedly(testing::Return(profile()));
+
+    tab_data_ = std::make_unique<tab_groups::CollaborationMessagingTabData>(
+        tab_interface());
 
     controller_ = std::make_unique<CollaborationMessagingPageActionController>(
         *tab_interface_, page_action_controller(), *tab_data_);
@@ -178,6 +189,7 @@ class CollaborationMessagingPageActionControllerTest : public testing::Test {
   std::unique_ptr<tab_groups::CollaborationMessagingTabData> tab_data_;
   std::unique_ptr<CollaborationMessagingPageActionController> controller_;
   FakePageActionController page_action_controller_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
 TEST_F(CollaborationMessagingPageActionControllerTest,

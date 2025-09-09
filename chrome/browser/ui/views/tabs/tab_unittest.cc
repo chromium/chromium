@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -34,9 +35,11 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -323,10 +326,35 @@ class TabContentsTest : public ChromeViewsTestBase {
     tab->alert_indicator_button_->fade_animation_->Stop();
   }
 
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+  GetCollaborationData(ui::UnownedUserDataHost& unowned_user_data_host) {
+    tabs::MockTabInterface mock_tab_interface;
+    MockBrowserWindowInterface mock_browser_window_interface;
+
+    EXPECT_CALL(mock_tab_interface, GetUnownedUserDataHost())
+        .Times(1)
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host));
+
+    EXPECT_CALL(mock_tab_interface, GetBrowserWindowInterface())
+        .Times(1)
+        .WillRepeatedly(testing::Return(&mock_browser_window_interface));
+
+    EXPECT_CALL(mock_browser_window_interface, GetProfile())
+        .Times(1)
+        .WillRepeatedly(testing::Return(profile()));
+
+    return std::make_unique<tab_groups::CollaborationMessagingTabData>(
+        &mock_tab_interface);
+  }
+
+  TestingProfile* profile() { return &profile_; }
+
   // Owned by TabStrip.
   raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
   raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
+
+  TestingProfile profile_;
 };
 
 TEST_F(TabTest, HitTest) {
@@ -924,8 +952,6 @@ TEST_F(TabContentsTest, AccessibleNameChanged) {
 }
 
 TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
-  TestingProfile profile;
-
   controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
 
   TabRendererData old_data = tab_strip_->tab_at(0)->data();
@@ -934,41 +960,49 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message for new_data.
-  tab_groups::CollaborationMessagingTabData collaboration_messaging1(&profile);
-  collaboration_messaging1.set_mocked_avatar_for_testing(gfx::Image());
-  collaboration_messaging1.SetMessage(
+  ui::UnownedUserDataHost unowned_user_data_1;
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging1 = GetCollaborationData(unowned_user_data_1);
+  collaboration_messaging1->set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging1->SetMessage(
       CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
-  new_data.collaboration_messaging = collaboration_messaging1.GetWeakPtr();
+  new_data.collaboration_messaging = collaboration_messaging1->GetWeakPtr();
 
   EXPECT_TRUE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message with a different name for old_data.
-  tab_groups::CollaborationMessagingTabData collaboration_messaging2(&profile);
-  collaboration_messaging2.set_mocked_avatar_for_testing(gfx::Image());
-  collaboration_messaging2.SetMessage(
+  ui::UnownedUserDataHost unowned_user_data_2;
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging2 = GetCollaborationData(unowned_user_data_2);
+  collaboration_messaging2->set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging2->SetMessage(
       CreateMessage("Name2", CollaborationEvent::TAB_ADDED));
-  old_data.collaboration_messaging = collaboration_messaging2.GetWeakPtr();
+  old_data.collaboration_messaging = collaboration_messaging2->GetWeakPtr();
 
   EXPECT_TRUE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message with a different event for old_data.
-  tab_groups::CollaborationMessagingTabData collaboration_messaging3(&profile);
-  collaboration_messaging3.set_mocked_avatar_for_testing(gfx::Image());
-  collaboration_messaging3.SetMessage(
+  ui::UnownedUserDataHost unowned_user_data_3;
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging3 = GetCollaborationData(unowned_user_data_3);
+  collaboration_messaging3->set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging3->SetMessage(
       CreateMessage("Name1", CollaborationEvent::TAB_UPDATED));
-  old_data.collaboration_messaging = collaboration_messaging3.GetWeakPtr();
+  old_data.collaboration_messaging = collaboration_messaging3->GetWeakPtr();
 
   EXPECT_TRUE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create a duplicate message for old_data.
-  tab_groups::CollaborationMessagingTabData collaboration_messaging4(&profile);
-  collaboration_messaging4.set_mocked_avatar_for_testing(gfx::Image());
-  collaboration_messaging4.SetMessage(
+  ui::UnownedUserDataHost unowned_user_data_4;
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging4 = GetCollaborationData(unowned_user_data_4);
+  collaboration_messaging4->set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging4->SetMessage(
       CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
-  old_data.collaboration_messaging = collaboration_messaging4.GetWeakPtr();
+  old_data.collaboration_messaging = collaboration_messaging4->GetWeakPtr();
 
   EXPECT_FALSE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));

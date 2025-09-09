@@ -11802,6 +11802,7 @@ if (!is_android && !is_chromeos_device) {
         "//components/privacy_sandbox/privacy_sandbox_attestations",
         "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
         "//components/saved_tab_groups/internal",
+        "//components/tabs:test_support",
         "//components/user_education/common:events",
         "//components/user_education/views",
         "//components/user_education/webui",
