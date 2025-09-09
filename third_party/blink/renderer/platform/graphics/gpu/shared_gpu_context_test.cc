@@ -38,47 +38,6 @@ class AcceleratedCompositingTestPlatform
   bool IsGpuCompositingDisabled() const override { return false; }
 };
 
-class SharedGpuContextTest : public Test {
- public:
-  void SetUp() override {
-    accelerated_compositing_scope_ = std::make_unique<
-        ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
-    task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
-    handle_ =
-        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
-            task_runner_);
-    auto factory = [](FakeGLES2Interface* gl)
-        -> std::unique_ptr<WebGraphicsContext3DProvider> {
-      gl->SetIsContextLost(false);
-      auto fake_context =
-          std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
-      gpu::Capabilities capabilities;
-      capabilities.max_texture_size = 20;
-      fake_context->SetCapabilities(capabilities);
-      return fake_context;
-    };
-    SharedGpuContext::SetContextProviderFactoryForTesting(
-        BindRepeating(factory, Unretained(&gl_)));
-  }
-
-  void TearDown() override {
-    handle_.reset();
-    task_runner_.reset();
-    SharedGpuContext::Reset();
-    accelerated_compositing_scope_ = nullptr;
-  }
-
-  FakeGLES2Interface& GlInterface() { return gl_; }
-
- private:
-  scoped_refptr<base::NullTaskRunner> task_runner_;
-  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
-  FakeGLES2Interface gl_;
-  std::unique_ptr<
-      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
-      accelerated_compositing_scope_;
-};
-
 // Test fixure that simulate a graphics context creation failure, when using gpu
 // compositing.
 class BadSharedGpuContextTest : public Test {
@@ -132,9 +91,11 @@ class SoftwareCompositingTest : public Test {
   FakeGLES2Interface gl_;
 };
 
-class SharedGpuContextTestViz : public Test {
+class SharedGpuContextTest : public Test {
  public:
   void SetUp() override {
+    accelerated_compositing_scope_ = std::make_unique<
+        ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
     task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
     handle_ =
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
@@ -153,13 +114,16 @@ class SharedGpuContextTestViz : public Test {
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  std::unique_ptr<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
+      accelerated_compositing_scope_;
 };
 
 TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
   EXPECT_NE(SharedGpuContext::ContextProviderWrapper(), nullptr);
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context =
       SharedGpuContext::ContextProviderWrapper();
-  GlInterface().SetIsContextLost(true);
+  test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   EXPECT_TRUE(!!context);
 
@@ -206,7 +170,7 @@ TEST_F(SoftwareCompositingTest, CompositingMode) {
   EXPECT_FALSE(SharedGpuContext::IsGpuCompositingEnabled());
 }
 
-TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
+TEST_F(SharedGpuContextTest, AccelerateImageBufferSurfaceAutoRecovery) {
   // Verifies that after a context loss, attempting to allocate an
   // AcceleratedImageBufferSurface will restore the context and succeed
   test_context_provider_->TestContextGL()->set_context_lost(true);
