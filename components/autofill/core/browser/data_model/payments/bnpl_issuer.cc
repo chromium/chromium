@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -129,6 +130,43 @@ std::string_view ConvertToBnplIssuerIdString(BnplIssuer::IssuerId issuer_id) {
       return kBnplAfterpayIssuerId;
     case BnplIssuer::IssuerId::kBnplKlarna:
       return kBnplKlarnaIssuerId;
+  }
+  NOTREACHED();
+}
+
+std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
+GetBnplIssuerIconIds(BnplIssuer::IssuerId issuer_id, bool issuer_linked) {
+  if (issuer_linked) {
+    switch (issuer_id) {
+      case BnplIssuer::IssuerId::kBnplAffirm:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_AFFIRM_LINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_AFFIRM_LINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplZip:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_ZIP_LINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_ZIP_LINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplAfterpay:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_AFTERPAY_LINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_AFTERPAY_LINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplKlarna:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_KLARNA_LINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_KLARNA_LINKED_DARK)};
+    }
+  } else {
+    switch (issuer_id) {
+      case BnplIssuer::IssuerId::kBnplAffirm:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_AFFIRM_UNLINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_AFFIRM_UNLINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplZip:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_ZIP_UNLINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_ZIP_UNLINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplAfterpay:
+        return {
+            BnplIssuer::LightModeImageId(IDR_AUTOFILL_AFTERPAY_UNLINKED),
+            BnplIssuer::DarkModeImageId(IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK)};
+      case BnplIssuer::IssuerId::kBnplKlarna:
+        return {BnplIssuer::LightModeImageId(IDR_AUTOFILL_KLARNA_UNLINKED),
+                BnplIssuer::DarkModeImageId(IDR_AUTOFILL_KLARNA_UNLINKED_DARK)};
+    }
   }
   NOTREACHED();
 }

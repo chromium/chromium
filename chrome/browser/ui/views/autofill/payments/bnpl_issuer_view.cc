@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/grit/components_scaled_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
@@ -75,42 +74,12 @@ void BnplIssuerView::AddedToWidget() {
     bool issuer_eligible =
         eligibility == BnplIssuerEligibilityForPage::kIsEligible;
     const bool issuer_linked = issuer.payment_instrument().has_value();
-    const auto image_ids = [&]() -> std::pair<int, int> {
-      if (issuer_linked) {
-        switch (issuer.issuer_id()) {
-          case IssuerId::kBnplAffirm:
-            return {IDR_AUTOFILL_AFFIRM_LINKED,
-                    IDR_AUTOFILL_AFFIRM_LINKED_DARK};
-          case IssuerId::kBnplZip:
-            return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
-          case IssuerId::kBnplAfterpay:
-            return {IDR_AUTOFILL_AFTERPAY_LINKED,
-                    IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
-          case IssuerId::kBnplKlarna:
-            return {IDR_AUTOFILL_KLARNA_LINKED,
-                    IDR_AUTOFILL_KLARNA_LINKED_DARK};
-        }
-        NOTREACHED();
-      }
-      switch (issuer.issuer_id()) {
-        case IssuerId::kBnplAffirm:
-          return {IDR_AUTOFILL_AFFIRM_UNLINKED,
-                  IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
-        case IssuerId::kBnplZip:
-          return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
-        case IssuerId::kBnplAfterpay:
-          return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
-                  IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
-        case IssuerId::kBnplKlarna:
-          return {IDR_AUTOFILL_KLARNA_UNLINKED,
-                  IDR_AUTOFILL_KLARNA_UNLINKED_DARK};
-      }
-      NOTREACHED();
-    }();
-
+    const std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
+        image_ids =
+            autofill::GetBnplIssuerIconIds(issuer.issuer_id(), issuer_linked);
     auto image_view = std::make_unique<views::ThemeTrackingImageView>(
-        ui::ImageModel::FromResourceId(image_ids.first),
-        ui::ImageModel::FromResourceId(image_ids.second),
+        ui::ImageModel::FromResourceId(image_ids.first.value()),
+        ui::ImageModel::FromResourceId(image_ids.second.value()),
         base::BindRepeating(
             [](views::View* view) {
               return ui::ColorVariant(view->GetColorProvider()->GetColor(

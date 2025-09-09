@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/types/optional_ref.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 
 namespace autofill {
@@ -68,6 +69,10 @@ class BnplIssuer {
     // Bound is inclusive.
     uint64_t price_upper_bound;
   };
+
+  // The resource IDs for the light and dark mode BNPL issuer icons.
+  using LightModeImageId = base::StrongAlias<class LightModeImageIdTag, int>;
+  using DarkModeImageId = base::StrongAlias<class DarkModeImageIdTag, int>;
 
   BnplIssuer();
   // `instrument_id` is present for linked issuers, and nullopt for unlinked
@@ -141,6 +146,11 @@ BnplIssuer::IssuerId ConvertToBnplIssuerIdEnum(std::string_view issuer_id);
 
 // Converts a BNPL enum value into its corresponding constant.
 std::string_view ConvertToBnplIssuerIdString(BnplIssuer::IssuerId issuer_id);
+
+// Returns a pair of icon IDs for a BNPL issuer, for light and dark modes
+// respectively.
+std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
+GetBnplIssuerIconIds(BnplIssuer::IssuerId issuer_id, bool issuer_linked);
 
 }  // namespace autofill
 
