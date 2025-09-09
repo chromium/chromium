@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -48,6 +49,11 @@ public class BookmarkBarUtils {
     @interface ViewType {
         int ITEM = 1;
     }
+
+    // Histogram names:
+    public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
+    public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
+            "Bookmarks.BookmarkBar.ToggledByKeyboardShortcut";
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
     private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
@@ -176,7 +182,10 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the user setting should be set.
      * @param enabled Whether the user setting should be set to enabled/disabled.
      */
-    public static void setUserPrefsShowBookmarksBar(Profile profile, boolean enabled) {
+    public static void setUserPrefsShowBookmarksBar(
+            Profile profile, boolean enabled, boolean fromKeyboardShortcut) {
+        RecordHistogram.recordBooleanHistogram(
+                fromKeyboardShortcut ? TOGGLED_BY_KEYBOARD_SHORTCUT : TOGGLED_IN_SETTINGS, enabled);
         getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
     }
 
@@ -185,10 +194,12 @@ public class BookmarkBarUtils {
      *
      * @param profile The profile for which the UserPref should be toggled.
      */
-    public static void toggleUserPrefsShowBookmarksBar(Profile profile) {
-        final var prefService = getPrefService(profile);
-        prefService.setBoolean(
-                Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
+    public static void toggleUserPrefsShowBookmarksBar(
+            Profile profile, boolean fromKeyboardShortcut) {
+        setUserPrefsShowBookmarksBar(
+                profile,
+                !getPrefService(profile).getBoolean(Pref.SHOW_BOOKMARK_BAR),
+                fromKeyboardShortcut);
     }
 
     // Device preferences methods - used on tablets.
@@ -220,7 +231,10 @@ public class BookmarkBarUtils {
      *
      * @param enabled The new device preference for enabling the bookmark bar.
      */
-    public static void setDevicePrefShowBookmarksBar(boolean enabled) {
+    public static void setDevicePrefShowBookmarksBar(
+            boolean enabled, boolean fromKeyboardShortcut) {
+        RecordHistogram.recordBooleanHistogram(
+                fromKeyboardShortcut ? TOGGLED_BY_KEYBOARD_SHORTCUT : TOGGLED_IN_SETTINGS, enabled);
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, enabled)
@@ -243,8 +257,8 @@ public class BookmarkBarUtils {
      * Toggles the value of the show bookmarks bar device preference, this is stored locally and
      * only used on tablets.
      */
-    public static void toggleDevicePrefShowBookmarksBar() {
-        setDevicePrefShowBookmarksBar(!isDevicePrefShowBookmarksBarEnabled());
+    public static void toggleDevicePrefShowBookmarksBar(boolean fromKeyboardShortcut) {
+        setDevicePrefShowBookmarksBar(!isDevicePrefShowBookmarksBarEnabled(), fromKeyboardShortcut);
     }
 
     // Helper methods.

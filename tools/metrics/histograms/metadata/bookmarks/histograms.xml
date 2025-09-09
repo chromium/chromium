@@ -215,6 +215,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.ToggledByKeyboardShortcut"
+    enum="BooleanEnabled" expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted when users show/hide the bookmarks bar using the keyboard shortcut
+    Ctrl+Shift+B. Emits enabled if the bar will be shown after the shortcut and
+    disabled if it will be hidden.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.ToggledInSettings" enum="BooleanEnabled"
+    expires_after="2026-03-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted when users show/hide the bookmarks bar using the Appearance Settings
+    page toggle. Emits enabled if the bar will be shown after the shortcut and
+    disabled if it will be hidden.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
     enum="BookmarkBarDragDropType" expires_after="2026-01-18">
   <owner>dfried@chromium.org</owner>

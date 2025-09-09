@@ -130,7 +130,9 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
                             BookmarkBarUtils.setUserPrefsShowBookmarksBar(
-                                    getProfile(), (boolean) newValue);
+                                    getProfile(),
+                                    (boolean) newValue,
+                                    /* fromKeyboardShortcut= */ false);
                             return true;
                         });
     }
@@ -152,7 +154,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
-                            BookmarkBarUtils.setDevicePrefShowBookmarksBar((boolean) newValue);
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                    (boolean) newValue, /* fromKeyboardShortcut= */ false);
                             return true;
                         });
     }

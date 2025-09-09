@@ -1892,9 +1892,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 if (DeviceInfo.isDesktop()) {
-                    BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfileSupplier.get());
+                    BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
+                            mProfileSupplier.get(), /* fromKeyboardShortcut= */ true);
                 } else {
-                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
+                            /* fromKeyboardShortcut= */ true);
                 }
                 return true;
             }

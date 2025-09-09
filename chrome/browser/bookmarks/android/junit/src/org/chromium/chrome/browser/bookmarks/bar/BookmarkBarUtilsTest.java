@@ -48,6 +48,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -270,7 +271,8 @@ public class BookmarkBarUtilsTest {
                             assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
 
                             // Case: feature allowed explicit device pref
-                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(true);
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                    true, /* fromKeyboardShortcut= */ false);
                             assertTrue(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
                         });
     }
@@ -299,11 +301,30 @@ public class BookmarkBarUtilsTest {
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.setUserPrefsShowBookmarksBar(mProfile, true);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT, true, 1)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_IN_SETTINGS)
+                        .build();
+
+        BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                mProfile, true, /* fromKeyboardShortcut= */ true);
         assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.setUserPrefsShowBookmarksBar(mProfile, false);
+        histogramWatcher.assertExpected();
+
+        var histogramWatcher2 =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(BookmarkBarUtils.TOGGLED_IN_SETTINGS, false, 1)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT)
+                        .build();
+
+        BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                mProfile, false, /* fromKeyboardShortcut= */ false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+
+        histogramWatcher2.assertExpected();
     }
 
     @Test
@@ -314,10 +335,10 @@ public class BookmarkBarUtilsTest {
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile);
+        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile, true);
         assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile);
+        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile, false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
     }
 
@@ -347,20 +368,36 @@ public class BookmarkBarUtilsTest {
     @SmallTest
     public void testSetDevicePrefShowBookmarksBar() {
         mOverrideContextRule.setIsDesktop(false);
-
         // User should not have set any preference yet.
         assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
         // Even though user has not set a device preference, the FeatureParam will make it true.
         assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
 
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT, true, 1)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_IN_SETTINGS)
+                        .build();
+
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ true);
         assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false);
+        histogramWatcher.assertExpected();
+
+        var histogramWatcher2 =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(BookmarkBarUtils.TOGGLED_IN_SETTINGS, false, 1)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT)
+                        .build();
+
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false, /* fromKeyboardShortcut= */ false);
         assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        histogramWatcher2.assertExpected();
     }
 
     @Test
@@ -374,11 +411,11 @@ public class BookmarkBarUtilsTest {
         // Even though user has not set a device preference, the FeatureParam will make it true.
         assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
 
-        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(true);
         assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
-        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(false);
         assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
     }

@@ -341,7 +341,8 @@ public class KeyboardFocusRowManagerTest {
                 () ->
                         BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                                 mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
-                                showBookmarksBar));
+                                showBookmarksBar,
+                                /* fromKeyboardShortcut= */ false));
     }
 
     private void setBookmarkBarFeatureParam(boolean param) {

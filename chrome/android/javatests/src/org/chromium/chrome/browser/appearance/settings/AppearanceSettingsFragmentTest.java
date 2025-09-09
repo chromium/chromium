@@ -218,11 +218,15 @@ public class AppearanceSettingsFragmentTest {
         Assert.assertTrue(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> BookmarkBarUtils.setDevicePrefShowBookmarksBar(false));
+                () ->
+                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                false, /* fromKeyboardShortcut= */ true));
         Assert.assertFalse(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> BookmarkBarUtils.setDevicePrefShowBookmarksBar(true));
+                () ->
+                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                true, /* fromKeyboardShortcut= */ false));
         Assert.assertTrue(bookmarkBarPref.isChecked());
     }
 
