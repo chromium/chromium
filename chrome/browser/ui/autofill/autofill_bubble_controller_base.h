@@ -65,10 +65,11 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // irrespective of its priority.
   void QueueOrShowBubble(bool force_show = false);
 
+  // Sets the `bubble_view_` and informs the bubble manager when the
+  // `bubble_view_` becomes null.
+  void SetBubbleViewAndInformBubbleManager(AutofillBubbleBase* bubble_view);
+
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
-  void set_bubble_view(AutofillBubbleBase* bubble_view) {
-    bubble_view_ = bubble_view;
-  }
 
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.

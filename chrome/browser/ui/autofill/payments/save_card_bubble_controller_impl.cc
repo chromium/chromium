@@ -535,7 +535,7 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
 
 void SaveCardBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  set_bubble_view(nullptr);
+  SetBubbleViewAndInformBubbleManager(nullptr);
 
   // If the dialog should be re-shown, do not change the bubble type or log
   // metrics.
@@ -769,11 +769,12 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    set_bubble_view(browser->window()
-                        ->GetAutofillBubbleHandler()
-                        ->ShowSaveCardConfirmationBubble(web_contents(), this));
+    SetBubbleViewAndInformBubbleManager(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowSaveCardConfirmationBubble(web_contents(), this));
   } else {
-    set_bubble_view(
+    SetBubbleViewAndInformBubbleManager(
         browser->window()->GetAutofillBubbleHandler()->ShowSaveCreditCardBubble(
             web_contents(), this, is_triggered_by_user_gesture_));
   }

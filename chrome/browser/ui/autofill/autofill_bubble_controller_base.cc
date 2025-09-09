@@ -35,8 +35,7 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    bubble_view_ = nullptr;
-    // Bubble Manager might be already destroyed so no need to inform it.
+    SetBubbleViewAndInformBubbleManager(nullptr);
   }
 }
 
@@ -60,15 +59,7 @@ void AutofillBubbleControllerBase::ShowBubble() {
 void AutofillBubbleControllerBase::HideBubble() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    bubble_view_ = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillShowBubblesBasedOnPriorities)) {
-      if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-        manager->OnBubbleHiddenByController(*this);
-      }
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
+    SetBubbleViewAndInformBubbleManager(nullptr);
   }
 }
 
@@ -106,6 +97,25 @@ void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 #endif
 
   ShowBubble();
+}
+
+void AutofillBubbleControllerBase::SetBubbleViewAndInformBubbleManager(
+    AutofillBubbleBase* bubble_view) {
+#if !BUILDFLAG(IS_ANDROID)
+  const bool was_showing = IsShowingBubble();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  bubble_view_ = bubble_view;
+
+#if !BUILDFLAG(IS_ANDROID)
+  const bool is_hiding = was_showing && !IsShowingBubble();
+  if (is_hiding && base::FeatureList::IsEnabled(
+                       features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+      manager->OnBubbleHiddenByController(*this);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill

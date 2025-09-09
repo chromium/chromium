@@ -122,7 +122,7 @@ bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
 
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  set_bubble_view(nullptr);
+  SetBubbleViewAndInformBubbleManager(nullptr);
   promo_code_button_clicked_ = false;
   UpdatePageActionIcon();
 }
@@ -213,10 +213,11 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  set_bubble_view(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowOfferNotificationBubble(web_contents(), this,
-                                                    is_user_gesture_));
+  SetBubbleViewAndInformBubbleManager(
+      browser->window()
+          ->GetAutofillBubbleHandler()
+          ->ShowOfferNotificationBubble(web_contents(), this,
+                                        is_user_gesture_));
   DCHECK(bubble_view());
 
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()

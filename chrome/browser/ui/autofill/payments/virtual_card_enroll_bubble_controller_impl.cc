@@ -206,7 +206,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  set_bubble_view(nullptr);
+  SetBubbleViewAndInformBubbleManager(nullptr);
   UpdatePageActionIcon();
 
   // If the dialog is to be shown again because user clicked on links, do not
@@ -339,7 +339,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    set_bubble_view(
+    SetBubbleViewAndInformBubbleManager(
         browser->window()
             ->GetAutofillBubbleHandler()
             ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
@@ -350,10 +350,11 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    set_bubble_view(browser->window()
-                        ->GetAutofillBubbleHandler()
-                        ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                                      user_gesture_reprompt));
+    SetBubbleViewAndInformBubbleManager(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowVirtualCardEnrollBubble(web_contents(), this,
+                                          user_gesture_reprompt));
   }
   DCHECK(bubble_view());
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()

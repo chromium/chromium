@@ -249,7 +249,7 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
 
 void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  set_bubble_view(nullptr);
+  SetBubbleViewAndInformBubbleManager(nullptr);
 
   // Log bubble result according to the closed reason.
   autofill_metrics::FilledCardInformationBubbleResult metric;
@@ -404,10 +404,11 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  set_bubble_view(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowFilledCardInformationBubble(web_contents(), this,
-                                                        is_user_gesture_));
+  SetBubbleViewAndInformBubbleManager(
+      browser->window()
+          ->GetAutofillBubbleHandler()
+          ->ShowFilledCardInformationBubble(web_contents(), this,
+                                            is_user_gesture_));
   DCHECK(bubble_view());
   bubble_has_been_shown_ = true;
 
