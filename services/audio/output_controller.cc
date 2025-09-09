@@ -93,6 +93,13 @@ OutputController::ErrorStatisticsTracker::~ErrorStatisticsTracker() {
   if (controller_) {
     controller_->SendLogMessage("StopStream => (duration=%" PRId64 " sec)",
                                 duration.InSeconds());
+    const double glitch_percentage =
+        duration.is_zero()
+            ? 0
+            : glitch_info_.duration.InSecondsF() / duration.InSecondsF();
+    controller_->SendLogMessage(
+        "StopStream => (glitches=[%s], glitch_percentage=%.3f%%)",
+        glitch_info_.ToString().c_str(), glitch_percentage * 100);
     controller_->SendLogMessage("StopStream => (error_during_callback=%s)",
                                 base::ToString(error_during_callback_).c_str());
   }
@@ -102,7 +109,9 @@ void OutputController::ErrorStatisticsTracker::RegisterError() {
   error_during_callback_ = true;
 }
 
-void OutputController::ErrorStatisticsTracker::OnMoreDataCalled() {
+void OutputController::ErrorStatisticsTracker::OnMoreDataCalled(
+    const media::AudioGlitchInfo& glitch_info) {
+  glitch_info_ += glitch_info;
   // Indicate that we haven't wedged (at least not indefinitely, WedgeCheck()
   // may have already fired if OnMoreData() took an abnormal amount of time).
   // Since this thread is the only writer of |on_more_io_data_called_| once the
@@ -419,7 +428,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
               "playout_delay (ms)", delay.InMillisecondsF());
   glitch_info.MaybeAddTraceEvent();
 
-  stats_tracker_->OnMoreDataCalled();
+  stats_tracker_->OnMoreDataCalled(glitch_info);
 
   if (request_before_read_) {
     sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);

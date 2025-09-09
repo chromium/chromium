@@ -242,7 +242,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     void RegisterError();
 
     // This function should be called from the stream callback thread.
-    void OnMoreDataCalled();
+    void OnMoreDataCalled(const media::AudioGlitchInfo& glitch_info);
 
    private:
     void WedgeCheck();
@@ -252,6 +252,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     RAW_PTR_EXCLUSION OutputController* const controller_;
 
     const base::TimeTicks start_time_;
+
+    // Accumulates AudioGlitchInfo provided in OnMoreData callbacks. Only used
+    // for logging purposes.
+    media::AudioGlitchInfo glitch_info_;
 
     bool error_during_callback_ = false;
 
