@@ -93,6 +93,7 @@ export class StatsTable {
    * @private
    */
   ensureStatsTable_(peerConnectionElement, report) {
+    const detailsId = peerConnectionElement.id + '-details-' + report.id;
     const tableId = peerConnectionElement.id + '-table-' + report.id;
     // Disable getElementById restriction here, since |tableId| is not
     // always a valid selector.
@@ -101,6 +102,7 @@ export class StatsTable {
     if (!table) {
       const container = this.ensureStatsTableContainer_(peerConnectionElement);
       const details = document.createElement('details');
+      details.id = detailsId;
       details.attributes['data-statsType'] = report.type;
       container.appendChild(details);
 

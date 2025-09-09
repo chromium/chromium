@@ -455,6 +455,28 @@ function addStandardStats(data) {
   }
 
   updateIceCandidateGrid(peerConnectionElement, r.statsById);
+
+  // Mark inactive outbound-rtp in grey.
+  const inactiveStatsIds = [];
+  const inactiveRtpStatsClass = 'stats-table-rtp-inactive';
+  stats.forEach(report => {
+    if (!(report.type === 'outbound-rtp')) {
+      return;
+    }
+    if (report.active === false) {
+      inactiveStatsIds.push(peerConnectionElement.id + '-details-' + report.id);
+    }
+  });
+  statsContainer.childNodes.forEach(node => {
+    if (node.nodeName !== 'DETAILS') {
+      return;
+    }
+    if (inactiveStatsIds.includes(node.id)) {
+      node.classList.add(inactiveRtpStatsClass);
+    } else {
+      node.classList.remove(inactiveRtpStatsClass);
+    }
+  });
 }
 
 /**
