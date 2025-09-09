@@ -696,12 +696,9 @@ Browser::~Browser() {
   BrowserList::RemoveBrowser(this);
   window_.reset();
 
-  // Tear down `BrowserWindowFeatures` and `BrowserUserData`s now to avoid
-  // exposing them to Browser in a partially-destroyed state. Eventually,
-  // all BrowserUserData should be converted to features. Until then,
-  // destroy `features_` because that's what breaks things the least :)
+  // Tear down `BrowserWindowFeatures` to avoid exposing it to Browser in a
+  // partially-destroyed state.
   features_.reset();
-  ClearAllUserData();
 
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant

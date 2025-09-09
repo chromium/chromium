@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
-#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
@@ -127,7 +126,6 @@ class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
                 public ChromeWebModalDialogManagerDelegate,
-                public base::SupportsUserData,
                 public BookmarkTabHelperObserver,
                 public zoom::ZoomObserver,
                 public ThemeServiceObserver,
