@@ -90,38 +90,6 @@ bool operator==(typename EnumTypeClass::Enum lhs, const EnumTypeClass& rhs) {
   return lhs == rhs.AsEnum();
 }
 
-// Migration adapters
-template <typename EnumTypeClass>
-  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
-bool operator==(const EnumTypeClass& lhs, const String& rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
-bool operator==(const EnumTypeClass& lhs, const AtomicString& rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, const char* rhs) {
-  DCHECK(!lhs.IsEmpty());
-  return lhs.AsString() == rhs;
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const char* lhs, const EnumTypeClass& rhs) {
-  return rhs == lhs;
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ENUMERATION_BASE_H_

@@ -610,7 +610,7 @@ String URLPattern::generate(const V8URLPatternComponent& component,
                             const VectorOfPairs<String, String>& groups,
                             ExceptionState& exception_state) const {
   for (auto&& [value, name] : ComponentsWithNames()) {
-    if (component == name) {
+    if (component.AsStringView() == name) {
       std::optional<String> result =
           value->Generate(groups, ShouldTreatAsStandardURL(), exception_state);
       if (!result) {
