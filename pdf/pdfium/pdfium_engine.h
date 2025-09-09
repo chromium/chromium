@@ -673,6 +673,7 @@ class PDFiumEngine : public DocumentLoader::Client,
     int char_index = -1;
     int form_type = FPDF_FORMFIELD_UNKNOWN;
     PDFiumPage::LinkTarget target;
+    gfx::PointF pdf_point;
   };
 
   friend class FormFillerTest;
@@ -832,6 +833,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   void SetFormSelectedText(FPDF_FORMHANDLE form_handle, FPDF_PAGE page);
 
   // Returns information about `point` and the objects at that point.
+  // `point` is in device coordinates.
   PointData GetPointData(const gfx::PointF& point);
 
   void OnSingleClick(int page_index, int char_index);
