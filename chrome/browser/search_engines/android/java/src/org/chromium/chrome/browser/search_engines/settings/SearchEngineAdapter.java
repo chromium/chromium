@@ -274,14 +274,12 @@ public class SearchEngineAdapter extends BaseAdapter
                 // It's very likely this is impacting users who have selected a search engine in a
                 // country where SEC program is in effect and have moved/relocated.
                 // If true, these engines should not be suppressed/removed, but appended to recents.
-                var knownEngines = new StringBuilder();
+                var knownEngines = new StringBuilder(" ");
                 for (var engine : mPrepopulatedSearchEngines) {
-                    if (!knownEngines.isEmpty()) knownEngines.append(", ");
-                    knownEngines.append(engine.getShortName());
+                    knownEngines.append(engine.getShortName()).append(", ");
                 }
                 for (var engine : mRecentSearchEngines) {
-                    if (!knownEngines.isEmpty()) knownEngines.append(", ");
-                    knownEngines.append(engine.getShortName());
+                    knownEngines.append(engine.getShortName()).append(", ");
                 }
                 var report =
                         new IllegalStateException(
@@ -295,7 +293,8 @@ public class SearchEngineAdapter extends BaseAdapter
                                                 : "<null>",
                                         TemplateUrlServiceFactory.getForProfile(mProfile)
                                                 .isDefaultSearchManaged(),
-                                        mRecentSearchEngines.size(),
+                                        mPrepopulatedSearchEngines.size()
+                                                + mRecentSearchEngines.size(),
                                         knownEngines.toString()));
                 JavaExceptionReporter.reportException(report);
             }
