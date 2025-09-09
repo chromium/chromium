@@ -36,6 +36,20 @@ class MockWalletablePassClient : public WalletablePassClient {
               (override));
 };
 
+// Mock implementation of WalletablePassIngestionController that provides mocks
+// for the pure virtual methods.
+class MockWalletablePassIngestionController
+    : public WalletablePassIngestionController {
+ public:
+  explicit MockWalletablePassIngestionController(WalletablePassClient* client)
+      : WalletablePassIngestionController(client) {}
+
+  MOCK_METHOD(void,
+              GetAnnotatedPageContent,
+              (AnnotatedPageContentCallback),
+              (override));
+};
+
 class WalletablePassIngestionControllerTest : public testing::Test {
  protected:
   WalletablePassIngestionControllerTest() = default;
@@ -46,10 +60,12 @@ class WalletablePassIngestionControllerTest : public testing::Test {
     ON_CALL(mock_client_, GetOptimizationGuideModelExecutor())
         .WillByDefault(Return(&mock_model_executor_));
     controller_ =
-        std::make_unique<WalletablePassIngestionController>(&mock_client_);
+        std::make_unique<MockWalletablePassIngestionController>(&mock_client_);
   }
 
-  WalletablePassIngestionController* controller() { return controller_.get(); }
+  MockWalletablePassIngestionController* controller() {
+    return controller_.get();
+  }
   optimization_guide::MockOptimizationGuideDecider& mock_decider() {
     return mock_decider_;
   }
@@ -65,7 +81,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
       mock_model_executor_;
   testing::NiceMock<MockWalletablePassClient> mock_client_;
 
-  std::unique_ptr<WalletablePassIngestionController> controller_;
+  std::unique_ptr<MockWalletablePassIngestionController> controller_;
 };
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -109,6 +125,43 @@ TEST_F(WalletablePassIngestionControllerTest,
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 
   test_api(controller()).ExtractWalletablePass(url, content);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_NotEligible) {
+  GURL url("https://example.com");
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+      .WillOnce(Return(kFalse));
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_)).Times(0);
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_Eligible) {
+  GURL url("https://example.com");
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+      .WillOnce(Return(kTrue));
+
+  // Expect GetAnnotatedPageContent to be called, and simulate a successful
+  // response.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(testing::WithArgs<0>(
+          [](MockWalletablePassIngestionController::AnnotatedPageContentCallback
+                 callback) {
+            optimization_guide::proto::AnnotatedPageContent content;
+            std::move(callback).Run(std::move(content));
+          }));
+
+  // Expect that the model executor is called when the content is retrieved.
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _));
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
 }
 
 }  // namespace

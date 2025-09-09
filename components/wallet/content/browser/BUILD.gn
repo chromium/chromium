@@ -8,6 +8,7 @@ static_library("browser") {
     "content_walletable_pass_ingestion_controller.h",
   ]
   deps = [
+    "//components/optimization_guide/content/browser",
     "//components/wallet/core/browser",
     "//content/public/browser",
   ]

@@ -22,6 +22,22 @@ WalletablePassIngestionController::WalletablePassIngestionController(
 WalletablePassIngestionController::~WalletablePassIngestionController() =
     default;
 
+void WalletablePassIngestionController::RegisterOptimizationTypes() {
+  client_->GetOptimizationGuideDecider()->RegisterOptimizationTypes(
+      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST});
+}
+
+void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
+    const GURL& url) {
+  if (!IsEligibleForExtraction(url)) {
+    return;
+  }
+
+  GetAnnotatedPageContent(base::BindOnce(
+      &WalletablePassIngestionController::OnGetAnnotatedPageContent,
+      weak_ptr_factory_.GetWeakPtr(), url));
+}
+
 bool WalletablePassIngestionController::IsEligibleForExtraction(
     const GURL& url) const {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
@@ -36,9 +52,17 @@ bool WalletablePassIngestionController::IsEligibleForExtraction(
          optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
-void WalletablePassIngestionController::RegisterOptimizationTypes() {
-  client_->GetOptimizationGuideDecider()->RegisterOptimizationTypes(
-      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST});
+void WalletablePassIngestionController::OnGetAnnotatedPageContent(
+    const GURL& url,
+    std::optional<optimization_guide::proto::AnnotatedPageContent>
+        annotated_page_content) {
+  if (!annotated_page_content) {
+    // TODO(crbug.com/441892746): Report getting annotated page content failure
+    // to UMA
+    return;
+  }
+
+  ExtractWalletablePass(url.spec(), std::move(*annotated_page_content));
 }
 
 void WalletablePassIngestionController::ExtractWalletablePass(

@@ -35,6 +35,10 @@ class WalletablePassIngestionControllerTestApi {
     controller_->ExtractWalletablePass(url, content);
   }
 
+  void StartWalletablePassDetectionFlow(const GURL& url) {
+    controller_->StartWalletablePassDetectionFlow(url);
+  }
+
  private:
   const raw_ref<WalletablePassIngestionController> controller_;
 };
