@@ -46,7 +46,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
   EXPECT_CALL(*model_executor(),
               ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&response, &model_execution_info](
               ModelBasedCapabilityKey feature,
               const google::protobuf::MessageLite& request_metadata,
@@ -58,7 +58,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                     std::make_unique<proto::ModelExecutionInfo>(
                         model_execution_info)),
                 /*log_entry=*/nullptr);
-          }));
+          });
   proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
@@ -86,7 +86,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
   EXPECT_CALL(*model_executor(),
               ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](ModelBasedCapabilityKey feature,
              const google::protobuf::MessageLite& request_metadata,
              const std::optional<base::TimeDelta>& execution_timeout,
@@ -102,7 +102,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                     // won't have a ModelExecutionInfo.
                     nullptr),
                 /*log_entry=*/nullptr);
-          }));
+          });
   proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
@@ -137,7 +137,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
       session,
       ExecuteModel(
           _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&response, &model_execution_info](
               const google::protobuf::MessageLite& request_metadata,
               OptimizationGuideModelExecutionResultStreamingCallback callback) {
@@ -148,7 +148,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
                     /*provided_by_on_device=*/true,
                     std::make_unique<proto::ModelExecutionInfo>(
                         model_execution_info)));
-          }));
+          });
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
@@ -175,7 +175,7 @@ TEST_F(ModelExecutionLoggingWrappersTest,
       session,
       ExecuteModel(
           _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const google::protobuf::MessageLite& request_metadata,
              OptimizationGuideModelExecutionResultStreamingCallback callback) {
             std::move(callback).Run(
@@ -189,7 +189,7 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                     // Errors that don't end up making a request to the model
                     // won't have a ModelExecutionInfo.
                     nullptr));
-          }));
+          });
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
@@ -218,7 +218,7 @@ TEST_F(ModelExecutionLoggingWrappersTest,
       session,
       ExecuteModel(
           _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&response](
               const google::protobuf::MessageLite& request_metadata,
               OptimizationGuideModelExecutionResultStreamingCallback callback) {
@@ -229,7 +229,7 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                     /*provided_by_on_device=*/true,
                     // execution_info is not set for incomplete responses.
                     /*execution_info=*/nullptr));
-          }));
+          });
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   ModelExecutionSessionCallbackWithLogging callback =
