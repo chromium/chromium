@@ -64,6 +64,31 @@ suite('PostMessageCommunication', () => {
     assertEquals(pdfPageNumber, page);
   });
 
+  test('ListenCallsCorrectProxyFunctionsAimDisabled', async () => {
+    loadTimeData.overrideValues({
+      'enableAimSearchbox': false,
+    });
+    // Recreate post message receiver to use new load time data.
+    postMessageReceiver.detach();
+    postMessageReceiver =
+        new PostMessageReceiver(testBrowserProxy, resultsFrame);
+
+    const textFragments = ['hello', 'world'];
+    const pdfPageNumber = 0;
+    const data = JSON.stringify({
+      [ParamType.MESSAGE_TYPE]: MessageType.SCROLL_TO,
+      [ParamType.TEXT_FRAGMENTS]: textFragments,
+      [ParamType.PDF_PAGE_NUMBER]: pdfPageNumber,
+    });
+
+    dispatchMessageEvent(data, RESULTS_SEARCH_URL_ORIGIN);
+    await testBrowserProxy.handler.whenCalled('onScrollToMessage');
+    const [fragment, page] =
+        testBrowserProxy.handler.getArgs('onScrollToMessage')[0];
+    assertDeepEquals(textFragments, fragment);
+    assertEquals(pdfPageNumber, page);
+  });
+
   test('ListenOnlyWorksForExpectedOrigin', () => {
     const textFragments = ['hello', 'world'];
     const pdfPageNumber = 0;
