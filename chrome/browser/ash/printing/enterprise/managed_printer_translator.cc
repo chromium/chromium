@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/enterprise/managed_printer_translator.h"
 
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <string>
 
@@ -23,6 +24,7 @@ const char kGuid[] = "guid";
 const char kDisplayName[] = "display_name";
 const char kDescription[] = "description";
 const char kUri[] = "uri";
+const char kUsbDeviceId[] = "usb_device_id";
 const char kPpdResource[] = "ppd_resource";
 const char kPrintJobOptions[] = "print_job_options";
 
@@ -30,6 +32,10 @@ const char kPrintJobOptions[] = "print_job_options";
 const char kUserSuppliedPpdUri[] = "user_supplied_ppd_uri";
 const char kEffectiveModel[] = "effective_model";
 const char kAutoconf[] = "autoconf";
+
+// UsbDeviceId field names.
+const char kVendorId[] = "vendor_id";
+const char kProductId[] = "product_id";
 
 std::optional<ManagedPrinterConfiguration::PpdResource> PpdResourceFromDict(
     const base::Value::Dict& ppd_resource) {
@@ -105,6 +111,34 @@ std::optional<Printer::PpdReference> ManagedPpdResourceToPpdReference(
   return ppd_reference;
 }
 
+std::optional<ManagedPrinterConfiguration::UsbDeviceId> UsbDeviceIdFromDict(
+    const base::Value::Dict& dict) {
+  std::optional<int> vendor_id = dict.FindInt(kVendorId);
+  std::optional<int> product_id = dict.FindInt(kProductId);
+
+  // Verify values exist and are integers.
+  if (!vendor_id.has_value() || !product_id.has_value()) {
+    LOG(WARNING) << "vendor_id or product_id missing or not an int: "
+                 << dict.DebugString();
+    return std::nullopt;
+  }
+
+  // Verify values are in the uint16 range.
+  if (vendor_id.value() < std::numeric_limits<uint16_t>::min() ||
+      vendor_id.value() > std::numeric_limits<uint16_t>::max() ||
+      product_id.value() < std::numeric_limits<uint16_t>::min() ||
+      product_id.value() > std::numeric_limits<uint16_t>::max()) {
+    LOG(WARNING) << "vendor_id or product_id out of range: "
+                 << dict.DebugString();
+    return std::nullopt;
+  }
+
+  auto usb_device_id = ManagedPrinterConfiguration::UsbDeviceId();
+  usb_device_id.set_vendor_id(vendor_id.value());
+  usb_device_id.set_product_id(product_id.value());
+  return usb_device_id;
+}
+
 }  // namespace
 
 std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
@@ -113,6 +147,7 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
   const std::string* display_name = config.FindString(kDisplayName);
   const std::string* description = config.FindString(kDescription);
   const std::string* uri = config.FindString(kUri);
+  const base::Value::Dict* usb_device_id_dict = config.FindDict(kUsbDeviceId);
   const base::Value::Dict* ppd_resource = config.FindDict(kPpdResource);
   const base::Value::Dict* print_job_options =
       config.FindDict(kPrintJobOptions);
@@ -125,7 +160,25 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
     result.set_display_name(*display_name);
   }
   if (uri) {
+    if (usb_device_id_dict) {
+      LOG(WARNING) << base::StringPrintf(
+          "Could not convert a dictionary to ManagedPrinterConfiguration: "
+          "multiple values set for the 'connection_type' oneof field: %s",
+          config.DebugString().c_str());
+      return std::nullopt;
+    }
     result.set_uri(*uri);
+  }
+  if (usb_device_id_dict) {
+    auto usb_device_id = UsbDeviceIdFromDict(*usb_device_id_dict);
+    if (!usb_device_id.has_value()) {
+      LOG(WARNING) << base::StringPrintf(
+          "Could not convert a dictionary to UsbDeviceId: "
+          "invalid 'usb_device_id' field: %s",
+          usb_device_id_dict->DebugString().c_str());
+      return std::nullopt;
+    }
+    *result.mutable_usb_device_id() = usb_device_id.value();
   }
   if (description) {
     result.set_description(*description);
