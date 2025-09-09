@@ -28,6 +28,10 @@ $ gn gen out/Debug --args="system_headers_in_deps=true \
 $ autoninja -C out/Debug chrome
 $ tools/clang/scripts/compiler_inputs_size.py out/Debug \
       <(ninja -C out/Debug -t commands chrome) <(ninja -C out/Debug -t deps)
+
+Or with Siso:
+$ tools/clang/scripts/compiler_inputs_size.py out/Debug \
+      <(siso query commands -C out/Debug chrome) <(siso query deps -C out/Debug)
 apps/app_lifetime_monitor.cc 9,034,754
 apps/app_lifetime_monitor_factory.cc 5,863,660
 apps/app_restore_service.cc 9,198,130
