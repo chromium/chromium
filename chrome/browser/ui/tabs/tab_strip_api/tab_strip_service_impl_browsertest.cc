@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
@@ -33,6 +34,22 @@
 
 // TODO(ffred): refactor this stuff. Maybe it makes more sense to have an
 // accumulator here instead of a test impl.
+// TODO(ffred): this is actually a e2e test. We should break up the tests into
+// integration (sync API) and e2e (mojo stuff).
+class ReallyVerySimpleSyncObserver
+    : public tabs_api::observation::TabStripApiObserver {
+ public:
+  ReallyVerySimpleSyncObserver() = default;
+  ~ReallyVerySimpleSyncObserver() override = default;
+
+  void OnTabEvents(
+      const std::vector<tabs_api::mojom::TabsEventPtr>& events) override {
+    num_callbacks++;
+  }
+
+  int num_callbacks = 0;
+};
+
 class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
   void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr& event) {
@@ -207,6 +224,22 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TabStripServiceMojoHandler> tab_strip_service_mojo_handler_;
 };
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
+  ReallyVerySimpleSyncObserver observer;
+
+  auto* service = tab_strip_service_mojo_handler_->GetTabStripService();
+  service->AddObserver(&observer);
+
+  ASSERT_EQ(0, observer.num_callbacks);
+
+  auto result = service->CreateTabAt(tabs_api::Position(0),
+                                     std::make_optional(GURL("www.foo.bear")));
+
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(1, observer.num_callbacks);
+}
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   mojo::Remote<TabStripService> remote;

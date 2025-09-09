@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 
 class GURL;
-class TabStripModelObserver;
 
 namespace tab_groups {
 
@@ -24,6 +23,12 @@ namespace tabs_api {
 
 class NodeId;
 class Position;
+
+namespace observation {
+
+class TabStripApiObserver;
+
+}  // namespace observation
 
 class TabStripService {
  public:
@@ -57,10 +62,8 @@ class TabStripService {
   UpdateTabGroupVisual(const tabs_api::NodeId& id,
                        const tab_groups::TabGroupVisualData& visual_data) = 0;
 
-  // TODO(crbug.com/439691937): we should have some sort of observation
-  // handling which supports filtering and lifecycle.
-  virtual void AddObserver(TabStripModelObserver* observer) = 0;
-  virtual void RemoveObserver(TabStripModelObserver* observer) = 0;
+  virtual void AddObserver(observation::TabStripApiObserver* observer) = 0;
+  virtual void RemoveObserver(observation::TabStripApiObserver* observer) = 0;
 };
 
 }  // namespace tabs_api

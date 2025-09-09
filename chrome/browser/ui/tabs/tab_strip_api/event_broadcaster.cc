@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
+
 namespace tabs_api {
 
 // A decoder which takes the incoming event type and directs them to the proper
@@ -49,6 +51,14 @@ void EventBroadcaster::Broadcast(
     const std::vector<events::Event>& events) {
   for (auto& target : targets) {
     target->OnTabEvents(Transform(events));
+  }
+}
+
+void EventBroadcaster::Broadcast(
+    const std::vector<observation::TabStripApiObserver*>& observers,
+    const std::vector<events::Event>& events) {
+  for (auto* observer : observers) {
+    observer->OnTabEvents(Transform(events));
   }
 }
 

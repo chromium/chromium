@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_EVENT_BROADCASTER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_EVENT_BROADCASTER_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_api//events/event.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace tabs_api {
+
+namespace observation {
+
+class TabStripApiObserver;
+
+}  // namespace observation
 
 // Simple tee which takes an event and broadcasts them to multiple targets.
 class EventBroadcaster {
@@ -22,6 +28,8 @@ class EventBroadcaster {
   void Broadcast(
       const mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver>& targets,
       const std::vector<events::Event>& event);
+  void Broadcast(const std::vector<observation::TabStripApiObserver*>& targets,
+                 const std::vector<events::Event>& event);
 };
 
 }  // namespace tabs_api

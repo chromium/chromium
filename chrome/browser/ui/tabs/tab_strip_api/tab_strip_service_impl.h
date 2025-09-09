@@ -7,11 +7,17 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 
 namespace tabs_api {
+
+namespace events {
+class TabStripEventRecorder;
+}  // namespace events
 
 class TabStripServiceImpl : public TabStripService {
  public:
@@ -51,12 +57,19 @@ class TabStripServiceImpl : public TabStripService {
       const tabs_api::NodeId& id,
       const tab_groups::TabGroupVisualData& visual_data) override;
 
-  void AddObserver(TabStripModelObserver* observer) override;
-  void RemoveObserver(TabStripModelObserver* observer) override;
+  void AddObserver(observation::TabStripApiObserver* observer) override;
+  void RemoveObserver(observation::TabStripApiObserver* observer) override;
 
  private:
+  void BroadcastEvents(
+      const std::vector<tabs_api::events::Event>& events) const;
+
   std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter_;
   std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
+  std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
+
+  // TODO(crbug.com/441256673): use observation list or something like that.
+  std::vector<observation::TabStripApiObserver*> observers_;
 };
 
 }  // namespace tabs_api

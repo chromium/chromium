@@ -47,7 +47,7 @@ TabStripServiceMojoHandler::TabStripServiceMojoHandler(
       tab_strip_model_adapter_.get(),
       base::BindRepeating(&TabStripServiceMojoHandler::BroadcastEvents,
                           base::Unretained(this)));
-  tab_strip_service_->AddObserver(recorder_.get());
+  tab_strip_model_adapter_->AddObserver(recorder_.get());
 }
 
 void TabStripServiceMojoHandler::BroadcastEvents(
@@ -57,7 +57,7 @@ void TabStripServiceMojoHandler::BroadcastEvents(
 }
 
 TabStripServiceMojoHandler::~TabStripServiceMojoHandler() {
-  tab_strip_service_->RemoveObserver(recorder_.get());
+  tab_strip_model_adapter_->RemoveObserver(recorder_.get());
 
   // Clear all observers
   // TODO (crbug.com/412955607): Implement a removal mechanism similar to
