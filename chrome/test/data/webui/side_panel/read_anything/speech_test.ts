@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, NodeStore, playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, NodeStore, playFromSelectionTimeout, SelectionController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -207,7 +207,7 @@ suite('Speech', () => {
           },
           baseTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      app.updateSelection();
+      SelectionController.getInstance().updateSelection(app.getSelection());
     }
 
     function playFromSelection() {

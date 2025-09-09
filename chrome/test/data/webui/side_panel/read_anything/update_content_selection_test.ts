@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
+import {BrowserProxy, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -24,7 +24,7 @@ suite('UpdateContentSelection', () => {
       anchorId: number, anchorOffset: number, focusId: number,
       focusOffset: number) {
     fakeTree.setSelection(anchorId, anchorOffset, focusId, focusOffset);
-    app.updateSelection();
+    SelectionController.getInstance().updateSelection(app.getSelection());
     return microtasksFinished();
   }
 

@@ -60,6 +60,7 @@ build_webui("build") {
     "read_anything_logger.ts",
     "read_anything_toolbar.html.ts",
     "read_anything_toolbar.ts",
+    "selection_controller.ts",
     "speech_browser_proxy.ts",
     "voice_selection_menu.html.ts",
     "voice_selection_menu.ts",

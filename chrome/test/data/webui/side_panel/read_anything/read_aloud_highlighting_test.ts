@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, playFromSelectionTimeout, SelectionController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -250,7 +250,7 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      app.updateSelection();
+      SelectionController.getInstance().updateSelection(app.getSelection());
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();

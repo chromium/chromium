@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, currentReadHighlightClass, getReadAloudModel, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, currentReadHighlightClass, getReadAloudModel, previousReadHighlightClass, ReadAloudHighlighter, SelectionController, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -28,6 +28,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
   let app: AppElement;
   let fakeTree: FakeTree;
   let highlighter: ReadAloudHighlighter;
+  let selectionController: SelectionController;
 
   const textNodeIds = [3, 5, 7, 9];
   const texts = [
@@ -47,6 +48,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
     highlighter = new ReadAloudHighlighter();
     ReadAloudHighlighter.setInstance(highlighter);
     SpeechController.setInstance(new SpeechController());
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
 
     // Don't use await createApp() when using a FakeTree, as it seems to cause
     // flakiness.
@@ -388,7 +391,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 0;
       const expectedFocusOffset = 5;
       fakeTree.setSelection(3, expectedAnchorOffset, 3, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[0]!, selection.anchorNode.textContent);
@@ -404,7 +407,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 1;
       const expectedFocusOffset = 7;
       fakeTree.setSelection(3, expectedAnchorOffset, 5, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[0]!, selection.anchorNode.textContent);
@@ -420,7 +423,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 6;
       fakeTree.setSelection(5, expectedAnchorOffset, 5, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[1]!, selection.anchorNode.textContent);
@@ -436,7 +439,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 6;
       const expectedFocusOffset = 2;
       fakeTree.setSelection(3, expectedAnchorOffset, 5, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[0]!, selection.anchorNode.textContent);
@@ -454,7 +457,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 10;
       fakeTree.setSelection(
           highlightId, expectedAnchorOffset, highlightId, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[1]!, selection.anchorNode.textContent);
@@ -470,7 +473,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 10;
       fakeTree.setSelection(5, expectedAnchorOffset, 5, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[1]!, selection.anchorNode.textContent);
@@ -489,7 +492,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
           const expectedFocusOffset = 9;
           fakeTree.setSelection(
               3, expectedAnchorOffset, 5, expectedFocusOffset);
-          app.updateSelection();
+          selectionController.updateSelection(app.getSelection());
 
           const selection = app.getSelection();
           assertEquals(texts[0]!, selection.anchorNode.textContent);
@@ -508,7 +511,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 0;
       fakeTree.setSelection(
           highlightId, expectedAnchorOffset, highlightId, highlightStart);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       const expectedSelectedText = texts[2]!.slice(0, highlightStart);
@@ -526,7 +529,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       // select node 7 starting after the end of the highlight
       fakeTree.setSelection(
           highlightId, highlightEnd, highlightId, texts[2]!.length);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       // The highlight should have split node 7 into two nodes - one with the
       // text that's highlighted and another with the remaining text. Since we
@@ -547,7 +550,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 8;
       fakeTree.setSelection(7, expectedAnchorOffset, 7, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[2]!, selection.anchorNode.textContent);
@@ -563,7 +566,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedAnchorOffset = 4;
       const expectedFocusOffset = 10;
       fakeTree.setSelection(5, expectedAnchorOffset, 7, expectedFocusOffset);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
       assertEquals(texts[1]!, selection.anchorNode.textContent);
@@ -581,7 +584,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
           // select all text
           fakeTree.setSelection(3, 0, 9, texts[3]!.length);
-          app.updateSelection();
+          selectionController.updateSelection(app.getSelection());
 
           const selection = app.getSelection();
           assertEquals(0, selection.anchorOffset);

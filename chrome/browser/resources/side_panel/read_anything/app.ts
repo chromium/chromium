@@ -28,9 +28,10 @@ import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {TextSegmenter} from './read_aloud/text_segmenter.js';
 import {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
 import type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
+import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
+import {SelectionController} from './selection_controller.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
@@ -81,7 +82,6 @@ export class AppElement extends AppElementBase implements
   private startTime = Date.now();
   private constructorTime: number;
 
-  private scrollingOnSelection_ = false;
   protected accessor hasContent_ = false;
   protected accessor emptyStateImagePath_: string|undefined;
   protected accessor emptyStateDarkImagePath_: string|undefined;
@@ -128,6 +128,8 @@ export class AppElement extends AppElementBase implements
   private speechController_: SpeechController = SpeechController.getInstance();
   private contentController_: ContentController =
       ContentController.getInstance();
+  private selectionController_: SelectionController =
+      SelectionController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -268,7 +270,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.updateSelection = () => {
-      this.updateSelection();
+      this.selectionController_.updateSelection(this.getSelection());
     };
 
     chrome.readingMode.updateVoicePackStatus =
@@ -310,8 +312,7 @@ export class AppElement extends AppElementBase implements
   }
 
   protected onContainerScroll_() {
-    chrome.readingMode.onScroll(this.scrollingOnSelection_);
-    this.scrollingOnSelection_ = false;
+    this.selectionController_.onScroll();
     if (this.isReadAloudEnabled_) {
       this.speechController_.onScroll();
     }
@@ -457,85 +458,6 @@ export class AppElement extends AppElementBase implements
   getSelection(): any {
     assert(this.shadowRoot, 'no shadow root');
     return this.shadowRoot.getSelection();
-  }
-
-  updateSelection() {
-    const selection: Selection = this.getSelection();
-    selection.removeAllRanges();
-
-    const range = new Range();
-    const startNodeId = chrome.readingMode.startNodeId;
-    const endNodeId = chrome.readingMode.endNodeId;
-    let startOffset = chrome.readingMode.startOffset;
-    let endOffset = chrome.readingMode.endOffset;
-    let startNode = this.nodeStore_.getDomNode(startNodeId);
-    let endNode = this.nodeStore_.getDomNode(endNodeId);
-    if (!startNode || !endNode) {
-      return;
-    }
-
-    // Range.setStart/setEnd behaves differently if the node is an element or a
-    // text node. If the former, the offset refers to the index of the children.
-    // If the latter, the offset refers to the character offset inside the text
-    // node. The start and end nodes are elements if they've been read aloud
-    // because we add formatting to the text that wasn't there before. However,
-    // the information we receive from chrome.readingMode is always the id of a
-    // text node and character offset for that text, so find the corresponding
-    // text child here and adjust the offset
-    if (startNode.nodeType !== Node.TEXT_NODE) {
-      const startTreeWalker =
-          document.createTreeWalker(startNode, NodeFilter.SHOW_TEXT);
-      while (startTreeWalker.nextNode()) {
-        const textNodeLength = startTreeWalker.currentNode.textContent!.length;
-        // Once we find the child text node inside which the starting index
-        // fits, update the start node to be that child node and the adjusted
-        // offset will be relative to this child node
-        if (startOffset < textNodeLength) {
-          startNode = startTreeWalker.currentNode;
-          break;
-        }
-
-        startOffset -= textNodeLength;
-      }
-    }
-    if (endNode.nodeType !== Node.TEXT_NODE) {
-      const endTreeWalker =
-          document.createTreeWalker(endNode, NodeFilter.SHOW_TEXT);
-      while (endTreeWalker.nextNode()) {
-        const textNodeLength = endTreeWalker.currentNode.textContent!.length;
-        if (endOffset <= textNodeLength) {
-          endNode = endTreeWalker.currentNode;
-          break;
-        }
-
-        endOffset -= textNodeLength;
-      }
-    }
-
-    // Gmail will try to select text when collapsing the node. At the same time,
-    // the node contents are then shortened because of the collapse which causes
-    // the range to go out of bounds. When this happens we should reset the
-    // selection.
-    try {
-      range.setStart(startNode, startOffset);
-      range.setEnd(endNode, endOffset);
-    } catch (err) {
-      selection.removeAllRanges();
-      return;
-    }
-
-    selection.addRange(range);
-
-    // Scroll the start node into view. ScrollIntoView is available on the
-    // Element class.
-    const startElement = startNode.nodeType === Node.ELEMENT_NODE ?
-        startNode as Element :
-        startNode.parentElement;
-    if (!startElement) {
-      return;
-    }
-    this.scrollingOnSelection_ = true;
-    startElement.scrollIntoViewIfNeeded();
   }
 
   protected updateLinks_() {
