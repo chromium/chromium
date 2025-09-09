@@ -55,6 +55,7 @@ enum class WebappInstallSource;
 
 namespace web_app {
 class UrlPatternWithRegexMatcher;
+class WebAppScope;
 
 class WebApp {
  public:
@@ -244,6 +245,8 @@ class WebApp {
   const base::flat_set<ScopeExtensionInfo>& validated_scope_extensions() const {
     return validated_scope_extensions_;
   }
+
+  WebAppScope GetScope() const;
 
   RunOnOsLoginMode run_on_os_login_mode() const {
     return run_on_os_login_mode_;

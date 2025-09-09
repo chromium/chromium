@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -503,58 +504,13 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   if (system_app() && system_app()->IsUrlInSystemAppScope(url)) {
     return true;
   }
-
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    size_t extended_scope_score =
-        ChromeOsWebAppExperiments::GetExtendedScopeScore(app_id(), url.spec());
-    if (extended_scope_score > 0) {
-      return true;
-    }
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  size_t app_extended_scope_score =
-      registrar().GetAppExtendedScopeScore(url, app_id());
-  if (app_extended_scope_score > 0) {
-    return true;
-  }
-
-  GURL app_scope = registrar().GetAppScope(app_id());
-  if (!app_scope.is_valid()) {
+  std::optional<WebAppScope> scope = registrar().GetEffectiveScope(app_id());
+  if (!scope.has_value()) {
     return false;
   }
-
-  // https://w3c.github.io/manifest/#navigation-scope
-  // If url is same origin as scope and url path starts with scope path, return
-  // true. Otherwise, return false.
-  if (!url::IsSameOriginWith(app_scope, url)) {
-    // We allow an upgrade from http |app_scope| to https |url|.
-    if (app_scope.scheme() != url::kHttpScheme) {
-      return false;
-    }
-
-    GURL::Replacements rep;
-    rep.SetSchemeStr(url::kHttpsScheme);
-    GURL secure_app_scope = app_scope.ReplaceComponents(rep);
-    if (!url::IsSameOriginWith(secure_app_scope, url)) {
-      return false;
-    }
-  }
-  // Past here, the url and scope must be same-origin.
-
-  // For scopes without paths, return 'true' early (allowing blobs to be in
-  // scope).
-  if (!app_scope.has_path() || app_scope.path() == "/") {
-    return true;
-  }
-  if (url.scheme() == url::kBlobScheme) {
-    // Blobs can only be in-scope in the above case where the app scope doesn't
-    // have a path.
-    return false;
-  }
-  std::string scope_path = app_scope.path();
-  std::string url_path = url.path();
-  return base::StartsWith(url_path, scope_path, base::CompareCase::SENSITIVE);
+  return scope->IsInScope(url, {.allow_http_to_https_upgrade = true});
 }
 
 WebAppBrowserController* WebAppBrowserController::AsWebAppBrowserController() {

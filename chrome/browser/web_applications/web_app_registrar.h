@@ -65,6 +65,7 @@ class ManifestSilentUpdateCommand;
 class WebApp;
 class WebAppProvider;
 class WebAppRegistrarObserver;
+class WebAppScope;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -385,28 +386,37 @@ class WebAppRegistrar {
   // apps are queried for their parent.
   base::flat_map<webapps::AppId, webapps::AppId> GetSubAppToParentMap() const;
 
-  // Returns the "scope" field from the app manifest, or infers a scope from the
   // "start_url" field if unavailable. Returns an invalid GURL iff the |app_id|
   // does not refer to an installed web app.
+  // Deprecated: Prefer using `GetEffectiveScope` to make in-scope decisions.
   GURL GetAppScope(const webapps::AppId& app_id) const;
 
+  // Returns a WebAppScope object for the given app_id. If no app exists for the
+  // app_id, then std::nullopt is returned.
+  std::optional<WebAppScope> GetEffectiveScope(
+      const webapps::AppId& app_id) const;
+
   // Returns whether |url| is in the scope of |app_id|.
+  // Deprecated: Prefer using `GetEffectiveScope` to make in-scope decisions.
   bool IsUrlInAppScope(const GURL& url, const webapps::AppId& app_id) const;
 
   // Returns whether |url| is in scope or scope_extensions of |app_id|.
   // Only checks scope if scope_extensions is disabled.
+  // Deprecated: Prefer using `GetEffectiveScope` to make in-scope decisions.
   bool IsUrlInAppExtendedScope(const GURL& url,
                                const webapps::AppId& app_id) const;
 
   // Returns the strength of matching |url| to the scope and scope_extensions of
   // |app_id|. Returns 0 if not in either.
   // Only checks scope if scope_extensions is disabled.
+  // Deprecated: Prefer using `GetEffectiveScope` to make in-scope decisions.
   int GetAppExtendedScopeScore(const GURL& url,
                                const webapps::AppId& app_id) const;
 
-  // Returns the strength of matching |url_spec| to the scope of |app_id|,
-  // returns 0 if not in scope.
-  int GetUrlInAppScopeScore(const std::string& url_spec,
+  // Returns the strength of matching |url| to the scope of |app_id|,
+  // returns 0 if not in scope. This does NOT check scope extensions.
+  // Deprecated: Prefer using `GetEffectiveScope` to make in-scope decisions.
+  int GetUrlInAppScopeScore(const GURL& url,
                             const webapps::AppId& app_id) const;
 
   // Returns whether the app is pending successful navigation in order to

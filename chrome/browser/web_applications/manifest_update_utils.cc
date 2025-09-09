@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/skia_util.h"
 
@@ -168,6 +169,9 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
   if (web_app.IsPolicyInstalledApp() &&
       base::FeatureList::IsEnabled(
           features::kWebAppManifestPolicyAppIdentityUpdate)) {
+    return true;
+  }
+  if (web_app.scope().SchemeIs(content::kChromeUIScheme)) {
     return true;
   }
 

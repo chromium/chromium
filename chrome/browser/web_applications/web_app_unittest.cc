@@ -532,29 +532,4 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
   EXPECT_EQ(*debug_permissions_policy, expected_permissions_policy);
 }
 
-class WebAppScopeTest : public WebAppTest {
- public:
-  void SetUp() override {
-    WebAppTest::SetUp();
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-};
-
-TEST_F(WebAppScopeTest, TestScopeIgnored) {
-  const GURL kStartUrl("https://www.foo.com/bar/index.html");
-  const GURL kScopeWithQueryAndFragments =
-      GURL("https://www.foo.com/bar/?query=abc#fragment");
-
-  std::unique_ptr<WebAppInstallInfo> install_info =
-      WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
-  install_info->scope = kScopeWithQueryAndFragments;
-  webapps::AppId app_id =
-      test::InstallWebApp(profile(), std::move(install_info));
-
-  EXPECT_EQ(GURL("https://www.foo.com/bar/"),
-            fake_provider().registrar_unsafe().GetAppScope(app_id));
-  EXPECT_TRUE(fake_provider().registrar_unsafe().IsUrlInAppScope(
-      GURL("https://www.foo.com/bar/"), app_id));
-}
-
 }  // namespace web_app

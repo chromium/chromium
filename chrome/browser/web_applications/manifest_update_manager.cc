@@ -224,7 +224,7 @@ void ManifestUpdateManager::MaybeUpdate(
   // Skip the cases when the app's scope and the site mismatch e.g. scope
   // extensions.
   if (provider_->registrar_unsafe().GetUrlInAppScopeScore(
-          url.spec(), app_id.value()) == 0) {
+          url, app_id.value()) == 0) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }

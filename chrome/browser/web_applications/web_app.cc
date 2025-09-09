@@ -50,6 +50,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -294,6 +295,11 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
     case IconPurpose::MASKABLE:
       return downloaded_icon_sizes_maskable_;
   }
+}
+
+WebAppScope WebApp::GetScope() const {
+  return WebAppScope(app_id_, scope_, validated_scope_extensions_,
+                     base::PassKey<WebApp>());
 }
 
 webapps::ManifestId WebApp::manifest_id() const {
