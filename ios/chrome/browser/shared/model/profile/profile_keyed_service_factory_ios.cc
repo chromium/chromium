@@ -12,17 +12,17 @@
 namespace {
 
 // Wraps `testing_factory` as a KeyedServiceFactory::TestingFactory.
-template <typename T>
 base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
-    base::OnceCallback<std::unique_ptr<KeyedService>(T*)> testing_factory) {
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](base::OnceCallback<std::unique_ptr<KeyedService>(T*)> testing_factory,
+      [](ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory,
          void* context) -> std::unique_ptr<KeyedService> {
-        return std::move(testing_factory).Run(static_cast<T*>(context));
+        return std::move(testing_factory)
+            .Run(static_cast<ProfileIOS*>(context));
       },
       std::move(testing_factory));
 }
@@ -32,14 +32,6 @@ base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
 void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
     ProfileIOS* profile,
     ProfileTestingFactory testing_factory) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  KeyedServiceFactory::SetTestingFactory(
-      profile, WrapFactory(std::move(testing_factory)));
-}
-
-void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
-    ProfileIOS* profile,
-    LegacyTestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   KeyedServiceFactory::SetTestingFactory(
       profile, WrapFactory(std::move(testing_factory)));

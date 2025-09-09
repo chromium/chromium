@@ -14,9 +14,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 
 class ProfileIOS;
-namespace web {
-class BrowserState;
-}  // namespace web
 
 // ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
 // KeyedServiceFactory under //ios/chrome/browser.
@@ -65,10 +62,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   using ProfileTestingFactory =
       base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS* profile)>;
 
-  using LegacyTestingFactory =
-      base::OnceCallback<std::unique_ptr<KeyedService>(web::BrowserState*)>;
-
-  using TestingFactory = LegacyTestingFactory;
+  using TestingFactory = ProfileTestingFactory;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>
@@ -90,10 +84,6 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // SetTestingFactory() are allowed; previous services will be shut down.
   void SetTestingFactory(ProfileIOS* profile,
                          ProfileTestingFactory testing_factory);
-
-  // Overload of SetTestingFactory(...) that accepts legacy factories.
-  void SetTestingFactory(ProfileIOS* profile,
-                         LegacyTestingFactory testing_factory);
 
  protected:
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the

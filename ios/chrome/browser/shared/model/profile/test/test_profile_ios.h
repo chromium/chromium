@@ -41,17 +41,9 @@ class TestProfileIOS final : public ProfileIOS {
         ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
 
     TestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::LegacyTestingFactory testing_factory);
-
-    TestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
         RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
             testing_factory);
-
-    TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-                   RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory
-                       testing_factory);
 
     TestingFactory(TestingFactory&&);
     TestingFactory& operator=(TestingFactory&&);
@@ -61,14 +53,9 @@ class TestProfileIOS final : public ProfileIOS {
     std::variant<
         std::pair<ProfileKeyedServiceFactoryIOS*,
                   ProfileKeyedServiceFactoryIOS::ProfileTestingFactory>,
-        std::pair<ProfileKeyedServiceFactoryIOS*,
-                  ProfileKeyedServiceFactoryIOS::LegacyTestingFactory>,
         std::pair<
             RefcountedProfileKeyedServiceFactoryIOS*,
-            RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory>,
-        std::pair<
-            RefcountedProfileKeyedServiceFactoryIOS*,
-            RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory>>
+            RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory>>
         service_factory_and_testing_factory;
   };
 
@@ -175,15 +162,8 @@ class TestProfileIOS final : public ProfileIOS {
         ProfileKeyedServiceFactoryIOS* service_factory,
         ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
     Builder& AddTestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::LegacyTestingFactory testing_factory);
-    Builder& AddTestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
         RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
-            testing_factory);
-    Builder& AddTestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory
             testing_factory);
 
     // Adds multiple testing factories to TestProfileIOS. These testing
