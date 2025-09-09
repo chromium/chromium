@@ -49,7 +49,6 @@ class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
-class GlicSharingManagerImpl;
 class GlicWindowController;
 class Host;
 class HostManager;
@@ -214,9 +213,8 @@ class GlicKeyedService : public KeyedService {
 
   std::vector<Host*> GetAllHosts();
   HostManager& host_manager();
-  GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
-    return *zero_state_suggestions_manager_;
-  }
+  GlicZeroStateSuggestionsManager& zero_state_suggestions_manager();
+
   // Returns whether this process host is either the Glic FRE WebUI or the Glic
   // main WebUI.
   bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
@@ -265,13 +263,10 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicFreController> fre_controller_;
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
-  std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
-  std::unique_ptr<GlicZeroStateSuggestionsManager>
-      zero_state_suggestions_manager_;
   base::OnceCallback<void()> preload_callback_;
 
   // Unowned

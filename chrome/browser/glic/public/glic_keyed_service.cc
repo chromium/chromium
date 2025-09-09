@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,9 +21,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -34,41 +31,31 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
-#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
-#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/common/url_constants.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace glic {
@@ -94,10 +81,12 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* glic_service,
-    GlicEnabling* glic_enabling) {
+    GlicEnabling* glic_enabling,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service) {
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicWindowControllerImpl>(
-        profile, identity_manager, glic_service, glic_enabling);
+        profile, identity_manager, glic_service, glic_enabling,
+        contextual_cueing_service);
   }
   return std::make_unique<GlicInstanceCoordinatorImpl>(
       profile, identity_manager, glic_service, glic_enabling);
@@ -122,27 +111,19 @@ GlicKeyedService::GlicKeyedService(
       window_controller_(CreateWindowController(profile,
                                                 identity_manager,
                                                 this,
-                                                enabling_.get())),
-      sharing_manager_(
-          std::make_unique<GlicSharingManagerImpl>(profile,
-                                                   &window_controller(),
-                                                   metrics_.get())),
+                                                enabling_.get(),
+                                                contextual_cueing_service)),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
       occlusion_notifier_(
           std::make_unique<GlicOcclusionNotifier>(window_controller())),
-      zero_state_suggestions_manager_(
-          std::make_unique<GlicZeroStateSuggestionsManager>(
-              sharing_manager_.get(),
-              &window_controller(),
-              contextual_cueing_service)),
       contextual_cueing_service_(contextual_cueing_service),
       actor_keyed_service_(actor_keyed_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   CHECK(actor_keyed_service_);
-  metrics_->SetControllers(&window_controller(), sharing_manager_.get());
+  metrics_->SetControllers(&window_controller(), &sharing_manager());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
@@ -239,8 +220,8 @@ void GlicKeyedService::PrepareForOpen() {
   fre_controller().MaybePreconnect();
 
   auto* active_web_contents =
-      sharing_manager_->GetFocusedTabData().focus()
-          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+      sharing_manager().GetFocusedTabData().focus()
+          ? sharing_manager().GetFocusedTabData().focus()->GetContents()
           : nullptr;
   if (contextual_cueing_service_ && active_web_contents) {
     contextual_cueing_service_
@@ -269,8 +250,8 @@ void GlicKeyedService::FetchZeroStateSuggestions(
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
         callback) {
   auto* active_web_contents =
-      sharing_manager_->GetFocusedTabData().focus()
-          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+      sharing_manager().GetFocusedTabData().focus()
+          ? sharing_manager().GetFocusedTabData().focus()->GetContents()
           : nullptr;
 
   if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
@@ -302,7 +283,12 @@ GlicFreController& GlicKeyedService::fre_controller() {
 }
 
 GlicSharingManager& GlicKeyedService::sharing_manager() {
-  return *sharing_manager_.get();
+  if (!UseDefaultWindowController()) {
+    NOTIMPLEMENTED();
+  }
+  return static_cast<GlicWindowControllerImpl&>(window_controller())
+      .glic_instance_components()
+      .sharing_manager();
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -614,8 +600,8 @@ void GlicKeyedService::CaptureScreenshot(
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
   return is_context_access_indicator_enabled_ &&
-         sharing_manager_->GetFocusedTabData().focus() &&
-         sharing_manager_->GetFocusedTabData().focus()->GetContents() ==
+         sharing_manager().GetFocusedTabData().focus() &&
+         sharing_manager().GetFocusedTabData().focus()->GetContents() ==
              contents;
 }
 
@@ -776,6 +762,16 @@ Host* GlicKeyedService::GetHostForActiveTab(BrowserWindowInterface* bwi) {
   }
 
   return window_controller().GetHostForTab(tab);
+}
+
+GlicZeroStateSuggestionsManager&
+GlicKeyedService::zero_state_suggestions_manager() {
+  if (!UseDefaultWindowController()) {
+    NOTIMPLEMENTED();
+  }
+  return static_cast<GlicWindowControllerImpl&>(window_controller())
+      .glic_instance_components()
+      .zero_state_suggestions_manager();
 }
 
 }  // namespace glic

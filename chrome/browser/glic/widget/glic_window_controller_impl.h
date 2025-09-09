@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance_components.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -64,10 +65,12 @@ class GlicWindowControllerImpl
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
 
-  GlicWindowControllerImpl(Profile* profile,
-                           signin::IdentityManager* identity_manager,
-                           GlicKeyedService* service,
-                           GlicEnabling* enabling);
+  GlicWindowControllerImpl(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      GlicKeyedService* service,
+      GlicEnabling* enabling,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service);
   ~GlicWindowControllerImpl() override;
 
   // GlicWindowController implementation
@@ -148,6 +151,8 @@ class GlicWindowControllerImpl
   Host& host() override;
   HostManager& host_manager() override;
   Host* GetHostForTab(tabs::TabInterface* tab) override;
+
+  GlicInstanceComponents& glic_instance_components();
 
  private:
   // Sets the floating attributes of the glic window.
@@ -392,6 +397,7 @@ class GlicWindowControllerImpl
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;
+  GlicInstanceComponents glic_instance_components_;
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   base::WeakPtrFactory<GlicWindowControllerImpl> weak_ptr_factory_{this};
