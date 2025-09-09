@@ -35,6 +35,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -74,7 +75,8 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK
+    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK,
+    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN
 })
 public class KeyboardAccessoryChipViewRenderTest {
 
@@ -95,6 +97,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
+                    .setRevision(2)
                     .build();
 
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
@@ -157,8 +160,36 @@ public class KeyboardAccessoryChipViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
     public void renderSuggestions() throws Exception {
-        AutofillSuggestion addessSuggestion =
+        // All suggestion types are rendered in the same test to minimize the number of render
+        // tests.
+        runOnUiThreadBlocking(
+                () -> {
+                    for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
+                        createChipViewFromSuggestion(suggestion);
+                    }
+                });
+        mRenderTestRule.render(mContentView, "keyboard_accessory_suggestions");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderTwoLineSuggestions() throws Exception {
+        // All suggestion types are rendered in the same test to minimize the number of render
+        // tests.
+        runOnUiThreadBlocking(
+                () -> {
+                    for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
+                        createChipViewFromSuggestion(suggestion);
+                    }
+                });
+        mRenderTestRule.render(mContentView, "keyboard_accessory_two_line_suggestions");
+    }
+
+    private List<AutofillSuggestion> createSuggestionsToRender() {
+        AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("Homer Simpson")
                         .setSubLabel("hsimpson@gmail.com")
@@ -190,12 +221,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setIconId(R.drawable.home_logo)
                         .build();
 
-        // All suggestion types are rendered in the same test to minimize the number of render
-        // tests.
-        runOnUiThreadBlocking(() -> createChipViewFromSuggestion(addessSuggestion));
-        runOnUiThreadBlocking(() -> createChipViewFromSuggestion(loyaltyCardSuggestion));
-        runOnUiThreadBlocking(() -> createChipViewFromSuggestion(homeAndWorkSuggestion));
-        mRenderTestRule.render(mContentView, "keyboard_accessory_suggestions");
+        return List.of(addressSuggestion, loyaltyCardSuggestion, homeAndWorkSuggestion);
     }
 
     private void createChipViewFromSuggestion(AutofillSuggestion suggestion) {

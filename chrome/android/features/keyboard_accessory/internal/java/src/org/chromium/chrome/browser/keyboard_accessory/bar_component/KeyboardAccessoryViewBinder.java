@@ -137,6 +137,16 @@ class KeyboardAccessoryViewBinder {
                             null,
                             0,
                             selectStyleForSuggestion(parent.getContext(), barItemType)));
+            // TODO: crbug.com/385172647 - Move height parameters to the xml file once the feature
+            // is launched.
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+                itemView.setMinimumHeight(
+                        parent.getContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.keyboard_accessory_chip_min_height_redesign));
+            }
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;
@@ -228,6 +238,31 @@ class KeyboardAccessoryViewBinder {
                     ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
                             && context.getResources().getConfiguration().fontScale
                                     >= LARGE_FONT_THRESHOLD;
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+                switch (barItemType) {
+                    case BarItem.Type.LOYALTY_CARD_SUGGESTION:
+                        // Loyalty cards suggestions have round icons.
+                        return useLargeChips
+                                ? R.style.KeyboardAccessoryLoyaltyCardLargeTwoLineChip
+                                : R.style.KeyboardAccessoryLoyaltyCardTwoLineChip;
+                    case BarItem.Type.HOME_AND_WORK_SUGGESTION:
+                        return useLargeChips
+                                ? R.style.KeyboardAccessoryHomeAndWorkLargeTwoLineChip
+                                : R.style.KeyboardAccessoryHomeAndWorkTwoLineChip;
+                    case BarItem.Type.SUGGESTION:
+                        return useLargeChips
+                                ? R.style.KeyboardAccessoryLargeTwoLineChip
+                                : R.style.KeyboardAccessoryTwoLineChip;
+                    case BarItem.Type.ACTION_CHIP:
+                    case BarItem.Type.DISMISS_CHIP:
+                    case BarItem.Type.TAB_LAYOUT:
+                    case BarItem.Type.ACTION_BUTTON:
+                    default:
+                        assert false : "Only suggestion chips have custom styles";
+                        return 0;
+                }
+            }
             switch (barItemType) {
                 case BarItem.Type.LOYALTY_CARD_SUGGESTION:
                     // Loyalty cards suggestions have round icons.

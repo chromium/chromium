@@ -39,4 +39,38 @@ found in the LICENSE file.
         <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
         <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
     </style>
+    <!-- TODO: crbug.com/385172647 - Clean up old styles once 2 line chip feature is launched. -->
+    <style name="KeyboardAccessoryTwoLineChip" parent="AssistiveChip">
+        <item name="android:minHeight">
+            @dimen/keyboard_accessory_chip_min_height_redesign
+        </item>
+        <item name="iconWidth">
+            @dimen/keyboard_accessory_bar_item_icon_width
+        </item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="verticalInset">2dp</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+        <style name="KeyboardAccessoryHomeAndWorkTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
+    </style>
+    <style name="KeyboardAccessoryHomeAndWorkLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
+    </style>
 </resources>
