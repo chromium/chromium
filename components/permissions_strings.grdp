@@ -488,7 +488,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </if>
   <if expr="is_chromeos">
     <message name="IDS_SMART_CARD_PERMISSION_PROMPT" desc="Text on dialog that asks the user for permission to access a smart card reader device and the card inserted in it (or presented to it, if contactless).">
-      Control authentication devices named <ph name="ReaderName">$1<ex>HID Omnikey</ex></ph> and smart cards used with them
+      Control authentication devices of type <ph name="ReaderName">$1<ex>HID Omnikey</ex></ph> and smart cards accessible to them
     </message>
     <message name="IDS_SMART_CARD_PERMISSION_ALWAYS_ALLOW" desc="Label on button to always allow access to this smart card reader and any card inserted in (or presented to) it.">
       Always allow, with any card

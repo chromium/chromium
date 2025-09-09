@@ -19214,10 +19214,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Any smart card reader
       </message>
       <message name="IDS_ACCESSED_SMART_CARD_READER_TITLE" desc="Title of the info bubble shown when site has an active connection to a smart card reader.">
-        Your smart card readers are being accessed
+        Your smart card readers are being controlled
       </message>
       <message name="IDS_ACCESSED_SMART_CARD_READER_BODY" desc="The body of the info bubble shown when site has an active connection to a smart card reader.">
-        This site is accessing smart card readers connected to your device and potentially smart cards available to them
+        This site is controlling smart card readers connected to your device and potentially smart cards available to them
       </message>
     </if>
 
