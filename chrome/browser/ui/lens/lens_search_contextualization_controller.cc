@@ -394,9 +394,10 @@ void LensSearchContextualizationController::UpdatePageContextualization(
   }
 
   // Do not capture a new screenshot if the feature param is not enabled or if
-  // the user is not viewing the live page, meaning the viewport cannot have
+  // the overlay is showing over the live page, meaning the viewport cannot have
   // changed.
-  if (!lens::features::UpdateViewportEachQueryEnabled()) {
+  if (!lens::features::UpdateViewportEachQueryEnabled() ||
+      lens_search_controller_->lens_overlay_controller()->IsOverlayShowing()) {
     UpdatePageContextualizationPart2(page_contents, primary_content_type,
                                      page_count, SkBitmap());
     return;
