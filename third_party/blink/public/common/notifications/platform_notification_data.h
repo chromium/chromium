@@ -54,7 +54,7 @@ struct BLINK_COMMON_EXPORT PlatformNotificationData {
 
   // Vibration pattern for the notification, following the syntax of the
   // Vibration API. https://www.w3.org/TR/vibration/
-  std::vector<int> vibration_pattern;
+  std::vector<int32_t> vibration_pattern;
 
   // The time at which the event the notification represents took place.
   base::Time timestamp;
