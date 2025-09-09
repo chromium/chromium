@@ -116,7 +116,7 @@ TEST_F(PushMessagingAppIdentifierTest, PersistAndFind) {
   ASSERT_TRUE(identifier.is_null());
 
   // Test basic PersistToPrefs round trips.
-  original_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
   {
     push_messaging::AppIdentifier found_by_app_id =
         push_messaging::AppIdentifier::FindByAppId(profile(),
@@ -150,7 +150,7 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
   // since that currently works, but it's ok to change the behavior of
   // PersistToPrefs; if so, this test can just do a raw ScopedDictPrefUpdate).
   original_.app_id_ = legacy_app_id;
-  original_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
 
   // Test that legacy entries can be read back from prefs.
   {
@@ -171,14 +171,14 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
 }
 
 TEST_F(PushMessagingAppIdentifierTest, PersistOverwritesSameOriginAndSW) {
-  original_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
 
   // Test that PersistToPrefs overwrites when same origin and Service Worker.
   ASSERT_NE(original_.app_id(), same_origin_and_sw_.app_id());
   ASSERT_EQ(original_.origin(), same_origin_and_sw_.origin());
   ASSERT_EQ(original_.service_worker_registration_id(),
             same_origin_and_sw_.service_worker_registration_id());
-  same_origin_and_sw_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(same_origin_and_sw_, profile());
   {
     push_messaging::AppIdentifier found_by_original_app_id =
         push_messaging::AppIdentifier::FindByAppId(profile(),
@@ -204,13 +204,13 @@ TEST_F(PushMessagingAppIdentifierTest, PersistOverwritesSameOriginAndSW) {
 }
 
 TEST_F(PushMessagingAppIdentifierTest, PersistDoesNotOverwriteDifferent) {
-  original_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
 
   // Test that PersistToPrefs doesn't overwrite when different origin or SW.
   ASSERT_NE(original_.app_id(), different_origin_.app_id());
   ASSERT_NE(original_.app_id(), different_sw_.app_id());
-  different_origin_.PersistToPrefs(profile());
-  different_sw_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_origin_, profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_sw_, profile());
   {
     push_messaging::AppIdentifier found_by_original_app_id =
         push_messaging::AppIdentifier::FindByAppId(profile(),
@@ -229,12 +229,12 @@ TEST_F(PushMessagingAppIdentifierTest, PersistDoesNotOverwriteDifferent) {
 }
 
 TEST_F(PushMessagingAppIdentifierTest, DeleteFromPrefs) {
-  original_.PersistToPrefs(profile());
-  different_origin_.PersistToPrefs(profile());
-  different_sw_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_origin_, profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_sw_, profile());
 
   // Test DeleteFromPrefs. Deleted app identifier should be deleted.
-  original_.DeleteFromPrefs(profile());
+  push_messaging::AppIdentifier::DeleteFromPrefs(original_, profile());
   {
     push_messaging::AppIdentifier found_by_original_app_id =
         push_messaging::AppIdentifier::FindByAppId(profile(),
@@ -251,11 +251,11 @@ TEST_F(PushMessagingAppIdentifierTest, DeleteFromPrefs) {
 }
 
 TEST_F(PushMessagingAppIdentifierTest, GetAll) {
-  original_.PersistToPrefs(profile());
-  different_origin_.PersistToPrefs(profile());
-  different_sw_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(original_, profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_origin_, profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_sw_, profile());
 
-  original_.DeleteFromPrefs(profile());
+  push_messaging::AppIdentifier::DeleteFromPrefs(original_, profile());
 
   // Test GetAll. Non-deleted app identifiers should all be listed.
   std::vector<push_messaging::AppIdentifier> all_app_identifiers =
@@ -286,7 +286,7 @@ TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
             different_et_.service_worker_registration_id());
   ASSERT_FALSE(kExpirationTime.is_null());
 
-  different_et_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(different_et_, profile());
 
   // Test PersistToPrefs and FindByAppId, whether expiration time is saved
   // properly
@@ -300,7 +300,7 @@ TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
     // Check whether expiration time was saved
     ExpectAppIdentifiersEqual(found_by_app_id, different_et_);
   }
-  with_et_.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(with_et_, profile());
   {
     all_app_identifiers = push_messaging::AppIdentifier::GetAll(profile());
     EXPECT_EQ(1u, all_app_identifiers.size());

@@ -515,7 +515,8 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
     ASSERT_EQ(gcm::GCMClient::SUCCESS, register_result);
   }
 
-  app_identifier.PersistToPrefs(GetBrowser()->profile());
+  push_messaging::AppIdentifier::PersistToPrefs(app_identifier,
+                                                GetBrowser()->profile());
   push_service_->IncreasePushSubscriptionCount(1, false /* is_pending */);
   push_service_->DecreasePushSubscriptionCount(1, true /* was_pending */);
 

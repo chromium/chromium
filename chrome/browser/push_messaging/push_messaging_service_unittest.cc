@@ -459,7 +459,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
 
   // (4) Manually set the time as expired, save the time in preferences
   app_identifier.set_expiration_time(base::Time::UnixEpoch());
-  app_identifier.PersistToPrefs(profile());
+  push_messaging::AppIdentifier::PersistToPrefs(app_identifier, profile());
   ASSERT_EQ(1u, push_messaging::AppIdentifier::GetCount(profile()));
 
   // (3) Remove all expired subscriptions

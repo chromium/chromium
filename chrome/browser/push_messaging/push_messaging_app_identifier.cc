@@ -259,8 +259,10 @@ bool AppIdentifier::IsExpired() const {
   return (expiration_time_) ? *expiration_time_ < base::Time::Now() : false;
 }
 
-void AppIdentifier::PersistToPrefs(Profile* profile) const {
-  DCheckValid();
+// static
+void AppIdentifier::PersistToPrefs(const AppIdentifier& id, Profile* profile) {
+  id.DCheckValid();
+  CHECK(!id.is_null());
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
@@ -268,22 +270,24 @@ void AppIdentifier::PersistToPrefs(Profile* profile) const {
 
   // Delete any stale entry with the same origin and Service Worker
   // registration id (hence we ensure there is a 1:1 not 1:many mapping).
-  AppIdentifier old =
-      FindByServiceWorker(profile, origin_, service_worker_registration_id_);
+  AppIdentifier old = FindByServiceWorker(profile, id.origin(),
+                                          id.service_worker_registration_id());
   if (!old.is_null())
-    map.Remove(old.app_id_);
+    map.Remove(old.app_id());
 
-  map.Set(app_id_, MakePrefValue(origin_, service_worker_registration_id_,
-                                 expiration_time_));
+  map.Set(id.app_id(),
+          MakePrefValue(id.origin(), id.service_worker_registration_id(),
+                        id.expiration_time()));
 }
 
-void AppIdentifier::DeleteFromPrefs(Profile* profile) const {
-  DCheckValid();
+// static
+void AppIdentifier::DeleteFromPrefs(const AppIdentifier& id, Profile* profile) {
+  id.DCheckValid();
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
   base::Value::Dict& map = update.Get();
-  map.Remove(app_id_);
+  map.Remove(id.app_id());
 }
 
 void AppIdentifier::DCheckValid() const {

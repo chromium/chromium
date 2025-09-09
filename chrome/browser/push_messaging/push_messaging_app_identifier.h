@@ -37,6 +37,11 @@ extern const char kAppIdentifierPrefix[];
 
 class AppIdentifier {
  public:
+  // crbug.com/440400313, to support PushMessagingAPI out of the //chrome, this
+  // is an ongoing effort to move the shared components to
+  // //components/push_messaging/. Functions in // AppIdentifier accessing
+  // //chrome, e.g. Profile or PrefRegistrySyncable, should be static.
+
   // Register profile-specific prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -75,10 +80,10 @@ class AppIdentifier {
   ~AppIdentifier();
 
   // Persist this app identifier to prefs.
-  void PersistToPrefs(Profile* profile) const;
+  static void PersistToPrefs(const AppIdentifier& id, Profile* profile);
 
   // Delete this app identifier from prefs.
-  void DeleteFromPrefs(Profile* profile) const;
+  static void DeleteFromPrefs(const AppIdentifier& id, Profile* profile);
 
   // Returns true if this identifier does not represent an app (i.e. this was
   // returned by a failed Find call).

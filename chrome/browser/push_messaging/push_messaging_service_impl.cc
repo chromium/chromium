@@ -1169,7 +1169,7 @@ void PushMessagingServiceImpl::DidSubscribeWithEncryptionInfo(
     return;
   }
 
-  app_identifier.PersistToPrefs(profile_);
+  push_messaging::AppIdentifier::PersistToPrefs(app_identifier, profile_);
   PushMessagingUnsubscribedEntry(
       app_identifier.origin(), app_identifier.service_worker_registration_id())
       .DeleteFromPrefs(profile_);
@@ -1328,7 +1328,7 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
       push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
   bool was_subscribed = !app_identifier.is_null();
   if (was_subscribed) {
-    app_identifier.DeleteFromPrefs(profile_);
+    push_messaging::AppIdentifier::DeleteFromPrefs(app_identifier, profile_);
     if (base::FeatureList::IsEnabled(
             features::kPushSubscriptionChangeEventOnResubscribe)) {
       switch (reason) {
