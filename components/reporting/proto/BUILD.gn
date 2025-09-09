@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -13,6 +14,12 @@ fuzzable_proto_library("record_constants") {
   generate_javascript = true
 
   sources = [ "synced/record_constants.proto" ]
+}
+
+proto_extras("record_constants_extras") {
+  sources = [ "synced/record_constants.proto" ]
+  deps = [ ":record_constants" ]
+  protobuf_full_support = true
 }
 
 # Record definitions for reporting.
@@ -28,6 +35,20 @@ fuzzable_proto_library("record_proto") {
     ":health_proto",
     ":record_constants",
   ]
+}
+
+proto_extras("record_proto_extras") {
+  sources = [ "synced/record.proto" ]
+  deps = [
+    ":health_proto",
+    ":record_constants",
+    ":record_proto",
+  ]
+  extras_deps = [
+    ":health_proto_extras",
+    ":record_constants_extras",
+  ]
+  protobuf_full_support = true
 }
 
 proto_library("interface_proto") {
@@ -57,6 +78,20 @@ fuzzable_proto_library("health_proto") {
     ":record_constants",
     ":status_proto",
   ]
+}
+
+proto_extras("health_proto_extras") {
+  sources = [ "synced/health.proto" ]
+  deps = [
+    ":health_proto",
+    ":record_constants",
+    ":status_proto",
+  ]
+  extras_deps = [
+    ":record_constants_extras",
+    ":status_proto_extras",
+  ]
+  protobuf_full_support = true
 }
 
 proto_library("session_affiliated_user_proto") {
@@ -95,6 +130,12 @@ fuzzable_proto_library("status_proto") {
   generate_javascript = true
 
   sources = [ "synced/status.proto" ]
+}
+
+proto_extras("status_proto_extras") {
+  sources = [ "synced/status.proto" ]
+  deps = [ ":status_proto" ]
+  protobuf_full_support = true
 }
 
 fuzzable_proto_library("upload_tracker_proto") {
