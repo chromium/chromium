@@ -782,7 +782,6 @@ external/wpt/webcodecs/videoFrame-texImage.any.html
 external/wpt/webcodecs/videoFrame-texImage.any.worker.html
 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html
 external/wpt/webrtc/RTCDataChannel-close.html
-external/wpt/webrtc/RTCDataChannel-send-close.html
 external/wpt/webrtc/RTCPeerConnection-operations.https.html
 external/wpt/websockets/binary/004.html?wpt_flags=h2
 external/wpt/websockets/Close-1000.any.html?wpt_flags=h2

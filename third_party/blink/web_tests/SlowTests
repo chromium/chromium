@@ -1215,9 +1215,6 @@ crbug.com/354579691 fast/events/touch/gesture/long-press-drag-drop-touch-editing
 
 crbug.com/40226500 http/tests/media/mixed-range-response.html [ Slow ]
 
-# Slow because it is transfering a lot of data to catch non-spec compliant behavior with large buffers
-crbug.com/356963272 external/wpt/webrtc/RTCDataChannel-send-close.html [ Slow ]
-
 # Slow because it contains a large number of subtests
 crbug.com/369600187 external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Slow ]
 
