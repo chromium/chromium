@@ -11,6 +11,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -171,14 +172,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   bool pending_immersive_vsync_ = false;
   bool pending_non_immersive_vsync_ = false;
 
-  // TODO(crbug.com/1494911): Remove |buffer_sync_token_| and
-  // |camera_image_sync_token_| once the sync tokens are incorporated
-  // into |buffer_shared_image_| and |camera_image_shared_image_| respectively.
-  scoped_refptr<gpu::ClientSharedImage> buffer_shared_image_;
-  gpu::SyncToken buffer_sync_token_;
-
-  scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image_;
-  gpu::SyncToken camera_image_sync_token_;
+  Vector<XRSharedImageData> shared_images_;
 
   bool last_has_focus_ = false;
 

@@ -85,6 +85,8 @@ class XRWebGLLayer final : public XRLayer, public XRWebGLLayerClient {
   void Trace(Visitor*) const override;
 
  private:
+  const XRSharedImageData& CameraSharedImage() const;
+
   void CreateAndBindCameraBufferTexture(
       const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
       const gpu::SyncToken& buffer_sync_token);

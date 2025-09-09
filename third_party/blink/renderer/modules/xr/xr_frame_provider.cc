@@ -342,17 +342,22 @@ void XRFrameProvider::OnImmersiveFrameData(
   // [1] https://immersive-web.github.io/webxr/#xr-animation-frame
   double high_res_now_ms = UpdateImmersiveFrameTime(window, *data);
 
+  shared_images_.clear();
+
   frame_id_ = data->render_info->frame_id;
   if (data->buffer_shared_image.has_value()) {
-    buffer_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        std::move(data->buffer_shared_image.value()));
-    buffer_sync_token_ = data->buffer_sync_token.value();
+    shared_images_.emplace_back(XRSharedImageSource::kBaseLayer, 0,
+                                gpu::ClientSharedImage::ImportUnowned(std::move(
+                                    data->buffer_shared_image.value())),
+                                data->buffer_sync_token.value());
   }
 
   if (data->camera_image_buffer_shared_image.has_value()) {
-    camera_image_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        std::move(data->camera_image_buffer_shared_image.value()));
-    camera_image_sync_token_ = data->camera_image_buffer_sync_token.value();
+    shared_images_.emplace_back(
+        XRSharedImageSource::kCamera, 0,
+        gpu::ClientSharedImage::ImportUnowned(
+            std::move(data->camera_image_buffer_shared_image.value())),
+        data->camera_image_buffer_sync_token.value());
   }
 
   pending_immersive_vsync_ = false;
@@ -523,21 +528,17 @@ void XRFrameProvider::ProcessScheduledFrame(
     // transition where the frame ID wasn't set yet. In that case, drawing can
     // proceed, but the result will be discarded in SubmitWebGLLayer().
     if (frame_transport_->DrawingIntoSharedBuffer() && frame_id_ >= 0) {
-      DCHECK(buffer_shared_image_);
+      DCHECK(shared_images_.size());
     }
 #endif
-
     // Run immersive_session_->OnFrame() in a posted task to ensure that
     // createAnchor promises get a chance to run - the presentation frame state
     // is already updated.
     window->GetTaskRunner(blink::TaskType::kInternalMedia)
-        ->PostTask(
-            FROM_HERE,
-            blink::BindOnce(&XRSession::OnFrame,
-                            WrapWeakPersistent(immersive_session_.Get()),
-                            high_res_now_ms, buffer_shared_image_,
-                            buffer_sync_token_, camera_image_shared_image_,
-                            camera_image_sync_token_));
+        ->PostTask(FROM_HERE,
+                   blink::BindOnce(&XRSession::OnFrame,
+                                   WrapWeakPersistent(immersive_session_.Get()),
+                                   high_res_now_ms, std::move(shared_images_)));
   } else {
     // In the process of fulfilling the frame requests for each session they are
     // extremely likely to request another frame. Work off of a separate list
@@ -598,8 +599,7 @@ void XRFrameProvider::OnPreDispatchInlineFrame(XRSession* session,
 
   // If we still have the session and don't have an immersive session, then we
   // should serve the frame.
-  session->OnFrame(timestamp, nullptr, gpu::SyncToken(), nullptr,
-                   gpu::SyncToken());
+  session->OnFrame(timestamp, Vector<XRSharedImageData>());
 }
 
 double XRFrameProvider::UpdateImmersiveFrameTime(

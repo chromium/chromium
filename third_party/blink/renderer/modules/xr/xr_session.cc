@@ -2068,12 +2068,8 @@ void XRSession::SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter) {
   metrics_reporter_ = std::move(reporter);
 }
 
-void XRSession::OnFrame(
-    double timestamp,
-    scoped_refptr<gpu::ClientSharedImage> output_shared_image,
-    const gpu::SyncToken& output_sync_token,
-    scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image,
-    const gpu::SyncToken& camera_image_sync_token) {
+void XRSession::OnFrame(double timestamp,
+                        Vector<XRSharedImageData> shared_images) {
   TRACE_EVENT0("gpu", "OnFrame");
   DVLOG(2) << __func__ << ": ended_=" << ended_
            << ", pending_frame_=" << pending_frame_;
@@ -2095,9 +2091,8 @@ void XRSession::OnFrame(
       // submit a frame back to the runtime, as all "GetFrameData" calls need a
       // matching submit.
       if (prev_base_layer_) {
-        layer_shared_image_manager_.SetLayerSharedImages(
-            prev_base_layer_, output_shared_image, output_sync_token,
-            camera_image_shared_image, camera_image_sync_token);
+        layer_shared_image_manager_.SetSharedImages(prev_base_layer_,
+                                                    std::move(shared_images));
 
         DVLOG(2) << __func__
                  << ": prev_base_layer_ is valid, submitting frame to it";
@@ -2118,9 +2113,8 @@ void XRSession::OnFrame(
     }
 
     XRLayer* frame_base_layer = render_state_->GetFirstLayer();
-    layer_shared_image_manager_.SetLayerSharedImages(
-        frame_base_layer, output_shared_image, output_sync_token,
-        camera_image_shared_image, camera_image_sync_token);
+    layer_shared_image_manager_.SetSharedImages(frame_base_layer,
+                                                std::move(shared_images));
 
     frame_base_layer->OnFrameStart();
 

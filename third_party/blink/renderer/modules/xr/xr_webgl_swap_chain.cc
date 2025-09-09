@@ -166,9 +166,7 @@ WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
     return nullptr;
   }
 
-  const XRLayerSharedImages& shared_images = layer()->GetSharedImages();
-  const XRSharedImageData& content_image_data =
-      shared_images.content_image_data;
+  const XRSharedImageData& content_image_data = layer()->SharedImage();
 
   CHECK(content_image_data.shared_image);
   CHECK(content_image_data.sync_token.HasData());

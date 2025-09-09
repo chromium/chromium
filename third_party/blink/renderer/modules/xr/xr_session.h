@@ -308,11 +308,7 @@ class XRSession final : public EventTarget,
   const AtomicString& InterfaceName() const override;
 
   void OnFocusChanged();
-  void OnFrame(double timestamp,
-               scoped_refptr<gpu::ClientSharedImage> output_shared_image,
-               const gpu::SyncToken& output_sync_token,
-               scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image,
-               const gpu::SyncToken& camera_image_sync_token);
+  void OnFrame(double timestamp, Vector<XRSharedImageData> shared_images);
 
   const HeapVector<Member<XRViewData>>& views();
 

@@ -21,8 +21,12 @@ const AtomicString& XRLayer::InterfaceName() const {
   return event_target_names::kXRLayer;
 }
 
-const XRLayerSharedImages& XRLayer::GetSharedImages() const {
-  return session_->LayerSharedImageManager().GetLayerSharedImages(this);
+const XRSharedImageData& XRLayer::SharedImage() const {
+  return session_->LayerSharedImageManager().LayerSharedImage(layer_id_);
+}
+
+bool XRLayer::HasSharedImage() const {
+  return session_->LayerSharedImageManager().HasLayerSharedImage(layer_id_);
 }
 
 void XRLayer::Trace(Visitor* visitor) const {
