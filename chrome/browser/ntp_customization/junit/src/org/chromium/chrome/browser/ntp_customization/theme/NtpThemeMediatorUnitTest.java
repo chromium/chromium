@@ -170,6 +170,7 @@ public class NtpThemeMediatorUnitTest {
                         mBottomSheetDelegate,
                         mProfile,
                         mNtpCustomizationConfigManager,
+                        null,
                         null);
     }
 }

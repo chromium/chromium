@@ -125,7 +125,7 @@ public class NtpCustomizationCoordinatorUnitTest {
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mView);
         bottomSheetContent.handleBackPress();
-        verify(mMediator).dismissBottomSheet();
+        verify(mMediator).dismissBottomSheet(/* animate= */ eq(true));
 
         clearInvocations(mMediator);
         mNtpCustomizationCoordinator =
@@ -134,7 +134,7 @@ public class NtpCustomizationCoordinatorUnitTest {
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mView);
         bottomSheetContent.handleBackPress();
-        verify(mMediator).dismissBottomSheet();
+        verify(mMediator).dismissBottomSheet(/* animate= */ eq(true));
     }
 
     @Test

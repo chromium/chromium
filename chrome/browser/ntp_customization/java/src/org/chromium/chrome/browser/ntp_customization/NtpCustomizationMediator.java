@@ -134,7 +134,7 @@ public class NtpCustomizationMediator {
         if (mCurrentBottomSheet == null) return;
 
         if (mCurrentBottomSheet == MAIN) {
-            dismissBottomSheet();
+            dismissBottomSheet(/* animate= */ true);
         } else {
             showBottomSheet(MAIN);
 
@@ -150,8 +150,8 @@ public class NtpCustomizationMediator {
     }
 
     /** Closes the entire bottom sheet view and returns to the New Tab Page. */
-    void dismissBottomSheet() {
-        mBottomSheetController.hideContent(mBottomSheetContent, true);
+    void dismissBottomSheet(boolean animate) {
+        mBottomSheetController.hideContent(mBottomSheetContent, animate);
         mCurrentBottomSheet = null;
     }
 

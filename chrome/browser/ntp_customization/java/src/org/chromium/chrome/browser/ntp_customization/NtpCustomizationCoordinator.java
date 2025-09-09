@@ -184,7 +184,7 @@ public class NtpCustomizationCoordinator {
                 contentView,
                 mBottomSheetType == MAIN
                         ? () -> mMediator.backPressOnCurrentBottomSheet()
-                        : () -> mMediator.dismissBottomSheet(),
+                        : () -> mMediator.dismissBottomSheet(/* animate= */ true),
                 this::destroy,
                 () -> mMediator.getCurrentBottomSheetType());
     }
@@ -233,7 +233,11 @@ public class NtpCustomizationCoordinator {
         if (mNtpThemeCoordinator == null) {
             Profile profile = assumeNonNull(mProfileSupplier.get());
             mNtpThemeCoordinator =
-                    new NtpThemeCoordinator(mContext, mDelegate, profile.getOriginalProfile());
+                    new NtpThemeCoordinator(
+                            mContext,
+                            mDelegate,
+                            profile.getOriginalProfile(),
+                            () -> mMediator.dismissBottomSheet(/* animate= */ false));
         }
         mMediator.showBottomSheet(THEME);
     }

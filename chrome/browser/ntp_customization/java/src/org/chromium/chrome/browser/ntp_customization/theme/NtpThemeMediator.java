@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -52,6 +54,7 @@ public class NtpThemeMediator {
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    private final Callback<@Nullable Bitmap> mOnImageSelectedCallback;
     private @Nullable ActivityResultRegistry mActivityResultRegistry;
     private @Nullable ActivityResultLauncher<String> mActivityResultLauncher;
     private @Nullable NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
@@ -64,7 +67,8 @@ public class NtpThemeMediator {
             BottomSheetDelegate delegate,
             Profile profile,
             NtpCustomizationConfigManager ntpCustomizationConfigManager,
-            @Nullable ActivityResultRegistry activityResultRegistry) {
+            @Nullable ActivityResultRegistry activityResultRegistry,
+            Callback<@Nullable Bitmap> onImageSelectedCallback) {
         mContext = context;
         mProfile = profile;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
@@ -72,6 +76,7 @@ public class NtpThemeMediator {
         mBottomSheetDelegate = delegate;
         mNtpCustomizationConfigManager = ntpCustomizationConfigManager;
         mActivityResultRegistry = activityResultRegistry;
+        mOnImageSelectedCallback = onImageSelectedCallback;
 
         // Hides the back button when the theme settings bottom sheet is displayed standalone.
         mBottomSheetPropertyModel.set(
@@ -96,7 +101,8 @@ public class NtpThemeMediator {
     }
 
     /** Sets the on click listener for each theme bottom sheet section. */
-    private void setOnClickListenerForAllSection() {
+    @VisibleForTesting
+    void setOnClickListenerForAllSection() {
         if (mActivityResultRegistry != null) {
             mActivityResultLauncher =
                     mActivityResultRegistry.register(
@@ -106,17 +112,11 @@ public class NtpThemeMediator {
                                 // If users didn't select any file, the returned uri is null.
                                 if (uri == null) return;
 
+                                // When a new image is selected, store it and
+                                // reset any existing crop settings from a previous
+                                // image.
                                 ShareImageFileUtils.getBitmapFromUriAsync(
-                                        mContext,
-                                        uri,
-                                        bitmap -> {
-                                            // If failed to get the bitmap of the chosen image,
-                                            // don't update existing background type.
-                                            if (bitmap == null) return;
-
-                                            mNtpCustomizationConfigManager.onBackgroundChanged(
-                                                    bitmap);
-                                        });
+                                        mContext, uri, mOnImageSelectedCallback);
                             });
         }
 

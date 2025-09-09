@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.THEME_KEYS;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.IntDef;
 import android.view.LayoutInflater;
 
 import androidx.activity.ComponentActivity;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -47,10 +50,19 @@ public class NtpThemeCoordinator {
         int NUM_ENTRIES = 4;
     }
 
+    private final Context mContext;
+    private final Runnable mDismissBottomSheetRunnable;
     private NtpThemeMediator mMediator;
     private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
+    private @Nullable UploadImagePreviewCoordinator mUploadPreviewCoordinator;
 
-    public NtpThemeCoordinator(Context context, BottomSheetDelegate delegate, Profile profile) {
+    public NtpThemeCoordinator(
+            Context context,
+            BottomSheetDelegate delegate,
+            Profile profile,
+            Runnable dismissBottomSheet) {
+        mContext = context;
+        mDismissBottomSheetRunnable = dismissBottomSheet;
         mNtpThemeBottomSheetView =
                 (NtpThemeBottomSheetView)
                         LayoutInflater.from(context)
@@ -89,12 +101,38 @@ public class NtpThemeCoordinator {
                         delegate,
                         profile,
                         NtpCustomizationConfigManager.getInstance(),
-                        activityResultRegistry);
+                        activityResultRegistry,
+                        this::onImageSelectedForPreview);
+    }
+
+    /**
+     * This is the callback method that gets invoked by the Mediator to initialize the {@code
+     * UploadImagePreviewCoordinator}.
+     */
+    public void onImageSelectedForPreview(@Nullable Bitmap bitmap) {
+        if (bitmap == null) return;
+
+        mUploadPreviewCoordinator =
+                new UploadImagePreviewCoordinator(
+                        (Activity) mContext,
+                        bitmap,
+                        // "On Confirm" callback
+                        (portraitMatrix, landscapeMatrix) -> {
+                            // TODO(crbug.com/423579377): call methods in
+                            // NtpCustomizationConfigManager to convert two matrices to two
+                            // drawables.
+                            mDismissBottomSheetRunnable.run();
+                        },
+                        // "On Cancel" callback
+                        mDismissBottomSheetRunnable);
     }
 
     public void destroy() {
         mMediator.destroy();
         mNtpThemeBottomSheetView.destroy();
+        if (mUploadPreviewCoordinator != null) {
+            mUploadPreviewCoordinator.destroy();
+        }
     }
 
     NtpThemeMediator getMediatorForTesting() {

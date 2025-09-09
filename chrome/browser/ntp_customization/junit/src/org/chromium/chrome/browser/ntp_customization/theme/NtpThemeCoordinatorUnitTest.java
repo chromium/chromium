@@ -35,6 +35,7 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private Profile mProfile;
+    @Mock private Runnable mDismissBottomSheet;
 
     private Context mContext;
     private NtpThemeCoordinator mCoordinator;
@@ -45,7 +46,9 @@ public class NtpThemeCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mCoordinator = new NtpThemeCoordinator(mContext, mBottomSheetDelegate, mProfile);
+        mCoordinator =
+                new NtpThemeCoordinator(
+                        mContext, mBottomSheetDelegate, mProfile, mDismissBottomSheet);
     }
 
     @Test
