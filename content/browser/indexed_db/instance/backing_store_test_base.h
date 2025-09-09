@@ -45,7 +45,13 @@ class BackingStoreTestBase : public testing::Test {
   CreateAndBeginTransaction(indexed_db::BackingStore::Database& db,
                             blink::mojom::IDBTransactionMode mode);
 
-  void CommitTransaction(indexed_db::BackingStore::Transaction& transaction);
+  // Commits both phase one and two of `transaction`. This also verifies commit
+  // steps are successful.
+  void CommitTransactionAndVerify(BackingStore::Transaction& transaction);
+  // Commits only phase one of `transaction`. This also verifies commit steps
+  // are successful.
+  void CommitTransactionPhaseOneAndVerify(
+      BackingStore::Transaction& transaction);
 
   std::vector<PartitionedLock> CreateDummyLock();
 
@@ -74,6 +80,55 @@ class BackingStoreTestBase : public testing::Test {
   IndexedDBValue value2_;
 
   raw_ptr<BackingStore> backing_store_ = nullptr;
+};
+
+class BackingStoreWithExternalObjectsTestBase : public BackingStoreTestBase {
+ public:
+  BackingStoreWithExternalObjectsTestBase();
+
+  BackingStoreWithExternalObjectsTestBase(
+      const BackingStoreWithExternalObjectsTestBase&) = delete;
+  BackingStoreWithExternalObjectsTestBase& operator=(
+      const BackingStoreWithExternalObjectsTestBase&) = delete;
+
+  ~BackingStoreWithExternalObjectsTestBase() override;
+
+  // Children test classes are expected to implement these.
+  virtual bool IncludesBlobs() = 0;
+  virtual bool IncludesFileSystemAccessHandles() = 0;
+
+  void SetUp() override;
+
+  IndexedDBExternalObject CreateBlobInfo(const std::u16string& file_name,
+                                         const std::u16string& type,
+                                         base::Time last_modified,
+                                         int64_t size);
+  IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
+                                         int64_t size);
+
+  IndexedDBExternalObject CreateFileSystemAccessHandle();
+
+  // This just checks the data that survive getting stored and recalled, e.g.
+  // the file path and UUID will change and thus aren't verified.
+  bool CheckBlobInfoMatches(
+      const std::vector<IndexedDBExternalObject>& reads) const;
+
+  std::vector<IndexedDBExternalObject>& external_objects() {
+    return external_objects_;
+  }
+
+ protected:
+  // Sample keys and values that are consistent.
+  blink::IndexedDBKey key3_;
+  IndexedDBValue value3_;
+
+  const std::string kBlobFileData1 = "asdfgasdf";
+  const std::string kBlobFileData2 = "aaaaaa";
+
+  // Blob details referenced by `value3_`. The various CheckBlob*() methods
+  // can be used to verify the state as a test progresses.
+  std::vector<IndexedDBExternalObject> external_objects_;
+  std::vector<std::string> blob_remote_uuids_;
 };
 
 }  // namespace content::indexed_db

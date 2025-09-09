@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
@@ -18,7 +22,18 @@
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
+using blink::IndexedDBKeyRange;
 using blink::IndexedDBObjectStoreMetadata;
+
+namespace {
+
+enum class ExternalObjectTestType {
+  kOnlyBlobs,
+  kOnlyFileSystemAccessHandles,
+  kBlobsAndFileSystemAccessHandles
+};
+
+}  // namespace
 
 namespace content::indexed_db {
 
@@ -64,15 +79,7 @@ TEST_P(BackingStoreTest, PutGetConsistency) {
 
     transaction1->Begin(CreateDummyLock());
     EXPECT_TRUE(transaction1->PutRecord(1, key, value.Clone()).has_value());
-    bool succeeded = false;
-    EXPECT_TRUE(
-        transaction1
-            ->CommitPhaseOne(
-                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
-                base::DoNothing())
-            .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
+    CommitTransactionAndVerify(*transaction1);
   }
 
   {
@@ -83,15 +90,7 @@ TEST_P(BackingStoreTest, PutGetConsistency) {
     transaction2->Begin(CreateDummyLock());
     auto result = transaction2->GetRecord(1, key);
     EXPECT_TRUE(result.has_value());
-    bool succeeded = false;
-    EXPECT_TRUE(
-        transaction2
-            ->CommitPhaseOne(
-                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
-                base::DoNothing())
-            .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
+    CommitTransactionAndVerify(*transaction2);
     EXPECT_EQ(value.bits, result->bits);
   }
 }
@@ -126,7 +125,7 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
                                                /*multi_entry=*/true))
             .ok());
 
-    CommitTransaction(*transaction);
+    CommitTransactionAndVerify(*transaction);
   }
 
   EXPECT_EQ((*db)->GetMetadata().object_stores.size(), 1U);
@@ -158,7 +157,7 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
     EXPECT_TRUE(pk.has_value());
     EXPECT_FALSE(pk->IsValid());
 
-    CommitTransaction(*transaction);
+    CommitTransactionAndVerify(*transaction);
   }
 
   EXPECT_EQ(object_store.indexes.end(), object_store.indexes.find(index_id));
@@ -208,16 +207,7 @@ TEST_P(BackingStoreTest, CreateDatabase) {
     const IndexedDBIndexMetadata& index =
         object_store.indexes.find(index_id)->second;
     EXPECT_EQ(index.id, index_id);
-
-    bool succeeded = false;
-    EXPECT_TRUE(
-        transaction
-            ->CommitPhaseOne(
-                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
-                base::DoNothing())
-            .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction->CommitPhaseTwo().ok());
+    CommitTransactionAndVerify(*transaction);
   }
 
   {
@@ -261,6 +251,391 @@ TEST_P(BackingStoreTest, DatabaseExists) {
   StatusOr<bool> db2_exists = backing_store()->DatabaseExists(u"db2");
   ASSERT_TRUE(db2_exists.has_value());
   EXPECT_FALSE(*db2_exists);
+}
+
+class BackingStoreTestWithExternalObjects
+    : public testing::WithParamInterface<
+          std::tuple<bool, ExternalObjectTestType>>,
+      public BackingStoreWithExternalObjectsTestBase {
+ public:
+  BackingStoreTestWithExternalObjects()
+      : sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
+            IsSqliteBackingStoreEnabled())) {}
+
+  BackingStoreTestWithExternalObjects(
+      const BackingStoreTestWithExternalObjects&) = delete;
+  BackingStoreTestWithExternalObjects& operator=(
+      const BackingStoreTestWithExternalObjects&) = delete;
+
+  bool IsSqliteBackingStoreEnabled() { return std::get<0>(GetParam()); }
+  ExternalObjectTestType TestType() { return std::get<1>(GetParam()); }
+
+  bool IncludesBlobs() override {
+    return TestType() != ExternalObjectTestType::kOnlyFileSystemAccessHandles;
+  }
+
+  bool IncludesFileSystemAccessHandles() override {
+    return TestType() != ExternalObjectTestType::kOnlyBlobs;
+  }
+
+ private:
+  base::AutoReset<std::optional<bool>> sqlite_override_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    BackingStoreTestWithExternalObjects,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            ExternalObjectTestType::kOnlyBlobs,
+            ExternalObjectTestType::kOnlyFileSystemAccessHandles,
+            ExternalObjectTestType::kBlobsAndFileSystemAccessHandles)),
+    [](const testing::TestParamInfo<
+        BackingStoreTestWithExternalObjects::ParamType>& info) {
+      std::string external_object_type;
+      switch (std::get<1>(info.param)) {
+        case ExternalObjectTestType::kOnlyBlobs:
+          external_object_type = "Blobs";
+          break;
+        case ExternalObjectTestType::kOnlyFileSystemAccessHandles:
+          external_object_type = "FileSystemAccessHandles";
+          break;
+        case ExternalObjectTestType::kBlobsAndFileSystemAccessHandles:
+          external_object_type = "BlobsAndFileSystemAccessHandles";
+          break;
+      }
+      return base::StrCat({std::get<0>(info.param) ? "Sqlite" : "LevelDb",
+                           external_object_type});
+    });
+
+TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+  {
+    // Initiate transaction1 - writing blobs.
+    auto transaction1 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction1->Begin(CreateDummyLock());
+    EXPECT_TRUE(transaction1->PutRecord(1, key3_, value3_.Clone()).has_value());
+    CommitTransactionAndVerify(*transaction1);
+  }
+
+  // Initiate transaction2, reading blobs.
+  {
+    auto transaction2 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+    // auto& transaction2 = *txn2;
+    transaction2->Begin(CreateDummyLock());
+    auto result = transaction2->GetRecord(1, key3_);
+    EXPECT_TRUE(result.has_value());
+    IndexedDBValue result_value = std::move(result.value());
+
+    CommitTransactionAndVerify(*transaction2);
+    EXPECT_EQ(value3_.bits, result_value.bits);
+
+    EXPECT_TRUE(CheckBlobInfoMatches(result_value.external_objects));
+  }
+
+  // Initiate transaction3, deleting blobs.
+  {
+    auto transaction3 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction3->Begin(CreateDummyLock());
+    EXPECT_TRUE(
+        transaction3
+            ->DeleteRange(1, IndexedDBKeyRange(key3_.Clone(), key3_.Clone(),
+                                               /*lower_open=*/false,
+                                               /*upper_open=*/false))
+            .ok());
+    CommitTransactionAndVerify(*transaction3);
+  }
+
+  // Verify deletes
+  {
+    auto transaction4 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction4->Begin(CreateDummyLock());
+    auto result = transaction4->GetRecord(1, key3_);
+    EXPECT_TRUE(result.has_value());
+    IndexedDBValue result_value = std::move(result.value());
+
+    CommitTransactionAndVerify(*transaction4);
+    EXPECT_TRUE(result_value.empty());
+  }
+}
+
+TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  const auto keys =
+      std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
+                     IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
+
+  // All of these delete ranges should result in the deletion of key1 and key2.
+  const auto ranges = std::to_array({
+      IndexedDBKeyRange(keys[1].Clone(), keys[2].Clone(), /*lower_open=*/false,
+                        /*upper_open=*/false),
+      IndexedDBKeyRange(keys[0].Clone(), keys[2].Clone(), /*lower_open=*/true,
+                        /*upper_open=*/false),
+      IndexedDBKeyRange(keys[1].Clone(), keys[3].Clone(), /*lower_open=*/false,
+                        /*upper_open=*/true),
+      IndexedDBKeyRange(keys[0].Clone(), keys[3].Clone(), /*lower_open=*/true,
+                        /*upper_open=*/true),
+  });
+
+  for (size_t i = 0; i < std::size(ranges); ++i) {
+    const int64_t object_store_id = i + 1;
+    const IndexedDBKeyRange& range = ranges[i];
+
+    std::vector<IndexedDBExternalObject> external_objects;
+    for (size_t j = 0; j < 4; ++j) {
+      std::string type = "type " + base::NumberToString(j);
+      external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+    }
+
+    // Reset from previous iteration.
+    blob_context_->ClearWrites();
+    file_system_access_context_->ClearWrites();
+
+    auto values = std::to_array({
+        IndexedDBValue("value0", {external_objects[0]}),
+        IndexedDBValue("value1", {external_objects[1]}),
+        IndexedDBValue("value2", {external_objects[2]}),
+        IndexedDBValue("value3", {external_objects[3]}),
+    });
+    ASSERT_GE(keys.size(), values.size());
+
+    {
+      // Initiate transaction1 - write records.
+      auto transaction1 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction1->Begin(CreateDummyLock());
+      BackingStore::RecordIdentifier record;
+      for (size_t j = 0; j < values.size(); ++j) {
+        EXPECT_TRUE(
+            transaction1->PutRecord(object_store_id, keys[j], values[j].Clone())
+                .has_value());
+      }
+
+      // Start committing transaction1.
+      CommitTransactionAndVerify(*transaction1);
+    }
+
+    {
+      // Initiate transaction 2 - delete range.
+      auto transaction2 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction2->Begin(CreateDummyLock());
+      EXPECT_TRUE(transaction2->DeleteRange(object_store_id, range).ok());
+
+      // Start committing transaction2.
+      CommitTransactionAndVerify(*transaction2);
+    }
+
+    // Verify deletes
+    for (size_t j = 0; j < keys.size(); ++j) {
+      {
+        auto transaction = db.CreateTransaction(
+            blink::mojom::IDBTransactionDurability::Relaxed,
+            blink::mojom::IDBTransactionMode::ReadWrite);
+        transaction->Begin(CreateDummyLock());
+        auto result = transaction->GetRecord(object_store_id, keys[j]);
+        EXPECT_TRUE(result.has_value());
+        IndexedDBValue result_value = std::move(result.value());
+
+        CommitTransactionAndVerify(*transaction);
+
+        if (j == 1 || j == 2) {
+          EXPECT_TRUE(result_value.empty());
+        } else {
+          EXPECT_FALSE(result_value.empty());
+          EXPECT_EQ(values[j].bits, result_value.bits);
+        }
+      }
+    }
+  }
+}
+
+TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  const auto keys = std::to_array({
+      IndexedDBKey(u"key0"),
+      IndexedDBKey(u"key1"),
+      IndexedDBKey(u"key2"),
+      IndexedDBKey(u"key3"),
+      IndexedDBKey(u"key4"),
+  });
+  const auto ranges = std::to_array({
+      IndexedDBKeyRange(keys[3].Clone(), keys[4].Clone(), /*lower_open=*/true,
+                        /*upper_open=*/false),
+      IndexedDBKeyRange(keys[2].Clone(), keys[1].Clone(), /*lower_open=*/false,
+                        /*upper_open=*/false),
+      IndexedDBKeyRange(keys[2].Clone(), keys[1].Clone(), /*lower_open=*/true,
+                        /*upper_open=*/true),
+  });
+
+  for (size_t i = 0; i < std::size(ranges); ++i) {
+    const int64_t object_store_id = i + 1;
+    const IndexedDBKeyRange& range = ranges[i];
+
+    std::vector<IndexedDBExternalObject> external_objects;
+    for (size_t j = 0; j < 4; ++j) {
+      std::string type = "type " + base::NumberToString(j);
+      external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+    }
+
+    // Reset from previous iteration.
+    blob_context_->ClearWrites();
+    file_system_access_context_->ClearWrites();
+
+    const auto values = std::to_array({
+        IndexedDBValue("value0", {external_objects[0]}),
+        IndexedDBValue("value1", {external_objects[1]}),
+        IndexedDBValue("value2", {external_objects[2]}),
+        IndexedDBValue("value3", {external_objects[3]}),
+    });
+    ASSERT_GE(keys.size(), values.size());
+
+    {
+      // Initiate transaction1 - write records.
+      auto transaction1 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction1->Begin(CreateDummyLock());
+
+      for (size_t j = 0; j < values.size(); ++j) {
+        EXPECT_TRUE(
+            transaction1->PutRecord(object_store_id, keys[j], values[j].Clone())
+                .has_value());
+      }
+      // Start committing transaction1.
+      CommitTransactionAndVerify(*transaction1);
+    }
+
+    // Initiate transaction 2 - delete range.
+    {
+      auto transaction2 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction2->Begin(CreateDummyLock());
+      EXPECT_TRUE(transaction2->DeleteRange(object_store_id, range).ok());
+
+      CommitTransactionAndVerify(*transaction2);
+    }
+
+    // Verify that no records were deleted.
+    for (size_t j = 0; j < values.size(); ++j) {
+      {
+        auto transaction3 = db.CreateTransaction(
+            blink::mojom::IDBTransactionDurability::Relaxed,
+            blink::mojom::IDBTransactionMode::ReadWrite);
+        transaction3->Begin(CreateDummyLock());
+        auto result = transaction3->GetRecord(object_store_id, keys[j]);
+        EXPECT_TRUE(result.has_value());
+        IndexedDBValue result_value = std::move(result.value());
+
+        CommitTransactionAndVerify(*transaction3);
+
+        // No records should have been deleted.
+        EXPECT_FALSE(result_value.empty());
+        EXPECT_EQ(values[j].bits, result_value.bits);
+      }
+    }
+  }
+}
+
+// This tests that external objects are deleted when ClearObjectStore is called.
+// See: http://crbug.com/488851
+// TODO(enne): we could use more comprehensive testing for ClearObjectStore.
+TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
+  std::vector<IndexedDBExternalObject> external_objects;
+  for (size_t j = 0; j < 4; ++j) {
+    std::string type = "type " + base::NumberToString(j);
+    external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+  }
+
+  const auto keys =
+      std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
+                     IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
+
+  const auto values = std::to_array({
+      IndexedDBValue("value0", {external_objects[0]}),
+      IndexedDBValue("value1", {external_objects[1]}),
+      IndexedDBValue("value2", {external_objects[2]}),
+      IndexedDBValue("value3", {external_objects[3]}),
+  });
+  ASSERT_GE(keys.size(), values.size());
+
+  const int64_t object_store_id = 999;
+
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  // Create two object stores, to verify that only one gets deleted.
+  for (size_t i = 0; i < 2; ++i) {
+    const int64_t write_object_store_id = object_store_id + i;
+
+    {  // Initiate transaction1 - write records.
+      auto transaction1 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction1->Begin(CreateDummyLock());
+      for (size_t j = 0; j < values.size(); ++j) {
+        EXPECT_TRUE(
+            transaction1
+                ->PutRecord(write_object_store_id, keys[j], values[j].Clone())
+                .has_value());
+      }
+
+      CommitTransactionAndVerify(*transaction1);
+    }
+  }
+
+  // Initiate transaction 2 - delete object store
+  {
+    auto transaction2 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction2->Begin(CreateDummyLock());
+    IndexedDBValue result_value;
+    EXPECT_TRUE(transaction2->ClearObjectStore(object_store_id).ok());
+
+    // Start committing transaction2.
+    CommitTransactionAndVerify(*transaction2);
+  }
+
+  // Verify that all blobs were removed.
+  for (size_t j = 0; j < values.size(); ++j) {
+    {
+      auto transaction3 =
+          db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+      transaction3->Begin(CreateDummyLock());
+      auto result = transaction3->GetRecord(object_store_id, keys[j]);
+      EXPECT_TRUE(result.has_value());
+      IndexedDBValue result_value = std::move(result.value());
+
+      CommitTransactionAndVerify(*transaction3);
+      EXPECT_TRUE(result_value.empty());
+    }
+  }
 }
 
 }  // namespace content::indexed_db

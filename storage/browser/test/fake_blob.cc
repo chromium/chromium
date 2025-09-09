@@ -34,9 +34,7 @@ void FakeBlob::ReadRange(uint64_t offset,
 }
 
 void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
-                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
-  NOTREACHED();
-}
+                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {}
 
 void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,
                     const std::string& method,
