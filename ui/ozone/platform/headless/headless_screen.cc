@@ -122,11 +122,9 @@ void HeadlessScreen::CreateDisplayList() {
     display::Display display(display::HeadlessScreenManager::GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
-    display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
 
-    if (!it.work_area_insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(it.work_area_insets);
-    }
+    display::HeadlessScreenManager::SetDisplayGeometry(
+        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(display::Display::IsValidRotation(it.rotation));

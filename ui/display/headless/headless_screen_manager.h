@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/display/display_export.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace display {
 class Display;
@@ -39,6 +41,15 @@ class DISPLAY_EXPORT HeadlessScreenManager {
 
   // Returns new headless display id.
   static int64_t GetNewDisplayId();
+
+  // Sets headless display geometry according to the specified physical bounds,
+  // work area insets and device pixel ratio. This is a helper function intended
+  // to be used by all HeadlessScreenManager clients to ensure consistent
+  // headless screen geometry handling.
+  static void SetDisplayGeometry(Display& display,
+                                 const gfx::Rect& bounds_in_pixels,
+                                 const gfx::Insets& work_area_insets_pixels,
+                                 float device_pixel_ratio);
 
   // Sets the delegate. Will crash if delegate is already set.
   void SetDelegate(Delegate* delegate,

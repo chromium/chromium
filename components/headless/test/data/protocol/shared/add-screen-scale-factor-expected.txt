@@ -2,7 +2,7 @@ Tests CDP Emulation.addScreen() API with scale factor.
 Added screen: {
     screenInfo : {
         availHeight : 300
-        availLeft : 400
+        availLeft : 800
         availTop : 0
         availWidth : 400
         colorDepth : 24
@@ -13,7 +13,7 @@ Added screen: {
         isInternal : false
         isPrimary : false
         label : 2nd
-        left : 400
+        left : 800
         orientation : {
             angle : 0
             type : landscapePrimary
@@ -47,7 +47,7 @@ Added screen: {
         }
         [1] : {
             availHeight : 300
-            availLeft : 400
+            availLeft : 800
             availTop : 0
             availWidth : 400
             colorDepth : 24
@@ -58,7 +58,7 @@ Added screen: {
             isInternal : false
             isPrimary : false
             label : 2nd
-            left : 400
+            left : 800
             orientation : {
                 angle : 0
                 type : landscapePrimary

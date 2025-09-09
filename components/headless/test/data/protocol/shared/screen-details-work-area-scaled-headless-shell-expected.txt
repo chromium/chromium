@@ -1,3 +1,0 @@
-Tests scaled screen work area.
-Screen: 0,0 400x300
-Work area: 100,100 200x100

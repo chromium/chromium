@@ -12,6 +12,7 @@
 #include "headless/lib/browser/headless_screen.h"
 #include "ui/display/display.h"
 #include "ui/display/display_util.h"
+#include "ui/display/headless/headless_screen_manager.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/display/screen_info.h"
@@ -141,19 +142,19 @@ Response EmulationHandler::AddScreen(
     std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info) {
   CHECK(display::Screen::Get()->IsHeadless());
 
-  display::Display display;
-  display.SetScaleAndBounds(device_pixel_ratio.value_or(1.0),
-                            gfx::Rect(left, top, width, height));
+  gfx::Rect bounds(left, top, width, height);
+
+  gfx::Insets insets;
   if (work_area_insets) {
-    gfx::Insets insets;
     insets.set_top(work_area_insets->GetTop(0));
     insets.set_left(work_area_insets->GetLeft(0));
     insets.set_bottom(work_area_insets->GetBottom(0));
     insets.set_right(work_area_insets->GetRight(0));
-    if (!insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(insets);
-    }
   }
+
+  display::Display display;
+  display::HeadlessScreenManager::SetDisplayGeometry(
+      display, bounds, insets, device_pixel_ratio.value_or(1.0f));
 
   if (rotation) {
     if (!display::Display::IsValidRotation(*rotation)) {

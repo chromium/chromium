@@ -13,6 +13,7 @@
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
+#include "ui/display/headless/headless_screen_manager.h"
 #include "ui/display/util/display_util.h"
 
 #if defined(USE_AURA)
@@ -97,11 +98,9 @@ HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
     display::Display display(GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
-    display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
 
-    if (!it.work_area_insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(it.work_area_insets);
-    }
+    display::HeadlessScreenManager::SetDisplayGeometry(
+        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(display::Display::IsValidRotation(it.rotation));

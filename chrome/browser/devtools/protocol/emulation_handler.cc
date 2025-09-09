@@ -176,19 +176,19 @@ Response EmulationHandler::AddScreen(
     return Response::ServerError("Method is only available in headless mode");
   }
 
-  display::Display display;
-  display.SetScaleAndBounds(device_pixel_ratio.value_or(1.0),
-                            gfx::Rect(left, top, width, height));
+  gfx::Rect bounds(left, top, width, height);
+
+  gfx::Insets insets;
   if (work_area_insets) {
-    gfx::Insets insets;
     insets.set_top(work_area_insets->GetTop(0));
     insets.set_left(work_area_insets->GetLeft(0));
     insets.set_bottom(work_area_insets->GetBottom(0));
     insets.set_right(work_area_insets->GetRight(0));
-    if (!insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(insets);
-    }
   }
+
+  display::Display display;
+  display::HeadlessScreenManager::SetDisplayGeometry(
+      display, bounds, insets, device_pixel_ratio.value_or(1.0f));
 
   if (rotation) {
     if (!display::Display::IsValidRotation(*rotation)) {

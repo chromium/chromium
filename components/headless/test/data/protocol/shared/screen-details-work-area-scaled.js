@@ -4,7 +4,6 @@
 //
 // META: --screen-info={workAreaLeft=100 workAreaRight=100 \
 // META:   workAreaTop=100 workAreaBottom=100 devicePixelRatio=2.0}
-// META: fork_headless_shell_expectations
 
 (async function(testRunner) {
   const {session, dp} =

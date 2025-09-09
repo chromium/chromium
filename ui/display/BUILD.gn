@@ -288,6 +288,7 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
+    "headless/headless_screen_manager_unittests.cc",
     "mojom/display_mojom_traits_unittest.cc",
     "mojom/screen_infos_mojom_traits_unittest.cc",
     "screen_unittest.cc",
