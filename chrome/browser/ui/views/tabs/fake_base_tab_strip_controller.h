@@ -95,7 +95,6 @@ class FakeBaseTabStripController : public TabStripController {
   bool HasVisibleBackgroundTabShapes() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
   bool CanDrawStrokes() const override;
-  bool IsFrameButtonsRightAligned() const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;

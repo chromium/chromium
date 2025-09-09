@@ -299,10 +299,6 @@ bool FakeBaseTabStripController::CanDrawStrokes() const {
   return false;
 }
 
-bool FakeBaseTabStripController::IsFrameButtonsRightAligned() const {
-  return false;
-}
-
 SkColor FakeBaseTabStripController::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return gfx::kPlaceholderColor;

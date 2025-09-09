@@ -995,13 +995,6 @@ void BrowserTabStripController::SetTabGroupNeedsAttention(
   tabstrip_->SetTabGroupNeedsAttention(group, attention);
 }
 
-bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
-#if BUILDFLAG(IS_MAC)
-  return false;
-#else
-  return true;
-#endif  // BUILDFLAG(IS_MAC)
-}
 
 void BrowserTabStripController::OnSplitTabChanged(
     const SplitTabChange& change) {

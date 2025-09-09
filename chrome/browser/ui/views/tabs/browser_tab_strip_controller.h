@@ -158,7 +158,6 @@ class BrowserTabStripController : public TabStripController,
   void SetTabNeedsAttentionAt(int index, bool attention) override;
   void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
                                  bool attention) override;
-  bool IsFrameButtonsRightAligned() const override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
   const Browser* browser() const { return browser_view_->browser(); }

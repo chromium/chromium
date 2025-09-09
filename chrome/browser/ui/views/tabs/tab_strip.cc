@@ -1872,7 +1872,12 @@ bool TabStrip::IsFocusInTabs() const {
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
   return !features::HasTabSearchToolbarButton() &&
-         controller_->IsFrameButtonsRightAligned() &&
+         !controller_->GetBrowser()
+              ->window()
+              ->AsBrowserView()
+              ->frame()
+              ->GetFrameView()
+              ->CaptionButtonsOnLeadingEdge() &&
          tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());
 }
 
