@@ -16,9 +16,9 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -114,11 +114,10 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SurfaceColorUpdateUtils.geTabItemSelectorColor(
-                        context, /* isIncognito= */ false);
+                return SemanticColorUtils.getColorSurfaceBright(context);
             case HubColorScheme.INCOGNITO:
-                return SurfaceColorUpdateUtils.geTabItemSelectorColor(
-                        context, /* isIncognito= */ true);
+                return ContextCompat.getColor(
+                        context, R.color.pane_switcher_selected_tab_incognito);
             default:
                 assert false;
                 return Color.TRANSPARENT;
@@ -194,11 +193,9 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SurfaceColorUpdateUtils.getPaneSwitcherBackgroundColor(
-                        context, /* isIncognito= */ false);
+                return SemanticColorUtils.getColorSurfaceContainer(context);
             case HubColorScheme.INCOGNITO:
-                return SurfaceColorUpdateUtils.getPaneSwitcherBackgroundColor(
-                        context, /* isIncognito= */ true);
+                return ContextCompat.getColor(context, R.color.pane_switcher_background_incognito);
             default:
                 assert false;
                 return Color.TRANSPARENT;
