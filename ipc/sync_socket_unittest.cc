@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/sync_socket.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -68,7 +64,7 @@ TEST_F(SyncSocketTest, DisconnectTest) {
   // Wait for the worker thread to say hello.
   char hello[kHelloStringLength] = {};
   pair[1].Receive(base::as_writable_byte_span(hello));
-  EXPECT_EQ(strcmp(hello, kHelloString), 0);
+  EXPECT_EQ(UNSAFE_TODO(strcmp(hello, kHelloString)), 0);
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
 
@@ -99,7 +95,7 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
   // Wait for the worker thread to say hello.
   char hello[kHelloStringLength] = {};
   pair[1].Receive(base::as_writable_byte_span(hello));
-  EXPECT_EQ(0, strcmp(hello, kHelloString));
+  EXPECT_EQ(0, UNSAFE_TODO(strcmp(hello, kHelloString)));
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
 
@@ -110,7 +106,7 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
   worker.Stop();
 
   // Verify the socket has received the message.
-  EXPECT_TRUE(strcmp(buf, kHelloString) == 0);
+  EXPECT_TRUE(UNSAFE_TODO(strcmp(buf, kHelloString)) == 0);
   EXPECT_EQ(received, bytes_to_send.size());
 }
 
