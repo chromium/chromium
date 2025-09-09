@@ -17,8 +17,8 @@ namespace {
 
 std::string GetHexEncodedHash(const std::unique_ptr<crypto::SecureHash>& hash) {
   std::vector<uint8_t> hash_value(hash->GetHashLength());
-  hash->Finish(hash_value.data(), hash_value.size());
-  return base::HexEncode(hash_value.data(), hash_value.size());
+  hash->Finish(hash_value);
+  return base::HexEncode(hash_value);
 }
 
 constexpr std::string_view kTestData1 = "Hello, world!";
