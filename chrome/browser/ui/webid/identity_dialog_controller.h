@@ -18,7 +18,7 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using Account = content::IdentityRequestAccount;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
