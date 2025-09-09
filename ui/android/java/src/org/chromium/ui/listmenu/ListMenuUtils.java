@@ -34,6 +34,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.Set;
 @NullMarked
 public class ListMenuUtils {
     private static @Nullable Runnable sFlyoutAfterDelayRunnable;
+    private static @Nullable WeakReference<View> sPendingFlyoutParentView;
 
     /**
      * Defines a contract for managing a series of flyout popups, typically used for nested context
@@ -256,6 +258,7 @@ public class ListMenuUtils {
                 () -> {
                     onFlyoutAfterDelay(item, view, flyoutHandler, levelOfHoveredItem);
                 };
+        sPendingFlyoutParentView = new WeakReference<>(view);
         Handler handler = view.getHandler();
         assert handler != null;
         handler.postDelayed(
@@ -289,12 +292,15 @@ public class ListMenuUtils {
     }
 
     private static void cancelFlyoutDelay(View view) {
-        if (sFlyoutAfterDelayRunnable != null) {
+        View pendingView =
+                (sPendingFlyoutParentView == null) ? null : sPendingFlyoutParentView.get();
+        if (sFlyoutAfterDelayRunnable != null && pendingView == view) {
             Handler handler = view.getHandler();
             if (handler != null) {
                 handler.removeCallbacks(sFlyoutAfterDelayRunnable);
             }
             sFlyoutAfterDelayRunnable = null;
+            sPendingFlyoutParentView = null;
         }
     }
 
@@ -356,6 +362,7 @@ public class ListMenuUtils {
                                         drillDownOverrideValue);
                                 break;
                             case MotionEvent.ACTION_HOVER_EXIT:
+                                cancelFlyoutDelay(view);
                                 // We only want to remove the flyout popups when the user hovers
                                 // over another item. We don't close the flyout popup even when the
                                 // item itself loses hover.
