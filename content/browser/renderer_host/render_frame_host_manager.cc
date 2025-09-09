@@ -359,7 +359,9 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ProcessPerSiteWithMainFrameThresholdBlockReason {
+//
+// LINT.IfChange(MainFrameProcessReuseBlockReason)
+enum class MainFrameProcessReuseBlockReason {
   kNotBlocked = 0,
   kDisableProcessResuse = 1,
   kDevToolsWasEverAttached = 2,
@@ -369,15 +371,12 @@ enum class ProcessPerSiteWithMainFrameThresholdBlockReason {
   kEmbedderDisallowedReuseForUrl = 6,
   kMaxValue = kEmbedderDisallowedReuseForUrl,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MainFrameProcessReuseBlockReason)
 
-void RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-    ProcessPerSiteWithMainFrameThresholdBlockReason reason) {
-  if (base::FeatureList::IsEnabled(
-          features::kProcessPerSiteUpToMainFrameThreshold)) {
-    base::UmaHistogramEnumeration(
-        "SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason",
-        reason);
-  }
+void RecordMainFrameProcessReuseBlockReason(
+    MainFrameProcessReuseBlockReason reason) {
+  base::UmaHistogramEnumeration(
+      "SiteIsolation.MainFrameProcessReuse.BlockReason", reason);
 }
 
 // If `site_instance` is for a main frame, try to reuse an existing process
@@ -411,22 +410,20 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
     return;
   }
   if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::kDisableProcessResuse);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kDisableProcessResuse);
     return;
   }
   if (!base::FeatureList::IsEnabled(
           features::kMainFrameProcessReuseAllowDevToolsAttached) &&
       RenderFrameDevToolsAgentHost::WasEverAttachedToAnyFrame()) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::
-            kDevToolsWasEverAttached);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kDevToolsWasEverAttached);
     return;
   }
   if (!site_instance->RequiresDedicatedProcess()) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::
-            kDoesNotRequireDedicatedProcess);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kDoesNotRequireDedicatedProcess);
     return;
   }
 
@@ -440,17 +437,15 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
   if (!base::FeatureList::IsEnabled(
           features::kMainFrameProcessReuseAllowIPAndLocalhost) &&
       (site_url.HostIsIPAddress() || net::IsLocalHostname(site_url.host()))) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::
-            kIsIpAddressOrLocalHost);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kIsIpAddressOrLocalHost);
     return;
   }
 
   // Disallow process reuse when scheme is not HTTP(S).
   if (!site_url.SchemeIsHTTPOrHTTPS()) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::
-            kSchemeIsNotHttpOrHttps);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kSchemeIsNotHttpOrHttps);
     return;
   }
 
@@ -469,14 +464,13 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
            ->ShouldReuseExistingProcessForNewMainFrameSiteInstance(
                site_instance->GetBrowserContext(),
                site_instance->original_url())) {
-    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-        ProcessPerSiteWithMainFrameThresholdBlockReason::
-            kEmbedderDisallowedReuseForUrl);
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
     return;
   }
 
-  RecordProcessPerSiteWithMainFrameThresholdBlockReason(
-      ProcessPerSiteWithMainFrameThresholdBlockReason::kNotBlocked);
+  RecordMainFrameProcessReuseBlockReason(
+      MainFrameProcessReuseBlockReason::kNotBlocked);
   if (base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold)) {
     site_instance->set_process_reuse_policy(

@@ -997,6 +997,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.MainFrameProcessReuse.BlockReason"
+    enum="MainFrameProcessReuseBlockReason" expires_after="2025-12-31">
+  <owner>bashi@chromium.org</owner>
+  <owner>gjc@google.com</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The reason why process sharing is disallowed for main frame navigation. The
+    UMA is only reported when the feature flag
+    ProcessPerSiteWithMainFrameThreshold or
+    ReusePrerenderingProcessForMainFrames is enabled. The UMA is recorded when
+    initializing a frame tree or getting a site instance for navigation.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.MissedReuseOpportunity.Found.MainFrame"
     enum="Boolean" expires_after="2026-07-18">
   <owner>aattar@google.com</owner>
@@ -1041,19 +1056,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The count of all out-of-process inner frame trees. Recorded once per UMA
     ping.
-  </summary>
-</histogram>
-
-<histogram
-    name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
-    enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
-    expires_after="2025-06-07">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    The reason why process sharing is disallowed when
-    ProcessPerSiteUpToMainFrameThreshold feature is enabled. Recorded when
-    initializing a frame tree or getting a site instance for navigation.
   </summary>
 </histogram>
 
