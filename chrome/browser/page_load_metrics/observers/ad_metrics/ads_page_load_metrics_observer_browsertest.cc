@@ -383,14 +383,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 // a page's lifecycling by creating a large ad frame, destroying it, and
 // creating a smaller iframe. The ad density recorded is the density with
 // the first larger frame.
-// TODO(crbug.com/443615131): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PageAdDensityRecordsPageMax DISABLED_PageAdDensityRecordsPageMax
-#else
-#define MAYBE_PageAdDensityRecordsPageMax PageAdDensityRecordsPageMax
-#endif
+// TODO(crbug.com/443615131, crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_PageAdDensityRecordsPageMax) {
+                       DISABLED_PageAdDensityRecordsPageMax) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -492,8 +487,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Creates multiple overlapping frames and verifies the page ad density.
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       PageAdDensityMultipleFrames) {
+                       DISABLED_PageAdDensityMultipleFrames) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -768,8 +764,9 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 
 // Test that an ad creative with the same origin as the main page,
 // but nested in a cross-origin root ad frame, is same-origin.
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
-                       CreativeOriginStatusSameNested) {
+                       DISABLED_CreativeOriginStatusSameNested) {
   TestCreativeOriginStatus(
       MakeFrame("a",
                 MakeFrame("b", MakeFrame("a", MakeFrame("c", nullptr), true))),
@@ -812,8 +809,9 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that if no iframe is created, there is no histogram set.
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
-                       CreativeOriginStatusNoSubframes) {
+                       DISABLED_CreativeOriginStatusNoSubframes) {
   TestCreativeOriginStatus(MakeFrame("a", nullptr), OriginStatus::kUnknown,
                            OriginStatusWithThrottling::kUnknownAndUnthrottled);
 }
@@ -874,8 +872,9 @@ IN_PROC_BROWSER_TEST_F(
       OriginStatusWithThrottling::kUnknownAndUnthrottled);
 }
 
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       UserActivationSetOnFrame) {
+                       DISABLED_UserActivationSetOnFrame) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -927,8 +926,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // See https://crbug.com/1193885.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       UserActivationSetOnFrameAfterSameOriginActivation) {
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverBrowserTest,
+    DISABLED_UserActivationSetOnFrameAfterSameOriginActivation) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -2341,8 +2342,9 @@ void WaitForRAF(content::DOMMessageQueue* message_queue) {
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
+// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       FrameRAFTriggersCpuUpdate) {
+                       DISABLED_FrameRAFTriggersCpuUpdate) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
 
