@@ -544,6 +544,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)settingsWasDismissed {
   [self stopManageAccountsNavigationController];
+  [self.mediator accountMenuIsUsable];
 }
 
 #pragma mark - Private

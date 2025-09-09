@@ -631,6 +631,10 @@ TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
     }
   }
   OCMExpect([delegate_mock_ didTapManageAccounts]);
+  OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
+  [mediator_ didTapManageAccounts];
+
+  // Simulate a double tap. Nothing should occurs on the second one.
   [mediator_ didTapManageAccounts];
 }
 
