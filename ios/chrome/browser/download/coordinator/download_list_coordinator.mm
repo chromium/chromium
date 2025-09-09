@@ -71,12 +71,12 @@
 
   [_mediator connect];
 
-  [self setupAndPresentDownloadListUI];
-
   // Register coordinator as DownloadRecordCommands handler.
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(DownloadRecordCommands)];
+
+  [self setupAndPresentDownloadListUI];
 }
 
 - (void)stop {
@@ -131,11 +131,13 @@
   _downloadListViewController.mutator = _mediator;
   [_mediator setConsumer:_downloadListViewController];
 
-  id<DownloadListCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), DownloadListCommands);
-  _downloadListViewController.downloadListHandler = handler;
-  // TODO:(crbug.com/441137558): Replace the controller with real controller.
-  // _downloadListViewController.downloadRecordHandler = self;
+  CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
+  id<DownloadListCommands> downloadListHandler =
+      HandlerForProtocol(commandDispatcher, DownloadListCommands);
+  id<DownloadRecordCommands> downloadRecordHandler =
+      HandlerForProtocol(commandDispatcher, DownloadRecordCommands);
+  _downloadListViewController.downloadListHandler = downloadListHandler;
+  _downloadListViewController.downloadRecordHandler = downloadRecordHandler;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_downloadListViewController];

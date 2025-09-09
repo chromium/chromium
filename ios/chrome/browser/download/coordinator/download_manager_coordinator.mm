@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -418,6 +419,12 @@
 
 - (void)presentOpenInForDownloadManagerViewController:
     (UIViewController*)controller {
+  if (IsDownloadListEnabled()) {
+    id<DownloadListCommands> downloadListHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), DownloadListCommands);
+    [downloadListHandler showDownloadList];
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenIn"));
   base::FilePath path = _mediator.GetDownloadPath();
   NSURL* URL = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];

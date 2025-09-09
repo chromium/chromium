@@ -22,6 +22,9 @@ enum class DownloadFilterType;
 /// Filters the download records based on the filter type.
 - (void)filterRecordsWithType:(DownloadFilterType)type;
 
+/// Filters the download records based on the search keyword.
+- (void)filterRecordsWithKeyword:(NSString*)keyword;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_MUTATOR_H_
