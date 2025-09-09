@@ -12,19 +12,26 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
+#include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -34,10 +41,12 @@ class WebUIBrowserGuestHandler
   WebUIBrowserGuestHandler(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<webui_browser::mojom::GuestHandler> receiver,
-      content::WebContents* web_contents)
+      content::WebContents* web_contents,
+      WebUIBrowserWindow* window)
       : content::DocumentService<webui_browser::mojom::GuestHandler>(
             render_frame_host,
             std::move(receiver)),
+        window_(window),
         web_contents_(web_contents->GetWeakPtr()) {}
   WebUIBrowserGuestHandler(const WebUIBrowserGuestHandler&) = delete;
   WebUIBrowserGuestHandler& operator=(const WebUIBrowserGuestHandler&) = delete;
@@ -76,9 +85,60 @@ class WebUIBrowserGuestHandler
 
   void StopLoading() override { web_contents_->Stop(); }
 
+  void OpenPageInfoMenu() override {
+    ui::TrackedElement* location_button =
+        BrowserElements::From(window_->browser())
+            ->GetElement(kLocationIconElementId);
+    CHECK(location_button) << "Location button not found";
+    std::unique_ptr<PageInfoBubbleSpecification> specification =
+        PageInfoBubbleSpecification::Builder(
+            location_button, window_->GetNativeWindow(), web_contents_.get(),
+            web_contents_->GetLastCommittedURL())
+            .Build();
+
+    views::BubbleDialogDelegateView* const bubble =
+        PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
+    bubble->GetWidget()->Show();
+  }
+
+  void GetSecurityIcon(GetSecurityIconCallback callback) override {
+    auto* icon = &window_->browser()
+                      ->GetFeatures()
+                      .location_bar_model()
+                      ->GetVectorIcon();
+    webui_browser::mojom::SecurityIcon icon_type;
+    if (icon == &omnibox::kHttpChromeRefreshIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::HttpChromeRefresh;
+    } else if (icon == &omnibox::kSecurePageInfoChromeRefreshIcon) {
+      icon_type =
+          webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;
+    } else if (icon == &vector_icons::kNoEncryptionIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::NoEncryption;
+    } else if (icon == &vector_icons::kNotSecureWarningChromeRefreshIcon) {
+      icon_type =
+          webui_browser::mojom::SecurityIcon::NotSecureWarningChromeRefresh;
+    } else if (icon == &vector_icons::kBusinessChromeRefreshIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::BusinessChromeRefresh;
+    } else if (icon == &vector_icons::kDangerousChromeRefreshIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::DangerousChromeRefresh;
+    } else if (icon == &omnibox::kProductChromeRefreshIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::ProductChromeRefresh;
+    } else if (icon == &vector_icons::kExtensionChromeRefreshIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::ExtensionChromeRefresh;
+    } else if (icon == &omnibox::kOfflinePinIcon) {
+      icon_type = webui_browser::mojom::SecurityIcon::OfflinePin;
+    } else {
+      CHECK(false) << "Add new icon to webui_browsers's browser.mojom and "
+                   << "app.ts and icons.html.ts.";
+    }
+    std::move(callback).Run(icon_type);
+  }
+
+  raw_ptr<WebUIBrowserWindow> window_;
+
   // The WebContents is destroyed before document
-  // services, causing a raw_ptr of WebContents dangling here, so use a weak ptr
-  // instead.
+  // services, causing a raw_ptr of WebContents dangling here, so use a weak
+  // ptr instead.
   base::WeakPtr<content::WebContents> web_contents_;
 };
 
@@ -116,7 +176,7 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
 
   // The RenderFrameHost takes ownership of this object via the DocumentService.
   new WebUIBrowserGuestHandler(render_frame_host(), std::move(receiver),
-                               tab_contents);
+                               tab_contents, GetBrowserWindow());
 
   guest_contents::GuestContentsHandle::CreateForWebContents(tab_contents);
   auto* guest_handle =

@@ -101,6 +101,33 @@ cr-searchbox[dropdown-is-visible] {
   app-region: no-drag;
 }
 
+#addressBox {
+  position: relative;
+  flex: 1;
+}
+
+#locationIconButton {
+  position: absolute;
+  z-index: 101;
+  top: 3px;
+  left: 22px;
+  height: 27px;
+  min-width: 32px;
+  padding: 0;
+  border: none;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  background-color: var(--color-searchbox-background);
+}
+
+#locationIcon {
+  fill: var(--color-searchbox-foreground);
+  stroke: var(--color-searchbox-foreground);
+  stroke-width: 0px;
+  stroke-linecap: round;
+  shape-rendering: geometricPrecision;
+}
+
 #searchBar {
   display: flex;
   flex: none;
@@ -108,7 +135,7 @@ cr-searchbox[dropdown-is-visible] {
 }
 
 #searchBar #address {
-  flex: 1;
+  display: block;
 }
 
 #rootContainer {

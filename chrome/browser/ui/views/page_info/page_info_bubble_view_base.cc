@@ -59,12 +59,12 @@ PageInfoBubbleViewBase::GetPageInfoBubbleForTesting() {
 }
 
 PageInfoBubbleViewBase::PageInfoBubbleViewBase(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     PageInfoBubbleViewBase::BubbleType type,
     content::WebContents* web_contents)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::DIALOG_SHADOW,
                                /*autosize=*/false),
@@ -76,7 +76,7 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   SetShowCloseButton(true);
 
   set_parent_window(parent_window);
-  if (!anchor_view) {
+  if (std::holds_alternative<std::nullptr_t>(anchor)) {
     SetAnchorRect(anchor_rect);
   }
 }

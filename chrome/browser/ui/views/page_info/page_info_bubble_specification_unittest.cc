@@ -24,7 +24,7 @@ TEST_F(PageInfoBubbleSpecificationTest, DefaultSpec) {
                                            test_web_contents.get(), test_url)
           .Build();
 
-  EXPECT_EQ(anchor_view.get(), specification->anchor_view());
+  EXPECT_EQ(views::BubbleAnchor(anchor_view.get()), specification->anchor());
   EXPECT_EQ(test_web_contents.get(), specification->web_contents());
   EXPECT_EQ(test_url, specification->url());
   EXPECT_TRUE(specification->anchor_rect().IsEmpty());

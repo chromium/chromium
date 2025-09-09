@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {SecurityIcon} from './browser.mojom-webui.js';
 import {GuestHandlerRemote} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
@@ -136,6 +137,18 @@ export class TabWebviewElement extends WebviewElement {
     } else {
       this.classList.remove('active');
     }
+  }
+
+  openPageInfoMenu() {
+    if (this.guestHandler) {
+      this.guestHandler.openPageInfoMenu();
+    }
+  }
+
+  async getSecurityIcon(): Promise<SecurityIcon> {
+    assert(this.guestHandler);
+    const {securityIcon} = await this.guestHandler.getSecurityIcon();
+    return securityIcon;
   }
 
   private attachTabContents() {

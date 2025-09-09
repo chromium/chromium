@@ -70,6 +70,20 @@ interface PageHandler {
   Close();
 };
 
+// These are all the different icons that can be displayed in the chip next to
+// a URL in the omnibox.
+enum SecurityIcon {
+  HttpChromeRefresh,
+  SecurePageInfoChromeRefresh,
+  NoEncryption,
+  NotSecureWarningChromeRefresh,
+  BusinessChromeRefresh,
+  DangerousChromeRefresh,
+  ProductChromeRefresh,
+  ExtensionChromeRefresh,
+  OfflinePin,
+};
+
 // Browser-side handler for requests from a GuestContents.
 interface GuestHandler {
   // Navigates the GuestContents to `src`.
@@ -92,4 +106,10 @@ interface GuestHandler {
 
   // Stop loading the GuestContents.
   StopLoading();
+
+  // Opens the page info menu.
+  OpenPageInfoMenu();
+
+  // Returns appropriate security icon for this GuestContents.
+  GetSecurityIcon() => (SecurityIcon security_icon);
 };

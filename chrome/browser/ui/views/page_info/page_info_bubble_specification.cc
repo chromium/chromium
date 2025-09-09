@@ -15,14 +15,14 @@
 #include "ui/views/view.h"
 
 PageInfoBubbleSpecification::Builder::Builder(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     gfx::NativeWindow parent_window,
     content::WebContents* web_contents,
     const GURL& url)
     : page_info_bubble_specification_(
           std::make_unique<PageInfoBubbleSpecification>(
               base::PassKey<Builder>{},
-              anchor_view,
+              anchor,
               parent_window,
               web_contents,
               url)) {}
@@ -91,11 +91,11 @@ PageInfoBubbleSpecification::Builder::Build() {
 
 PageInfoBubbleSpecification::PageInfoBubbleSpecification(
     base::PassKey<Builder>,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     gfx::NativeWindow parent_window,
     content::WebContents* web_contents,
     const GURL& url)
-    : anchor_view_(anchor_view),
+    : anchor_(anchor),
       parent_window_(parent_window),
       web_contents_(web_contents),
       url_(url) {}
@@ -128,8 +128,8 @@ void PageInfoBubbleSpecification::ShowMerchantTrustPage() {
   show_merchant_trust_page_ = true;
 }
 
-views::View* PageInfoBubbleSpecification::anchor_view() {
-  return anchor_view_;
+views::BubbleAnchor PageInfoBubbleSpecification::anchor() {
+  return anchor_;
 }
 
 gfx::NativeWindow PageInfoBubbleSpecification::parent_window() {

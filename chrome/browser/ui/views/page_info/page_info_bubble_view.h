@@ -33,7 +33,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   ~PageInfoBubbleView() override;
 
   // Creates the appropriate page info bubble for the given |url|.
-  // |anchor_view| will be used to place the bubble.  If |anchor_view| is null,
+  // |anchor| will be used to place the bubble.  If |anchor| is null,
   // |anchor_rect| will be used instead.  |parent_window| will become the
   // parent of the widget hosting the bubble view.
   static views::BubbleDialogDelegateView* CreatePageInfoBubble(
@@ -56,7 +56,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   PageInfo* presenter_for_testing() { return presenter_.get(); }
 
  private:
-  PageInfoBubbleView(views::View* anchor_view,
+  PageInfoBubbleView(views::BubbleAnchor anchor,
                      const gfx::Rect& anchor_rect,
                      gfx::NativeView parent_window,
                      content::WebContents* web_contents,

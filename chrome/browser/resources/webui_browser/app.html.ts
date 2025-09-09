@@ -44,7 +44,15 @@ export function getHtml(this: WebuiBrowserAppElement) {
         @click="${this.onForwardClick_}"></cr-icon-button>
       <cr-icon-button class="${this.reloadOrStopIcon_}"
         @click="${this.onReloadOrStopClick_}"></cr-icon-button>
-      <cr-searchbox id="address"></cr-searchbox>
+      <div id="addressBox">
+        <cr-searchbox id="address"></cr-searchbox>
+        <cr-button id="locationIconButton" type="button"
+          ?hidden="${!this.showLocationIconButton_}"
+          @click="${this.onLocationIconClick_}">
+          <cr-icon id="locationIcon"
+            icon="webui-browser:${this.locationIcon_}Icon"></cr-icon>
+        </cr-button>
+      </div>
       <cr-icon-button id="avatarButton" iron-icon="cr:person"
         @click="${this.onAvatarClick_}"></cr-icon-button>
       <cr-icon-button id="appMenuButton" iron-icon="cr:more-vert"

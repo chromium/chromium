@@ -48,9 +48,9 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
   METADATA_HEADER(InternalPageInfoBubbleView, PageInfoBubbleViewBase)
 
  public:
-  // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
+  // If |anchor| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
-  InternalPageInfoBubbleView(views::View* anchor_view,
+  InternalPageInfoBubbleView(views::BubbleAnchor anchor,
                              const gfx::Rect& anchor_rect,
                              gfx::NativeView parent_window,
                              content::WebContents* web_contents,
@@ -66,12 +66,12 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
 ////////////////////////////////////////////////////////////////////////////////
 
 InternalPageInfoBubbleView::InternalPageInfoBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     const GURL& url)
-    : PageInfoBubbleViewBase(anchor_view,
+    : PageInfoBubbleViewBase(anchor,
                              anchor_rect,
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_INTERNAL_PAGE,
@@ -132,7 +132,7 @@ BEGIN_METADATA(InternalPageInfoBubbleView)
 END_METADATA
 
 PageInfoBubbleView::PageInfoBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     content::WebContents* associated_web_contents,
@@ -140,7 +140,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback,
     bool allow_extended_site_info)
-    : PageInfoBubbleViewBase(anchor_view,
+    : PageInfoBubbleViewBase(anchor,
                              anchor_rect,
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
@@ -193,7 +193,7 @@ PageInfoBubbleView::~PageInfoBubbleView() {
 // static
 views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     std::unique_ptr<PageInfoBubbleSpecification> specification) {
-  views::View* const anchor_view = specification->anchor_view();
+  views::BubbleAnchor const anchor = specification->anchor();
   const gfx::Rect& anchor_rect = specification->anchor_rect();
   content::WebContents* const web_contents = specification->web_contents();
 
@@ -204,15 +204,15 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   if (PageInfo::IsFileOrInternalPage(url) ||
       url.SchemeIs(extensions::kExtensionScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
-    return new InternalPageInfoBubbleView(anchor_view, anchor_rect, parent_view,
+    return new InternalPageInfoBubbleView(anchor, anchor_rect, parent_view,
                                           web_contents, url);
   }
 
-  PageInfoBubbleView* const bubble = new PageInfoBubbleView(
-      anchor_view, anchor_rect, parent_view, web_contents, url,
-      specification->initialized_callback(),
-      specification->page_info_closing_callback(),
-      specification->show_extended_site_info());
+  PageInfoBubbleView* const bubble =
+      new PageInfoBubbleView(anchor, anchor_rect, parent_view, web_contents,
+                             url, specification->initialized_callback(),
+                             specification->page_info_closing_callback(),
+                             specification->show_extended_site_info());
   if (specification->permission_page_type().has_value()) {
     bubble->OpenPermissionPage(specification->permission_page_type().value());
   }

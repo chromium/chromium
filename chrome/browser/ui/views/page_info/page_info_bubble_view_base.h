@@ -21,7 +21,6 @@ class Rect;
 }  // namespace gfx
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -60,7 +59,7 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   static views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting();
 
  protected:
-  PageInfoBubbleViewBase(views::View* anchor_view,
+  PageInfoBubbleViewBase(views::BubbleAnchor anchor,
                          const gfx::Rect& anchor_rect,
                          gfx::NativeView parent_window,
                          BubbleType type,
