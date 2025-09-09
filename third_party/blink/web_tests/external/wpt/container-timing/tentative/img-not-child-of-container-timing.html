@@ -21,10 +21,8 @@ body {
     );
     observer.observe({entryTypes: ['container']});
 
-    // Wait 2 seconds for observations, then finish successfully
-    t.step_timeout(() => {
-      t.done();
-    }, 2000);
+    finishOnElementTiming(t);
+
     // Add the image during onload to be sure that the observer is registered
     // in time.
     window.onload = () => {
@@ -37,6 +35,8 @@ body {
       img.src = '/container-timing/resources/square100.png';
       img.setAttribute('id', 'img_id');
       document.body.appendChild(img);
+
+      addPaintingElementTimingAfterDoubleRAF(document.body);
     };
   }, 'Containertiming observed without paintable contents and an image outside does not report observations.');
 </script>
