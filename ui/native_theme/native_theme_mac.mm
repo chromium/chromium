@@ -108,24 +108,24 @@ namespace ui {
 
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-  return NativeThemeMacWeb::instance();
+  static base::NoDestructor<NativeThemeAura> s_web_theme;
+  return s_web_theme.get();
 }
 
 // static
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  return NativeThemeMac::instance();
+  static base::NoDestructor<NativeThemeMac> s_native_theme;
+  static bool initialized = false;
+  if (!initialized) {
+    s_native_theme->ConfigureWebInstance();
+    initialized = true;
+  }
+  return s_native_theme.get();
 }
 
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   return true;
-}
-
-// static
-NativeThemeMac* NativeThemeMac::instance() {
-  static base::NoDestructor<NativeThemeMac> s_native_theme(
-      /*configure_web_instance=*/true, /*should_only_use_dark_colors=*/false);
-  return s_native_theme.get();
 }
 
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
@@ -539,12 +539,8 @@ static void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
   NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
 }
 
-NativeThemeMac::NativeThemeMac(bool configure_web_instance,
-                               bool should_only_use_dark_colors)
-    : NativeThemeBase(should_only_use_dark_colors) {
-  if (!should_only_use_dark_colors) {
-    InitializeDarkModeStateAndObserver();
-  }
+NativeThemeMac::NativeThemeMac() {
+  InitializeDarkModeStateAndObserver();
 
   set_prefers_reduced_transparency(PrefersReducedTransparency());
   set_inverted_colors(InvertedColors());
@@ -576,10 +572,6 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                 usingBlock:^(NSNotification* notification) {
                   theme->NotifyOnNativeThemeUpdated();
                 }];
-  }
-
-  if (configure_web_instance) {
-    ConfigureWebInstance();
   }
 }
 
@@ -663,17 +655,6 @@ void NativeThemeMac::ConfigureWebInstance() {
       CaptionSettingsChangedNotificationCallback,
       kMACaptionAppearanceSettingsChangedNotification, nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
-}
-
-NativeThemeMacWeb::NativeThemeMacWeb()
-    : NativeThemeAura(
-          /*use_overlay_scrollbars=*/false,
-          /*should_only_use_dark_colors=*/false) {}
-
-// static
-NativeThemeMacWeb* NativeThemeMacWeb::instance() {
-  static base::NoDestructor<NativeThemeMacWeb> s_native_theme;
-  return s_native_theme.get();
 }
 
 }  // namespace ui

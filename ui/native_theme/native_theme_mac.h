@@ -98,9 +98,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMac>;
-  static NativeThemeMac* instance();
 
-  NativeThemeMac(bool configure_web_instance, bool should_only_use_dark_colors);
+  NativeThemeMac();
   ~NativeThemeMac() override;
 
   // NativeTheme:
@@ -169,16 +168,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   // contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-};
-
-// Mac implementation of native theme support for web controls.
-// For consistency with older versions of Chrome for Mac, we do multiply
-// the border width and radius by the zoom, unlike the generic impl.
-class NativeThemeMacWeb : public NativeThemeAura {
- public:
-  NativeThemeMacWeb();
-
-  static NativeThemeMacWeb* instance();
 };
 
 }  // namespace ui

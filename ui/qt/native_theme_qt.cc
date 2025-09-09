@@ -23,10 +23,7 @@
 namespace qt {
 
 NativeThemeQt::NativeThemeQt(QtInterface* shim)
-    : ui::NativeThemeAura(/*use_overlay_scrollbars=*/false,
-                          /*should_only_use_dark_colors=*/false,
-                          ui::SystemTheme::kQt),
-      shim_(shim) {}
+    : ui::NativeThemeAura(ui::SystemTheme::kQt), shim_(shim) {}
 
 NativeThemeQt::~NativeThemeQt() = default;
 

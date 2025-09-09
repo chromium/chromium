@@ -18,17 +18,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   friend class NativeThemeAuraTest;
   friend class base::NoDestructor<NativeThemeAura>;
 
-  NativeThemeAura(bool use_overlay_scrollbars,
-                  bool should_only_use_dark_colors,
-                  ui::SystemTheme system_theme = ui::SystemTheme::kDefault,
-                  bool configure_web_instance = false);
+  explicit NativeThemeAura(bool use_overlay_scrollbar = false);
+  explicit NativeThemeAura(SystemTheme system_theme);
 
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;
 
   ~NativeThemeAura() override;
-
-  static NativeThemeAura* web_instance();
 
   // Overridden from NativeTheme:
   void ConfigureWebInstance() override;

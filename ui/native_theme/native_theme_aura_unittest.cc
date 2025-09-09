@@ -40,8 +40,7 @@ class NativeThemeAuraTest : public testing::Test {
   }
 
  private:
-  NativeThemeAura theme_{/*use_overlay_scrollbars=*/false,
-                         /*should_only_use_dark_colors=*/false};
+  NativeThemeAura theme_;
 };
 
 TEST_F(NativeThemeAuraTest, VerticalArrows) {

@@ -17,7 +17,7 @@ namespace {
 
 class TestNativeTheme : public NativeTheme {
  public:
-  TestNativeTheme() : NativeTheme(false) {}
+  TestNativeTheme() = default;
   TestNativeTheme(const TestNativeTheme&) = delete;
   TestNativeTheme& operator=(const TestNativeTheme&) = delete;
   ~TestNativeTheme() override = default;

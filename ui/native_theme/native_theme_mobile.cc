@@ -15,15 +15,12 @@ namespace ui {
 
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-  return NativeThemeMobile::instance();
-}
-
-NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  return NativeThemeMobile::instance();
+  static base::NoDestructor<NativeThemeMobile> s_web_theme;
+  return s_web_theme.get();
 }
 
 // static
-NativeThemeMobile* NativeThemeMobile::instance() {
+NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeThemeMobile> s_native_theme;
   return s_native_theme.get();
 }

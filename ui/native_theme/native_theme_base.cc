@@ -348,12 +348,6 @@ gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
   NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
 }
 
-NativeThemeBase::NativeThemeBase() : NativeThemeBase(false) {}
-
-NativeThemeBase::NativeThemeBase(bool should_only_use_dark_colors,
-                                 ui::SystemTheme system_theme)
-    : NativeTheme(should_only_use_dark_colors, system_theme) {}
-
 NativeThemeBase::~NativeThemeBase() = default;
 
 void NativeThemeBase::PaintArrowButton(

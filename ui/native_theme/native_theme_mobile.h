@@ -23,7 +23,6 @@ class NativeThemeMobile : public NativeThemeBase {
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMobile>;
-  static NativeThemeMobile* instance();
 
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;

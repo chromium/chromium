@@ -18,7 +18,7 @@ using SystemThemeColor = NativeTheme::SystemThemeColor;
 
 class TestNativeThemeWin : public NativeThemeWin {
  public:
-  TestNativeThemeWin() : NativeThemeWin(false, false) {}
+  TestNativeThemeWin() = default;
   TestNativeThemeWin& operator=(const TestNativeThemeWin&) = delete;
 
   ~TestNativeThemeWin() override = default;

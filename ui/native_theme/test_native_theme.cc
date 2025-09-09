@@ -6,7 +6,7 @@
 
 namespace ui {
 
-TestNativeTheme::TestNativeTheme() : NativeTheme(false) {}
+TestNativeTheme::TestNativeTheme() = default;
 TestNativeTheme::~TestNativeTheme() = default;
 
 gfx::Size TestNativeTheme::GetPartSize(Part part,

@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   void ConfigureWebInstance() override;
   std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
 
-  NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
+  NativeThemeWin();
   ~NativeThemeWin() override;
 
  private:

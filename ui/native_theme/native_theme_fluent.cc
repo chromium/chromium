@@ -39,20 +39,12 @@
 
 namespace ui {
 
-NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
-    : NativeThemeBase(should_only_use_dark_colors) {
+NativeThemeFluent::NativeThemeFluent() {
   set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
   scrollbar_width_ = kScrollbarThickness;
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
-
-// static
-NativeThemeFluent* NativeThemeFluent::web_instance() {
-  static base::NoDestructor<NativeThemeFluent> s_native_theme_for_web(
-      /*should_only_use_dark_colors=*/false);
-  return s_native_theme_for_web.get();
-}
 
 void NativeThemeFluent::PaintArrowButton(
     cc::PaintCanvas* canvas,

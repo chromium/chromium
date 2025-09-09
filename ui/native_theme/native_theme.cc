@@ -195,12 +195,10 @@ base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {
   return kDefaultCaretBlinkInterval;
 }
 
-NativeTheme::NativeTheme(bool should_use_dark_colors,
-                         ui::SystemTheme system_theme)
-    : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
+NativeTheme::NativeTheme(ui::SystemTheme system_theme)
+    : should_use_dark_colors_(IsForcedDarkMode()),
       system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
-
       preferred_color_scheme_(CalculatePreferredColorScheme()),
       preferred_contrast_(CalculatePreferredContrast()) {}
 

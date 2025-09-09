@@ -14,7 +14,7 @@ namespace {
 
 class TestNativeThemeMac : public NativeThemeMac {
  public:
-  TestNativeThemeMac() : NativeThemeMac(false, false) {}
+  TestNativeThemeMac() = default;
   TestNativeThemeMac& operator=(const TestNativeThemeMac&) = delete;
 
   ~TestNativeThemeMac() override = default;

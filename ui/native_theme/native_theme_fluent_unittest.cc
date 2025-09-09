@@ -119,7 +119,7 @@ class NativeThemeFluentTest : public ::testing::Test,
     }
   }
 
-  NativeThemeFluent theme_{false};
+  NativeThemeFluent theme_;
 };
 
 // Verify the dimensions of an arrow rect with triangular arrows for a given

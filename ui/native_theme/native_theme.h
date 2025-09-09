@@ -595,7 +595,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
  protected:
   explicit NativeTheme(
-      bool should_only_use_dark_colors,
       ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
 

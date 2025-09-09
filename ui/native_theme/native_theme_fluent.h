@@ -31,14 +31,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   static constexpr int kScrollbarThickness = 15;
   // LINT.ThenChange(//third_party/blink/web_tests/resources/scrollbar-util.js:FluentScrollbarThickness)
 
-  explicit NativeThemeFluent(bool should_only_use_dark_colors);
+  NativeThemeFluent();
 
   NativeThemeFluent(const NativeThemeFluent&) = delete;
   NativeThemeFluent& operator=(const NativeThemeFluent&) = delete;
 
   ~NativeThemeFluent() override;
-
-  static NativeThemeFluent* web_instance();
 
   void PaintArrowButton(
       cc::PaintCanvas* canvas,

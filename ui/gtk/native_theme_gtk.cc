@@ -96,9 +96,7 @@ NativeThemeGtk* NativeThemeGtk::instance() {
   return s_native_theme.get();
 }
 
-NativeThemeGtk::NativeThemeGtk()
-    : NativeThemeBase(/*should_only_use_dark_colors=*/false,
-                      ui::SystemTheme::kGtk) {
+NativeThemeGtk::NativeThemeGtk() : NativeThemeBase(ui::SystemTheme::kGtk) {
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
 

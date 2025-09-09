@@ -174,7 +174,12 @@ base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
 }  // namespace
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeWin> s_native_theme(true, false);
+  static base::NoDestructor<NativeThemeWin> s_native_theme;
+  static bool initialized = false;
+  if (!initialized) {
+    s_native_theme->ConfigureWebInstance();
+    initialized = true;
+  }
   return s_native_theme.get();
 }
 
@@ -268,10 +273,8 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
   }
 }
 
-NativeThemeWin::NativeThemeWin(bool configure_web_instance,
-                               bool should_only_use_dark_colors)
-    : NativeTheme(should_only_use_dark_colors),
-      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()) {
+NativeThemeWin::NativeThemeWin()
+    : supports_windows_dark_mode_(base::win::IsDarkModeAvailable()) {
   // By default UI should not use the system accent color.
   set_should_use_system_accent_color(false);
 
@@ -282,8 +285,7 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
 
   hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
   if (hkcu_themes_regkey_.Valid()) {
-    if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
-        !IsForcedHighContrast()) {
+    if (!IsForcedDarkMode() && !IsForcedHighContrast()) {
       UpdateDarkModeStatus();
     }
     UpdatePrefersReducedTransparency();
@@ -311,10 +313,6 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   SetPreferredContrast(CalculatePreferredContrast());
 
   memset(theme_handles_, 0, sizeof(theme_handles_));
-
-  if (configure_web_instance) {
-    ConfigureWebInstance();
-  }
 
   // Histogram high contrast state.
   // NOTE: Reported in metrics; do not reorder, add additional values at end.
