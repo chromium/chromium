@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Creates the VariationsIdsProvider instance. This must be called before
   // GetInstance(). Only one instance of VariationsIdsProvider may be created.
-  static VariationsIdsProvider* Create(Mode mode);
+  static VariationsIdsProvider* CreateInstance(Mode mode);
 
   static VariationsIdsProvider* GetInstance();
 

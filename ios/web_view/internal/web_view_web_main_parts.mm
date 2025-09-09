@@ -77,7 +77,7 @@ void WebViewWebMainParts::PreCreateThreads() {
 
   ApplicationContext::GetInstance()->PreCreateThreads();
 
-  variations::VariationsIdsProvider::Create(
+  variations::VariationsIdsProvider::CreateInstance(
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);

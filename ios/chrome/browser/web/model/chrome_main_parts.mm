@@ -422,7 +422,7 @@ void IOSChromeMainParts::SetUpFieldTrials(
 // This will occur inside //content for blink.
 #if !BUILDFLAG(USE_BLINK)
   // FeatureList requires VariationsIdsProvider to be created.
-  variations::VariationsIdsProvider::Create(
+  variations::VariationsIdsProvider::CreateInstance(
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
 #endif
 

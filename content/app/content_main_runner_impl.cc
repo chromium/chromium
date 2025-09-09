@@ -1182,7 +1182,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     auto* provider = delegate_->CreateVariationsIdsProvider();
     if (!provider) {
-      variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::CreateInstance(
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 

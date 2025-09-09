@@ -65,7 +65,7 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 // function variations::CreateSimpleURLLoaderWithVariationsHeader().
 
 // static
-VariationsIdsProvider* VariationsIdsProvider::Create(Mode mode) {
+VariationsIdsProvider* VariationsIdsProvider::CreateInstance(Mode mode) {
   base::AutoLock lock(GetInstanceLock());
   DCHECK(!g_instance);
   g_instance = new VariationsIdsProvider(mode);

@@ -303,7 +303,7 @@ bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 variations::VariationsIdsProvider*
 AwMainDelegate::CreateVariationsIdsProvider() {
-  return variations::VariationsIdsProvider::Create(
+  return variations::VariationsIdsProvider::CreateInstance(
       variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 }
 
