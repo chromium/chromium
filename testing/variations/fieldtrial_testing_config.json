@@ -4542,7 +4542,7 @@
             ]
         }
     ],
-    "CanvasNoise": [
+    "CanvasInterventions": [
         {
             "platforms": [
                 "android_webview",
@@ -4554,9 +4554,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250527_NonDogfood",
                     "params": {
-                        "enable_in_regular_mode": "true"
+                        "enable_in_regular_mode": "false"
                     },
                     "enable_features": [
                         "CanvasNoise"
