@@ -129,9 +129,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
                          /*visit_order*/ options.visit_order,
                          /*app_id*/ options.app_id)))
         .Times(1)
-        .WillOnce(testing::Invoke([&, mock_results](
-                                      const std::u16string& search_text,
-                                      const QueryOptions& options) {
+        .WillOnce([&, mock_results](const std::u16string& search_text,
+                                    const QueryOptions& options) {
           std::vector<BrowsingHistoryService::HistoryEntry> results;
           if (mock_results.empty()) {
             BrowsingHistoryService::HistoryEntry entry(
@@ -151,7 +150,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
           handler_->OnQueryComplete(
               mock_results.empty() ? results : mock_results, info,
               base::OnceClosure());
-        }));
+        });
   }
 
   mojom::QueryResultPtr RunQueryHistory(

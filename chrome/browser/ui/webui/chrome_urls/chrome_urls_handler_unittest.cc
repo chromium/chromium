@@ -148,10 +148,9 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   chrome_urls::mojom::ChromeUrlsDataPtr url_data;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&url_data](chrome_urls::mojom::ChromeUrlsDataPtr arg) {
-            url_data = std::move(arg);
-          }));
+      .WillOnce([&url_data](chrome_urls::mojom::ChromeUrlsDataPtr arg) {
+        url_data = std::move(arg);
+      });
   handler_->GetUrls(callback.Get());
 
   // Validate WebUI URL data.

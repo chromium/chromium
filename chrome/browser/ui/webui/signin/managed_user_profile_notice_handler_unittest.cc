@@ -39,7 +39,6 @@
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
-using testing::Invoke;
 
 namespace {
 

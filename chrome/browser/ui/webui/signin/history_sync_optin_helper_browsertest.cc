@@ -140,9 +140,9 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   // Mock accepting the user management screen.
   EXPECT_CALL(delegate, ShowAccountManagementScreen)
-      .WillOnce(testing::Invoke([&](signin::SigninChoiceCallback callback) {
+      .WillOnce([&](signin::SigninChoiceCallback callback) {
         std::move(callback).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
-      }));
+      });
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).WillOnce([&]() {
     run_loop.Quit();
   });
@@ -170,9 +170,9 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   // Mock cancelling the user management screen.
   EXPECT_CALL(delegate, ShowAccountManagementScreen)
-      .WillOnce(testing::Invoke([&](signin::SigninChoiceCallback callback) {
+      .WillOnce([&](signin::SigninChoiceCallback callback) {
         std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
-      }));
+      });
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
   EXPECT_CALL(delegate, FinishFlowWithoutHistorySyncOptin).WillOnce([&]() {
     run_loop.Quit();

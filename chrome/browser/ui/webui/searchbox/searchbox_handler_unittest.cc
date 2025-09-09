@@ -120,13 +120,12 @@ TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {
   searchbox::mojom::OmniboxPopupSelectionPtr selection;
   EXPECT_CALL(page_, UpdateSelection)
       .Times(4)
-      .WillRepeatedly(
-          testing::Invoke([&old_selection, &selection](
-                              searchbox::mojom::OmniboxPopupSelectionPtr arg0,
-                              searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
-            old_selection = std::move(arg0);
-            selection = std::move(arg1);
-          }));
+      .WillRepeatedly([&old_selection, &selection](
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg0,
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
+        old_selection = std::move(arg0);
+        selection = std::move(arg1);
+      });
 
   handler_->UpdateSelection(
       OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),

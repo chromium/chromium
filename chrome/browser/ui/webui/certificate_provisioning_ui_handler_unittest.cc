@@ -49,7 +49,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::UnorderedElementsAre;
 
 // Extracted from a X.509 certificate using the command:

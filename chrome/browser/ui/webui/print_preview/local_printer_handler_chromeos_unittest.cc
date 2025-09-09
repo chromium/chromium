@@ -37,7 +37,6 @@ using ::crosapi::mojom::OAuthNotNeeded;
 using ::printing::mojom::IppClientInfo;
 using ::printing::mojom::IppClientInfoPtr;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -265,7 +264,7 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsUsername) {
         std::move(cb).Run("chronos");
       };
   EXPECT_CALL(local_printer(), GetUsernamePerPolicy)
-      .WillOnce(WithArg<0>(Invoke(return_expected_username)));
+      .WillOnce(WithArg<0>(return_expected_username));
 
   base::Value::Dict fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(
@@ -291,7 +290,7 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsOAuthToken) {
             crosapi::mojom::OAuthAccessToken::New("token")));
       };
   EXPECT_CALL(local_printer(), GetOAuthAccessToken)
-      .WillOnce(WithArg<1>(Invoke(return_expected_oauth_token)));
+      .WillOnce(WithArg<1>(return_expected_oauth_token));
 
   base::Value::Dict fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(
@@ -336,7 +335,7 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
         std::move(cb).Run(std::move(client_infos_to_send));
       };
   EXPECT_CALL(local_printer(), GetIppClientInfo)
-      .WillOnce(WithArg<1>(Invoke(std::move(return_expected_client_info))));
+      .WillOnce(WithArg<1>(std::move(return_expected_client_info)));
 
   base::Value::Dict fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(

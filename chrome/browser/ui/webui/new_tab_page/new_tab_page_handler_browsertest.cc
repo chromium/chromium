@@ -163,8 +163,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageHandlerManagedTest, SetNoticePolicyPref) {
   bool visible;
   EXPECT_CALL(*mock_page(), FooterVisibilityUpdated)
       .Times(2)
-      .WillRepeatedly(testing::Invoke(
-          [&visible](bool visible_arg) { visible = visible_arg; }));
+      .WillRepeatedly([&visible](bool visible_arg) { visible = visible_arg; });
 
   local_state()->SetBoolean(prefs::kNTPFooterManagementNoticeEnabled, false);
   mock_page()->FlushForTesting();
@@ -183,8 +182,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageHandlerManagedTest, SetCustomFooterLabel) {
   bool visible;
   EXPECT_CALL(*mock_page(), FooterVisibilityUpdated)
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
-          [&visible](bool visible_arg) { visible = visible_arg; }));
+      .WillRepeatedly([&visible](bool visible_arg) { visible = visible_arg; });
 
   profile()->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
   mock_page()->FlushForTesting();
@@ -209,8 +207,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageHandlerManagedTest, SetCustomFooterLogo) {
   bool visible;
   EXPECT_CALL(*mock_page(), FooterVisibilityUpdated)
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
-          [&visible](bool visible_arg) { visible = visible_arg; }));
+      .WillRepeatedly([&visible](bool visible_arg) { visible = visible_arg; });
 
   profile()->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
   mock_page()->FlushForTesting();

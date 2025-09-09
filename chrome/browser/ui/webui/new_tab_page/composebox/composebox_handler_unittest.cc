@@ -313,9 +313,9 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
   std::vector<SessionState> session_states;
   EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
       .Times(3)
-      .WillRepeatedly(testing::Invoke([&](SessionState session_state) {
+      .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
-      }));
+      });
 
   // Start the session.
   EXPECT_CALL(query_controller(), NotifySessionStarted)
@@ -414,17 +414,15 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
   EXPECT_CALL(query_controller(), DeleteFile)
-      .WillOnce(
-          testing::Invoke([&token_arg](const base::UnguessableToken& token) {
-            token_arg = token;
-            return true;
-          }));
+      .WillOnce([&token_arg](const base::UnguessableToken& token) {
+        token_arg = token;
+        return true;
+      });
 
   EXPECT_CALL(query_controller(), GetFileInfo)
-      .WillOnce(
-          testing::Invoke([&file_info](const base::UnguessableToken& token) {
-            return file_info.get();
-          }));
+      .WillOnce([&file_info](const base::UnguessableToken& token) {
+        return file_info.get();
+      });
 
   handler().DeleteContext(delete_file_token);
 
@@ -517,12 +515,12 @@ TEST_F(ComposeboxHandlerTabContextTest, AddTabContext) {
           tab_features->tab_contextualization_controller());
   EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
       .Times(1)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](lens::TabContextualizationController::GetPageContextCallback
                  callback) {
             std::move(callback).Run(
                 std::make_unique<lens::ContextualInputData>());
-          }));
+          });
 
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
@@ -551,12 +549,12 @@ TEST_P(ComposeboxHandlerFileUploadStatusTest, OnFileUploadStatusChanged) {
   composebox_query::mojom::FileUploadStatus status;
   EXPECT_CALL(mock_page_, OnContextualInputStatusChanged)
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&status](
               const base::UnguessableToken& file_token,
               composebox_query::mojom::FileUploadStatus file_upload_status,
               std::optional<composebox_query::mojom::FileUploadErrorType>
-                  file_upload_error_type) { status = file_upload_status; }));
+                  file_upload_error_type) { status = file_upload_status; });
 
   const auto expected_status = GetParam();
   base::UnguessableToken token = base::UnguessableToken::Create();
