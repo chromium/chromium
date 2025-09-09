@@ -29,8 +29,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background,
-      ColorScheme color_scheme) const override;
+      const MenuBackgroundExtraParams& menu_background) const override;
   void PaintMenuSeparator(
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
@@ -43,11 +42,11 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       State state,
       const gfx::Rect& rect,
       const MenuItemExtraParams& menu_item) const override;
-  void PaintFrameTopArea(cc::PaintCanvas* canvas,
-                         State state,
-                         const gfx::Rect& rect,
-                         const FrameTopAreaExtraParams& frame_top_area,
-                         ColorScheme color_scheme) const override;
+  void PaintFrameTopArea(
+      cc::PaintCanvas* canvas,
+      State state,
+      const gfx::Rect& rect,
+      const FrameTopAreaExtraParams& frame_top_area) const override;
   void NotifyOnNativeThemeUpdated() override;
   void NotifyOnPreferredContrastUpdated() override;
 

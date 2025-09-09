@@ -4165,6 +4165,7 @@ std::tuple<bool, bool> GetForcedColorsForWebContent(
 #if !BUILDFLAG(IS_ANDROID)
 blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
     ui::NativeTheme::PreferredColorScheme native_theme_scheme) {
+  // Web content treats "no preference" as light mode.
   return (native_theme_scheme == ui::NativeTheme::PreferredColorScheme::kDark)
              ? blink::mojom::PreferredColorScheme::kDark
              : blink::mojom::PreferredColorScheme::kLight;

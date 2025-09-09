@@ -52,13 +52,12 @@ void NativeThemeFluent::PaintArrowButton(
     const gfx::Rect& rect,
     Part direction,
     State state,
-    ColorScheme color_scheme,
+    bool dark_mode,
     bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
-  PaintButton(canvas, color_provider, rect, direction, color_scheme,
-              in_forced_colors, extra_params);
-  PaintArrow(canvas, color_provider, rect, direction, state, color_scheme,
-             extra_params);
+  PaintButton(canvas, color_provider, rect, direction, in_forced_colors,
+              extra_params);
+  PaintArrow(canvas, color_provider, rect, direction, state, extra_params);
 }
 
 void NativeThemeFluent::PaintScrollbarTrack(
@@ -68,7 +67,6 @@ void NativeThemeFluent::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    ColorScheme color_scheme,
     bool in_forced_colors) const {
   gfx::Rect track_fill_rect = rect;
   if (in_forced_colors) {
@@ -113,8 +111,7 @@ void NativeThemeFluent::PaintScrollbarThumb(
     Part part,
     State state,
     const gfx::Rect& rect,
-    const ScrollbarThumbExtraParams& extra_params,
-    ColorScheme color_scheme) const {
+    const ScrollbarThumbExtraParams& extra_params) const {
   DCHECK_NE(state, NativeTheme::kDisabled);
 
   cc::PaintFlags flags;
@@ -168,8 +165,7 @@ void NativeThemeFluent::PaintScrollbarCorner(
     const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const ScrollbarTrackExtraParams& extra_params,
-    ColorScheme color_scheme) const {
+    const ScrollbarTrackExtraParams& extra_params) const {
   cc::PaintFlags flags;
   const SkColor corner_color =
       extra_params.track_color.has_value()
@@ -211,7 +207,6 @@ void NativeThemeFluent::PaintButton(
     const ColorProvider* color_provider,
     const gfx::Rect& rect,
     Part direction,
-    ColorScheme color_scheme,
     bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
@@ -268,7 +263,6 @@ void NativeThemeFluent::PaintArrow(
     const gfx::Rect& rect,
     Part part,
     State state,
-    ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& extra_params) const {
   const ColorId arrow_color_id =
       state == NativeTheme::kPressed || state == NativeTheme::kHovered

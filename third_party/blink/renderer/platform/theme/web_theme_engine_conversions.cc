@@ -46,11 +46,12 @@ NT::State NativeThemeState(WTE::State state) {
   return kStateMap.at(state);
 }
 
-NT::ColorScheme NativeColorScheme(mojom::blink::ColorScheme color_scheme) {
+NT::PreferredColorScheme NativeColorScheme(
+    mojom::blink::ColorScheme color_scheme) {
   using MCS = mojom::blink::ColorScheme;
-  using NTCS = NT::ColorScheme;
-  static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTCS>(
-      {{MCS::kLight, NTCS::kLight}, {MCS::kDark, NTCS::kDark}});
+  using NTPCS = NT::PreferredColorScheme;
+  static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTPCS>(
+      {{MCS::kLight, NTPCS::kLight}, {MCS::kDark, NTPCS::kDark}});
   return kColorSchemeMap.at(color_scheme);
 }
 

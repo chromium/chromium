@@ -44,15 +44,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme,
+             PreferredColorScheme color_scheme,
              bool in_forced_colors,
              const std::optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background,
-      ColorScheme color_scheme) const override;
+      const MenuBackgroundExtraParams& menu_background) const override;
   void PaintMenuItemBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -64,14 +63,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
                               State state,
                               const gfx::Rect& rect,
                               const ScrollbarExtraParams& scroll_thumb,
-                              ColorScheme color_scheme) const;
+                              bool dark_mode) const;
   // Paint the track. |track_bounds| is the bounds for the track.
   void PaintMacScrollBarTrackOrCorner(cc::PaintCanvas* canvas,
                                       Part part,
                                       State state,
                                       const ScrollbarExtraParams& extra_params,
                                       const gfx::Rect& rect,
-                                      ColorScheme color_scheme,
+                                      bool dark_mode,
                                       bool is_corner) const;
 
   // Paints the styled button shape used for default controls on Mac. The basic
@@ -120,17 +119,17 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
                                    const gfx::Rect& rect,
                                    const ScrollbarExtraParams& extra_params,
                                    bool is_corner,
-                                   ColorScheme color_scheme) const;
+                                   bool dark_mode) const;
   void PaintScrollbarTrackInnerBorder(cc::PaintCanvas* canvas,
                                       const gfx::Rect& rect,
                                       const ScrollbarExtraParams& extra_params,
                                       bool is_corner,
-                                      ColorScheme color_scheme) const;
+                                      bool dark_mode) const;
   void PaintScrollbarTrackOuterBorder(cc::PaintCanvas* canvas,
                                       const gfx::Rect& rect,
                                       const ScrollbarExtraParams& extra_params,
                                       bool is_corner,
-                                      ColorScheme color_scheme) const;
+                                      bool dark_mode) const;
 
   void InitializeDarkModeStateAndObserver();
 
@@ -145,7 +144,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
 
   std::optional<SkColor> GetScrollbarColor(
       ScrollbarPart part,
-      ColorScheme color_scheme,
+      bool dark_mode,
       const ScrollbarExtraParams& extra_params) const;
 
   int ScrollbarTrackBorderWidth(float scale_from_dip) const {

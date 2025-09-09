@@ -140,14 +140,13 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            State state,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
-                           ColorScheme color_scheme,
+                           PreferredColorScheme color_scheme,
                            bool in_forced_colors,
                            const std::optional<SkColor>& accent_color) const {
-  ColorScheme color_scheme_updated = color_scheme;
-  if (color_scheme_updated == ColorScheme::kDefault) {
-    color_scheme_updated =
-        ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
-  }
+  // For `color_scheme`, `kNoPreference` means "use current".
+  const bool dark_mode = color_scheme == PreferredColorScheme::kDark ||
+                         (color_scheme == PreferredColorScheme::kNoPreference &&
+                          ShouldUseDarkColors());
 
   if (rect.IsEmpty()) {
     return;
@@ -157,19 +156,18 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
       PaintMacScrollbarThumb(canvas, part, state, rect,
-                             std::get<ScrollbarExtraParams>(extra),
-                             color_scheme_updated);
+                             std::get<ScrollbarExtraParams>(extra), dark_mode);
       break;
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       PaintMacScrollBarTrackOrCorner(canvas, part, state,
                                      std::get<ScrollbarExtraParams>(extra),
-                                     rect, color_scheme_updated, false);
+                                     rect, dark_mode, false);
       break;
     case kScrollbarCorner:
       PaintMacScrollBarTrackOrCorner(canvas, part, state,
                                      std::get<ScrollbarExtraParams>(extra),
-                                     rect, color_scheme_updated, true);
+                                     rect, dark_mode, true);
       break;
     default:
       NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
@@ -220,17 +218,16 @@ void NativeThemeMac::PaintMacScrollBarTrackOrCorner(
     State state,
     const ScrollbarExtraParams& extra_params,
     const gfx::Rect& rect,
-    ColorScheme color_scheme,
+    bool dark_mode,
     bool is_corner) const {
   if (is_corner && extra_params.is_overlay) {
     return;
   }
-  PaintScrollBarTrackGradient(canvas, rect, extra_params, is_corner,
-                              color_scheme);
+  PaintScrollBarTrackGradient(canvas, rect, extra_params, is_corner, dark_mode);
   PaintScrollbarTrackInnerBorder(canvas, rect, extra_params, is_corner,
-                                 color_scheme);
+                                 dark_mode);
   PaintScrollbarTrackOuterBorder(canvas, rect, extra_params, is_corner,
-                                 color_scheme);
+                                 dark_mode);
 }
 
 void NativeThemeMac::PaintScrollBarTrackGradient(
@@ -238,11 +235,10 @@ void NativeThemeMac::PaintScrollBarTrackGradient(
     const gfx::Rect& rect,
     const ScrollbarExtraParams& extra_params,
     bool is_corner,
-    ColorScheme color_scheme) const {
+    bool dark_mode) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
   // Select colors.
   std::vector<SkColor4f> gradient_colors;
-  bool dark_mode = color_scheme == ColorScheme::kDark;
   if (extra_params.is_overlay) {
     if (dark_mode) {
       gradient_colors = {SkColor4f{0.847f, 0.847f, 0.847f, 0.157f},
@@ -290,7 +286,7 @@ void NativeThemeMac::PaintScrollBarTrackGradient(
   // And draw.
   cc::PaintFlags flags;
   std::optional<SkColor> track_color =
-      GetScrollbarColor(ScrollbarPart::kTrack, color_scheme, extra_params);
+      GetScrollbarColor(ScrollbarPart::kTrack, dark_mode, extra_params);
   if (track_color.has_value()) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -308,7 +304,7 @@ void NativeThemeMac::PaintScrollbarTrackInnerBorder(
     const gfx::Rect& rect,
     const ScrollbarExtraParams& extra_params,
     bool is_corner,
-    ColorScheme color_scheme) const {
+    bool dark_mode) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
 
   // Compute the rect for the border.
@@ -331,7 +327,7 @@ void NativeThemeMac::PaintScrollbarTrackInnerBorder(
   // And draw.
   cc::PaintFlags flags;
   SkColor inner_border_color =
-      GetScrollbarColor(ScrollbarPart::kTrackInnerBorder, color_scheme,
+      GetScrollbarColor(ScrollbarPart::kTrackInnerBorder, dark_mode,
                         extra_params)
           .value();
   flags.setColor(inner_border_color);
@@ -343,11 +339,11 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
     const gfx::Rect& rect,
     const ScrollbarExtraParams& extra_params,
     bool is_corner,
-    ColorScheme color_scheme) const {
+    bool dark_mode) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
   cc::PaintFlags flags;
   SkColor outer_border_color =
-      GetScrollbarColor(ScrollbarPart::kTrackOuterBorder, color_scheme,
+      GetScrollbarColor(ScrollbarPart::kTrackOuterBorder, dark_mode,
                         extra_params)
           .value();
   flags.setColor(outer_border_color);
@@ -390,7 +386,7 @@ void NativeThemeMac::PaintMacScrollbarThumb(
     State state,
     const gfx::Rect& rect,
     const ScrollbarExtraParams& scroll_thumb,
-    ColorScheme color_scheme) const {
+    bool dark_mode) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
 
   // Compute the bounds for the rounded rect for the thumb from the bounds of
@@ -424,8 +420,7 @@ void NativeThemeMac::PaintMacScrollbarThumb(
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   SkColor thumb_color =
-      GetScrollbarColor(ScrollbarPart::kThumb, color_scheme, scroll_thumb)
-          .value();
+      GetScrollbarColor(ScrollbarPart::kThumb, dark_mode, scroll_thumb).value();
   flags.setColor(thumb_color);
   const SkScalar radius = std::min(bounds.width(), bounds.height());
   paint_canvas.DrawRoundRect(bounds, radius, flags);
@@ -433,12 +428,11 @@ void NativeThemeMac::PaintMacScrollbarThumb(
 
 std::optional<SkColor> NativeThemeMac::GetScrollbarColor(
     ScrollbarPart part,
-    ColorScheme color_scheme,
+    bool dark_mode,
     const ScrollbarExtraParams& extra_params) const {
   // This function is called from the renderer process through the scrollbar
   // drawing functions. Due to this, it cannot use any of the dynamic NS system
   // colors.
-  bool dark_mode = color_scheme == ColorScheme::kDark;
   if (part == ScrollbarPart::kThumb) {
     if (extra_params.thumb_color.has_value()) {
       return extra_params.thumb_color.value();
@@ -500,8 +494,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,
     const gfx::Size& size,
-    const MenuBackgroundExtraParams& menu_background,
-    ColorScheme color_scheme) const {
+    const MenuBackgroundExtraParams& menu_background) const {
   DCHECK(color_provider);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

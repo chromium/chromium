@@ -28,7 +28,7 @@ class TestNativeTheme : public NativeTheme {
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme,
+             PreferredColorScheme color_scheme,
              bool in_forced_colors,
              const std::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;

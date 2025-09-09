@@ -39,8 +39,7 @@ void NativeThemeQt::PaintFrameTopArea(
     cc::PaintCanvas* canvas,
     State state,
     const gfx::Rect& rect,
-    const FrameTopAreaExtraParams& frame_top_area,
-    ColorScheme color_scheme) const {
+    const FrameTopAreaExtraParams& frame_top_area) const {
   auto image = shim_->DrawHeader(
       rect.width(), rect.height(), frame_top_area.default_background_color,
       frame_top_area.is_active ? ColorState::kNormal : ColorState::kInactive,

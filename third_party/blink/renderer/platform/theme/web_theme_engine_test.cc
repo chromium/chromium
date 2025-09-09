@@ -61,9 +61,9 @@ TEST(WebThemeEngineTest, NativeSystemThemeState) {
 }
 
 TEST(WebThemeEngineTest, NativeColorScheme) {
-  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
+  EXPECT_EQ(ui::NativeTheme::PreferredColorScheme::kLight,
             NativeColorScheme(blink::mojom::ColorScheme::kLight));
-  EXPECT_EQ(ui::NativeTheme::ColorScheme::kDark,
+  EXPECT_EQ(ui::NativeTheme::PreferredColorScheme::kDark,
             NativeColorScheme(blink::mojom::ColorScheme::kDark));
 }
 

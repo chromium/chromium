@@ -147,11 +147,10 @@ TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
   constexpr gfx::Rect kRect(15, 100);
   // `is_web_test` is `false` by default.
   const NativeTheme::ScrollbarThumbExtraParams extra_params;
-  theme_.PaintScrollbarThumb(
-      &canvas, &color_provider,
-      /*part=*/NativeTheme::kScrollbarVerticalThumb,
-      /*state=*/NativeTheme::kNormal, kRect, extra_params,
-      /*color_scheme=*/NativeTheme::ColorScheme::kDefault);
+  theme_.PaintScrollbarThumb(&canvas, &color_provider,
+                             /*part=*/NativeTheme::kScrollbarVerticalThumb,
+                             /*state=*/NativeTheme::kNormal, kRect,
+                             extra_params);
   EXPECT_EQ(canvas.TotalOpCount(), 1u);
   EXPECT_EQ(canvas.ReleaseAsRecord().GetFirstOp().GetType(),
             cc::PaintOpType::kDrawRRect);

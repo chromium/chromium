@@ -34,15 +34,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background,
-      ColorScheme color_scheme) const override;
+      const MenuBackgroundExtraParams& menu_background) const override;
   void PaintArrowButton(
       cc::PaintCanvas* gc,
       const ColorProvider* color_provider,
       const gfx::Rect& rect,
       Part direction,
       State state,
-      ColorScheme color_scheme,
+      bool dark_mode,
       bool in_forced_colors,
       const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
@@ -51,26 +50,25 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
                            const gfx::Rect& rect,
-                           ColorScheme color_scheme,
                            bool in_forced_colors) const override;
-  void PaintScrollbarThumb(cc::PaintCanvas* canvas,
-                           const ColorProvider* color_provider,
-                           Part part,
-                           State state,
-                           const gfx::Rect& rect,
-                           const ScrollbarThumbExtraParams& extra_params,
-                           ColorScheme color_scheme) const override;
+  void PaintScrollbarThumb(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      Part part,
+      State state,
+      const gfx::Rect& rect,
+      const ScrollbarThumbExtraParams& extra_params) const override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
   SkColor GetScrollbarThumbColor(
       const ui::ColorProvider& color_provider,
       State state,
       const ScrollbarThumbExtraParams& extra) const override;
-  void PaintScrollbarCorner(cc::PaintCanvas* canvas,
-                            const ColorProvider* color_provider,
-                            State state,
-                            const gfx::Rect& rect,
-                            const ScrollbarTrackExtraParams& extra_params,
-                            ColorScheme color_scheme) const override;
+  void PaintScrollbarCorner(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const ScrollbarTrackExtraParams& extra_params) const override;
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;

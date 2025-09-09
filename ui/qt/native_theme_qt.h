@@ -23,11 +23,11 @@ class NativeThemeQt : public ui::NativeThemeAura {
 
  protected:
   // ui::NativeThemeAura:
-  void PaintFrameTopArea(cc::PaintCanvas* canvas,
-                         State state,
-                         const gfx::Rect& rect,
-                         const FrameTopAreaExtraParams& frame_top_area,
-                         ColorScheme color_scheme) const override;
+  void PaintFrameTopArea(
+      cc::PaintCanvas* canvas,
+      State state,
+      const gfx::Rect& rect,
+      const FrameTopAreaExtraParams& frame_top_area) const override;
 
  private:
   // IMPORTANT NOTE: All members that use `shim_` must be decorated with

@@ -125,12 +125,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kMaxValue = kAquatic,
   };
 
-  // OS-level preferred color scheme. (Ex. high contrast or dark mode color
-  // preference.)
   enum class PreferredColorScheme {
-    kDark = 0,
+    kNoPreference = 0,
     kLight = 1,
-    kMaxValue = kLight,
+    kDark = 2,
+    kMaxValue = kDark,
   };
 
   // OS-level preferred contrast. (Ex. high contrast or increased contrast.)
@@ -140,15 +139,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kLess = 2,
     kCustom = 3,
     kMaxValue = kCustom,
-  };
-
-  // The color scheme used for painting the native controls.
-  enum class ColorScheme {
-    kDefault,
-    kLight,
-    kDark,
-    kPlatformHighContrast,  // When the platform is providing HC colors (eg.
-                            // Win)
   };
 
   // Each structure below holds extra information needed when painting a given
@@ -390,17 +380,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
                      State state,
                      const gfx::Rect& rect,
                      const ExtraParams& extra,
-                     ColorScheme color_scheme,
+                     PreferredColorScheme color_scheme,
                      bool in_forced_colors,
                      const std::optional<SkColor>& accent_color) const = 0;
-  void Paint(cc::PaintCanvas* canvas,
-             const ui::ColorProvider* color_provider,
-             Part part,
-             State state,
-             const gfx::Rect& rect,
-             const ExtraParams& extra,
-             ColorScheme color_scheme = ColorScheme::kDefault,
-             bool in_forced_colors = false) const {
+  void Paint(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      Part part,
+      State state,
+      const gfx::Rect& rect,
+      const ExtraParams& extra,
+      PreferredColorScheme color_scheme = PreferredColorScheme::kNoPreference,
+      bool in_forced_colors = false) const {
     Paint(canvas, color_provider, part, state, rect, extra, color_scheme,
           in_forced_colors, std::nullopt);
   }

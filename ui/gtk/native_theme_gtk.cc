@@ -193,8 +193,7 @@ void NativeThemeGtk::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
     const ui::ColorProvider* color_provider,
     const gfx::Size& size,
-    const MenuBackgroundExtraParams& menu_background,
-    ColorScheme color_scheme) const {
+    const MenuBackgroundExtraParams& menu_background) const {
   auto context = GetStyleContextFromCss(GtkCssMenu());
   // Chrome menus aren't rendered with transparency, so avoid rounded corners.
   ApplyCssToContext(context, "* { border-radius: 0px; }");
@@ -264,8 +263,7 @@ void NativeThemeGtk::PaintFrameTopArea(
     cc::PaintCanvas* canvas,
     State state,
     const gfx::Rect& rect,
-    const FrameTopAreaExtraParams& frame_top_area,
-    ColorScheme color_scheme) const {
+    const FrameTopAreaExtraParams& frame_top_area) const {
   auto context = GetStyleContextFromCss(frame_top_area.use_custom_frame
                                             ? "headerbar.header-bar.titlebar"
                                             : "menubar");

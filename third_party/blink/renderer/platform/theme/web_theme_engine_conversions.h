@@ -18,7 +18,7 @@ PLATFORM_EXPORT ui::NativeTheme::Part NativeThemePart(
 PLATFORM_EXPORT ui::NativeTheme::State NativeThemeState(
     WebThemeEngine::State state);
 
-PLATFORM_EXPORT ui::NativeTheme::ColorScheme NativeColorScheme(
+PLATFORM_EXPORT ui::NativeTheme::PreferredColorScheme NativeColorScheme(
     mojom::blink::ColorScheme color_scheme);
 
 }  // namespace blink

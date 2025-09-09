@@ -132,8 +132,7 @@ void NativeThemeAura::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,
     const gfx::Size& size,
-    const MenuBackgroundExtraParams& menu_background,
-    ColorScheme color_scheme) const {
+    const MenuBackgroundExtraParams& menu_background) const {
   DCHECK(color_provider);
   // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   SkColor4f color =
@@ -164,32 +163,31 @@ void NativeThemeAura::PaintArrowButton(
     const gfx::Rect& rect,
     Part direction,
     State state,
-    ColorScheme color_scheme,
+    bool dark_mode,
     bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   SkColor bg_color =
-      GetControlColor(kScrollbarArrowBackground, color_scheme, color_provider);
+      GetControlColor(kScrollbarArrowBackground, dark_mode, color_provider);
   // Aura-win uses slightly different arrow colors.
   SkColor arrow_color = gfx::kPlaceholderColor;
   switch (state) {
     case kDisabled:
-      arrow_color = GetArrowColor(state, color_scheme, color_provider);
+      arrow_color = GetArrowColor(state, dark_mode, color_provider);
       break;
     case kHovered:
-      bg_color = GetControlColor(kScrollbarArrowBackgroundHovered, color_scheme,
+      bg_color = GetControlColor(kScrollbarArrowBackgroundHovered, dark_mode,
                                  color_provider);
       arrow_color =
-          GetControlColor(kScrollbarArrowHovered, color_scheme, color_provider);
+          GetControlColor(kScrollbarArrowHovered, dark_mode, color_provider);
       break;
     case kNormal:
-      arrow_color =
-          GetControlColor(kScrollbarArrow, color_scheme, color_provider);
+      arrow_color = GetControlColor(kScrollbarArrow, dark_mode, color_provider);
       break;
     case kPressed:
-      bg_color = GetControlColor(kScrollbarArrowBackgroundPressed, color_scheme,
+      bg_color = GetControlColor(kScrollbarArrowBackgroundPressed, dark_mode,
                                  color_provider);
       arrow_color =
-          GetControlColor(kScrollbarArrowPressed, color_scheme, color_provider);
+          GetControlColor(kScrollbarArrowPressed, dark_mode, color_provider);
       break;
     case kNumStates:
       break;
@@ -256,7 +254,6 @@ void NativeThemeAura::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    ColorScheme color_scheme,
     bool in_forced_colors) const {
   // Overlay Scrollbar should never paint a scrollbar track.
   DCHECK(!use_overlay_scrollbar());
@@ -264,7 +261,7 @@ void NativeThemeAura::PaintScrollbarTrack(
   const SkColor track_color =
       extra_params.track_color.has_value()
           ? extra_params.track_color.value()
-          : GetControlColor(kScrollbarTrack, color_scheme, color_provider);
+          : GetControlColor(kScrollbarTrack, {}, color_provider);
   flags.setColor(track_color);
   canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
 }
@@ -275,8 +272,7 @@ void NativeThemeAura::PaintScrollbarThumb(
     Part part,
     State state,
     const gfx::Rect& rect,
-    const ScrollbarThumbExtraParams& extra_params,
-    ColorScheme color_scheme) const {
+    const ScrollbarThumbExtraParams& extra_params) const {
   // Do not paint if state is disabled.
   if (state == kDisabled) {
     return;
@@ -377,12 +373,11 @@ void NativeThemeAura::PaintScrollbarCorner(
     const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const ScrollbarTrackExtraParams& extra_params,
-    ColorScheme color_scheme) const {
+    const ScrollbarTrackExtraParams& extra_params) const {
   // Overlay Scrollbar should never paint a scrollbar corner.
   DCHECK(!use_overlay_scrollbar());
-  const SkColor default_corner_color = GetControlColor(
-      kScrollbarCornerControlColorId, color_scheme, color_provider);
+  const SkColor default_corner_color =
+      GetControlColor(kScrollbarCornerControlColorId, {}, color_provider);
 
   cc::PaintFlags flags;
   flags.setColor(extra_params.track_color.value_or(default_corner_color));
