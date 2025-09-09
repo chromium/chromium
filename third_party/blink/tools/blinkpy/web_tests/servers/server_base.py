@@ -33,7 +33,6 @@ import socket
 import sys
 import tempfile
 
-import six
 
 _log = logging.getLogger(__name__)
 

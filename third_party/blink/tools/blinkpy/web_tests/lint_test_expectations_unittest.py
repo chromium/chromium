@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import io
 import json
 import optparse
 import textwrap
@@ -39,8 +40,6 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import lint_test_expectations
 from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
-
-from six import StringIO
 
 
 class FakePort(object):
@@ -659,7 +658,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 class MainTest(unittest.TestCase):
 
     def setUp(self):
-        self.stderr = StringIO()
+        self.stderr = io.StringIO()
 
     def test_success(self):
         with patch.object(lint_test_expectations,

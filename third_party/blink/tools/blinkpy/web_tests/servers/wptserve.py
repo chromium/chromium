@@ -7,8 +7,6 @@ import datetime
 import json
 import logging
 
-import six
-
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.servers import server_base
 
