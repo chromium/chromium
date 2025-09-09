@@ -462,7 +462,8 @@ WebrtcAudioModule* WebrtcTransport::audio_module() {
 std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
     const std::string& name) {
   webrtc::DataChannelInit config;
-  config.reliable = true;
+  // We don't set maxRetransmits or maxRetransmitTime,
+  // so the channel is reliable.
   auto result = peer_connection()->CreateDataChannelOrError(name, &config);
   if (!result.ok()) {
     LOG(ERROR) << "CreateDataChannelOrError() failed: "
@@ -1013,8 +1014,8 @@ void WebrtcTransport::OnIceCandidate(const webrtc::IceCandidate* candidate) {
 
   std::unique_ptr<XmlElement> candidate_element(
       new XmlElement(QName(kTransportNamespace, "candidate")));
-  std::string candidate_str;
-  if (!candidate->ToString(&candidate_str)) {
+  std::string candidate_str = candidate->ToString();
+  if (candidate_str.empty()) {
     LOG(ERROR) << "Failed to serialize local candidate.";
     return;
   }
