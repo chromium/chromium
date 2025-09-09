@@ -401,8 +401,6 @@ void FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
     return;
   }
   old_document_info->history_item = GetDocumentLoader()->GetHistoryItem();
-  old_document_info->had_sticky_activation_before_navigation =
-      frame_->HadStickyUserActivationBeforeNavigation();
   if (auto* scheduler = frame_->GetFrameScheduler()) {
     old_document_info->frame_scheduler_unreported_task_time =
         scheduler->UnreportedTaskTime();

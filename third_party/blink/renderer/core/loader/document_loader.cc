@@ -2981,10 +2981,8 @@ void DocumentLoader::CommitNavigation() {
       (commit_reason_ == CommitReason::kRegular)
           ? ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()
           : nullptr;
-  bool had_sticky_activation_before_navigation =
-      old_document_info_for_commit &&
-      old_document_info_for_commit->had_sticky_activation_before_navigation;
-  if (had_sticky_activation_before_navigation != had_sticky_activation_) {
+  if (frame_->HadStickyUserActivationBeforeNavigation() !=
+      had_sticky_activation_) {
     frame_->SetHadStickyUserActivationBeforeNavigation(had_sticky_activation_);
     frame_->GetLocalFrameHostRemote()
         .HadStickyUserActivationBeforeNavigationChanged(had_sticky_activation_);
