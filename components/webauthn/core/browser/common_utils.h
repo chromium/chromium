@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBAUTH_COMMON_UTILS_H_
-#define CONTENT_BROWSER_WEBAUTH_COMMON_UTILS_H_
+#ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_COMMON_UTILS_H_
+#define COMPONENTS_WEBAUTHN_CORE_BROWSER_COMMON_UTILS_H_
 
 #include <string>
 
 #include "base/containers/span.h"
 
-namespace content {
+namespace webauthn {
 
 std::string Base64UrlEncodeOmitPadding(
     const base::span<const uint8_t> challenge);
 
-}  // namespace content
+}  // namespace webauthn
 
-#endif  // CONTENT_BROWSER_WEBAUTH_COMMON_UTILS_H_
+#endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_COMMON_UTILS_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webauth/common_utils.h"
+#include "components/webauthn/core/browser/common_utils.h"
 
 #include <string>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
 
-namespace content {
+namespace webauthn {
 
 std::string Base64UrlEncodeOmitPadding(
     const base::span<const uint8_t> challenge) {
@@ -19,4 +19,4 @@ std::string Base64UrlEncodeOmitPadding(
   return ret;
 }
 
-}  // namespace content
+}  // namespace webauthn

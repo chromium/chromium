@@ -63,6 +63,14 @@ source_set("passkey_model") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("common_utils") {
+  sources = [
+    "common_utils.cc",
+    "common_utils.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = []

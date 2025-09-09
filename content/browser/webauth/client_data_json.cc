@@ -12,7 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "content/browser/webauth/common_utils.h"
+#include "components/webauthn/core/browser/common_utils.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
@@ -94,7 +94,8 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   }
 
   ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncodeOmitPadding(*params.challenge)));
+  ret.append(
+      ToJSONString(webauthn::Base64UrlEncodeOmitPadding(*params.challenge)));
 
   ret.append(R"(,"origin":)");
   ret.append(ToJSONString(params.origin.Serialize()));
@@ -179,7 +180,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append("}");
     if (params.payment_options->browser_bound_public_key.has_value()) {
       ret.append(R"(,"browserBoundPublicKey":)");
-      ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
+      ret.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
           *params.payment_options->browser_bound_public_key)));
     }
     ret.append("}");
@@ -187,7 +188,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
              params.payment_options->browser_bound_public_key.has_value() &&
              params.type == ClientDataRequestType::kWebAuthnCreate) {
     ret.append(R"(,"payment":{"browserBoundPublicKey":)");
-    ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
+    ret.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
         *params.payment_options->browser_bound_public_key)));
     ret.append("}");
   }
