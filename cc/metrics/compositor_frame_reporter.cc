@@ -197,7 +197,7 @@ void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
 // For measuring the queuing issues with GenerationToBrowserMain we are only
 // looking at scrolling events. So we will not create a histogram that
 // encompasses all EventMetrics::EventType options.
-constexpr int kMaxGestureScrollHistogramIndex = 5;
+constexpr int kMaxGestureScrollHistogramIndex = 6;
 int GetGestureScrollIndex(EventMetrics::EventType type) {
   switch (type) {
     case EventMetrics::EventType::kFirstGestureScrollUpdate:
@@ -210,8 +210,10 @@ int GetGestureScrollIndex(EventMetrics::EventType type) {
       return 3;
     case EventMetrics::EventType::kInertialGestureScrollUpdate:
       return 4;
+    case EventMetrics::EventType::kInertialGestureScrollEnd:
+      return 5;
     default:
-      // We are only interested in 5 categories of EventType for scroll input
+      // We are only interested in 6 categories of EventType for scroll input
       NOTREACHED();
   }
 }

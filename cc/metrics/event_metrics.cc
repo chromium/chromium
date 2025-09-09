@@ -107,6 +107,9 @@ constexpr auto kInterestingEvents = std::to_array<InterestingEvents>({
                                         .count = kScrollHistogramBucketCount,
                                         .version_suffix = "2"}}),
     EVENT_TYPE(MouseMoved, ui::EventType::kMouseMoved),
+    EVENT_TYPE(InertialGestureScrollEnd,
+               ui::EventType::kGestureScrollEnd,
+               .scroll_is_inertial = true),
 #undef EVENT_TYPE
 });
 static_assert(std::size(kInterestingEvents) ==

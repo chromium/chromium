@@ -65,6 +65,7 @@ constexpr std::array<
         "Ash.EventLatency.GesturePinchUpdate.TotalLatency",
         "Ash.EventLatency.InertialGestureScrollUpdate.TotalLatency",
         "Ash.EventLatency.MouseMoved.TotalLatency",
+        "Ash.EventLatency.InertialGestureScrollEnd.TotalLatency",
     }};
 
 static_assert(kEventLatencyHistogramNames.size() ==

@@ -65,7 +65,8 @@ class CC_EXPORT EventMetrics {
     kGesturePinchUpdate,
     kInertialGestureScrollUpdate,
     kMouseMoved,
-    kMaxValue = kMouseMoved,
+    kInertialGestureScrollEnd,
+    kMaxValue = kInertialGestureScrollEnd,
   };
 
   // Stages of event dispatch in different processes/threads.

@@ -32,6 +32,9 @@ chromium-metrics-reviews@google.com.
       summary="gesture-scroll-update events that are non-inertial (i.e. not
                generated due to a user fling) and not the first one in a
                scroll sequence"/>
+  <variant name="InertialGestureScrollEnd"
+      summary="gesture-scroll-end events that are inertial (i.e. generated
+               due to a user fling)"/>
   <variant name="InertialGestureScrollUpdate"
       summary="gesture-scroll-update events that are inertial (i.e. generated
                due to a user fling)"/>
@@ -955,6 +958,9 @@ chromium-metrics-reviews@google.com.
                  Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4.
                  This tracks GestureScrollBegin"/>
     <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
+    <variant name="InertialGestureScrollEnd"
+        summary="gesture-scroll-end events that are inertial (i.e. generated
+                 due to a user fling)"/>
     <variant name="InertialGestureScrollUpdate"
         summary="gesture-scroll-update events that are inertial (i.e.
                  generated due to a user fling)"/>

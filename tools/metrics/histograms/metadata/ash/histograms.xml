@@ -267,6 +267,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GestureTapDown"/>
   <variant name="GestureTapUnconfirmed"/>
   <variant name="GestureTwoFingerTap"/>
+  <variant name="InertialGestureScrollEnd"/>
   <variant name="InertialGestureScrollUpdate"/>
   <variant name="KeyPressed"/>
   <variant name="KeyReleased"/>
