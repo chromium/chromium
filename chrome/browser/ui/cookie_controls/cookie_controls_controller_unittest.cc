@@ -1722,6 +1722,35 @@ TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
   incognito_cookie_controls()->Update(web_contents());
 }
 
+TEST_F(CookieControlsUserBypassIncognitoTest, UpdateIconOnIppPrefChange) {
+  profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
+  NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(web_contents());
+
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest, UpdateIconOnFppPrefChange) {
+  profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    true);
+  NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(web_contents());
+
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    false);
+}
 const char kUMAFppActiveDisableProtections[] =
     "TrackingProtections.Bubble.FppActive.DisableProtections";
 const char kUMAFppActiveEnableProtections[] =
