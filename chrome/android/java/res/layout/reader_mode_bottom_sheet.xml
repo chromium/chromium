@@ -36,10 +36,14 @@ found in the LICENSE file.
         android:paddingVertical="16dp"
         android:gravity="center_vertical"/>
 
-    <FrameLayout
-        android:id="@+id/controls_container"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:id="@+id/controls_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+    </ScrollView>
 
 </org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetView>
