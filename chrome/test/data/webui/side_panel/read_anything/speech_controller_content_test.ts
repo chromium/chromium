@@ -102,25 +102,33 @@ suite('SpeechController', () => {
     });
 
     test('initializes speech tree after content is set', () => {
+      // TODO:crbug.com/440400392- Support preprocessing when TS Segmentation
+      // is enabled.
+      const expectedInitCalls =
+          chrome.readingMode.isTsTextSegmentationEnabled ? 0 : 1;
       speechController.initializeSpeechTree();
       // Before any content has been set, init is not called.
       assertEquals(0, readAloudModel.getCallCount('init'));
 
       setSimpleAxTreeWithText('hello');
-      assertEquals(1, readAloudModel.getCallCount('init'));
+      assertEquals(expectedInitCalls, readAloudModel.getCallCount('init'));
 
       // After the tree has already been initialized, init is not called again.
       speechController.initializeSpeechTree();
-      assertEquals(1, readAloudModel.getCallCount('init'));
+      assertEquals(expectedInitCalls, readAloudModel.getCallCount('init'));
     });
 
     test('updateContent initializes speech', () => {
+      // TODO:crbug.com/440400392- Support preprocessing when TS Segmentation
+      // is enabled.
+      const expectedInitCalls =
+          chrome.readingMode.isTsTextSegmentationEnabled ? 0 : 1;
       setSimpleAxTreeWithText('hello');
       readAloudModel.setInitialized(false);
-      assertEquals(1, readAloudModel.getCallCount('init'));
+      assertEquals(expectedInitCalls, readAloudModel.getCallCount('init'));
 
       app.updateContent();
-      assertEquals(2, readAloudModel.getCallCount('init'));
+      assertEquals(expectedInitCalls * 2, readAloudModel.getCallCount('init'));
     });
   });
 

@@ -77,4 +77,43 @@ suite('TextSegmenter', () => {
     textSegmenter.updateLanguage('fr-fr');
     assertEquals(2, textSegmenter.getWordCount(text));
   });
+
+  test('getSentences', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+
+    const sentence1 = 'I don\'t think you\'re ready for the takedown. ';
+    const sentence2 =
+        'Break you into peices in the world of pain \'cause you\'re all ' +
+        'the same. ';
+    const sentence3 = 'Yeah, it\'s a takedown.';
+    const text = sentence1 + sentence2 + sentence3;
+    const sentences = textSegmenter.getSentences(text);
+
+    assertEquals(3, sentences.length);
+    assertEquals(sentence1, sentences[0]!.text);
+    assertEquals(0, sentences[0]!.index);
+
+    assertEquals(sentence2, sentences[1]!.text);
+    assertEquals(sentence1.length, sentences[1]!.index);
+
+    assertEquals(sentence3, sentences[2]!.text);
+    assertEquals(sentence1.length + sentence2.length, sentences[2]!.index);
+  });
+
+  test('getSentences in scriptio continua language', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+    textSegmenter.updateLanguage('jp');
+
+    const sentence1 = '市場に行ってフルーツをたくさん買ったよ？';
+    const sentence2 = 'すごく美味しいよ。';
+    const text = sentence1 + sentence2;
+    const sentences = textSegmenter.getSentences(text);
+
+    assertEquals(2, sentences.length);
+    assertEquals(sentence1, sentences[0]!.text);
+    assertEquals(0, sentences[0]!.index);
+
+    assertEquals(sentence2, sentences[1]!.text);
+    assertEquals(sentence1.length, sentences[1]!.index);
+  });
 });

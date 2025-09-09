@@ -127,10 +127,29 @@ class DomReadAloudNodeImpl extends DomReadAloudNode {
   }
 }
 
-
 // A segment of text within a single node.
 export interface Segment {
   node: ReadAloudNode;
   start: number;
   length: number;
+}
+
+// Represents a textual sentence.
+export interface Sentence {
+  text: string;
+  index: number;
+}
+
+// Represents a segmented sentence to be used with read aloud that contains
+// mappings to ReadAloudNodes.
+export interface SegmentedSentence {
+  sentenceInfo: Sentence;
+  segments: Segment[];
+}
+
+// A representation of a node linked with its starting offset within a broader
+// block of text
+export interface OffsetByNode {
+  node: DomReadAloudNode;
+  startOffset: number;
 }

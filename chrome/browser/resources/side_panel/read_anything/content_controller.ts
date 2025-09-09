@@ -129,7 +129,8 @@ export class ContentController {
     // which can be computationally expensive.
     // This needs to be done after the text node is created and added to the
     // node store.
-    if (chrome.readingMode.isReadAloudEnabled) {
+    if (chrome.readingMode.isReadAloudEnabled &&
+        !chrome.readingMode.isTsTextSegmentationEnabled) {
       this.speechController_.initializeSpeechTree(textNode);
     }
 

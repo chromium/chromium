@@ -351,6 +351,8 @@ export class SpeechController {
     }
 
     if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      // TODO: crbug.com/440400392- The speech tree should also be initialized
+      // before the play button is pressed.
       this.initializeSpeechTree(context);
     } else {
       this.initializeSpeechTree();

@@ -162,11 +162,14 @@ export class ReadAloudHighlighter {
       return highlight;
     }
 
-    if (this.wordBoundaries_.notSupported() ||
+    if (chrome.readingMode.isTsTextSegmentationEnabled ||
+        this.wordBoundaries_.notSupported() ||
         isEspeak(this.voiceLanguageController_.getCurrentVoice())) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.
+      // Until ts_model_impl supports word highlighting, always fallback to
+      // sentence highlighting.
       return chrome.readingMode.sentenceHighlighting;
     }
 
