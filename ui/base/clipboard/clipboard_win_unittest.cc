@@ -161,38 +161,25 @@ TEST_F(ClipboardWinTest, InvalidBitmapDoesNotCrash) {
   const size_t kHeaderSize = sizeof(BITMAPINFOHEADER);
   const size_t kPixelBytes = 4;
 
-  HGLOBAL hmem_handle =
-      ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, kHeaderSize + kPixelBytes);
-  ASSERT_TRUE(hmem_handle);
+  BITMAPINFOHEADER hdr = {};
+  hdr.biSize = sizeof(BITMAPINFOHEADER);
+  hdr.biWidth = kWidth;
+  hdr.biHeight = kHeight;
+  hdr.biPlanes = 1;
+  hdr.biBitCount = 0;  // Abnormal value under test.
+  hdr.biCompression = BI_RGB;
+
+  std::vector<uint8_t> invalid_bitmap_data(kHeaderSize + kPixelBytes, 0);
+  base::as_writable_byte_span(invalid_bitmap_data)
+      .first(sizeof(BITMAPINFOHEADER))
+      .copy_from(base::byte_span_from_ref(hdr));
 
   {
-    base::win::ScopedHGlobal<BITMAPINFOHEADER*> hmem(hmem_handle);
-    BITMAPINFOHEADER* hdr = hmem.data();
-    ASSERT_TRUE(hdr);
-
-    hdr->biSize = sizeof(BITMAPINFOHEADER);
-    hdr->biWidth = kWidth;
-    hdr->biHeight = kHeight;
-    hdr->biPlanes = 1;
-    hdr->biBitCount = 0;  // Abnormal value under test.
-    hdr->biCompression = BI_RGB;
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    // Writing an invalid bitmap to the clipboard.
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(invalid_bitmap_data));
   }
-
-  // Open clipboard and set CF_DIB.
-  // TODO(Guohui Xie): consider reuse retry logic in ScopedClipboard.
-  bool opened = false;
-  for (int attempts = 0; attempts < 5; ++attempts) {
-    if (::OpenClipboard(nullptr)) {
-      opened = true;
-      break;
-    }
-    ::Sleep(5);
-  }
-  ASSERT_TRUE(opened);
-  ::EmptyClipboard();
-  // Ownership of hmem_handle is transferred to the system on success.
-  ASSERT_NE(::SetClipboardData(CF_DIB, hmem_handle), nullptr);
-  ::CloseClipboard();
 
   // Reading PNG should not crash.
   base::test::TestFuture<const std::vector<uint8_t>&> png_future;

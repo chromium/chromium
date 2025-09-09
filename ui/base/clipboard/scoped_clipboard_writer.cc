@@ -208,6 +208,16 @@ void ScopedClipboardWriter::WritePickledData(
   raw_objects_.insert({format, std::move(raw_data)});
 }
 
+void ScopedClipboardWriter::WriteRawDataForTest(
+    const ClipboardFormatType& format,
+    std::vector<uint8_t> data) {
+  RecordWrite(ClipboardFormatMetric::kCustomData);
+  Clipboard::RawData raw_data;
+  raw_data.format = format;
+  raw_data.data = std::move(data);
+  raw_objects_.insert({format, std::move(raw_data)});
+}
+
 void ScopedClipboardWriter::WriteData(std::u16string_view format,
                                       mojo_base::BigBuffer data) {
   RecordWrite(ClipboardFormatMetric::kData);
