@@ -74,9 +74,10 @@ class ModelExecutionFeaturesController
   ModelExecutionFeaturesController& operator=(
       const ModelExecutionFeaturesController&) = delete;
 
-  // Returns true if the opt-in setting should be shown for this profile for
+  // Returns the visibility state of the opt-in setting for this profile for the
   // given `feature`. This should only be called by settings UX.
-  bool IsSettingVisible(UserVisibleFeatureKey feature) const;
+  SettingsVisibilityResult GetSettingsVisibility(
+      UserVisibleFeatureKey feature) const;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on

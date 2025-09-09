@@ -30,37 +30,6 @@ namespace optimization_guide {
 
 namespace {
 
-// Util class for recording the construction and validation of Settings
-// Visibility histogram.
-class ScopedSettingsVisibilityResultHistogramRecorder {
- public:
-  explicit ScopedSettingsVisibilityResultHistogramRecorder() = default;
-
-  ~ScopedSettingsVisibilityResultHistogramRecorder() {
-    CHECK(is_valid_);
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.SettingsVisibilityResult.",
-             GetStringNameForModelExecutionFeature(feature_)}),
-        result_);
-  }
-
-  void SetValid() { is_valid_ = true; }
-
-  void SetResult(
-      UserVisibleFeatureKey feature,
-      ModelExecutionFeaturesController::SettingsVisibilityResult result) {
-    is_valid_ = true;
-    feature_ = feature;
-    result_ = result;
-  }
-
- private:
-  bool is_valid_ = false;
-  UserVisibleFeatureKey feature_;
-  ModelExecutionFeaturesController::SettingsVisibilityResult result_;
-};
-
 enum class FeatureCurrentlyEnabledResult {
   kUnknown = 0,
   // Not enabled because user is not signed-in.
@@ -326,30 +295,22 @@ ModelExecutionFeaturesController::ShouldHideHistorySearch() const {
 #endif
 }
 
-bool ModelExecutionFeaturesController::IsSettingVisible(
+ModelExecutionFeaturesController::SettingsVisibilityResult
+ModelExecutionFeaturesController::GetSettingsVisibility(
     UserVisibleFeatureKey feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  ScopedSettingsVisibilityResultHistogramRecorder metrics_recorder;
 
   switch (
       GetCurrentUserValidityResult(feature, /*skip_enterprise_check=*/true)) {
     case ModelExecutionFeaturesController::UserValidityResult::
         kInvalidUnsignedUser:
-      metrics_recorder.SetResult(
-          feature, SettingsVisibilityResult::kNotVisibleUnsignedUser);
-      return false;
+      return SettingsVisibilityResult::kNotVisibleUnsignedUser;
     case ModelExecutionFeaturesController::UserValidityResult::
         kInvalidEnterprisePolicy:
-      metrics_recorder.SetResult(
-          feature, SettingsVisibilityResult::kNotVisibleEnterprisePolicy);
-      return false;
+      return SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
     case ModelExecutionFeaturesController::UserValidityResult::
         kInvalidModelExecutionCapability:
-      metrics_recorder.SetResult(
-          feature,
-          SettingsVisibilityResult::kNotVisibleModelExecutionCapability);
-      return false;
+      return SettingsVisibilityResult::kNotVisibleModelExecutionCapability;
     case ModelExecutionFeaturesController::UserValidityResult::kValid:
       break;
   }
@@ -358,26 +319,20 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
   if (feature == UserVisibleFeatureKey::kHistorySearch) {
     SettingsVisibilityResult result = ShouldHideHistorySearch();
     if (result != SettingsVisibilityResult::kUnknown) {
-      metrics_recorder.SetResult(feature, result);
-      return false;
+      return result;
     }
   }
 
   // If the setting is currently enabled by user, then we should show the
   // setting to the user regardless of any other checks.
   if (ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
-    metrics_recorder.SetResult(
-        feature, SettingsVisibilityResult::kVisibleFeatureAlreadyEnabled);
-    return true;
+    return SettingsVisibilityResult::kVisibleFeatureAlreadyEnabled;
   }
 
   bool result = base::FeatureList::IsEnabled(
       *features::internal::GetFeatureToUseToCheckSettingsVisibility(feature));
-  SettingsVisibilityResult visibility_result =
-      result ? SettingsVisibilityResult::kVisibleFieldTrialEnabled
-             : SettingsVisibilityResult::kNotVisibleFieldTrialDisabled;
-  metrics_recorder.SetResult(feature, visibility_result);
-  return result;
+  return result ? SettingsVisibilityResult::kVisibleFieldTrialEnabled
+                : SettingsVisibilityResult::kNotVisibleFieldTrialDisabled;
 }
 
 void ModelExecutionFeaturesController::AddObserver(

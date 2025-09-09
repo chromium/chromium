@@ -658,7 +658,20 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
   }
 #endif
 
-  return model_execution_features_controller_->IsSettingVisible(feature);
+  using SettingsVisibilityResult =
+      ModelExecutionFeaturesController::SettingsVisibilityResult;
+  const SettingsVisibilityResult visibility =
+      model_execution_features_controller_->GetSettingsVisibility(feature);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.SettingsVisibilityResult.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      visibility);
+
+  return visibility ==
+             SettingsVisibilityResult::kVisibleFeatureAlreadyEnabled ||
+         visibility == SettingsVisibilityResult::kVisibleFieldTrialEnabled;
 }
 
 void OptimizationGuideKeyedService::AddModelExecutionSettingsEnabledObserver(
