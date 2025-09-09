@@ -47,6 +47,8 @@ class NewTabPagePreloadPipelineManager
     return weak_factory_.GetWeakPtr();
   }
 
+  void StartPrefetch(const GURL& url);
+
   void StartPrerender(const GURL& url, content::PreloadingPredictor predictor);
 
   void ResetPrerender();

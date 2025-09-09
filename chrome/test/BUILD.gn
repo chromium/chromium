@@ -3455,6 +3455,7 @@ if (!is_android) {
       "../browser/prefetch/prefetch_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",
       "../browser/preloading/autocomplete_dictionary_preload_browsertest.cc",
+      "../browser/preloading/new_tab_page_preload/new_tab_page_preload_browsertest.cc",
       "../browser/preloading/prefetch/no_state_prefetch/prerender_nostate_prefetch_browsertest.cc",
       "../browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.cc",
       "../browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h",

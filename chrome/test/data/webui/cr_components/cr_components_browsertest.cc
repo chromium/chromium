@@ -202,22 +202,25 @@ IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeHueSliderDialog) {
           "mocha.run()");
 }
 
-class CrComponentsPrerenderTest : public CrComponentsMostVisitedTest {
+class CrComponentsPreloadingTest : public CrComponentsMostVisitedTest {
  protected:
-  CrComponentsPrerenderTest() {
-    const std::map<std::string, std::string> params = {
-        {"preconnect_start_delay_on_mouse_hover_ms", "0"}};
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kNewTabPageTriggerForPrerender2, params);
+  CrComponentsPreloadingTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+             features::kNewTabPageTriggerForPrerender2,
+             {{"preconnect_start_delay_on_mouse_hover_ms", "0"}}),
+         base::test::FeatureRefAndParams(
+             features::kNewTabPageTriggerForPrefetch,
+             {{"prefetch_start_delay_on_mouse_hover_ms", "0"}})},
+        {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrComponentsPrerenderTest, Prerendering) {
-  RunTest("cr_components/most_visited_test.js",
-          "runMochaSuite('Prerendering');");
+IN_PROC_BROWSER_TEST_F(CrComponentsPreloadingTest, Preloading) {
+  RunTest("cr_components/most_visited_test.js", "runMochaSuite('Preloading');");
 }
 
 class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {

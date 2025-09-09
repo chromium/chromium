@@ -234,6 +234,19 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
           chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
 }
 
+void MostVisitedHandler::PrefetchMostVisitedTile(
+    most_visited::mojom::MostVisitedTilePtr tile) {
+  if (!base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch)) {
+    page_handler_.ReportBadMessage(
+        "PrefetchMostVisitedTile is only expected to be called "
+        "when kNewTabPageTriggerForPrefetch is true.");
+    return;
+  }
+
+  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
+      ->StartPrefetch(tile->url);
+}
+
 void MostVisitedHandler::PreconnectMostVisitedTile(
     most_visited::mojom::MostVisitedTilePtr tile) {
   if (!base::FeatureList::IsEnabled(
