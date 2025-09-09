@@ -60,24 +60,27 @@ class DNRManifestTest : public testing::Test {
   // Loads the extension and verifies that the manifest info is correctly set
   // up without any warnings or errors.
   void LoadAndExpectSuccess(const std::vector<TestRulesetInfo>& info) {
-    std::vector<InstallWarning> warnings;
-    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-    warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
-    LoadAndExpectWarning(info, warnings);
+    LoadAndExpectWarning(info, std::nullopt);
   }
 
   // Loads the extension and verifies that the manifest info is correctly set
   // up, has no errors, but has provided warning.
   void LoadAndExpectWarning(
       const std::vector<TestRulesetInfo>& info,
-      const std::vector<InstallWarning>& expected_warnings) {
+      const std::optional<InstallWarning>& expected_warning) {
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
         Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension) << error;
     EXPECT_TRUE(error.empty());
-    EXPECT_EQ(expected_warnings, extension.get()->install_warnings());
+    if (expected_warning) {
+      ASSERT_EQ(1u, extension.get()->install_warnings().size());
+      EXPECT_EQ(expected_warning.value(),
+                extension.get()->install_warnings()[0]);
+    } else {
+      EXPECT_TRUE(extension.get()->install_warnings().empty());
+    }
 
     const std::vector<DNRManifestData::RulesetInfo>& rulesets =
         DNRManifestData::GetRulesets(*extension);
@@ -366,11 +369,8 @@ TEST_F(DNRManifestTest, DuplicateRulesetPath) {
   TestRulesetInfo ruleset_2("bar", "rules.json", base::Value::List());
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
-  std::vector<InstallWarning> warnings;
-  warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-  warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
-  warnings.emplace_back(errors::kDeclarativeNetRequestPathDuplicates);
-  LoadAndExpectWarning(rulesets, warnings);
+  LoadAndExpectWarning(
+      rulesets, InstallWarning(errors::kDeclarativeNetRequestPathDuplicates));
 }
 
 }  // namespace

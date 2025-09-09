@@ -68,6 +68,7 @@ class RulesetManagerTest : public DNRTestBase {
   using RequestActionType = RequestAction::Type;
 
   // Helper to create a composite matcher instance for the given |rules|.
+  // TODO(crbug.com/40804030): Remove has_background_script argument.
   void CreateMatcherForRules(
       const std::vector<TestRule>& rules,
       const std::string& extension_dirname,
@@ -79,9 +80,10 @@ class RulesetManagerTest : public DNRTestBase {
 
     // Create extension directory.
     ASSERT_TRUE(base::CreateDirectory(extension_dir));
-    ConfigFlag flags = has_background_script
-                           ? ConfigFlag::kConfig_HasBackgroundScript
-                           : ConfigFlag::kConfig_None;
+    auto flags = has_background_script
+                     ? (ConfigFlag::kConfig_HasBackgroundScript |
+                        ConfigFlag::kConfig_DEPRECATED_ManifestVersion2)
+                     : ConfigFlag::kConfig_None;
 
     constexpr char kRulesetID[] = "id";
     constexpr char kJSONRulesFilename[] = "rules_file.json";
@@ -430,7 +432,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_1 = last_loaded_extension();
     manager()->AddRuleset(extension_1->id(), std::move(matcher));
   }
@@ -448,7 +450,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_2", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_2 = last_loaded_extension();
     manager()->AddRuleset(extension_2->id(), std::move(matcher));
   }
@@ -699,8 +701,7 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
     std::vector<std::string> host_permissions = {"*://yahoo.com/*",
                                                  "*://example.com/*"};
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-        {rule}, "redirecting extension", &redirect_matcher, host_permissions,
-        false /* has_background_script */));
+        {rule}, "redirecting extension", &redirect_matcher, host_permissions));
   }
   std::string redirect_extension_id = last_loaded_extension()->id();
 
@@ -712,9 +713,8 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
     TestRule rule = CreateGenericRule();
     rule.id = kMinValidID;
     rule.condition->url_filter = std::string("example.com");
-    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-        {rule}, "blocking extension", &blocking_matcher,
-        {} /* host_permissions */, false /* has_background_script */));
+    ASSERT_NO_FATAL_FAILURE(
+        CreateMatcherForRules({rule}, "blocking extension", &blocking_matcher));
   }
   std::string blocking_extension_id = last_loaded_extension()->id();
 
@@ -833,9 +833,8 @@ TEST_P(RulesetManagerResponseHeadersTest, MergeModifyHeaderActions) {
   auto load_extension_with_rules = [this](const std::string& name,
                                           const std::vector<TestRule>& rules) {
     std::unique_ptr<CompositeMatcher> matcher;
-    ASSERT_NO_FATAL_FAILURE(
-        CreateMatcherForRules(rules, name, &matcher, {"<all_urls>"},
-                              /*has_background_script=*/false));
+    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+        rules, name, &matcher, {URLPattern::kAllUrlsPattern}));
     manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
   };
 
@@ -975,7 +974,7 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_1", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_1 = last_loaded_extension();
     manager()->AddRuleset(extension_1->id(), std::move(matcher));
   }
@@ -986,7 +985,7 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {}, "test extension_2", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_2 = last_loaded_extension();
   }
 
@@ -1068,8 +1067,7 @@ TEST_P(RulesetManagerTest, QueryTransformRemoveParamsTrailingQuestionMark) {
 
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_1", &matcher,
-        std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        std::vector<std::string>({URLPattern::kAllUrlsPattern})));
     extension = last_loaded_extension();
     manager()->AddRuleset(extension->id(), std::move(matcher));
   }

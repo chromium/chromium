@@ -291,31 +291,73 @@ base::Value::Dict CreateManifest(
     const std::vector<std::string>& hosts,
     unsigned flags,
     const std::string& extension_name) {
-  std::vector<std::string> permissions = hosts;
-
-  if (!(flags & kConfig_OmitDeclarativeNetRequestPermission))
-    permissions.push_back(kDeclarativeNetRequestPermission);
-
-  // These permissions are needed for some tests. TODO(karandeepb): Add a
-  // ConfigFlag for these.
-  permissions.push_back("webRequest");
-  permissions.push_back("webRequestBlocking");
-
-  if (flags & kConfig_HasFeedbackPermission)
-    permissions.push_back(kFeedbackAPIPermission);
-
-  if (flags & kConfig_HasActiveTab)
-    permissions.push_back("activeTab");
-
-  if (flags & kConfig_HasDelarativeNetRequestWithHostAccessPermission)
-    permissions.push_back("declarativeNetRequestWithHostAccess");
-
-  std::vector<std::string> background_scripts;
-  if (flags & kConfig_HasBackgroundScript)
-    background_scripts.push_back("background.js");
-
   base::Value::Dict manifest_builder;
 
+  bool is_manifest_version_2 = flags & kConfig_DEPRECATED_ManifestVersion2;
+
+  // Set 'manifest_version' manifest entry.
+  if (is_manifest_version_2) {
+    manifest_builder.Set(keys::kManifestVersion, 2);
+  } else {
+    manifest_builder.Set(keys::kManifestVersion, 3);
+  }
+
+  // Set 'permissions' and 'host_permissions' manifest entries.
+  std::vector<std::string> permissions;
+  if (!hosts.empty()) {
+    if (is_manifest_version_2) {
+      permissions = hosts;
+    } else {
+      manifest_builder.Set(keys::kHostPermissions, ToValue(hosts));
+    }
+  }
+  if (flags & kConfig_DEPRECATED_HasWebRequestBlockingPermission) {
+    // 'webRequestBlocking' requires Manifest Version 2.
+    DCHECK(is_manifest_version_2);
+    permissions.push_back("webRequestBlocking");
+  }
+  if (flags & kConfig_HasWebRequestPermission) {
+    permissions.push_back("webRequest");
+  }
+  if (!(flags & kConfig_OmitDeclarativeNetRequestPermission)) {
+    permissions.push_back(kDeclarativeNetRequestPermission);
+  }
+  if (flags & kConfig_HasFeedbackPermission) {
+    permissions.push_back(kFeedbackAPIPermission);
+  }
+  if (flags & kConfig_HasActiveTab) {
+    permissions.push_back("activeTab");
+  }
+  if (flags & kConfig_HasDelarativeNetRequestWithHostAccessPermission) {
+    permissions.push_back("declarativeNetRequestWithHostAccess");
+  }
+  if (!permissions.empty()) {
+    manifest_builder.Set(keys::kPermissions, ToValue(std::move(permissions)));
+  }
+
+  // Set 'action' manifest key to empty object to activate chrome.action API.
+  if (flags & kConfig_HasAction) {
+    // Manifest Version 2 does not support 'action' manifest key.
+    DCHECK(!is_manifest_version_2);
+    manifest_builder.Set(keys::kAction, base::Value::Dict());
+  }
+
+  // Set 'background' manifest entry.
+  if (flags & kConfig_HasBackgroundScript) {
+    if (is_manifest_version_2) {
+      // Set 'background.scripts' manifest entry on Manifest Version 2.
+      manifest_builder.SetByDottedPath(
+          keys::kBackgroundScripts,
+          ToValue(std::vector<std::string>({"background.js"})));
+    } else {
+      // Set 'background.service_worker' manifest entry on modern manifest
+      // version.
+      manifest_builder.SetByDottedPath(keys::kBackgroundServiceWorkerScript,
+                                       "background.js");
+    }
+  }
+
+  // Set 'declarative_net_request.rule_resources' manifest entry.
   if (flags & kConfig_OmitDeclarativeNetRequestKey) {
     DCHECK(ruleset_info.empty());
   } else {
@@ -325,6 +367,7 @@ base::Value::Dict CreateManifest(
                                 ToValue(ruleset_info)));
   }
 
+  // Set 'sandbox.pages' manifest entry.
   if (flags & kConfig_HasManifestSandbox) {
     manifest_builder.SetByDottedPath(
         keys::kSandboxedPages,
@@ -334,12 +377,7 @@ base::Value::Dict CreateManifest(
   // std::move() to trigger rvalue overloads.
   return std::move(manifest_builder)
       .Set(keys::kName, extension_name)
-      .Set(keys::kPermissions, ToValue(permissions))
-      .Set(keys::kVersion, "1.0")
-      .Set(keys::kManifestVersion, 2)
-      .Set("background",
-           base::Value::Dict().Set("scripts", ToValue(background_scripts)))
-      .Set(keys::kBrowserAction, base::Value::Dict());
+      .Set(keys::kVersion, "1.0");
 }
 
 base::Value::List ToListValue(const std::vector<std::string>& vec) {

@@ -490,11 +490,13 @@ class DeclarativeNetRequestBrowserTest
       EXPECT_FALSE(IsNavigationBlocked(url)) << url;
   }
 
+  // TODO(crbug.com/40804030): Update function name to reflect it's used in
+  // MV3-style background service workers and not MV2-style background pages.
   std::string ExecuteScriptInBackgroundPageAndReturnString(
       const ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kActivate) {
+          browsertest_util::ScriptUserActivation::kDontActivate) {
     base::Value result = ExecuteScriptInBackgroundPage(extension_id, script,
                                                        script_user_activation);
     return result.is_string() ? result.GetString() : "";
@@ -3468,10 +3470,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       profile(), base::WrapRefCounted(extension));
   scripting_modifier.SetWithholdHostPermissions(true);
 
-  EXPECT_EQ(
-      extension->permissions_data()->active_permissions().explicit_hosts(),
-      URLPatternSet(
-          {URLPattern(URLPattern::SCHEME_CHROMEUI, "chrome://favicon/*")}));
+  EXPECT_TRUE(extension->permissions_data()
+                  ->active_permissions()
+                  .explicit_hosts()
+                  .is_empty());
 
   // Request made by index.html to script.js should be blocked despite the
   // extension having no active host permissions to the request.
@@ -3821,7 +3823,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
   // Load the extension with a background script so scripts can be run from its
   // generated background page.
-  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasWebRequestPermission);
 
   TestRule rule = CreateGenericRule();
   rule.condition->url_filter = "||example.com";
@@ -3869,7 +3872,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestPriority) {
   // Load the extension with a background script so scripts can be run from its
   // generated background page.
-  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+  set_config_flags(
+      ConfigFlag::kConfig_HasBackgroundScript |
+      ConfigFlag::kConfig_HasWebRequestPermission |
+      ConfigFlag::kConfig_DEPRECATED_HasWebRequestBlockingPermission |
+      ConfigFlag::kConfig_DEPRECATED_ManifestVersion2);
 
   GURL url = embedded_test_server()->GetURL("example.com",
                                             "/pages_with_script/index.html");
@@ -4041,13 +4048,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
 // Test that the extension cannot retrieve the number of actions matched
 // from the badge text by calling chrome.browserAction.getBadgeText, unless
 // it has the declarativeNetRequestFeedback permission or activeTab is granted
-// for the tab. Not supported on Android because Android only supports manifest
-// V3, which does not support chrome.browserAction.
+// for the tab. Not supported on Android because Android does not support
+// ui_test_utils::NavigateToURL().
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        GetBadgeTextForActionsMatched) {
   auto query_badge_text = [this](const ExtensionId& extension_id, int tab_id) {
     static constexpr char kBadgeTextQueryScript[] = R"(
-        chrome.browserAction.getBadgeText({tabId: %d}, badgeText => {
+        chrome.action.getBadgeText({tabId: %d}, badgeText => {
           chrome.test.sendScriptResult(badgeText);
         });
       )";
@@ -4063,7 +4070,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   rule.action->type = "block";
 
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
-                   ConfigFlag::kConfig_HasActiveTab);
+                   ConfigFlag::kConfig_HasActiveTab |
+                   ConfigFlag::kConfig_HasAction);
 
   // Create the first extension.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
@@ -4080,7 +4088,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   rule_2.action->type = "block";
 
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
-                   ConfigFlag::kConfig_HasFeedbackPermission);
+                   ConfigFlag::kConfig_HasFeedbackPermission |
+                   ConfigFlag::kConfig_HasAction);
 
   // Create the second extension with the feedback permission.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
@@ -5189,7 +5198,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // generated background page. Also grant the feedback permission for the
   // extension so it has access to the getMatchedRules API function.
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
-                   ConfigFlag::kConfig_HasFeedbackPermission);
+                   ConfigFlag::kConfig_HasFeedbackPermission |
+                   ConfigFlag::kConfig_DEPRECATED_ManifestVersion2);
 
   // Ensure that GetMatchedRules is being throttled.
   DeclarativeNetRequestGetMatchedRulesFunction::

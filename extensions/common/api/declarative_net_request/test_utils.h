@@ -212,6 +212,20 @@ enum ConfigFlag {
 
   // Whether the extension has an manifest sandbox page entry.
   kConfig_HasManifestSandbox = 1 << 7,
+
+  // Whether the extension has a manifest action (popup) entry. This is needed
+  // to activate chrome.action API.
+  kConfig_HasAction = 1 << 8,
+
+  // Whether the "webRequest" permission should be included.
+  kConfig_HasWebRequestPermission = 1 << 9,
+
+  // Whether the "webRequestBlocking" permission should be included. Requires
+  // MV2 flag below.
+  kConfig_DEPRECATED_HasWebRequestBlockingPermission = 1 << 10,
+
+  // Whether to use deprecated Manifest Version 2.
+  kConfig_DEPRECATED_ManifestVersion2 = 1 << 11,
 };
 
 // Describes a single extension ruleset.
