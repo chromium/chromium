@@ -631,6 +631,37 @@ public class MessageBannerRenderTest {
         mRenderTestRule.render(view, "message_banner_with_close_button");
     }
 
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    public void testNoTitle() throws Exception {
+        Drawable drawable =
+                ApiCompatibilityUtils.getDrawable(
+                        sActivity.getResources(), android.R.drawable.ic_delete);
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, drawable)
+                        .with(MessageBannerProperties.DESCRIPTION, "Description")
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view = inflateMessageViewOnUiThread();
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params =
+                new LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        sActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.message_banner_main_content_height));
+
+        View mainContent = getMainContent(view);
+        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mainContent, params));
+        mRenderTestRule.render(mainContent, "message_banner_no_title");
+    }
+
     private View getMainContent(MessageBannerView message) {
         View mainContent = message.getMainContentForTesting();
         ((ViewGroup) mainContent.getParent()).removeView(mainContent);

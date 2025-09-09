@@ -118,6 +118,7 @@ public class MessageBannerView extends RelativeLayout {
     }
 
     void setTitle(String title) {
+        mTitle.setVisibility(TextUtils.isEmpty(title) ? GONE : VISIBLE);
         mTitle.setText(title);
         if (mOnTitleChanged != null) mOnTitleChanged.run();
         if (mOverrideSecondaryIconContentDescription
