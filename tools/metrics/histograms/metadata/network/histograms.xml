@@ -5215,7 +5215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.EmptyTokenCache2"
-    enum="IpProtectionProxyLayer" expires_after="2026-01-07">
+    enum="IpProtectionProxyLayer" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -5254,7 +5254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
-    enum="BooleanSuccess" expires_after="2026-01-07">
+    enum="BooleanSuccess" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -5289,7 +5289,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.GetProbabilisticRevealTokensResult"
-    enum="ProbabilisticRevealTokensResult" expires_after="2026-01-07">
+    enum="ProbabilisticRevealTokensResult" expires_after="2026-03-08">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -5370,7 +5370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.OAuthTokenFetchTime" units="ms"
-    expires_after="2026-01-07">
+    expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
@@ -5587,7 +5587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.TryGetAuthTokensErrors"
-    enum="IpProtectionTokenBatchRequestError" expires_after="2026-01-07">
+    enum="IpProtectionTokenBatchRequestError" expires_after="2026-03-08">
   <owner>linxinan@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>

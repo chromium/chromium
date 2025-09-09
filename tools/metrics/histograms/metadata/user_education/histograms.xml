@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

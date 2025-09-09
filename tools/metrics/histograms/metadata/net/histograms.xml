@@ -3057,7 +3057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.BytesSent" units="bytes"
-    expires_after="2026-01-07">
+    expires_after="2026-03-08">
   <owner>aakallam@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -3175,7 +3175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net" units="bytes"
-    expires_after="2026-01-07">
+    expires_after="2026-03-08">
   <owner>aakallam@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -8111,7 +8111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

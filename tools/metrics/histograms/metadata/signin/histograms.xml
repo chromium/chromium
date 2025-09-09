@@ -1563,7 +1563,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.ExplicitSigninMigration" enum="ExplicitSigninMigration"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>droger@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <summary>
@@ -1806,7 +1806,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IdentityConfirmationSnackbarDecision"
-    enum="IdentityConfirmationSnackbarDecision" expires_after="2026-01-04">
+    enum="IdentityConfirmationSnackbarDecision" expires_after="2026-03-08">
   <owner>jlebel@chromium.org</owner>
   <owner>jood@google.com</owner>
   <owner>treib@chromium.org</owner>

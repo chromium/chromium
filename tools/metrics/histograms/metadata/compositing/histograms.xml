@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Browser.BeginFrame.Produced.Duration.Subsampled"
-    units="microseconds" expires_after="2026-01-04">
+    units="microseconds" expires_after="2026-03-08">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -755,7 +755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Slim.BeginFrameResult" enum="SlimBeginFrameResult"
-    expires_after="2025-12-01">
+    expires_after="2026-03-08">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>

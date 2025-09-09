@@ -1203,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-03-08">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1237,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.NewPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-03-08">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1255,7 +1255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.Username"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-03-08">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -2092,7 +2092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.IsSyncPasswordHashSaved"
-    enum="IsSyncPasswordHashSaved" expires_after="2026-01-06">
+    enum="IsSyncPasswordHashSaved" expires_after="2026-03-08">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -3832,7 +3832,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.ReusedPasswordType" enum="ReusedPasswordType"
-    expires_after="2026-01-06">
+    expires_after="2026-03-08">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -4163,7 +4163,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
-    enum="GaiaPasswordHashChange" expires_after="2026-01-06">
+    enum="GaiaPasswordHashChange" expires_after="2026-03-08">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -4844,7 +4844,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.RequestOutcome"
-    enum="PasswordProtectionRequestOutcome" expires_after="2026-01-06">
+    enum="PasswordProtectionRequestOutcome" expires_after="2026-03-08">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -4933,7 +4933,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.Verdict" enum="PasswordProtectionVerdict"
-    expires_after="2026-01-06">
+    expires_after="2026-03-08">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
