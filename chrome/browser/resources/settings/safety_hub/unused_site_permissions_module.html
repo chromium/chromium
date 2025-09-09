@@ -16,17 +16,20 @@
     sites="[[sites_]]">
   <div slot="button-container">
     <cr-button id="gotItButton" on-click="onGotItClick_"
-        hidden$="[[shouldShowCompletionInfo_]]">
+        hidden$="[[shouldShowCompletionInfo_]]"
+        aria-describedby="subheader">
       $i18n{safetyHubUnusedSitePermissionsGotItLabel}
     </cr-button>
     <cr-icon-button id="moreActionButton" class="icon-more-vert"
         on-click="onMoreActionClick_" hidden$="[[shouldShowCompletionInfo_]]"
-        title="$i18n{moreActions}">
+        title="$i18n{moreActions}"
+        aria-describedby="header">
     </cr-icon-button>
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
         on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]"
         on-focus="showUndoTooltip_" on-mouseenter="showUndoTooltip_"
-        aria-label="$i18n{safetyHubUnusedSitePermissionsUndoLabel}">
+        aria-label="$i18n{safetyHubUnusedSitePermissionsUndoLabel}"
+        aria-describedby="header">
     </cr-icon-button>
   </div>
 </settings-safety-hub-module>
