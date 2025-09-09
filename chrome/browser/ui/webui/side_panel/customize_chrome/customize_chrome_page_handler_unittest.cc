@@ -553,7 +553,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
-
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
@@ -579,7 +578,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
       .WillByDefault(Return(std::make_optional(custom_background)));
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
-
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_TRUE(theme->background_image->daily_refresh_enabled);
@@ -598,7 +596,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
       .WillByDefault(Return(false));
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
-
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
@@ -619,7 +616,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
       .WillByDefault(Return(false));
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
-
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_TRUE(theme->background_image->is_uploaded_image);
@@ -653,7 +649,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
   ON_CALL(mock_theme_service(), GetThemeID()).WillByDefault(Return("foo"));
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
-
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);

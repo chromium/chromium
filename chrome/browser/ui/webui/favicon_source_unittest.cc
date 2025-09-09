@@ -73,8 +73,6 @@ class TestFaviconSource : public FaviconSource {
                     ui::NativeTheme* theme)
       : FaviconSource(profile, format, serve_untrusted), theme_(theme) {}
 
-  ~TestFaviconSource() override = default;
-
   MOCK_METHOD(base::RefCountedMemory*, LoadIconBytes, (float, int));
 
  protected:

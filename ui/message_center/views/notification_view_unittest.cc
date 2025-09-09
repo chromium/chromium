@@ -91,8 +91,8 @@ class NotificationTestDelegate : public NotificationDelegate {
 
 }  // namespace
 
-class NotificationViewTest : public views::ViewObserver,
-                             public views::ViewsTestBase,
+class NotificationViewTest : public views::ViewsTestBase,
+                             public views::ViewObserver,
                              public message_center::MessageCenterObserver,
                              public views::InkDropObserver {
  public:

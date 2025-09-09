@@ -432,7 +432,7 @@ Old code defines a disabled button color absolutely:
 
 **Best practice**
 
-[Current version](https://source.chromium.org/chromium/chromium/src/+/main:ui/native_theme/common_theme.cc;l=264;drc=21c19ce054e99a4361dff61877a4197831b80e6b)
+[Newer version](https://source.chromium.org/chromium/chromium/src/+/main:ui/native_theme/common_theme.cc;l=264;drc=21c19ce054e99a4361dff61877a4197831b80e6b)
 makes it clear that the disabled color is related to the normal color:
 
 |||---|||

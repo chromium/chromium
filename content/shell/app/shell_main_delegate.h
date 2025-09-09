@@ -59,8 +59,9 @@ class ShellMainDelegate : public ContentMainDelegate {
   // Shell.
   //
   // content_browsertests should not set the kRunWebTests command line flag, so
-  // |is_content_browsertests_| and |web_test_runner_| are mututally exclusive.
+  // |is_content_browsertests_| and |web_test_runner_| are mutually exclusive.
   bool is_content_browsertests_;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Only present when running web tests, which run inside Content Shell.
   //
