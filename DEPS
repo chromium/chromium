@@ -279,11 +279,11 @@ vars = {
   'reclient_version': 're_client_version:0.179.0.28341fc7-gomaip',
 
   # screen-ai CIPD packages
-  'screen_ai_linux': 'version:140.02',
-  'screen_ai_macos_amd64': 'version:140.02',
-  'screen_ai_macos_arm64': 'version:140.02',
-  'screen_ai_windows_amd64': 'version:140.02',
-  'screen_ai_windows_386': 'version:140.02',
+  'screen_ai_linux': 'version:140.03',
+  'screen_ai_macos_amd64': 'version:140.03',
+  'screen_ai_macos_arm64': 'version:140.03',
+  'screen_ai_windows_amd64': 'version:140.03',
+  'screen_ai_windows_386': 'version:140.03',
 
   # download libaom test data
   'download_libaom_testdata': False,
