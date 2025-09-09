@@ -147,7 +147,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     }
   }
 
-  if (physical_fragment.IsGrid()) {
+  if (physical_fragment.IsGrid() || physical_fragment.IsMasonry()) {
     container_builder_.TransferGridLayoutData(
         std::make_unique<GridLayoutData>(*result.GetGridLayoutData()));
   } else if (physical_fragment.IsFrameSet()) {

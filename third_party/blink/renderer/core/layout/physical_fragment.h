@@ -267,6 +267,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool IsGrid() const { return layout_object_->IsLayoutGrid(); }
+  bool IsMasonry() const { return layout_object_->IsLayoutMasonry(); }
 
   bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;
