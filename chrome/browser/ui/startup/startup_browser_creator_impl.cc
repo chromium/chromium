@@ -162,19 +162,23 @@ void StartupBrowserCreatorImpl::Launch(
 
   DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
 
-  if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
-    install_chrome_app::InstallChromeApp(
-        command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
-  }
-
   // It's possible for there to be no browser window, e.g. if someone
   // specified a non-sensical combination of options
   // ("--kiosk --no_startup_window"); do nothing in that case.
-  BrowserWindowInterface* browser =
+  BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (browser) {
-    MaybeToggleFullscreen(browser);
+  if (!browser) {
+    LOG(ERROR) << "No browser window found for startup.";
+    return;
   }
+
+  if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
+    install_chrome_app::InstallChromeApp(
+        command_line_->GetSwitchValueASCII(switches::kInstallChromeApp),
+        browser);
+  }
+
+  MaybeToggleFullscreen(browser);
 }
 
 Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(
