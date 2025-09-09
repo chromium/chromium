@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "one_time_token.cc",
+    "one_time_token.h",
+    "one_time_token_type.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "one_time_token_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
