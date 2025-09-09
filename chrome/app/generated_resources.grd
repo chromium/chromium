@@ -9447,6 +9447,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the increase font size button of the reading mode feature.">
         Increase font size
       </message>
+      <message name="IDS_READING_MODE_INCREASE_FONT_SIZE_ANNOUNCEMENT" desc="Accessibility aria announcement for increasing font size.">
+        Font size increased
+      </message>
+      <message name="IDS_READING_MODE_DECREASE_FONT_SIZE_ANNOUNCEMENT" desc="Accessibility aria announcement for increasing font size.">
+        Font size decreased
+      </message>
       <message name="IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL" desc="Accessibility label for the button that disables all links in reading mode content.">
         Disable links
       </message>

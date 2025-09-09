@@ -97,6 +97,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       `)}
     </select>
     <hr class="separator" aria-hidden="true">
+    <div id="size-announce" class="announce-block" aria-live="polite"></div>
     <cr-icon-button id="font-size-decrease-old" tabindex="-1"
         class="toolbar-button"
         aria-label="$i18n{decreaseFontSizeLabel}"
@@ -127,6 +128,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   `)}
 
   ${this.textStyleOptions_.map((item, index) => html`
+    ${item.announceBlock??html``}
     <cr-icon-button class="toolbar-button text-style-button" id="${item.id}"
         tabindex="-1"
         data-index="${index}"
