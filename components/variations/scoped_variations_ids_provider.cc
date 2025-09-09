@@ -21,4 +21,14 @@ ScopedVariationsIdsProvider::~ScopedVariationsIdsProvider() {
   VariationsIdsProvider::DestroyInstanceForTesting(previous_instance_);
 }
 
+VariationsIdsProvider* ScopedVariationsIdsProvider::operator->() {
+  CHECK_EQ(current_instance_, VariationsIdsProvider::GetInstance());
+  return current_instance_;
+}
+
+VariationsIdsProvider& ScopedVariationsIdsProvider::operator*() {
+  CHECK_EQ(current_instance_, VariationsIdsProvider::GetInstance());
+  return *current_instance_;
+}
+
 }  // namespace variations::test

@@ -22,6 +22,9 @@ class ScopedVariationsIdsProvider {
   ScopedVariationsIdsProvider& operator=(const ScopedVariationsIdsProvider&) =
       delete;
 
+  VariationsIdsProvider* operator->();
+  VariationsIdsProvider& operator*();
+
  private:
   // A pointer to the previous instance of `VariationsIdsProvider` that is
   // in place when this class is instantiated. This is used to restore the

@@ -182,30 +182,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   friend class ::variations::test::ScopedVariationsIdsProvider;
 
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, ForceVariationIds_Valid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           ForceVariationIds_ValidCommandLine);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           ForceVariationIds_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           ForceDisableVariationIds_ValidCommandLine);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           ForceDisableVariationIds_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           OnFieldTrialGroupFinalized);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           LowEntropySourceValue_Valid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           LowEntropySourceValue_Null);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           GetGoogleAppVariationsString);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, GetVariationsString);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, GetVariationsVector);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           GetTimeboxedVariationsVector);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
-                           GetVariationsVectorForWebPropertiesKeys);
-
   explicit VariationsIdsProvider(Mode mode);
   ~VariationsIdsProvider() override;
 
