@@ -58,7 +58,6 @@ build_webui("build") {
     "history_list.css",
     "history_toolbar.css",
     "shared_style.css",
-    "shared_style_lit.css",
     "shared_vars.css",
     "side_bar.css",
     "synced_device_card.css",

@@ -6,8 +6,8 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_scrollable_lit.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
- * #import=./shared_style_lit.css.js
- * #include=cr-shared-style-lit shared-style-lit cr-scrollable-lit
+ * #import=./shared_style.css.js
+ * #include=cr-shared-style-lit shared-style cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 :host {
