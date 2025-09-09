@@ -112,7 +112,7 @@ void ProfilePickerPostSignInAdapter::Init(
                      weak_ptr_factory_.GetWeakPtr(), PostHostClearedCallback());
 
   if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
-    history_sync_optin_helper_ = std::make_unique<HistorySyncOptinHelper>(
+    history_sync_optin_helper_ = HistorySyncOptinHelper::Create(
         identity_manager, profile_, account_info, /*delegate=*/this,
         HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
     history_sync_optin_helper_->StartHistorySyncOptinFlow();
@@ -130,7 +130,7 @@ void ProfilePickerPostSignInAdapter::Init(
       std::move(on_sync_screen_closed_closure_));
 }
 
-void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen() {
+void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(Profile*) {
   // Finishes the sign-in process by moving to the history sync optin screen.
   CHECK(IsInitialized());
   host_->ShowScreen(

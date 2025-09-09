@@ -150,16 +150,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
  private:
   class HistorySyncOptinDelegate : public HistorySyncOptinHelper::Delegate {
    public:
-    HistorySyncOptinDelegate(Browser* browser);
+    HistorySyncOptinDelegate();
     ~HistorySyncOptinDelegate() override;
-    void ShowHistorySyncOptinScreen() override;
+    void ShowHistorySyncOptinScreen(Profile* profile) override;
     void ShowAccountManagementScreen(
         signin::SigninChoiceCallback on_account_management_screen_closed)
         override;
     void FinishFlowWithoutHistorySyncOptin() override;
-
-   private:
-    raw_ptr<Browser> browser_;
   };
 
   friend class content::WebContentsUserData<DiceTabHelper>;

@@ -55,7 +55,8 @@ class ProfileManagementDisclaimerService
   // detailed description of the `callback` parameter.
   // The caller must ensure that we are not already creating a managed profile
   // for another account using `GetAccountBeingConsideredForManagementIfAny()`.
-  void EnsureManagedProfileForAccount(
+  // Virtual for testing purposes.
+  virtual void EnsureManagedProfileForAccount(
       const CoreAccountId& account_id,
       signin_metrics::AccessPoint access_point,
       base::OnceCallback<void(Profile*, bool)> callback);

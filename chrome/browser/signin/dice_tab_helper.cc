@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -45,19 +46,21 @@ constexpr char kDiceSyncHeaderArrivalTimeWindowHistogramName[] =
 base::TimeDelta DiceTabHelper::g_delay_before_interception_bubble_retry =
     base::Seconds(3);
 
-DiceTabHelper::HistorySyncOptinDelegate::HistorySyncOptinDelegate(
-    Browser* browser)
-    : browser_(browser) {
-  CHECK(browser_);
-}
+DiceTabHelper::HistorySyncOptinDelegate::HistorySyncOptinDelegate() = default;
 
 DiceTabHelper::HistorySyncOptinDelegate::~HistorySyncOptinDelegate() = default;
 
-void DiceTabHelper::HistorySyncOptinDelegate::ShowHistorySyncOptinScreen() {
-  if (!browser_) {
+void DiceTabHelper::HistorySyncOptinDelegate::ShowHistorySyncOptinScreen(
+    Profile* profile) {
+  // The creation of a new managed profile results in opening a new browser
+  // different from the original one, so we need retrieve the browser from the
+  // current profile.
+  CHECK(profile);
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  if (!browser) {
     return;
   }
-  browser_->GetFeatures()
+  browser->GetFeatures()
       .signin_view_controller()
       ->ShowModalHistorySyncOptInDialog();
 }
@@ -137,9 +140,9 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
     CHECK(identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
               .account_id == account_info.account_id);
     tab_helper->state_->history_sync_optin_delegate =
-        std::make_unique<HistorySyncOptinDelegate>(browser);
+        std::make_unique<HistorySyncOptinDelegate>();
     tab_helper->state_->history_sync_optin_helper =
-        std::make_unique<HistorySyncOptinHelper>(
+        HistorySyncOptinHelper::Create(
             identity_manager, profile, extended_account_info,
             tab_helper->state_->history_sync_optin_delegate.get(),
             HistorySyncOptinHelper::LaunchContext::kInBrowser);
