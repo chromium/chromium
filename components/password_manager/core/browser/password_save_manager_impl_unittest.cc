@@ -456,6 +456,8 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsEmptyStore) {
 
   const PasswordForm& pending_credentials =
       password_save_manager_impl()->GetPendingCredentials();
+  parsed_submitted_form_.notes[0].date_created =
+      pending_credentials.GetPasswordBackupDateCreated().value();
   CheckPendingCredentials(parsed_submitted_form_, pending_credentials);
   EXPECT_GE(pending_credentials.date_last_used, kNow);
 }
@@ -472,9 +474,11 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsNewCredentials) {
   PasswordForm expected_credentials = parsed_submitted_form_;
   expected_credentials.all_alternative_usernames.emplace_back(
       AlternativeElement::Value(saved_match_.username_value));
-  CheckPendingCredentials(
-      expected_credentials,
-      password_save_manager_impl()->GetPendingCredentials());
+  const PasswordForm& pending_credentials =
+      password_save_manager_impl()->GetPendingCredentials();
+  expected_credentials.notes[0].date_created =
+      pending_credentials.GetPasswordBackupDateCreated().value();
+  CheckPendingCredentials(expected_credentials, pending_credentials);
 }
 
 // Tests that when submitted credentials are equal to already saved one then
@@ -2119,6 +2123,11 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
   PasswordForm profile_updated_match(profile_saved_match);
   profile_updated_match.date_last_used =
       password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  profile_updated_match.notes[0].date_created =
+      password_save_manager_impl()
+          ->GetPendingCredentials()
+          .GetPasswordBackupDateCreated()
+          .value();
   profile_updated_match.moving_blocked_for_list.push_back(user2_id_hash);
 
   EXPECT_CALL(*mock_account_form_saver(), Update).Times(0);
@@ -2153,6 +2162,11 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
   PasswordForm profile_updated_match(profile_saved_match);
   profile_updated_match.date_last_used =
       password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  profile_updated_match.notes[0].date_created =
+      password_save_manager_impl()
+          ->GetPendingCredentials()
+          .GetPasswordBackupDateCreated()
+          .value();
   profile_updated_match.moving_blocked_for_list.push_back(user2_id_hash);
 
   EXPECT_CALL(*mock_account_form_saver(), Update).Times(0);

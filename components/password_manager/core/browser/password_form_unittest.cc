@@ -74,6 +74,18 @@ TEST(PasswordFormTest, UpdatesExistingNote) {
   EXPECT_EQ(form.GetNoteWithEmptyUniqueDisplayName(), u"updated note");
 }
 
+TEST(PasswordFormTest, SetPasswordBackupNoteUpdatesDateCreated) {
+  PasswordForm form;
+  form.SetPasswordBackupNote(u"first");
+  std::optional<base::Time> first_date = form.GetPasswordBackupDateCreated();
+  form.SetPasswordBackupNote(u"second");
+  std::optional<base::Time> second_date = form.GetPasswordBackupDateCreated();
+
+  ASSERT_TRUE(first_date);
+  ASSERT_TRUE(second_date);
+  EXPECT_GT(*second_date, *first_date);
+}
+
 }  // namespace
 
 }  // namespace password_manager
