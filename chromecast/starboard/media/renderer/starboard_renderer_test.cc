@@ -150,10 +150,6 @@ StarboardVideoSampleInfo GetStarboardVideoConfig() {
 }
 
 // Some default configs.
-const ::media::AudioDecoderConfig kChromiumAudioConfig =
-    GetChromiumAudioConfig();
-const ::media::VideoDecoderConfig kChromiumVideoConfig =
-    GetChromiumVideoConfig();
 const StarboardAudioSampleInfo kSbAudioConfig = GetStarboardAudioConfig();
 const StarboardVideoSampleInfo kSbVideoConfig = GetStarboardVideoConfig();
 
@@ -168,8 +164,8 @@ class StarboardRendererTest : public ::testing::Test {
   StarboardRendererTest() {
     mojo::core::Init();
 
-    audio_stream_.set_audio_decoder_config(kChromiumAudioConfig);
-    video_stream_.set_video_decoder_config(kChromiumVideoConfig);
+    audio_stream_.set_audio_decoder_config(GetChromiumAudioConfig());
+    video_stream_.set_video_decoder_config(GetChromiumVideoConfig());
 
     ON_CALL(starboard_for_drm_, CreateDrmSystem)
         .WillByDefault(Return(&drm_system_));

@@ -33,13 +33,13 @@ const char* RegisterMimeType(std::string mime) {
     return "";
   }
 
-  static base::Lock lock;
+  static base::NoDestructor<base::Lock> lock;
   // A node_hash_set is used here because we require key ptr stability (so that
   // c strings remain valid).
   static base::NoDestructor<absl::node_hash_set<std::string>> registry
-      GUARDED_BY(lock);
+      GUARDED_BY(*lock);
 
-  base::AutoLock autlock(lock);
+  base::AutoLock autlock(*lock);
   auto it_and_inserted = registry->insert(std::move(mime));
   return it_and_inserted.first->c_str();
 }
