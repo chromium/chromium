@@ -308,8 +308,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   EXPECT_EQ(seed_file_data, compressed_seed);
 
   // Verify that the seed data is loaded correctly.
-  EXPECT_EQ(seed_reader_writer.GetSeedData().storage_format,
-            StoredSeed::StorageFormat::kCompressed);
   std::string stored_seed_data;
   std::string stored_signature;
   LoadSeedResult read_seed_result = seed_reader_writer.ReadSeedDataOnStartup(
@@ -317,10 +315,10 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   EXPECT_EQ(read_seed_result, LoadSeedResult::kSuccess);
   EXPECT_EQ(stored_seed_data, seed_data);
   EXPECT_EQ(stored_signature, "signature");
-  EXPECT_EQ(seed_reader_writer.GetSeedData().signature, "signature");
-  EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 2);
-  EXPECT_EQ(seed_reader_writer.GetSeedData().seed_date, seed_date);
-  EXPECT_EQ(seed_reader_writer.GetSeedData().client_fetch_time, fetch_time);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().signature, "signature");
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().milestone, 2);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, seed_date);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, fetch_time);
 }
 
 // Verifies that a seed is cleared from a seed file for clients in the SeedFiles
@@ -354,10 +352,10 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   ASSERT_EQ(stored_seed, LoadSeedResult::kSuccess);
   ASSERT_THAT(stored_seed_data, Not(IsEmpty()));
   ASSERT_THAT(stored_signature, Not(IsEmpty()));
-  ASSERT_THAT(seed_reader_writer.GetSeedData().signature, Not(IsEmpty()));
-  ASSERT_NE(seed_reader_writer.GetSeedData().milestone, 0);
-  ASSERT_FALSE(seed_reader_writer.GetSeedData().seed_date.is_null());
-  ASSERT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+  ASSERT_THAT(seed_reader_writer.GetSeedInfo().signature, Not(IsEmpty()));
+  ASSERT_NE(seed_reader_writer.GetSeedInfo().milestone, 0);
+  ASSERT_FALSE(seed_reader_writer.GetSeedInfo().seed_date.is_null());
+  ASSERT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
 
   // Clear seed and force write.
@@ -374,11 +372,11 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   LoadSeedResult result_after_clear = seed_reader_writer.ReadSeedDataOnStartup(
       &stored_seed_data, &stored_signature);
   EXPECT_EQ(result_after_clear, LoadSeedResult::kEmpty);
-  EXPECT_THAT(seed_reader_writer.GetSeedData().signature, IsEmpty());
-  EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 0);
-  EXPECT_TRUE(seed_reader_writer.GetSeedData().seed_date.is_null());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().signature, IsEmpty());
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().milestone, 0);
+  EXPECT_TRUE(seed_reader_writer.GetSeedInfo().seed_date.is_null());
   // Session country code is not cleared.
-  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
   // Local state prefs should be cleared.
   EXPECT_THAT(local_state_.GetString(GetParam().seed_fields_prefs.seed),
@@ -407,13 +405,13 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
       GetParam().seed_fields_prefs, GetParam().channel,
       entropy_providers_.get(), file_writer_thread_.task_runner());
 
-  ASSERT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+  ASSERT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
 
   seed_reader_writer.ClearSessionCountry();
 
   // Session country code is cleared.
-  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code, IsEmpty());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code, IsEmpty());
   // Local state pref should be cleared.
   EXPECT_THAT(
       local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
@@ -439,8 +437,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
       entropy_providers_.get(), file_writer_thread_.task_runner());
 
   // Ensure seed data loaded from seed file.
-  EXPECT_EQ(StoredSeed::StorageFormat::kCompressed,
-            seed_reader_writer.GetSeedData().storage_format);
   std::string stored_seed_data;
   LoadSeedResult read_seed_result =
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
@@ -477,8 +473,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
       /*sample=*/1, /*expected_bucket_count=*/1);
 
   // Ensure seed data loaded from seed file.
-  ASSERT_EQ(StoredSeed::StorageFormat::kCompressed,
-            seed_reader_writer.GetSeedData().storage_format);
   std::string stored_seed_data;
   LoadSeedResult read_seed_result =
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
@@ -859,11 +853,11 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   LoadSeedResult read_result =
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
   EXPECT_EQ(read_result, LoadSeedResult::kEmpty);
-  EXPECT_THAT(seed_reader_writer.GetSeedData().signature, IsEmpty());
-  EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 0);
-  EXPECT_TRUE(seed_reader_writer.GetSeedData().seed_date.is_null());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().signature, IsEmpty());
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().milestone, 0);
+  EXPECT_TRUE(seed_reader_writer.GetSeedInfo().seed_date.is_null());
   // Session country code is not cleared.
-  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
 
   // Verify seed cleared correctly in Local State prefs and that seed file is
@@ -904,7 +898,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSessionCountryCode) {
   seed_reader_writer.ClearSessionCountry();
   file_writer_thread_.FlushForTesting();
 
-  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code, IsEmpty());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code, IsEmpty());
   EXPECT_THAT(
       local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
       IsEmpty());
@@ -928,8 +922,6 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadLocalStateBasedSeed) {
       entropy_providers_.get(), file_writer_thread_.task_runner());
 
   // Ensure seed data loaded from prefs, not seed file.
-  ASSERT_EQ(StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-            seed_reader_writer.GetSeedData().storage_format);
   std::string stored_seed_data;
   LoadSeedResult read_result =
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);

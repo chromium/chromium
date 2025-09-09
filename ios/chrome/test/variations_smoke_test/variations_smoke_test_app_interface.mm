@@ -63,7 +63,7 @@ base::Time GetProcessStartTime() {
                                  ->GetVariationsService()
                                  ->GetSeedStoreForTesting()
                                  ->GetSeedReaderWriterForTesting()
-                                 ->GetSeedData()
+                                 ->GetSeedInfo()
                                  .client_fetch_time;
   // If there's no fetch time, the returned time will be 0 microseconds
   // from Windows epoch.

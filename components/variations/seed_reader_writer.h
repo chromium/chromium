@@ -39,27 +39,19 @@ const char kSeedFilesGroup[] = "SeedFiles_V7";
 // duplicating storage space.
 inline constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
-// Represents a seed and its storage format where clients using
-// seed-file-based seeds store compressed data and those using
-// local-state-based seeds store compressed, base64 encoded data.
-// It also stores other seed-related info.
-struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
-  enum class StorageFormat { kCompressed, kCompressedAndBase64Encoded };
+// Represents seed-related info that, contrary to the seed data, is stored in
+// memory, so it can be read synchronously.
+struct COMPONENT_EXPORT(VARIATIONS) SeedInfo {
+  SeedInfo(std::string_view signature,
+           int milestone,
+           base::Time seed_date,
+           base::Time client_fetch_time,
+           std::string_view session_country_code,
+           std::string_view permanent_country_code,
+           std::string_view permanent_country_version);
+  ~SeedInfo();
+  SeedInfo(const SeedInfo& other);
 
-  StoredSeed(StorageFormat storage_format,
-             std::string_view signature,
-             int milestone,
-             base::Time seed_date,
-             base::Time client_fetch_time,
-             std::string_view session_country_code,
-             std::string_view permanent_country_code,
-             std::string_view permanent_country_version);
-  ~StoredSeed();
-  StoredSeed(const StoredSeed& other);
-
-  // The storage format of the seed. Seed-file-based seeds are compressed while
-  // local-state-based seeds are compressed and base64 encoded.
-  const StorageFormat storage_format;
   // base64-encoded signature of the seed.
   const std::string_view signature;
   // The milestone with which the seed was fetched
@@ -170,8 +162,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Clears the session country code.
   void ClearSessionCountry();
 
-  // Returns stored seed data.
-  StoredSeed GetSeedData() const;
+  // Returns stored seed-related info. Contrary to the seed data, the data is
+  // stored in memory, so it can be read synchronously.
+  SeedInfo GetSeedInfo() const;
 
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
@@ -230,10 +223,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   }
 
  private:
+  // The storage format of the seed. Seed-file-based seeds are compressed while
+  // local-state-based seeds are compressed and base64 encoded.
+  enum class SeedStorageFormat { kCompressed, kCompressedAndBase64Encoded };
+
   // Callback for GetSeedData(). The arguments are the storage format, the seed
   // data, and the signature.
-  using GetSeedDataCallback = base::OnceCallback<
-      void(StoredSeed::StorageFormat, std::string, std::string)>;
+  using GetSeedDataCallback =
+      base::OnceCallback<void(SeedStorageFormat, std::string, std::string)>;
 
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
@@ -289,17 +286,27 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Calls `done_callback` with the result of the load, the seed data, and
   // signature. The seed data and signature should only be used if the result is
   // `LoadSeedResult::kSuccess`.
-  void ProcessStoredSeedDataAndRunCallback(
-      ReadSeedDataCallback done_callback,
-      StoredSeed::StorageFormat storage_format,
-      std::string seed_data,
-      std::string signature);
+  void ProcessStoredSeedDataAndRunCallback(ReadSeedDataCallback done_callback,
+                                           SeedStorageFormat storage_format,
+                                           std::string seed_data,
+                                           std::string signature);
 
   // Calls `done_callback` with the result of the load. If the seed file needs
   // to be read, the read will be done in a background thread. The seed data
   // won't be processed, if the seed needs to be used, use ReadSeedData()
   // instead.
   void GetSeedData(GetSeedDataCallback done_callback);
+
+  // Processes the stored seed data and returns the result of the load. If a
+  // pointer for the `signature` is provided, the signature will be read and
+  // stored into it. The value stored into `seed_data` and `signature`
+  // should only be used if the result is `LoadSeedResult::kSuccess`.
+  static LoadSeedResult ProcessStoredSeedData(
+      SeedStorageFormat storage_format,
+      std::string_view stored_seed_data,
+      std::string_view stored_seed_signature,
+      std::string* seed_data,
+      std::string* signature = nullptr);
 
   // Pref service used to persist seeds and seed-related info.
   raw_ptr<PrefService> local_state_;
@@ -317,7 +324,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Stored seed info. Used to store a seed applied during field trial
   // setup or a seed fetched from a variations server. Also stores other
   // seed-related info.
-  StoredSeedInfo seed_info_;
+  StoredSeedInfo stored_seed_info_;
 
   // Seed data stored in memory. It will be set to std::nullopt if the seed data
   // is not stored in memory. In contrast, empty string means the seed data is

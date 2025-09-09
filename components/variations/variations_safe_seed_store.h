@@ -36,8 +36,7 @@ class VariationsSafeSeedStore {
   // used was fetched. (See VariationsSeedStore::GetTimeForStudyDateChecks().)
   virtual base::Time GetTimeForStudyDateChecks() const = 0;
 
-  // Getter and setter for the compressed and base64-encoded safe seed.
-  virtual StoredSeed GetCompressedSeed() const = 0;
+  // Setter for the safe seed and other seed-related info.
   virtual StoreSeedResult SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
 
   // Getter and setter for the locale associated with the safe seed in the

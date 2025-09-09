@@ -174,13 +174,13 @@ bool MakeSeedStoreLoadStoredSeed(TestVariationsSeedStore& seed_store) {
 }
 
 // Gets the seed data from the seed store.
-StoredSeed GetSeedData(TestVariationsSeedStore& seed_store) {
-  return seed_store.GetSeedReaderWriterForTesting()->GetSeedData();
+SeedInfo GetSeedInfo(TestVariationsSeedStore& seed_store) {
+  return seed_store.GetSeedReaderWriterForTesting()->GetSeedInfo();
 }
 
 // Gets the safe seed data from the seed store.
-StoredSeed GetSafeSeedData(TestVariationsSeedStore& seed_store) {
-  return seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData();
+SeedInfo GetSafeSeedInfo(TestVariationsSeedStore& seed_store) {
+  return seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedInfo();
 }
 
 // Sample seeds and the server produced delta between them to verify that the
@@ -278,11 +278,11 @@ void CheckRegularSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
             LoadSeedResult::kSuccess);
   EXPECT_THAT(stored_seed_data, Not(IsEmpty()));
   EXPECT_THAT(stored_seed_signature, Not(IsEmpty()));
-  StoredSeed stored_seed = GetSeedData(seed_store);
-  EXPECT_THAT(stored_seed.signature, Not(IsEmpty()));
-  EXPECT_NE(stored_seed.milestone, 0);
-  EXPECT_NE(stored_seed.seed_date, base::Time());
-  EXPECT_NE(stored_seed.client_fetch_time, base::Time());
+  SeedInfo stored_seed_info = GetSeedInfo(seed_store);
+  EXPECT_THAT(stored_seed_info.signature, Not(IsEmpty()));
+  EXPECT_NE(stored_seed_info.milestone, 0);
+  EXPECT_NE(stored_seed_info.seed_date, base::Time());
+  EXPECT_NE(stored_seed_info.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   }
@@ -299,11 +299,11 @@ void CheckRegularSeedAndSeedPrefsAreCleared(
   EXPECT_EQ(seed_store.GetSeedReaderWriterForTesting()->ReadSeedDataOnStartup(
                 &stored_seed_data, nullptr),
             LoadSeedResult::kEmpty);
-  StoredSeed stored_seed = GetSeedData(seed_store);
-  EXPECT_THAT(stored_seed.signature, IsEmpty());
-  EXPECT_EQ(stored_seed.milestone, 0);
-  EXPECT_EQ(stored_seed.seed_date, base::Time());
-  EXPECT_EQ(stored_seed.client_fetch_time, base::Time());
+  SeedInfo stored_seed_info = GetSeedInfo(seed_store);
+  EXPECT_THAT(stored_seed_info.signature, IsEmpty());
+  EXPECT_EQ(stored_seed_info.milestone, 0);
+  EXPECT_EQ(stored_seed_info.seed_date, base::Time());
+  EXPECT_EQ(stored_seed_info.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   }
@@ -326,11 +326,11 @@ void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
       LoadSeedResult::kSuccess);
   EXPECT_THAT(stored_seed_data, Not(IsEmpty()));
   EXPECT_THAT(stored_seed_signature, Not(IsEmpty()));
-  StoredSeed stored_seed = GetSafeSeedData(seed_store);
-  EXPECT_THAT(stored_seed.signature, Not(IsEmpty()));
-  EXPECT_NE(stored_seed.milestone, 0);
-  EXPECT_NE(stored_seed.seed_date, base::Time());
-  EXPECT_NE(stored_seed.client_fetch_time, base::Time());
+  SeedInfo stored_seed_info = GetSafeSeedInfo(seed_store);
+  EXPECT_THAT(stored_seed_info.signature, Not(IsEmpty()));
+  EXPECT_NE(stored_seed_info.milestone, 0);
+  EXPECT_NE(stored_seed_info.seed_date, base::Time());
+  EXPECT_NE(stored_seed_info.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_FALSE(
         PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
@@ -354,7 +354,7 @@ void CheckSafeSeedAndSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs,
       seed_store.GetSafeSeedReaderWriterForTesting()->ReadSeedDataOnStartup(
           &stored_seed_data, nullptr),
       LoadSeedResult::kEmpty);
-  StoredSeed stored_seed = GetSafeSeedData(seed_store);
+  SeedInfo stored_seed = GetSafeSeedInfo(seed_store);
   EXPECT_THAT(stored_seed.signature, IsEmpty());
   EXPECT_EQ(stored_seed.milestone, 0);
   if (ShouldUseLocalStateSeed()) {
@@ -541,7 +541,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSignature) {
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
 
   // Verify session country is not cleared.
-  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
+  EXPECT_THAT(GetSeedInfo(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
@@ -573,7 +573,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
 
   // Verify session country is not cleared.
-  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
+  EXPECT_THAT(GetSeedInfo(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_RejectEmptySignature) {
@@ -648,7 +648,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_AcceptEmptySignature) {
           &stored_seed_data, nullptr);
   EXPECT_EQ(result, LoadSeedResult::kSuccess);
   EXPECT_EQ(stored_seed_data, seed_data);
-  const StoredSeed stored_seed = GetSeedData(seed_store);
+  const SeedInfo stored_seed = GetSeedInfo(seed_store);
   EXPECT_THAT(stored_seed.signature, IsEmpty());
   EXPECT_NE(stored_seed.milestone, 0);
   if (ShouldUseLocalStateSeed()) {
@@ -767,7 +767,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
 
   // Verify session country is not cleared.
-  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
+  EXPECT_THAT(GetSeedInfo(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
@@ -802,7 +802,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
 
   // Verify session country is not cleared.
-  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
+  EXPECT_THAT(GetSeedInfo(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -841,7 +841,7 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
 
   // Verify session country is not cleared.
-  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
+  EXPECT_THAT(GetSeedInfo(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_F(VariationsSeedStoreTest, ApplyDeltaPatch) {
@@ -1027,11 +1027,11 @@ TEST_P(StoreSeedDataAllGroupsTest, CountryCode) {
   std::string seed = SerializeSeed(CreateTestSeed());
   ASSERT_TRUE(
       StoreSeedData(seed_store, seed, {.country_code = "test_country"}));
-  EXPECT_EQ("test_country", GetSeedData(seed_store).session_country_code);
+  EXPECT_EQ("test_country", GetSeedInfo(seed_store).session_country_code);
 
   // Test with no country code specified - which should preserve the old value.
   ASSERT_TRUE(StoreSeedData(seed_store, seed));
-  EXPECT_EQ("test_country", GetSeedData(seed_store).session_country_code);
+  EXPECT_EQ("test_country", GetSeedInfo(seed_store).session_country_code);
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, GzippedSeed) {
@@ -2434,17 +2434,17 @@ TEST_P(VariationsSeedStoreTestAllGroupsDates, UpdateSeedDateAndLogDayChange) {
   DatesTestParams params = std::get<1>(GetParam());
   if (!params.old_seed_date.is_null()) {
     seed_store.UpdateSeedDateAndLogDayChange(params.old_seed_date);
-    const base::Time stored_seed_date = GetSeedData(seed_store).seed_date;
+    const base::Time stored_seed_date = GetSeedInfo(seed_store).seed_date;
     ASSERT_EQ(stored_seed_date, params.old_seed_date);
   } else {
-    ASSERT_TRUE(GetSeedData(seed_store).seed_date.is_null());
+    ASSERT_TRUE(GetSeedInfo(seed_store).seed_date.is_null());
   }
 
   base::HistogramTester histogram_tester;
   seed_store.UpdateSeedDateAndLogDayChange(params.new_seed_date);
 
   // Verify that the seed date is updated.
-  base::Time stored_seed_date = GetSeedData(seed_store).seed_date;
+  base::Time stored_seed_date = GetSeedInfo(seed_store).seed_date;
   EXPECT_EQ(stored_seed_date, params.new_seed_date);
 
   // Verify that the day change is logged.

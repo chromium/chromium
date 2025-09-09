@@ -383,7 +383,7 @@ void VariationsSeedStore::OnValidatedSafeSeedStored(
 }
 
 base::Time VariationsSeedStore::GetLatestSeedFetchTime() const {
-  return seed_reader_writer_->GetSeedData().client_fetch_time;
+  return seed_reader_writer_->GetSeedInfo().client_fetch_time;
 }
 
 base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
@@ -391,7 +391,7 @@ base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
 }
 
 int VariationsSeedStore::GetLatestMilestone() const {
-  return seed_reader_writer_->GetSeedData().milestone;
+  return seed_reader_writer_->GetSeedInfo().milestone;
 }
 
 int VariationsSeedStore::GetSafeSeedMilestone() const {
@@ -400,7 +400,7 @@ int VariationsSeedStore::GetSafeSeedMilestone() const {
 
 base::Time VariationsSeedStore::GetLatestTimeForStudyDateChecks()
     const {
-  return seed_reader_writer_->GetSeedData().seed_date;
+  return seed_reader_writer_->GetSeedInfo().seed_date;
 }
 
 base::Time VariationsSeedStore::GetSafeSeedTimeForStudyDateChecks() const {
@@ -439,7 +439,7 @@ void VariationsSeedStore::UpdateSeedDateAndLogDayChange(
 void VariationsSeedStore::LogSeedDayChange(
     base::Time server_date_fetched) {
   UpdateSeedDateResult result = UpdateSeedDateResult::NO_OLD_DATE;
-  const base::Time stored_date = seed_reader_writer_->GetSeedData().seed_date;
+  const base::Time stored_date = seed_reader_writer_->GetSeedInfo().seed_date;
   if (!stored_date.is_null()) {
     result = GetSeedDateChangeState(server_date_fetched, stored_date);
   }
@@ -453,16 +453,16 @@ const std::string& VariationsSeedStore::GetLatestSerialNumber() {
 }
 
 std::string VariationsSeedStore::GetLatestCountry() {
-  return std::string(seed_reader_writer_->GetSeedData().session_country_code);
+  return std::string(seed_reader_writer_->GetSeedInfo().session_country_code);
 }
 
 std::string VariationsSeedStore::GetPermanentConsistencyCountry() {
-  return std::string(seed_reader_writer_->GetSeedData().permanent_country_code);
+  return std::string(seed_reader_writer_->GetSeedInfo().permanent_country_code);
 }
 
 std::string VariationsSeedStore::GetPermanentConsistencyVersion() {
   return std::string(
-      seed_reader_writer_->GetSeedData().permanent_country_version);
+      seed_reader_writer_->GetSeedInfo().permanent_country_version);
 }
 
 void VariationsSeedStore::ClearPermanentConsistencyCountryAndVersion() {
@@ -856,17 +856,17 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   //    |kIdenticalToSafeSeedSentinel| is stored as the latest seed value to
   //    avoid duplicating seed A in storage.
   // 4. The client is promoting seed B to safe seed.
-  const StoredSeed latest_seed = seed_reader_writer_->GetSeedData();
+  const SeedInfo latest_seed_info = seed_reader_writer_->GetSeedInfo();
   if (safe_seed_read_result.result == LoadSeedResult::kSuccess &&
       safe_seed_read_result.seed_data != seed.seed_data &&
       seed_reader_writer_->IsIdenticalToSafeSeedSentinel()) {
     StoreSeedResult store_result =
         seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
             .seed_data = safe_seed_read_result.seed_data,
-            .signature = latest_seed.signature,
-            .milestone = latest_seed.milestone,
-            .seed_date = latest_seed.seed_date,
-            .client_fetch_time = latest_seed.client_fetch_time,
+            .signature = latest_seed_info.signature,
+            .milestone = latest_seed_info.milestone,
+            .seed_date = latest_seed_info.seed_date,
+            .client_fetch_time = latest_seed_info.client_fetch_time,
         });
     if (store_result != StoreSeedResult::kSuccess) {
       std::move(done_callback).Run(store_result);
@@ -902,10 +902,10 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     StoreSeedResult store_result =
         seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
             .seed_data = kIdenticalToSafeSeedSentinel,
-            .signature = latest_seed.signature,
-            .milestone = latest_seed.milestone,
-            .seed_date = latest_seed.seed_date,
-            .client_fetch_time = latest_seed.client_fetch_time,
+            .signature = latest_seed_info.signature,
+            .milestone = latest_seed_info.milestone,
+            .seed_date = latest_seed_info.seed_date,
+            .client_fetch_time = latest_seed_info.client_fetch_time,
         });
     if (store_result != StoreSeedResult::kSuccess) {
       std::move(done_callback).Run(store_result);
@@ -914,7 +914,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.
-    safe_seed_store_->SetFetchTime(latest_seed.client_fetch_time);
+    safe_seed_store_->SetFetchTime(latest_seed_info.client_fetch_time);
   }
   std::move(done_callback).Run(StoreSeedResult::kSuccess);
 }
