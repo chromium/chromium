@@ -1123,7 +1123,10 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  FullBrowserTransitionManager::Get()->OnProfileCreated(this);
+  if (!base::FeatureList::IsEnabled(
+          features::kDelayOnProfileCreatedForFullBrowserTransition)) {
+    FullBrowserTransitionManager::Get()->OnProfileCreated(this);
+  }
 
   SimpleDependencyManager::GetInstance()->CreateServices(GetProfileKey());
 
@@ -1131,16 +1134,27 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // Check that the IdentityManager was not created before the browser context
   // services were created. This ensures that browser tests can override the
   // IdentityManager with a fake.
-
-  // TODO(msarda): This invariant is violated on Android. Remove this check
-  // once the IdentityManager is no longer created as part of the initialization
-  // of the storage partition on Android.
   CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
         base::NotFatalUntil::M160);
+#else
+  if (base::FeatureList::IsEnabled(
+          features::kDelayOnProfileCreatedForFullBrowserTransition)) {
+    // TODO(msarda): This invariant is violated on Android, but may be fixed by
+    // enabling the kDelayOnProfileCreatedForFullBrowserTransition feature.
+    // Remove this check once the IdentityManager is no longer created too early
+    // on Android.
+    CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
+          base::NotFatalUntil::M160);
+  }
 #endif
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
+
+  if (base::FeatureList::IsEnabled(
+          features::kDelayOnProfileCreatedForFullBrowserTransition)) {
+    FullBrowserTransitionManager::Get()->OnProfileCreated(this);
+  }
 
   ChromeVersionService::OnProfileLoaded(prefs_.get(), IsNewProfile());
   DoFinalInit(create_mode);

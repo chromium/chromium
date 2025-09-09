@@ -48,6 +48,7 @@ BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProvider);
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
+BASE_DECLARE_FEATURE(kDelayOnProfileCreatedForFullBrowserTransition);
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);

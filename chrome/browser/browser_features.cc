@@ -117,6 +117,15 @@ BASE_FEATURE(kDestroySystemProfiles,
              "DestroySystemProfiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables delaying the call to FullBrowserTransitionManager::OnProfileCreated()
+// until after BrowserContextDependencyManager::CreateBrowserContextServices()
+// in ProfileImpl::OnLocaleReady(). This change is thought to avoid creating
+// certain KeyedServices before they are properly initialized, but is flagged
+// guarded in case it causes unexpected issues.
+BASE_FEATURE(kDelayOnProfileCreatedForFullBrowserTransition,
+             "DelayOnProfileCreatedForFullBrowserTransition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 BASE_FEATURE(kFlexOrgManagementDisclosure,
