@@ -117,11 +117,19 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   network::mojom::SupportsLoadingModePtr result =
       network::ParseSupportsLoadingMode(*headers);
-  if (!result.is_null() &&
-      base::Contains(result->supported_modes,
-                     network::mojom::LoadingMode::kCredentialedPrerender)) {
-    parsed_headers->supports_loading_mode.push_back(
-        network::mojom::LoadingMode::kCredentialedPrerender);
+  if (!result.is_null()) {
+    if (base::Contains(result->supported_modes,
+                       network::mojom::LoadingMode::kCredentialedPrerender)) {
+      parsed_headers->supports_loading_mode.push_back(
+          network::mojom::LoadingMode::kCredentialedPrerender);
+    }
+
+    if (base::Contains(
+            result->supported_modes,
+            network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
+      parsed_headers->supports_loading_mode.push_back(
+          network::mojom::LoadingMode::kPrerenderCrossOriginFrames);
+    }
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)

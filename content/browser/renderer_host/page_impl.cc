@@ -11,6 +11,8 @@
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "content/browser/manifest/manifest_manager_host.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -216,6 +218,10 @@ void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
   activation_start_time_ = activation_start;
 }
 
+void PageImpl::NotifyCrossOriginSubframePrerenderIsAllowed() {
+  is_cross_origin_subframe_prerender_allowed_ = true;
+}
+
 void PageImpl::Activate(
     ActivationType type,
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
@@ -237,26 +243,49 @@ void PageImpl::Activate(
   for (const auto& rvh : render_view_hosts) {
     auto params = blink::mojom::PrerenderPageActivationParams::New();
 
-    if (main_document_->GetRenderViewHost() == &*rvh) {
-      // For prerendering activation, send activation_start only to the
-      // RenderViewHost for the main frame to avoid sending the info
-      // cross-origin. Only this RenderViewHost needs the info, as we expect the
-      // other RenderViewHosts are made for cross-origin iframes which have not
-      // yet loaded their document. To the renderer, it just looks like an
-      // ongoing navigation is happening in the frame and has not yet committed.
+    const bool is_main_document = main_document_->GetRenderViewHost() == &*rvh;
+    if (is_main_document) {
       // These RenderViews still need to know about activation so their
       // documents are created in the non-prerendered state once their
       // navigation is committed.
-      params->activation_start = *activation_start_time_;
       // Note that there cannot be a use-after-move since the if condition
       // should be true at most once.
       CHECK(!view_transition_state_consumed);
       params->view_transition_state = std::move(view_transition_state);
       view_transition_state_consumed = true;
-    } else if (type == ActivationType::kPreview) {
+    }
+
+    const bool should_send_activation_start = [&]() {
+      // For prerendering activation, send activation_start only to the
+      // RenderViewHost for the main frame to avoid sending the info
+      // cross-origin. Only this RenderViewHost needs the info, as we expect
+      // the other RenderViewHosts are made for cross-origin iframes which
+      // have not yet loaded their document. To the renderer, it just looks
+      // like an ongoing navigation is happening in the frame and has not yet
+      // committed.
+      if (is_main_document) {
+        return true;
+      }
+
+      // Even cross-origin, we allow if the main document has the special
+      // header. See PrerenderHost::AllowCrossOriginSubframeNavigation() for
+      // detail.
+      if (base::FeatureList::IsEnabled(
+              ::features::kPrerender2CrossOriginIframes) &&
+          type == ActivationType::kPrerendering &&
+          is_cross_origin_subframe_prerender_allowed_) {
+        return true;
+      }
+
       // For preview activation, send activation_start to all RenderViewHosts
       // as preview loads cross-origin subframes under the capability control,
       // and activation_start time is meaningful there.
+      if (type == ActivationType::kPreview) {
+        return true;
+      }
+      return false;
+    }();
+    if (should_send_activation_start) {
       params->activation_start = *activation_start_time_;
     }
 

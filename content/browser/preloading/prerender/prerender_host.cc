@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -46,6 +47,7 @@
 #include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
@@ -643,14 +645,24 @@ void PrerenderHost::ReadyToCommitNavigation(
     return;
   }
 
+  bool has_no_vary_search_with_parse_error_header = false;
   if (navigation_request->response() &&
-      navigation_request->response()->parsed_headers &&
-      navigation_request->response()
-          ->parsed_headers->no_vary_search_with_parse_error) {
-    MaybeSetNoVarySearch(
-        *navigation_request->response()
-             ->parsed_headers->no_vary_search_with_parse_error);
-  } else {
+      navigation_request->response()->parsed_headers) {
+    const network::mojom::ParsedHeadersPtr& parsed_headers =
+        navigation_request->response()->parsed_headers;
+    if (parsed_headers->no_vary_search_with_parse_error) {
+      has_no_vary_search_with_parse_error_header = true;
+      MaybeSetNoVarySearch(*parsed_headers->no_vary_search_with_parse_error);
+    }
+
+    if (base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes) &&
+        base::Contains(
+            parsed_headers->supports_loading_mode,
+            network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
+      allow_cross_origin_subframe_navigation_ = true;
+    }
+  }
+  if (!has_no_vary_search_with_parse_error_header) {
     CHECK(!no_vary_search_.has_value());
     CHECK(!no_vary_search_parse_error_.has_value());
   }
@@ -776,6 +788,14 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // duration of current_frame_host being null.
   std::unique_ptr<StoredPage> page =
       GetFrameTree()->root()->render_manager()->TakePrerenderedPage();
+  CHECK(page);
+  if (allow_cross_origin_subframe_navigation_) {
+    CHECK(
+        base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes));
+    page->render_frame_host()
+        ->GetPage()
+        .NotifyCrossOriginSubframePrerenderIsAllowed();
+  }
 
   NavigationEntryRestoreContextImpl context;
   std::unique_ptr<NavigationEntryImpl> nav_entry =

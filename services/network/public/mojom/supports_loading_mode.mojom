@@ -27,6 +27,11 @@ enum LoadingMode {
   // A mode to opt-in to being loaded in a fenced frame. The navigation in the
   // root fenced frame node should not be successful if the mode is not present.
   kFencedFrame,
+
+  // A mode that cross-origin iframes experience the prerendering state in the
+  // same way that same-origin iframes or top-level prerendered pages do.
+  kPrerenderCrossOriginFrames,
+
 };
 
 // https://github.com/jeremyroman/alternate-loading-modes/blob/gh-pages/opt-in.md

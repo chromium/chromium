@@ -26,6 +26,8 @@ constexpr struct KnownLoadingMode {
     {"uncredentialed-prerender", mojom::LoadingMode::kUncredentialedPrerender},
     {"credentialed-prerender", mojom::LoadingMode::kCredentialedPrerender},
     {"fenced-frame", mojom::LoadingMode::kFencedFrame},
+    {"prerender-cross-origin-frames",
+     mojom::LoadingMode::kPrerenderCrossOriginFrames},
 };
 
 }  // namespace

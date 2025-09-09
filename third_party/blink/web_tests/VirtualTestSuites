@@ -4075,7 +4075,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
+      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes",
       "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": [

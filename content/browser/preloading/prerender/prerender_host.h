@@ -415,6 +415,11 @@ class CONTENT_EXPORT PrerenderHost {
   // Called when we stop blocking navigation while waiting for headers.
   void OnWaitingForHeadersFinished(WaitingForHeadersFinishedReason reason);
 
+  // Whether to allow cross-origin subframes to be prerendered.
+  bool AllowCrossOriginSubframeNavigation() const {
+    return allow_cross_origin_subframe_navigation_;
+  }
+
   // Returns true iff prefetch ahead of prerender is not available for this
   // prerender and this prerender should be aborted.
   //
@@ -598,6 +603,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   std::unique_ptr<PreloadServingMetrics>
       prerender_initial_preload_serving_metrics_;
+  // True if cross-origin subframe navigations are allowed.
+  bool allow_cross_origin_subframe_navigation_ = false;
 
   base::WeakPtrFactory<PrerenderHost> weak_factory_{this};
 };

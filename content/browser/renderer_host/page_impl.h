@@ -182,6 +182,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   void SetActivationStartTime(base::TimeTicks activation_start);
 
+  void NotifyCrossOriginSubframePrerenderIsAllowed();
+
   // Called during the activation navigation. Sends an IPC to the RenderViews in
   // the renderers, instructing them to transition their documents from
   // prerendered to activated. Tells the corresponding RenderFrameHostImpls that
@@ -439,6 +441,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // TODO(b:291867362): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
   std::optional<base::TimeTicks> activation_start_time_;
+
+  // True if cross origin iframe prerender is allowed.
+  bool is_cross_origin_subframe_prerender_allowed_ = false;
 
   // The resizing mode requested by Blink for the virtual keyboard.
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =

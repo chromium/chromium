@@ -74,6 +74,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
 
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 
+// If enabled, browsers will now prerender all cross-origin frames if the
+// top-level frame's HTTP response includes the Supports-Loading-Mode:
+// prerender-cross-origin-frames. (crbug.com/440387014)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2CrossOriginIframes);
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_
