@@ -205,7 +205,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
                            GetTimeboxedVariationsVector);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            GetVariationsVectorForWebPropertiesKeys);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, GetVariationsVectorImpl);
 
   explicit VariationsIdsProvider(Mode mode);
   ~VariationsIdsProvider() override;
