@@ -5651,21 +5651,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenSpendRate"
-    units="tokens" expires_after="2026-03-08">
-  <owner>awillia@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Number of auth tokens spent for {ProxyLayer}, as a rate per hour, up to
-    1000. This value is measured approximately every 5 minutes.
-  </summary>
-  <token key="ProxyLayer">
-    <variant name="ProxyA"/>
-    <variant name="ProxyB"/>
-  </token>
-</histogram>
-
 <histogram name="NetworkService.MaskedDomainList.DiskUsage" units="KB"
     expires_after="2026-01-11">
   <owner>djmitche@chromium.org</owner>

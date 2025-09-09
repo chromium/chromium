@@ -112,9 +112,9 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   const int batch_size_;
   const size_t cache_low_water_mark_;
 
-  // The last time token rates were measured and the counts since then.
+  // The last time token rates were measured and the expiration counts since
+  // then.
   base::TimeTicks last_token_rate_measurement_;
-  int64_t tokens_spent_ = 0;
   int64_t tokens_expired_ = 0;
 
   // Map for caches of tokens keyed by geo id. For each geo entry, tokens are

@@ -418,7 +418,6 @@ std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(
     tokens_in_cache = it->second.size();
     result.emplace(std::move(it->second.front()));
     it->second.pop_front();
-    tokens_spent_++;
     Telemetry().RecordTokenCountEvent(proxy_layer_,
                                       IpProtectionTokenCountEvent::kSpent, 1);
   }
@@ -471,12 +470,6 @@ void IpProtectionTokenManagerImpl::MeasureTokenRates() {
   auto denominator = base::Hours(1).InMilliseconds();
   if (interval_ms != 0) {
     last_token_rate_measurement_ = now;
-
-    auto spend_rate = tokens_spent_ * denominator / interval_ms;
-    // A maximum of 1000 would correspond to a spend rate of about 16/min,
-    // which is higher than we expect to see.
-    Telemetry().TokenSpendRate(proxy_layer_, spend_rate);
-
     auto expiration_rate = tokens_expired_ * denominator / interval_ms;
     // Entire batches of tokens are likely to expire within a single 5-minute
     // measurement interval. 1024 tokens in 5 minutes is equivalent to 12288
@@ -485,7 +478,6 @@ void IpProtectionTokenManagerImpl::MeasureTokenRates() {
   }
 
   last_token_rate_measurement_ = now;
-  tokens_spent_ = 0;
   tokens_expired_ = 0;
 }
 

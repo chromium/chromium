@@ -171,10 +171,6 @@ class IpProtectionTelemetry {
       GetProxyListResult result,
       std::optional<base::TimeDelta> duration) = 0;
 
-  // Token spend rate, in tokens per hour. This value is expected to be less
-  // than 1000.
-  virtual void TokenSpendRate(ProxyLayer, int) = 0;
-
   // Token expiration rate, in tokens per hour. This value is expected to be
   // less than 100,000.
   virtual void TokenExpirationRate(ProxyLayer, int) = 0;

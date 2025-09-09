@@ -237,14 +237,6 @@ void IpProtectionTelemetryUma::ProxyListRefreshComplete(
   }
 }
 
-void IpProtectionTelemetryUma::TokenSpendRate(ProxyLayer proxy_layer,
-                                              int value) {
-  base::UmaHistogramCounts1000(
-      base::StrCat({"NetworkService.IpProtection.",
-                    ProxyLayerToString(proxy_layer), ".TokenSpendRate"}),
-      value);
-}
-
 void IpProtectionTelemetryUma::TokenExpirationRate(ProxyLayer proxy_layer,
                                                    int value) {
   base::UmaHistogramCounts100000(

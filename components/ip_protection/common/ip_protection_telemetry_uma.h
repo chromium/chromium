@@ -41,7 +41,6 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void ProxyListRefreshComplete(
       GetProxyListResult result,
       std::optional<base::TimeDelta> duration) override;
-  void TokenSpendRate(ProxyLayer, int) override;
   void TokenExpirationRate(ProxyLayer, int) override;
   void MdlEstimatedMemoryUsage(size_t) override;
   void MdlEstimatedDiskUsage(int64_t) override;
