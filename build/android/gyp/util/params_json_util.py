@@ -354,6 +354,13 @@ class ParamsJson(dict):
     """Returns True if the target type runs manifest_merger.py."""
     return self.type in _MERGES_MANIFESTS_TYPES
 
+  def needs_full_javac_classpath(self):
+    """Returns True if the target type runs manifest_merger.py."""
+    return self.type in ('android_apk', 'android_app_bundle_module') or (
+        self.is_library() and self.get('needs_full_javac_classpath',
+                                       False)) or (self.type == 'dist_jar'
+                                                   and self.requires_android())
+
   def collects_dex_paths(self):
     """Returns True if the target type collects transitive .dex files."""
     if self.type in ('dist_aar', 'dist_jar'):

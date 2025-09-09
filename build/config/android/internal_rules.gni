@@ -126,9 +126,22 @@ template("write_build_config") {
   _params_file =
       string_replace(invoker.build_config, ".build_config.json", ".params.json")
   _inputs = [ _params_file ]
-  _outputs = [ invoker.build_config ]
+  _outputs = []
   _deps = []
   _type = invoker.type
+
+  # ParamsJson.needs_full_javac_classpath()
+  _needs_full_javac_classpath =
+      _type == "android_apk" || _type == "android_app_bundle" ||
+      (defined(invoker.needs_full_javac_classpath) &&
+       invoker.needs_full_javac_classpath) ||
+      (defined(invoker.dex_needs_classpath) && invoker.dex_needs_classpath)
+
+  if (_needs_full_javac_classpath ||
+      (_type != "java_library" && _type != "android_assets" &&
+       _type != "android_resources" && _type != "group")) {
+    _outputs = [ invoker.build_config ]
+  }
 
   # ParamsJson.merges_manifests()
   _merges_manifests =
@@ -580,13 +593,15 @@ template("write_build_config") {
       if (defined(_lint_json)) {
         lint_json = rebase_path(_lint_json, root_build_dir)
       }
+      if (defined(_needs_full_javac_classpath) && _type == "java_library") {
+        needs_full_javac_classpath = _needs_full_javac_classpath
+      }
     }
   }
   write_file(_params_file, _params, "json")
 
-  # These build steps require no computed values.
-  if (_type == "android_assets" || _type == "android_resources" ||
-      _type == "group") {
+  # Some types require no computed values.
+  if (_outputs == []) {
     not_needed([
                  "_deps",
                  "_inputs",
@@ -3826,6 +3841,8 @@ if (enable_java_templates) {
       is_prebuilt = _is_prebuilt
       if (defined(_dex_needs_classpath)) {
         dex_needs_classpath = _dex_needs_classpath
+      } else if (defined(invoker.bytecode_rewriter_target)) {
+        needs_full_javac_classpath = true
       }
       if (defined(_enable_bytecode_checks) && _enable_bytecode_checks) {
         enable_bytecode_checks = _enable_bytecode_checks
@@ -4173,8 +4190,7 @@ if (enable_java_templates) {
 
         # ijar needs only _unprocessed_jar_deps, but this also needs to export
         # __header and __build_config targets from deps.
-        deps = _unprocessed_jar_deps + _java_header_deps +
-               [ ":$_build_config_target_name" ]
+        deps = _unprocessed_jar_deps + _java_header_deps
       }
     }
 
@@ -4406,7 +4422,6 @@ if (enable_java_templates) {
         if (defined(invoker.deps)) {
           deps += invoker.deps
         }
-        public_deps += [ ":$_build_config_target_name" ]
         if (defined(invoker.public_deps)) {
           public_deps += invoker.public_deps
         }

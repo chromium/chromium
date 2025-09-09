@@ -671,9 +671,14 @@ def main():
 
   if has_classpath:
     tv = _TransitiveValuesBuilder(params).Build()
+    sdk_deps = params.deps().of_type('system_java_library')
 
-    main_config['javac_full_classpath'] = (list(tv.all_unprocessed_jars) +
-                                           list(tv.all_input_jars_paths))
+    javac_full_classpath = (list(tv.all_unprocessed_jars) +
+                            list(tv.all_input_jars_paths))
+
+    if params.needs_full_javac_classpath():
+      main_config['javac_full_classpath'] = javac_full_classpath
+      main_config['sdk_jars'] = sdk_deps.collect('unprocessed_jar_path')
 
     if params.collects_processed_classpath():
       main_config['processed_classpath'] = list(tv.all_processed_jars)
@@ -689,11 +694,6 @@ def main():
     if params.needs_transitive_rtxt():
       rtxt_config['dependency_rtxt_files'] = (
           params.resource_deps().collect('rtxt_path'))
-
-    sdk_deps = params.deps().of_type('system_java_library')
-    main_config['sdk_jars'] = sdk_deps.collect('unprocessed_jar_path')
-    sdk_interface_jars = sdk_deps.collect('interface_jar_path')
-    main_config['sdk_interface_jars'] = sdk_interface_jars
 
     if proguard_enabled or target_type == 'dist_aar':
       main_config['proguard_all_configs'] = sorted(tv.proguard_configs)
@@ -717,7 +717,7 @@ def main():
     turbine_config['processor_classes'] = sorted(
         processor_deps.collect('main_class'))
 
-    # Duplicate so that turbine.py does not need to read another .json.
+    sdk_interface_jars = sdk_deps.collect('interface_jar_path')
     turbine_config['sdk_interface_jars'] = sdk_interface_jars
 
     javac_config['javac_full_interface_classpath'] = (
@@ -901,10 +901,10 @@ def main():
 
     # Used by check_for_missing_direct_deps.py to give better error message
     # when missing deps are found. Both javac_full_classpath_targets and
-    # javac_full_classpath must be in identical orders, as they get passed as
-    # separate arrays and then paired up based on index.
+    # javac_full_interface_classpath must be in identical orders, as they get
+    # passed as separate arrays and then paired up based on index.
     targets_config['javac_full_classpath_targets'] = [
-        jar_to_target[x] for x in main_config['javac_full_classpath']
+        jar_to_target[x] for x in javac_full_classpath
     ]
 
   if path := params.get('lint_json'):
