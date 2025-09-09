@@ -1428,7 +1428,7 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
   }
 
   point_data.page_index = page;
-  PDFiumPage::Area result = pages_[page]->GetCharIndex(
+  PDFiumPage::Area result = pages_[page]->GetCharInfo(
       point_in_page, GetCurrentOrientation(), &point_data.char_index,
       &point_data.form_type, &point_data.target);
   point_data.area =

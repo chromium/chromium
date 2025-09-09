@@ -219,15 +219,19 @@ class PDFiumPage {
   // Transforms an in-page y coordinate to its value in screen coordinates.
   float TransformPageToScreenY(float y);
 
-  // Given a point in the document that's in this page, returns its character
-  // index if it's near a character, and also the type of text.
-  // Target is optional. It will be filled in for WEBLINK_AREA or
-  // DOCLINK_AREA only.
-  Area GetCharIndex(const gfx::Point& point,
-                    PageOrientation orientation,
-                    int* char_index,
-                    int* form_type,
-                    LinkTarget* target);
+  // Given a point in this page in screen coordinates, along with the page's
+  // orientation, returns the area type, or `NONSELECTABLE_AREA` if the area
+  // type cannot be determined.
+  //
+  // Also writes to the following non-optional out-parameters:
+  // - `char_index`, if `point` is near a character.
+  // - `form_type, if `point` is over a form.
+  // - `target`, if the area is `WEBLINK_AREA` or `DOCLINK_AREA`.
+  Area GetCharInfo(const gfx::Point& point,
+                   PageOrientation orientation,
+                   int* char_index,
+                   int* form_type,
+                   LinkTarget* target);
 
   // Converts a form type to its corresponding Area.
   static Area FormTypeToArea(int form_type);

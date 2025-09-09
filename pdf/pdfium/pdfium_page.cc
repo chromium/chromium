@@ -1069,13 +1069,14 @@ PDFiumPage::Area PDFiumPage::GetLinkTarget(FPDF_LINK link, LinkTarget* target) {
   }
 }
 
-PDFiumPage::Area PDFiumPage::GetCharIndex(const gfx::Point& point,
-                                          PageOrientation orientation,
-                                          int* char_index,
-                                          int* form_type,
-                                          LinkTarget* target) {
-  if (!available_)
+PDFiumPage::Area PDFiumPage::GetCharInfo(const gfx::Point& point,
+                                         PageOrientation orientation,
+                                         int* char_index,
+                                         int* form_type,
+                                         LinkTarget* target) {
+  if (!available_) {
     return NONSELECTABLE_AREA;
+  }
 
   gfx::Point device_point = point - rect_.OffsetFromOrigin();
   double new_x;
@@ -1088,9 +1089,8 @@ PDFiumPage::Area PDFiumPage::GetCharIndex(const gfx::Point& point,
 
   // hit detection tolerance, in points.
   constexpr double kTolerance = 20.0;
-  int rv = FPDFText_GetCharIndexAtPos(GetTextPage(), new_x, new_y, kTolerance,
-                                      kTolerance);
-  *char_index = rv;
+  *char_index = FPDFText_GetCharIndexAtPos(GetTextPage(), new_x, new_y,
+                                           kTolerance, kTolerance);
 
   FPDF_LINK link = FPDFLink_GetLinkAtPoint(GetPage(), new_x, new_y);
   int control =
@@ -1113,22 +1113,25 @@ PDFiumPage::Area PDFiumPage::GetCharIndex(const gfx::Point& point,
     // In that case, GetLinkTarget() will return NONSELECTABLE_AREA
     // and we should proceed with area detection.
     Area area = GetLinkTarget(link, target);
-    if (area != NONSELECTABLE_AREA)
+    if (area != NONSELECTABLE_AREA) {
       return area;
+    }
   } else if (link) {
     // We don't handle all possible link types of the PDF. For example,
     // launch actions, cross-document links, etc.
     // See identical block above.
     Area area = GetLinkTarget(link, target);
-    if (area != NONSELECTABLE_AREA)
+    if (area != NONSELECTABLE_AREA) {
       return area;
+    }
   } else if (control > FPDF_FORMFIELD_UNKNOWN) {
     *form_type = control;
     return FormTypeToArea(*form_type);
   }
 
-  if (rv < 0)
+  if (*char_index < 0) {
     return NONSELECTABLE_AREA;
+  }
 
   return GetLink(*char_index, target) != -1 ? WEBLINK_AREA : TEXT_AREA;
 }
