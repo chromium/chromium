@@ -12,7 +12,7 @@
 #include "codelabs/mojo_examples/mojo_impls.h"
 #include "codelabs/mojo_examples/mojom/interface.mojom.h"
 #include "codelabs/mojo_examples/process_bootstrapper.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -123,7 +123,7 @@ class RendererIPCListener : public IPC::Listener {
     // Get ready to receive the invitation from the browser process, which bears
     // a message pipe represented by `ipc_bootstrap_pipe`.
     channel_proxy_->Init(
-        IPC::ChannelMojo::CreateClientFactory(
+        IPC::ChannelFactory::CreateClientFactory(
             std::move(ipc_bootstrap_pipe), /*ipc_task_runner=*/io_task_runner,
             /*proxy_task_runner=*/
             base::SingleThreadTaskRunner::GetCurrentDefault()),

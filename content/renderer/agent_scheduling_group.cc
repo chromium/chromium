@@ -22,7 +22,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_navigation_metrics_manager.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -39,7 +39,7 @@
 
 namespace content {
 
-using ::IPC::ChannelMojo;
+using ::IPC::ChannelFactory;
 using ::IPC::Listener;
 using ::IPC::SyncChannel;
 using ::mojo::AssociatedReceiver;
@@ -138,7 +138,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   // 2. `AutomationMessageFilter` - needs to be handled somehow.
 
   channel_->Init(
-      ChannelMojo::CreateClientFactory(
+      ChannelFactory::CreateClientFactory(
           bootstrap.PassPipe(),
           /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
           /*proxy_task_runner=*/agent_group_scheduler_->DefaultTaskRunner()),

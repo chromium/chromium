@@ -139,11 +139,11 @@ class ChannelProxyRunner {
   void RunProxy() {
     std::unique_ptr<IPC::ChannelFactory> factory;
     if (for_server_) {
-      factory = IPC::ChannelMojo::CreateServerFactory(
+      factory = IPC::ChannelFactory::CreateServerFactory(
           std::move(handle_), io_thread_.task_runner(),
           base::SingleThreadTaskRunner::GetCurrentDefault());
     } else {
-      factory = IPC::ChannelMojo::CreateClientFactory(
+      factory = IPC::ChannelFactory::CreateClientFactory(
           std::move(handle_), io_thread_.task_runner(),
           base::SingleThreadTaskRunner::GetCurrentDefault());
     }

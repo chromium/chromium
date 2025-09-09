@@ -177,7 +177,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "ipc/constants.mojom.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/trace_ipc_message.h"
 #include "media/base/media_switches.h"
@@ -1969,7 +1969,7 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   mojo::ScopedMessagePipeHandle bootstrap =
       mojo_invitation_.AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
   std::unique_ptr<IPC::ChannelFactory> channel_factory =
-      IPC::ChannelMojo::CreateServerFactory(
+      IPC::ChannelFactory::CreateServerFactory(
           std::move(bootstrap), io_task_runner,
           base::SingleThreadTaskRunner::GetCurrentDefault());
 

@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_message_pipe_reader.h"
 #include "ipc/ipc_mojo_bootstrap.h"
 
@@ -45,19 +44,6 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       mojo::ScopedMessagePipeHandle handle,
       Mode mode,
       Listener* listener,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
-
-  // Create a factory object for ChannelMojo.
-  // The factory is used to create Mojo-based ChannelProxy family.
-  // |host| must not be null.
-  static std::unique_ptr<ChannelFactory> CreateServerFactory(
-      mojo::ScopedMessagePipeHandle handle,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
-
-  static std::unique_ptr<ChannelFactory> CreateClientFactory(
-      mojo::ScopedMessagePipeHandle handle,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 

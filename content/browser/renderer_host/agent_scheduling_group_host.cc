@@ -21,7 +21,7 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -31,7 +31,7 @@ namespace content {
 
 namespace {
 
-using ::IPC::ChannelMojo;
+using ::IPC::ChannelFactory;
 using ::IPC::ChannelProxy;
 using ::IPC::Listener;
 using ::mojo::AssociatedReceiver;
@@ -399,7 +399,7 @@ void AgentSchedulingGroupHost::SetUpIPC() {
     process_->GetRendererInterface()->CreateAgentSchedulingGroup(
         bootstrap.InitWithNewPipeAndPassReceiver());
 
-    auto channel_factory = ChannelMojo::CreateServerFactory(
+    auto channel_factory = ChannelFactory::CreateServerFactory(
         bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,
         /*proxy_task_runner=*/
         base::SingleThreadTaskRunner::GetCurrentDefault());

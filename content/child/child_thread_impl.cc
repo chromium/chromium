@@ -57,7 +57,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_platform_file.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -721,7 +721,7 @@ void ChildThreadImpl::Init(const Options& options) {
   // Add filters passed here via options.
   if (options.with_legacy_ipc_channel) {
     DCHECK(legacy_ipc_bootstrap_pipe.is_valid());
-    channel_->Init(IPC::ChannelMojo::CreateClientFactory(
+    channel_->Init(IPC::ChannelFactory::CreateClientFactory(
                        std::move(legacy_ipc_bootstrap_pipe),
                        ChildProcess::current()->io_task_runner(),
                        ipc_task_runner_
