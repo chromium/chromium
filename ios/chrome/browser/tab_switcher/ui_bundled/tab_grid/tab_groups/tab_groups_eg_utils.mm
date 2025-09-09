@@ -33,8 +33,10 @@ id<GREYMatcher> NewTabGroupButton() {
 // tab at `index`.
 void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index,
                                                           bool first_group) {
+  base::PlatformThread::Sleep(base::Seconds(1));
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(index)]
       performAction:grey_longPressWithDuration(base::Seconds(1))];
+  base::PlatformThread::Sleep(base::Seconds(1));
   if (first_group) {
     [[EarlGrey selectElementWithMatcher:
                    grey_text(l10n_util::GetPluralNSStringF(
