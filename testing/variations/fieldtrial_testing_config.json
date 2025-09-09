@@ -20657,24 +20657,6 @@
             ]
         }
     ],
-    "ReloadSelectionModel": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReloadSelectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
@@ -23624,7 +23606,7 @@
             ]
         }
     ],
-    "SideBySideDogfood": [
+    "SideBySide": [
         {
             "platforms": [
                 "linux",
@@ -23633,15 +23615,13 @@
             ],
             "experiments": [
                 {
-                    "name": "SideBySide_Dogfood",
+                    "name": "Enabled_WithMenu",
                     "params": {
-                        "drop_target_max_width": "360",
-                        "drop_target_min_width": "88",
-                        "drop_target_show_delay": "700ms",
-                        "drop_target_width_percentage": "20",
-                        "mini_toolbar_active_config": "hide"
+                        "mini_toolbar_active_config": "showmenu"
                     },
                     "enable_features": [
+                        "CloseActiveTabInSplitViewViaHotkey",
+                        "ReloadSelectionModel",
                         "SideBySide",
                         "SideBySideLinkMenuNewBadge",
                         "SideBySideSessionRestore"
