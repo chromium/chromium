@@ -400,6 +400,7 @@ void LensOverlayUntrustedUI::CreatePageHandler(
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   LensOverlayController& controller = GetLensOverlayController();
 
+  controller.SetInvocationTimeForWebUIBinding(base::TimeTicks::Now());
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
   controller.BindOverlay(std::move(receiver), std::move(page));

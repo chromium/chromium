@@ -602,4 +602,63 @@ void RecordIframeLoadStatus(bool is_error_page, net::Error net_error_code) {
                                 status);
 }
 
+void RecordTimeToCloseOpenedSidePanel(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToCloseOpenedSidePanel",
+                                duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToScreenshot(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToScreenshot", duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToFetchBoundingBoxes(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToFetchBoundingBoxes",
+                                duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToFetchPdfPage(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToFetchPdfPage", duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToCheckPageContextEligibility(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes(
+      "Lens.Overlay.TimeToCheckPageContextEligibility", duration,
+      /*min=*/base::Milliseconds(1),
+      /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToCreateScreenshotBitmap(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToCreateScreenshotBitmap",
+                                duration, /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToGetPageContext(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToGetPageContext", duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
+void RecordTimeToWebuiBound(base::TimeDelta duration) {
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToWebuiBound", duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
 }  // namespace lens

@@ -811,6 +811,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.TimeToCheckPageContextEligibility" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when checking if the page context is eligible for Lens.
+    Measures the elapsed time to check for eligibility.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCloseOpenedSidePanel" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the side panel is closed after being opened from the
+    overlay. Measures the elapsed time to close the side panel.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCreateScreenshotBitmap" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a bitmap is created from a screenshot. Measures the
+    elapsed time to create the screenshot bitmap.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchBoundingBoxes" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the bounding boxes for images on the page are fetched.
+    Measures the elapsed time to fetch the bounding boxes.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchPdfPage" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a PDF page is fetched for the Lens Overlay. Measures the
+    elapsed time to fetch the PDF page.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
     expires_after="2026-01-11">
   <owner>jdonnelly@chromium.org</owner>
@@ -833,6 +883,36 @@ chromium-metrics-reviews@google.com.
     invoked and when the user first interacts with the overlay.
   </summary>
   <token key="FirstInteractionType" variants="FirstInteractionType"/>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToGetPageContext" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page context is retrieved. Measures the elapsed time
+    to get the page context.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToScreenshot" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a screenshot is successfully captured for the Lens
+    Overlay. Measures the elapsed time to capture the screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToWebuiBound" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page handler is bound to the C++ controller. Measures
+    the elapsedtime for the page to bind.
+  </summary>
 </histogram>
 
 <histogram name="Lens.Overlay.TimeToWebUIReady" units="ms"

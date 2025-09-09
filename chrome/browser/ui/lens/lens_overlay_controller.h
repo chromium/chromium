@@ -319,7 +319,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Handles a new region thumbnail being created.
   void HandleRegionBitmapCreated(const SkBitmap& region_bitmap);
 
-  // Called when the side panel alignment changes.
+  // Called when the side panel alignment chgces.
   void OnSidePanelAlignmentChanged();
 
   // Testing function to issue a Lens region selection request.
@@ -403,6 +403,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Opens the side panel for testing. If the side panel is already open, this
   // does nothing.
   void OpenSidePanelForTesting();
+
+  // Sets the invocation time for WebUI binding.
+  void SetInvocationTimeForWebUIBinding(base::TimeTicks time);
 
   // Returns the lens suggest inputs stored in this controller for testing.
   const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
@@ -686,7 +689,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void CaptureScreenshot();
 
   // Fetches the bounding boxes of all images within the current viewport.
-  void FetchViewportImageBoundingBoxes(const SkBitmap& bitmap);
+  void FetchViewportImageBoundingBoxes(
+      std::optional<base::TimeTicks> bounding_box_start_time,
+      const SkBitmap& bitmap);
 
   // Gets the current page number if viewing a PDF.
   void GetPdfCurrentPage(
@@ -694,6 +699,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
           chrome_render_frame,
       int attempt_id,
       const SkBitmap& bitmap,
+      std::optional<base::TimeTicks> bounding_box_start_time,
       const std::vector<gfx::Rect>& bounds);
 
   // Called once a screenshot has been captured. This should trigger transition
@@ -709,13 +715,16 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       int attempt_id,
       const SkBitmap& bitmap,
       const std::vector<gfx::Rect>& bounds,
+      std::optional<base::TimeTicks> pdf_page_start_time,
       std::optional<uint32_t> pdf_current_page);
 
   // Called when the page context eligibility is fetched.
-  void OnPageContextEligibilityFetched(const SkBitmap& bitmap,
-                                       const std::vector<gfx::Rect>& all_bounds,
-                                       std::optional<uint32_t> pdf_current_page,
-                                       bool is_page_context_eligible);
+  void OnPageContextEligibilityFetched(
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& all_bounds,
+      std::optional<uint32_t> pdf_current_page,
+      std::optional<base::TimeTicks> page_context_eligibility_start_time,
+      bool is_page_context_eligible);
 
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
@@ -728,12 +737,14 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       const SkBitmap& screenshot,
       const std::vector<gfx::Rect>& all_bounds,
       std::optional<uint32_t> pdf_current_page,
+      std::optional<base::TimeTicks> screenshot_bitmap_start_time,
       SkBitmap rgb_screenshot);
 
   // Stores the page content and continues the initialization process. Also
   // records the page count for PDF.
   void StorePageContentAndContinueInitialization(
       std::unique_ptr<OverlayInitializationData> initialization_data,
+      std::optional<base::TimeTicks> page_context_start_time,
       std::vector<lens::PageContent> page_contents,
       lens::MimeType primary_content_type,
       std::optional<uint32_t> page_count);
@@ -840,7 +851,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void SetOverlayRoundedCorner();
 
   // Called to continue the screenshot process while opening lens overlay.
-  void FinishedWaitingForReflow();
+  void FinishedWaitingForReflow(
+      std::optional<base::TimeTicks> reflow_start_time);
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(
@@ -1053,6 +1065,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // The time at which the overlay was invoked, since epoch. Used to calculate
   // timeToWebUIReady on the WebUI side.
   base::Time invocation_time_since_epoch_;
+
+  // The time at which the webUI binding was invoked. Used to compute timing
+  // metrics.
+  base::TimeTicks invocation_time_for_webui_binding_;
 
   // Indicates whether this is the first upload handler event received. This is
   // used to determine whether to show the upload progress bar.

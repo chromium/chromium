@@ -9360,3 +9360,48 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   EXPECT_TRUE(rounded_corners.upper_right() == 0);
   EXPECT_TRUE(rounded_corners.upper_left() > 0);
 }
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordInitializationTimingHistograms) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // No metrics should be emitted before anything happens.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToScreenshot", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateBitmap", 0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.TimeToCheckPageContextEligibility", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeForPageToBind", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCloseOpenedSidePanel",
+                                    0);
+
+  // Open the side panel so we can test the side panel closing metric.
+  auto* side_panel_coordinator =
+      browser()->GetFeatures().side_panel_coordinator();
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToScreenshot", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateScreenshotBitmap",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.TimeToCheckPageContextEligibility", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToWebuiBound", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCloseOpenedSidePanel",
+                                    1);
+}

@@ -216,6 +216,30 @@ void RecordHandleTextDirectiveResult(
 // Records the load status of the side panel iframe.
 void RecordIframeLoadStatus(bool is_error_page, net::Error net_error_code);
 
+// Records the time it takes to close the side panel
+void RecordTimeToCloseOpenedSidePanel(base::TimeDelta duration);
+
+// Records the time it takes to take a screenshot.
+void RecordTimeToScreenshot(base::TimeDelta duration);
+
+// Records the time it takes to fetch bounding boxes.
+void RecordTimeToFetchBoundingBoxes(base::TimeDelta duration);
+
+// Records the time it takes to fetch the PDF page.
+void RecordTimeToFetchPdfPage(base::TimeDelta duration);
+
+// Records the time it takes to check page context eligibility.
+void RecordTimeToCheckPageContextEligibility(base::TimeDelta duration);
+
+// Records the time it takes to create the screenshot bitmap.
+void RecordTimeToCreateScreenshotBitmap(base::TimeDelta duration);
+
+// Records the time it takes to get the page context
+void RecordTimeToGetPageContext(base::TimeDelta duration);
+
+// Records the time it takes for the page to bind
+void RecordTimeToWebuiBound(base::TimeDelta duration);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_

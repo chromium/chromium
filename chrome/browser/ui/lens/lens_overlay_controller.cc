@@ -373,6 +373,13 @@ void LensOverlayController::BindOverlay(
   page_.Bind(std::move(page));
 
   InitializeOverlay(/*initialization_data=*/nullptr);
+  lens::RecordTimeToWebuiBound(base::TimeTicks::Now() -
+                               invocation_time_for_webui_binding_);
+}
+
+void LensOverlayController::SetInvocationTimeForWebUIBinding(
+    base::TimeTicks invocation_time_for_webui_binding) {
+  invocation_time_for_webui_binding_ = invocation_time_for_webui_binding;
 }
 
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
@@ -893,8 +900,10 @@ void LensOverlayController::ShowUI(
     base::SingleThreadTaskRunner::GetCurrentDefault()
         ->PostNonNestableDelayedTask(
             FROM_HERE,
-            base::BindOnce(&LensOverlayController::FinishedWaitingForReflow,
-                           weak_factory_.GetWeakPtr()),
+            base::BindOnce(
+                &LensOverlayController::FinishedWaitingForReflow,
+                weak_factory_.GetWeakPtr(),
+                std::make_optional<base::TimeTicks>(base::TimeTicks::Now())),
             kReflowWaitTimeout);
   } else {
     CaptureScreenshot();
@@ -1331,17 +1340,19 @@ void LensOverlayController::CaptureScreenshot() {
     return;
   }
 
-  // Side panel is now full closed, take screenshot and open overlay.
+  // Side panel is now fully closed, take screenshot and open overlay.
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &LensOverlayController::FetchViewportImageBoundingBoxes,
-              weak_factory_.GetWeakPtr())));
+              weak_factory_.GetWeakPtr(),
+              std::make_optional<base::TimeTicks>(base::TimeTicks::Now()))));
 }
 
 void LensOverlayController::FetchViewportImageBoundingBoxes(
+    std::optional<base::TimeTicks> bounding_box_start_time,
     const SkBitmap& bitmap) {
   content::RenderFrameHost* render_frame_host =
       tab_->GetContents()->GetPrimaryMainFrame();
@@ -1354,7 +1365,13 @@ void LensOverlayController::FetchViewportImageBoundingBoxes(
 
   frame->RequestBoundsHintForAllImages(base::BindOnce(
       &LensOverlayController::GetPdfCurrentPage, weak_factory_.GetWeakPtr(),
-      std::move(chrome_render_frame), ++screenshot_attempt_id_, bitmap));
+      std::move(chrome_render_frame), ++screenshot_attempt_id_, bitmap,
+      std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
+
+  if (bounding_box_start_time.has_value()) {
+    lens::RecordTimeToScreenshot(base::TimeTicks::Now() -
+                                 bounding_box_start_time.value());
+  }
 }
 
 void LensOverlayController::GetPdfCurrentPage(
@@ -1362,7 +1379,12 @@ void LensOverlayController::GetPdfCurrentPage(
         chrome_render_frame,
     int attempt_id,
     const SkBitmap& bitmap,
+    std::optional<base::TimeTicks> bounding_box_start_time,
     const std::vector<gfx::Rect>& bounds) {
+  if (bounding_box_start_time.has_value()) {
+    lens::RecordTimeToFetchBoundingBoxes(base::TimeTicks::Now() -
+                                         bounding_box_start_time.value());
+  }
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
@@ -1370,13 +1392,15 @@ void LensOverlayController::GetPdfCurrentPage(
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
         &LensOverlayController::DidCaptureScreenshot,
         weak_factory_.GetWeakPtr(), std::move(chrome_render_frame), attempt_id,
-        bitmap, bounds));
+        bitmap, bounds,
+        std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   DidCaptureScreenshot(std::move(chrome_render_frame), attempt_id, bitmap,
-                       bounds, /*pdf_current_page=*/std::nullopt);
+                       bounds, /*pdf_current_page=*/std::nullopt,
+                       /*pdf_page_start_time=*/std::nullopt);
 }
 
 void LensOverlayController::DidCaptureScreenshot(
@@ -1385,7 +1409,12 @@ void LensOverlayController::DidCaptureScreenshot(
     int attempt_id,
     const SkBitmap& bitmap,
     const std::vector<gfx::Rect>& all_bounds,
+    std::optional<base::TimeTicks> pdf_page_start_time,
     std::optional<uint32_t> pdf_current_page) {
+  if (pdf_page_start_time.has_value()) {
+    lens::RecordTimeToFetchPdfPage(base::TimeTicks::Now() -
+                                   pdf_page_start_time.value());
+  }
   // While capturing a screenshot the overlay was cancelled. Do nothing.
   if (state_ == State::kOff || IsOverlayClosing()) {
     return;
@@ -1417,9 +1446,10 @@ void LensOverlayController::DidCaptureScreenshot(
     // after the eligibility is fetched.
     GetContextualizationController()->IsPageContextEligible(
         tab_url, /*frame_metadata=*/{},
-        base::BindOnce(&LensOverlayController::OnPageContextEligibilityFetched,
-                       weak_factory_.GetWeakPtr(), bitmap, all_bounds,
-                       pdf_current_page));
+        base::BindOnce(
+            &LensOverlayController::OnPageContextEligibilityFetched,
+            weak_factory_.GetWeakPtr(), bitmap, all_bounds, pdf_current_page,
+            std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
     return;
   }
 
@@ -1435,7 +1465,12 @@ void LensOverlayController::OnPageContextEligibilityFetched(
     const SkBitmap& bitmap,
     const std::vector<gfx::Rect>& all_bounds,
     std::optional<uint32_t> pdf_current_page,
+    std::optional<base::TimeTicks> page_context_eligibility_start_time,
     bool is_page_context_eligible) {
+  if (page_context_eligibility_start_time.has_value()) {
+    lens::RecordTimeToCheckPageContextEligibility(
+        base::TimeTicks::Now() - page_context_eligibility_start_time.value());
+  }
   auto bitmap_to_send = bitmap;
   auto page_url = lens_search_controller_->GetPageURL();
   auto page_title = lens_search_controller_->GetPageTitle();
@@ -1468,16 +1503,22 @@ void LensOverlayController::CreateInitializationData(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CreateRgbBitmap, screenshot),
-      base::BindOnce(&LensOverlayController::ContinueCreateInitializationData,
-                     weak_factory_.GetWeakPtr(), screenshot, all_bounds,
-                     pdf_current_page));
+      base::BindOnce(
+          &LensOverlayController::ContinueCreateInitializationData,
+          weak_factory_.GetWeakPtr(), screenshot, all_bounds, pdf_current_page,
+          std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
 }
 
 void LensOverlayController::ContinueCreateInitializationData(
     const SkBitmap& screenshot,
     const std::vector<gfx::Rect>& all_bounds,
     std::optional<uint32_t> pdf_current_page,
+    std::optional<base::TimeTicks> screenshot_bitmap_start_time,
     SkBitmap rgb_screenshot) {
+  if (screenshot_bitmap_start_time.has_value()) {
+    lens::RecordTimeToCreateScreenshotBitmap(
+        base::TimeTicks::Now() - screenshot_bitmap_start_time.value());
+  }
   if (state_ != State::kStartingWebUI || rgb_screenshot.drawsNothing()) {
     // TODO(b/334185985): Handle case when screenshot RGB encoding fails.
     lens_search_controller_->CloseLensSync(
@@ -1511,14 +1552,19 @@ void LensOverlayController::ContinueCreateInitializationData(
 
   GetContextualizationController()->GetPageContextualization(base::BindOnce(
       &LensOverlayController::StorePageContentAndContinueInitialization,
-      weak_factory_.GetWeakPtr(), std::move(initialization_data)));
+      weak_factory_.GetWeakPtr(), std::move(initialization_data),
+      std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
 }
 
 void LensOverlayController::StorePageContentAndContinueInitialization(
     std::unique_ptr<OverlayInitializationData> initialization_data,
+    std::optional<base::TimeTicks> page_context_start_time,
     std::vector<lens::PageContent> page_contents,
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count) {
+  if (page_context_start_time.has_value()) {
+    lens::RecordTimeToGetPageContext(base::TimeTicks::Now() - invocation_time_);
+  }
   initialization_data->page_contents_ = page_contents;
   initialization_data->primary_content_type_ = primary_content_type;
   initialization_data->pdf_page_count_ = page_count;
@@ -2107,8 +2153,13 @@ void LensOverlayController::SetOverlayRoundedCorner() {
   overlay_view_->layer()->SetRoundedCornerRadius(radii);
 }
 
-void LensOverlayController::FinishedWaitingForReflow() {
+void LensOverlayController::FinishedWaitingForReflow(
+    std::optional<base::TimeTicks> reflow_start_time) {
   if (state_ == State::kClosingOpenedSidePanel) {
+    if (reflow_start_time.has_value()) {
+      lens::RecordTimeToCloseOpenedSidePanel(base::TimeTicks::Now() -
+                                             reflow_start_time.value());
+    }
     // This path is invoked after the user invokes the overlay, but we needed
     // to close the side panel before taking a screenshot. The Side panel is
     // now closed so we can now take the screenshot of the page.
