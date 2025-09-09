@@ -18,7 +18,7 @@ test name, the silencing type (`DISABLED` or `FLAKY`), and optional conditions.
     *   Identify the required `<test_name>`, required `<silencing_type>`
         (`DISABLED` or `FLAKY`), and optional `<conditions>` from the user's
         input.
-    *   Example input: `/cr:test:silence-test-ios testMyFeature FLAKY only on
+    *   Example input: `/cr:test:silence-test testMyFeature FLAKY only on
         iphone device`
     *   **If you can't parse all the required arguments:** Do not proceed with
         this task and print out the missing arguments to the user.
