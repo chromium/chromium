@@ -313,6 +313,17 @@ exempted_from_description_builders = {
         "win32-archive-rel",
         "win32-arm64-rel",
         "win32-official",
+
+        # Libfuzzer testers that were recently added while description checking
+        # was broken
+        "chromeos-x64-libfuzzer-asan-rel-tests",
+        "linux-x64-libfuzzer-asan-dbg-tests",
+        "linux-x64-libfuzzer-asan-rel-tests",
+        "linux-x64-libfuzzer-msan-rel-tests",
+        "linux-x64-libfuzzer-ubsan-rel-tests",
+        "linux-x86-libfuzzer-asan-rel-tests",
+        "mac-arm64-libfuzzer-asan-rel-tests",
+        "win-x64-libfuzzer-asan-rel-tests",
     ]),
     "codesearch": set([
         "gen-android-try",
