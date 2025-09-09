@@ -4,6 +4,7 @@
 
 #include "content/browser/loader/prefetch_url_loader_service_context.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -65,6 +66,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    // TODO(crbug.com/443182219): Remove this after the investigation is done.
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -133,6 +136,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(
               network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+      // TODO(crbug.com/443182219): Remove this after the investigation is done.
+      base::debug::DumpWithoutCrashing();
       return;
     }
 
@@ -189,6 +194,8 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
   if (!resource_request.request_initiator) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: no request_initiator");
+    // TODO(crbug.com/443182219): Remove this after the investigation is done.
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -199,6 +206,8 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
           resource_request.url)) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: same-origin");
+    // TODO(crbug.com/443182219): Remove this after the investigation is done.
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -213,6 +222,8 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
           current_context.render_frame_host->GetLastCommittedOrigin()) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: frame origin mismatch");
+    // TODO(crbug.com/443182219): Remove this after the investigation is done.
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -224,6 +235,8 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
       net::LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: can use restricted prefetch");
+    // TODO(crbug.com/443182219): Remove this after the investigation is done.
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
