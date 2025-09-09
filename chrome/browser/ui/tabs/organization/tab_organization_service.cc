@@ -130,15 +130,10 @@ bool TabOrganizationService::CanStartRequest() const {
 
 // The signin flow is not used on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-  const signin::IdentityManager* const identity_manager(
-      IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
-  const auto primary_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  const auto extended_account_info =
-      identity_manager->FindExtendedAccountInfo(primary_account_info);
-  return !extended_account_info.IsEmpty() &&
-         identity_manager->HasAccountWithRefreshToken(
-             primary_account_info.account_id);
+  const signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile_);
+  return identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin);
 #else
   return true;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
