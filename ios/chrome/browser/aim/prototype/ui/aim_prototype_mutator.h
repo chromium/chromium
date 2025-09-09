@@ -14,6 +14,8 @@
 - (void)sendText:(NSString*)text;
 /// Sets `enabled` state for AIM.
 - (void)setAIModeEnabled:(BOOL)enabled;
+/// Adds tab content.
+- (void)attachCurrentTabContent;
 
 @end
 

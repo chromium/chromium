@@ -183,6 +183,11 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
   _AIModeEnabled = enabled;
 }
 
+- (void)attachCurrentTabContent {
+  // TODO(crbug.com/442564280): Attach the current tab content to the user's
+  // query.
+}
+
 #pragma mark - ComposeboxFileUploadObserver
 
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken

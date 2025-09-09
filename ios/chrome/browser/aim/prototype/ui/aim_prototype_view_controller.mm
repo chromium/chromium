@@ -306,12 +306,21 @@ const CGFloat kGlowEffectWidth = 4.0f;
                     aimPrototypeViewControllerDidTapFileButton:weakSelf];
               }];
 
-  plusButton.menu = [UIMenu menuWithTitle:@""
-                                 children:@[
-                                   fileAction,
-                                   galleryAction,
-                                   cameraAction,
-                                 ]];
+  UIAction* attachCurrentTabAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"Attach current tab"
+                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator attachCurrentTabContent];
+              }];
+
+  plusButton.menu = [UIMenu
+      menuWithTitle:@""
+           children:@[
+             fileAction, galleryAction, cameraAction, attachCurrentTabAction
+           ]];
 
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
