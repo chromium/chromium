@@ -261,17 +261,20 @@ VariationsIdsProvider::~VariationsIdsProvider() {
 }
 
 // static
-void VariationsIdsProvider::CreateInstanceForTesting(Mode mode) {
+VariationsIdsProvider* VariationsIdsProvider::CreateInstanceForTesting(
+    Mode mode) {
   base::AutoLock lock(GetInstanceLock());
-  delete g_instance;
+  VariationsIdsProvider* previous_instance = g_instance;
   g_instance = new VariationsIdsProvider(mode);
+  return previous_instance;
 }
 
 // static
-void VariationsIdsProvider::DestroyInstanceForTesting() {
+void VariationsIdsProvider::DestroyInstanceForTesting(
+    VariationsIdsProvider* previous_instance) {
   base::AutoLock lock(GetInstanceLock());
   delete g_instance;
-  g_instance = nullptr;
+  g_instance = previous_instance;
 }
 
 std::string VariationsIdsProvider::GetVariationsString(

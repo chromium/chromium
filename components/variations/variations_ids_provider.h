@@ -210,8 +210,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   explicit VariationsIdsProvider(Mode mode);
   ~VariationsIdsProvider() override;
 
-  static void CreateInstanceForTesting(Mode mode);
-  static void DestroyInstanceForTesting();
+  // Creates a new instance of `VariationsIdsProvider` for testing, returning
+  // the pointer to the previous instance. This should only be called by
+  // `ScopedVariationsIdsProvider`.
+  static VariationsIdsProvider* CreateInstanceForTesting(Mode mode);
+  // Resets the global instance of `VariationsIdsProvider` to the given
+  // instance, for testing. This should only be called by
+  // `ScopedVariationsIdsProvider`.
+  static void DestroyInstanceForTesting(VariationsIdsProvider* previous_instance);
 
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the `variation_id` repeated field of
