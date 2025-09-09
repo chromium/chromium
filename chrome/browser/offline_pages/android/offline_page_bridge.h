@@ -187,6 +187,11 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
+  void AcquireFileAccessPermission(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_web_contents,
+      const base::android::JavaParamRef<jobject>& j_callback_obj);
+
  private:
   void GetPageByOfflineIdDone(
       offline_items_collection::LaunchLocation launch_location,

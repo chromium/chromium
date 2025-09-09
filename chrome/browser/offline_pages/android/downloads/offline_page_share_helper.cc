@@ -24,6 +24,10 @@ using OfflineItemShareInfo = offline_items_collection::OfflineItemShareInfo;
 namespace offline_pages {
 namespace {
 
+content::WebContents* EmptyWebContentGetter() {
+  return nullptr;
+}
+
 // Create share info with a content URI or file URI. We try best effort to get
 // content URI if |file_path| is in Android public directory. Then try to
 // fall back to file URI. If both failed, we will share the URL of the page
@@ -68,18 +72,34 @@ void OfflinePageShareHelper::OnPageGetForShare(
   // Need to publish internal page to public directory to share the file with
   // content URI instead of the web page URL.
   if (in_private_dir) {
-    // Retrieve the offline page again in case it's deleted.
-    PageCriteria criteria;
-    criteria.guid = content_id_.id;
-    criteria.maximum_matches = 1;
-    model_->GetPagesWithCriteria(
-        criteria, base::BindOnce(&OfflinePageShareHelper::OnPageGetForPublish,
-                                 weak_ptr_factory_.GetWeakPtr()));
+    AcquireFileAccessPermission();
     return;
   }
 
   // Try to share the mhtml file if the page is in public directory.
   NotifyCompletion(ShareResult::kSuccess, CreateShareInfo(page.file_path));
+}
+
+void OfflinePageShareHelper::AcquireFileAccessPermission() {
+  DownloadControllerBase::Get()->AcquireFileAccessPermission(
+      base::BindRepeating(&EmptyWebContentGetter),
+      base::BindOnce(&OfflinePageShareHelper::OnFileAccessPermissionDone,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OfflinePageShareHelper::OnFileAccessPermissionDone(bool granted) {
+  if (!granted) {
+    NotifyCompletion(ShareResult::kFileAccessPermissionDenied, nullptr);
+    return;
+  }
+
+  // Retrieve the offline page again in case it's deleted.
+  PageCriteria criteria;
+  criteria.guid = content_id_.id;
+  criteria.maximum_matches = 1;
+  model_->GetPagesWithCriteria(
+      criteria, base::BindOnce(&OfflinePageShareHelper::OnPageGetForPublish,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OfflinePageShareHelper::OnPageGetForPublish(

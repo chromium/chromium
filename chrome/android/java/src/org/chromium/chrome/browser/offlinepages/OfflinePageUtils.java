@@ -112,7 +112,6 @@ public class OfflinePageUtils {
 
         /**
          * Shows the "reload" snackbar for the given tab.
-         *
          * @param context The application context.
          * @param snackbarManager Class that shows the snackbar.
          * @param snackbarController Class to control the snackbar.
@@ -121,7 +120,7 @@ public class OfflinePageUtils {
         void showReloadSnackbar(
                 Context context,
                 SnackbarManager snackbarManager,
-                SnackbarController snackbarController,
+                final SnackbarController snackbarController,
                 int tabId);
     }
 
@@ -161,7 +160,7 @@ public class OfflinePageUtils {
         public void showReloadSnackbar(
                 Context context,
                 SnackbarManager snackbarManager,
-                SnackbarController snackbarController,
+                final SnackbarController snackbarController,
                 int tabId) {
             if (tabId == Tab.INVALID_TAB_ID) return;
 
@@ -397,7 +396,20 @@ public class OfflinePageUtils {
             return;
         }
 
-        publishThenShareInternalPage(window, offlinePageBridge, offlinePage, shareCallback);
+        // The file access permission is needed since we may need to publish the archive
+        // file if it resides in internal directory.
+        offlinePageBridge.acquireFileAccessPermission(
+                webContents,
+                (granted) -> {
+                    if (!granted) {
+                        return;
+                    }
+
+                    // If the page is not in a public location, we must publish it before
+                    // sharing it.
+                    publishThenShareInternalPage(
+                            window, offlinePageBridge, offlinePage, shareCallback);
+                });
     }
 
     /**
@@ -741,7 +753,7 @@ public class OfflinePageUtils {
         /** The single, stateless TabRestoreTracker instance to monitor all tab restores. */
         private final TabModelSelector mTabModelSelector;
 
-        RecentTabTracker(TabModelSelector selector) {
+        public RecentTabTracker(TabModelSelector selector) {
             super(selector);
             mTabModelSelector = selector;
         }

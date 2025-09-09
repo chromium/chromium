@@ -41,6 +41,9 @@ class DownloadController : public DownloadControllerBase {
   DownloadController& operator=(const DownloadController&) = delete;
 
   // DownloadControllerBase implementation.
+  void AcquireFileAccessPermission(
+      const content::WebContents::Getter& wc_getter,
+      AcquireFileAccessPermissionCallback callback) override;
   void CreateAndroidDownload(const content::WebContents::Getter& wc_getter,
                              const DownloadInfo& info) override;
 
@@ -96,6 +99,10 @@ class DownloadController : public DownloadControllerBase {
   // Helper methods to start android download on UI thread.
   void StartAndroidDownload(const content::WebContents::Getter& wc_getter,
                             const DownloadInfo& info);
+  void StartAndroidDownloadInternal(
+      const content::WebContents::Getter& wc_getter,
+      const DownloadInfo& info,
+      bool allowed);
 
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);

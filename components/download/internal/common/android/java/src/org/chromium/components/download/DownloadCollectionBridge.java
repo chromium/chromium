@@ -11,6 +11,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.FileUtils;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
@@ -19,6 +20,8 @@ import android.provider.MediaStore.Downloads;
 import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -128,25 +131,27 @@ public class DownloadCollectionBridge {
 
     /**
      * Returns whether a download needs to be published.
-     *
      * @param filePath File path of the download.
      * @return True if the download needs to be published, or false otherwise.
      */
     @CalledByNative
     public static boolean shouldPublishDownload(final String filePath) {
-        if (filePath == null) return false;
-        // Only need to publish downloads that are on primary storage.
-        return !sDownloadDelegate.isDownloadOnSDCard(filePath);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (filePath == null) return false;
+            // Only need to publish downloads that are on primary storage.
+            return !sDownloadDelegate.isDownloadOnSDCard(filePath);
+        }
+        return false;
     }
 
     /**
      * Copies file content from a source file to the destination Uri.
-     *
      * @param sourcePath File content to be copied from.
      * @param destinationUri Destination Uri to be copied to.
      * @return True on success, or false otherwise.
      */
     @CalledByNative
+    @RequiresApi(29)
     public static boolean copyFileToIntermediateUri(
             final String sourcePath, final String destinationUri) {
         try {
@@ -277,6 +282,7 @@ public class DownloadCollectionBridge {
      * @return an array of download Uri and display name pair.
      */
     @CalledByNative
+    @RequiresApi(29)
     private static DisplayNameInfo @Nullable [] getDisplayNamesForDownloads() {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor = null;
@@ -308,12 +314,18 @@ public class DownloadCollectionBridge {
         return null;
     }
 
+    /** @return whether download collection is supported. */
+    public static boolean supportsDownloadCollection() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    }
+
     /**
      * Gets the content URI of the download that has the given file name.
      *
      * @param fileName name of the file.
      * @return Uri of the download with the given display name.
      */
+    @RequiresApi(29)
     public static @Nullable Uri getDownloadUriForFileName(String fileName) {
         Cursor cursor = null;
         try {
@@ -372,13 +384,13 @@ public class DownloadCollectionBridge {
 
     /**
      * Helper method to create PendingParams needed for PendingSession creation.
-     *
      * @param fileName Name of the file.
      * @param mimeType Mime type of the file.
      * @param originalUrl Originating URL of the download.
      * @param referrer Referrer of the download.
      * @return PendingParams needed for creating the PendingSession.
      */
+    @RequiresApi(29)
     private static PendingParams createPendingParams(
             final String fileName,
             final String mimeType,

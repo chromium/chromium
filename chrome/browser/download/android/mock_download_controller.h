@@ -26,6 +26,9 @@ class MockDownloadController : public DownloadControllerBase {
                                 const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
                                 bool is_media) override;
+  void AcquireFileAccessPermission(
+      const content::WebContents::Getter& wc_getter,
+      AcquireFileAccessPermissionCallback callback) override;
   void SetApproveFileAccessRequestForTesting(bool approve) override;
   void CreateAndroidDownload(const content::WebContents::Getter& wc_getter,
                              const DownloadInfo& info) override;

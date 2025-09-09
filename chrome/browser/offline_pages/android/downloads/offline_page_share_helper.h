@@ -42,6 +42,9 @@ class OfflinePageShareHelper {
  private:
   void OnPageGetForShare(const std::vector<OfflinePageItem>& pages);
 
+  void AcquireFileAccessPermission();
+  void OnFileAccessPermissionDone(bool granted);
+
   void OnPageGetForPublish(const std::vector<OfflinePageItem>& pages);
   void OnPagePublished(const base::FilePath& file_path, SavePageResult result);
 

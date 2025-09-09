@@ -584,6 +584,17 @@ public class OfflinePageBridge {
                 .isShowingTrustedOfflinePage(mNativeOfflinePageBridge, webContents);
     }
 
+    /**
+     * Tries to acquire the storage access permssion if not yet.
+     *
+     * @param webContents Contents of the page to check.
+     * @param callback Callback to notify the result.
+     */
+    public void acquireFileAccessPermission(WebContents webContents, Callback<Boolean> callback) {
+        org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
+                .acquireFileAccessPermission(mNativeOfflinePageBridge, webContents, callback);
+    }
+
     @CalledByNative
     protected void offlinePageModelLoaded() {
         mIsNativeOfflinePageModelLoaded = true;
@@ -715,7 +726,7 @@ public class OfflinePageBridge {
         void getAllPages(
                 long nativeOfflinePageBridge,
                 List<OfflinePageItem> offlinePages,
-                Callback<List<OfflinePageItem>> callback);
+                final Callback<List<OfflinePageItem>> callback);
 
         void willCloseTab(long nativeOfflinePageBridge, WebContents webContents);
 
@@ -818,5 +829,8 @@ public class OfflinePageBridge {
                 long nativeOfflinePageBridge,
                 @JniType("std::string") String url,
                 Callback<LoadUrlParams> callback);
+
+        void acquireFileAccessPermission(
+                long nativeOfflinePageBridge, WebContents webContents, Callback<Boolean> callback);
     }
 }

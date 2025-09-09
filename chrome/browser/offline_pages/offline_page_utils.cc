@@ -111,6 +111,55 @@ void DoCalculateSizeBetween(
   std::move(callback).Run(total_size);
 }
 
+content::WebContents* GetWebContentsByFrameID(int render_process_id,
+                                              int render_frame_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!render_frame_host)
+    return NULL;
+  return content::WebContents::FromRenderFrameHost(render_frame_host);
+}
+
+content::WebContents::Getter GetWebContentsGetter(
+    content::WebContents* web_contents) {
+  // The FrameTreeNode ID should be used to access the WebContents.
+  content::FrameTreeNodeId frame_tree_node_id =
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+  if (frame_tree_node_id) {
+    return base::BindRepeating(content::WebContents::FromFrameTreeNodeId,
+                               frame_tree_node_id);
+  }
+
+  // In other cases, use the RenderProcessHost ID + RenderFrameHost ID to get
+  // the WebContents.
+  return base::BindRepeating(
+      &GetWebContentsByFrameID,
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      web_contents->GetPrimaryMainFrame()->GetRoutingID());
+}
+
+void AcquireFileAccessPermissionDoneForScheduleDownload(
+    const content::WebContents::Getter& wc_getter,
+    const std::string& name_space,
+    const GURL& url,
+    OfflinePageUtils::DownloadUIActionFlags ui_action,
+    const std::string& request_origin,
+    bool granted) {
+  if (!granted)
+    return;
+  content::WebContents* web_contents = wc_getter.Run();
+  if (!web_contents) {
+    return;
+  }
+
+  OfflinePageTabHelper* tab_helper =
+      OfflinePageTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->ScheduleDownloadHelper(web_contents, name_space, url, ui_action,
+                                     request_origin);
+}
+
 }  // namespace
 
 // static
@@ -247,13 +296,13 @@ void OfflinePageUtils::ScheduleDownload(content::WebContents* web_contents,
   if (!web_contents)
     return;
 
-  OfflinePageTabHelper* tab_helper =
-      OfflinePageTabHelper::FromWebContents(web_contents);
-  if (!tab_helper) {
-    return;
-  }
-  tab_helper->ScheduleDownloadHelper(web_contents, name_space, url, ui_action,
-                                     request_origin);
+  // Ensure that the storage permission is granted since the archive file is
+  // going to be placed in the public directory.
+  AcquireFileAccessPermission(
+      web_contents,
+      base::BindOnce(&AcquireFileAccessPermissionDoneForScheduleDownload,
+                     GetWebContentsGetter(web_contents), name_space, url,
+                     ui_action, request_origin));
 }
 
 // static
@@ -320,6 +369,21 @@ bool OfflinePageUtils::IsShowingTrustedOfflinePage(
   OfflinePageTabHelper* tab_helper =
       OfflinePageTabHelper::FromWebContents(web_contents);
   return tab_helper && tab_helper->IsShowingTrustedOfflinePage();
+}
+
+// static
+void OfflinePageUtils::AcquireFileAccessPermission(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_ANDROID)
+  content::WebContents::Getter web_contents_getter =
+      GetWebContentsGetter(web_contents);
+  DownloadControllerBase::Get()->AcquireFileAccessPermission(
+      web_contents_getter, std::move(callback));
+#else
+  // Not needed in other platforms.
+  std::move(callback).Run(true /*granted*/);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace offline_pages

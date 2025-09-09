@@ -789,6 +789,22 @@ void OfflinePageBridge::GetPageBySizeAndDigestDone(
   RunLoadUrlParamsCallbackAndroid(j_callback_obj, launch_url, offline_header);
 }
 
+void OfflinePageBridge::AcquireFileAccessPermission(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaParamRef<jobject>& j_callback_obj) {
+  ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (!web_contents) {
+    base::android::RunBooleanCallbackAndroid(j_callback_ref, false);
+    return;
+  }
+  OfflinePageUtils::AcquireFileAccessPermission(
+      web_contents, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                                   j_callback_ref));
+}
+
 void OfflinePageBridge::NotifyIfDoneLoading() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OfflinePageBridge_offlinePageModelLoaded(env, java_ref_);
