@@ -79,7 +79,7 @@ public class PinnedTabStripViewBinderTest {
     @Test
     public void testSetScrollToPosition() {
         mPropertyModel.set(PinnedTabStripProperties.SCROLL_TO_POSITION, 5);
-        verify(mRecyclerView).scrollToPosition(5);
+        verify(mRecyclerView).smoothScrollToPosition(5);
     }
 
     @Test

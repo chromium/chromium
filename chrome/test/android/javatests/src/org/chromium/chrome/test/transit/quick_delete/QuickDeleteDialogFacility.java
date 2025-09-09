@@ -76,16 +76,11 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
 
     /**
      * Click Delete to delete the selected time period, go to the tab switcher and show a snackbar.
-     *
-     * @param regularTabsExistAfterDeletion True if there are any regular tabs to display in the tab
-     *     switcher post-deletion. This should typically be false if all tabs are deleted or if the
-     *     last tab in the tab switcher is closed.
      */
-    public Pair<RegularTabSwitcherStation, QuickDeleteSnackbarFacility> confirmDelete(
-            boolean regularTabsExistAfterDeletion) {
+    public Pair<RegularTabSwitcherStation, QuickDeleteSnackbarFacility> confirmDelete() {
         RegularTabSwitcherStation tabSwitcher =
                 new RegularTabSwitcherStation(
-                        regularTabsExistAfterDeletion, /* incognitoTabsExist= */ false);
+                        /* regularTabsExist= */ true, /* incognitoTabsExist= */ false);
         QuickDeleteSnackbarFacility snackbar = new QuickDeleteSnackbarFacility(mTimePeriod);
 
         positiveButtonElement.clickTo().arriveAt(tabSwitcher, snackbar);

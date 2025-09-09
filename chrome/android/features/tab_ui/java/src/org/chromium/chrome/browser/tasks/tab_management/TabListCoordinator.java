@@ -1155,8 +1155,4 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     public TabListHighlighter getTabListHighlighter() {
         return mTabListHighlighter;
     }
-
-    public TabListModel getTabListModel() {
-        return mModelList;
-    }
 }

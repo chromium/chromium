@@ -5,12 +5,8 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -26,13 +22,6 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
         assert incognitoTabsButtonElement != null;
         declareEnterCondition(
                 new ViewElementMatchesCondition(incognitoTabsButtonElement, isSelected()));
-
-        recyclerViewElement =
-                declareView(
-                        paneHostElement.descendant(
-                                RecyclerView.class,
-                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)),
-                        unscopedOption());
     }
 
     /**

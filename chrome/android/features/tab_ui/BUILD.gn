@@ -116,7 +116,6 @@ android_resources("java_resources") {
     "java/res/layout/tab_list_recycler_view_layout.xml",
     "java/res/layout/tab_strip_item.xml",
     "java/res/layout/tab_switcher_drag_shadow_view.xml",
-    "java/res/layout/tab_switcher_pane_layout.xml",
     "java/res/layout/toolbar_back_button.xml",
     "java/res/layout/toolbar_new_tab_and_menu_button.xml",
     "java/res/values/attrs.xml",

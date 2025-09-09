@@ -183,5 +183,4 @@ found in the LICENSE file.
     <dimen name="pinned_tab_strip_item_title_padding_start">11dp</dimen>
     <dimen name="pinned_tab_strip_recycler_view_padding_horizontal">8dp</dimen>
     <dimen name="pinned_tab_strip_item_vertical_margin">16dp</dimen>
-    <dimen name="pinned_tab_strip_item_width_delta">16dp</dimen>
 </resources>

@@ -88,6 +88,10 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         delayedElements.declareNoView(searchLoupe);
                     }
                 });
+        recyclerViewElement =
+                declareView(
+                        paneHostElement.descendant(
+                                RecyclerView.class, withId(R.id.tab_list_recycler_view)));
     }
 
     /**

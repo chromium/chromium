@@ -42,7 +42,7 @@ class PinnedTabStripViewBinder {
         } else if (PinnedTabStripProperties.SCROLL_TO_POSITION.equals(propertyKey)) {
             int position = model.get(PinnedTabStripProperties.SCROLL_TO_POSITION);
             if (position != -1) {
-                view.scrollToPosition(position);
+                view.smoothScrollToPosition(position);
             }
         }
     }
