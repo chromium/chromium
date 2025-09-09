@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/shared_storage/shared_storage_features.h"
 
 namespace content::features {
 
-BASE_FEATURE(SharedStorageSelectURLLimit,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedStorageSelectURLLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,
                    kSharedStorageSelectURLBitBudgetPerPageLoad,
                    &kSharedStorageSelectURLLimit,

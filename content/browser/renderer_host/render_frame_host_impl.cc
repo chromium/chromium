@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include <algorithm>
@@ -354,8 +352,7 @@
 
 namespace features {
 
-BASE_FEATURE(DoNotEvictOnAXLocationChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDoNotEvictOnAXLocationChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
@@ -207,7 +205,7 @@ namespace content {
 
 namespace {
 
-BASE_FEATURE(ScreenCaptureKitFullDesktopFallback,
+BASE_FEATURE(kScreenCaptureKitFullDesktopFallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac

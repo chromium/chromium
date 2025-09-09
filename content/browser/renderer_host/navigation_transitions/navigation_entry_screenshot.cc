@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
 #include "base/feature_list.h"
@@ -32,7 +30,7 @@ namespace content {
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 
-BASE_FEATURE(NavigationEntryScreenshotCompression,
+BASE_FEATURE(kNavigationEntryScreenshotCompression,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static bool g_disable_compression_for_testing = false;

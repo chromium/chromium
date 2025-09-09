@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/public/browser/process_allocation_context.h"
 
 #include "base/feature_list.h"
@@ -16,7 +14,7 @@ namespace {
 // by the RFHInitRoot() to at least the same as a spare renderer.
 // The renderer taken by RFHInitRoot() may benefit subsequent navigations
 // in that new frame.
-BASE_FEATURE(TreatRFHInitRootAsForNavigation,
+BASE_FEATURE(kTreatRFHInitRootAsForNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/android/selection/selection_popup_controller.h"
 
 #include <cstdlib>
@@ -64,8 +62,7 @@ bool IsOffsetAdjustValid(
 
 namespace {
 
-BASE_FEATURE(DismissMagnifierOnViewSwap,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDismissMagnifierOnViewSwap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

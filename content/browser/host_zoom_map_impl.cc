@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/host_zoom_map_impl.h"
 
 #include <algorithm>
@@ -68,7 +66,7 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
 }
 
 // Allows HostZoomMap to grant independent zoom to subframes.
-BASE_FEATURE(SubframeZoom, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSubframeZoom, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if local root subframes may have different zoom levels than
 // the primary main frame.

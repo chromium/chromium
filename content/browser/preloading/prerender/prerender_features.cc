@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/preloading/prerender/prerender_features.h"
 
 #include "content/public/browser/content_browser_client.h"
@@ -18,7 +16,7 @@ namespace features {
 // WebContents. Note that this issue does not happen on browser_tests, so this
 // could be specific to WPT setup.
 // TODO(crbug.com/40249964): Allow activation in background by default.
-BASE_FEATURE(Prerender2AllowActivationInBackground,
+BASE_FEATURE(kPrerender2AllowActivationInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables fallback from prerender to prefetch for Speculation Rules.
@@ -29,7 +27,7 @@ BASE_FEATURE(Prerender2AllowActivationInBackground,
 // - Use code paths for prefetch/prerender integration. (The effect of
 //   `kPrefetchPrerenderIntegration`).
 // - Trigger prefetch ahead of prerender.
-BASE_FEATURE(Prerender2FallbackPrefetchSpecRules,
+BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool>
@@ -54,8 +52,7 @@ const base::FeatureParam<bool> kPrerender2FallbackUsePreloadServingMetrics{
     &kPrerender2FallbackPrefetchSpecRules,
     "kPrerender2FallbackUsePreloadServingMetrics", false};
 
-BASE_FEATURE(Prerender2NoVarySearch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2NoVarySearch, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender{
@@ -77,7 +74,7 @@ const base::FeatureParam<int>
         &kPrerender2NoVarySearch, "wait_for_headers_timeout_embedders", 1000};
 
 // If enabled, suppresses prerendering on slow network.
-BASE_FEATURE(SuppressesPrerenderingOnSlowNetwork,
+BASE_FEATURE(kSuppressesPrerenderingOnSlowNetwork,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Regarding how this number was chosen, see the design doc linked from
@@ -89,12 +86,12 @@ const base::FeatureParam<base::TimeDelta>
 
 // If enabled, disallows non-trustworthy plaintext HTTP prerendering.
 // See https://crbug.com/340895233 for more details.
-BASE_FEATURE(Prerender2DisallowNonTrustworthyHttp,
+BASE_FEATURE(kPrerender2DisallowNonTrustworthyHttp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(Prerender2WarmUpCompositorForImmediate,
+BASE_FEATURE(kPrerender2WarmUpCompositorForImmediate,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(Prerender2WarmUpCompositorForNonImmediate,
+BASE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool UsePrefetchPrerenderIntegration() {
@@ -107,6 +104,6 @@ bool UsePrefetchPrerenderIntegration() {
              ->UsePrefetchPrerenderIntegration();
 }
 
-BASE_FEATURE(Prerender2CrossOriginIframes, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2CrossOriginIframes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

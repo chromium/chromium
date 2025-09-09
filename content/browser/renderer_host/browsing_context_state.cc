@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/browsing_context_state.h"
 
 #include "base/memory/ptr_util.h"
@@ -17,7 +15,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
 namespace features {
-BASE_FEATURE(NewBrowsingContextStateOnBrowsingContextGroupSwap,
+BASE_FEATURE(kNewBrowsingContextStateOnBrowsingContextGroupSwap,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BrowsingContextStateImplementationType GetBrowsingContextMode() {

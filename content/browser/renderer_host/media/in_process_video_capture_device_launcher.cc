@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/media/in_process_video_capture_device_launcher.h"
 
 #include <optional>
@@ -96,8 +94,7 @@ const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 #if BUILDFLAG(IS_MAC)
 // If this feature is enabled, ScreenCaptureKit will be used for screen
 // capturing.
-BASE_FEATURE(ScreenCaptureKitMacScreen,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenCaptureKitMacScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {

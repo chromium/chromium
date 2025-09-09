@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/service_worker/service_worker_registry.h"
 
 #include <type_traits>
@@ -50,16 +48,17 @@ namespace {
 // Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
 // intended to be controlled from Field Trial (e.g. kill-switch). The original
 // flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
-BASE_FEATURE(ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
+BASE_FEATURE(
+    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
     base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
+BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
+BASE_FEATURE(kServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
+BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled() {
@@ -177,7 +176,7 @@ constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 }  // namespace
 
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
-BASE_FEATURE(ServiceWorkerMergeFindRegistrationForClientUrl,
+BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename... ReplyArgs>

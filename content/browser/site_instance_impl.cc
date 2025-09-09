@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/site_instance_impl.h"
 
 #include <string>
@@ -72,7 +70,7 @@ SiteInstanceId::Generator g_site_instance_id_generator;
 // These calls should either be replaced with GetOrCreateProcess() if process
 // creation was intentional, or the caller should be changed to avoid
 // unnecessarily creating a process.
-BASE_FEATURE(TraceSiteInstanceGetProcessCreation,
+BASE_FEATURE(kTraceSiteInstanceGetProcessCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to crash if GetProcess is called on a SiteInstance without a process.

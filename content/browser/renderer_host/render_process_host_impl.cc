@@ -5,8 +5,6 @@
 // Represents the browser side of the browser <--> renderer communication
 // channel. There will be one RenderProcessHost per renderer process.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/render_process_host_impl.h"
 
 #include <algorithm>
@@ -1212,8 +1210,7 @@ void InvokeVideoDecoderEventCB(RenderProcessHostImpl::VideoDecoderEvent event) {
 #if !BUILDFLAG(IS_ANDROID)
 // Enables kUserVisible process priority. Otherwise when feature is disabled,
 // Priority::kUserVisible has same behavior as Priority::kUserBlocking.
-BASE_FEATURE(UserVisibleProcessPriority,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserVisibleProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Please keep in sync with "RenderProcessHostBlockedURLReason" in

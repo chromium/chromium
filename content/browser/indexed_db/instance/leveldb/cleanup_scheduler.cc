@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 
 #include "base/feature_list.h"
@@ -14,8 +12,7 @@
 
 namespace content::indexed_db::level_db {
 
-BASE_FEATURE(IdbInSessionDbCleanup,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIdbInSessionDbCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 constexpr base::TimeDelta kTimeBetweenRuns = base::Minutes(30);

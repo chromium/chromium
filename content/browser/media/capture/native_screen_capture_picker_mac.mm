@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
@@ -152,8 +150,7 @@ namespace content {
 
 // When enabled, this allows you to change the maximum number of streams you can
 // share with the native picker to kMaxContentShareCountValue.
-BASE_FEATURE(MaxContentShareCount,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMaxContentShareCount, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kMaxContentShareCountValue = {
     &kMaxContentShareCount, "max_content_share_count", 50};
 

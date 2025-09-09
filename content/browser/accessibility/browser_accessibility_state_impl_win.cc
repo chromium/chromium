@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
@@ -40,7 +38,7 @@ namespace {
 // Killswitch to turn off this feature remotely in case it affects ATs in a way
 // we didn't expect. This is temporary.
 // TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
-BASE_FEATURE(DisableUiaProviderWhenJawsIsRunning,
+BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";

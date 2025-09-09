@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/navigation_request.h"
 
 #include <memory>
@@ -241,7 +239,7 @@ namespace {
 // Kill-switch for the fix to copy item_sequence_number and
 // document_sequence_number from a prerender navigation entry during prerender
 // activation (https://crbug.com/442618062).
-BASE_FEATURE(PrerenderFixSequenceNumbers, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerenderFixSequenceNumbers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default timeout for the READY_TO_COMMIT -> COMMIT transition. Chosen
 // initially based on the Navigation.ReadyToCommitUntilCommit UMA, and then
@@ -263,7 +261,7 @@ const char kSecSharedStorageWritableRequestHeaderKey[] =
 // Flag to control whether redirect URLs are being sanitized before sending
 // them to the renderer process as part of the navigation.
 // See https://crbug.com/40095391.
-BASE_FEATURE(SanitizeRedirectUrlsDuringNavigation,
+BASE_FEATURE(kSanitizeRedirectUrlsDuringNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDeferSpeculativeRFHWaitUntilFinalResponse{

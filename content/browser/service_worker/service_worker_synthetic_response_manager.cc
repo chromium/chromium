@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 
 #include <cstddef>
@@ -50,7 +48,7 @@ enum class SyntheticResponseReloadReason {
 // When this is enabled, the browser stores response headers for synthetic
 // responses even if there is no opt-in header in its response. This is for
 // local development and testing.
-BASE_FEATURE(ServiceWorkerBypassSyntheticResponseHeaderCheck,
+BASE_FEATURE(kServiceWorkerBypassSyntheticResponseHeaderCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>

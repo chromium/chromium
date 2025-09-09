@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
 #include <limits>
@@ -157,8 +155,7 @@ namespace {
 // `RenderWidgetHost` is hidden.
 // TODO(crbug.com/330301468): Remove this once we determine the cause of failure
 // to reallocate an LSI for the UI compositor.
-BASE_FEATURE(RenderWidgetHostHiddenCheck,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRenderWidgetHostHiddenCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 // We need to watch for mouse events outside a Web Popup or its parent

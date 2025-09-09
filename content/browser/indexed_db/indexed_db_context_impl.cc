@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 
 #include <algorithm>
@@ -80,7 +78,7 @@ using storage::BucketLocator;
 // `IdbPrioritizeForegroundClients` affects relative ordering of transactions
 // for a single client. This feature affects which backends are run at a higher
 // task priority. See crbug.com/329221141
-BASE_FEATURE(IdbExpediteBackendProcessingForForegroundClients,
+BASE_FEATURE(kIdbExpediteBackendProcessingForForegroundClients,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

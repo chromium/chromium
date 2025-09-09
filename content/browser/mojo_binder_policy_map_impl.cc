@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/mojo_binder_policy_map_impl.h"
 
 #include <string_view>
@@ -41,7 +39,7 @@ namespace content {
 
 #if BUILDFLAG(IS_MAC)
 // Put crbug.com/115920 fix under flag, so we can measure its CWV impact.
-BASE_FEATURE(TextInputHostMojoCapabilityControlWorkaround,
+BASE_FEATURE(kTextInputHostMojoCapabilityControlWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

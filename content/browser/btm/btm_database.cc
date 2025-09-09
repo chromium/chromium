@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/btm/btm_database.h"
 
 #include <cstddef>
@@ -40,7 +38,7 @@ namespace content {
 namespace {
 
 // NOTE: This is flag is intended for local testing and debugging only.
-BASE_FEATURE(DisableExclusiveLockingOnDipsDatabase,
+BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";

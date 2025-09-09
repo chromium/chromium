@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 
 #include <stddef.h>
@@ -64,7 +62,7 @@ namespace content {
 // if it is not used.
 // Do not enable by default until https://crbug.com/377749384 is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-BASE_FEATURE(ReleaseVideoSourceProviderIfNotInUse,
+BASE_FEATURE(kReleaseVideoSourceProviderIfNotInUse,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kReleaseVideoSourceProviderTimeout{
@@ -72,7 +70,7 @@ const base::FeatureParam<base::TimeDelta> kReleaseVideoSourceProviderTimeout{
     "release_video_source_provider_timeout", base::Seconds(60)};
 #endif
 
-BASE_FEATURE(EnumerateDevicesRelaxedCache,
+BASE_FEATURE(kEnumerateDevicesRelaxedCache,
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

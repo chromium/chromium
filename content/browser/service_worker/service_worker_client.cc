@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/service_worker/service_worker_client.h"
 
 #include <set>
@@ -1341,7 +1339,6 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
 
 // If a blob URL is used for a SharedWorker script's URL, a controller will be
 // inherited.
-BASE_FEATURE(SharedWorkerBlobURLFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedWorkerBlobURLFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/startup_helper.h"
 
 #include <algorithm>
@@ -65,8 +63,7 @@ constexpr double kThreadPoolCoresMultiplier = 0.6;
 constexpr int kThreadPoolOffset = 0;
 #endif
 
-BASE_FEATURE(BrowserThreadPoolAdjustment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBrowserThreadPoolAdjustment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kBrowserThreadPoolMin{
     &kBrowserThreadPoolAdjustment, "min", kThreadPoolDefaultMin};

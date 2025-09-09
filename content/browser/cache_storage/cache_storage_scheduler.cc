@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
 
 #include <string>
@@ -55,8 +53,7 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 
 // Enables support for parallel cache_storage operations via the
 // "max_shared_ops" fieldtrial parameter.
-BASE_FEATURE(CacheStorageParallelOps,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCacheStorageParallelOps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageScheduler::CacheStorageScheduler(
     CacheStorageSchedulerClient client_type,

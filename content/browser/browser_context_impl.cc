@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/browser_context_impl.h"
 
 #include <utility>
@@ -58,7 +56,7 @@ void NotifyContextWillBeDestroyed(StoragePartition* partition) {
 
 // Kill switch that controls whether to cancel navigations as part of
 // BrowserContext shutdown. See https://crbug.com/40274462.
-BASE_FEATURE(CancelNavigationsDuringBrowserContextShutdown,
+BASE_FEATURE(kCancelNavigationsDuringBrowserContextShutdown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

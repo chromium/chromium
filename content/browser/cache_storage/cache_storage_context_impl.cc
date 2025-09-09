@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 
 #include "base/feature_list.h"
@@ -31,8 +29,7 @@
 
 namespace content {
 
-BASE_FEATURE(CacheStorageTaskPriority,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCacheStorageTaskPriority, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageContextImpl::CacheStorageContextImpl(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)

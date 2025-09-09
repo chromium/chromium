@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 
 #include <memory>
@@ -79,7 +77,7 @@ TokenFrameMap& GetTokenFrameProxyMap() {
 
 // TODO(https://crbug.com/339512240): Remove this killswitch once the
 // optimization for postMessage proxy creation finishes rolling out.
-BASE_FEATURE(SkipPostMessageProxyCreationWithinFrameTree,
+BASE_FEATURE(kSkipPostMessageProxyCreationWithinFrameTree,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

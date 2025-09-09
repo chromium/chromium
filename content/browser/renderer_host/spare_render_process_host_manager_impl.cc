@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 
 #include "base/check.h"
@@ -35,13 +33,13 @@ using SpareProcessMaybeTakeAction =
 namespace {
 
 // Enables killing spare renders when memory pressure signal is received.
-BASE_FEATURE(KillSpareRenderOnMemoryPressure,
+BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, MEMORY_PRESSURE_LEVEL_CRITICAL is used as the threshold that
 // determines when a spare RPH can be created or killed. By default,
 // MEMORY_PRESSURE_LEVEL_MODERATE is used.
-BASE_FEATURE(SpareRPHUseCriticalMemoryPressure,
+BASE_FEATURE(kSpareRPHUseCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, only the extra RPHs (controlled by the MultipleSpareRPHs
