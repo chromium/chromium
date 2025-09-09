@@ -5,14 +5,14 @@
 import("//build/config/features.gni")
 
 source_set("timestamped_pref_value") {
-  sources = [ "timestamped_pref_value/timestamped_pref_value.h" ]
+  sources = [ "timestamped_pref_value.h" ]
   deps = [ "//base" ]
   if (is_android) {
     sources += [
-      "timestamped_pref_value/android/timestamped_pref_value_bridge_android.cc",
-      "timestamped_pref_value/android/timestamped_pref_value_bridge_android.h",
+      "android/timestamped_pref_value_bridge_android.cc",
+      "android/timestamped_pref_value_bridge_android.h",
     ]
-    deps += [ "timestamped_pref_value/android:jni_headers" ]
+    deps += [ "android:jni_headers" ]
   }
 }
 

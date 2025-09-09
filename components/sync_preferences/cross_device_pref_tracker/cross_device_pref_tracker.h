@@ -13,7 +13,7 @@
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value/timestamped_pref_value.h"
+#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
 
 namespace sync_preferences {
 
