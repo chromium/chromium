@@ -1408,9 +1408,9 @@ void PDFiumEngine::PrintEnd() {
 PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
   PointData point_data;
   int page = -1;
-  const gfx::Point point_in_page = DeviceToScreen(point);
+  const gfx::Point screen_point = DeviceToScreen(point);
   for (int visible_page : visible_pages_) {
-    if (pages_[visible_page]->rect().Contains(point_in_page)) {
+    if (pages_[visible_page]->rect().Contains(screen_point)) {
       page = visible_page;
       break;
     }
@@ -1429,7 +1429,7 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
 
   point_data.page_index = page;
   PDFiumPage::Area result = pages_[page]->GetCharInfo(
-      point_in_page, GetCurrentOrientation(), &point_data.char_index,
+      screen_point, GetCurrentOrientation(), &point_data.char_index,
       &point_data.form_type, &point_data.target);
   point_data.area =
       (client_->IsPrintPreview() && result == PDFiumPage::WEBLINK_AREA)
@@ -1538,9 +1538,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   if (point_data.page_index != -1) {
     UpdateFocusElementType(FocusElementType::kPage);
     last_focused_page_ = point_data.page_index;
-    double page_x;
-    double page_y;
-    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+    gfx::PointF pdf_point = DeviceToPdf(point_data.page_index, point);
 
     if (point_data.form_type != FPDF_FORMFIELD_UNKNOWN) {
       // FORM_OnLButton*() will trigger a callback to
@@ -1557,10 +1555,11 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
     FPDF_PAGE page = pages_[point_data.page_index]->GetPage();
 
     if (click_count == 1) {
-      FORM_OnLButtonDown(form(), page, event.GetModifiers(), page_x, page_y);
+      FORM_OnLButtonDown(form(), page, event.GetModifiers(), pdf_point.x(),
+                         pdf_point.y());
     } else if (click_count == 2) {
-      FORM_OnLButtonDoubleClick(form(), page, event.GetModifiers(), page_x,
-                                page_y);
+      FORM_OnLButtonDoubleClick(form(), page, event.GetModifiers(),
+                                pdf_point.x(), pdf_point.y());
     }
     if (point_data.form_type != FPDF_FORMFIELD_UNKNOWN) {
       return true;  // Return now before we get into the selection code.
@@ -1621,20 +1620,19 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
   bool is_form_text_area =
       IsFormTextArea(point_data.area, point_data.form_type);
 
-  double page_x = -1;
-  double page_y = -1;
+  gfx::PointF pdf_point(-1, -1);
   FPDF_PAGE page = nullptr;
   if (is_form_text_area) {
     DCHECK_NE(point_data.page_index, -1);
 
-    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+    pdf_point = DeviceToPdf(point_data.page_index, point);
     page = pages_[point_data.page_index]->GetPage();
   }
 
   // Handle the case when focus starts inside a form text area.
   if (focus_field_type_ == FocusFieldType::kText) {
     if (is_form_text_area) {
-      FORM_OnFocus(form(), page, 0, page_x, page_y);
+      FORM_OnFocus(form(), page, 0, pdf_point.x(), pdf_point.y());
     } else {
       // Transition out of a form text area.
       KillFormFocus();
@@ -1645,7 +1643,7 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
   // Handle the case when focus starts outside a form text area and transitions
   // into a form text area.
   if (is_form_text_area) {
-    FORM_OnFocus(form(), page, 0, page_x, page_y);
+    FORM_OnFocus(form(), page, 0, pdf_point.x(), pdf_point.y());
     return true;
   }
 
@@ -1753,11 +1751,9 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
   }
 
   if (point_data.page_index != -1) {
-    double page_x;
-    double page_y;
-    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+    gfx::PointF pdf_point = DeviceToPdf(point_data.page_index, point);
     FORM_OnLButtonUp(form(), pages_[point_data.page_index]->GetPage(),
-                     event.GetModifiers(), page_x, page_y);
+                     event.GetModifiers(), pdf_point.x(), pdf_point.y());
   }
 
   if (!selecting_) {
@@ -1783,11 +1779,9 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
         DetermineCursorType(point_data.area, point_data.form_type));
 
     if (point_data.page_index != -1) {
-      double page_x;
-      double page_y;
-      DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+      gfx::PointF pdf_point = DeviceToPdf(point_data.page_index, point);
       FORM_OnMouseMove(form(), pages_[point_data.page_index]->GetPage(), 0,
-                       page_x, page_y);
+                       pdf_point.x(), pdf_point.y());
     }
 
     UpdateLinkUnderCursor(GetLinkAtPosition(point));
@@ -3914,24 +3908,22 @@ bool PDFiumEngine::MouseDownState::Matches(
   return true;
 }
 
-void PDFiumEngine::DeviceToPage(int page_index,
-                                const gfx::PointF& device_point,
-                                double* page_x,
-                                double* page_y) {
-  *page_x = 0;
-  *page_y = 0;
-
-  gfx::Point point_in_page = DeviceToScreen(device_point);
+gfx::PointF PDFiumEngine::DeviceToPdf(int page_index,
+                                      const gfx::PointF& device_point) {
+  gfx::Point screen_point = DeviceToScreen(device_point);
 
   PDFiumPage* page = pages_[page_index].get();
   const gfx::Rect& page_rect = page->rect();
-  point_in_page -= page_rect.OffsetFromOrigin();
+  screen_point -= page_rect.OffsetFromOrigin();
 
+  double page_x = 0;
+  double page_y = 0;
   FPDF_BOOL ret = FPDF_DeviceToPage(
       page->GetPage(), 0, 0, page_rect.width(), page_rect.height(),
-      ToPDFiumRotation(GetCurrentOrientation()), point_in_page.x(),
-      point_in_page.y(), page_x, page_y);
+      ToPDFiumRotation(GetCurrentOrientation()), screen_point.x(),
+      screen_point.y(), &page_x, &page_y);
   DCHECK(ret);
+  return gfx::PointF(page_x, page_y);
 }
 
 gfx::Point PDFiumEngine::DeviceToScreen(const gfx::PointF& device_point) const {
