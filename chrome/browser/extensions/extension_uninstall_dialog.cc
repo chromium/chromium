@@ -39,6 +39,8 @@
 #include "ui/native_window_tracker/native_window_tracker.h"
 #include "url/origin.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace {

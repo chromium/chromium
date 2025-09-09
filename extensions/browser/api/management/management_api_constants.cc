@@ -4,6 +4,10 @@
 
 #include "extensions/browser/api/management/management_api_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extension_management_api_constants {
 
 const char kDisabledReasonKey[] = "disabledReason";

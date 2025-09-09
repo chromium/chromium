@@ -9,8 +9,14 @@
 #include <utility>
 
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
@@ -78,6 +84,21 @@ class ManagementUninstallFunctionUninstallDialogDelegate
 
 }  // namespace
 
+ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
+
+ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
+
+GURL ChromeManagementAPIDelegate::GetFullLaunchURL(
+    const Extension* extension) const {
+  return AppLaunchInfo::GetFullLaunchURL(extension);
+}
+
+LaunchType ChromeManagementAPIDelegate::GetLaunchType(
+    const ExtensionPrefs* prefs,
+    const Extension* extension) const {
+  return ::extensions::GetLaunchType(prefs, extension);
+}
+
 std::unique_ptr<UninstallDialogDelegate>
 ChromeManagementAPIDelegate::UninstallFunctionDelegate(
     ManagementUninstallFunctionBase* function,
@@ -85,6 +106,38 @@ ChromeManagementAPIDelegate::UninstallFunctionDelegate(
     bool show_programmatic_uninstall_ui) const {
   return std::make_unique<ManagementUninstallFunctionUninstallDialogDelegate>(
       function, target_extension, show_programmatic_uninstall_ui);
+}
+
+bool ChromeManagementAPIDelegate::UninstallExtension(
+    content::BrowserContext* context,
+    const ExtensionId& transient_extension_id,
+    UninstallReason reason,
+    std::u16string* error) const {
+  return extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
+      transient_extension_id, reason, error);
+}
+
+void ChromeManagementAPIDelegate::SetLaunchType(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    LaunchType launch_type) const {
+  ::extensions::SetLaunchType(context, extension_id, launch_type);
+}
+
+GURL ChromeManagementAPIDelegate::GetIconURL(const Extension* extension,
+                                             int icon_size,
+                                             ExtensionIconSet::Match match,
+                                             bool grayscale) const {
+  return ExtensionIconSource::GetIconURL(extension, icon_size, match,
+                                         grayscale);
+}
+
+GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
+    const Extension& extension,
+    content::BrowserContext* context) const {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(context);
+  return extension_management->GetEffectiveUpdateURL(extension);
 }
 
 }  // namespace extensions

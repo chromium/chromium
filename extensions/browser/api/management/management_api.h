@@ -20,8 +20,11 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // Note: While this code compiles on Android, its delegates in //chrome do not,
 // and therefore the API doesn't fully work yet on Android.

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
-
 #include <memory>
 #include <utility>
 
@@ -17,8 +15,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -32,7 +30,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -48,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -66,7 +62,6 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/launch_util.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
@@ -329,10 +324,6 @@ GetSupervisedUserExtensionsDelegateFromContext(
 }
 }  // namespace
 
-ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
-
-ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
-
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const Extension* extension,
     content::BrowserContext* context) const {
@@ -364,17 +355,6 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,
                       extension->GetType());
   return true;
-}
-
-GURL ChromeManagementAPIDelegate::GetFullLaunchURL(
-    const Extension* extension) const {
-  return AppLaunchInfo::GetFullLaunchURL(extension);
-}
-
-LaunchType ChromeManagementAPIDelegate::GetLaunchType(
-    const ExtensionPrefs* prefs,
-    const Extension* extension) const {
-  return ::extensions::GetLaunchType(prefs, extension);
 }
 
 std::unique_ptr<InstallPromptDelegate>
@@ -480,6 +460,9 @@ void ChromeManagementAPIDelegate::EnableExtension(
   // from the extensions management page (see `ManagementSetEnabledFunction`).
   CHECK(extension);
 
+  // TODO(crbug.com/371332103): Move this to the shared implementation file once
+  // tests are running. Desktop Android uses a stub delegate that should work
+  // until supervised users are implemented.
   SupervisedUserExtensionsDelegate* extensions_delegate =
       GetSupervisedUserExtensionsDelegateFromContext(context);
   extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
@@ -497,43 +480,14 @@ void ChromeManagementAPIDelegate::DisableExtension(
     const Extension* source_extension,
     const ExtensionId& extension_id,
     disable_reason::DisableReason disable_reason) const {
+  // TODO(crbug.com/371332103): Move this to the shared implementation file once
+  // tests are running. Desktop Android uses a stub delegate that should work
+  // until supervised users are implemented.
   SupervisedUserExtensionsDelegate* extensions_delegate =
       GetSupervisedUserExtensionsDelegateFromContext(context);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
   ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
       source_extension, extension_id, disable_reason);
-}
-
-bool ChromeManagementAPIDelegate::UninstallExtension(
-    content::BrowserContext* context,
-    const ExtensionId& transient_extension_id,
-    UninstallReason reason,
-    std::u16string* error) const {
-  return extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
-      transient_extension_id, reason, error);
-}
-
-void ChromeManagementAPIDelegate::SetLaunchType(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    LaunchType launch_type) const {
-  ::extensions::SetLaunchType(context, extension_id, launch_type);
-}
-
-GURL ChromeManagementAPIDelegate::GetIconURL(const Extension* extension,
-                                             int icon_size,
-                                             ExtensionIconSet::Match match,
-                                             bool grayscale) const {
-  return ExtensionIconSource::GetIconURL(extension, icon_size, match,
-                                         grayscale);
-}
-
-GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
-    const Extension& extension,
-    content::BrowserContext* context) const {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(context);
-  return extension_management->GetEffectiveUpdateURL(extension);
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(

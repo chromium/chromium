@@ -5,19 +5,11 @@
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/launch_util.h"
 #include "extensions/browser/uninstall_reason.h"
 
 namespace extensions {
-
-ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
-
-ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
 
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const Extension* extension,
@@ -25,17 +17,6 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   // Return false to to cause the chrome.management API call to return an error.
   // This is similar to how we behave with Chrome Apps on Win/Mac/Linux.
   return false;
-}
-
-GURL ChromeManagementAPIDelegate::GetFullLaunchURL(
-    const Extension* extension) const {
-  return AppLaunchInfo::GetFullLaunchURL(extension);
-}
-
-LaunchType ChromeManagementAPIDelegate::GetLaunchType(
-    const ExtensionPrefs* prefs,
-    const Extension* extension) const {
-  return ::extensions::GetLaunchType(prefs, extension);
 }
 
 std::unique_ptr<InstallPromptDelegate>
@@ -105,38 +86,6 @@ void ChromeManagementAPIDelegate::DisableExtension(
   // TODO(crbug.com/crbug.com/410612887): Support supervised user metrics here.
   ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
       source_extension, extension_id, disable_reason);
-}
-
-bool ChromeManagementAPIDelegate::UninstallExtension(
-    content::BrowserContext* context,
-    const ExtensionId& transient_extension_id,
-    UninstallReason reason,
-    std::u16string* error) const {
-  return ExtensionRegistrar::Get(context)->UninstallExtension(
-      transient_extension_id, reason, error);
-}
-
-void ChromeManagementAPIDelegate::SetLaunchType(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    LaunchType launch_type) const {
-  NOTIMPLEMENTED();
-}
-
-GURL ChromeManagementAPIDelegate::GetIconURL(const Extension* extension,
-                                             int icon_size,
-                                             ExtensionIconSet::Match match,
-                                             bool grayscale) const {
-  return ExtensionIconSource::GetIconURL(extension, icon_size, match,
-                                         grayscale);
-}
-
-GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
-    const Extension& extension,
-    content::BrowserContext* context) const {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(context);
-  return extension_management->GetEffectiveUpdateURL(extension);
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(
