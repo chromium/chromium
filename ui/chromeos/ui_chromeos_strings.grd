@@ -1926,6 +1926,12 @@
       <message name="IDS_NETWORK_ERROR_PASSPHRASE_REQUIRED" desc="Network error message shown when a passphrase is required to connect to a network but was not supplied.">
         Passphrase required
       </message>
+      <message name="IDS_NETWORK_ERROR_BLOCKED_BY_POLICY" desc="Network error message shown when a network is blocked by enterprise policy.">
+        Network is blocked by policy
+      </message>
+      <message name="IDS_NETWORK_ERROR_WAITING_FOR_SCAN" desc="Network error message shown when a network can not be connected to until a scan, for example a wifi scan, has finished.">
+        Waiting for scan to finish, retry later
+      </message>
       <message name="IDS_NETWORK_ERROR_UNKNOWN" desc="Network error message shown for an unknown or unexpected network configuration error">
         Error configuring network
       </message>
