@@ -5,6 +5,8 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 
 #include "components/browsing_data/content/browsing_data_model.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -58,6 +60,65 @@ TEST_F(BrowsingDataHelperTest, SchemesThatCantStoreDataDontMatchAnything) {
   EXPECT_FALSE(IsWebScheme(url::kBlobScheme));
   EXPECT_FALSE(IsWebScheme(url::kFileSystemScheme));
   EXPECT_FALSE(IsWebScheme("invalid-scheme-i-just-made-up"));
+}
+
+TEST_F(BrowsingDataHelperTest, CreateWebsiteSettingsFilter) {
+  // A filter builder in "preserve" mode with no rules matches everything for
+  // deletion, and should result in a null filter.
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kPreserve);
+  EXPECT_TRUE(CreateWebsiteSettingsFilter(filter_builder.get()).is_null());
+
+  // A filter builder in "delete" mode with no rules should not result in a
+  // null filter, as it matches nothing.
+  filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  EXPECT_FALSE(CreateWebsiteSettingsFilter(filter_builder.get()).is_null());
+
+  // Test "preserve" mode.
+  filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kPreserve);
+  filter_builder->AddOrigin(url::Origin::Create(GURL("https://google.com")));
+  auto preserve_predicate = CreateWebsiteSettingsFilter(filter_builder.get());
+  EXPECT_FALSE(preserve_predicate.is_null());
+
+  // The wildcard pattern should be ignored.
+  EXPECT_FALSE(preserve_predicate.Run(ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsPattern::Wildcard()));
+
+  // A non-wildcard pattern for an origin added to the filter should not match,
+  // as it is preserved.
+  EXPECT_FALSE(preserve_predicate.Run(
+      ContentSettingsPattern::FromString("[*.]google.com"),
+      ContentSettingsPattern::Wildcard()));
+
+  // A non-wildcard pattern for an origin not in the filter should match, as it
+  // should be deleted.
+  EXPECT_TRUE(preserve_predicate.Run(
+      ContentSettingsPattern::FromString("[*.]example.com"),
+      ContentSettingsPattern::Wildcard()));
+
+  // Test "delete" mode.
+  filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(url::Origin::Create(GURL("https://google.com")));
+  auto delete_predicate = CreateWebsiteSettingsFilter(filter_builder.get());
+  EXPECT_FALSE(delete_predicate.is_null());
+
+  // The wildcard pattern should be ignored.
+  EXPECT_FALSE(delete_predicate.Run(ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::Wildcard()));
+
+  // A non-wildcard pattern for an origin added to the filter should match.
+  EXPECT_TRUE(
+      delete_predicate.Run(ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsPattern::Wildcard()));
+
+  // A non-wildcard pattern for an origin not in the filter should not match.
+  EXPECT_FALSE(delete_predicate.Run(
+      ContentSettingsPattern::FromString("[*.]example.com"),
+      ContentSettingsPattern::Wildcard()));
 }
 
 TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {

@@ -38,10 +38,12 @@ bool WebsiteSettingsFilterAdapter(
     return false;
   }
 
-  // Website settings only use origin-scoped patterns. The only content setting
-  // this filter is used for is DURABLE_STORAGE, which also only uses
-  // origin-scoped patterns. Such patterns can be directly translated to a GURL.
-  GURL url(primary_pattern.ToString());
+  // The predicate is URL-based. Content settings patterns, however, are not
+  // always convertible to a valid GURL. We use `ToRepresentativeUrl()` to
+  // attempt to resolve common wildcards (e.g., `[*.]example.com` to
+  // `example.com`).
+  GURL url = primary_pattern.ToRepresentativeUrl();
+
   DCHECK(url.is_valid()) << "url: '" << url.possibly_invalid_spec() << "' "
                          << "pattern: '" << primary_pattern.ToString() << "'";
   return predicate.Run(url);
