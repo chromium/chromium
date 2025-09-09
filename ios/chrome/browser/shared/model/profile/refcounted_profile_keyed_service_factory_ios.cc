@@ -54,20 +54,6 @@ void RefcountedProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
 }
 
 scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BuildServiceInstanceFor(static_cast<web::BrowserState*>(profile));
-}
-
-scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
-}
-
-scoped_refptr<RefcountedKeyedService>
 RefcountedProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
     bool create) {

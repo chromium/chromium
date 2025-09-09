@@ -116,12 +116,7 @@ class RefcountedProfileKeyedServiceFactoryIOS
 
   // Creates a new instance of the service for `profile`.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const;
-
-  // Creates a new instance of the service for `context`.
-  // Deprecated, override `BuildServiceInstanceFor(ProfileIOS*)` instead.
-  virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const;
+      ProfileIOS* profile) const = 0;
 
  private:
   // RefcountedKeyedServiceFactory implementation:

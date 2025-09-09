@@ -110,12 +110,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
 
   // Creates a new instance of the service for `profile`.
   virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const;
-
-  // Creates a new instance of the service for `context`.
-  // Deprecated, override `BuildServiceInstanceFor(ProfileIOS*)` instead.
-  virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const;
+      ProfileIOS* profile) const = 0;
 
  private:
   // KeyedServiceFactory implementation:

@@ -51,20 +51,6 @@ void ProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
   // Nothing to do.
 }
 
-std::unique_ptr<KeyedService>
-ProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BuildServiceInstanceFor(static_cast<web::BrowserState*>(profile));
-}
-
-std::unique_ptr<KeyedService>
-ProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
-}
-
 KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
     bool create) {
