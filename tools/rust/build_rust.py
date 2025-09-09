@@ -656,6 +656,11 @@ def GitApplyCherryPicks():
     GitCherryPick(RUST_SRC_DIR, '4ecca581fad73c51d7c7a78c4b97a3ada2ca5249',
                   'https://github.com/rust-lang/rust.git')
 
+    # TODO(crbug.com/442112342): Remove once
+    # https://github.com/rust-lang/rust/pull/146133 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, '916b55e08217ca14dabec0169067ed8d6523bf6e',
+                  'https://github.com/rust-lang/rust.git')
+
     print('Finished applying cherry-picks.')
 
 
