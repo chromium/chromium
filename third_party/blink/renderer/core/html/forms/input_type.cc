@@ -317,6 +317,10 @@ void InputType::SetValueAsDecimal(const Decimal& new_value,
   GetElement().SetValue(Serialize(new_value), event_behavior);
 }
 
+String InputType::ConvertFromVisibleValue(const String& visible_value) const {
+  return SanitizeValue(visible_value);
+}
+
 void InputType::ReadingChecked() const {}
 
 void InputType::WillUpdateCheckedness(bool) {}
