@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/gpu/buildflags.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 
@@ -175,7 +176,12 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
  private:
   ContextProvider* context_provider() { return context_provider_.get(); }
-  GrDirectContext* gr_context() { return context_provider()->GrContext(); }
+  GrDirectContext* gr_context() {
+    if (!gr_context_) {
+      gr_context_ = GrDirectContext::MakeMock(nullptr);
+    }
+    return gr_context_.get();
+  }
 
   gpu::SyncToken GenerateSyncToken();
 
@@ -214,6 +220,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   SharedImagePurgeableCallback set_purgeable_callback_;
 
   THREAD_CHECKER(thread_checker_);
+
+  sk_sp<GrDirectContext> gr_context_;
 
   base::WeakPtrFactory<FakeSkiaOutputSurface> weak_ptr_factory_{this};
 };

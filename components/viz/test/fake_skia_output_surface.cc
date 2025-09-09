@@ -21,23 +21,17 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -344,16 +338,13 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
     GrBackendTexture* backend_texture) {
   DCHECK(!image_context.mailbox().IsZero());
 
-  auto* gl = context_provider()->ContextGL();
-  auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      image_context.mailbox().name);
-  auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
-      image_context.format(), /*plane_index=*/0);
-  GrGLTextureInfo gl_texture_info = {image_context.texture_target(), texture_id,
-                                     gl_format_desc.storage_internal_format};
-  *backend_texture = GrBackendTextures::MakeGL(
-      image_context.size().width(), image_context.size().height(),
-      skgpu::Mipmapped::kNo, gl_texture_info);
+  static int next_id = 0;
+  GrMockTextureInfo mock_texture_info = GrMockTextureInfo(
+      SkColorTypeToGrColorType(ToClosestSkColorType(image_context.format())),
+      SkTextureCompressionType::kNone, ++next_id);
+  *backend_texture = GrBackendTexture(image_context.size().width(),
+                                      image_context.size().height(),
+                                      skgpu::Mipmapped::kNo, mock_texture_info);
   return true;
 }
 
