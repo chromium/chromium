@@ -18,22 +18,13 @@ from collections.abc import Collection
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 
-PROMPTFOO_CONFIG_COMPONENTS = [
-    ('agents', 'extensions', 'build_information', 'tests', 'promptfoo',
-     'host_os.yaml'),
-    ('agents', 'extensions', 'build_information', 'tests', 'promptfoo',
-     'host_arch.yaml'),
-    ('agents', 'prompts', 'eval', 'add_gtest_coverage', 'eval.yaml'),
-]
-PROMPTFOO_CONFIGS = [
-    CHROMIUM_SRC.joinpath(*c) for c in PROMPTFOO_CONFIG_COMPONENTS
-]
-
 EXTENSIONS_TO_INSTALL = [
     'build_information',
     'depot_tools',
     'landmines',
 ]
+
+TESTCASE_EXTENSION = '.promptfoo.yaml'
 
 
 class PromptfooInstallation(abc.ABC):
@@ -232,6 +223,20 @@ class WorkDir(contextlib.AbstractContextManager):
             shutil.rmtree(self.path)
 
 
+def discover_testcase_files() -> list[pathlib.Path]:
+    """Discovers all testcase files that can be run by this test runner.
+
+    Returns:
+        A list of Paths, each path pointing to a .yaml file containing a
+        promptfoo test case.
+    """
+    extensions_path = CHROMIUM_SRC / 'agents' / 'extensions'
+    all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
+    prompts_path = CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
+    all_tests.extend(list(prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
+    return all_tests
+
+
 def main() -> int:
     """Evaluates prompts using promptfoo.
 
@@ -281,11 +286,9 @@ def main() -> int:
                                  args.promptfoo_version)
 
     returncode = 0
-    configs_to_run = PROMPTFOO_CONFIGS
+    configs_to_run = discover_testcase_files()
     if args.filter:
-        configs_to_run = [
-            c for c in PROMPTFOO_CONFIGS if args.filter in str(c)
-        ]
+        configs_to_run = [c for c in configs_to_run if args.filter in str(c)]
     if len(configs_to_run) == 0:
         logging.info('No tests to run')
 
