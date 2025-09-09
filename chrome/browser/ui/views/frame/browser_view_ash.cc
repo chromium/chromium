@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "components/search/ntp_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
@@ -111,7 +112,11 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       IsWindowControlsOverlayEnabled();
 
   auto* ntp_footer = GetActiveContentsContainerView()->new_tab_footer_view();
-  const bool is_ntp_footer_showing = ntp_footer->GetVisible();
+  bool is_ntp_footer_showing = false;
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    is_ntp_footer_showing = ntp_footer->GetVisible();
+  }
+
   if (is_ntp_footer_showing) {
     const gfx::RoundedCornersF ntp_footer_radii(
         0, 0,
