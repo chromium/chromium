@@ -358,8 +358,7 @@ export class SettingsAutofillSectionElement extends
   private shouldShowAddressIcon_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
-    return this.isCloudOffVisible_(address, accountInfo) ||
-        loadTimeData.getBoolean('enableSupportForHomeAndWork');
+    return this.getAddressIcon_(address, accountInfo).length > 0;
   }
 
   /**
@@ -370,17 +369,18 @@ export class SettingsAutofillSectionElement extends
   private getAddressIcon_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
-    if (this.isAccountHomeAddress_(address)) {
-      return 'settings20:home';
-    }
-    if (this.isAccountWorkAddress_(address)) {
-      return 'settings20:work';
+    if (loadTimeData.getBoolean('enableSupportForHomeAndWork')) {
+      if (this.isAccountHomeAddress_(address)) {
+        return 'settings20:home';
+      }
+      if (this.isAccountWorkAddress_(address)) {
+        return 'settings20:work';
+      }
     }
     if (this.isCloudOffVisible_(address, accountInfo)) {
       return 'cr20:cloud-off';
     }
-
-    return 'settings20:location-on';
+    return '';
   }
 
   /**
