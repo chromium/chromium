@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -94,6 +95,18 @@ class BASE_EXPORT AccessControlList {
                 SecurityAccessMode mode,
                 DWORD access_mask,
                 DWORD inheritance);
+
+  // Add an access allowed conditional ACE to the ACL.
+  // |sid| the SID for the ACE.
+  // |ace_flags| the flags for the ACE, such as inheritance.
+  // |access_mask| the granted access mask.
+  // |condition| the conditional expression to filter the ACE. The conditional
+  // expression must be enclosed with parentheses.
+  // Returns true if successful, false on error with the Win32 last error set.
+  bool AddAccessAllowedConditionalAce(const Sid& sid,
+                                      DWORD ace_flags,
+                                      DWORD access_mask,
+                                      std::wstring_view condition);
 
   // Make a clone of the current AccessControlList object.
   AccessControlList Clone() const;

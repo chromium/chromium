@@ -9,6 +9,7 @@
 #include <aclapi.h>
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -175,6 +176,42 @@ bool AccessControlList::SetEntry(const Sid& sid,
   std::vector<ExplicitAccessEntry> ace_list;
   ace_list.emplace_back(sid, mode, access_mask, inheritance);
   return SetEntries(ace_list);
+}
+
+bool AccessControlList::AddAccessAllowedConditionalAce(
+    const Sid& sid,
+    DWORD ace_flags,
+    DWORD access_mask,
+    std::wstring_view condition) {
+  base::HeapArray<uint8_t> base_acl =
+      acl_.empty() ? EmptyAclToBuffer()
+                   : base::HeapArray<uint8_t>::CopiedFrom(acl_);
+  std::wstring condition_str(condition);
+  DWORD length;
+  if (::AddConditionalAce(reinterpret_cast<ACL*>(base_acl.data()), ACL_REVISION,
+                          ace_flags, ACCESS_ALLOWED_CALLBACK_ACE_TYPE,
+                          access_mask, sid.GetPSID(), condition_str.data(),
+                          &length)) {
+    ::SetLastError(ERROR_INVALID_PARAMETER);
+    return false;
+  }
+
+  if (::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    return false;
+  }
+
+  base::HeapArray<uint8_t> acl = base::HeapArray<uint8_t>::Uninit(length);
+  acl.copy_prefix_from(base_acl);
+  ACL* pacl = reinterpret_cast<ACL*>(acl.data());
+  pacl->AclSize = checked_cast<WORD>(length);
+  if (!::AddConditionalAce(pacl, ACL_REVISION, ace_flags,
+                           ACCESS_ALLOWED_CALLBACK_ACE_TYPE, access_mask,
+                           sid.GetPSID(), condition_str.data(), &length)) {
+    return false;
+  }
+
+  acl_ = std::move(acl);
+  return true;
 }
 
 AccessControlList AccessControlList::Clone() const {
