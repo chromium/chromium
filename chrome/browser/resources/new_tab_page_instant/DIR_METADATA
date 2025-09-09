@@ -1,6 +1,3 @@
-monorail: {
-  component: "UI>Browser>NewTabPage"
-}
 buganizer_public: {
-  component_id: 1457163
+  component_id: 1619002
 }
