@@ -3879,7 +3879,7 @@ enum WebFeature {
   kOBSOLETE_TextWrapPrettyFail = 4595,
   kContainerQueryEvalUnknown = 4596,
   kOBSOLETE_EventTimingPresentationPromiseResolvedAfterReport = 4597,
-  kGetCoalescedEventsInInsecureContext = 4598,
+  kOBSOLETE_GetCoalescedEventsInInsecureContext = 4598,
   kCSPEESameOriginBlanketEnforcement = 4599,
   // The items above roughly this point are available in the M116 branch.
   kSharedDictionaryUsed = 4601,
