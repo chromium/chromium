@@ -9,6 +9,7 @@
 
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -31,7 +32,17 @@ std::vector<ContextualTask> ContextualTasksServiceImpl::GetTasks() const {
 }
 
 void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
-  tasks_.erase(task_id);
+  auto task_it = tasks_.find(task_id);
+  if (task_it == tasks_.end()) {
+    return;
+  }
+
+  const auto& task = task_it->second;
+  for (const auto& session_id : task.GetSessionIds()) {
+    session_to_task_.erase(session_id);
+  }
+
+  tasks_.erase(task_it);
 }
 
 void ContextualTasksServiceImpl::AssignServerIdToTask(
@@ -70,6 +81,39 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
   if (it != tasks_.end()) {
     it->second.RemoveUrl(url);
   }
+}
+
+void ContextualTasksServiceImpl::AttachSessionIdToTask(
+    const base::Uuid& task_id,
+    SessionID session_id) {
+  session_to_task_[session_id] = task_id;
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    it->second.AddSessionId(session_id);
+  }
+}
+
+void ContextualTasksServiceImpl::DetachSessionIdFromTask(
+    const base::Uuid& task_id,
+    SessionID session_id) {
+  session_to_task_.erase(session_id);
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    it->second.RemoveSessionId(session_id);
+  }
+}
+
+std::optional<ContextualTask>
+ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
+    SessionID session_id) const {
+  auto it = session_to_task_.find(session_id);
+  if (it != session_to_task_.end()) {
+    auto task_it = tasks_.find(it->second);
+    if (task_it != tasks_.end()) {
+      return task_it->second;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace contextual_tasks

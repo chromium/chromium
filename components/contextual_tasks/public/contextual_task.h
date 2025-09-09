@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/uuid.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -64,6 +65,16 @@ class ContextualTask {
   // Removes a URL from the task.
   void RemoveUrl(const GURL& url);
 
+  // Returns the SessionIDs of tabs related to the task.
+  std::vector<SessionID> GetSessionIds() const;
+
+  // Adds a SessionID to the task. If the SessionID already exists, this method
+  // does nothing.
+  void AddSessionId(SessionID session_id);
+
+  // Removes a SessionID from the task.
+  void RemoveSessionId(SessionID session_id);
+
  private:
   // The unique ID of the task.
   base::Uuid task_id_;
@@ -74,6 +85,10 @@ class ContextualTask {
 
   // URLs relevant to the task.
   std::vector<GURL> urls_;
+
+  // SessionIDs of tabs related to the task. SessionIDs are local to the
+  // device and are not synced.
+  std::vector<SessionID> session_ids_;
 };
 
 }  // namespace contextual_tasks

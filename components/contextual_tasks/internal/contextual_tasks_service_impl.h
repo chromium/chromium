@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -32,11 +33,18 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
                               const std::string& server_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
+  void AttachSessionIdToTask(const base::Uuid& task_id,
+                             SessionID session_id) override;
+  void DetachSessionIdFromTask(const base::Uuid& task_id,
+                               SessionID session_id) override;
+  std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
+      SessionID session_id) const override;
 
  private:
   // The set of all tasks currently managed by the service, indexed by their
   // unique task ID for efficient lookup.
   std::map<base::Uuid, ContextualTask> tasks_;
+  std::map<SessionID, base::Uuid> session_to_task_;
 };
 
 }  // namespace contextual_tasks

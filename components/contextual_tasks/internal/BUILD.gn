@@ -17,6 +17,7 @@ source_set("internal") {
     "//base",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//components/sessions:session_id",
     "//url",
   ]
 }
@@ -30,6 +31,7 @@ source_set("unit_tests") {
     ":internal",
     "//base/test:test_support",
     "//components/contextual_tasks/public",
+    "//components/sessions:session_id",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

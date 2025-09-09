@@ -56,4 +56,21 @@ void ContextualTask::RemoveUrl(const GURL& url) {
   urls_.erase(std::remove(urls_.begin(), urls_.end(), url), urls_.end());
 }
 
+std::vector<SessionID> ContextualTask::GetSessionIds() const {
+  return session_ids_;
+}
+
+void ContextualTask::AddSessionId(SessionID session_id) {
+  if (std::find(session_ids_.begin(), session_ids_.end(), session_id) ==
+      session_ids_.end()) {
+    session_ids_.push_back(session_id);
+  }
+}
+
+void ContextualTask::RemoveSessionId(SessionID session_id) {
+  session_ids_.erase(
+      std::remove(session_ids_.begin(), session_ids_.end(), session_id),
+      session_ids_.end());
+}
+
 }  // namespace contextual_tasks

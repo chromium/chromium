@@ -9,6 +9,7 @@
 
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -54,8 +55,13 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   ContextualTask task = service_.CreateTask();
   EXPECT_EQ(1u, service_.GetTasks().size());
 
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  service_.AttachSessionIdToTask(task.GetTaskId(), session_id);
+  EXPECT_TRUE(service_.GetMostRecentContextualTaskForSessionID(session_id));
+
   service_.DeleteTask(task.GetTaskId());
   EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_FALSE(service_.GetMostRecentContextualTaskForSessionID(session_id));
 }
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask_Twice) {
@@ -234,6 +240,37 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
 
   service_.DetachUrlFromTask(task.GetTaskId(), url);
   EXPECT_TRUE(service_.GetTasks()[0].GetUrls().empty());
+}
+
+TEST_F(ContextualTasksServiceImplTest, AttachSessionIdToTask) {
+  ContextualTask task = service_.CreateTask();
+  SessionID session_id = SessionID::FromSerializedValue(1);
+
+  service_.AttachSessionIdToTask(task.GetTaskId(), session_id);
+
+  std::optional<ContextualTask> recent_task =
+      service_.GetMostRecentContextualTaskForSessionID(session_id);
+  ASSERT_TRUE(recent_task.has_value());
+  EXPECT_EQ(task.GetTaskId(), recent_task->GetTaskId());
+}
+
+TEST_F(ContextualTasksServiceImplTest, DetachSessionIdFromTask) {
+  ContextualTask task = service_.CreateTask();
+  SessionID session_id = SessionID::FromSerializedValue(1);
+
+  service_.AttachSessionIdToTask(task.GetTaskId(), session_id);
+  EXPECT_TRUE(service_.GetMostRecentContextualTaskForSessionID(session_id));
+
+  service_.DetachSessionIdFromTask(task.GetTaskId(), session_id);
+  EXPECT_FALSE(service_.GetMostRecentContextualTaskForSessionID(session_id));
+}
+
+TEST_F(ContextualTasksServiceImplTest,
+       GetMostRecentContextualTaskForSessionID_NotFound) {
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  std::optional<ContextualTask> recent_task =
+      service_.GetMostRecentContextualTaskForSessionID(session_id);
+  EXPECT_FALSE(recent_task.has_value());
 }
 
 }  // namespace contextual_tasks

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/uuid.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -64,6 +65,20 @@ TEST(ContextualTaskTest, RemoveChat) {
 
   task.RemoveChat(type, server_id);
   EXPECT_FALSE(task.GetChat().has_value());
+}
+
+TEST(ContextualTaskTest, AddAndRemoveSessionId) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  SessionID session_id = SessionID::FromSerializedValue(1);
+
+  task.AddSessionId(session_id);
+  task.AddSessionId(session_id);
+
+  EXPECT_EQ(1u, task.GetSessionIds().size());
+
+  task.RemoveSessionId(session_id);
+  EXPECT_EQ(0u, task.GetSessionIds().size());
 }
 
 }  // namespace contextual_tasks

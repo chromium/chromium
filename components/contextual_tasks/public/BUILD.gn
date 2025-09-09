@@ -13,6 +13,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/sessions:session_id",
     "//url",
   ]
 }
@@ -25,6 +26,7 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//testing/gtest",
     "//url",
   ]
