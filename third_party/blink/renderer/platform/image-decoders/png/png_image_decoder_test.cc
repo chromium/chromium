@@ -2076,5 +2076,22 @@ TEST(PNGTests, ActlZero) {
   EXPECT_LE(frame_count, 1u);
 }
 
+// Regression test for https://crbug.com/443427198.
+TEST(PNGTests, InterlacedMultiframeWitBlending) {
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      kDecodersTestingDir, "interlaced-multiframe-with-blending.png");
+  EXPECT_FALSE(data->empty());
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+
+  wtf_size_t frame_count = decoder->FrameCount();
+  EXPECT_EQ(frame_count, 4u);
+  for (wtf_size_t i = 0; i < frame_count; i++) {
+    // Not crashing when decoding is the main verification in this test.
+    decoder->DecodeFrameBufferAtIndex(i);
+    EXPECT_FALSE(decoder->Failed());
+  }
+}
+
 }  // namespace
 }  // namespace blink
