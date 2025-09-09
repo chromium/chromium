@@ -1992,12 +1992,6 @@
       name: "DynamicSafeAreaInsets",
       status: {"Android": "stable"},
     },
-    // Dynamically change the safe area insets as browser controls scrolls.
-    {
-      name: "DynamicSafeAreaInsetsOnScroll",
-      depends_on: ["DynamicSafeAreaInsets"],
-      status: {"Android": "stable"},
-    },
     {
       public: true,
       name: "ElementCapture",

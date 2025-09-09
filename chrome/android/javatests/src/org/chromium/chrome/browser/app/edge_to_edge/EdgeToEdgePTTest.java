@@ -47,7 +47,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 })
 @EnableFeatures({
     "DynamicSafeAreaInsets",
-    "DynamicSafeAreaInsetsOnScroll",
     "DrawCutoutEdgeToEdge",
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })

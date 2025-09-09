@@ -582,8 +582,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
            settings.skewport_extrapolation_limit_in_screen_pixels) =
       GetTilingInterestAreaSizes();
 
-  settings.dynamic_safe_area_insets_on_scroll_enabled =
-      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled();
+  // TODO(crbug.com/432044218): remove
+  // LayerTreeSettings::dynamic_safe_area_insets_on_scroll_enabled.
+  settings.dynamic_safe_area_insets_on_scroll_enabled = true;
   return settings;
 }
 
