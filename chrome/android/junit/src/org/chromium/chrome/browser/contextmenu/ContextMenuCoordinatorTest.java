@@ -458,6 +458,7 @@ public class ContextMenuCoordinatorTest {
                 rootView,
                 contentView,
                 isPopup,
+                false,
                 ContextMenuUtils.isPopupSupported(mActivity),
                 0,
                 0,

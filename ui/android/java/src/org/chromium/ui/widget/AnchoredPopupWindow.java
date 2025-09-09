@@ -377,6 +377,22 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
 
         /**
+         * @param width The desired width for the content of the popup window in pixel.
+         */
+        public Builder setDesiredContentWidth(int width) {
+            mDesiredContentWidthPx = width;
+            return this;
+        }
+
+        /**
+         * @param height The desired height for the content of the popup window in pixel.
+         */
+        public Builder setDesiredContentHeight(int height) {
+            mDesiredContentHeightPx = height;
+            return this;
+        }
+
+        /**
          * @param orientation The vertical orientation preferred.
          */
         public Builder setPreferredVerticalOrientation(@VerticalOrientation int orientation) {

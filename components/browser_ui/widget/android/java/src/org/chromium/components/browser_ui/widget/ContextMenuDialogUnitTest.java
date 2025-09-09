@@ -278,6 +278,7 @@ public class ContextMenuDialogUnitTest {
                 mRootView,
                 mMenuContentView,
                 isPopup,
+                /* isFlyout= */ false,
                 shouldRemoveScrim,
                 0,
                 0,

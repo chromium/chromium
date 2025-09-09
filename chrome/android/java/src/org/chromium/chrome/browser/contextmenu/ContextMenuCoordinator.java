@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -23,7 +24,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import android.widget.FrameLayout;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -297,6 +297,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         layout,
                         menu,
                         mUsePopupWindow,
+                        /* isFlyout= */ false,
                         shouldRemoveScrim,
                         dialogTopMarginPx,
                         dialogBottomMarginPx,
@@ -417,6 +418,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         new FrameLayout(mActivity),
                         menu,
                         mUsePopupWindow,
+                        /* isFlyout= */ true,
                         /* shouldRemoveScrim= */ true,
                         ContextMenuDialog.NO_CUSTOM_MARGIN,
                         ContextMenuDialog.NO_CUSTOM_MARGIN,
@@ -458,6 +460,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      * @param layout The inflated context menu layout that will house the context menu.
      * @param menuView The inflated view that contains the list view.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
+     * @param isPopup Whether the window is a flyout popup.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default defined in
      *     XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default defined
@@ -477,6 +480,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             View layout,
             View menuView,
             boolean isPopup,
+            boolean isFlyout,
             boolean shouldRemoveScrim,
             int topMarginPx,
             int bottomMarginPx,
@@ -494,6 +498,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         layout,
                         menuView,
                         isPopup,
+                        isFlyout,
                         shouldRemoveScrim,
                         popupMargin,
                         desiredPopupContentWidth,

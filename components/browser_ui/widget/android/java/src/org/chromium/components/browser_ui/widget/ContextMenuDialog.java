@@ -33,6 +33,7 @@ import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestina
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
 
 /**
@@ -49,6 +50,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final Activity mActivity;
     private final View mContentView;
     private final boolean mIsPopup;
+    private final boolean mIsFlyout;
     private final boolean mShouldRemoveScrim;
 
     private float mContextMenuSourceXPx;
@@ -85,6 +87,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param layout The context menu layout that will house the menu.
      * @param contentView The context menu view to display on the dialog.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
+     * @param isFlyout Whether the popup is a flyout.
      * @param shouldRemoveScrim Whether the context menu should removes the scrim behind the dialog
      *     visually.
      * @param popupMargin The margin for the context menu.
@@ -105,6 +108,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             View layout,
             View contentView,
             boolean isPopup,
+            boolean isFlyout,
             boolean shouldRemoveScrim,
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
@@ -118,6 +122,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView = contentView;
         mLayout = layout;
         mIsPopup = isPopup;
+        mIsFlyout = isFlyout;
         mShouldRemoveScrim = shouldRemoveScrim;
         mPopupMargin = popupMargin;
         mDesiredPopupContentWidth = desiredPopupContentWidth;
@@ -134,6 +139,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         if (mShouldRemoveScrim) {
             dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+            if (mIsFlyout) {
+                dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
         }
         Window activityWindow = mActivity.getWindow();
         dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -197,35 +205,43 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                 dismiss();
                                 return;
                             }
-                            mPopupWindow =
-                                    new AnchoredPopupWindow(
-                                            mActivity,
-                                            mLayout,
-                                            new ColorDrawable(Color.TRANSPARENT),
-                                            mContentView,
-                                            new RectProvider(mRect));
+
+                            AnchoredPopupWindow.Builder builder =
+                                    new AnchoredPopupWindow.Builder(
+                                                    mActivity,
+                                                    mLayout,
+                                                    new ColorDrawable(Color.TRANSPARENT),
+                                                    () -> mContentView,
+                                                    new RectProvider(mRect))
+                                            .setSmartAnchorWithMaxWidth(true)
+                                            .setVerticalOverlapAnchor(true)
+                                            .setOutsideTouchable(false)
+                                            .setAnimateFromAnchor(true)
+                                            // Set popup focusable so the screen reader can announce
+                                            // the popup properly, and key press events are handled
+                                            // correctly for context menu keyboard navigation.
+                                            .setFocusable(true)
+                                            // Set touch modal false (outside touches will be sent
+                                            // to other windows behind it) so that touches from
+                                            // drag-drop will dismiss the context menu.
+                                            .setTouchModal(false)
+                                            // If the popup is dismissed, dismiss this dialog as
+                                            // well. This is required when the popup is dismissed
+                                            // through backpress / hardware accessories where the
+                                            // #dismiss is not triggered by #onTouchEvent.
+                                            .addOnDismissListener(ContextMenuDialog.this::dismiss);
+
                             if (mPopupMargin != null) {
-                                mPopupWindow.setMargin(mPopupMargin);
+                                builder.setMargin(mPopupMargin);
                             }
                             if (mDesiredPopupContentWidth != null) {
-                                mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
+                                builder.setDesiredContentWidth(mDesiredPopupContentWidth);
                             }
-                            mPopupWindow.setSmartAnchorWithMaxWidth(true);
-                            mPopupWindow.setVerticalOverlapAnchor(true);
-                            mPopupWindow.setOutsideTouchable(false);
-                            mPopupWindow.setAnimateFromAnchor(true);
-                            // Set popup focusable so the screen reader can announce the popup
-                            // properly, and key press events are handdled correctly for context
-                            // menu keyboard navigation.
-                            mPopupWindow.setFocusable(true);
-                            // Set touch modal false (outside touches will be sent to other windows
-                            // behind it) so that touches from drag-drop will dismiss the context
-                            // menu.
-                            mPopupWindow.setTouchModal(false);
-                            // If the popup is dismissed, dismiss this dialog as well. This is
-                            // required when the popup is dismissed through backpress / hardware
-                            // accessiries where the #dismiss is not triggered by #onTouchEvent.
-                            mPopupWindow.addOnDismissListener(ContextMenuDialog.this::dismiss);
+                            if (mIsFlyout) {
+                                builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
+                            }
+
+                            mPopupWindow = builder.build();
                             mPopupWindow.show();
                         } else {
                             // Otherwise, the menu will already be in the hierarchy, and we need to
