@@ -58,6 +58,8 @@ namespace {
 
 using SyntheticResponseStatus =
     ServiceWorkerSyntheticResponseManager::SyntheticResponseStatus;
+using SyntheticResponseEligibility =
+    ServiceWorkerMetrics::SyntheticResponseEligibility;
 
 const char kHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
@@ -105,6 +107,12 @@ void MaybeSetHeaderReceivedTiming(net::LoadTimingInfo& timing) {
 
 constexpr char kHistogramSyntheticResponseEligibility[] =
     "ServiceWorker.SyntheticResponse.Eligibility";
+
+void RecordSyntheticResponseEligibility(
+    SyntheticResponseEligibility eligibility) {
+  base::UmaHistogramEnumeration(kHistogramSyntheticResponseEligibility,
+                                eligibility);
+}
 
 }  // namespace
 
@@ -1023,10 +1031,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
   if (resource_request_.load_flags & kReloadFlags) {
     // Synthetic response is not enabled in reloading the page.
-    base::UmaHistogramEnumeration(
-        kHistogramSyntheticResponseEligibility,
-        ServiceWorkerMetrics::SyntheticResponseEligibility::
-            kNotEligibleByReload);
+    RecordSyntheticResponseEligibility(
+        SyntheticResponseEligibility::kNotEligibleByReload);
     return false;
   }
 
@@ -1067,10 +1073,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       // When it's not ready, the header is not stored yet. That means we don't
       // create a synthetic response locally, and wait for the response from the
       // network.
-      base::UmaHistogramEnumeration(
-          kHistogramSyntheticResponseEligibility,
-          ServiceWorkerMetrics::SyntheticResponseEligibility::
-              kNotEligibleByNoHeaderStored);
+      RecordSyntheticResponseEligibility(
+          SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
       break;
     case SyntheticResponseStatus::kReady:
       // When it's ready, the header which the service worker locally storead is
@@ -1080,9 +1084,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       synthetic_response_manager_->StartSyntheticResponse(base::BindOnce(
           &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
           weak_factory_.GetWeakPtr()));
-      base::UmaHistogramEnumeration(
-          kHistogramSyntheticResponseEligibility,
-          ServiceWorkerMetrics::SyntheticResponseEligibility::kEligible);
+      RecordSyntheticResponseEligibility(
+          SyntheticResponseEligibility::kEligible);
       break;
   }
 
