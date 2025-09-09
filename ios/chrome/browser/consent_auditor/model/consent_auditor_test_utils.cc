@@ -7,7 +7,6 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-std::unique_ptr<KeyedService> BuildFakeConsentAuditor(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildFakeConsentAuditor(ProfileIOS* profile) {
   return std::make_unique<consent_auditor::FakeConsentAuditor>();
 }

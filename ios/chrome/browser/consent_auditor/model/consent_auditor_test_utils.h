@@ -12,7 +12,6 @@
 
 // Returns a basic FakeConsentAuditor.
 // Allows to override factories in tests.
-std::unique_ptr<KeyedService> BuildFakeConsentAuditor(
-    web::BrowserState* context);
+std::unique_ptr<KeyedService> BuildFakeConsentAuditor(ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_TEST_UTILS_H_
