@@ -711,7 +711,7 @@ void ViewTransition::InitTypes(const Vector<String>& types) {
   // checks that it is in a current view transition. Because InitTypes is
   // called during ctor, the supplement does not yet know that this will become
   // a current view transition, so we need to invalidate explicitly.
-  if (auto* originating_element = document_->documentElement()) {
+  if (auto* originating_element = Scope()) {
     originating_element->ActiveViewTransitionStateChanged();
     if (!types_->IsEmpty()) {
       originating_element->ActiveViewTransitionTypeStateChanged();

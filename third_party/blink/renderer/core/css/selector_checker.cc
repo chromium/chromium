@@ -491,6 +491,13 @@ bool NeedsScopeActivation(
                                  context.selector->IsLastInComplexSelector());
 }
 
+ViewTransition* GetTransitionForScope(const Element& element) {
+  if (element.IsPseudoElement()) {
+    return nullptr;
+  }
+  return ViewTransitionUtils::GetTransition(element);
+}
+
 }  // namespace
 
 SelectorChecker::FeaturelessMatch
@@ -2869,14 +2876,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(context.relative_anchor_element);
       return context.relative_anchor_element == &element;
     case CSSSelector::kPseudoActiveViewTransition: {
-      // :active-view-transition is only valid on the document element.
-      if (!element.IsDocumentElement()) {
-        return false;
-      }
-
       // The pseudo is only valid if there is a transition.
-      auto* transition =
-          ViewTransitionUtils::GetTransition(element.GetDocument());
+      auto* transition = GetTransitionForScope(element);
       if (!transition) {
         return false;
       }
@@ -2885,14 +2886,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return transition->MatchForActiveViewTransition();
     }
     case CSSSelector::kPseudoActiveViewTransitionType: {
-      // :active-view-transition-type is only valid on the document element.
-      if (!element.IsDocumentElement()) {
-        return false;
-      }
-
       // The pseudo is only valid if there is a transition.
-      auto* transition =
-          ViewTransitionUtils::GetTransition(element.GetDocument());
+      auto* transition = GetTransitionForScope(element);
       if (!transition) {
         return false;
       }
