@@ -2404,12 +2404,17 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  // Hide the live caption dialog if it's visible and the user taps outside of
-  // it.
-  if (live_caption_dialog_ && live_caption_dialog_->GetVisible() &&
-      !GetLiveCaptionDialogBounds().Contains(event->location()) &&
-      !GetLiveCaptionButtonBounds().Contains(event->location())) {
-    SetLiveCaptionDialogVisibility(false);
+  if (live_caption_dialog_ && live_caption_dialog_->GetVisible()) {
+    if (!GetLiveCaptionDialogBounds().Contains(event->location())) {
+      // Hide the live caption dialog if it's visible and the user taps outside
+      // of it.
+      SetLiveCaptionDialogVisibility(false);
+      event->SetHandled();
+      return;
+    }
+
+    // Otherwise, let the live caption dialog handle the gesture.
+    live_caption_dialog_->OnGestureTapEvent(event);
     return;
   }
 
