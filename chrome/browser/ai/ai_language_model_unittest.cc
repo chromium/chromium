@@ -1324,14 +1324,7 @@ TEST_F(AILanguageModelTest, CrashRecoveryMeasureInputUsage) {
   EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
 }
 
-// TODO(crbug.com/414632884): This test is flaky on Linux TSAN.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_CanCreate_WaitsForEligibility \
-  DISABLED_CanCreate_WaitsForEligibility
-#else
-#define MAYBE_CanCreate_WaitsForEligibility CanCreate_WaitsForEligibility
-#endif
-TEST_F(AILanguageModelTest, MAYBE_CanCreate_WaitsForEligibility) {
+TEST_F(AILanguageModelTest, CanCreate_WaitsForEligibility) {
   base::test::TestFuture<base::OnceCallback<void(
       optimization_guide::OnDeviceModelEligibilityReason)>>
       eligibility_future;
