@@ -108,6 +108,52 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
   return object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
 }
 
+// Validates the relationship between outer and visible bounding boxes.
+//
+// The visible bounding box should generally be contained within or equal to
+// the outer bounding box, since it represents the visible portion of the
+// object. However, there are some exceptions:
+// 1. Inline elements can have different calculation methods that cause slight
+// differences
+// 2. Floating-point to integer conversions can introduce small rounding errors
+// 3. CSS transforms can cause complex geometric relationships
+#if DCHECK_IS_ON()
+void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
+                           const gfx::Rect& visible_box_in_viewport_coords,
+                           const LayoutObject& object) {
+  // Visible box coordinates should always be viewport-relative (>= 0)
+  DCHECK_GE(visible_box_in_viewport_coords.x(), 0)
+      << "Visible box should have x >= 0, got: "
+      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+  DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
+      << "Visible box should have y >= 0, got: "
+      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+
+  // For block-level elements, the visible box should generally be no larger
+  // than the outer box (with some tolerance for rounding errors).
+  // Inline elements are exempt because they can have different calculation
+  // methods that cause the visible box to be larger.
+  // TODO(crbug.com/422588784): Fixinline element box sizing  and enable check.
+  if (!object.IsInline()) {
+    const int kTolerancePixels = 1;
+    DCHECK_LE(visible_box_in_viewport_coords.width(),
+              outer_box_in_absolute_coords.width() + kTolerancePixels)
+        << "Visible box width should not exceed outer box width by more than "
+        << kTolerancePixels
+        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
+        << ", Outer: " << outer_box_in_absolute_coords.ToString()
+        << " for object: " << object;
+    DCHECK_LE(visible_box_in_viewport_coords.height(),
+              outer_box_in_absolute_coords.height() + kTolerancePixels)
+        << "Visible box height should not exceed outer box height by more than "
+        << kTolerancePixels
+        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
+        << ", Outer: " << outer_box_in_absolute_coords.ToString()
+        << " for object: " << object;
+  }
+}
+#endif  // DCHECK_IS_ON()
+
 void ComputeScrollerInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
@@ -1355,6 +1401,12 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
   geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
+
+  // Validate the relationship between outer and visible bounding boxes
+#if DCHECK_IS_ON()
+  ValidateBoundingBoxes(geometry.outer_bounding_box,
+                        geometry.visible_bounding_box, object);
+#endif
 
   geometry.is_fixed_or_sticky_position =
       object.Style()->GetPosition() == EPosition::kFixed ||
