@@ -634,20 +634,12 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
   // If refresh succeeded:
   // 1. update the session by adding a new session, replacing the old one
   // 2. restart the deferred requests.
-  //
-  // Note that we notified `on_access_callback` about `session_key.id` already,
-  // so we only need to notify the callback about other sessions.
   if (registration_result.is_session()) {
     std::unique_ptr<Session> new_session = registration_result.TakeSession();
     CHECK(new_session);
     CHECK_EQ(new_session->id(), session_key.id);
 
     SchemefulSite new_site(new_session->origin());
-    if (new_session->id() != session_key.id) {
-      NotifySessionAccess(
-          on_access_callback, SessionAccess::AccessType::kCreation,
-          SessionKey{new_site, new_session->id()}, *new_session);
-    }
     AddSession(new_site, std::move(new_session));
     // The session has been refreshed, restart the request.
     UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
