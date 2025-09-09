@@ -36,22 +36,9 @@ Window* CreateTestWindowWithDelegate(WindowDelegate* delegate,
                                      int id,
                                      const gfx::Rect& bounds,
                                      Window* parent) {
-  return CreateTestWindowWithDelegateAndType(
-      delegate, client::WINDOW_TYPE_NORMAL, id, bounds, parent, true);
-}
-
-Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
-                                            client::WindowType type,
-                                            int id,
-                                            const gfx::Rect& bounds,
-                                            Window* parent,
-                                            bool show_on_creation) {
-  return CreateTestWindow({.delegate = delegate,
-                           .parent = parent,
-                           .bounds = bounds,
-                           .window_type = type,
-                           .window_id = id,
-                           .show = show_on_creation})
+  return CreateTestWindow(
+             {.delegate = delegate, .parent = parent, .bounds = bounds,
+              .window_id = id})
       .release();
 }
 
