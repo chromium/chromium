@@ -506,6 +506,21 @@ class PLATFORM_EXPORT CanvasResourceProvider
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };
 
+// * Renders to a SharedImage, which manages memory internally.
+// * Layers may be overlay candidates.
+class PLATFORM_EXPORT CanvasResourceProviderSharedImage
+    : public CanvasResourceProvider {
+ public:
+  CanvasResourceProviderSharedImage(
+      gfx::Size,
+      viz::SharedImageFormat,
+      SkAlphaType,
+      const gfx::ColorSpace&,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      Delegate*);
+  ~CanvasResourceProviderSharedImage() override = default;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_

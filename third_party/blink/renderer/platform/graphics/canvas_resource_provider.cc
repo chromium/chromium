@@ -184,26 +184,41 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   }
 };
 
-// * Renders to a SharedImage, which manages memory internally.
-// * Layers may be overlay candidates.
-class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
-                                          public viz::ContextLostObserver,
-                                          public BitmapGpuChannelLostObserver {
+CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    Delegate* delegate)
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             std::move(context_provider_wrapper),
+                             delegate) {}
+
+// TODO(crbug.com/391648152): Fold this class into
+// CanvasResourceProviderSharedImage.
+class CanvasResourceProviderSharedImageImpl
+    : public CanvasResourceProviderSharedImage,
+      public viz::ContextLostObserver,
+      public BitmapGpuChannelLostObserver {
  public:
-  CanvasResourceProviderSharedImage(
+  CanvasResourceProviderSharedImageImpl(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate)
-      : CanvasResourceProvider(kSharedImage,
-                               size,
-                               format,
-                               alpha_type,
-                               color_space,
-                               /*context_provider_wrapper=*/nullptr,
-                               delegate),
+      : CanvasResourceProviderSharedImage(size,
+                                          format,
+                                          alpha_type,
+                                          color_space,
+                                          /*context_provider_wrapper=*/nullptr,
+                                          delegate),
         shared_image_interface_provider_(
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
@@ -217,7 +232,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
-  CanvasResourceProviderSharedImage(
+  CanvasResourceProviderSharedImageImpl(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -227,13 +242,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate)
-      : CanvasResourceProvider(kSharedImage,
-                               size,
-                               format,
-                               alpha_type,
-                               color_space,
-                               std::move(context_provider_wrapper),
-                               delegate),
+      : CanvasResourceProviderSharedImage(size,
+                                          format,
+                                          alpha_type,
+                                          color_space,
+                                          std::move(context_provider_wrapper),
+                                          delegate),
         raster_context_provider_(
             base::WrapRefCounted(ContextProviderWrapper()
                                      ->ContextProvider()
@@ -255,7 +269,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       EnsureWriteAccess();
   }
 
-  ~CanvasResourceProviderSharedImage() override {
+  ~CanvasResourceProviderSharedImageImpl() override {
     UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                                max_inflight_resources_, 20);
     if (is_software_) {
@@ -937,7 +951,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       unused_resources_reclaim_timer_.Start(
           FROM_HERE, kUnusedResourceExpirationTime,
           base::BindOnce(
-              &CanvasResourceProviderSharedImage::ClearOldUnusedResources,
+              &CanvasResourceProviderSharedImageImpl::ClearOldUnusedResources,
               base::Unretained(this)));
     }
   }
@@ -1273,7 +1287,7 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
+  auto provider = std::make_unique<CanvasResourceProviderSharedImageImpl>(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       delegate);
   if (provider->IsValid()) {
@@ -1393,7 +1407,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 #endif
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
+  auto provider = std::make_unique<CanvasResourceProviderSharedImageImpl>(
       size, format, alpha_type, color_space, context_provider_wrapper,
       is_accelerated, shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
