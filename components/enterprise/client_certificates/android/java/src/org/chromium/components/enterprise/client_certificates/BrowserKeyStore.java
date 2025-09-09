@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.security.keystore.StrongBoxUnavailableException;
 import android.util.Base64;
 
 import org.jni_zero.CalledByNative;
@@ -177,33 +176,41 @@ public final class BrowserKeyStore {
     }
 
     private @Nullable BrowserKey createBrowserKey(byte[] identifier, String keyStoreAlias) {
+        if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
+            Log.w(
+                    BrowserKey.TAG,
+                    "Android Keystore APIs for key generation are not available on this API"
+                        + " level.");
+            return null;
+        }
+
         KeyPairGenerator generator = getAndroidKeyPairGenerator();
         if (generator == null) {
             return null;
         }
-        KeyGenParameterSpec.Builder specBuilder;
-        if (Build.VERSION.SDK_INT < VERSION_CODES.P) {
-            return null;
+
+        KeyGenParameterSpec.Builder specBuilder =
+                new KeyGenParameterSpec.Builder(keyStoreAlias, KeyProperties.PURPOSE_SIGN)
+                        .setDigests(
+                                KeyProperties
+                                        .DIGEST_SHA256); // Requires Android 6 (VERSION_CODES.M).
+
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.P && getDeviceSupportsHardwareKeys()) {
+            specBuilder.setIsStrongBoxBacked(
+                    true); // StrongBox requires Android 9 (VERSION_CODES.P).
         }
+
         try {
-            specBuilder =
-                    new KeyGenParameterSpec.Builder(keyStoreAlias, KeyProperties.PURPOSE_SIGN)
-                            .setDigests(KeyProperties.DIGEST_SHA256)
-                            .setIsStrongBoxBacked(
-                                    true); // StrongBox requires Android 9 (VERSION_CODES.P).
-            try {
-                generator.initialize(specBuilder.build());
-            } catch (InvalidAlgorithmParameterException e) {
-                Log.e(
-                        BrowserKey.TAG,
-                        "Could not initialize key pair generation for browser key support.",
-                        e);
-                return null;
-            }
+            generator.initialize(specBuilder.build());
             return new BrowserKey(identifier, generator.generateKeyPair());
-        } catch (StrongBoxUnavailableException e) {
-            // TODO(crbug.com/432304139): Add support for software backed keys later.
-            Log.e(BrowserKey.TAG, "StrongBox is not available while creating a browser key.");
+        } catch (InvalidAlgorithmParameterException e) {
+            Log.e(
+                    BrowserKey.TAG,
+                    "Could not initialize key pair generation for browser key support.",
+                    e);
+            return null;
+        } catch (Exception e) {
+            Log.e(BrowserKey.TAG, "An unexpected error occurred during key pair generation.", e);
             return null;
         }
     }

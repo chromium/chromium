@@ -30,13 +30,6 @@ void ValidatePrivateKey(scoped_refptr<PrivateKey> key,
   ASSERT_TRUE(key->GetSSLPrivateKey());
 }
 
-bool IsHardwareKeySupported() {
-  // TODO(b/crbug.com/432304139) Support software keys.
-  // StrongBox is required for this test.
-  auto bk_key_store = CreateBrowserKeyStoreInstance();
-  return bk_key_store->GetDeviceSupportsHardwareKeys();
-}
-
 }  // namespace
 
 TEST(AndroidPrivateKeyFactoryTest, TestCreateFactory) {
@@ -46,9 +39,6 @@ TEST(AndroidPrivateKeyFactoryTest, TestCreateFactory) {
 }
 
 TEST(AndroidPrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
-  if (!IsHardwareKeySupported()) {
-    GTEST_SKIP();
-  }
   base::test::TaskEnvironment task_environment;
   ScopedSSLKeyConverter scoped_converter;
 
@@ -69,9 +59,6 @@ TEST(AndroidPrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
 }
 
 TEST(AndroidPrivateKeyFactoryTest, SupportedCreateKey_LoadKeyFromDict) {
-  if (!IsHardwareKeySupported()) {
-    GTEST_SKIP();
-  }
   base::test::TaskEnvironment task_environment;
   ScopedSSLKeyConverter scoped_converter;
 

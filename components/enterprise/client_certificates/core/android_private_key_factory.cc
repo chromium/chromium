@@ -47,12 +47,6 @@ static constexpr std::array<device::PublicKeyCredentialParams::CredentialInfo,
 scoped_refptr<AndroidPrivateKey> CreateOrLoadKeyFromKeyStore(
     scoped_refptr<BrowserKeyStore> bk_key_store,
     std::vector<uint8_t> credential_id) {
-  if (!bk_key_store->GetDeviceSupportsHardwareKeys()) {
-    // StrongBox is required for this key.
-    // TODO(crbug.com/432304139): Add support for software keys.
-    return nullptr;
-  }
-
   std::unique_ptr<BrowserKey> bk =
       bk_key_store->GetOrCreateBrowserKeyForCredentialId(
           credential_id, base::ToVector(kEs256Allowed));

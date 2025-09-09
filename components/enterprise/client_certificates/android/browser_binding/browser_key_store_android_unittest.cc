@@ -59,7 +59,7 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
           std::move(bk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_FALSE(bk->GetPrivateKey().is_null());
-  EXPECT_FALSE(bk->GetSSLPrivateKey().get() == nullptr);
+  EXPECT_TRUE(bk->GetSSLPrivateKey());
   EXPECT_FALSE(bk->GetPublicKeyAsSPKI().empty());
   EXPECT_FALSE(bk->GetIdentifier().empty());
   auto signature = bk->Sign(std::vector<uint8_t>{1, 2, 3});
@@ -72,11 +72,11 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
   }
 }
 
-TEST_F(BrowserKeyStoreAndroidTest, DoesNotGetbkWhenNoStrongBoxSupport) {
+TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenNoStrongBoxSupport) {
   scoped_refptr<BrowserKeyStore> bk_store = CreateBrowserKeyStoreInstance();
   ASSERT_TRUE(bk_store);
   if (bk_store->GetDeviceSupportsHardwareKeys()) {
-    // This test does not run with StrongBox.
+    // StrongBox must be unsupported for this test.
     GTEST_SKIP();
   }
   std::vector<uint8_t> bk_id{1, 2, 3, 4};
@@ -85,7 +85,18 @@ TEST_F(BrowserKeyStoreAndroidTest, DoesNotGetbkWhenNoStrongBoxSupport) {
       bk_store->GetOrCreateBrowserKeyForCredentialId(
           std::move(bk_id), base::ToVector(kEs256Allowed));
 
-  EXPECT_EQ(bk, nullptr);
+  EXPECT_FALSE(bk->GetPrivateKey().is_null());
+  EXPECT_TRUE(bk->GetSSLPrivateKey());
+  EXPECT_FALSE(bk->GetPublicKeyAsSPKI().empty());
+  EXPECT_FALSE(bk->GetIdentifier().empty());
+  auto signature = bk->Sign(std::vector<uint8_t>{1, 2, 3});
+  EXPECT_TRUE(signature.has_value());
+  EXPECT_FALSE(signature.value().empty());
+
+  // Clean up by removing the bk.
+  if (bk) {
+    bk_store->DeleteBrowserKey(bk->GetIdentifier());
+  }
 }
 
 }  // namespace

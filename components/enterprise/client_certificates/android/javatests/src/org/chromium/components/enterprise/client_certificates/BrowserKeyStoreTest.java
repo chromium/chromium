@@ -26,6 +26,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.security.KeyPair;
 import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
@@ -72,6 +74,30 @@ public class BrowserKeyStoreTest {
         }
     }
 
+    private void setSdkInt(int sdkInt) throws Exception {
+        Field sdkIntField = Build.VERSION.class.getField("SDK_INT");
+        sdkIntField.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(sdkIntField, sdkIntField.getModifiers() & ~Modifier.FINAL);
+        sdkIntField.set(null, sdkInt);
+    }
+
+    @Test
+    public void testDoesNotCreateKeyOnOldApi() throws Exception {
+        int originalSdkInt = Build.VERSION.SDK_INT;
+        try {
+            setSdkInt(Build.VERSION_CODES.LOLLIPOP); // API 21, M is 23.
+
+            BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+            BrowserKey bk =
+                    browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+            assertNull(bk);
+        } finally {
+            setSdkInt(originalSdkInt);
+        }
+    }
+
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
     public void testCreatesNewEcKey() {
@@ -109,7 +135,7 @@ public class BrowserKeyStoreTest {
 
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
-    public void testDoesCreateKeyWithUnsupportedAlgorithm() throws Exception {
+    public void testDoesNotCreateKeyWithUnsupportedAlgorithm() throws Exception {
         assumeTrue(isStrongBoxAvailable());
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
         BrowserKey bk =
