@@ -12116,6 +12116,205 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
       /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 }
 
+// This tests the unusual case where there's a live H2 session for a host with
+// HTTP/1.1 required set. The test specifically test the case where an H2
+// connection is made while another transaction to the same host is using
+// HTTP/1.x and is just starting NTLM authentication on a non-reusable socket.
+// In this case, the H2 session should not be used for completing the NTLM
+// authentication, in favor of making a new HTTP/1.x connections.
+//
+// Note that the NTLM bits were largely stolen from the NTLMAuthV2 test.
+TEST_P(HttpNetworkTransactionTest, Http11RequiredWithH2Session) {
+  const GURL kUrl1("https://server/1");
+  const GURL kUrl2("https://server/2");
+
+  HttpAuthNtlmMechanism::ScopedProcSetter proc_setter(
+      MockGetMSTime, MockGenerateRandom, MockGetHostName);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // Generate the NTLM messages based on known test data.
+  std::string negotiate_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
+
+  // Set up reads/writes for the initial NTLM challenge in response to the first
+  // request, over an HTTP/1.x socket. It closes the connection, so a new
+  // connection will be established after HTTP/1.1 required is set on the
+  // HttpServerProperties.
+  MockWrite http11_data_writes1[] = {
+      MockWrite("GET /1 HTTP/1.1\r\n"
+                "Host: server\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead http11_data_reads1[] = {
+      MockRead("HTTP/1.1 401 Access Denied\r\n"),
+      // Negotiate and NTLM are often requested together.  However, we only want
+      // to test NTLM. Since Negotiate is preferred over NTLM, we have to skip
+      // the header that requests Negotiate for this test.
+      MockRead("WWW-Authenticate: NTLM\r\n"), MockRead("Connection: close\r\n"),
+      MockRead("Content-Length: 42\r\n"),
+      MockRead("Content-Type: text/html\r\n\r\n"),
+      // Missing content -- won't matter, as connection will be reset.
+  };
+
+  // Second set of HTTP/1.1 reads/writes for NTLM authentication.
+  MockWrite http11_data_writes2[] = {
+      // After restarting with a null identity, this is the
+      // request we should be issuing -- the final header line contains a Type
+      // 1 message.
+      MockWrite("GET /1 HTTP/1.1\r\n"
+                "Host: server\r\n"
+                "Connection: keep-alive\r\n"
+                "Authorization: NTLM "),
+      MockWrite(negotiate_msg),
+      MockWrite("\r\n\r\n"),
+
+      // After calling trans1.RestartWithAuth(), we should send a Type 3 message
+      // (using correct credentials).  The second request continues on the
+      // same connection.
+      MockWrite("GET /1 HTTP/1.1\r\n"
+                "Host: server\r\n"
+                "Connection: keep-alive\r\n"
+                "Authorization: NTLM "),
+      MockWrite(authenticate_msg),
+      MockWrite("\r\n\r\n"),
+  };
+
+  MockRead http11_data_reads2[] = {
+      // The origin server responds with a Type 2 message.
+      MockRead("HTTP/1.1 401 Access Denied\r\n"),
+      MockRead("WWW-Authenticate: NTLM "),
+      MockRead(challenge_msg),
+      MockRead("\r\n"),
+      MockRead("Content-Length: 42\r\n"),
+      MockRead("Content-Type: text/html\r\n\r\n"),
+      MockRead("You are not authorized to view this page\r\n"),
+
+      // Lastly we get the desired content.
+      MockRead("HTTP/1.1 200 OK\r\n"),
+      MockRead("Content-Type: text/html; charset=utf-8\r\n"),
+      MockRead("Connection: close\r\n"),
+      MockRead("Content-Length: 6\r\n\r\n"),
+      MockRead("Hello1"),
+  };
+
+  // Set up the reads/writes for the first HTTP/1.x socket. The second HTTP/1.x
+  // socket will actually be the third socket created, with an H2 session
+  // created on a different socket between establishment of the two HTTP/1.x
+  // connections.
+  StaticSocketDataProvider http11_data1(http11_data_reads1,
+                                        http11_data_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&http11_data1);
+  SSLSocketDataProvider http11_ssl1(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&http11_ssl1);
+
+  // Set up an H2 session with 2 sequential request/response pairs, for the
+  // second and third requests.
+  spdy::SpdySerializedFrame req2(spdy_util_.ConstructSpdyGet(
+      kUrl2.spec().c_str(), /*stream_id=*/1, LOWEST));
+  spdy::SpdySerializedFrame resp2(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), /*stream_id=*/1));
+  spdy::SpdySerializedFrame body2(
+      spdy_util_.ConstructSpdyDataFrame(1, "Hello2", /*fin=*/true));
+  MockWrite http2_writes[] = {
+      CreateMockWrite(req2, 0),
+  };
+  MockRead http2_reads[] = {CreateMockRead(resp2, 1), CreateMockRead(body2, 2),
+                            MockRead(SYNCHRONOUS, ERR_IO_PENDING, 3)};
+  SequencedSocketData http2_data(http2_reads, http2_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&http2_data);
+  AddSSLSocketData();
+
+  // Set up the second HTTP/1.1 connection, which is the one where NTLM
+  // authentication actually takes place.
+  StaticSocketDataProvider http11_data2(http11_data_reads2,
+                                        http11_data_writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&http11_data2);
+  SSLSocketDataProvider http11_ssl2(ASYNC, OK);
+  http11_ssl2.next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&http11_ssl2);
+
+  // Start the first request, and run through all data on the first socket. The
+  // second HTTP/1.1 socket won't be connected until the request is restarted
+  // with auth information.
+  HttpRequestInfo request1;
+  request1.method = "GET";
+  request1.url = kUrl1;
+  request1.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  // Ensure load is not disrupted by flags which suppress behaviour specific
+  // to other auth schemes.
+  request1.load_flags = LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
+  TestCompletionCallback callback1;
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
+  int rv = trans1.Start(&request1, callback1.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback1.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(trans1.IsReadyToRestartForAuth());
+  const HttpResponseInfo* response = trans1.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(CheckNTLMServerAuth(response->auth_challenge));
+
+  // Start the second request, and run until completion. It should use H2.
+  HttpRequestInfo request2 = request1;
+  request2.url = kUrl2;
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback2;
+  int rv2 = trans2.Start(&request2, callback2.callback(), NetLogWithSource());
+  ASSERT_THAT(callback2.GetResult(rv2), IsOk());
+  const HttpResponseInfo* response2 = trans2.GetResponseInfo();
+  ASSERT_TRUE(response2);
+  EXPECT_TRUE(response2->was_fetched_via_spdy);
+  EXPECT_TRUE(response2->was_alpn_negotiated);
+  std::string response_data2;
+  ASSERT_THAT(ReadTransaction(&trans2, &response_data2), IsOk());
+  EXPECT_EQ("Hello2", response_data2);
+
+  // Run `trans1` through the first round of auth, which should establish a new
+  // HTTP/1.1 connection, ignoring the H2 session.
+  TestCompletionCallback callback3;
+  rv = trans1.RestartWithAuth(
+      AuthCredentials(ntlm::test::kDomainUserCombined, ntlm::test::kPassword),
+      callback3.callback());
+  EXPECT_THAT(callback3.GetResult(rv), IsOk());
+  EXPECT_TRUE(trans1.IsReadyToRestartForAuth());
+  response = trans1.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(response->auth_challenge.has_value());
+
+  // Perform the second round of auth, completing authentication and getting the
+  // final response. Check that the response was received over HTTP/1.1.
+  TestCompletionCallback callback4;
+  rv = trans1.RestartWithAuth(AuthCredentials(), callback4.callback());
+  EXPECT_THAT(callback4.GetResult(rv), IsOk());
+  response = trans1.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(response->auth_challenge.has_value());
+  EXPECT_FALSE(response->was_fetched_via_spdy);
+  EXPECT_FALSE(response->was_alpn_negotiated);
+  std::string response_data;
+  rv = ReadTransaction(&trans1, &response_data);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_EQ("Hello1", response_data);
+
+  // Check that all data was read, indicating the requests ran as expected.
+  EXPECT_TRUE(http11_data1.AllReadDataConsumed());
+  EXPECT_TRUE(http11_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(http2_data.AllReadDataConsumed());
+  EXPECT_TRUE(http2_data.AllWriteDataConsumed());
+  EXPECT_TRUE(http11_data2.AllReadDataConsumed());
+  EXPECT_TRUE(http11_data2.AllWriteDataConsumed());
+}
+
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 
 // Variant of above test using WebSockets.

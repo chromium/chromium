@@ -3135,6 +3135,58 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
 }
 
+// Test that an existing H2 session is not used if the destination requires
+// HTTP/1.1. Ideally, there would by no H2 sessions for such a destination, but
+// that's difficult to ensure.
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreH2SessionWhenRequiresHttp11) {
+  // Set up two identical Requesters.
+  StreamRequester requester1;
+  requester1.set_destination("https://a.test");
+  auto stream_key = requester1.GetStreamKey();
+  StreamRequester requester2(stream_key);
+
+  // Set up an H2 session using the first Requester.
+  CreateFakeSpdySession(requester1.GetStreamKey());
+  requester1.RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.WaitForResult(), IsOk());
+  EXPECT_EQ(requester1.negotiated_protocol(), NextProto::kProtoHTTP2);
+
+  // Now set HTTP/1.1 as being required for the destination.
+  http_server_properties()->SetHTTP11Required(
+      stream_key.destination(), stream_key.network_anonymization_key());
+
+  // There should still be a live H2 session.
+  EXPECT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/false,
+      /*is_websocket=*/false));
+
+  // Set up a DNS resolution.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_ip_endpoint(MakeIPEndPoint("192.0.2.1", 443))
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Set up socket data for a new TCP connection. Only H1 should appear in
+  // the SSLConfig's NextProtos.
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  // Request another stream. Should get a new HTTP/1.x stream instead of a
+  // stream on the pre-existing H2 session, and there should be no CHECK
+  // failures caused by the H2 session still existing.
+  requester2.RequestStream(pool());
+  EXPECT_THAT(requester2.WaitForResult(), IsOk());
+  EXPECT_NE(requester2.negotiated_protocol(), NextProto::kProtoHTTP2);
+  EXPECT_EQ(pool().TotalActiveStreamCount(), 2u);
+}
+
 // Test that an IP pooled SPDY session is not used if the destination requires
 // HTTP/1.1.
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionRequiresHttp11) {
