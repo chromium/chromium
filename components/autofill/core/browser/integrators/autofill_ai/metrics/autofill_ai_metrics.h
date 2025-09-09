@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "base/containers/flat_map.h"
+
 namespace autofill {
 
 class EntityType;
@@ -22,6 +24,11 @@ enum class AutofillAiOptInFunnelEvents {
 };
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
+
+void LogLocalEntitiesDeduplicationMetrics(
+    const base::flat_map<EntityType, size_t>&
+        local_entities_considered_for_deduplication_per_type,
+    const base::flat_map<EntityType, size_t>& local_entities_dedupled_per_type);
 
 std::string_view EntityTypeToMetricsString(EntityType type);
 

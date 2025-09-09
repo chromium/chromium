@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -96,13 +97,21 @@ TEST_F(EntityInstanceCleanerTest, DuplicatedLocalEntitiesAreRemoved) {
   webdata_helper()->WaitUntilIdle();
   ASSERT_EQ(entity_data_manager().GetEntityInstances().size(), 3u);
 
+  base::HistogramTester histogram_tester;
   test_api(cleaner()).MaybeCleanupLocalEntityInstancesData();
   webdata_helper()->WaitUntilIdle();
-
   base::span<const EntityInstance> instances =
       entity_data_manager().GetEntityInstances();
+
   EXPECT_THAT(instances.size(), 1u);
-  EXPECT_EQ(instances[0].guid(), entity3.guid());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
+      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Passport", 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Passport", 2, 1);
 }
 
 TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
@@ -113,6 +122,7 @@ TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
   webdata_helper()->WaitUntilIdle();
   ASSERT_EQ(entity_data_manager().GetEntityInstances().size(), 2u);
 
+  base::HistogramTester histogram_tester;
   test_api(cleaner()).MaybeCleanupLocalEntityInstancesData();
   webdata_helper()->WaitUntilIdle();
 
@@ -120,6 +130,17 @@ TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
       entity_data_manager().GetEntityInstances();
   EXPECT_THAT(instances.size(), 1u);
   EXPECT_EQ(instances[0].guid(), entity2.guid());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
+      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.AllEntities", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Passport", 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Passport", 1, 1);
 }
 
 TEST_F(EntityInstanceCleanerTest, DifferentEntities_NoneIsRemoved) {
@@ -130,12 +151,24 @@ TEST_F(EntityInstanceCleanerTest, DifferentEntities_NoneIsRemoved) {
   webdata_helper()->WaitUntilIdle();
   ASSERT_EQ(entity_data_manager().GetEntityInstances().size(), 2u);
 
+  base::HistogramTester histogram_tester;
   test_api(cleaner()).MaybeCleanupLocalEntityInstancesData();
   webdata_helper()->WaitUntilIdle();
 
   base::span<const EntityInstance> instances =
       entity_data_manager().GetEntityInstances();
   EXPECT_THAT(instances.size(), 2u);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
+      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.AllEntities", 0,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Passport", 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Passport", 0, 1);
 }
 
 }  // namespace autofill

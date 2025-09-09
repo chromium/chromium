@@ -5,14 +5,16 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 
 #include "base/check_deref.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -70,25 +72,38 @@ void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
       chrome_version_major) {
     pref_service_->SetInteger(prefs::kAutofillAiLastVersionDeduped,
                               chrome_version_major);
-
     base::span<const EntityInstance> entities =
         entity_data_manager_->GetEntityInstances();
     base::flat_set<EntityInstance::EntityId> to_be_removed;
 
+    base::flat_map<EntityType, size_t> n_local_entities_per_type;
+    base::flat_map<EntityType, size_t> n_local_entities_removed_per_type;
+    // Adds `entity_a` to `to_be_removed` if `entity_a` is a subset of
+    // `entity_b` and is a local entity.
+    // Returns true if `entity_a` was newly added to `to_be_removed`, false
+    // otherwise.
+    auto maybe_add_duplicate_entity_to_to_be_removed =
+        [&](const EntityInstance& entity_a, const EntityInstance entity_b) {
+          if (to_be_removed.contains(entity_a.guid())) {
+            return false;
+          }
+          return entity_a.record_type() == EntityInstance::RecordType::kLocal &&
+                 entity_a.IsSubsetOf(entity_b) &&
+                 to_be_removed.insert(entity_a.guid()).second;
+        };
+
     for (size_t i = 0; i < entities.size(); i++) {
       const EntityInstance& entity_a = entities[i];
-      if (to_be_removed.contains(entity_a.guid())) {
-        continue;
+      if (entity_a.record_type() == EntityInstance::RecordType::kLocal) {
+        ++n_local_entities_per_type[entity_a.type()];
       }
       for (size_t j = i + 1; j < entities.size(); j++) {
         const EntityInstance& entity_b = entities[j];
-        if (entity_a.IsSubsetOf(entity_b) &&
-            entity_a.record_type() == EntityInstance::RecordType::kLocal) {
-          to_be_removed.insert(entity_a.guid());
-        } else if (entity_b.IsSubsetOf(entity_a) &&
-                   entity_b.record_type() ==
-                       EntityInstance::RecordType::kLocal) {
-          to_be_removed.insert(entity_b.guid());
+        if (maybe_add_duplicate_entity_to_to_be_removed(entity_a, entity_b)) {
+          ++n_local_entities_removed_per_type[entity_a.type()];
+        } else if (maybe_add_duplicate_entity_to_to_be_removed(entity_b,
+                                                               entity_a)) {
+          ++n_local_entities_removed_per_type[entity_b.type()];
         }
       }
     }
@@ -96,6 +111,9 @@ void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
     for (const auto& guid : to_be_removed) {
       entity_data_manager_->RemoveEntityInstance(guid);
     }
+
+    LogLocalEntitiesDeduplicationMetrics(n_local_entities_per_type,
+                                         n_local_entities_removed_per_type);
   }
 }
 

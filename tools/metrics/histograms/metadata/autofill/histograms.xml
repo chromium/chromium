@@ -1109,6 +1109,54 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities"
+    units="entities" expires_after="2026-03-01">
+  <owner>brunobraga@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill AI entities that have been considered for
+    deduplication. Emitted once per major version if there are at least more
+    than two entities of a certain type.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.{EntityType}"
+    enum="Boolean" expires_after="2025-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill AI {EntityType} entities that have been considered
+    for deduplication. Emitted once per major version if the user has at least
+    two {EntityType} entities.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
+<histogram
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.AllEntities"
+    units="entities" expires_after="2026-03-01">
+  <owner>brunobraga@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill AI entities that have been deduped. Emitted once per
+    major version only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.{EntityType}"
+    enum="Boolean" expires_after="2025-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill AI {EntityType} entities that have been deduped.
+    Emitted once per major version.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
 <histogram name="Autofill.Ai.EditedAutofilledFieldAtSubmission"
     enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
