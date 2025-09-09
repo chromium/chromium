@@ -467,21 +467,21 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
     HelpBubbleArrow bubble_arrow) {
-  CHECK(bubble_arrow_callback_.is_null());
+  CHECK(!bubble_arrow_callback_);
   bubble_arrow_ = bubble_arrow;
   return *this;
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrowCallback(
     HelpBubbleArrowCallback bubble_arrow_callback) {
-  CHECK(bubble_arrow_callback_.is_null());
+  CHECK(!bubble_arrow_callback_);
   bubble_arrow_callback_ = std::move(bubble_arrow_callback);
   return *this;
 }
 
 HelpBubbleArrow FeaturePromoSpecification::GetBubbleArrow(
     const ui::TrackedElement* anchor_element) const {
-  if (!bubble_arrow_callback_.is_null()) {
+  if (bubble_arrow_callback_) {
     return bubble_arrow_callback_.Run(anchor_element);
   }
   return bubble_arrow_;
@@ -573,7 +573,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetMetadata(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
     bool custom_action_is_default) {
-  DCHECK(!custom_action_callback_.is_null());
+  DCHECK(custom_action_callback_);
   custom_action_is_default_ = custom_action_is_default;
   return *this;
 }
@@ -581,7 +581,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
 FeaturePromoSpecification&
 FeaturePromoSpecification::SetCustomActionDismissText(
     int custom_action_dismiss_string_id) {
-  DCHECK(promo_type_ == PromoType::kCustomAction);
+  DCHECK_EQ(promo_type_, PromoType::kCustomAction);
   custom_action_dismiss_string_id_ = custom_action_dismiss_string_id;
   return *this;
 }
@@ -598,11 +598,11 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
   if (index) {
     CHECK_EQ(PromoType::kRotating, promo_type_);
     return rotating_promos_.at(*index)->GetAnchorElement(context, std::nullopt);
-  } else {
-    // Should not be called directly on a rotating promo.
-    CHECK_NE(PromoType::kRotating, promo_type_);
-    return AnchorElementProviderCommon::GetAnchorElement(context, index);
   }
+
+  // Should not be called directly on a rotating promo.
+  CHECK_NE(PromoType::kRotating, promo_type_);
+  return AnchorElementProviderCommon::GetAnchorElement(context, std::nullopt);
 }
 
 int FeaturePromoSpecification::GetNextValidIndex(int starting_index) const {
