@@ -32,6 +32,9 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             <span class="value">${baseInfo.version}</value>
           </div>
           <div>
+            Backend Type: <span class="value">${baseInfo.backendType}</value>
+          </div>
+          <div>
             File path:
             <span class="value">${baseInfo.filePath}</value>
           </div>

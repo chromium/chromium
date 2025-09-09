@@ -136,6 +136,9 @@ class OnDeviceModelServiceController final {
   // Retrieves the object storing the adaptation metadata for 'feature'.
   MaybeAdaptationMetadata& GetFeatureMetadata(ModelBasedCapabilityKey feature);
 
+  // Returns the selected performance hint.
+  proto::OnDeviceModelPerformanceHint GetPerformanceHint();
+
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
     model_broker_impl_.BindBroker(std::move(receiver));
   }

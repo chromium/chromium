@@ -333,6 +333,16 @@ MaybeAdaptationMetadata& OnDeviceModelServiceController::GetFeatureMetadata(
   return adaptation_metadata_.Get(feature);
 }
 
+proto::OnDeviceModelPerformanceHint
+OnDeviceModelServiceController::GetPerformanceHint() {
+  if (!base_model_controller_->model_metadata()) {
+    return proto::OnDeviceModelPerformanceHint::
+        ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED;
+  }
+
+  return base_model_controller_->model_metadata()->performance_hint();
+}
+
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
     ModelBasedCapabilityKey feature,
     OnDeviceModelAvailabilityObserver* observer) {

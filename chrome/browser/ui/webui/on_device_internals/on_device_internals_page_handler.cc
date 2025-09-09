@@ -314,6 +314,28 @@ void PageHandler::OnReceivedPerformanceInfoForPageData(
         debug_state.state_->GetComponentVersion().GetString();
     info->version = debug_state.state_->GetBaseModelSpec().model_version;
     info->name = debug_state.state_->GetBaseModelSpec().model_name;
+
+    optimization_guide::proto::OnDeviceModelPerformanceHint performance_hint =
+        optimization_guide::OptimizationGuideGlobalState::CreateOrGet()
+            ->service_controller()
+            .GetPerformanceHint();
+    switch (performance_hint) {
+      case optimization_guide::proto::OnDeviceModelPerformanceHint::
+          ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY:
+        info->backend_type = "GPU (highest quality)";
+        break;
+      case optimization_guide::proto::OnDeviceModelPerformanceHint::
+          ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE:
+        info->backend_type = "GPU (fastest inference)";
+        break;
+      case optimization_guide::proto::OnDeviceModelPerformanceHint::
+          ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU:
+        info->backend_type = "CPU";
+        break;
+      default:
+        info->backend_type = "UNKNOWN";
+    }
+
     data->base_model->info = std::move(info);
   }
 

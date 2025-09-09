@@ -54,6 +54,8 @@ struct BaseModelInfo {
   string name;
   // The version of the base model.
   string version;
+  // A string representation of the backend (CPU vs GPU) used for this model.
+  string backend_type;
 };
 
 // Struct containing name of supplementary model and whether they are ready.
