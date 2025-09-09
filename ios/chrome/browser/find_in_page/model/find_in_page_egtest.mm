@@ -319,6 +319,15 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that FIP works properly with bottom omnibox.
 - (void)testWithBottomOmnibox {
+// TODO(crbug.com/437314322): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    if (![ChromeEarlGrey isIPadIdiom]) {
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+    }
+  }
+#endif
+
   [_helper helperTestFindInPageWithBottomOmnibox];
 }
 
