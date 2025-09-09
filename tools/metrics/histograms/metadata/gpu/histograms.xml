@@ -1328,6 +1328,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.RequestAdapterStatus.WebGPU"
+    enum="WebGPURequestAdapterStatus" expires_after="2026-09-03">
+  <owner>olivierli@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The result of requesting a WebGPU adapater. Recorded for each attempt.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2026-02-01">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
