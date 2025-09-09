@@ -238,11 +238,8 @@
 #pragma mark - BuggyAuthenticationViewOwner
 
 - (BOOL)viewWillPersist {
-  // This coordinator has no view of its own. So we only need to check whether
-  // the coordinator currently started’s view may have disappeared silently.
-  return (!self.addAccountCoordinator ||
-          self.addAccountCoordinator.viewWillPersist) &&
-         (!self.reauthCoordinator || self.reauthCoordinator.viewWillPersist);
+  // This coordinator always display its navigation controller.
+  return YES;
 }
 
 #pragma mark - AnimatedCoordinator
@@ -294,14 +291,11 @@
   CoreAccountInfo account;
   account.gaia = GaiaId(identity.gaiaID);
   account.email = base::SysNSStringToUTF8(identity.userEmail);
-  if (self.reauthCoordinator) {
-    if (self.reauthCoordinator.viewWillPersist) {
-      [self.reauthCoordinator stop];
-    } else {
-      // In case of double tap, let the first reauth proceed.
-      return;
-    }
+  if (self.reauthCoordinator.viewWillPersist) {
+    // In case of double tap, let the first reauth proceed.
+    return;
   }
+  [self.reauthCoordinator stop];
   self.reauthCoordinator = [[ReauthCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
