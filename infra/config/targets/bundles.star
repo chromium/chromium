@@ -1762,6 +1762,7 @@ targets.bundle(
         "media_base_junit_tests",
         "module_installer_junit_tests",
         "net_junit_tests",
+        "one_time_tokens_junit_tests",
         "paint_preview_junit_tests",
         "password_manager_junit_tests",
         "services_junit_tests",
@@ -1910,6 +1911,17 @@ targets.bundle(
             ],
         ),
         "net_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_q",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+                "pie-x86-emulator",
+                "10-x86-emulator",
+                "16-x64-emulator",
+            ],
+        ),
+        "one_time_tokens_junit_tests": targets.per_test_modification(
             remove_mixins = [
                 "chromium_pixel_2_q",
                 "emulator-4-cores",

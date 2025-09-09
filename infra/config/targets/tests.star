@@ -2005,6 +2005,10 @@ targets.tests.isolated_script_test(
     name = "password_manager_junit_tests",
 )
 
+targets.tests.isolated_script_test(
+    name = "one_time_tokens_junit_tests",
+)
+
 targets.tests.gtest_test(
     name = "pdf_unittests",
 )

@@ -1826,6 +1826,14 @@ targets.binaries.generated_script(
     module_scheme = "webtest",
 )
 
+targets.binaries.generated_script(
+    name = "one_time_tokens_junit_tests",
+    label = "//components/one_time_tokens/android/backend/sms:one_time_tokens_junit_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "junit",
+)
+
 targets.binaries.console_test_launcher(
     name = "openscreen_unittests",
     label = "//chrome/browser/media/router:openscreen_unittests",

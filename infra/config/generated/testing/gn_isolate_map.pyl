@@ -1447,6 +1447,11 @@
     "label": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
     "type": "generated_script",
   },
+  "one_time_tokens_junit_tests": {
+    "label": "//components/one_time_tokens/android/backend/sms:one_time_tokens_junit_tests",
+    "type": "generated_script",
+    "skip_usage_check": True,
+  },
   "openscreen_unittests": {
     "label": "//chrome/browser/media/router:openscreen_unittests",
     "type": "console_test_launcher",
