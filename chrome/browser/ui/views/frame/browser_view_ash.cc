@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
-#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
@@ -66,20 +65,6 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     side_panel->SetBackgroundRadii(side_panel_radii);
   }
 
-  window_scrim_view()->SetRoundedCorners(window_radii);
-
-  if (IsInSplitView()) {
-    // In a non-split view, browser's content (main web content, DevTools, NTP
-    // footer, etc.) extends into the rounded corners. However, in split view,
-    // the content is bordered, making it sufficient to simply round the
-    // background painted by multi_contents_view().
-    const gfx::RoundedCornersF multi_contents_radii(
-        0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
-        left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
-    multi_contents_view()->SetBackgroundRadii(multi_contents_radii);
-    return;
-  }
-
   views::WebView *devtools_webview =
       GetActiveContentsContainerView()->devtools_web_view();
   CHECK(devtools_webview);
@@ -94,9 +79,9 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
       left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
 
-  SetRoundedCornersOnHost(devtools_webview->holder(), devtools_webview_radii);
-  GetActiveContentsContainerView()->devtools_scrim_view()->SetRoundedCorners(
-      devtools_webview_radii);
+  if (!IsInSplitView()) {
+    SetRoundedCornersOnHost(devtools_webview->holder(), devtools_webview_radii);
+  }
 
   const ContentsContainerView::DevToolsDockedPlacement devtools_placement =
       GetActiveContentsContainerView()->devtools_docked_placement();
@@ -108,8 +93,12 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       GetAllVisibleContentsWebViews();
   ContentsWebView* contents_webview = contents_views.front();
 
-  const gfx::Rect contents_bounds =
-      GetActiveContentsContainerView()->GetContentsViewBounds();
+  // In a split view, the contents area bounds are equivalent to the
+  // MultiContentsView parent bounds.
+  const gfx::Rect& contents_bounds =
+      contents_views.size() > 1
+          ? contents_webview->parent()->bounds()
+          : GetActiveContentsContainerView()->GetContentsViewBounds();
   const views::View* container = contents_container();
 
   const bool devtools_showing = contents_bounds != container->GetLocalBounds();
@@ -184,6 +173,9 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     contents_webview->SetBackgroundRadii(contents_webview_radii);
   }
 
+  // Ensure that browser scrims are rounded as well.
+  window_scrim_view()->SetRoundedCorners(window_radii);
+
   const gfx::RoundedCornersF contents_scrim_radii(
       round_content_webview_top_corner ? window_radii.upper_left() : 0,
       round_content_webview_top_corner ? window_radii.upper_right() : 0,
@@ -191,4 +183,6 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
   GetActiveContentsContainerView()->contents_scrim_view()->SetRoundedCorners(
       contents_scrim_radii);
+  GetActiveContentsContainerView()->devtools_scrim_view()->SetRoundedCorners(
+      devtools_webview_radii);
 }
