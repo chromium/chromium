@@ -329,7 +329,7 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
   last_result.SortAndCull(
       input, &template_url_service(), triggered_feature_service(),
       /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
-      /*mia_enabled*/ false);
+      /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ACMatches current_matches;
   PopulateAutocompleteMatches(current, &current_matches);
@@ -338,12 +338,12 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
   current_result.SortAndCull(
       input, &template_url_service(), triggered_feature_service(),
       /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
-      /*mia_enabled*/ false);
+      /*mia_enabled=*/false, /*is_incognito=*/false);
   current_result.TransferOldMatches(input, &last_result);
   current_result.SortAndCull(
       input, &template_url_service(), triggered_feature_service(),
       /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
-      /*mia_enabled*/ false);
+      /*mia_enabled=*/false, /*is_incognito=*/false);
 
   AssertResultMatches(current_result, UNSAFE_TODO({expected, expected_size}));
 }
@@ -361,7 +361,7 @@ void AutocompleteResultTest::SortMatchesAndVerifyOrder(
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   std::vector<std::string> expected;
   std::ranges::transform(
@@ -397,7 +397,7 @@ TEST_F(AutocompleteResultTest, SwapMatches) {
   r1.SortAndCull(input, &template_url_service(), triggered_feature_service(),
                  /*is_lens_active=*/false,
                  /*can_show_contextual_suggestions=*/false,
-                 /*mia_enabled*/ false);
+                 /*mia_enabled=*/false, /*is_incognito=*/false);
   EXPECT_TRUE(r1.default_match());
   EXPECT_EQ(&*r1.begin(), r1.default_match());
 
@@ -765,7 +765,7 @@ TEST_F(AutocompleteResultTest, SortAndCullEmptyDestinationURLs) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Of the two results with the same non-empty destination URL, the
   // lower-relevance one should be dropped.  All of the results with empty URLs
@@ -808,7 +808,7 @@ TEST_F(AutocompleteResultTest, SortAndCullTailSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(3UL, result.size());
   EXPECT_NE(AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
@@ -845,7 +845,7 @@ TEST_F(AutocompleteResultTest, SortAndCullKeepDefaultTailSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(3UL, result.size());
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
@@ -880,7 +880,7 @@ TEST_F(AutocompleteResultTest, SortAndCullKeepMoreDefaultTailSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(5UL, result.size());
   // Non-tail default must be first, regardless of score
@@ -917,7 +917,7 @@ TEST_F(AutocompleteResultTest, SortAndCullZeroRelevanceSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(4UL, result.size());
   EXPECT_NE(AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
@@ -953,7 +953,7 @@ TEST_F(AutocompleteResultTest, SortAndCullZeroRelevanceDefaultMatches) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // It should ignore the first suggestion, despite it being marked as
   // allowed to be default.
@@ -993,7 +993,7 @@ TEST_F(AutocompleteResultTest, SortAndCullOnlyTailSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(5UL, result.size());
   EXPECT_NE(AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
@@ -1022,7 +1022,7 @@ TEST_F(AutocompleteResultTest, SortAndCullNoMatchesAllowedToBeDefault) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(3UL, result.size());
   EXPECT_EQ(matches[1].destination_url, result.match_at(0)->destination_url);
@@ -1060,7 +1060,7 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // We expect the 3rd and 4th results to be removed.
   ASSERT_EQ(3U, result.size());
@@ -1108,7 +1108,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Expect 3 unique results after SortAndCull().
   ASSERT_EQ(3U, result.size());
@@ -1143,7 +1143,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
     last_result.SortAndCull(
         input, &template_url_service(), triggered_feature_service(),
         /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
-        /*mia_enabled*/ false);
+        /*mia_enabled=*/false, /*is_incognito=*/false);
 
     ACMatches current_matches = PopulateAutocompleteMatches(current);
     AutocompleteResult current_result;
@@ -1153,7 +1153,8 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
     current_result.SortAndCull(
         input, &template_url_service(), triggered_feature_service(),
         /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
-        /*mia_enabled*/ false, *last_result.match_at(0));
+        /*mia_enabled=*/false, /*is_incognito=*/false,
+        *last_result.match_at(0));
 
     AssertResultMatches(current_result, expected);
   };
@@ -1376,7 +1377,7 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
     AssertResultMatches(result, data);
   }
 
@@ -1393,7 +1394,7 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
     ASSERT_EQ(4U, result.size());
     EXPECT_EQ("http://c/", result.match_at(0)->destination_url.spec());
     EXPECT_EQ("http://a/", result.match_at(1)->destination_url.spec());
@@ -1432,7 +1433,7 @@ TEST_F(AutocompleteResultTest, SortAndCullFailsWithIncorrectDefaultScheme) {
       result.SortAndCull(input, &template_url_service(),
                          triggered_feature_service(), /*is_lens_active=*/false,
                          /*can_show_contextual_suggestions=*/false,
-                         /*mia_enabled*/ false),
+                         /*mia_enabled=*/false, /*is_incognito=*/false),
       "");
 }
 #endif
@@ -1466,7 +1467,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPermitSearchForSchemeMatching) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullPromoteDefaultMatch) {
@@ -1488,7 +1489,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDefaultMatch) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
   ASSERT_EQ(3U, result.size());
   EXPECT_EQ("http://c/", result.match_at(0)->destination_url.spec());
   EXPECT_EQ(1100, result.match_at(0)->relevance);
@@ -1519,7 +1520,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteUnconsecutiveMatches) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
   ASSERT_EQ(5U, result.size());
   EXPECT_EQ("http://b/", result.match_at(0)->destination_url.spec());
   EXPECT_EQ(1200, result.match_at(0)->relevance);
@@ -1594,7 +1595,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPreferEntities) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // The first result will be the personalized suggestion.
   EXPECT_EQ(2UL, result.size());
@@ -1648,7 +1649,7 @@ TEST_F(AutocompleteResultTest,
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(result.size(), 3u);
 
@@ -1709,7 +1710,7 @@ TEST_F(AutocompleteResultTest,
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(result.size(), 2u);
 
@@ -1751,7 +1752,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPreferEntitiesFillIntoEditMustMatch) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // The entity suggestion won't be chosen in this case because it has a non-
   // matching value for fill_into_edit.
@@ -1793,7 +1794,7 @@ TEST_F(AutocompleteResultTest,
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // The first result will be a plain match.
   EXPECT_EQ(2UL, result.size());
@@ -1847,7 +1848,7 @@ TEST_F(
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(result.size(), 2u);
 
@@ -1901,7 +1902,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // We expect the 3rd and 4th results to be removed.
   ASSERT_EQ(3U, result.size());
@@ -1938,7 +1939,7 @@ TEST_F(AutocompleteResultTest, SortAndCullFeaturedSearchBeforeStarterPack) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
   const std::array<TestData, 5> expected_data{{
@@ -2027,7 +2028,7 @@ TEST_F(AutocompleteResultTest, GroupSuggestionsByExtension) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   TestData expected_data[] = {
       {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
@@ -2066,7 +2067,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(result.size(), 1u);
   EXPECT_EQ(result.match_at(0)->type, AutocompleteMatchType::HISTORY_CLUSTER);
@@ -2111,7 +2112,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // Expect the search suggest to be moved about URL suggestions due to
     // the logic which groups searches and URLs together.
@@ -2152,7 +2153,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     EXPECT_EQ(result.size(), AutocompleteResult::GetMaxMatches());
     auto expected_types = std::to_array<AutocompleteMatchType::Type>({
@@ -2324,7 +2325,7 @@ TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // We expect three results:
   // The document result for [1] may override the history result.
@@ -2490,7 +2491,7 @@ TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   EXPECT_EQ(result.size(), 5u);
   EXPECT_EQ(result.match_at(0)->relevance, 1500);
@@ -2640,7 +2641,7 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
     result.SortAndCull(omnibox_srp_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // There should be 8 total suggestions, 4 from the group 1 and 4 from group
     // 2. Group 2 should follow group 1 since this is a search results page.
@@ -2692,7 +2693,7 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
     result.SortAndCull(web_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // There should be 4 total suggestions, 2 from the group 1 and 2 from group
     // 2. Group 1 should follow group 2 since this is a web page.
@@ -2771,7 +2772,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     result.SortAndCull(omnibox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     const std::array<TestData, 5> expected_data{{
         // Previous search related suggestion chips are not permitted in the
@@ -2799,7 +2800,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     result.SortAndCull(omnibox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     const std::array<TestData, 8> expected_data{{
         // Previous search related suggestion chips are permitted in the omnibox
@@ -2838,7 +2839,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     result.SortAndCull(realbox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     const std::array<TestData, 8> expected_data{{
         {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
@@ -2870,7 +2871,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     result.SortAndCull(realbox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     const std::array<TestData, 5> expected_data{{
         // Previous search related suggestion chips not permitted when their
@@ -2938,7 +2939,7 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
     result.SortAndCull(omnibox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // There should be 8 total suggestions, including the IPH suggestion.
     // With the IPH suggestion present, the 8th group1 suggestion should be
@@ -2976,7 +2977,7 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
     result.SortAndCull(realbox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // The IPH suggestion should not be shown in the Realbox, even if it's
     // present in the list of matches.
@@ -3006,7 +3007,7 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
     result.SortAndCull(omnibox_zps_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     // There should be 8 total suggestions, including the IPH suggestion.
     // With the IPH suggestion not present, all suggestion slots should be
@@ -3174,7 +3175,7 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     result.SortAndCull(zero_input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
                        /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled*/ false);
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
 
     const std::array<TestData, 5> expected_data{{
         // Default suggestion comes 1st.
@@ -3298,7 +3299,7 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
   result.SortAndCull(zero_input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   const std::array<TestData, 5> expected_data{{
       {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
@@ -3514,7 +3515,7 @@ TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/true,
-                     /*mia_enabled=*/false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Non-contextual search & URL suggestions should have been ablated.
   const std::array<TestData, 2> expected_data{{
@@ -3581,7 +3582,7 @@ TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers_AblateSearchOnly) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/true,
-                     /*mia_enabled=*/false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Only non-contextual search suggestions should have been ablated.
   const std::array<TestData, 4> expected_data{{
@@ -3649,7 +3650,7 @@ TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers_AblateUrlOnly) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/true,
-                     /*mia_enabled=*/false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Only URL suggestions should have been ablated.
   const std::array<TestData, 4> expected_data{{
@@ -3684,7 +3685,7 @@ TEST_F(AutocompleteResultTest, AttachAimAction) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   ASSERT_EQ(2U, result.size());
   EXPECT_TRUE(result.match_at(0)->actions.empty());
@@ -3738,7 +3739,7 @@ TEST_F(AutocompleteResultTest, AttachAimAction_AimNotEligible) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   FakeAutocompleteProviderClient client;
   MockAimEligibilityService* mock_aim_eligibility_service =
@@ -3775,7 +3776,7 @@ TEST_F(AutocompleteResultTest, AttachAimAction_AimNotLocallyEligible) {
   result.SortAndCull(input, &template_url_service(),
                      triggered_feature_service(), /*is_lens_active=*/false,
                      /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
 
   FakeAutocompleteProviderClient client;
   MockAimEligibilityService* mock_aim_eligibility_service =

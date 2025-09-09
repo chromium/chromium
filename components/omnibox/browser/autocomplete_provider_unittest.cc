@@ -674,8 +674,8 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
   }
   result_.Reset();
   result_.AppendMatches(matches);
-  result_.MergeSuggestionGroupsMap(
-      omnibox::BuildDefaultGroupsForInput(AutocompleteInput()));
+  result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(
+      AutocompleteInput(), /*is_incognito=*/false));
   result_.set_zero_prefix_enabled_in_session(input_is_zero_suggest);
 
   // Update Searchbox stats.

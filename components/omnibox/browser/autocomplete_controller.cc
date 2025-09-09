@@ -1492,22 +1492,23 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   const bool mia_enabled =
       omnibox_feature_configs::MiaZPS::Get().enabled &&
       AimEligibilityService::IsAimAllowedByPolicy(provider_client_->GetPrefs());
+  const bool is_incognito = provider_client_->IsOffTheRecord();
 
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
-    internal_result_.SortAndCull(input_, template_url_service_,
-                                 triggered_feature_service_, is_lens_active,
-                                 can_show_contextual_suggestions, mia_enabled,
-                                 old_result.default_match_to_preserve);
+    internal_result_.SortAndCull(
+        input_, template_url_service_, triggered_feature_service_,
+        is_lens_active, can_show_contextual_suggestions, mia_enabled,
+        is_incognito, old_result.default_match_to_preserve);
     internal_result_.TransferOldMatches(input_,
                                         &old_result.matches_to_transfer);
   }
 
-  internal_result_.SortAndCull(input_, template_url_service_,
-                               triggered_feature_service_, is_lens_active,
-                               can_show_contextual_suggestions, mia_enabled,
-                               old_result.default_match_to_preserve);
+  internal_result_.SortAndCull(
+      input_, template_url_service_, triggered_feature_service_, is_lens_active,
+      can_show_contextual_suggestions, mia_enabled, is_incognito,
+      old_result.default_match_to_preserve);
 
   if (update_type == UpdateType::kSyncPass) {
     StartExpireTimer();

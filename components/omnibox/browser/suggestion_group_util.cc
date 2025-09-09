@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "build/buildflag.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -78,11 +79,21 @@ const GroupConfigMap& BuildDefaultHubZPSGroups() {
   return g_default_hub_zps_groups.Get();
 }
 
-const GroupConfigMap& BuildDefaultHubTypedGroups() {
+const GroupConfigMap& BuildDefaultHubTypedGroups(bool is_incognito) {
   if (g_default_hub_typed_groups.Get().empty()) {
     g_default_hub_typed_groups.Get() = {
         // clang-format off
-        {GROUP_MOBILE_OPEN_TABS, CreateGroup(SECTION_MOBILE_OPEN_TABS)},
+                {GROUP_MOBILE_OPEN_TABS,
+#if BUILDFLAG(IS_ANDROID)
+         base::FeatureList::IsEnabled(kAndroidHubSearchTabGroups) && !is_incognito
+             ? CreateGroup(SECTION_MOBILE_OPEN_TABS,
+                           GroupConfig_RenderType_DEFAULT_VERTICAL,
+                           IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER)
+             : CreateGroup(SECTION_MOBILE_OPEN_TABS)
+#else
+             CreateGroup(SECTION_MOBILE_OPEN_TABS)
+#endif
+        },
         {GROUP_MOBILE_BOOKMARKS,
              CreateGroup(SECTION_MOBILE_BOOKMARKS,
                          GroupConfig_RenderType_DEFAULT_VERTICAL,
@@ -104,13 +115,14 @@ const GroupConfigMap& BuildDefaultHubTypedGroups() {
 }  // namespace
 
 const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
-    const AutocompleteInput& input) {
+    const AutocompleteInput& input,
+    bool is_incognito) {
   using OEP = ::metrics::OmniboxEventProto;
   switch (input.current_page_classification()) {
     case OEP::ANDROID_HUB:
       return input.IsZeroSuggest() || input.text().empty()
                  ? BuildDefaultHubZPSGroups()
-                 : BuildDefaultHubTypedGroups();
+                 : BuildDefaultHubTypedGroups(is_incognito);
     default:
       return BuildDefaultGroups();
   }
@@ -118,6 +130,8 @@ const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
 
 void ResetDefaultGroupsForTest() {
   g_default_groups.Get().clear();
+  g_default_hub_zps_groups.Get().clear();
+  g_default_hub_typed_groups.Get().clear();
 }
 
 GroupId GroupIdForNumber(int value) {

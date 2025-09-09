@@ -567,7 +567,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
       triggered_feature_service(), /*is_lens_active=*/false,
-      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false,
+      /*is_incognito=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -616,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
       triggered_feature_service(), /*is_lens_active=*/false,
-      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false,
+      /*is_incognito=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -722,7 +724,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
       triggered_feature_service(), /*is_lens_active=*/false,
-      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false,
+      /*is_incognito=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   chrome::FocusLocationBar(browser());
@@ -823,7 +826,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
       triggered_feature_service(), /*is_lens_active=*/false,
-      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false,
+      /*is_incognito=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -982,7 +986,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
       triggered_feature_service(), /*is_lens_active=*/false,
-      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false,
+      /*is_incognito=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();

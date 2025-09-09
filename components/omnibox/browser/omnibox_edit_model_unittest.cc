@@ -643,7 +643,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_TRUE(model()->IsPopupSelectionOnInitialLine());
   model()->SetPopupSelection(Selection(0), true, false);
@@ -749,7 +749,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
 
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::kNoMatch, model()->GetPopupSelection().line);
@@ -784,7 +784,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
   // Test moving and wrapping down.
@@ -846,7 +846,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
@@ -953,7 +953,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
@@ -1057,7 +1057,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
 
   // Simulate OmniboxController updating the popup, then check initial state.
@@ -1110,7 +1110,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   model()->SetPopupSelection(Selection(0), true, false);
   // The default state should be unfocused.
@@ -1131,7 +1131,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::FOCUSED_BUTTON_ACTION,
             model()->GetPopupSelection().state);
@@ -1151,7 +1151,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
@@ -1167,7 +1167,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
@@ -1205,7 +1205,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
   result->SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   model()->OpenSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
@@ -1243,7 +1243,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
                       /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
 
   // Inform the model of the controller result set changes.
   model()->OnPopupResultChanged();

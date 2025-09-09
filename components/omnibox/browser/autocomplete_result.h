@@ -124,6 +124,7 @@ class AutocompleteResult {
                    bool is_lens_active,
                    bool can_show_contextual_suggestions,
                    bool mia_enabled,
+                   bool is_incognito,
                    std::optional<AutocompleteMatch> default_match_to_preserve =
                        std::nullopt);
 

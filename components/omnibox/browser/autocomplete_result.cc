@@ -373,6 +373,7 @@ void AutocompleteResult::SortAndCull(
     bool is_lens_active,
     bool can_show_contextual_suggestions,
     bool mia_enabled,
+    bool is_incognito,
     std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
@@ -388,7 +389,8 @@ void AutocompleteResult::SortAndCull(
       !is_zero_suggest;
   bool use_grouping = is_zero_suggest || use_grouping_for_non_zps;
 
-  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
+  MergeSuggestionGroupsMap(
+      omnibox::BuildDefaultGroupsForInput(input, is_incognito));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',
   // they only assign IDs when their ID isn't obvious from the match type. Most
   // matches will instead set IDs here to keep providers 'dumb' and the

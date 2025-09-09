@@ -68,7 +68,10 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/419289558): Re-enable color surface feature flags.
-@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_THEME_MODULE,
+    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
+})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
@@ -374,9 +377,10 @@ public class TabSwitcherSearchTest {
 
         TabSwitcherSearchStation tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("test");
+        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 1,
+                        /* index= */ 2,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -421,9 +425,10 @@ public class TabSwitcherSearchTest {
 
         TabSwitcherSearchStation tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("navigate");
+        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 1,
+                        /* index= */ 2,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -471,9 +476,10 @@ public class TabSwitcherSearchTest {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 tabSwitcher.selectTabGroupsPane().openTabGroupsPaneSearch();
         tabSwitcherSearchStation.typeInOmnibox("test");
+        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 1,
+                        /* index= */ 2,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");

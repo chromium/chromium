@@ -4,6 +4,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
@@ -74,7 +75,8 @@ TEST(SuggestionGroupTest, SectionMobileMostVisited_HorizontalRenderType) {
                             {});
 
   AutocompleteInput input;
-  auto default_groups = omnibox::BuildDefaultGroupsForInput(input);
+  auto default_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
   auto most_visited_group_config =
       default_groups.find(omnibox::GROUP_MOBILE_MOST_VISITED);
 
@@ -91,7 +93,8 @@ TEST(SuggestionGroupTest, SectionMobileMostVisited_VerticalRenderType) {
                             {omnibox::kMostVisitedTilesHorizontalRenderGroup});
 
   AutocompleteInput input;
-  auto default_groups = omnibox::BuildDefaultGroupsForInput(input);
+  auto default_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
   auto most_visited_group_config =
       default_groups.find(omnibox::GROUP_MOBILE_MOST_VISITED);
 
@@ -109,7 +112,8 @@ TEST(SuggestionGroupTest, AndroidHubZPS) {
 
   using OEP = ::metrics::OmniboxEventProto;
   AutocompleteInput input(u"", OEP::ANDROID_HUB, TestingSchemeClassifier());
-  auto default_groups = omnibox::BuildDefaultGroupsForInput(input);
+  auto default_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
   auto open_tabs_group_config =
       default_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS);
 
@@ -128,7 +132,8 @@ TEST(SuggestionGroupTest, AndroidHubTyped) {
 
   using OEP = ::metrics::OmniboxEventProto;
   AutocompleteInput input(u"test", OEP::ANDROID_HUB, TestingSchemeClassifier());
-  auto default_groups = omnibox::BuildDefaultGroupsForInput(input);
+  auto default_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
 
   auto open_tabs_group_config =
       default_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS);
@@ -143,3 +148,32 @@ TEST(SuggestionGroupTest, AndroidHubTyped) {
             search_group_config->second.render_type());
   ASSERT_EQ("Search the web", search_group_config->second.header_text());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(SuggestionGroupTest, AndroidHubTypedTabGroups) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({omnibox::kAndroidHubSearchTabGroups},
+                            {omnibox::kMostVisitedTilesHorizontalRenderGroup});
+
+  using OEP = ::metrics::OmniboxEventProto;
+  AutocompleteInput input(u"test", OEP::ANDROID_HUB, TestingSchemeClassifier());
+  auto default_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
+
+  auto open_tabs_group_config =
+      default_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS);
+  ASSERT_NE(open_tabs_group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
+            open_tabs_group_config->second.render_type());
+  ASSERT_EQ("Tabs and tab groups",
+            open_tabs_group_config->second.header_text());
+
+  auto search_group_config = default_groups.find(omnibox::GROUP_SEARCH);
+  ASSERT_NE(search_group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
+            search_group_config->second.render_type());
+  ASSERT_EQ("Search the web", search_group_config->second.header_text());
+}
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -625,6 +625,7 @@
   <message name="IDS_OMNIBOX_HUB_HISTORY_HEADER" desc="The header for the history suggestions section.">
     History
   </message>
-
-
+  <message name="IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER" desc="The header for the typed match suggestions section.">
+    Tabs and tab groups
+  </message>
 </grit-part>

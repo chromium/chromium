@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   results.SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   controller()->autocomplete_controller()->NotifyChanged();
 
   // Check that arrowing up and down emits the event.

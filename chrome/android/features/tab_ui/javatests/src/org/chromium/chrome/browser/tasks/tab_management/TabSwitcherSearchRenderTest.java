@@ -70,7 +70,8 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.HISTORY_PANE_ANDROID
+    ChromeFeatureList.HISTORY_PANE_ANDROID,
+    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
 })
 public class TabSwitcherSearchRenderTest {
     private static final int SERVER_PORT = 13245;
@@ -82,7 +83,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(12)
+                    .setRevision(13)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 
@@ -290,8 +291,9 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("foo");
+        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         searchStation.findSuggestion(
-                /* index= */ 0,
+                /* index= */ 1,
                 /* title= */ "   Foobar",
                 /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                         + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -334,8 +336,9 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("data");
+        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         searchStation.findSuggestion(
-                /* index= */ 1,
+                /* index= */ 2,
                 /* title= */ "   Test",
                 /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                         + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -368,7 +371,8 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("test");
-        searchStation.findSuggestion(/* index= */ 0, /* title= */ "   Test", /* text= */ null);
+        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
+        searchStation.findSuggestion(/* index= */ 1, /* title= */ "   Test", /* text= */ null);
 
         mRenderTestRule.render(
                 searchStation.getActivity().findViewById(android.R.id.content),
