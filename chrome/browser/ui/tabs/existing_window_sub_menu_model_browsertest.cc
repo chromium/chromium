@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -333,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   BrowserList::SetLastActive(browser_5);
   BrowserList::SetLastActive(browser_7);
 
-  const std::initializer_list<Browser* const> expected_mru_order{
+  const std::initializer_list<BrowserWindowInterface* const> expected_mru_order{
       browser_7, browser_5, browser_4, browser_2, browser_3, browser_6};
   // `initializer_list` (instead of `array`) is necessary to construct a dynamic
   // span which can be compared to `vector`.
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   BrowserList::SetLastActive(browser_2);
   BrowserList::SetLastActive(browser_4);
 
-  const std::initializer_list<Browser* const> expected_mru_order{
+  const std::initializer_list<BrowserWindowInterface* const> expected_mru_order{
       browser_4, browser_2, browser_3, browser_5};
   // `initializer_list` (instead of `array`) is necessary to construct a dynamic
   // span which can be compared to `vector`.

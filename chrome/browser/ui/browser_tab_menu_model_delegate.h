@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace web_app {
@@ -36,7 +36,8 @@ class BrowserTabMenuModelDelegate : public TabMenuModelDelegate {
 
  private:
   // TabMenuModelDelegate:
-  std::vector<Browser*> GetOtherBrowserWindows(bool is_app) override;
+  std::vector<BrowserWindowInterface*> GetOtherBrowserWindows(
+      bool is_app) override;
 
   const SessionID session_id_;
   const raw_ptr<const Profile> profile_;

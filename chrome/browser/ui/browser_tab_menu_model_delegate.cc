@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
 namespace chrome {
@@ -21,23 +23,28 @@ BrowserTabMenuModelDelegate::BrowserTabMenuModelDelegate(
 
 BrowserTabMenuModelDelegate::~BrowserTabMenuModelDelegate() = default;
 
-std::vector<Browser*> BrowserTabMenuModelDelegate::GetOtherBrowserWindows(
-    bool is_app) {
-  std::vector<Browser*> browsers;
+std::vector<BrowserWindowInterface*>
+BrowserTabMenuModelDelegate::GetOtherBrowserWindows(bool is_app) {
+  std::vector<BrowserWindowInterface*> browsers;
 
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    // We can only move into a tabbed view of the same profile, and not the same
-    // window we're currently in.
-    if (browser->GetSessionID() != session_id_ &&
-        browser->profile() == profile_) {
-      if (is_app && browser->is_type_app() &&
-          browser->app_controller()->app_id() == app_controller_->app_id()) {
-        browsers.push_back(browser);
-      } else if (!is_app && browser->is_type_normal()) {
-        browsers.push_back(browser);
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        // We can only move into a tabbed view of the same profile, and not the
+        // same window we're currently in.
+        if (browser->GetSessionID() != session_id_ &&
+            browser->GetProfile() == profile_) {
+          if (is_app &&
+              browser->GetType() == BrowserWindowInterface::TYPE_APP &&
+              browser->GetAppBrowserController()->app_id() ==
+                  app_controller_->app_id()) {
+            browsers.push_back(browser);
+          } else if (!is_app && browser->GetType() ==
+                                    BrowserWindowInterface::TYPE_NORMAL) {
+            browsers.push_back(browser);
+          }
+        }
+        return true;  // continue iterating
+      });
   return browsers;
 }
 

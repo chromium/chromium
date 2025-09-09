@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -24,7 +25,8 @@ class WebAppTabStripModelDelegate : public TestTabStripModelDelegate {
 // A TabMenuModelDelegate that simulates no other browser windows being open.
 class TabMenuModelTestDelegate : public TabMenuModelDelegate {
  public:
-  std::vector<Browser*> GetOtherBrowserWindows(bool is_app) override {
+  std::vector<BrowserWindowInterface*> GetOtherBrowserWindows(
+      bool is_app) override {
     return {};
   }
 };
