@@ -95,6 +95,8 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -185,6 +187,8 @@ public class MainSettingsFragmentTest {
     @Mock public TemplateUrlService mMockTemplateUrlService;
     @Mock public TemplateUrl mMockSearchEngine;
 
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
@@ -198,6 +202,7 @@ public class MainSettingsFragmentTest {
         // ObservableSupplierImpl needs a Looper.
         Looper.prepare();
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
                 mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);

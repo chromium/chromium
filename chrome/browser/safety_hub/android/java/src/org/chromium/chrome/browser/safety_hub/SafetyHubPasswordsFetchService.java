@@ -13,8 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -143,7 +143,7 @@ public class SafetyHubPasswordsFetchService {
 
     /** Returns true if a password fetch can be performed, namely if GMSCore can be called. */
     public boolean canPerformFetch() {
-        return AndroidRequirements.get().isPasswordManagerAvailable();
+        return PasswordManagerUtilBridge.isPasswordManagerAvailable();
     }
 
     public void clearPrefs() {

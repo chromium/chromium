@@ -219,7 +219,7 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#include "components/password_manager/core/browser/android/android_requirements.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/payments/content/browser_binding/browser_bound_keys_deleter_factory.h"
 #include "components/payments/content/browser_binding/mock_browser_bound_keys_deleter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4017,8 +4017,8 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
 #if BUILDFLAG(IS_ANDROID)
     // Override the GMS version to be big enough for split stores UPM support,
     // so these tests still pass in bots with an outdated version.
-    password_manager::SetAndroidRequirementsForTesting(
-        /*has_min_gms_version=*/true, password_manager::HasInternalBackend());
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
 #endif
   }
 

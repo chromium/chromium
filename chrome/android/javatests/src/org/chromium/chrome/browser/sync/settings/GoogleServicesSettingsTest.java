@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -31,6 +32,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
@@ -71,10 +74,12 @@ public class GoogleServicesSettingsTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
+    @Mock private PasswordManagerUtilBridge.Natives mMockPasswordManagerUtilBridgeJni;
     private WebPageStation mPage;
 
     @Before
     public void setUp() {
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mMockPasswordManagerUtilBridgeJni);
         mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

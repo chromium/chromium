@@ -12,6 +12,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -93,7 +93,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (AndroidRequirements.get().isPasswordManagerAvailable()) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
         }
         return INVALID_PASSWORD_COUNT;
@@ -105,7 +105,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (AndroidRequirements.get().isPasswordManagerAvailable()) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
         }
         return INVALID_PASSWORD_COUNT;

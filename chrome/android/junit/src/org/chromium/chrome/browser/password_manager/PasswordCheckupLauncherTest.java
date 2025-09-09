@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -68,6 +67,8 @@ public class PasswordCheckupLauncherTest {
 
     @Mock private Profile mProfile;
 
+    @Mock private PasswordManagerUtilBridge.Natives mMockPasswordManagerUtilBridgeJni;
+
     @Mock private SyncService mMockSyncService;
 
     @Mock WindowAndroid mMockWindowAndroid;
@@ -75,6 +76,9 @@ public class PasswordCheckupLauncherTest {
     @Mock private PendingIntent mMockPendingIntentForLocalCheckup;
 
     @Mock private PendingIntent mMockPendingIntentForAccountCheckup;
+
+    private final FakePasswordManagerBackendSupportHelper mFakeBackendSupportHelper =
+            new FakePasswordManagerBackendSupportHelper();
 
     private ModalDialogManager mModalDialogManager;
 
@@ -89,6 +93,8 @@ public class PasswordCheckupLauncherTest {
 
     @Before
     public void setUp() {
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mMockPasswordManagerUtilBridgeJni);
+
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);
@@ -100,9 +106,8 @@ public class PasswordCheckupLauncherTest {
         mFakeAccountManagerFacade.addAccount(TEST_ACCOUNT);
         when(mMockSyncService.getAccountInfo()).thenReturn(TEST_ACCOUNT);
 
-        boolean hasMinGmsVersion = AndroidRequirements.get().hasMinGmsVersion();
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(hasMinGmsVersion, /* hasInternalBackend= */ true));
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(mFakeBackendSupportHelper);
+        mFakeBackendSupportHelper.setBackendPresent(true);
 
         PasswordCheckupClientHelperFactory.setFactoryForTesting(
                 mFakePasswordCheckupClientHelperFactory);
@@ -126,9 +131,7 @@ public class PasswordCheckupLauncherTest {
     public void testLaunchCheckupOnDeviceShowsAccountCheckup()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mMockPasswordManagerUtilBridgeJni.isPasswordManagerAvailable(true)).thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
                 mProfile, mMockWindowAndroid, LEAK_DIALOG, TestAccounts.ACCOUNT1.getEmail());
@@ -140,9 +143,7 @@ public class PasswordCheckupLauncherTest {
     public void testLaunchCheckupOnDeviceShowsLocalCheckup()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes()).thenReturn(Collections.emptySet());
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mMockPasswordManagerUtilBridgeJni.isPasswordManagerAvailable(true)).thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
                 mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
@@ -156,9 +157,7 @@ public class PasswordCheckupLauncherTest {
         // Local checkup will be launched from the leak detection dialog if the leaked credential is
         // stored only in the local store, even though the user is syncing passwords.
         when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mMockPasswordManagerUtilBridgeJni.isPasswordManagerAvailable(true)).thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
                 mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);

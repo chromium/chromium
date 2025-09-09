@@ -52,8 +52,11 @@ import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -69,7 +72,6 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -119,6 +121,8 @@ public class SafetyCheckMediatorTest {
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
 
     // TODO(crbug.com/40854050): Use fake instead of mocking
+    @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private FakePasswordCheckControllerFactory mPasswordCheckControllerFactory;
@@ -221,11 +225,15 @@ public class SafetyCheckMediatorTest {
 
     @Before
     public void setUp() {
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         configureMockSyncService();
 
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
 
         SafetyCheckBridgeJni.setInstanceForTesting(mSafetyCheckBridge);
 
@@ -233,9 +241,8 @@ public class SafetyCheckMediatorTest {
         mPasswordCheckModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ mUseGmsApi, /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
+                .thenReturn(mUseGmsApi);
         // TODO(crbug.com/40854050): Use existing fake instead of mocking
         PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
                 mock(PasswordCheckupClientHelperFactory.class);

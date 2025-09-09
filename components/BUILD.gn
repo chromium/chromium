@@ -688,7 +688,6 @@ test("components_unittests") {
       "//components/one_time_tokens/android/backend/sms:unit_tests",
       "//components/paint_preview/browser/android:java",
       "//components/paint_preview/player/android:unit_tests",
-      "//components/password_manager/core/browser/android:android_java",
       "//components/payments/content/android",
       "//components/payments/content/android/spc:browser_binding_java",
       "//components/payments/content/android/ui",

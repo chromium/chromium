@@ -73,6 +73,8 @@ import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -197,6 +199,7 @@ public class ManageSyncSettingsTest {
     @Mock private UnifiedConsentServiceBridge.Natives mUnifiedConsentServiceBridgeMock;
     @Mock private RegionalCapabilitiesService mRegionalCapabilities;
     @Mock private GoogleActivityController mGoogleActivityController;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
@@ -224,6 +227,8 @@ public class ManageSyncSettingsTest {
         // extensions are not supported. This prevents having to maintain two sets of screenshots
         // for render tests. Individual tests may override it.
         ThreadUtils.runOnUiThreadBlocking(() -> mFakeExtensionUiBackendRule.setEnabled(false));
+
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
     }
 
     /**

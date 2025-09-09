@@ -31,10 +31,10 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
-#include "components/password_manager/core/browser/android/android_requirements.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -71,8 +71,8 @@ class SigninManagerAndroidTest : public ::testing::Test {
   SigninManagerAndroidTest() {
     // Override the GMS version to be big enough for split stores UPM support,
     // so DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
-    password_manager::SetAndroidRequirementsForTesting(
-        /*has_min_gms_version=*/true, password_manager::HasInternalBackend());
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
   }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;

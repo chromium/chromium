@@ -37,6 +37,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -75,6 +77,7 @@ public class SignOutCoordinatorTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private SyncService mSyncService;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private Runnable mOnSignOut;
@@ -93,6 +96,7 @@ public class SignOutCoordinatorTest {
     public void testLegacyDialogWithRevokeSyncConsentReason() {
         setUpMocks();
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mProfile.isChild()).thenReturn(true);
@@ -110,6 +114,7 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testLegacyDialog_hasSyncingAccount() {
         setUpMocks();
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);

@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -34,7 +36,6 @@ import org.chromium.chrome.test.transit.settings.PreferenceFacility;
 import org.chromium.chrome.test.transit.settings.SettingsActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -62,6 +63,7 @@ public class PasswordsPreferenceTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private LoginDbDeprecationUtilBridge.Natives mLoginDbDeprecationUtilBridgeJniMock;
 
     SettingsActivityPublicTransitEntryPoints mEntryPoints =
@@ -69,6 +71,7 @@ public class PasswordsPreferenceTest {
 
     @Before
     public void setUp() {
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         LoginDbDeprecationUtilBridgeJni.setInstanceForTesting(mLoginDbDeprecationUtilBridgeJniMock);
         PasswordManagerTestHelper.setUpGmsCoreFakeBackends();
     }
@@ -77,9 +80,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPasswordManagerAvailableNoSubtitle() throws IOException {
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
                 .thenReturn("random/file/path");
 
@@ -95,9 +96,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPwmStoppedWorkingSubtitle() throws IOException {
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ false, /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
                 .thenReturn("random/file/path");
 
@@ -114,9 +113,7 @@ public class PasswordsPreferenceTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSomePasswordsNotAccessibleSubtitle() throws IOException {
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
         fakeCsv.deleteOnExit();
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -135,9 +132,7 @@ public class PasswordsPreferenceTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
     public void testSomePasswordsNotAccessibleSubtitleNotDisplayedOnAuto() throws IOException {
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ true, /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
         fakeCsv.deleteOnExit();
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))

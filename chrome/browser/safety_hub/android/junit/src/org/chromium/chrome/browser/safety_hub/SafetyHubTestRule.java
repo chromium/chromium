@@ -16,15 +16,18 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -44,6 +47,7 @@ public class SafetyHubTestRule implements TestRule {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNatives;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -57,6 +61,7 @@ public class SafetyHubTestRule implements TestRule {
     private void setUp() {
         MockitoAnnotations.initMocks(this);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNatives);
         PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
@@ -73,9 +78,10 @@ public class SafetyHubTestRule implements TestRule {
     }
 
     private void setUpPasswordManagerBackendForTesting() {
-        boolean hasMinGmsVersion = AndroidRequirements.get().hasMinGmsVersion();
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(hasMinGmsVersion, /* hasInternalBackend= */ true));
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
 
         setUpFakePasswordCheckupClientHelper();
     }
@@ -103,10 +109,8 @@ public class SafetyHubTestRule implements TestRule {
     }
 
     public void setPasswordManagerAvailable(boolean isPasswordManagerAvailable) {
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(
-                        /* hasMinGmsVersion= */ isPasswordManagerAvailable,
-                        /* hasInternalBackend= */ true));
+        when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(true))
+                .thenReturn(isPasswordManagerAvailable);
     }
 
     public PendingIntent getIntentForAccountPasswordCheckup() {

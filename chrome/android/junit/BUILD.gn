@@ -902,10 +902,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridgeTest.java",
     ]
 
-    deps = [
-      ":chrome_junit_tests_helper",
-      "//components/password_manager/core/browser/android:android_java",
-    ]
+    deps = [ ":chrome_junit_tests_helper" ]
   }
 
   robolectric_library(

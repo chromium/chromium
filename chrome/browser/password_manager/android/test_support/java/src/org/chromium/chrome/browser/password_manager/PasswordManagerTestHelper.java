@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.password_manager.AndroidRequirements;
 import org.chromium.components.signin.AccountUtils;
 
 /**
@@ -13,6 +13,8 @@ import org.chromium.components.signin.AccountUtils;
  * integration tests (like chrome_public_test_apk) interacting with the password store.
  */
 public class PasswordManagerTestHelper {
+    private static final String MIN_PWM_GMS_CORE_VERSION = "241512000";
+
     /** It is not supposed to have any state. */
     private PasswordManagerTestHelper() {}
 
@@ -29,9 +31,8 @@ public class PasswordManagerTestHelper {
      */
     @Deprecated
     public static void setUpPwmRequiredMinGmsVersion() {
-        boolean hasInternalBackend = AndroidRequirements.get().hasInternalBackend();
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(/* hasMinGmsVersion= */ true, hasInternalBackend));
+        // TODO(crbug.com/407535752): Audit usages of this and trim them down to the bare minimum.
+        DeviceInfo.setGmsVersionCodeForTest(MIN_PWM_GMS_CORE_VERSION);
     }
 
     /**
@@ -42,9 +43,10 @@ public class PasswordManagerTestHelper {
      * default, but account store needs to be set up preliminary, see `setAccountForPasswordStore`.
      */
     public static void setUpGmsCoreFakeBackends() {
-        boolean hasMinGmsVersion = AndroidRequirements.get().hasMinGmsVersion();
-        AndroidRequirements.setForTesting(
-                new AndroidRequirements(hasMinGmsVersion, /* hasInternalBackend= */ true));
+        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
+                new FakePasswordManagerBackendSupportHelper();
+        fakePasswordManagerBackend.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
         CredentialManagerLauncherFactory.setFactoryForTesting(
                 new FakeCredentialManagerLauncherFactoryImpl());
         PasswordCheckupClientHelperFactory.setFactoryForTesting(
