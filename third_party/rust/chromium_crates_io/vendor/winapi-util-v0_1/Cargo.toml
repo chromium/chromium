@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "winapi-util"
-version = "0.1.10"
+version = "0.1.11"
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 build = false
 autolib = false
@@ -45,7 +45,7 @@ name = "winapi_util"
 path = "src/lib.rs"
 
 [target."cfg(windows)".dependencies.windows-sys]
-version = ">=0.48.0, <=0.60.*"
+version = ">=0.48.0, <=0.61.*"
 features = [
     "Win32_Foundation",
     "Win32_Storage_FileSystem",

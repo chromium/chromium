@@ -1,7 +1,7 @@
 Name: winapi-util
 URL: https://crates.io/crates/winapi-util
-Version: 0.1.10
-Revision: 29a804c1a048429a4c35fd2c3f6b82f8495159df
+Version: 0.1.11
+Revision: 803874c57dc1f10ecd42f7c86d9de72f53818432
 Update Mechanism: Manual
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/LICENSE-MIT

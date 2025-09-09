@@ -31,7 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A dumping ground for high level safe wrappers over windows-sys."
   cargo_pkg_repository = "https://github.com/BurntSushi/winapi-util"
-  cargo_pkg_version = "0.1.10"
+  cargo_pkg_version = "0.1.11"
 
   allow_unsafe = true
 
