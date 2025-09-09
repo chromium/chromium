@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -420,6 +421,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   testFocusOmniboxFromOtherOrientation
 #endif
 - (void)MAYBE_testFocusOmniboxFromOtherOrientation {
+  // TODO(crbug.com/443913539): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -470,6 +478,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 #define MAYBE_testFocusOmniboxFromPortrait testFocusOmniboxFromPortrait
 #endif
 - (void)MAYBE_testFocusOmniboxFromPortrait {
+  // TODO(crbug.com/443913539): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
