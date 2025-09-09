@@ -974,8 +974,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
-    expires_after="2025-09-14">
-  <owner>cwd@google.com</owner>
+    expires_after="2026-03-14">
+  <owner>zactu@google.com</owner>
   <owner>chromeos-bsm@google.com</owner>
   <summary>
     ChromeOS time from Battery Saver activation that it took the user to
