@@ -644,6 +644,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-01">
   <owner>kawasin@google.com</owner>
   <owner>baseos-perf@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is a specialized subset of the `Browser.MainThreadsCongestion`
     metric, designed to capture the metrics specifically during the first minute
@@ -668,6 +669,7 @@ chromium-metrics-reviews@google.com.
     units="janks" expires_after="2025-04-27">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
@@ -698,6 +700,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-02-22">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
@@ -718,6 +721,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-01">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
@@ -741,6 +745,7 @@ chromium-metrics-reviews@google.com.
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
@@ -782,6 +787,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-02-22">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
