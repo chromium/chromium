@@ -5,6 +5,7 @@ import './context_menu_entrypoint.js';
 import './composebox_dropdown.js';
 import './file_carousel.js';
 import './icons.html.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -352,6 +353,13 @@ export class ComposeboxElement extends I18nMixinLit
         this.i18n('composeboxCancelButtonTitle');
   }
 
+  protected shouldShowSuggestionActivityLink_() {
+    if (!this.result_ || !this.showDropdown_) {
+      return false;
+    }
+    return this.result_.matches.some((match) => match.isNoncannedAimSuggestion);
+  }
+
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
@@ -439,11 +447,14 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.$.input.value.trim().length > 0 || this.files_.size > 0) {
       this.$.input.value = '';
       this.input_ = '';
+      this.lastQueriedInput_ = this.input_;
       this.files_ = new Map();
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
       this.$.input.focus();
       this.$.matches.unselect();
+      this.searchboxHandler_.queryAutocomplete(
+          stringToMojoString16(this.$.input.value), false);
     } else {
       this.closeComposebox_();
     }

@@ -37,6 +37,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -382,6 +383,9 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
 
     mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
 
+    mojom_match->is_noncanned_aim_suggestion =
+        match.suggestion_group_id == omnibox::GROUP_MIA_RECOMMENDATIONS;
+
     matches.push_back(std::move(mojom_match));
     line++;
   }
@@ -519,6 +523,12 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                     ntp_composebox::FeatureConfig::Get()
                         .config.composebox()
                         .input_placeholder_text());
+  source->AddString(
+      "suggestionActivityLink",
+      l10n_util::GetStringFUTF16(IDS_NTP_COMPOSE_SUGGESTIONS_INFO,
+                                 u"https://myactivity.google.com/"
+                                 u"activitycontrols?settings=search&utm_source="
+                                 u"aim&utm_campaign=aim_str"));
 
   source->AddBoolean(
       "searchboxMatchSearchboxTheme",
