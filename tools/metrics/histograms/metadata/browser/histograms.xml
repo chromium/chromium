@@ -1185,6 +1185,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="BrowserRenderProcessHost.AvailableMemoryBeforeCreation.SpareRenderer"
+    units="MB" expires_after="2026-01-15">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Recorded the size of the available memory when before creating the spare
+    renderer. The UMA is recorded only on the Android platform before the
+    creation of a spare renderer.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.BlockedByFilterURL"
     enum="RenderProcessHostBlockedURLReason" expires_after="2026-02-05">
   <owner>creis@chromium.org</owner>

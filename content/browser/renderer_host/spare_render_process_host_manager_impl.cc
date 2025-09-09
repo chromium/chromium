@@ -504,6 +504,12 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     no_spare_renderer_reason_ = NoSpareRendererReason::kOnceBackgrounded;
     return nullptr;
   }
+
+  base::SystemMemoryInfo meminfo;
+  base::GetSystemMemoryInfo(&meminfo);
+  base::UmaHistogramMemoryLargeMB(
+      "BrowserRenderProcessHost.AvailableMemoryBeforeCreation.SpareRenderer",
+      meminfo.available);
 #endif
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
