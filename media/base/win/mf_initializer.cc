@@ -14,8 +14,8 @@
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
 #include "media/base/win/media_foundation_package_runtime_locator.h"
 
 namespace {

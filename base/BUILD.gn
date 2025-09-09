@@ -1830,6 +1830,7 @@ component("base") {
       "win/dark_mode_support.h",
       "win/default_apps_util.cc",
       "win/default_apps_util.h",
+      "win/delayload_helpers.h",
       "win/elevation_util.cc",
       "win/elevation_util.h",
       "win/embedded_i18n/language_selector.cc",
@@ -3318,7 +3319,7 @@ source_set("path_service_unittest") {
 }
 
 if (is_win) {
-  # Used by win_util_unittest.cc to test delayload helpers.
+  # Used by win/delayload_helpers_unittest.cc to test delayload helpers.
   config("delayload_esent_dll") {
     ldflags = [ "/DELAYLOAD:esent.dll" ]
   }
@@ -3863,6 +3864,7 @@ test("base_unittests") {
       "win/com_init_check_hook_unittest.cc",
       "win/com_init_util_unittest.cc",
       "win/dark_mode_support_unittest.cc",
+      "win/delayload_helpers_unittest.cc",
       "win/dispatch_stub.cc",
       "win/dispatch_stub.h",
       "win/dllmain.cc",

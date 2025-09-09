@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "base/threading/scoped_thread_priority.h"
-#include "base/win/win_util.h"
+#include "base/win/delayload_helpers.h"
 
 namespace device::bluetooth_init_win {
 

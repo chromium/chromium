@@ -9,8 +9,8 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/resource_exhaustion.h"
-#include "base/win/win_util.h"
 
 namespace ui {
 
