@@ -132,6 +132,10 @@ MATCHER_P2(PlaybackRateChanged, old_rate_string, new_rate_string, "") {
                                   std::string(new_rate_string));
 }
 
+MATCHER(NonNullNonEmptySpan, "") {
+  return arg.data() && !arg.empty();
+}
+
 class MockMediaObserver : public media::MediaObserver {
  public:
   MOCK_METHOD1(OnBecameDominantVisibleContent, void(bool));
@@ -221,8 +225,8 @@ class MockWebMediaPlayerEncryptedMediaClient
   MockWebMediaPlayerEncryptedMediaClient& operator=(
       const MockWebMediaPlayerEncryptedMediaClient&) = delete;
 
-  MOCK_METHOD3(Encrypted,
-               void(media::EmeInitDataType, const unsigned char*, unsigned));
+  MOCK_METHOD2(Encrypted,
+               void(media::EmeInitDataType, base::span<const uint8_t>));
   MOCK_METHOD0(DidBlockPlaybackWaitingForKey, void());
   MOCK_METHOD0(DidResumePlaybackBlockedForKey, void());
 };
@@ -1906,7 +1910,7 @@ TEST_F(WebMediaPlayerImplTest, Encrypted) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(encrypted_client_,
-                Encrypted(media::EmeInitDataType::WEBM, NotNull(), Gt(0u)));
+                Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
     EXPECT_CALL(encrypted_client_, DidBlockPlaybackWaitingForKey());
     EXPECT_CALL(encrypted_client_, DidResumePlaybackBlockedForKey())
         .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -2010,7 +2014,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
 
   // Load encrypted media and expect encrypted event.
   EXPECT_CALL(encrypted_client_,
-              Encrypted(media::EmeInitDataType::WEBM, NotNull(), Gt(0u)));
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
 
   base::RunLoop run_loop;
   // MediaFoundationRenderer doesn't use AudioService.

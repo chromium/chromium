@@ -406,13 +406,11 @@ ScriptPromise<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
 
 // Create a MediaEncryptedEvent for WD EME.
 static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
-                                   const unsigned char* init_data,
-                                   unsigned init_data_length) {
+                                   base::span<const uint8_t> init_data) {
   MediaEncryptedEventInit* initializer = MediaEncryptedEventInit::Create();
   initializer->setInitDataType(
       EncryptedMediaUtils::ConvertFromInitDataType(init_data_type));
-  initializer->setInitData(DOMArrayBuffer::Create(
-      UNSAFE_TODO(base::span(init_data, init_data_length))));
+  initializer->setInitData(DOMArrayBuffer::Create(init_data));
   initializer->setBubbles(false);
   initializer->setCancelable(false);
 
@@ -422,17 +420,16 @@ static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
 
 void HTMLMediaElementEncryptedMedia::Encrypted(
     media::EmeInitDataType init_data_type,
-    const unsigned char* init_data,
-    unsigned init_data_length) {
+    base::span<const uint8_t> init_data) {
   DVLOG(EME_LOG_LEVEL) << __func__;
 
   Event* event;
   if (GetSupplementable()->IsMediaDataCorsSameOrigin()) {
-    event = CreateEncryptedEvent(init_data_type, init_data, init_data_length);
+    event = CreateEncryptedEvent(init_data_type, init_data);
   } else {
     // Current page is not allowed to see content from the media file,
     // so don't return the initData. However, they still get an event.
-    event = CreateEncryptedEvent(media::EmeInitDataType::UNKNOWN, nullptr, 0);
+    event = CreateEncryptedEvent(media::EmeInitDataType::UNKNOWN, {});
     GetSupplementable()->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,

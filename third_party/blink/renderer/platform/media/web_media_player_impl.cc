@@ -1678,9 +1678,7 @@ void WebMediaPlayerImpl::OnEncryptedMediaInitData(
     video_decode_stats_reporter_.reset();
   }
 
-  encrypted_client_->Encrypted(
-      init_data_type, init_data.data(),
-      base::saturated_cast<unsigned int>(init_data.size()));
+  encrypted_client_->Encrypted(init_data_type, init_data);
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)

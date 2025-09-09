@@ -44,8 +44,7 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
 
   // WebMediaPlayerEncryptedMediaClient methods
   void Encrypted(media::EmeInitDataType init_data_type,
-                 const unsigned char* init_data,
-                 unsigned init_data_length) final;
+                 base::span<const uint8_t> init_data) final;
   void DidBlockPlaybackWaitingForKey() final;
   void DidResumePlaybackBlockedForKey() final;
   WebContentDecryptionModule* ContentDecryptionModule();
