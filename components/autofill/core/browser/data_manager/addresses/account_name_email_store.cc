@@ -14,6 +14,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 
 namespace autofill {
 
@@ -26,12 +27,15 @@ constexpr std::string_view kSeparator = "|";
 AccountNameEmailStore::AccountNameEmailStore(
     AddressDataManager& address_data_manager,
     signin::IdentityManager& identity_manager,
+    syncer::SyncService& sync_service,
     PrefService& pref_service)
     : address_data_manager_(address_data_manager),
       identity_manager_(identity_manager),
+      sync_service_(sync_service),
       pref_service_(pref_service) {
   address_data_manager_observer_.Observe(&address_data_manager);
   identity_manager_observer_.Observe(&identity_manager);
+  sync_service_observer_.Observe(&sync_service);
 }
 
 AccountNameEmailStore::~AccountNameEmailStore() = default;

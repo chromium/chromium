@@ -121,11 +121,11 @@ AddressDataManager::AddressDataManager(
         *this, sync_service, *pref_service_,
         alternative_state_name_map_updater_.get());
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForNameAndEmail) &&
-        identity_manager) {
+    if (identity_manager && sync_service &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForNameAndEmail)) {
       account_name_email_store_ = std::make_unique<AccountNameEmailStore>(
-          *this, *identity_manager, *pref_service_);
+          *this, *identity_manager, *sync_service, *pref_service_);
     }
   }
 }
@@ -139,6 +139,7 @@ void AddressDataManager::Shutdown() {
   contact_info_precondition_checker_.reset();
   address_data_cleaner_.reset();
   home_and_work_metadata_.reset();
+  account_name_email_store_.reset();
 }
 
 void AddressDataManager::AddObserver(AddressDataManager::Observer* obs) {

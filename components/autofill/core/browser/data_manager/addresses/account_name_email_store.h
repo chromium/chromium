@@ -6,10 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ACCOUNT_NAME_EMAIL_STORE_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace autofill {
 
@@ -25,10 +28,12 @@ namespace autofill {
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
 class AccountNameEmailStore : public signin::IdentityManager::Observer,
-                              public AddressDataManager::Observer {
+                              public AddressDataManager::Observer,
+                              public syncer::SyncServiceObserver {
  public:
   AccountNameEmailStore(AddressDataManager& address_data_manager,
                         signin::IdentityManager& identity_manager,
+                        syncer::SyncService& sync_service,
                         PrefService& pref_service);
   ~AccountNameEmailStore() override;
 
@@ -62,6 +67,7 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
 
   const raw_ref<AddressDataManager> address_data_manager_;
   const raw_ref<signin::IdentityManager> identity_manager_;
+  const raw_ref<syncer::SyncService> sync_service_;
   const raw_ref<PrefService> pref_service_;
 
   // Used to update `kAutofillNameAndEmailProfileNotSelectedCounter` pref in
@@ -74,6 +80,13 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+
+  // Used to create/remove the `kAccountNameEmail` profile when autofill's sync
+  // state changes.
+  // TODO(crbug.com/356845298): Refactor removing and creating profile in
+  // overridden `OnStateChanged(SyncService*)` method.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observer_{this};
 };
 
 }  // namespace autofill

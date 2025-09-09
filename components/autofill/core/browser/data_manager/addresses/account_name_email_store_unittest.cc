@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +49,7 @@ class AccountNameEmailStoreTest : public testing::Test {
   AccountNameEmailStoreTest()
       : prefs_(test::PrefServiceForTesting()),
         identity_manager_(identity_test_env_.identity_manager()),
-        store_(test_adm_, *identity_manager_, *prefs_) {}
+        store_(test_adm_, *identity_manager_, sync_service_, *prefs_) {}
 
   void CreatePrimaryAccount(std::string_view name, std::string_view email) {
     // Calling `MakePrimaryAccountAvailable` registers the account with the
@@ -94,6 +95,7 @@ class AccountNameEmailStoreTest : public testing::Test {
   // `identity_manager_` is owned by `identity_test_env_`
   raw_ptr<signin::IdentityManager> identity_manager_;
   TestAddressDataManager test_adm_;
+  syncer::TestSyncService sync_service_;
   AccountNameEmailStore store_;
 };
 
