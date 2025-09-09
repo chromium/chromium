@@ -210,6 +210,21 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     }
 
     @Test
+    public void testMaybeShowSuggestions_oneTabPinned() {
+        int[] tabIds = {1, 2};
+        GroupSuggestion suggestion = new GroupSuggestion(tabIds, 10, 0, "", "", "");
+        setupCachedSuggestion(suggestion);
+        mockTab(1, 0, true);
+        Tab pinnedTab = mockTab(2, 1, false);
+        when(pinnedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getCount()).thenReturn(2);
+
+        mService.maybeShowSuggestions();
+        verify(mSuggestionLifecycleObserverHandler, never()).onShowSuggestion(any());
+        verify(mUserResponseCallback).onResult(any());
+    }
+
+    @Test
     public void testClearSuggestions_callsHandler() {
         mService.clearSuggestions();
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
@@ -278,7 +293,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
-    private void mockTab(int tabId, int index, boolean isActive) {
+    private Tab mockTab(int tabId, int index, boolean isActive) {
         Tab tab = mock();
 
         when(tab.getId()).thenReturn(tabId);
@@ -290,6 +305,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         when(mTabModel.indexOf(tab)).thenReturn(index);
         when(mTabModel.getTabAt(index)).thenReturn(tab);
         mTabs.add(index, tab);
+        return tab;
     }
 
     private void setupCachedSuggestion(GroupSuggestion suggestion) {

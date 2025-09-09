@@ -271,6 +271,8 @@ public class TabSwitcherGroupSuggestionService {
             Map<@TabId Integer, Integer> tabIdsToIndices, List<Tab> tabsSortedByIndex) {
         int prevIndex = TabModel.INVALID_TAB_INDEX;
         for (Tab tab : tabsSortedByIndex) {
+            if (tab.getIsPinned()) return false;
+
             @TabId int tabId = tab.getId();
 
             assert tabIdsToIndices.containsKey(tabId);
