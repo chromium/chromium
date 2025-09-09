@@ -210,6 +210,25 @@ class KeyboardAccessoryView extends LinearLayout {
         super.onFinishInflate();
         sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
 
+        // TODO: crbug.com/385172647 - Move height parameters to the xml file once the feature is
+        // launched.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+            LinearLayout barContents = findViewById(R.id.accessory_bar_contents);
+            // TODO: crbug.com/385172647 - Figure out if the height needs to be increased even if
+            // there are no suggestions displayed.
+            barContents.setMinimumHeight(
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign));
+
+            LinearLayout.LayoutParams layoutParams =
+                    (LinearLayout.LayoutParams) barContents.getLayoutParams();
+            layoutParams.height =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
+            barContents.setLayoutParams(layoutParams);
+        }
+
         mBarItemsView = findViewById(R.id.bar_items_view);
         initializeHorizontalRecyclerView(mBarItemsView);
 

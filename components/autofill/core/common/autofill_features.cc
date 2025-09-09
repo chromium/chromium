@@ -921,6 +921,12 @@ BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
              "AutofillDeepLinkAutofillOptions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls if Chrome Keyboard Accessory on Android displays 2 line chips.
+// TODO: crbug.com/385172647 - Clean up after the feature is launched.
+BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
+             "AutofillEnableKeyboardAccessoryChipRedesign",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
 BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
