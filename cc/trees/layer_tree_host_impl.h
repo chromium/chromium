@@ -936,6 +936,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void ElasticOverscrollAnimationFinished();
 
+  void set_send_frame_token_to_embedder(bool send_frame_token_to_embedder) {
+    send_frame_token_to_embedder_ = send_frame_token_to_embedder;
+  }
+  bool send_frame_token_to_embedder() const {
+    return send_frame_token_to_embedder_;
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1424,6 +1431,14 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Track previously visible scrollable elements for viewport visibility
   // detection.
   base::flat_set<ElementId> previously_visible_scrollable_elements_;
+
+  // Only used in TreesInViz mode, whether to call
+  // CompositorFrameSinkSupport::OnFrameTokenChanged(). In TreesInViz
+  // mode, it's computed when calling GenerateCompositorFrame() in
+  // renderer process, and its computation when calling
+  // GenerateCompositorFrame() in viz is skipped, therefore, we need to
+  // pass it from renderer to viz.
+  bool send_frame_token_to_embedder_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

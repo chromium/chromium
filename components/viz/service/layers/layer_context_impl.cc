@@ -1601,8 +1601,6 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
     return;
   }
 
-  frame.metadata.send_frame_token_to_embedder = true;
-
   std::optional<HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
 
@@ -1767,6 +1765,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   RETURN_IF_FALSE(update->next_frame_token > 0, "invalid frame token");
   host_impl_->set_next_frame_token_from_client(update->next_frame_token);
+
+  host_impl_->set_send_frame_token_to_embedder(
+      update->send_frame_token_to_embedder);
 
   for (const auto& tiling : update->tilings) {
     if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {

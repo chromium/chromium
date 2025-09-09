@@ -2904,6 +2904,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   base::TimeTicks submit_time = base::TimeTicks::Now();
 
   if (settings_.TreesInVizInClientProcess()) {
+    send_frame_token_to_embedder_ =
+        compositor_frame.metadata.send_frame_token_to_embedder;
     UpdateDisplayTree(*frame);
 
     layer_tree_frame_sink_->ExportFrameTiming();
@@ -3269,9 +3271,15 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
     // TODO(zmo): Consider plumbing the observer to viz as well.
     if (render_frame_metadata_observer_) {
+      // Make sure we don't recompute and overwrite metadata's
+      // send_frame_token_to_embedder in viz.
+      DCHECK(!settings_.trees_in_viz_in_viz_process);
       render_frame_metadata_observer_->OnRenderFrameSubmission(
           *last_draw_render_frame_metadata_, &metadata,
           active_tree()->TakeForceSendMetadataRequest());
+    }
+    if (settings_.trees_in_viz_in_viz_process) {
+      metadata.send_frame_token_to_embedder = send_frame_token_to_embedder_;
     }
   }
 

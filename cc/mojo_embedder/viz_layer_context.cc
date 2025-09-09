@@ -1280,6 +1280,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   }
   DCHECK_NE(host_impl_->next_frame_token(), viz::kInvalidFrameToken);
   update->next_frame_token = host_impl_->next_frame_token();
+  update->send_frame_token_to_embedder =
+      host_impl_->send_frame_token_to_embedder();
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();

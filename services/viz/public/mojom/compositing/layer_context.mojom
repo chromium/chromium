@@ -106,6 +106,12 @@ struct LayerTreeUpdate {
   // crash and rest the token generator, leading to client/viz inconsistence.
   uint32 next_frame_token;
 
+  // Whether to call CompositorFrameSinkSupport::OnFrameTokenChanged().
+  // This is computed in renderer process when calling
+  // GenerateCompositorFrame(), passed to viz process, and sets it when
+  // calling GenerateCompositorFrame() again in viz process.
+  bool send_frame_token_to_embedder;
+
   // The viz::LocalSurfaceId to unthrottle drawing for.
   // This is from LayerTreeHostImpl.
   // It is still necessary to send it over to viz because
