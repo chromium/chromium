@@ -56,7 +56,7 @@
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

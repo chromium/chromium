@@ -22,7 +22,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/win/internal_constants.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/win/msg_util.h"
 
 namespace ui {

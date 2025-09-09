@@ -27,7 +27,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 

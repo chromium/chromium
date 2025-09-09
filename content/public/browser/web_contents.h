@@ -57,7 +57,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)

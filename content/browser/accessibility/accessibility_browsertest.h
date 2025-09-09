@@ -8,7 +8,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_BROWSERTEST_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_BROWSERTEST_H_

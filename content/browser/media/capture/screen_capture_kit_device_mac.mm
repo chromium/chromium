@@ -19,7 +19,7 @@
 #include "content/browser/media/capture/screen_capture_kit_fullscreen_module.h"
 #include "content/public/common/content_features.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     std::optional<gfx::Size>,

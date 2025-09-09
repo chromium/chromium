@@ -32,7 +32,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_IOS_TVOS)
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"

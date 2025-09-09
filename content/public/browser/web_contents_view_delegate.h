@@ -17,7 +17,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if defined(__OBJC__)
 #if BUILDFLAG(IS_MAC)
