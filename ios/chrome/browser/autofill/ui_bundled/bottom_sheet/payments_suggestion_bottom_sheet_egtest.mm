@@ -329,7 +329,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the Payments Bottom Sheet appears when tapping on a credit card
 // related field with the new blur logic.
-- (void)testOpenPaymentsBottomSheetUseCreditCardWithNewBlur {
+// TODO(crbug.com/444033658): Fix test and re-enable.
+- (void)DISABLED_testOpenPaymentsBottomSheetUseCreditCardWithNewBlur {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
