@@ -27,7 +27,7 @@ Env* GetEnvForTestWindows();
 // Creates a test window. It internally uses TestWindowBuilder. If `color` is
 // specified, it'll create a test delegate that fills the content with the given
 // color.
-std::unique_ptr<Window> CreateTestWindow(
+[[nodiscard]] std::unique_ptr<Window> CreateTestWindow(
     WindowBuilderParams params = {},
     std::optional<SkColor> color = std::nullopt);
 
