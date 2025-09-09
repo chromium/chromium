@@ -8,8 +8,10 @@ namespace ash {
 
 NetworkConnectionObserver::NetworkConnectionObserver() = default;
 
-void NetworkConnectionObserver::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict
+NetworkConnectionObserver::ConnectToNetworkRequested(
     const std::string& service_path) {
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void NetworkConnectionObserver::ConnectSucceeded(

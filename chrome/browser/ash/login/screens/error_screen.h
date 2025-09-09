@@ -109,7 +109,8 @@ class ErrorScreen : public BaseScreen,
   void ShowCaptivePortal();
 
   // NetworkConnectionObserver overrides:
-  void ConnectToNetworkRequested(const std::string& service_path) override;
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override;
 
   // Default hide_closure for Hide().
   void DefaultHideCallback();

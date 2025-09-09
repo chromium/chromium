@@ -242,6 +242,19 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Returns the shill id of the recently disconnected P2P group.
     virtual int GetRecentlyDisconnectedP2PGroupId() = 0;
 
+    // If set to true, `RequestScan()` will set the `shill::kScanningProperty`
+    // to true and then schedule a (delayed with the "interactive delay") task
+    // to reset it to false again.
+    // If set to false, `shill::kScanningProperty` is not auto-reset to false.
+    // If never called, the default is true.
+    virtual void SetAutoCompleteScan(bool auto_complete_scan) = 0;
+
+    // Triggers a "scanning complete" event on `device_path`.
+    // This resets the `shill::kScanningProperty` and also continues to
+    // "ConnectToBestServices" if `ScanAndConnectToBestServices` was called
+    // previously.
+    virtual void TriggerScanCompleted(const std::string& device_path) = 0;
+
    protected:
     virtual ~TestInterface() = default;
   };

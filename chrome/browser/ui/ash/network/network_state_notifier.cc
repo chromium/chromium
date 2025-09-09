@@ -202,7 +202,7 @@ NetworkStateNotifier::~NetworkStateNotifier() {
   NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
 }
 
-void NetworkStateNotifier::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict NetworkStateNotifier::ConnectToNetworkRequested(
     const std::string& service_path) {
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkState(
@@ -212,6 +212,8 @@ void NetworkStateNotifier::ConnectToNetworkRequested(
   }
 
   RemoveConnectNotification();
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void NetworkStateNotifier::NetworkConnectionStateChanged(

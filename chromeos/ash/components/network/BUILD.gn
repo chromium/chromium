@@ -308,6 +308,8 @@ source_set("test_support") {
     "system_token_cert_db_storage_test_util.h",
     "test_cellular_esim_profile_handler.cc",
     "test_cellular_esim_profile_handler.h",
+    "test_support/technology_enablement_waiter.cc",
+    "test_support/technology_enablement_waiter.h",
   ]
 }
 

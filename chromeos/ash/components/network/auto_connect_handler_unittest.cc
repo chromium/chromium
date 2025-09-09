@@ -16,9 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -27,6 +29,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/test_support/technology_enablement_waiter.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -35,6 +38,8 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -328,6 +333,10 @@ const char* kConfigureCellular3UnmanagedConnected = R"(
   { "GUID": "cellular3", "Type": "cellular", "State": "online",
     "AutoConnect": true, "Profile": "/profile/default",
     "Cellular.EID": "1234567890"})";
+
+const char* kConfigWifi0UnmanagedSharedConnectable = R"(
+  { "GUID": "wifi0", "Type": "wifi", "State": "idle",
+    "Connectable": true, "Security": "wpa", "Profile": "/profile/default" })";
 
 const char* kConfigWifi0UnmanagedSharedConnected = R"(
   { "GUID": "wifi0", "Type": "wifi", "State": "online",
@@ -925,6 +934,117 @@ TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyWiFiToConnectIfAvailable) {
   EXPECT_TRUE(helper().profile_test()->HasService(wifi0_service_path));
 
   EXPECT_EQ(0, test_observer_->num_auto_connect_events());
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableWaitForScanAfterLogin) {
+  std::string wifi0_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+
+  // FakeShillManagerClient should not auto-reset the shill::kScanningProperty,
+  // so the test can simulate a state where a scan has not finished yet.
+  helper().manager_test()->SetAutoCompleteScan(false);
+
+  // Apply 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy as a device
+  // policy.
+  auto global_config = base::Value::Dict().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  // `kPolicy` provides a managed configuration for "wifi1" which has not been
+  // set up as visible by the test - so unmanaged networks should still be
+  // allowed, because no managed network is visible.
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  // When a manual connection to wifi0 is attempted, AutoConnectHandler should
+  // veto it: a scan has not been completed yet, but enforcement of
+  // AllowOnlyPolicyWiFiToConnectIfAvailable needs a complete scan.
+  const auto verdict_before_scan =
+      auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path);
+  EXPECT_EQ(ConnectToNetworkRequestVerdict::kVetoWaitingForScan,
+            verdict_before_scan);
+
+  const auto* wifi_device =
+      helper().network_state_handler()->GetDeviceStateByType(
+          NetworkTypePattern::WiFi());
+  ASSERT_NE(nullptr, wifi_device);
+
+  helper().manager_test()->TriggerScanCompleted(wifi_device->path());
+
+  // After the scan has completed, the connection should be allowed.
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    const auto verdict_after_scan =
+        auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path);
+    return verdict_after_scan == ConnectToNetworkRequestVerdict::kProceed;
+  }));
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableWaitForScanAfterWifiToggle) {
+  std::string wifi0_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+
+  // Apply 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy as a device
+  // policy.
+  auto global_config = base::Value::Dict().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  // `kPolicy` provides a managed configuration for "wifi1" which has not been
+  // set up as visible by the test - so unmanaged networks should still be
+  // allowed, because no managed network is visible.
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  // After the scan has completed, the connection should be allowed.
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    const auto verdict_after_scan =
+        auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path);
+    return verdict_after_scan == ConnectToNetworkRequestVerdict::kProceed;
+  }));
+
+  TechnologyEnablementWaiter technology_enablement_waiter(
+      helper().network_state_handler());
+
+  // Toggle wifi enablement - after that a new full scan is required.
+  {
+    helper().technology_state_controller()->SetTechnologiesEnabled(
+        NetworkTypePattern::WiFi(), false /* enabled */,
+        network_handler::ErrorCallback());
+
+    technology_enablement_waiter.Wait(NetworkTypePattern::WiFi(), false);
+  }
+
+  {
+    helper().technology_state_controller()->SetTechnologiesEnabled(
+        NetworkTypePattern::WiFi(), true /* enabled */,
+        network_handler::ErrorCallback());
+
+    technology_enablement_waiter.Wait(NetworkTypePattern::WiFi(), true);
+  }
+
+  const auto verdict_before_scan =
+      auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path);
+  EXPECT_EQ(ConnectToNetworkRequestVerdict::kVetoWaitingForScan,
+            verdict_before_scan);
+
+  // Fake shill doesn't auto-trigger scanning on wifi device enablement - do it
+  // manually.
+  helper().network_state_handler()->RequestScan(NetworkTypePattern::WiFi());
+
+  // After the scan has completed, the connection should be allowed.
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    const auto verdict_after_scan =
+        auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path);
+    return verdict_after_scan == ConnectToNetworkRequestVerdict::kProceed;
+  }));
 }
 
 }  // namespace ash

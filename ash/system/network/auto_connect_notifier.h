@@ -34,7 +34,8 @@ class ASH_EXPORT AutoConnectNotifier : public NetworkConnectionObserver,
   ~AutoConnectNotifier() override;
 
   // NetworkConnectionObserver:
-  void ConnectToNetworkRequested(const std::string& service_path) override;
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override;
 
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;

@@ -68,9 +68,11 @@ AutoConnectNotifier::~AutoConnectNotifier() {
   }
 }
 
-void AutoConnectNotifier::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict AutoConnectNotifier::ConnectToNetworkRequested(
     const std::string& /* service_path */) {
   has_user_explicitly_requested_connection_ = true;
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void AutoConnectNotifier::NetworkConnectionStateChanged(

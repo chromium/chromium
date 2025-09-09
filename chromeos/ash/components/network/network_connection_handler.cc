@@ -55,6 +55,8 @@ const char NetworkConnectionHandler::kErrorCertLoadTimeout[] =
     "cert-load-timeout";
 const char NetworkConnectionHandler::kErrorBlockedByPolicy[] =
     "blocked-by-policy";
+const char NetworkConnectionHandler::kErrorWaitingForScan[] =
+    "waiting-for-scan";
 const char NetworkConnectionHandler::kErrorHexSsidRequired[] =
     "hex-ssid-required";
 const char NetworkConnectionHandler::kErrorActivateFailed[] = "activate-failed";
