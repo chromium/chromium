@@ -287,24 +287,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @Config(sdk = 30)
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgeForMediaViewer() {
         doReturn(true)
                 .when(mBrowserServicesIntentDataProvider)
                 .shouldEnableEmbeddedMediaExperience();
         assertTrue(mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
-    }
-
-    @Test
-    @Config(sdk = 30)
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testEdgeToEdgeForMediaViewer_DisabledFeatures() {
-        doReturn(true)
-                .when(mBrowserServicesIntentDataProvider)
-                .shouldEnableEmbeddedMediaExperience();
-        assertFalse(
-                "Not drawing E2E when feature disabled.",
-                mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
     }
 
     @Test

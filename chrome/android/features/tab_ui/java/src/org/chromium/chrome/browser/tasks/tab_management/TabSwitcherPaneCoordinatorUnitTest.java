@@ -450,14 +450,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
-        assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
-    }
-
-    @Test
     public void testSetTabSwitcherContentSensitivity() {
         PropertyModel containerViewModel = mCoordinator.getContainerViewModelForTesting();
         assertFalse(containerViewModel.get(IS_CONTENT_SENSITIVE));

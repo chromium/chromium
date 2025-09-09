@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -313,14 +312,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         padAdjuster.overrideBottomInset(0);
         assertEquals(0, buttonContainer.getPaddingBottom());
         assertTrue("clipToPadding should not change.", buttonContainer.getClipToPadding());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
-        assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
     }
 
     @Test
