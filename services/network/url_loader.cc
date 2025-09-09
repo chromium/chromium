@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -136,6 +137,8 @@
 namespace network {
 
 namespace {
+
+BASE_FEATURE(kDelayedCookieNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Cannot use 0, because this means "default" in
 // mojo::core::Core::CreateDataPipe
@@ -1142,10 +1145,14 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
         internal::FetchKeepAliveRequestNetworkMetricType::kOnResponse);
   }
 
-  // Use `true` to force sending the cookie accessed update now. This is because
-  // for navigations the CookieObserver might get torn down by the time the
-  // request completes.
-  ReportFlaggedResponseCookies(true);
+  // Wait to report for main frame navigations. This is because handling the
+  // cookie notification contends with ReadyToCommitNavigation, which is in the
+  // critical path for loading. Additionally, cookie observers for navigations
+  // now outlive the NavigationRequest.
+  bool delay_cookie_call =
+      url_request_->isolation_info().IsMainFrameRequest() &&
+      base::FeatureList::IsEnabled(kDelayedCookieNotification);
+  ReportFlaggedResponseCookies(!delay_cookie_call);
 
   if (net_error != net::OK) {
     NotifyCompleted(net_error);
