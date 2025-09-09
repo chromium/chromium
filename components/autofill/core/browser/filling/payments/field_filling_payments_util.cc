@@ -283,8 +283,9 @@ std::u16string GetVirtualCardNumberForPreviewInput(
 // Returns the credit card CVC for Preview or Fill.
 std::u16string GetCreditCardVerificationCodeForInput(
     const CreditCard& credit_card,
-    mojom::ActionPersistence action_persistence) {
-  if (credit_card.cvc().empty()) {
+    mojom::ActionPersistence action_persistence,
+    bool is_cvc_filling_supported) {
+  if (!is_cvc_filling_supported || credit_card.cvc().empty()) {
     return {};
   }
   switch (action_persistence) {
@@ -375,6 +376,7 @@ std::u16string GetFillingValueForCreditCardForInput(
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
+    bool is_cvc_filling_supported,
     std::string* failure_to_fill) {
   const FieldType field_type = field.Type().GetCreditCardType();
   // Do not fill expired CC expiration dates.
@@ -391,8 +393,8 @@ std::u16string GetFillingValueForCreditCardForInput(
   switch (field_type) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
-      return GetCreditCardVerificationCodeForInput(credit_card,
-                                                   action_persistence);
+      return GetCreditCardVerificationCodeForInput(
+          credit_card, action_persistence, is_cvc_filling_supported);
     case CREDIT_CARD_NUMBER:
       return GetCreditCardNumberForInput(
           credit_card, field.credit_card_number_offset(), field.max_length(),
@@ -447,7 +449,7 @@ std::u16string GetValueForVirtualCardInputPreview(
       return ReplaceDigitsWithCenterDots(GetFillingValueForCreditCardForInput(
           virtual_card, app_locale,
           /*action_persistence=*/mojom::ActionPersistence::kPreview, field,
-          failure_to_fill));
+          /*is_cvc_filling_supported=*/true, failure_to_fill));
     default:
       // All other cases handled here.
       return virtual_card.GetInfo(field_type, app_locale);
@@ -482,6 +484,7 @@ std::u16string GetFillingValueForCreditCard(
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
+    bool is_cvc_filling_supported,
     std::string* failure_to_fill) {
   CHECK(field.Type().GetGroups().contains_any(
       {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField}));
@@ -490,9 +493,9 @@ std::u16string GetFillingValueForCreditCard(
               action_persistence == mojom::ActionPersistence::kPreview
           ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
                                                failure_to_fill)
-          : GetFillingValueForCreditCardForInput(credit_card, app_locale,
-                                                 action_persistence, field,
-                                                 failure_to_fill);
+          : GetFillingValueForCreditCardForInput(
+                credit_card, app_locale, action_persistence, field,
+                is_cvc_filling_supported, failure_to_fill);
 
   return field.IsSelectElement() && !value.empty()
              ? GetFillingValueForCreditCardSelectControl(value, app_locale,

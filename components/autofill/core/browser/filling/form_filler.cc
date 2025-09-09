@@ -1151,7 +1151,8 @@ FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
             return {
                 GetFillingValueForCreditCard(
                     CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
-                    action_persistence, autofill_field, failure_to_fill),
+                    action_persistence, autofill_field,
+                    manager_->client().IsCvcSavingSupported(), failure_to_fill),
                 autofill_field.Type().GetCreditCardType()};
           },
           [&](const AugmentedFillingPayload::EntityPayload&
