@@ -2331,6 +2331,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
+      "//chrome/browser/autocomplete:browser_tests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/background",
@@ -3161,10 +3162,6 @@ if (!is_android) {
       "../browser/accessibility/phrase_segmentation/dependency_parser_model_loader_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
-      "../browser/autocomplete/autocomplete_browsertest.cc",
-      "../browser/autocomplete/chrome_aim_eligibility_service_browsertest.cc",
-      "../browser/autocomplete/chrome_autocomplete_provider_client_browsertest.cc",
-      "../browser/autocomplete/tab_matcher_desktop_browsertest.cc",
       "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
       "../browser/background/background_contents_test_waiter.cc",
       "../browser/background/background_contents_test_waiter.h",
@@ -6332,11 +6329,6 @@ test("unit_tests") {
     "../browser/after_startup_task_utils_unittest.cc",
     "../browser/apps/icon_standardizer_unittest.cc",
     "../browser/apps/user_type_filter_unittest.cc",
-    "../browser/autocomplete/chrome_autocomplete_scheme_classifier_unittest.cc",
-    "../browser/autocomplete/provider_state_service_factory_unittest.cc",
-    "../browser/autocomplete/remote_suggestions_service_factory_unittest.cc",
-    "../browser/autocomplete/search_provider_unittest.cc",
-    "../browser/autocomplete/shortcuts_provider_extension_unittest.cc",
     "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
     "../browser/background_fetch/background_fetch_delegate_impl_unittest.cc",
     "../browser/background_fetch/background_fetch_permission_context_unittest.cc",
@@ -6862,6 +6854,7 @@ test("unit_tests") {
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:unit_tests",
     "//chrome/browser/autofill",
     "//chrome/browser/background:unit_tests",
     "//chrome/browser/battery",
@@ -7406,6 +7399,10 @@ test("unit_tests") {
   if (enable_server_based_recognition) {
     deps += [ "//chrome/services/speech/internal:unit_tests" ]
   }
+
+  # TODO(crbug.com/353332589): Remove this circular dependency when
+  # c/b/profiles/profile_testing_helper.h gets componentized.
+  allow_circular_includes_from = [ "//chrome/browser/autocomplete:unit_tests" ]
 
   if (enable_compose) {
     sources += [
@@ -9375,7 +9372,6 @@ test("unit_tests") {
     sources += [
       "../../apps/saved_files_service_unittest.cc",
       "../../tools/json_schema_compiler/test/features_generation_unittest.cc",
-      "../browser/autocomplete/keyword_extensions_delegate_impl_unittest.cc",
       "../browser/browsing_data/counters/hosted_apps_counter_unittest.cc",
       "../browser/controlled_frame/controlled_frame_menu_icon_loader_unittest.cc",
       "../browser/controlled_frame/controlled_frame_permissions_unittest.cc",
@@ -9593,7 +9589,7 @@ test("unit_tests") {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    allow_circular_includes_from = [
+    allow_circular_includes_from += [
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
     ]

@@ -201,24 +201,6 @@ static_library("browser") {
     "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
-    "autocomplete/autocomplete_classifier_factory.cc",
-    "autocomplete/chrome_autocomplete_provider_client.cc",
-    "autocomplete/chrome_autocomplete_provider_client.h",
-    "autocomplete/chrome_autocomplete_scheme_classifier.cc",
-    "autocomplete/document_suggestions_service_factory.cc",
-    "autocomplete/document_suggestions_service_factory.h",
-    "autocomplete/enterprise_search_aggregator_suggestions_service_factory.cc",
-    "autocomplete/enterprise_search_aggregator_suggestions_service_factory.h",
-    "autocomplete/in_memory_url_index_factory.cc",
-    "autocomplete/in_memory_url_index_factory.h",
-    "autocomplete/provider_state_service_factory.cc",
-    "autocomplete/provider_state_service_factory.h",
-    "autocomplete/remote_suggestions_service_factory.cc",
-    "autocomplete/remote_suggestions_service_factory.h",
-    "autocomplete/shortcuts_backend_factory.cc",
-    "autocomplete/shortcuts_backend_factory.h",
-    "autocomplete/zero_suggest_cache_service_factory.cc",
-    "autocomplete/zero_suggest_cache_service_factory.h",
     "background_fetch/background_fetch_delegate_factory.cc",
     "background_fetch/background_fetch_delegate_factory.h",
     "background_fetch/background_fetch_delegate_impl.cc",
@@ -1840,6 +1822,21 @@ static_library("browser") {
     # c/b/browser_features.h gets componentized. It is included by
     # c/b/webid/federated_identity_api_permission_context.cc.
     "//chrome/browser/webid:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once the following
+    # headers get componentized:
+    # c/b/custom_handlers/protocol_handler_registry_factory.h"
+    # c/b/external_protocol/external_protocol_handler.h"
+    # c/b/profiles/profile_io_data.h"
+    # c/b/bookmarks/bookmark_model_factory.h"
+    # c/b/history/top_sites_factory.h"
+    # c/b/history_clusters/history_clusters_service_factory.h"
+    # c/b/history_embeddings/history_embeddings_service_factory.h"
+    # c/b/history_embeddings/history_embeddings_utils.h"
+    # c/b/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+    # c/b/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+    # c/b/browser_process_platform_part.h"
+    "//chrome/browser/autocomplete:impl",
   ]
 
   public_deps = [
@@ -1891,6 +1888,7 @@ static_library("browser") {
     "//chrome/browser/app_mode",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/autocomplete:impl",
     "//chrome/browser/autofill",
     "//chrome/browser/background",
     "//chrome/browser/background:impl",
@@ -2683,8 +2681,6 @@ static_library("browser") {
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.h",
       "after_startup_task_utils_android.cc",
       "android/android_theme_resources.h",
-      "android/autocomplete/tab_matcher_android.cc",
-      "android/autocomplete/tab_matcher_android.h",
       "android/background_sync_launcher_android.cc",
       "android/background_sync_launcher_android.h",
       "android/background_tab_manager.cc",
@@ -3710,8 +3706,6 @@ static_library("browser") {
       "accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
-      "autocomplete/tab_matcher_desktop.cc",
-      "autocomplete/tab_matcher_desktop.h",
       "badging/badge_manager.cc",
       "badging/badge_manager.h",
       "badging/badge_manager_delegate.h",
@@ -4688,7 +4682,6 @@ static_library("browser") {
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
       # componentized:
-      # - c/b/autocomplete/chrome_autocomplete_provider_client.h
       # - c/b/history_embeddings/history_embeddings_utils.h
       # - c/b/defaults.h"
       # - c/b/page_info/merchant_trust_service_factory.h
@@ -7591,10 +7584,6 @@ static_library("browser") {
 
   if (enable_extensions_core) {
     sources += [
-      "autocomplete/keyword_extensions_delegate_impl.cc",
-      "autocomplete/keyword_extensions_delegate_impl.h",
-      "autocomplete/unscoped_extension_provider_delegate_impl.cc",
-      "autocomplete/unscoped_extension_provider_delegate_impl.h",
       "download/download_crx_util.cc",
       "speech/extension_api/tts_engine_extension_api.cc",
       "speech/extension_api/tts_engine_extension_api.h",
@@ -7637,8 +7626,6 @@ static_library("browser") {
     sources += [
       "accessibility/animation_policy_prefs.cc",
       "accessibility/animation_policy_prefs.h",
-      "autocomplete/shortcuts_extensions_manager.cc",
-      "autocomplete/shortcuts_extensions_manager.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
       "clipboard/chrome_clipboard_permission_context_delegate.cc",
@@ -8431,10 +8418,6 @@ static_library("browser") {
 
   if (build_with_tflite_lib) {
     sources += [
-      "autocomplete/autocomplete_scoring_model_service_factory.cc",
-      "autocomplete/autocomplete_scoring_model_service_factory.h",
-      "autocomplete/on_device_tail_model_service_factory.cc",
-      "autocomplete/on_device_tail_model_service_factory.h",
       "navigation_predictor/preloading_model_executor.cc",
       "navigation_predictor/preloading_model_executor.h",
       "navigation_predictor/preloading_model_handler.cc",

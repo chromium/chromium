@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ANDROID_AUTOCOMPLETE_TAB_MATCHER_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/search_engines/template_url_service.h"
 
 class AutocompleteInput;
+class TabAndroid;
 class TemplateURLService;
 
 // Implementation of TabMatcher targeting Android platform.
