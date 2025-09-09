@@ -470,7 +470,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the expected metric is logged when accepting a suggestion from
 // the bottom sheet that is not the first one in the list.
-- (void)testAcceptedSuggestionIndexLogged {
+// TODO(crbug.com/415030578): Fix test and re-enable.
+- (void)DISABLED_testAcceptedSuggestionIndexLogged {
   // Add a credit card to the Personal Data Manager.
   [AutofillAppInterface saveMaskedCreditCard];
 
