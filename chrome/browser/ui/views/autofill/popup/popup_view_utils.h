@@ -19,6 +19,10 @@ class WebContents;
 
 namespace autofill {
 
+// Minimum pixels an element must horizontally overlap with the visible
+// area to generate Autofill popup. Prevents clickjacking vulnerabilities.
+inline constexpr int kMinHorizontalOverlapForPopup = 100;
+
 // Specifies how the popup cell was selected.
 enum PopupCellSelectionSource {
   // (Un)selections with no direct user input, e.g. unselection by timeout.
@@ -32,15 +36,16 @@ enum PopupCellSelectionSource {
 // direction it's supposed to grow (either up or down). Components `x` and
 // `width` of `popup_bounds` are not changed.
 void CalculatePopupYAndHeight(int popup_preferred_height,
-                              const gfx::Rect& content_area_bounds,
+                              const gfx::Rect& visible_content_area_bounds,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds);
 
-// Returns whether there is enough height within `content_area_bounds` above or
-// below `element_bounds` to display `item_height`, and that the first dropdown
-// item will actually be visible within the bounds of the content area.
+// Returns whether there is enough height within `visible_content_area_bounds`
+// above or below `element_bounds` to display `item_height`, and that the first
+// dropdown item will actually be visible within the bounds of the visible
+// content area.
 bool CanShowDropdownHere(int item_height,
-                         const gfx::Rect& content_area_bounds,
+                         const gfx::Rect& visible_content_area_bounds,
                          const gfx::Rect& element_bounds);
 
 // Returns whether there is any open prompt in `web_contents` with bounds that
@@ -50,41 +55,42 @@ bool CanShowDropdownHere(int item_height,
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
 
-// Returns the total vertical space on `content_area_bounds` on a specific
-// `side` of the `element_bounds`.
+// Returns the total vertical space on `visible_content_area_bounds` on a
+// specific `side` of the `element_bounds`.
 int GetAvailableVerticalSpaceOnSideOfElement(
-    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& visible_content_area_bounds,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side);
 
-// Returns the total horizontal space on `content_area_bounds` on a
+// Returns the total horizontal space on `visible_content_area_bounds` on a
 // specific `side` of the `element_bounds`.
 int GetAvailableHorizontalSpaceOnSideOfElement(
-    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& visible_content_area_bounds,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side);
 
 // Returns true if there is enough space to place the popup with
-// `popup_preferred_size` plus an additional `spacing` on a specific
-// `side` of the `element_bounds` in the `content_area_bounds`. `spacing`
-// defines the number of additional pixels the popup should be displaced from
-// the element.
-bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
-                                     const gfx::Rect& element_bounds,
-                                     const gfx::Size& popup_preferred_size,
-                                     int spacing,
-                                     views::BubbleArrowSide side);
+// `popup_preferred_size` plus an additional `spacing` on a specific `side` of
+// the `element_bounds` in the `visible_content_area_bounds`. `spacing` defines
+// the number of additional pixels the popup should be displaced from the
+// element.
+bool IsPopupPlaceableOnSideOfElement(
+    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& element_bounds,
+    const gfx::Size& popup_preferred_size,
+    int spacing,
+    views::BubbleArrowSide side);
 
 // Returns the first side from popup_preferred_sides, for which the popup with
 // a `popup_preferred_size` fits on the side of the `element_bounds` in
-// the `content_area_bounds` taking the arrow length into account.
+// the `visible_content_area_bounds` taking the arrow length into account.
 // If neither side bits, the function returns kBottom.
 // `anchor_type` is used to define whether the `element_bounds` width
 // is taken into account to decide if vertical positioning is allowed.
 // In the case of `PopupAnchorType::kCaret`, this width
 // check does not apply. Since carets are narrow by design.
 views::BubbleArrowSide GetOptimalArrowSide(
-    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& visible_content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
     base::span<const views::BubbleArrowSide> popup_preferred_sides,
@@ -92,17 +98,17 @@ views::BubbleArrowSide GetOptimalArrowSide(
 
 // Determines the optimal position of a popup with `popup_preferred_size` next
 // to an UI element with `element_bounds`. The arrow pointer dimensions are
-// not taken into account if it is present. `content_area_bounds` are the
-// boundaries of the view port, `right_to_left` indicates if the website uses
-// text written from right to left. `scrollbar_width` is the width of a scroll
-// bar and `maximum_offset_to_center` is the maximum number of pixels the popup
-// can be moved towards the center of `element_bounds` and
+// not taken into account if it is present. `visible_content_area_bounds` are
+// the boundaries of the view port, `right_to_left` indicates if the website
+// uses text written from right to left. `scrollbar_width` is the width of a
+// scroll bar and `maximum_offset_to_center` is the maximum number of pixels the
+// popup can be moved towards the center of `element_bounds` and
 // `maximum_width_percentage_to_center` is the maxmum percentage of the
 // element's width for the popup to move towards the center. `popup_bounds` is
 // the current rect of the popup that is modified by this function. The
 // function returns the arrow position that is used on the popup.
 views::BubbleBorder::Arrow GetOptimalPopupPlacement(
-    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& visible_content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
     bool right_to_left,
@@ -134,6 +140,15 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // Returns whether the suggestion with this `type` can have child
 // suggestions.
 bool IsExpandableSuggestionType(SuggestionType type);
+
+// Returns bounds of a display that has most intersection with element_bounds.
+// If no display data is available (e.g display::Screen::Get() == nullptr)
+// returns std::nullopt.
+std::optional<gfx::Rect> GetDisplayBounds(const gfx::Rect& element_bounds);
+
+// Returns the intersection between the given element and its display.
+// If no display data is available, returns provided element bounds.
+gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds);
 
 }  // namespace autofill
 
