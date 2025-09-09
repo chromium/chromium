@@ -22,15 +22,6 @@
 
 namespace headless {
 
-namespace {
-
-int64_t GetNewDisplayId() {
-  static int64_t synthesized_display_id = 2000;
-  return synthesized_display_id++;
-}
-
-}  // namespace
-
 // static
 HeadlessScreen* HeadlessScreen::Create(const gfx::Size& window_size,
                                        std::string_view screen_info_spec) {
@@ -95,7 +86,7 @@ HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
   bool is_primary = true;
   base::flat_set<int64_t> internal_display_ids;
   for (const auto& it : screen_info) {
-    display::Display display(GetNewDisplayId());
+    display::Display display(display::HeadlessScreenManager::GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
 
@@ -193,7 +184,7 @@ int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
       CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::Get()));
 
   display::Display new_display(display);
-  new_display.set_id(GetNewDisplayId());
+  new_display.set_id(display::HeadlessScreenManager::GetNewDisplayId());
 
   bool is_primary = headless_screen.display_list().displays().empty();
 
