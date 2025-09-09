@@ -101,9 +101,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // New (sortable) encoding scheme.
   if (key.IsValid()) {
     std::string encoded = content::indexed_db::EncodeSortableIDBKey(key);
-    CHECK(content::indexed_db::DecodeSortableIDBKey(encoded).Equals(key))
-        << key.DebugString()
-        << " could not be round-tripped through sortable encoding.";
+    IndexedDBKey decoded = content::indexed_db::DecodeSortableIDBKey(encoded);
+    // If too deeply nested, decoding will reject the input by returning an
+    // invalid key.
+    if (decoded.IsValid()) {
+      CHECK(decoded.Equals(key))
+          << key.DebugString()
+          << " could not be round-tripped through sortable encoding.";
+    }
   }
   return 0;
 }
