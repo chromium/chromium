@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 
 #import <UIKit/UIKit.h>
@@ -52,7 +50,7 @@ namespace {
 // will mark any pending reports as skipped. By disabling UserEnabledUploading
 // safe mode crashes will be ignored. This also disables the main thread freeze
 // detector.
-BASE_FEATURE(IOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";

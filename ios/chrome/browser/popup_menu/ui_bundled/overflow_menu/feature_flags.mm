@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 
 #import "components/password_manager/core/common/password_manager_features.h"
 
-BASE_FEATURE(NewOverflowMenu, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNewOverflowMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNewOverflowMenuEnabled() {
   return base::FeatureList::IsEnabled(kNewOverflowMenu);

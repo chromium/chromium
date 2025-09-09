@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/aim/prototype/public/features.h"
 
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 
-BASE_FEATURE(AimPrototypeDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAimPrototypeDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kImageLoadDelayMsParam[] = "image_load_delay_ms";
 const char kUploadDelayMsParam[] = "upload_delay_ms";

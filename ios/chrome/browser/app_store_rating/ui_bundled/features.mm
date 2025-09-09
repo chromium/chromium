@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 
-BASE_FEATURE(AppStoreRating, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppStoreRating, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);

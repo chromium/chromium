@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/screen_time/model/features.h"
 
-BASE_FEATURE(ScreenTimeIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenTimeIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenTimeIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kScreenTimeIntegration);

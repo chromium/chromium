@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
 #import "base/apple/foundation_util.h"
@@ -243,13 +241,13 @@ namespace {
 // removed around February 2024. If enabled, createInitialUI will call
 // makeKeyAndVisible before mainCoordinator start. When disabled, this fix
 // resolves a flicker when starting the app in light mode
-BASE_FEATURE(MakeKeyAndVisibleBeforeMainCoordinatorStart,
+BASE_FEATURE(kMakeKeyAndVisibleBeforeMainCoordinatorStart,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to control whether Search Intents (Widgets, Application
 // Shortcuts menu) forcibly open a new tab, rather than reusing an
 // existing NTP. See http://crbug.com/1363375 for details.
-BASE_FEATURE(ForceNewTabForIntentSearch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceNewTabForIntentSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome

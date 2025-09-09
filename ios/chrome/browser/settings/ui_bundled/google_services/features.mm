@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
 
-BASE_FEATURE(LinkedServicesSettingIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLinkedServicesSettingIos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLinkedServicesSettingIosEnabled() {
   return base::FeatureList::IsEnabled(kLinkedServicesSettingIos);

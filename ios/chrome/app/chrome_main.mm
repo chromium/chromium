@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import <UIKit/UIKit.h>
 
 #import "base/allocator/partition_alloc_support.h"
@@ -42,7 +40,7 @@ namespace {
 
 // Kill switch to disable adding memory ranges to crash data when heap
 // corruption or double free is detected by PA-E.
-BASE_FEATURE(IOSCorruptionDetectedMemoryRangesKillSwitch,
+BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The number of times a PA-E double free or corruption has been detected.

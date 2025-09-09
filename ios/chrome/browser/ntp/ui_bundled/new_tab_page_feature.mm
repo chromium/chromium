@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 
 #import "base/ios/ios_util.h"
@@ -31,7 +29,7 @@ const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(EnableDiscoverFeedStaticResourceServing,
+BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
@@ -42,18 +40,17 @@ BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(OverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(WebFeedFeedbackReroute, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebFeedFeedbackReroute, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(EnableSignedOutViewDemotion, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableSignedOutViewDemotion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(EnableiPadFeedGhostCards, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableiPadFeedGhostCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(FeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(UseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
 

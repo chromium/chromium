@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/web/content/js_messaging/content_java_script_feature_manager.h"
 
 #import "base/containers/contains.h"
@@ -21,7 +19,7 @@ namespace web {
 
 namespace {
 
-BASE_FEATURE(ContentEnableInjectedFeatureScripts,
+BASE_FEATURE(kContentEnableInjectedFeatureScripts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::u16string MakeInjectableIntoMainFrameOnly(const std::u16string& script) {
