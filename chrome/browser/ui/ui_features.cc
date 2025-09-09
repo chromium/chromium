@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chrome/browser/ui/ui_features.h"
 
 #include "base/feature_list.h"
@@ -63,7 +61,7 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
 BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
              "OfferPinToTaskbarInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(OfferPinToTaskbarInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOfferPinToTaskbarInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

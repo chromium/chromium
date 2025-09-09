@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 
 #include <string>
@@ -13,7 +11,7 @@
 
 namespace features {
 
-BASE_FEATURE(IdentifiabilityStudyMetaExperiment,
+BASE_FEATURE(kIdentifiabilityStudyMetaExperiment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double>
@@ -25,7 +23,7 @@ const base::FeatureParam<double>
         &kIdentifiabilityStudyMetaExperiment, "ActivationProbability",
         kIdentifiabilityStudyMetaExperimentDefaultActivationProbability};
 
-BASE_FEATURE(IdentifiabilityStudy, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIdentifiabilityStudy, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kIdentifiabilityStudyGeneration = {
     &kIdentifiabilityStudy, "Gen", 0};

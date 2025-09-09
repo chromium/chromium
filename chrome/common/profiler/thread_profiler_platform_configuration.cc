@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
 #include "base/command_line.h"
@@ -17,7 +15,7 @@
 #include "chrome/common/profiler/process_type.h"
 #include "components/sampling_profiler/process_type.h"
 
-BASE_FEATURE(SamplingProfilerOnWorkerThreads,
+BASE_FEATURE(kSamplingProfilerOnWorkerThreads,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -74,7 +72,7 @@ extern char __executable_start;
 #endif  // UNWINDING_SUPPORTED
 
 // See `RequestUnwindPrerequisitesInstallation` below.
-BASE_FEATURE(InstallAndroidUnwindDfm, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInstallAndroidUnwindDfm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

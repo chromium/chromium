@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <string>
@@ -46,7 +44,7 @@ namespace request_header_integrity {
 
 namespace {
 
-BASE_FEATURE(RequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns extended, stable, beta, dev, or canary if a channel is available,
 // otherwise the empty string.
