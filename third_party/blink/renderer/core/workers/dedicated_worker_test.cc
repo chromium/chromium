@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -404,6 +406,22 @@ DedicatedWorkerTest::WorkerMessagingProxy() {
 
 DedicatedWorkerThreadForTest* DedicatedWorkerTest::GetWorkerThread() {
   return worker_messaging_proxy_->GetDedicatedWorkerThread();
+}
+
+void DedicatedWorkerTest::RunOnWorkerThread(
+    CrossThreadOnceFunction<void(ExecutionContext*)> task) {
+  base::RunLoop run_loop;
+  PostCrossThreadTaskAndReply(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](CrossThreadOnceFunction<void(ExecutionContext*)> task,
+             DedicatedWorkerThreadForTest* worker_thread) {
+            auto* execution_context = worker_thread->GlobalScope();
+            std::move(task).Run(execution_context);
+          },
+          std::move(task), CrossThreadUnretained(GetWorkerThread())),
+      CrossThreadOnceClosure(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 void DedicatedWorkerTest::StartWorker(

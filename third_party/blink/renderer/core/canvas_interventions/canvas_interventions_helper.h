@@ -22,6 +22,8 @@ inline constexpr std::string_view kCanvasSizeMetricName =
     "FingerprintingProtection.CanvasNoise.NoisedCanvasSize";
 inline constexpr std::string_view kCanvasOperationMetricName =
     "FingerprintingProtection.CanvasNoise.OperationTriggered";
+inline constexpr std::string_view kCanvasNoiseReadbacksPerContextMetricName =
+    "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext";
 
 enum class CanvasNoiseReason {
   kAllConditionsMet = 0,

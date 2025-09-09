@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
@@ -40,6 +41,27 @@
 namespace blink {
 
 namespace {
+
+constexpr const char kCanvasOperationMetricPrefix[] =
+    "FingerprintingProtection.CanvasNoise.OperationTriggered.";
+constexpr const char kCanvasNoiseReadbacksPerContextMetricPrefix[] =
+    "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext.";
+
+std::string_view GetContextTypeForMetrics(ExecutionContext* execution_context) {
+  if (execution_context->IsWindow()) {
+    return "Window";
+  }
+  if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    return "DedicatedWorker";
+  }
+  if (execution_context->IsSharedWorkerGlobalScope()) {
+    return "SharedWorker";
+  }
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    return "ServiceWorker";
+  }
+  return "Other";
+}
 
 // Returns true when all criteria to apply noising are met. Currently this
 // entails that
@@ -131,6 +153,10 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   UMA_HISTOGRAM_EXACT_LINEAR(kCanvasOperationMetricName,
                              static_cast<int>(high_entropy_canvas_op_types),
                              canvas_op_exclusive_max);
+  base::UmaHistogramExactLinear(
+      base::StrCat({kCanvasOperationMetricPrefix,
+                    GetContextTypeForMetrics(execution_context)}),
+      static_cast<int>(high_entropy_canvas_op_types), canvas_op_exclusive_max);
 
   AuditsIssue::ReportUserReidentificationCanvasNoisedIssue(
       CaptureSourceLocation(execution_context), execution_context);
@@ -176,8 +202,11 @@ CanvasInterventionsHelper::CanvasInterventionsHelper(
 
 void CanvasInterventionsHelper::ContextDestroyed() {
   CHECK_GT(num_noised_canvas_readbacks_, 0);
-  UMA_HISTOGRAM_COUNTS_100(
-      "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext",
+  UMA_HISTOGRAM_COUNTS_100(kCanvasNoiseReadbacksPerContextMetricName,
+                           num_noised_canvas_readbacks_);
+  base::UmaHistogramCounts100(
+      base::StrCat({kCanvasNoiseReadbacksPerContextMetricPrefix,
+                    GetContextTypeForMetrics(GetExecutionContext())}),
       num_noised_canvas_readbacks_);
 }
 
