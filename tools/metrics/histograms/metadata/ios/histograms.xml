@@ -4263,7 +4263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.Favicons.Percentage" units="%"
-    expires_after="2025-10-19">
+    expires_after="2026-04-19">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
