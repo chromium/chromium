@@ -73,7 +73,7 @@ class TestSendTabToSelfSyncService
       : model_(std::make_unique<FakeSendTabToSelfModel>()) {}
   ~TestSendTabToSelfSyncService() override = default;
 
-  static std::unique_ptr<KeyedService> Build(web::BrowserState* context) {
+  static std::unique_ptr<KeyedService> Build(ProfileIOS* profile) {
     return std::make_unique<TestSendTabToSelfSyncService>();
   }
 
