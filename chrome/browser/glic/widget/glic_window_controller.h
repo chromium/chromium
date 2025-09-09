@@ -80,6 +80,7 @@ class GlicWindowController {
   virtual Host& host() = 0;
   virtual HostManager& host_manager() = 0;
 
+  virtual std::vector<Host*> GetHosts() = 0;
   virtual Host* GetHostForTab(tabs::TabInterface* tab) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already

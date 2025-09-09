@@ -512,6 +512,7 @@ class GlicWebClientHandler
         page_handler_(page_handler),
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
+        window_controller_(&glic_service_->window_controller()),
         glic_sharing_manager_(static_cast<GlicSharingManagerImpl&>(
             glic_service_->sharing_manager())),
         pref_service_(profile_->GetPrefs()),
@@ -1372,7 +1373,7 @@ class GlicWebClientHandler
     host().UnsetWebClient(this);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
-    glic_service_->window_controller().RemoveStateObserver(this);
+    window_controller_->RemoveStateObserver(this);
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
@@ -1505,6 +1506,7 @@ class GlicWebClientHandler
   raw_ptr<Profile> profile_;
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
+  raw_ptr<GlicWindowController> window_controller_;
   raw_ref<GlicSharingManagerImpl> glic_sharing_manager_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;

@@ -56,7 +56,8 @@ namespace glic {
 // TODO(refactor): Remove.
 Host& GlicInstanceCoordinatorImpl::host() {
   NOTIMPLEMENTED();
-  return host_manager_->primary_host();
+  CHECK(!instances_.empty());
+  return instances_.begin()->second->host();
 }
 
 // TODO(refactor): Remove.
@@ -65,12 +66,21 @@ HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   return *host_manager_;
 }
 
+std::vector<Host*> GlicInstanceCoordinatorImpl::GetHosts() {
+  std::vector<Host*> hosts;
+  for (const auto& [id, instance] : instances_) {
+    hosts.push_back(&instance->host());
+  }
+  return hosts;
+}
+
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
     GlicEnabling* enabling)
-    : profile_(profile), host_manager_(std::make_unique<HostManager>(profile)) {
+    : profile_(profile) {
+  host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
   browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
@@ -388,7 +398,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
   // TODO: Sync this id with the web client.
   ConversationId new_conversation_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstance>(
-      profile_, CreateHost(), new_conversation_id,
+      profile_, std::make_unique<Host>(profile_), new_conversation_id,
       weak_ptr_factory_.GetWeakPtr());
   if (bwi) {
     browser_to_conversation_map_[bwi] = new_conversation_id;
@@ -444,18 +454,6 @@ bool GlicInstanceCoordinatorImpl::IsFloatingInstance(GlicInstance* instance) {
 
 void GlicInstanceCoordinatorImpl::ReattachFloatingInstance() {
   NOTIMPLEMENTED();
-}
-
-std::unique_ptr<Host> GlicInstanceCoordinatorImpl::CreateHost() {
-  auto host = std::make_unique<Host>(
-      profile_, base::BindOnce(&GlicInstanceCoordinatorImpl::OnDestroyingHost,
-                               base::Unretained(this)));
-  host_manager_->AddHost(host.get());
-  return host;
-}
-
-void GlicInstanceCoordinatorImpl::OnDestroyingHost(Host* host) {
-  host_manager_->RemoveHost(host);
 }
 
 }  // namespace glic

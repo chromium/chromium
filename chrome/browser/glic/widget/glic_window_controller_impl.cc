@@ -299,8 +299,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     GlicEnabling* enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
-      host_(profile, base::DoNothing()),
-      host_manager_(std::make_unique<HostManager>(profile)),
+      host_(profile),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling),
@@ -309,6 +308,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
                                 host(),
                                 *glic_service->metrics(),
                                 contextual_cueing_service) {
+  host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
   if (window_config_.ShouldResetOnStart()) {
     previous_position_.reset();
   } else {
@@ -316,7 +316,6 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
   }
   application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
   host_.Initialize(this);
-  host_manager_->AddHost(&host_);
   host_observation_.Observe(&host());
 }
 
@@ -637,6 +636,10 @@ Host& GlicWindowControllerImpl::host() {
 
 HostManager& GlicWindowControllerImpl::host_manager() {
   return *host_manager_;
+}
+
+std::vector<Host*> GlicWindowControllerImpl::GetHosts() {
+  return {&host_};
 }
 
 Host* GlicWindowControllerImpl::GetHostForTab(tabs::TabInterface* tab) {

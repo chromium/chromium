@@ -162,7 +162,6 @@ void GlicKeyedService::Shutdown() {
   if (glic_profile_manager) {
     glic_profile_manager->OnServiceShutdown(this);
   }
-  host_manager().Destroy();
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,

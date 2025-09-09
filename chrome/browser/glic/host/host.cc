@@ -56,21 +56,11 @@ Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
 Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
     default;
 
-Host::Host(Profile* profile,
-           base::OnceCallback<void(Host*)> destruction_callback)
-    : profile_(profile),
-      destruction_callback_(std::move(destruction_callback)) {}
-Host::~Host() {
-  std::move(destruction_callback_).Run(this);
-}
+Host::Host(Profile* profile) : profile_(profile) {}
+Host::~Host() = default;
 
 void Host::Initialize(Delegate* delegate) {
   delegate_ = delegate;
-}
-
-void Host::Destroy() {
-  Shutdown();
-  delegate_ = nullptr;
 }
 
 void Host::Shutdown() {
@@ -401,22 +391,13 @@ const mojom::PanelState& Host::GetPanelState(
   return delegate_->GetPanelState();
 }
 
-HostManager::HostManager(Profile* profile)
+HostManager::HostManager(Profile* profile,
+                         base::WeakPtr<GlicWindowController> window_controller)
     : profile_(profile),
+      window_controller_(window_controller),
       dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {}
 
 HostManager::~HostManager() = default;
-
-Host& HostManager::primary_host() {
-  CHECK(!instance_hosts_.empty());
-  return *instance_hosts_[0];
-}
-
-void HostManager::Destroy() {
-  for (Host* host : GetAllHosts()) {
-    host->Destroy();
-  }
-}
 
 void HostManager::Shutdown() {
   for (Host* host : GetAllHosts()) {
@@ -424,19 +405,11 @@ void HostManager::Shutdown() {
   }
 }
 
-void HostManager::AddHost(Host* host) {
-  instance_hosts_.push_back(host);
-}
-
-void HostManager::RemoveHost(Host* host) {
-  std::erase_if(instance_hosts_, [host](Host* h) { return h == host; });
-}
-
 void HostManager::GuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
 
-  for (Host* host : instance_hosts_) {
+  for (Host* host : GetPrimaryHosts()) {
     if (!host->webui_contents()) {
       continue;
     }
@@ -451,7 +424,7 @@ void HostManager::GuestAdded(content::WebContents* guest_contents) {
 }
 
 std::vector<Host*> HostManager::GetAllHosts() {
-  std::vector<Host*> hosts = instance_hosts_;
+  std::vector<Host*> hosts = GetPrimaryHosts();
   for (std::unique_ptr<Host>& host : tab_hosts_) {
     hosts.push_back(host.get());
   }
@@ -477,17 +450,18 @@ bool HostManager::IsGlicWebUiHost(content::RenderProcessHost* process_host) {
 }
 
 Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
+  std::vector<Host*> instance_hosts = GetPrimaryHosts();
   auto iter = std::find_if(
-      instance_hosts_.begin(), instance_hosts_.end(), [page_handler](Host* h) {
+      instance_hosts.begin(), instance_hosts.end(), [page_handler](Host* h) {
         return h->webui_contents() == page_handler->webui_contents();
       });
-  if (iter != instance_hosts_.end()) {
+  if (iter != instance_hosts.end()) {
     Host* host = *iter;
     host->WebUIPageHandlerAdded(page_handler);
     return host;
   }
 
-  tab_hosts_.push_back(std::make_unique<Host>(profile_, base::DoNothing()));
+  tab_hosts_.push_back(std::make_unique<Host>(profile_));
   Host& new_host = *tab_hosts_.back();
   new_host.Initialize(dummy_host_delegate_.get());
   new_host.WebUIPageHandlerAdded(page_handler);
@@ -495,10 +469,11 @@ Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
 }
 
 void HostManager::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
+  std::vector<Host*> instance_hosts = GetPrimaryHosts();
   for (Host* host : GetAllHosts()) {
     if (host->page_handler() == page_handler) {
       host->WebUIPageHandlerRemoved(page_handler);
-      if (base::Contains(instance_hosts_, host)) {
+      if (base::Contains(instance_hosts, host)) {
         std::erase_if(tab_hosts_, [host](std::unique_ptr<Host>& h) {
           return h.get() == host;
         });
@@ -516,6 +491,13 @@ Host* HostManager::FindHostForTabForTesting(tabs::TabInterface& tab) {
   }
 
   return nullptr;
+}
+
+std::vector<Host*> HostManager::GetPrimaryHosts() {
+  if (!window_controller_) {
+    return {};
+  }
+  return window_controller_->GetHosts();
 }
 
 }  // namespace glic

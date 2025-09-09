@@ -66,6 +66,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   // GlicWindowController implementation
   Host& host() override;
   HostManager& host_manager() override;
+  std::vector<Host*> GetHosts() override;
   Host* GetHostForTab(tabs::TabInterface* tab) override;
 
   void Toggle(BrowserWindowInterface* browser,
@@ -134,9 +135,6 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   bool HasAttachedInstance(GlicInstance* instance);
   bool IsFloatingInstance(GlicInstance* instance);
   void ReattachFloatingInstance();
-
-  std::unique_ptr<Host> CreateHost();
-  void OnDestroyingHost(Host* host);
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;

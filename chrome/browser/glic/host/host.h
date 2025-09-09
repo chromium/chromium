@@ -24,6 +24,7 @@ class RenderProcessHost;
 namespace glic {
 class GlicKeyedService;
 class GlicPageHandler;
+class GlicWindowController;
 class WebUIContentsContainer;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
@@ -84,9 +85,7 @@ class Host {
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
-  using DestructionCallback = base::OnceCallback<void(Host*)>;
-
-  Host(Profile* profile, DestructionCallback destruction_callback);
+  explicit Host(Profile* profile);
   Host(const Host&) = delete;
   ~Host();
   Host& operator=(const Host&) = delete;
@@ -96,10 +95,6 @@ class Host {
   void PanelWillOpen(mojom::InvocationSource invocation_source);
 
   void PanelWasClosed();
-
-  // Must be called before the delegate is destroyed, just before Host's
-  // destructor.
-  void Destroy();
 
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
@@ -249,7 +244,6 @@ class Host {
   }
 
   raw_ptr<Profile> profile_;
-  DestructionCallback destruction_callback_;
 
   // Null before `Initialize()` and after `Shutdown()`.
   raw_ptr<Delegate> delegate_;
@@ -274,17 +268,11 @@ class Host {
 // else soon.
 class HostManager {
  public:
-  explicit HostManager(Profile* profile);
+  HostManager(Profile* profile,
+              base::WeakPtr<GlicWindowController> window_controller);
   ~HostManager();
 
-  // TODO(refactor): Remove.
-  Host& primary_host();
-
   void Shutdown();
-  void Destroy();
-
-  void AddHost(Host* host);
-  void RemoveHost(Host* host);
 
   // Called when a `GlicPageHandler` is created.
   Host* WebUIPageHandlerAdded(GlicPageHandler* page_handler);
@@ -306,9 +294,11 @@ class HostManager {
   Host* FindHostForTabForTesting(tabs::TabInterface& tab);
 
  private:
+  std::vector<Host*> GetPrimaryHosts();
+
   class DummyHostDelegate;
   raw_ptr<Profile> profile_;
-  std::vector<Host*> instance_hosts_;
+  base::WeakPtr<GlicWindowController> window_controller_;
   std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
   // Hosts for any unclaimed page handlers, which is approximately limited to
   // chrome://glic in tabs. These are only important for developers, and do not

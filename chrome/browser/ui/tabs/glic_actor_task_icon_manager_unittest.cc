@@ -43,7 +43,7 @@ class GlicActorTaskIconManagerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());
     window_controller_ = std::make_unique<MockGlicWindowController>();
-    host_ = std::make_unique<Host>(profile_.get(), base::DoNothing());
+    host_ = std::make_unique<Host>(profile_.get());
     ON_CALL(*window_controller_, host).WillByDefault(ReturnRef(*host_));
     manager_ = std::make_unique<GlicActorTaskIconManager>(
         profile_.get(), actor_service_.get(), *window_controller_.get());
