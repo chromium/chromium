@@ -48,6 +48,8 @@ class ActorKeyedServiceTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
+    ActorKeyedService::Get(profile())->SetActorUiStateManagerForTesting(
+        BuildUiStateManagerMock());
   }
 
   TestingProfileManager* testing_profile_manager() {
@@ -65,12 +67,7 @@ class ActorKeyedServiceTest : public testing::Test {
 // Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
-  std::unique_ptr<ExecutionEngine> execution_engine =
-      std::make_unique<ExecutionEngine>(profile());
-  actor_service->AddActiveTask(std::make_unique<ActorTask>(
-      profile(), std::move(execution_engine),
-      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
+  actor_service->CreateTask();
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
   EXPECT_EQ(actor_service->GetActiveTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
@@ -79,12 +76,7 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 // Stops a task.
 TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
-  std::unique_ptr<ExecutionEngine> execution_engine =
-      std::make_unique<ExecutionEngine>(profile());
-  TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>(
-      profile(), std::move(execution_engine),
-      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
+  TaskId id = actor_service->CreateTask();
 
   // Add a tab to the task
   ActorTask* task = actor_service->GetTask(id);
@@ -141,12 +133,7 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInInactive_ReturnsSuccessfully) {
 // Test that adding a tab to a paused or stopped task has no effect.
 TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
-  std::unique_ptr<ExecutionEngine> execution_engine =
-      std::make_unique<ExecutionEngine>(profile());
-  TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>(
-      profile(), std::move(execution_engine),
-      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
+  TaskId id = actor_service->CreateTask();
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
