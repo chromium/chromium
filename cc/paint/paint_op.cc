@@ -54,9 +54,7 @@
 namespace cc {
 namespace {
 
-BASE_FEATURE(kUseLitePaintOps,
-             "UseLitePaintOps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseLitePaintOps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // In a future CL, convert DrawImage to explicitly take sampling instead of
 // quality
