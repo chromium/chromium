@@ -74,7 +74,7 @@ class LayerTreeImplScopedKeepSurfaceAlive
 // This enum is used for the "Compositing.Slim.BeginFrameResult" histogram.
 enum class SlimBeginFrameResult {
   kEarlyOutNoDraw = 0,
-  kFrameProcessed = 1,
+  kEarlyOutProcessed = 1,
   kFrameProduced = 2,
   kMaxValue = kFrameProduced,
 };
@@ -502,8 +502,9 @@ void LayerTreeImpl::FlushBeginFrameResults() {
     begin_frame_not_needed_count_ = 0;
   }
   if (begin_frame_processed_count_ > 0) {
-    histogram->AddCount(static_cast<int>(SlimBeginFrameResult::kFrameProcessed),
-                        begin_frame_processed_count_);
+    histogram->AddCount(
+        static_cast<int>(SlimBeginFrameResult::kEarlyOutProcessed),
+        begin_frame_processed_count_);
     begin_frame_processed_count_ = 0;
   }
   if (begin_frame_produced_count_ > 0) {

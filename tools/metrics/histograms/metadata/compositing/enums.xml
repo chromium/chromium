@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SlimBeginFrameResult">
   <int value="0" label="EarlyOutNoDraw"/>
   <int value="1" label="EarlyOutProcessed"/>
-  <int value="2" label="EarlyOutFrameProduced"/>
+  <int value="2" label="FrameProduced"/>
 </enum>
 
 <enum name="ToggleFrameRateCase">
