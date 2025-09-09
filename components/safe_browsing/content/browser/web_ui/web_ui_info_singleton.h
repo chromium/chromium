@@ -159,11 +159,17 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   static void NotifyLogMessageListeners(const base::Time& timestamp,
                                         const std::string& message);
 
+  // Add the reporting event to |upload_event_requests_| and send it to all the
+  // open chrome://safe-browsing tabs.
+  void AddToReportingEvents(
+      const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
+      const base::Value::Dict& result);
+
   // Add the reporting event to |reporting_events_| and send it to all the open
   // chrome://safe-browsing tabs.
   void AddToReportingEvents(const base::Value::Dict& event);
 
-  // Clear |reporting_events_|.
+  // Clear |reporting_events_| & |upload_event_requests_|.
   void ClearReportingEvents();
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
@@ -333,6 +339,13 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
     return reporting_events_;
   }
 
+  const std::vector<
+      std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
+                base::Value::Dict>>&
+  upload_event_requests() {
+    return upload_event_requests_;
+  }
+
   mojo::Remote<network::mojom::CookieManager> GetCookieManager(
       content::BrowserContext* browser_context);
 
@@ -451,6 +464,9 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
   std::vector<base::Value::Dict> reporting_events_;
+  std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
+                        base::Value::Dict>>
+      upload_event_requests_;
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   // Map of deep scan requests sent since the oldest currently open

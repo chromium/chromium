@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -158,6 +159,10 @@ std::string SerializeHPRTLookupResponse(
 base::Value::Dict SerializeLogMessage(base::Time timestamp,
                                       const std::string& message);
 base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event);
+base::Value::Dict SerializeUploadEventsRequest(
+    const ::chrome::cros::reporting::proto::UploadEventsRequest&
+        upload_events_request,
+    const base::Value::Dict& result);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,

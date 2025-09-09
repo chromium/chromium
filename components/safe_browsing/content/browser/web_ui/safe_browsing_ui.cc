@@ -569,6 +569,12 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
     reporting_events.Append(reporting_event.Clone());
   }
 
+  for (const auto& request_result_pair :
+       WebUIInfoSingleton::GetInstance()->upload_event_requests()) {
+    reporting_events.Append(web_ui::SerializeUploadEventsRequest(
+        request_result_pair.first, request_result_pair.second));
+  }
+
   AllowJavascript();
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
@@ -827,6 +833,16 @@ void SafeBrowsingUIHandler::NotifyLogMessageJsListener(
                     web_ui::SerializeLogMessage(timestamp, message));
 }
 
+void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
+    const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
+    const base::Value::Dict& result) {
+  AllowJavascript();
+  FireWebUIListener("reporting-events-update",
+                    web_ui::SerializeUploadEventsRequest(event, result));
+}
+
+// TODO(crbug.com/443997643): Delete when
+// UploadRealtimeReportingEventsUsingProto is cleaned up.
 void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
     const base::Value::Dict& event) {
   AllowJavascript();

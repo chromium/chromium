@@ -474,15 +474,8 @@ void RealtimeReportingClient::UploadCallback(
     EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
-  base::Value::Dict event_wrapper = base::Value::Dict();
-  base::Value::Dict error_details = ReportErrorDetails(upload_result);
-  event_wrapper.Merge(std::move(error_details));
-  event_wrapper.Set("upload_request",
-                    base::EscapeNonASCII(request.SerializeAsString()));
-  event_wrapper.Set("event_type", static_cast<int>(event_type));
-
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-      std::move(event_wrapper));
+      std::move(request), ReportErrorDetails(upload_result));
 
   if (upload_result.IsSuccess()) {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",

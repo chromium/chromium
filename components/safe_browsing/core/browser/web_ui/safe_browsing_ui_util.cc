@@ -15,6 +15,12 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/strings/escape.h"
+#else
+#include "components/enterprise/common/proto/upload_request_response.to_value.h"  // nogncheck crbug.com/1125897
+#endif
+
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/proto/connectors.to_value.h"
@@ -485,10 +491,30 @@ base::Value::Dict SerializeLogMessage(base::Time timestamp,
   return result;
 }
 
+// TODO(crbug.com/443997643): Delete when
+// UploadRealtimeReportingEventsUsingProto is cleaned up.
 base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
   base::Value::Dict result;
   result.Set("message", SerializeJson(event));
   return result;
+}
+
+base::Value::Dict SerializeUploadEventsRequest(
+    const ::chrome::cros::reporting::proto::UploadEventsRequest&
+        upload_events_request,
+    const base::Value::Dict& result) {
+  base::Value::Dict message;
+#if BUILDFLAG(IS_ANDROID)
+  message.Set("request",
+              base::EscapeNonASCII(upload_events_request.SerializeAsString()));
+#else
+  message.Set("request", ::chrome::cros::reporting::proto::Serialize(
+                             upload_events_request));
+#endif
+  message.Set("response", result.Clone());
+  base::Value::Dict wrapper;
+  wrapper.Set("message", SerializeJson(message));
+  return wrapper;
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

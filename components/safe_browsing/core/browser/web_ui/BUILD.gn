@@ -17,6 +17,7 @@ source_set("util") {
     "//base:i18n",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:hit_report",
@@ -29,4 +30,8 @@ source_set("util") {
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//components/sync/protocol",
   ]
+
+  if (!is_android) {
+    deps += [ "//components/enterprise/common/proto:upload_request_response_extras_to_value" ]
+  }
 }

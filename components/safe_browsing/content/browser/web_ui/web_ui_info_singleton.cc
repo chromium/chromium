@@ -352,6 +352,23 @@ void WebUIInfoSingleton::ClearLogMessages() {
   }
 }
 
+void WebUIInfoSingleton::AddToReportingEvents(
+    const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
+    const base::Value::Dict& result) {
+  if (!HasListener()) {
+    return;
+  }
+
+  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+       webui_instances_) {
+    webui_listener->NotifyReportingEventJsListener(event, result);
+  }
+
+  upload_event_requests_.emplace_back(std::move(event), result.Clone());
+}
+
+// TODO(crbug.com/443997643): Delete when
+// UploadRealtimeReportingEventsUsingProto is cleaned up.
 void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
   if (!HasListener()) {
     return;
@@ -367,6 +384,9 @@ void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
 
 void WebUIInfoSingleton::ClearReportingEvents() {
   std::vector<base::Value::Dict>().swap(reporting_events_);
+  std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
+                        base::Value::Dict>>()
+      .swap(upload_event_requests_);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

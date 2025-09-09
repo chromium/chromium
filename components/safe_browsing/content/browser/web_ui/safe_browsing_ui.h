@@ -259,6 +259,9 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Called when any new reporting events are sent while one or more WebUI tabs
   // are open.
   void NotifyReportingEventJsListener(const base::Value::Dict& event);
+  void NotifyReportingEventJsListener(
+      const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
+      const base::Value::Dict& result);
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   // Called when any deep scans are updated while one or more WebUI
