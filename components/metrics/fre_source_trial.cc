@@ -27,6 +27,8 @@ std::string CreateFirstRunTrial(
     version_info::Channel channel) {
   int enabled_percent = 0;
   int control_percent = 0;
+  int enabled_20_percent = 0;
+  int control_20_percent = 0;
   int default_percent = 100;
   switch (channel) {
     case version_info::Channel::CANARY:
@@ -39,7 +41,9 @@ std::string CreateFirstRunTrial(
     case version_info::Channel::STABLE:
       enabled_percent = 1;
       control_percent = 1;
-      default_percent = 98;
+      enabled_20_percent = 20;
+      control_20_percent = 20;
+      default_percent = 58;
       break;
     default:
       break;
@@ -49,6 +53,8 @@ std::string CreateFirstRunTrial(
   scoped_refptr<base::FieldTrial> trial = CreateFieldTrial(entropy_provider);
   trial->AppendGroup(kEnabledGroup, enabled_percent);
   trial->AppendGroup(kControlGroup, control_percent);
+  trial->AppendGroup(kEnabledGroup20, enabled_20_percent);
+  trial->AppendGroup(kControlGroup20, control_20_percent);
   trial->AppendGroup(kDefaultGroup, default_percent);
 
   // Finalize the group choice. `group_name()` calls `Activate()` internally.
@@ -70,7 +76,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsEnabled() {
-  return base::FieldTrialList::FindFullName(kFRESourceTrial) == kEnabledGroup;
+  const std::string& group_name =
+      base::FieldTrialList::FindFullName(kFRESourceTrial);
+  return group_name == kEnabledGroup || group_name == kEnabledGroup20;
 }
 
 void Create(PrefService* local_state,
