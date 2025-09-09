@@ -55,7 +55,7 @@ class HeavyAdBlocklistTest : public testing::Test {
 
   void SetUp() override { ConfigBlocklistWithParams({}); }
 
-  void TearDown() override { variations::testing::ClearAllVariationParams(); }
+  void TearDown() override { variations::test::ClearAllVariationParams(); }
 
   // Sets up a new blocklist with the given |params|.
   void ConfigBlocklistWithParams(

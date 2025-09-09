@@ -667,7 +667,7 @@ class BlinkSettingsFieldTrialTest : public testing::Test {
                                     switches::kRendererProcess);
   }
 
-  void TearDown() override { variations::testing::ClearAllVariationParams(); }
+  void TearDown() override { variations::test::ClearAllVariationParams(); }
 
   void CreateFieldTrial(const char* trial_name, const char* group_name) {
     base::FieldTrialList::CreateFieldTrial(trial_name, group_name);

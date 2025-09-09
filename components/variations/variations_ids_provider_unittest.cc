@@ -28,7 +28,7 @@ class VariationsIdsProviderTest : public ::testing::Test {
 
   ~VariationsIdsProviderTest() override = default;
 
-  void TearDown() override { testing::ClearAllVariationIDs(); }
+  void TearDown() override { test::ClearAllVariationIDs(); }
 
   void SetCurrentTime(base::Time t) { current_time_ = t; }
 

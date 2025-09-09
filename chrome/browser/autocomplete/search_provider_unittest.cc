@@ -163,7 +163,7 @@ class SearchProviderFeatureTestComponent {
       const bool command_line_overrides);
 
   ~SearchProviderFeatureTestComponent() {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
  private:

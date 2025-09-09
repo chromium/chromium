@@ -152,7 +152,7 @@ COMPONENT_EXPORT(VARIATIONS)
 base::Time GetNextTimeWindowEvent(base::Time time);
 
 // Expose some functions for testing.
-namespace testing {
+namespace test {
 
 // Clears all of the mapped associations. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
@@ -161,7 +161,7 @@ COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationIDs();
 // Clears all of the associated params. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
 COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationParams();
-}  // namespace testing
+}  // namespace test
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_

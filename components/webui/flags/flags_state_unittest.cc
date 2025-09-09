@@ -222,7 +222,7 @@ class FlagsStateTest : public ::testing::Test,
 #endif
   }
 
-  ~FlagsStateTest() override { variations::testing::ClearAllVariationParams(); }
+  ~FlagsStateTest() override { variations::test::ClearAllVariationParams(); }
 
   // FlagsState::Delegate:
   bool ShouldExcludeFlag(const FlagsStorage* storage,

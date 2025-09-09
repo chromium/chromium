@@ -190,7 +190,7 @@ void PopulateLaunchOptionsWithVariationsInfo(
 }
 #endif  // !BUILDFLAG(USE_BLINK)
 
-namespace testing {
+namespace test {
 
 void TestGetFieldTrialActiveGroupIds(
     std::string_view suffix,
@@ -200,5 +200,5 @@ void TestGetFieldTrialActiveGroupIds(
                                              name_group_ids);
 }
 
-}  // namespace testing
+}  // namespace test
 }  // namespace variations

@@ -135,7 +135,7 @@ class NetworkQualityEstimatorEctFieldTrialBrowserTest
   ~NetworkQualityEstimatorEctFieldTrialBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
     std::map<std::string, std::string> variation_params;
     variation_params["force_effective_connection_type"] = "2G";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(

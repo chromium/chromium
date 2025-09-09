@@ -113,8 +113,8 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
   ~VariationsSeedSimulatorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
-    testing::ClearAllVariationIDs();
-    testing::ClearAllVariationParams();
+    test::ClearAllVariationIDs();
+    test::ClearAllVariationParams();
   }
 
   // Simulates the differences between |seed|'s studies and the current field

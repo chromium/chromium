@@ -105,7 +105,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
 
   ~FeedbackUploaderDispatchTest() override {
     // Clean up registered ids.
-    variations::testing::ClearAllVariationIDs();
+    variations::test::ClearAllVariationIDs();
   }
 
   // Registers a field trial with the specified name and group and an associated

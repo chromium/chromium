@@ -32,7 +32,7 @@ class OmniboxFieldTrialTest : public testing::Test {
 
   void ResetFieldTrialList() {
     scoped_feature_list_.Reset();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
     scoped_feature_list_.Init();
   }
 
@@ -40,7 +40,7 @@ class OmniboxFieldTrialTest : public testing::Test {
       const base::Feature& feature,
       const base::FieldTrialParams& feature_parameters) {
     scoped_feature_list_.Reset();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(feature,
                                                             feature_parameters);
   }

@@ -359,8 +359,8 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
 }
 
 void ResetVariations() {
-  testing::ClearAllVariationIDs();
-  testing::ClearAllVariationParams();
+  test::ClearAllVariationIDs();
+  test::ClearAllVariationParams();
 }
 
 const FieldTrialTestingConfig kTestingConfig = {

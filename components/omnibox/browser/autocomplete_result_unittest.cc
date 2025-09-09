@@ -154,7 +154,7 @@ class AutocompleteResultTest : public testing::Test {
   };
 
   AutocompleteResultTest() {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
 
     // Create the list of mock providers. 6 is enough.
     mock_provider_list_.push_back(new FakeAutocompleteProvider(

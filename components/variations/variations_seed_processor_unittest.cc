@@ -251,8 +251,8 @@ class VariationsSeedProcessorTest : public ::testing::Test {
   ~VariationsSeedProcessorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
-    testing::ClearAllVariationIDs();
-    testing::ClearAllVariationParams();
+    test::ClearAllVariationIDs();
+    test::ClearAllVariationParams();
   }
 
   void CreateTrialsFromSeed(const VariationsSeed& seed) {
@@ -469,7 +469,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
                                    "Repeated", "Enabled"));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kRepeated));
 
-    testing::ClearAllVariationIDs();
+    test::ClearAllVariationIDs();
   }
 }
 
@@ -1527,8 +1527,8 @@ TYPED_TEST(VariationsSeedProcessorTest,
   EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
 
   // Clear field trial states:
-  testing::ClearAllVariationIDs();
-  testing::ClearAllVariationParams();
+  test::ClearAllVariationIDs();
+  test::ClearAllVariationParams();
 
   // Give this study a new layer member constraint, and randomize it again:
   layer_membership->add_layer_member_ids(member_1->id());

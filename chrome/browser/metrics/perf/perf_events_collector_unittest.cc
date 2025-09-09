@@ -1277,7 +1277,7 @@ class PerfCollectorCollectionParamsTest : public testing::Test {
       const PerfCollectorCollectionParamsTest&) = delete;
 
   void TearDown() override {
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
  protected:

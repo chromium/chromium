@@ -163,7 +163,7 @@ void PopulateLaunchOptionsWithVariationsInfo(
 
 // Expose some functions for testing. These functions just wrap functionality
 // that is implemented above.
-namespace testing {
+namespace test {
 
 COMPONENT_EXPORT(VARIATIONS)
 void TestGetFieldTrialActiveGroupIds(
@@ -171,7 +171,7 @@ void TestGetFieldTrialActiveGroupIds(
     const base::FieldTrial::ActiveGroups& active_groups,
     std::vector<ActiveGroupId>* name_group_ids);
 
-}  // namespace testing
+}  // namespace test
 
 }  // namespace variations
 

@@ -196,7 +196,7 @@ base::Time GetNextTimeWindowEvent(base::Time current_time) {
 
 // Functions below are exposed for testing explicitly behind this namespace.
 // They simply wrap existing functions in this file.
-namespace testing {
+namespace test {
 
 void ClearAllVariationIDs() {
   GroupMapAccessor::GetInstance()->ClearAllMapsForTesting();
@@ -205,5 +205,5 @@ void ClearAllVariationIDs() {
 void ClearAllVariationParams() {
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
-}  // namespace testing
+}  // namespace test
 }  // namespace variations

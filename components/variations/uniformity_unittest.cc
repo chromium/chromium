@@ -149,7 +149,7 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
       .CreateTrialsFromSeed(seed, *client_state,
                             base::BindRepeating(NoopUIStringOverrideCallback),
                             entropy_providers, layers, &feature_list);
-  testing::ClearAllVariationIDs();
+  test::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
 }
 

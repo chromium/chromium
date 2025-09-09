@@ -36,7 +36,7 @@ class NetworkSessionConfiguratorTest : public testing::Test {
  public:
   NetworkSessionConfiguratorTest() {
     scoped_feature_list_.Init();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line) {

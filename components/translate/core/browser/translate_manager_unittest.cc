@@ -153,7 +153,7 @@ class TranslateManagerTest : public ::testing::Test {
 
   void TearDown() override {
     manager_->ResetForTesting();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   // Utility function to prepare translate_manager_ for testing.
