@@ -180,6 +180,14 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         gap_geometry.GetGapOffset(track_direction, gap_index);
     const Vector<LayoutUnit> intersections =
         gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index);
+
+    // TODO(javiercon): Multicol intersections are not being generated yet, that
+    // will happen in follow up CL. To avoid crashing on a CHECK, skip empty
+    // intersections. This will be removed in next CL.
+    if (intersections.empty()) {
+      continue;
+    }
+
     const wtf_size_t last_intersection_index = intersections.size() - 1;
     wtf_size_t start = 0;
     while (start < last_intersection_index) {

@@ -71,8 +71,34 @@ for these.
     - Cross gaps before: `[2, 4]`
     - Cross gaps after: `[5, 5]`
 
+### Multicol
+- **MainGap**: Row gap created by `column-wrap: wrap`.
+  The presence of a spanner will add a new `MainGap`.
+- **CrossGap**: Column gap. The presence of a spanner will add a new `CrossGap` for each
+  column gap.
+- **Association rules**: Similar to Grid, any row and column gaps will neatly align,
+so we can avoid duplication by storing cross gaps once and share them across all main gaps.
+However, if there is a spanner, we add a `CrossGap` that starts right after the spanner.
+This is to support the current behavior of `column-rule` where we don't
+paint behind spanners and where `rule-outset` rules don't apply.
+- **Example: Multicol container with spanners and row gaps (blue) formed by
+`column-wrap`.
+  -![Diagram with a multicol with row-wrap showing the cross and main gaps](resources/multicol-mc.png)
+
+  - Two spanners (orange).
+  - Four ***Main Gap*** (M1 to M4),similar to Grid and Flex, we keep track of just one offset
+    (block offset) for each.
+    - In the case of a `MainGap`created by a spanner, the block offset represents
+      the block start of the spanner.
+    - In the case of a `MainGap` created by `column-wrap: wrap`, the block offset represents
+      the midpoint in the gap between one row and the next.
+  - Six ***Cross Gaps*** (C1 to C6). We keep track of the coordinates (yellow) of where these start from.
+  - We keep track of which `CrossGaps` are associated with each `MainGap` via a range [start, end] of
+    cross gap indices. For each `MainGap` we say that the `CrossGaps` associated with it are any that start
+    before that main gap (and after a spanner).
+      - This information is needed by Paint to calculate the intersection points of row gaps and column gaps.
+
 <!--
-TODO(javiercon): Complete this for multicol.
 TODO(samomekarajr && javiercon): Complete this for masonry.
 -->
 ---

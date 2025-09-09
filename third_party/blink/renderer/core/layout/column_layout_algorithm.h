@@ -126,6 +126,27 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   void BuildRowGapIntersections(const LogicalRect& column_logical_rect,
                                 GapIntersectionList& row_gap_intersections);
 
+  // TODO(crbug.com/436140061): The following are for the optimized version of
+  // GapDecorations. Once the optimized version is implemented, we can remove
+  // all the other unused methods and members from the old version.
+
+  // Gap decorations:
+  // * `CrossGap`s are the column gaps. The presence of a spanner will create a
+  // new `CrossGap` for each column gap.
+  // * `MainGap`s are the row gaps created by `column-wrap: wrap`. We will
+  // also have a `MainGap` for each spanner.
+  // See third_party/blink/renderer/core/layout/gap/README.md for more info.
+  void AddCrossGapForColumn(LayoutUnit inline_offset, LayoutUnit block_offset);
+
+  // Populates `range_of_cross_gaps_before_current_main_gap_` with
+  // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
+  // For each `MainGap` we say that the `CrossGaps` associated with it are any
+  // that start before that main gap (and after a spanner). This information is
+  // needed by Paint to calculate the intersection points of row gaps and column
+  // gaps.
+  void CommitRangeOfCrossGapsBeforeCurrentMainGap();
+  void ResetRangeOfCrossGapsBeforeCurrentMainGap();
+
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
   // we'll keep the unpositioned marker around, so that we can retry with a
@@ -230,6 +251,18 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   LayoutUnit column_gap_size_;
   LayoutUnit row_gap_size_;
+
+  // TODO(crbug.com/436140061): The following are for the optimized version of
+  // GapDecorations. Once the optimized version is implemented, we can remove
+  // all the other unused methods and members from the old version.
+  //
+  //`main_gaps_` are the row gaps, while `cross_gaps_` are the column gaps.
+  Vector<MainGap> main_gaps_;
+  Vector<CrossGap> cross_gaps_;
+  CrossGapRange range_of_cross_gaps_before_current_main_gap_;
+
+  std::optional<LayoutUnit> content_inline_start_;
+  std::optional<LayoutUnit> content_block_start_;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check

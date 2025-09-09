@@ -19,7 +19,8 @@ namespace blink {
 class CORE_EXPORT MainGap {
  public:
   MainGap() = default;
-  MainGap(LayoutUnit offset) : gap_offset_(offset) {}
+  MainGap(LayoutUnit offset, bool is_spanner_main_gap = false)
+      : gap_offset_(offset), is_spanner_main_gap_(is_spanner_main_gap) {}
 
   void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
   LayoutUnit GetGapOffset() const { return gap_offset_; }
@@ -63,6 +64,9 @@ class CORE_EXPORT MainGap {
   void SetRangeOfCrossGapsBefore(const CrossGapRange& range) {
     range_of_cross_gaps_before_ = range;
   }
+  const CrossGapRange& RangeOfCrossGapsBefore() const {
+    return range_of_cross_gaps_before_;
+  }
 
   void SetRangeOfCrossGapsAfter(const CrossGapRange& range) {
     range_of_cross_gaps_after_ = range;
@@ -80,6 +84,8 @@ class CORE_EXPORT MainGap {
     return str;
   }
 
+  bool IsSpannerMainGap() const { return is_spanner_main_gap_; }
+
  private:
   // This represents the midpoint offset (block or inline) of the gap. If the main
   // direction is row it'll be the block offset otherwise it'll be the inline.
@@ -94,6 +100,9 @@ class CORE_EXPORT MainGap {
   // falling either before or after that main gap).
   CrossGapRange range_of_cross_gaps_before_;
   CrossGapRange range_of_cross_gaps_after_;
+
+  // Only used for multicol.
+  bool is_spanner_main_gap_ = false;
 };
 
 }  // namespace blink

@@ -400,7 +400,8 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   container_builder_.HandleOofsAndSpecialDescendants();
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+  if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
+       RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
       Style().HasGapRule()) {
     // After we are done, we can modify the last column intersections to move
     // them to be at the edge of the container.
@@ -426,6 +427,41 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
         gap_geometry->SetGapIntersections(kForRows, std::move(row_gaps_));
         gap_geometry->SetBlockGapSize(row_gap_size_);
       }
+
+      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+        // TODO(crbug.com/436140061): The following are for the optimized
+        // version of GapDecorations. Once the optimized version is implemented,
+        // we can remove all the parts of this function used for the old
+        // version.
+        // TODO(crbug.com/440123087): Risky since they could in theory be used
+        // after moved. Clean up to not move members. Change members to
+        // unique_ptrs.
+        if (!cross_gaps_.empty()) {
+          gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+        }
+        if (!main_gaps_.empty()) {
+          gap_geometry->SetMainGaps(std::move(main_gaps_));
+        }
+
+        CHECK(content_inline_start_.has_value());
+        CHECK(content_block_start_.has_value());
+        gap_geometry->SetContentInlineOffsets(
+            *content_inline_start_, container_builder_.FragmentInlineSize() -
+                                        BorderScrollbarPadding().inline_end);
+
+        LayoutUnit content_block_size = container_builder_.FragmentBlockSize();
+        LayoutUnit applicable_border_scrollbar_padding_block_end =
+            container_builder_.ApplicableBorders().block_end +
+            container_builder_.ApplicableScrollbar().block_end +
+            container_builder_.ApplicablePadding().block_end;
+        gap_geometry->SetContentBlockOffsets(
+            *content_block_start_,
+            content_block_size - applicable_border_scrollbar_padding_block_end);
+
+        // For multicol, the main direction will always be the rows.
+        gap_geometry->SetMainDirection(kForRows);
+      }
+
       container_builder_.SetGapGeometry(gap_geometry);
     }
   }
@@ -825,6 +861,47 @@ void ColumnLayoutAlgorithm::BuildRowGapIntersections(
     row_gap_intersections.emplace_back(intersection_inline_offset,
                                        row_gap_block_offset);
   }
+}
+
+void ColumnLayoutAlgorithm::AddCrossGapForColumn(LayoutUnit inline_offset,
+                                                 LayoutUnit block_offset) {
+  // Unlike in flex, gaps in multicol will always start and end at either a
+  // content edge or spanner, both cases which are treated the same by paint.
+  CrossGap::EdgeIntersectionState state =
+      CrossGap::EdgeIntersectionState::kBoth;
+
+  cross_gaps_.emplace_back(LogicalOffset(inline_offset, block_offset), state);
+
+  // We increment the range of cross gaps associated with the current gap
+  // whenever we add a new cross gap. This range is then "flushed"/"committed"
+  // to the main gap each time we process a row.
+  range_of_cross_gaps_before_current_main_gap_.Increment(cross_gaps_.size() -
+                                                         1);
+}
+
+void ColumnLayoutAlgorithm::ResetRangeOfCrossGapsBeforeCurrentMainGap() {
+  range_of_cross_gaps_before_current_main_gap_ = CrossGapRange();
+}
+
+void ColumnLayoutAlgorithm::CommitRangeOfCrossGapsBeforeCurrentMainGap() {
+  if (main_gaps_.empty() || cross_gaps_.empty()) {
+    return;
+  }
+
+  if (!range_of_cross_gaps_before_current_main_gap_.IsValid()) {
+    // The only situation where we would expect the range to not be valid is if
+    // we have inserted multiple spanners in a row (back to back, with no space
+    // in between). In such cases, we need to use the range from the previous
+    // main gap, which will be valid. Subsequent calls to this after each
+    // spanner in the sequence will always then find that same valid range.
+    CHECK_GT(main_gaps_.size(), 1u);
+    range_of_cross_gaps_before_current_main_gap_ =
+        main_gaps_[main_gaps_.size() - 2].RangeOfCrossGapsBefore();
+    CHECK(range_of_cross_gaps_before_current_main_gap_.IsValid());
+  }
+
+  main_gaps_.back().SetRangeOfCrossGapsBefore(
+      range_of_cross_gaps_before_current_main_gap_);
 }
 
 struct ResultWithOffset {
@@ -1309,6 +1386,14 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     if (column_gaps_.empty()) {
       // The number of column gaps is one less than the number of columns.
       column_gaps_.resize(new_columns.size() - 1);
+
+      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+        // TODO(crbug.com/436140061): The following are for the optimized
+        // version
+        // of GapDecorations. Once the optimized version is implemented, we can
+        // remove all the other unused methods and members from the old version.
+        cross_gaps_.reserve(cross_gaps_.size() + new_columns.size() - 1);
+      }
     }
     if (has_wrapped) {
       row_gap_intersections.ReserveInitialCapacity(new_columns.size() + 1);
@@ -1317,7 +1402,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     num_columns_in_last_processed_row_ = new_columns.size();
   }
 
+  bool row_precedes_spanner = result->GetColumnSpannerPath();
   wtf_size_t column_index_in_row = 0;
+
   // Commit all column fragments to the fragment builder.
   for (const auto& result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
@@ -1341,7 +1428,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+    if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
+         RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
         Style().HasGapRule()) {
       // If we have a row gap, it means that the block offset of the last
       // intersections added to each column gap is wrong, since it should be in
@@ -1355,11 +1443,46 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         BuildRowGapIntersections(column_logical_rect, row_gap_intersections);
       }
 
+      // TODO(crbug.com/436140061): The following are for the optimized version.
+      // As described in third_party/blink/renderer/core/layout/gap/README.md,
+      // we create a `MainGap` when we have a row gap.
+      if (column_index_in_row == 0 && has_wrapped &&
+          row_gap_size_ > LayoutUnit()) {
+        // If this `MainGap` is not for a spanner, the offset will be the
+        // midpoint in the gap between one row and the next. Otherwise, it will
+        // be the start of the spanner.
+        main_gaps_.emplace_back(
+            column_logical_rect.BlockStartOffset() - (row_gap_size_ / 2),
+            /*is_spanner_main_gap=*/false);
+      }
+
       // The first column in a row has no associated column intersections.
       if (column_index_in_row > 0) {
         BuildGapIntersectionsForColumn(column_index_in_row - 1,
                                        column_logical_rect, has_wrapped,
-                                       result->GetColumnSpannerPath());
+                                       row_precedes_spanner);
+        // TODO(crbug.com/436140061): The following are for the optimized
+        // version of GapDecorations. Once the optimized version is implemented,
+        // we can remove all the other unused methods and members from the old
+        // version. We don't add new CrossGaps if we have inserted a row gap.
+        // This is because the only times new columns are inserted are when we
+        // have wrapped or when we layout a spanner. The only time we want to
+        // add new cross gaps is when we laid out a spanner, not when
+        // we have wrapped, since the `CrossGap` can be shared across rows.
+        //
+        // See third_party/blink/renderer/core/layout/gap/README.md for more
+        // information.
+        if (!has_wrapped) {
+          AddCrossGapForColumn(
+              column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2),
+              column_logical_rect.BlockStartOffset());
+        }
+      }
+
+      if (!content_inline_start_.has_value() &&
+          !content_block_start_.has_value()) {
+        content_inline_start_ = column_logical_rect.InlineStartOffset();
+        content_block_start_ = column_logical_rect.BlockStartOffset();
       }
 
       // If this is the last column, we need to add the last intersection for
@@ -1377,6 +1500,15 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     }
 
     column_index_in_row++;
+  }
+
+  if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+    // We purposely commit the range of cross gaps before current main gap after
+    // processing the row to capture all cross gaps that began prior to the main
+    // gap boundary. Only do this if a `MainGap` was created.
+    if (has_wrapped) {
+      CommitRangeOfCrossGapsBeforeCurrentMainGap();
+    }
   }
 
   if (!row_gap_intersections.empty()) {
@@ -1466,6 +1598,21 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
 
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
+
+  if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled() &&
+      Style().HasGapRule() && !cross_gaps_.empty()) {
+    // If the spanner comes before the start of any cross gaps, we skip it since
+    // it won't affect the cross gaps.
+    // As described in third_party/blink/renderer/core/layout/gap/README.md,
+    // we create a `MainGap` at the spanner's block start offset when we have a
+    // spanner.
+    main_gaps_.emplace_back(offset.block_offset,
+                            /*is_spanner_main_gap=*/true);
+    // A spanner ends the current range of cross gaps, since it leads to the
+    // introduction of new `CrossGap`s.
+    CommitRangeOfCrossGapsBeforeCurrentMainGap();
+    ResetRangeOfCrossGapsBeforeCurrentMainGap();
+  }
 
   return BreakStatus::kContinue;
 }
