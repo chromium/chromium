@@ -7523,8 +7523,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowAutofillAiSuggestions) {
       Suggestion(SuggestionType::kFillAutofillAi)};
   EXPECT_CALL(delegate, GetSuggestions).WillOnce(Return(suggestions));
 
-  OnAskForValuesToFill(passport_form(), passport_form().fields().front(),
-                       AutofillSuggestionTriggerSource::kAutofillAi);
+  OnAskForValuesToFill(
+      passport_form(), passport_form().fields().front(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   EXPECT_THAT(external_delegate()->suggestions(),
               ElementsAre(Field(&Suggestion::type,
                                 Eq(SuggestionType::kFillAutofillAi))));
@@ -7539,8 +7540,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   SeeForm(/*may_run_model=*/false);
 
   EXPECT_CALL(*client().GetAutofillAiManager(), GetSuggestions).Times(0);
-  OnAskForValuesToFill(passport_form(), passport_form().fields().front(),
-                       AutofillSuggestionTriggerSource::kAutofillAi);
+  OnAskForValuesToFill(
+      passport_form(), passport_form().fields().front(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -7556,8 +7558,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
   EXPECT_CALL(*client().GetAutofillAiManager(), GetSuggestions)
       .WillOnce(Return(std::vector<Suggestion>{}));
 
-  OnAskForValuesToFill(passport_form(), passport_form().fields().front(),
-                       AutofillSuggestionTriggerSource::kAutofillAi);
+  OnAskForValuesToFill(
+      passport_form(), passport_form().fields().front(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
 }
 
@@ -7572,8 +7575,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, AutofillAiIph) {
 
   EXPECT_CALL(client(), ShowAutofillFieldIphForFeature(
                             _, AutofillClient::IphFeature::kAutofillAi));
-  OnAskForValuesToFill(form, form.fields().front(),
-                       AutofillSuggestionTriggerSource::kAutofillAi);
+  OnAskForValuesToFill(
+      form, form.fields().front(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 // Tests that the Autofill AI IPH is not shown if there are Autofill
@@ -7590,8 +7594,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   EXPECT_CALL(client(), ShowAutofillFieldIphForFeature(
                             _, AutofillClient::IphFeature::kAutofillAi))
       .Times(0);
-  OnAskForValuesToFill(form, form.fields().front(),
-                       AutofillSuggestionTriggerSource::kAutofillAi);
+  OnAskForValuesToFill(
+      form, form.fields().front(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 // Tests that an Autofill profile is not imported into the address data manager

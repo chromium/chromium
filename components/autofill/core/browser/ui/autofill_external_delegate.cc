@@ -133,8 +133,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
       // context menu) and a trigger source (by selecting a suggestion generated
       // through the context menu).
       return AutofillTriggerSource::kManualFallback;
-    case AutofillSuggestionTriggerSource::kAutofillAi:
-      return AutofillTriggerSource::kAutofillAi;
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return AutofillTriggerSource::kProactivePasswordRecovery;
   }

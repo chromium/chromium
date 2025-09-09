@@ -28,7 +28,6 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
@@ -62,7 +61,6 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return false;
@@ -90,7 +88,6 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return false;
     // `kPasswordManager`, `kiOS`, and `kPlusAddressUpdatedInBrowserProcess` are
@@ -126,7 +123,6 @@ bool ShouldShowFullSuggestionListForPasswordManager(
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
       return false;
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return true;

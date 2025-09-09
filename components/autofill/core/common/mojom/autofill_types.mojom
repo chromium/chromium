@@ -614,8 +614,7 @@ enum AutofillSuggestionTriggerSource {
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
   kPasswordManagerProcessedFocusedField = 17,
-  // Autofill AI was invoked.
-  kAutofillAi = 18,
+  // kAutofillAi = 18 is deprecated
   // An update to the suggestions is triggered, e.g. because a user decided
   // to refresh a plus address suggestion or because a network request for a
   // plus address suggestion terminated and its result needs to be shown.

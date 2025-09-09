@@ -440,7 +440,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return false;
