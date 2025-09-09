@@ -133,6 +133,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -2356,6 +2357,12 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
   // We may end up here during destruction.
   if (toolbar_) {
     toolbar_->Update(contents);
+  }
+  if (multi_contents_view_) {
+    for (ContentsContainerView* contents_container :
+         multi_contents_view_->contents_container_views()) {
+      contents_container->mini_toolbar()->UpdateContents();
+    }
   }
 }
 

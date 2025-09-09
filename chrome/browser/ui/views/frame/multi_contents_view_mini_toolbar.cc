@@ -197,6 +197,13 @@ void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
   alert_state_indicator_->SetVisible(!is_active);
 }
 
+void MultiContentsViewMiniToolbar::UpdateContents() {
+  std::optional<TabRendererData> tab_data = GetTabData();
+  if (tab_data.has_value()) {
+    UpdateContents(tab_data.value());
+  }
+}
+
 void MultiContentsViewMiniToolbar::UpdateWebContents(views::WebView* web_view) {
   tab_alert_status_subscription_.reset();
   web_contents_ = web_view->web_contents();
