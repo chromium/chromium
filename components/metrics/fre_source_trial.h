@@ -18,9 +18,6 @@ inline constexpr char kFRESourceTrial[] = "FileMetricsProviderFRESourceTrial";
 inline constexpr char kDefaultGroup[] = "Default";
 inline constexpr char kControlGroup[] = "Control";
 inline constexpr char kEnabledGroup[] = "Enabled";
-// Groups for the 20% stable experiment.
-inline constexpr char kControlGroup20[] = "Control_20";
-inline constexpr char kEnabledGroup20[] = "Enabled_20";
 
 // Registers the local state prefs for the FileMetricsProvider FRE trial.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

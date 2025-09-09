@@ -1493,9 +1493,7 @@ INSTANTIATE_TEST_SUITE_P(FRETrialFirstRunGroups,
                          FileMetricsProviderFRETrialFirstRunGroupsTest,
                          testing::Values(fre_source_trial::kDefaultGroup,
                                          fre_source_trial::kControlGroup,
-                                         fre_source_trial::kEnabledGroup,
-                                         fre_source_trial::kControlGroup20,
-                                         fre_source_trial::kEnabledGroup20));
+                                         fre_source_trial::kEnabledGroup));
 
 TEST_P(FileMetricsProviderFRETrialFirstRunGroupsTest, FRETrialKeepTrialGroup) {
   const std::string_view trial_group = GetParam();
@@ -1544,8 +1542,7 @@ TEST_P(FileMetricsProviderFRETrialFirstRunGroupsTest,
 
   task_environment()->RunUntilIdle();
 
-  bool should_keep_dir = trial_group == fre_source_trial::kEnabledGroup ||
-                         trial_group == fre_source_trial::kEnabledGroup20;
+  bool should_keep_dir = trial_group == fre_source_trial::kEnabledGroup;
   EXPECT_EQ(base::PathExists(dir), should_keep_dir);
 }
 
@@ -1557,9 +1554,7 @@ INSTANTIATE_TEST_SUITE_P(FRETrialSubsequentRunGroups,
                          FileMetricsProviderFRETrialSubsequentRunGroupsTest,
                          testing::Values(fre_source_trial::kDefaultGroup,
                                          fre_source_trial::kControlGroup,
-                                         fre_source_trial::kEnabledGroup,
-                                         fre_source_trial::kControlGroup20,
-                                         fre_source_trial::kEnabledGroup20));
+                                         fre_source_trial::kEnabledGroup));
 
 TEST_P(FileMetricsProviderFRETrialSubsequentRunGroupsTest, FRETrialPostFRERun) {
   const std::string_view trial_group = GetParam();
