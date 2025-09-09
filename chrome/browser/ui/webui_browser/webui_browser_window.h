@@ -25,6 +25,7 @@ class Widget;
 }  // namespace views
 
 class Browser;
+class WebUIBrowserExtensionsContainer;
 class WebUIBrowserModalDialogHost;
 class WebUIBrowserSidePanelUI;
 class WebUIBrowserUI;
@@ -271,6 +272,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();
 
+  WebUIBrowserUI* GetWebUIBrowserUI() const;
   WebUIBrowserSidePanelUI* GetWebUIBrowserSidePanelUI();
 
   Browser* browser() { return browser_.get(); }
@@ -309,7 +311,6 @@ class WebUIBrowserWindow : public BrowserWindow,
       const;
 
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
-  WebUIBrowserUI* GetWebUIBrowserUI() const;
 
   const raw_ptr<Browser> browser_;
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
@@ -324,6 +325,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   ui::AcceleratorManager accelerator_manager_;
 
   std::unique_ptr<WebUIBrowserModalDialogHost> modal_dialog_host_;
+  std::unique_ptr<WebUIBrowserExtensionsContainer> extensions_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_

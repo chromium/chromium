@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -107,6 +108,12 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<extensions_bar::mojom::PageHandlerFactory> receiver) {
+  extensions_bar_page_factory_receiver_.reset();
+  extensions_bar_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   content::WebUI* webui = web_ui();
   content::WebContents* web_contents = webui->GetWebContents();
@@ -172,6 +179,14 @@ void WebUIBrowserUI::CreatePageHandler(
   bookmark_bar_page_handler_ =
       std::make_unique<WebUIBrowserBookmarkBarPageHandler>(
           std::move(receiver), std::move(page), web_ui(), browser_);
+}
+
+void WebUIBrowserUI::CreatePageHandler(
+    mojo::PendingRemote<extensions_bar::mojom::Page> page,
+    mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver) {
+  static_cast<WebUIBrowserExtensionsContainer*>(
+      browser_window()->GetExtensionsContainer())
+      ->Bind(std::move(page), std::move(receiver));
 }
 
 const std::vector<ui::ElementIdentifier>&

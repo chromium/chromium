@@ -4,6 +4,7 @@
 
 import './bookmark_bar.js';
 import './content_region.js';
+import './extensions_bar.js';
 import './icons.html.js';
 import './side_panel.js';
 import '/strings.m.js';

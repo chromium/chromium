@@ -45,6 +45,8 @@ source_set("impl") {
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
+    "webui_browser_extensions_container.cc",
+    "webui_browser_extensions_container.h",
     "webui_browser_modal_dialog_host.cc",
     "webui_browser_modal_dialog_host.h",
     "webui_browser_page_handler.cc",
@@ -74,6 +76,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/tabs/tab_strip_api",
@@ -82,6 +85,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/searchbox",
+    "//chrome/browser/ui/webui/util",
     "//chrome/common:chrome_features",
     "//components/guest_contents/browser",
     "//components/input",
@@ -116,6 +120,7 @@ mojom("browser_mojo_bindings") {
   sources = [
     "bookmark_bar.mojom",
     "browser.mojom",
+    "extensions_bar.mojom",
   ]
   public_deps = [
     "//chrome/browser/ui/tabs/tab_strip_api:mojom",

@@ -1462,6 +1462,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<color_change_listener::mojom::PageHandler>()
         .Add<webui_browser::mojom::PageHandlerFactory>()
         .Add<bookmark_bar::mojom::PageHandlerFactory>()
+        .Add<extensions_bar::mojom::PageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<metrics_reporter::mojom::PageMetricsHost>()
         .Add<tabs_api::mojom::TabStripService>()

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
@@ -128,6 +129,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
       std::make_unique<WebShellWebContentsUserData>(this));
 
   modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
+  extensions_container_ =
+      std::make_unique<WebUIBrowserExtensionsContainer>(*browser_, *this);
 
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
@@ -584,6 +587,10 @@ void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
   // This is a no-op if it's already set to |this|.
   new_contents->SetColorProviderSource(this);
 
+  // State of extensions depends on what's active --- e.g. some may be disabled
+  // on some URLs.
+  extensions_container_->NotifyOfAllActions();
+
   NOTIMPLEMENTED();
 }
 
@@ -682,8 +689,7 @@ void WebUIBrowserWindow::FocusToolbar() {
 }
 
 ExtensionsContainer* WebUIBrowserWindow::GetExtensionsContainer() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return extensions_container_.get();
 }
 
 void WebUIBrowserWindow::ToolbarSizeChanged(bool is_animating) {
@@ -869,6 +875,7 @@ void WebUIBrowserWindow::ConfirmBrowserCloseWithPendingDownloads(
 void WebUIBrowserWindow::UserChangedTheme(
     BrowserThemeChangeType theme_change_type) {
   NotifyColorProviderChanged();
+  extensions_container_->NotifyOfAllActions();  // Icons may need re-rendering.
 }
 
 void WebUIBrowserWindow::ShowAppMenu() {
