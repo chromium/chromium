@@ -86,6 +86,9 @@ void SplitTabHighlightController::OnActiveTabChange(
         OmniboxTabHelper::FromWebContents(active_tab->GetContents());
     CHECK(tab_helper);
     omnibox_tab_helper_observation_.Observe(tab_helper);
+    tab_will_discard_subscription_ = active_tab->RegisterWillDiscardContents(
+        base::BindRepeating(&SplitTabHighlightController::OnTabWillDiscard,
+                            base::Unretained(this)));
   }
   // Need to update the highlight because the omnibox focus state
   // event might have already been triggered before the active tab change.
@@ -99,6 +102,17 @@ void SplitTabHighlightController::OnTabWillDetach(
   // longer than the web contents it is observing.
   omnibox_tab_helper_observation_.Reset();
   tab_will_detach_subscription_ = base::CallbackListSubscription();
+}
+
+void SplitTabHighlightController::OnTabWillDiscard(
+    tabs::TabInterface* tab_interface,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  // Reset the observation of the omnibox tab helper since it is possible for
+  // the active tab to be discarded on CrOS.
+  omnibox_tab_helper_observation_.Reset();
+  is_omnibox_popup_showing_ = false;
+  UpdateHighlight();
 }
 
 void SplitTabHighlightController::OnPageInfoBubbleCreated(
