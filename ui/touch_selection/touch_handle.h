@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/touch_selection_draggable.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"

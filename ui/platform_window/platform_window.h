@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "ui/base/class_property.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 template <class T>

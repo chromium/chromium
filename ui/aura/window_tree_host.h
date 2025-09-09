@@ -27,7 +27,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_source.h"
 #include "ui/events/platform_event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {

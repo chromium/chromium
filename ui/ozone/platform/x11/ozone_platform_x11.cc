@@ -27,7 +27,7 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/visual_manager.h"

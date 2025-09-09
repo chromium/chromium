@@ -28,7 +28,7 @@
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"

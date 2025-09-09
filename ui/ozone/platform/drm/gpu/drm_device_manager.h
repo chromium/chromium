@@ -11,7 +11,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class FilePath;

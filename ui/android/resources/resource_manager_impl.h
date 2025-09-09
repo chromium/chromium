@@ -17,7 +17,7 @@
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace cc {
 class UIResourceManager;

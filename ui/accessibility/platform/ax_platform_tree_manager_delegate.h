@@ -14,7 +14,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContentsAccessibility;

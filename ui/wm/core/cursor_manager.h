@@ -13,7 +13,7 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace ui {

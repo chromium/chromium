@@ -22,7 +22,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

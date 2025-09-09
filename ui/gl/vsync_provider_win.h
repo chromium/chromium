@@ -5,7 +5,7 @@
 #ifndef UI_GL_VSYNC_PROVIDER_WIN_H_
 #define UI_GL_VSYNC_PROVIDER_WIN_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_export.h"
 

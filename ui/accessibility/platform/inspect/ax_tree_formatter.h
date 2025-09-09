@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

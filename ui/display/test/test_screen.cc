@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ui/display/display.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/display_list.h"

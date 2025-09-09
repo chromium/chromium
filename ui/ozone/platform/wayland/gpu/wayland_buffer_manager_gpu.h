@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/frame_data.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"

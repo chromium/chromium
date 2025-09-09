@@ -6,7 +6,7 @@
 #define UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 
 #include "base/memory/raw_ref.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gtk/gtk_ui_platform.h"
 

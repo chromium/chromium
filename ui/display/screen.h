@@ -18,7 +18,7 @@
 #include "ui/display/display_export.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class TimeDelta;

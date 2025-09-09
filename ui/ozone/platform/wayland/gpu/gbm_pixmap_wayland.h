@@ -16,7 +16,7 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {

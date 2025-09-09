@@ -18,7 +18,7 @@
 #include "ui/display/display_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace aura {

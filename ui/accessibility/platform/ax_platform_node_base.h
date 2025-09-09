@@ -24,7 +24,7 @@
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(USE_ATK)
 #include <atk/atk.h>

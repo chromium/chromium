@@ -23,7 +23,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/x/x11_shm_image_pool.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"

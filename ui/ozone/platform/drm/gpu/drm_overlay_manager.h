@@ -14,7 +14,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"

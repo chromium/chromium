@@ -20,7 +20,7 @@
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/accessibility/platform/inspect/ax_transform_mac.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push

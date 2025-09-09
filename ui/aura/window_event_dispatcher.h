@@ -28,7 +28,7 @@
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class Event;

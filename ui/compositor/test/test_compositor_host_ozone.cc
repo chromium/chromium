@@ -15,7 +15,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"

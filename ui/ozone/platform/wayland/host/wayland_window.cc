@@ -40,7 +40,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"

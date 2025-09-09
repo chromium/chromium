@@ -23,7 +23,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/base_shell_dialog_win.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
 #include "ui/shell_dialogs/select_file_policy.h"

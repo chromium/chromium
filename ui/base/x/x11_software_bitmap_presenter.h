@@ -14,7 +14,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/xproto.h"
 
 class SkCanvas;

@@ -8,7 +8,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"

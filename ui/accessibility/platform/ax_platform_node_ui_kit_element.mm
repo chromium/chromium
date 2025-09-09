@@ -20,7 +20,7 @@
 #import "ui/accessibility/platform/ax_platform_node_ios.h"
 #import "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #import "ui/accessibility/platform/child_iterator_base.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 @implementation AXPlatformNodeUIKitElement {
   // The AXPlatformNode corresponding to this wrapper instance.

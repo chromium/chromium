@@ -13,7 +13,7 @@
 #include "ui/display/display_features.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/util/display_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display {
 namespace {

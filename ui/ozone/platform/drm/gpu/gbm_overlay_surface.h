@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/overlay_plane.h"
 #include "ui/ozone/public/overlay_surface.h"
 

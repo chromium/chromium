@@ -16,7 +16,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Point;

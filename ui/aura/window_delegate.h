@@ -9,7 +9,7 @@
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkPath;
 

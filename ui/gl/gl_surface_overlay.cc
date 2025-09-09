@@ -5,7 +5,7 @@
 #include "ui/gl/gl_surface_overlay.h"
 
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gl {
 

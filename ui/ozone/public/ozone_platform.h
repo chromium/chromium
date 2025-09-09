@@ -16,7 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 

@@ -11,7 +11,7 @@
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {

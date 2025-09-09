@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/run_loop.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

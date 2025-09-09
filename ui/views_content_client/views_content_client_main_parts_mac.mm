@@ -17,7 +17,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views_content_client/views_content_client.h"
 

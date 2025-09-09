@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui_controls {
 namespace {

@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_X11_LINUX_UI_DELEGATE_X11_H_
 #define UI_OZONE_PLATFORM_X11_LINUX_UI_DELEGATE_X11_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {

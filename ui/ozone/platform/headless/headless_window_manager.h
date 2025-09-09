@@ -10,7 +10,7 @@
 #include "base/containers/id_map.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {

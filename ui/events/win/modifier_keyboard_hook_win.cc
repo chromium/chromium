@@ -19,7 +19,7 @@
 #include "ui/events/win/events_win_utils.h"
 #include "ui/events/win/keyboard_hook_monitor_impl.h"
 #include "ui/events/win/keyboard_hook_win_base.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

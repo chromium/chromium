@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 
 namespace display::win {

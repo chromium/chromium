@@ -24,7 +24,7 @@
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 

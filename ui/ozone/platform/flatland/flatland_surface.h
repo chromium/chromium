@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/flatland/flatland_connection.h"
 #include "ui/ozone/public/platform_window_surface.h"
 

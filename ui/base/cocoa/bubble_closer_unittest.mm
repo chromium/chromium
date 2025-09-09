@@ -8,7 +8,7 @@
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/base/test/menu_test_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

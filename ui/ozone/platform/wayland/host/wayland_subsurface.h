@@ -9,7 +9,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
