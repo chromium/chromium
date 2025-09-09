@@ -55,16 +55,23 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_handler_);
   }
 
-  void InitInfobar(const bool for_upload) {
+  void InitInfobar(
+      const bool for_upload,
+      autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type =
+          autofill::payments::PaymentsAutofillClient::CardSaveType::
+              kCardSaveOnly) {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableCvcStorageAndFilling);
+
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         "https://www.example.com/");
-    ;
     std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
             CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
                 for_upload, credit_card,
-                SaveCreditCardOptions().with_num_strikes(0));
+                SaveCreditCardOptions().with_num_strikes(0).with_card_save_type(
+                    card_save_type));
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));
@@ -88,6 +95,7 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
   FakeInfobarBannerConsumer* consumer_ = nil;
   SaveCardInfobarBannerOverlayMediator* mediator_ = nil;
   id mock_snackbar_commands_handler_ = nil;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, SetUpConsumer) {
@@ -285,3 +293,67 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, NoSnackbarForUploadSave) {
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
+
+struct SaveCardBannerMetricsTestCase {
+  const std::string name;
+  const bool is_for_upload;
+  const autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type;
+};
+
+class SaveCardInfobarBannerOverlayMediatorMetricsTest
+    : public SaveCardInfobarBannerOverlayMediatorTest,
+      public ::testing::WithParamInterface<SaveCardBannerMetricsTestCase> {
+ protected:
+  std::string GetExpectedHistogramName() {
+    const auto& test_case = GetParam();
+    std::string_view destination =
+        test_case.is_for_upload ? ".Server" : ".Local";
+    std::string_view suffix;
+    switch (test_case.card_save_type) {
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardSaveWithCvc:
+        suffix = ".SavingWithCvc";
+        break;
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardSaveOnly:
+        suffix = "";
+        break;
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCvcSaveOnly:
+        ADD_FAILURE() << "This test case shouldn't exist for the banner UI.";
+        break;
+    }
+    return base::StrCat({"Autofill.SaveCreditCardPromptResult.IOS", destination,
+                         ".Banner.NumStrikes.0.NoFixFlow", suffix});
+  }
+};
+
+TEST_P(SaveCardInfobarBannerOverlayMediatorMetricsTest, LogsBannerShown) {
+  base::HistogramTester histogram_tester;
+  const auto& test_case = GetParam();
+  InitInfobar(test_case.is_for_upload, test_case.card_save_type);
+
+  histogram_tester.ExpectUniqueSample(GetExpectedHistogramName(),
+                                      SaveCreditCardPromptResultIOS::kShown, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SaveCardInfobarBannerOverlayMediatorMetricsTest,
+    testing::ValuesIn<SaveCardBannerMetricsTestCase>({
+        {"ServerCardSaveOnly", true,
+         autofill::payments::PaymentsAutofillClient::CardSaveType::
+             kCardSaveOnly},
+        {"ServerCardSaveWithCvc", true,
+         autofill::payments::PaymentsAutofillClient::CardSaveType::
+             kCardSaveWithCvc},
+        {"LocalCardSaveOnly", false,
+         autofill::payments::PaymentsAutofillClient::CardSaveType::
+             kCardSaveOnly},
+        {"LocalCardSaveWithCvc", false,
+         autofill::payments::PaymentsAutofillClient::CardSaveType::
+             kCardSaveWithCvc},
+    }),
+    [](const ::testing::TestParamInfo<SaveCardBannerMetricsTestCase>& info) {
+      return info.param.name;
+    });

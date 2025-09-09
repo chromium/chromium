@@ -464,24 +464,28 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
     bottom_sheet_tab_helper->ShowSaveCardBottomSheet(std::move(model));
     return;
   }
+  const bool is_cvc_save_only =
+      save_card_delegate->GetSaveCreditCardOptions().card_save_type ==
+      CardSaveType::kCvcSaveOnly;
+
   if (save_card_delegate->is_for_upload()
           ? base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
           : base::FeatureList::IsEnabled(
                 features::kAutofillLocalSaveCardBottomSheet)) {
-    // Logs the decision to not show the bottomsheet for users with flag
-    // enabled.
-    autofill_metrics::LogSaveCreditCardPromptResultIOS(
-        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
-        save_card_delegate->is_for_upload(),
-        save_card_delegate->GetSaveCreditCardOptions(),
-        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-            kBottomSheet);
+    if (!is_cvc_save_only) {
+      // Logs the decision to not show the bottomsheet for users with flag
+      // enabled.
+      autofill_metrics::LogSaveCreditCardPromptResultIOS(
+          autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+          save_card_delegate->is_for_upload(),
+          save_card_delegate->GetSaveCreditCardOptions(),
+          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+              kBottomSheet);
+    }
   }
-  InfobarType infobar_type =
-      (save_card_delegate->GetSaveCreditCardOptions().card_save_type ==
-       CardSaveType::kCvcSaveOnly)
-          ? InfobarType::kInfobarTypeSaveCvc
-          : InfobarType::kInfobarTypeSaveCard;
+  InfobarType infobar_type = is_cvc_save_only
+                                 ? InfobarType::kInfobarTypeSaveCvc
+                                 : InfobarType::kInfobarTypeSaveCard;
 
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(

@@ -16,7 +16,7 @@ AutofillSaveCardDelegate::AutofillSaveCardDelegate(
                  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         save_card_callback,
     payments::PaymentsAutofillClient::SaveCreditCardOptions options)
-    : options_(options),
+    : options_(std::move(options)),
       had_user_interaction_(false),
       save_card_callback_(std::move(save_card_callback)) {}
 

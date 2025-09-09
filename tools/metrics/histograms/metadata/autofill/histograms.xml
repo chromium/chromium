@@ -6207,7 +6207,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptResult.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}"
+    name="Autofill.SaveCreditCardPromptResult.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}{SaveType}"
     enum="SaveCreditCardPromptResultIOS" expires_after="2026-02-22">
   <owner>kavitasoni@google.com</owner>
   <owner>chrome-payments-team@google.com</owner>
@@ -6216,8 +6216,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     The relative frequency with which the credit card prompt on iOS of the type
     {OverlayType} is shown and user's subsequent action (accepted, denied or
     ignored) taken for that prompt for a card to be saved as a {SaveDestination}
-    card with {Strikes} and which required {FixFlow}. Is emitted every time the
-    prompt is shown or not shown and for any action taken when shown.
+    card with {Strikes} and which required {FixFlow}. The prompt is shown when
+    {SaveType}. Is emitted every time the prompt is shown or not shown and for
+    any action taken when shown.
   </summary>
   <token key="OverlayType">
     <variant name="Banner" summary="InfoBar Banner"/>
@@ -6240,6 +6241,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="card holder name and expiry date"/>
     <variant name="RequestingExpiryDate" summary="only expiry date"/>
   </token>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptResult.{SaveDestination}"

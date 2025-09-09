@@ -641,6 +641,60 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
   EXPECT_FALSE(error_context.has_value());
 }
 
+TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
+       DoesNotLogNotShownForCvcOnlySave_WhenBottomSheetNotShown) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList features(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
+  options.show_prompt = true;
+  options.num_strikes = 1;
+
+  payments_client()->ShowSaveCreditCardToCloud(
+      autofill::test::GetCreditCard(), LegalMessageLines(), std::move(options),
+      base::DoNothing());
+
+  // Verify the bottom sheet was not shown.
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  // Verify that the kNotShown metric is logged with the correct CVC suffix.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.1."
+      "NoFixFlow.SavingWithCvc",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/0);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
+       LogsNotShownForCardSaveWithCvc_WhenBottomSheetNotShown) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList features(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
+  options.show_prompt = true;
+  options.num_strikes = 1;
+
+  payments_client()->ShowSaveCreditCardToCloud(
+      autofill::test::GetCreditCard(), LegalMessageLines(), std::move(options),
+      base::DoNothing());
+
+  // Verify the bottom sheet was not shown.
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  // Verify that the kNotShown metric is logged with the correct CVC suffix.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.1."
+      "NoFixFlow.SavingWithCvc",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/1);
+}
+
 class IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest
     : public IOSChromePaymentsAutofillClientTest {
  private:

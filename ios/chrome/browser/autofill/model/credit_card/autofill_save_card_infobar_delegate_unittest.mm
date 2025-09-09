@@ -539,4 +539,54 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillSaveCardInfoBarDelegateMetricsTestWithNumStrikes,
     /*strike_count*/ testing::Values(0, 1, 2, 3));
 
+class AutofillSaveCardInfoBarDelegateMetricsTestWithCardSaveType
+    : public AutofillSaveCardInfoBarDelegateTest,
+      public testing::WithParamInterface<
+          payments::PaymentsAutofillClient::CardSaveType> {
+ protected:
+  std::string_view CardSaveTypeToMetricSuffix(
+      payments::PaymentsAutofillClient::CardSaveType save_type) {
+    switch (save_type) {
+      case payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc:
+      case payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
+        return ".SavingWithCvc";
+      case payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly:
+        return "";
+    }
+  }
+};
+
+TEST_P(AutofillSaveCardInfoBarDelegateMetricsTestWithCardSaveType,
+       LogSaveCreditCardInfoBarResultMetric) {
+  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      save_card_callback = base::BindOnce(
+          &AutofillSaveCardInfoBarDelegateTest::UploadSaveCardPromptCallbackFn,
+          base::Unretained(this));
+
+  payments::PaymentsAutofillClient::CardSaveType save_type = GetParam();
+
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate = CreateDelegate(
+      std::move(save_card_callback),
+      SaveCreditCardOptions().with_num_strikes(0).with_card_save_type(
+          save_type));
+
+  base::HistogramTester histogram_tester;
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      SaveCreditCardPromptResultIOS::kShown,
+      SaveCreditCardPromptOverlayType::kBanner);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSaveCreditCardPromptResultIOSPrefix,
+                    ".Server.Banner.NumStrikes.0.NoFixFlow",
+                    CardSaveTypeToMetricSuffix(save_type)}),
+      SaveCreditCardPromptResultIOS::kShown, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillSaveCardInfoBarDelegateTest,
+    AutofillSaveCardInfoBarDelegateMetricsTestWithCardSaveType,
+    testing::Values(
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly,
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc));
+
 }  // namespace autofill
