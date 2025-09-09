@@ -2326,8 +2326,10 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
 
   auto* component_loader = extensions::ComponentLoader::Get(profile_);
 
-  if (component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
+  if (component_loader->ExistsOrPendingAdd(
+          extension_misc::kEnhancedNetworkTtsExtensionId)) {
     return;
+  }
 
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
@@ -2351,7 +2353,8 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
       extension_misc::kEnhancedNetworkTtsExtensionId, manifest_filename,
       guest_manifest_filename,
       base::BindOnce(&AccessibilityManager::PostLoadEnhancedNetworkTts,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      {});
 }
 
 void AccessibilityManager::UnloadEnhancedNetworkTts() {

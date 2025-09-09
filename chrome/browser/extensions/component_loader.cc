@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -341,6 +342,12 @@ void ComponentLoader::Remove(const ExtensionId& id) {
       break;
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsPendingAdd(id)) {
+    pending_extension_ids_.erase(id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ComponentLoader::Exists(const ExtensionId& id) const {
@@ -440,7 +447,7 @@ void ComponentLoader::AddGuestModeTestExtension(const base::FilePath& path) {
   AddComponentFromDirWithManifestFilename(
       path, extension_misc::kGuestModeTestExtensionId,
       extensions::kManifestFilename, extensions::kManifestFilename,
-      base::RepeatingClosure());
+      /*done_cb=*/{}, /*error_cb=*/{});
 }
 
 void ComponentLoader::AddKeyboardApp() {
@@ -571,7 +578,7 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     AddComponentFromDirWithManifestFilename(
         base::FilePath("/usr/share/chromeos-assets/quickoffice"),
         extension_misc::kQuickOfficeComponentExtensionId,
-        extensions::kManifestFilename, extensions::kManifestFilename, {});
+        extensions::kManifestFilename, extensions::kManifestFilename, {}, {});
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -629,13 +636,26 @@ void ComponentLoader::UnloadComponent(ComponentExtensionInfo* component) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+bool ComponentLoader::IsPendingAdd(const ExtensionId& extension_id) const {
+  return base::Contains(pending_extension_ids_, extension_id);
+}
+
+bool ComponentLoader::ExistsOrPendingAdd(
+    const ExtensionId& extension_id) const {
+  return Exists(extension_id) || IsPendingAdd(extension_id);
+}
+
 void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const base::FilePath& root_directory,
     const ExtensionId& extension_id,
     const base::FilePath::CharType* manifest_file_name,
     const base::FilePath::CharType* guest_manifest_file_name,
-    base::OnceClosure done_cb) {
+    base::OnceClosure done_cb,
+    base::OnceClosure error_cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  CHECK(!IsPendingAdd(extension_id));
+  pending_extension_ids_.emplace(extension_id);
 
   const base::FilePath::CharType* manifest_filename =
       IsNormalSession() ? manifest_file_name : guest_manifest_file_name;
@@ -646,7 +666,8 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
                      manifest_filename, true),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     std::nullopt, std::nullopt, std::move(done_cb)));
+                     std::nullopt, std::nullopt, std::move(done_cb),
+                     std::move(error_cb)));
 }
 
 void ComponentLoader::FinishAddComponentFromDir(
@@ -655,9 +676,23 @@ void ComponentLoader::FinishAddComponentFromDir(
     const std::optional<std::string>& name_string,
     const std::optional<std::string>& description_string,
     base::OnceClosure done_cb,
+    base::OnceClosure error_cb,
     std::optional<base::Value::Dict> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Extension is removed during loading. Skip adding in this case.
+  if (!IsPendingAdd(extension_id)) {
+    if (error_cb) {
+      std::move(error_cb).Run();
+    }
+    return;
+  }
+  pending_extension_ids_.erase(extension_id);
+
   if (!manifest) {
+    if (error_cb) {
+      std::move(error_cb).Run();
+    }
     return;  // Error already logged.
   }
 
@@ -682,26 +717,11 @@ void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
                                           base::OnceClosure done_cb) {
   AddComponentFromDirWithManifestFilename(
       root_directory, extension_id, extensions::kManifestFilename,
-      extension_misc::kGuestManifestFilename, std::move(done_cb));
-}
-
-void ComponentLoader::AddWithNameAndDescriptionFromDir(
-    const base::FilePath& root_directory,
-    const ExtensionId& extension_id,
-    const std::string& name_string,
-    const std::string& description_string) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&LoadManifestOnFileThread, root_directory,
-                     extensions::kManifestFilename, false),
-      base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
-                     weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     name_string, description_string, base::OnceClosure()));
+      extension_misc::kGuestManifestFilename, std::move(done_cb), {});
 }
 
 void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
-  if (!Exists(extension_misc::kGoogleSpeechSynthesisExtensionId)) {
+  if (!ExistsOrPendingAdd(extension_misc::kGoogleSpeechSynthesisExtensionId)) {
     AddComponentFromDir(
         ::features::IsAccessibilityManifestV3EnabledForGoogleTts()
             ? base::FilePath(
@@ -715,7 +735,7 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
             extension_misc::kGoogleSpeechSynthesisExtensionId));
   }
 
-  if (!Exists(extension_misc::kEspeakSpeechSynthesisExtensionId)) {
+  if (!ExistsOrPendingAdd(extension_misc::kEspeakSpeechSynthesisExtensionId)) {
     AddComponentFromDir(
         base::FilePath(
             ::features::IsAccessibilityManifestV3EnabledForEspeakNGTts()
