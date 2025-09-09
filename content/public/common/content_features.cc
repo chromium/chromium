@@ -36,11 +36,6 @@ BASE_FEATURE(kAndroidDevToolsFrontend,
              "AndroidDevToolsFrontend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables media to continue playing in the background.
-BASE_FEATURE(kAndroidEnableBackgroundMediaLargeFormFactors,
-             "AndroidEnableBackgroundMediaLargeFormFactors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Fallback to next named service slot if launching a privileged service process
 // hangs. In practice, this means if GPU launch hanges, then retry it once.
 BASE_FEATURE(AndroidFallbackToNextSlot, base::FEATURE_ENABLED_BY_DEFAULT);

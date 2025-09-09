@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Process;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.GuardedBy;
 
@@ -29,7 +30,10 @@ import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** DeviceInfo is a utility class to access the device-related information. */
+/**
+ * Caches device info during app start-up. For values that might change during the lifetime of the
+ * app, refer to @see org.chromium.ui.base.DeviceFormFactor.java
+ */
 @JNINamespace("base::android::device_info")
 @NullMarked
 public final class DeviceInfo {
@@ -40,6 +44,9 @@ public final class DeviceInfo {
     private static boolean sInitialized;
     private static boolean sIsXrForTesting;
     private final IDeviceInfo mIDeviceInfo;
+
+    // This is the minimum width in DP that defines a large display device
+    public static final int LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP = 600;
 
     @GuardedBy("CREATION_LOCK")
     private static @Nullable DeviceInfo sInstance;
@@ -65,7 +72,8 @@ public final class DeviceInfo {
                         /* isFoldable= */ info.isFoldable,
                         /* isDesktop= */ info.isDesktop,
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
-                        /* isXr= */ sIsXrForTesting ? true : info.isXr);
+                        /* isXr= */ sIsXrForTesting ? true : info.isXr,
+                        /* wasLaunchedOnLargeDisplay= */ info.wasLaunchedOnLargeDisplay);
     }
 
     public static IDeviceInfo getAidlInfo() {
@@ -168,6 +176,15 @@ public final class DeviceInfo {
         return "";
     }
 
+    /**
+     * @return The device's screen width in density-independent pixels (dp).
+     */
+    private static int getDeviceWidthInDp() {
+        DisplayMetrics displayMetrics =
+                ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+        return (int) (displayMetrics.widthPixels / displayMetrics.density);
+    }
+
     private DeviceInfo() {
         mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
@@ -230,6 +247,9 @@ public final class DeviceInfo {
         }
         mIDeviceInfo.vulkanDeqpLevel = vulkanLevel;
 
+        mIDeviceInfo.wasLaunchedOnLargeDisplay =
+                getDeviceWidthInDp() >= LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
+
         mIDeviceInfo.isXr = pm.hasSystemFeature("android.software.xr.api.openxr");
     }
 
@@ -242,6 +262,7 @@ public final class DeviceInfo {
                 boolean isFoldable,
                 boolean isDesktop,
                 int vulkanDeqpLevel,
-                boolean isXr);
+                boolean isXr,
+                boolean wasLaunchedOnLargeDisplay);
     }
 }

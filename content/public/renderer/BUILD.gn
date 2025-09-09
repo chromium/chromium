@@ -114,8 +114,5 @@ source_set("render_frame_media_playback_options") {
     "//content/public/common:renderer_type",
   ]
 
-  deps = [
-    "//content/public/common:common_sources",
-    "//ui/base",
-  ]
+  deps = [ "//content/public/common:common_sources" ]
 }

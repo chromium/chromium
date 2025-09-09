@@ -36,6 +36,7 @@ struct IDeviceInfo {
   // Available only on Android T+.
   int32_t vulkanDeqpLevel;
   bool isXr;
+  bool wasLaunchedOnLargeDisplay;
 };
 #endif
 
@@ -66,14 +67,17 @@ static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       jboolean isFoldable,
                                       jboolean isDesktop,
                                       jint vulkanDeqpLevel,
-                                      jboolean isXr) {
+                                      jboolean isXr,
+                                      jboolean wasLaunchedOnLargeDisplay) {
   Set(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
                   .isAutomotive = static_cast<bool>(isAutomotive),
                   .isDesktop = static_cast<bool>(isDesktop),
                   .isFoldable = static_cast<bool>(isFoldable),
                   .isTv = static_cast<bool>(isTV),
                   .vulkanDeqpLevel = vulkanDeqpLevel,
-                  .isXr = static_cast<bool>(isXr)});
+                  .isXr = static_cast<bool>(isXr),
+                  .wasLaunchedOnLargeDisplay =
+                      static_cast<bool>(wasLaunchedOnLargeDisplay)});
 }
 
 const std::string& gms_version_code() {
@@ -107,6 +111,14 @@ int32_t vulkan_deqp_level() {
 
 bool is_xr() {
   return get_device_info().isXr;
+}
+
+// This returns the cached value during initial startup. If you need this
+// evaluated at runtime, then use device_form_factor Additionally, this differs
+// from device_form_factor in that it does not guarantee that the Android
+// resource (-sw600) is respected.
+bool was_launched_on_large_display() {
+  return get_device_info().wasLaunchedOnLargeDisplay;
 }
 
 void set_is_xr_for_testing() {

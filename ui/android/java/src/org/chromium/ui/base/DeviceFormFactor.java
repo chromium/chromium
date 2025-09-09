@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -59,7 +60,8 @@ public class DeviceFormFactor {
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
      * directories. E.g.: res/values-sw600dp/values.xml
      */
-    public static final int MINIMUM_TABLET_WIDTH_DP = 600;
+    public static final int MINIMUM_TABLET_WIDTH_DP =
+            DeviceInfo.LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
 
     /** Matches the value set in res/values-sw600dp/values.xml */
     @VisibleForTesting public static final int SCREEN_BUCKET_TABLET = 2;
