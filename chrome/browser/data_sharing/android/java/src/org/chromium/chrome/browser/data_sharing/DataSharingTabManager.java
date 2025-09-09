@@ -749,22 +749,6 @@ public class DataSharingTabManager {
      * @param manageCallback The callbacks for user actions in the manage UI.
      * @return The session id associated with the UI instance.
      */
-    public @Nullable String showManageSharingWithManageCallback(
-            Activity activity,
-            String collaborationId,
-            DataSharingManageUiConfig.ManageCallback manageCallback) {
-        assert mProfile != null;
-        return showManageSharing(activity, collaborationId, manageCallback);
-    }
-
-    /**
-     * Shows UI for manage sharing.
-     *
-     * @param activity The activity to show the UI for.
-     * @param collaborationId The collaboration ID to show the UI for.
-     * @param manageCallback The callbacks for user actions in the manage UI.
-     * @return The session id associated with the UI instance.
-     */
     public @Nullable String showManageSharing(
             Activity activity,
             String collaborationId,
