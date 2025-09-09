@@ -1082,6 +1082,7 @@ IN_PROC_BROWSER_TEST_P(
                                      Track::kSecond));
 }
 
+// TODO(crbug.com/394794490): Update this suite when adding support for other-tab-capture.
 // Suite of tests ensuring that only self-capture sessions may be the target of
 // sub-capture, and that the app may only apply sub-capture using targets in its
 // own tab. (However, any target in the current tab is permitted.)
@@ -1178,4 +1179,53 @@ IN_PROC_BROWSER_TEST_P(SubCaptureSelfCaptureOnlyBrowserTest, ApplySubCapture) {
 
   EXPECT_EQ(expect_permitted, tabs_[kMainTab].ApplySubCaptureTarget(
                                   target, type_, capturing_entity_));
+}
+
+class SubCaptureUnapplyBrowserTest
+    : public SubCaptureBrowserTestBase,
+      public WithParamInterface<std::tuple<bool, bool, SubCaptureTargetType>> {
+ public:
+  SubCaptureUnapplyBrowserTest()
+      : self_capture_(std::get<0>(GetParam())),
+        cross_tab_sub_capture_allowed_(std::get<1>(GetParam())),
+        type_(std::get<2>(GetParam())) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kRegionCaptureOfOtherTabs, cross_tab_sub_capture_allowed_},
+         {features::kElementCaptureOfOtherTabs,
+          cross_tab_sub_capture_allowed_}});
+  }
+  ~SubCaptureUnapplyBrowserTest() override = default;
+
+ protected:
+  const bool self_capture_;
+  const bool cross_tab_sub_capture_allowed_;
+  const SubCaptureTargetType type_;
+};
+
+std::string SubCaptureUnapplyBrowserTestParamsToString(
+    const TestParamInfo<SubCaptureUnapplyBrowserTest::ParamType>& info) {
+  const bool self_capture = std::get<0>(info.param);
+  const bool cross_tab_sub_capture_allowed = std::get<1>(info.param);
+  const SubCaptureTargetType type = std::get<2>(info.param);
+  return base::StrCat(
+      {"Capturing", self_capture ? "Self" : "Other", "CrossTabSubCapture",
+       cross_tab_sub_capture_allowed ? "Allowed" : "Disallowed",
+       type == SubCaptureTargetType::kCropTarget ? "Region" : "Element",
+       "Capture"});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SubCaptureUnapplyBrowserTest,
+    Combine(Bool(),
+            Bool(),
+            Values(SubCaptureTargetType::kCropTarget,
+                   SubCaptureTargetType::kRestrictionTarget)),
+    SubCaptureUnapplyBrowserTestParamsToString);
+
+IN_PROC_BROWSER_TEST_P(SubCaptureUnapplyBrowserTest, ApplyToElement) {
+  const Frame relevant_frame = Frame::kTopLevelDocument;
+  SetUpTest(relevant_frame, self_capture_);
+  TabInfo& tab = tabs_[kMainTab];
+  EXPECT_TRUE(tab.ApplySubCaptureTarget("undefined", type_, relevant_frame));
 }

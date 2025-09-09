@@ -106,6 +106,11 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
     return false;
   }
 
+  // Uncropping / unrestricting is always permitted.
+  if (target.is_zero()) {
+    return true;
+  }
+
   if (capturing_wc != captured_wc) {
     switch (type) {
       case media::mojom::SubCaptureTargetType::kCropTarget:
@@ -128,14 +133,10 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
   if (!helper) {
     // No sub-capture target IDs of this type were produced on this WebContents.
     // Any non-zero ID should be rejected on account of being invalid.
-    // A zero ID would ultimately be rejected on account of the track
-    // being uncropped/unrestricted, so we can unconditionally reject.
     return false;
   }
 
-  // * target.is_zero() = uncrop-request.
-  // * !target.is_zero() = crop-request.
-  return target.is_zero() || helper->IsAssociatedWith(target, type);
+  return helper->IsAssociatedWith(target, type);
 }
 
 MediaStreamDispatcherHost::ApplySubCaptureTargetCallback
