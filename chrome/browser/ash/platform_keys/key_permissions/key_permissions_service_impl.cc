@@ -135,6 +135,10 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     return;
   }
 
+  // Note: we considered an implementation that would also be correct if the key
+  // is on multiple tokens in https://crrev.com/c/2784967 but decided to keep
+  // the simple implementation for now, as corporate keys can only exist on one
+  // token on ChromeOS at the moment, and there are no plans to change it.
   bool key_on_user_token_only = false;
   for (const auto key_location : key_locations) {
     switch (key_location) {
