@@ -72,7 +72,9 @@ public class PaneBackStackHandlerUnitTest {
                         .registerPane(
                                 PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mBookmarksPane));
 
-        mPaneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        mPaneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
     }
 
     @After

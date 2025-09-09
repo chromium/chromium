@@ -28,7 +28,7 @@ public class HubPaneHostMediator {
     private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
     private final PropertyModel mPropertyModel;
     private final PaneOrderController mPaneOrderController;
-    private @PaneId int mCurrentPaneId = PaneId.TAB_SWITCHER;
+    private @PaneId int mCurrentPaneId;
     private final ObservableSupplier<Pane> mPaneSupplier;
     private final TransitiveObservableSupplier<Pane, Boolean> mHairlineVisibilitySupplier;
 
@@ -44,13 +44,16 @@ public class HubPaneHostMediator {
      * @param propertyModel The model for the pane host.
      * @param paneSupplier The supplier for the current pane.
      * @param paneOrderController The controller for the order of panes.
+     * @param defaultPaneId The default pane's Id.
      */
     public HubPaneHostMediator(
             PropertyModel propertyModel,
             ObservableSupplier<Pane> paneSupplier,
-            PaneOrderController paneOrderController) {
+            PaneOrderController paneOrderController,
+            @PaneId int defaultPaneId) {
         mPropertyModel = propertyModel;
         mPaneOrderController = paneOrderController;
+        mCurrentPaneId = defaultPaneId;
         mPaneSupplier = paneSupplier;
         mPaneSupplier.addObserver(mOnPaneChangeCallback);
 

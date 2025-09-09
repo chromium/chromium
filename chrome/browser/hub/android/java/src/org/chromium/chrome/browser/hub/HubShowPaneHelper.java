@@ -11,8 +11,11 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class HubShowPaneHelper {
     private @Nullable @PaneId Integer mNextPaneId;
+    private final @PaneId int mDefaultPaneId;
 
-    public HubShowPaneHelper() {}
+    public HubShowPaneHelper(@PaneId int defaultPaneId) {
+        mDefaultPaneId = defaultPaneId;
+    }
 
     // Sets the next pane id.
     public void setPaneToShow(@PaneId int nextPaneId) {
@@ -36,7 +39,7 @@ public class HubShowPaneHelper {
         }
 
         if (mNextPaneId == null) {
-            return PaneId.TAB_SWITCHER;
+            return mDefaultPaneId;
         }
 
         return mNextPaneId;

@@ -82,6 +82,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param hubColorMixer Mixes the Hub Overview Color.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param defaultPaneId The default pane's Id.
      */
     public HubCoordinator(
             Activity activity,
@@ -94,7 +95,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             SearchActivityClient searchActivityClient,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             HubColorMixer hubColorMixer,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @PaneId int defaultPaneId) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -166,7 +168,10 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         mHubPaneHostCoordinator =
                 new HubPaneHostCoordinator(
-                        hubPaneHostView, paneManager.getFocusedPaneSupplier(), hubColorMixer);
+                        hubPaneHostView,
+                        paneManager.getFocusedPaneSupplier(),
+                        hubColorMixer,
+                        defaultPaneId);
 
         ObservableSupplier<@Nullable View> overlayViewSupplier =
                 new TransitiveObservableSupplier<Pane, @Nullable View>(

@@ -39,6 +39,7 @@ public class HubManagerFactory {
      * @return an instance of {@link HubManagerImpl}.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param defaultPaneId The default pane's Id.
      */
     @SuppressWarnings("NullAway") // https://crbug.com/433562519
     public static HubManager createHubManager(
@@ -53,7 +54,8 @@ public class HubManagerFactory {
             HubShowPaneHelper hubShowPaneHelper,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @PaneId int defaultPaneId) {
         return new HubManagerImpl(
                 activity,
                 profileProviderSupplier,
@@ -66,6 +68,7 @@ public class HubManagerFactory {
                 hubShowPaneHelper,
                 edgeToEdgeSupplier,
                 searchActivityClient,
-                xrSpaceModeObservableSupplier);
+                xrSpaceModeObservableSupplier,
+                defaultPaneId);
     }
 }

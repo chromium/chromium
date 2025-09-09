@@ -24,17 +24,21 @@ public class HubPaneHostCoordinator {
      * @param hubPaneHostView The root view of this component. Inserted into hierarchy for us.
      * @param paneSupplier A way to observe and get the current {@link Pane}.
      * @param hubColorMixer Mixes the Hub Overview Color.
+     * @param defaultPaneId The default pane's Id.
      */
     public HubPaneHostCoordinator(
             HubPaneHostView hubPaneHostView,
             ObservableSupplier<Pane> paneSupplier,
-            HubColorMixer hubColorMixer) {
+            HubColorMixer hubColorMixer,
+            @PaneId int defaultPaneId) {
         PropertyModel model =
                 new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
                         .build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
-        mMediator = new HubPaneHostMediator(model, paneSupplier, new DefaultPaneOrderController());
+        mMediator =
+                new HubPaneHostMediator(
+                        model, paneSupplier, new DefaultPaneOrderController(), defaultPaneId);
     }
 
     /** Cleans up observers and resources. */

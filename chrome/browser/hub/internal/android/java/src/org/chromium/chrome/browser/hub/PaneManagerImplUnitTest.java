@@ -74,7 +74,9 @@ public class PaneManagerImplUnitTest {
                         .registerPane(
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
 
@@ -108,7 +110,9 @@ public class PaneManagerImplUnitTest {
                         .registerPane(
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mTabSwitcherPane));
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
 
@@ -133,7 +137,9 @@ public class PaneManagerImplUnitTest {
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mTabSwitcherPane))
                         .registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(null));
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
 
@@ -157,7 +163,9 @@ public class PaneManagerImplUnitTest {
                         .registerPane(
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromSupplier(mPaneSupplier));
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         verifyNoInteractions(mPaneSupplier);
 
         paneManager.focusPane(PaneId.TAB_SWITCHER);
@@ -174,7 +182,9 @@ public class PaneManagerImplUnitTest {
                         .registerPane(
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mTabSwitcherPane));
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         paneManager.destroy();
         verifyNoInteractions(mTabSwitcherPane);
@@ -189,7 +199,9 @@ public class PaneManagerImplUnitTest {
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mTabSwitcherPane));
         mHubVisibilitySupplier.set(true);
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         ShadowLooper.runUiThreadTasks();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
@@ -217,7 +229,9 @@ public class PaneManagerImplUnitTest {
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         mHubVisibilitySupplier.set(false);
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         ShadowLooper.runUiThreadTasks();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
@@ -243,7 +257,9 @@ public class PaneManagerImplUnitTest {
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         mHubVisibilitySupplier.set(true);
-        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         ShadowLooper.runUiThreadTasks();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
@@ -292,7 +308,9 @@ public class PaneManagerImplUnitTest {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
                         .registerPane(PaneId.TAB_SWITCHER, supplier);
-        PaneManager paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        PaneManager paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         assertNull(paneManager.getPaneForId(PaneId.TAB_SWITCHER));
         assertTrue(called.get());
 

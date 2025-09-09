@@ -58,6 +58,7 @@ public class HubProvider {
      * @param searchActivityClient A client for the search activity, used to launch search.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param defaultPaneId The default pane's Id.
      */
     public HubProvider(
             Activity activity,
@@ -70,10 +71,11 @@ public class HubProvider {
             Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @PaneId int defaultPaneId) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mHubShowPaneHelper = new HubShowPaneHelper();
+        mHubShowPaneHelper = new HubShowPaneHelper(defaultPaneId);
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
@@ -96,7 +98,8 @@ public class HubProvider {
                                     mHubShowPaneHelper,
                                     edgeToEdgeSupplier,
                                     searchActivityClient,
-                                    xrSpaceModeObservableSupplier);
+                                    xrSpaceModeObservableSupplier,
+                                    defaultPaneId);
                         });
 
         mOnPaneFocused =

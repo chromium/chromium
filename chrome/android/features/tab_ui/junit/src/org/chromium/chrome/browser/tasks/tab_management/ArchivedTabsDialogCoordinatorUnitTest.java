@@ -324,6 +324,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         savedTabGroupAfter.localId = new LocalTabGroupId(TAB_GROUP_ID);
 
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
+        when(mPaneManager.getDefaultPane()).thenReturn(mTabSwitcherPaneBase);
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING))
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupBefore)

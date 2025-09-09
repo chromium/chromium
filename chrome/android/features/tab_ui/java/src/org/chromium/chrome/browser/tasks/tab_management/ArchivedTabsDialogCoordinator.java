@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -259,9 +258,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                             TabSwitcherPaneBase tabSwitcherPaneBase =
                                     (TabSwitcherPaneBase)
-                                            mPaneManagerSupplier
-                                                    .get()
-                                                    .getPaneForId(PaneId.TAB_SWITCHER);
+                                            mPaneManagerSupplier.get().getDefaultPane();
                             assumeNonNull(tabSwitcherPaneBase);
                             Callback<Integer> requestOpenTabGroupDialog =
                                     (rootId) -> {

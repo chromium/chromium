@@ -17,7 +17,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubManager;
-import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -155,8 +155,10 @@ public class IncognitoReauthCoordinatorFactory {
                 if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                     assumeNonNull(mHubManagerSupplier);
                     mHubManagerSupplier.runSyncOrOnAvailable(
-                            hubManager ->
-                                    hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER));
+                            hubManager -> {
+                                PaneManager manager = hubManager.getPaneManager();
+                                manager.focusPane(manager.getDefaultPaneId());
+                            });
                     return;
                 }
                 mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);

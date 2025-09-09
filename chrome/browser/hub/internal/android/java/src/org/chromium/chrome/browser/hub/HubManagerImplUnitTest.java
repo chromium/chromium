@@ -175,7 +175,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -208,7 +209,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -272,7 +274,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -312,7 +315,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -356,7 +360,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -407,7 +412,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

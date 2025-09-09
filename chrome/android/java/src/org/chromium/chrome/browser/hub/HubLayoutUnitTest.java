@@ -266,7 +266,7 @@ public class HubLayoutUnitTest {
         when(mHubController.getHubColorMixer()).thenReturn(mHubColorMixer);
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         when(mHubManager.getHubController()).thenReturn(mHubController);
-        mHubShowPaneHelper = new HubShowPaneHelper();
+        mHubShowPaneHelper = new HubShowPaneHelper(/* defaultPaneId= */ PaneId.TAB_SWITCHER);
         when(mHubManager.getHubShowPaneHelper()).thenReturn(mHubShowPaneHelper);
         doAnswer(
                         invocation -> {

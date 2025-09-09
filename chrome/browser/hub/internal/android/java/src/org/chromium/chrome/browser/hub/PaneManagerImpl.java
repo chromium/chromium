@@ -26,6 +26,7 @@ public class PaneManagerImpl implements PaneManager {
     private final Callback<Boolean> mHubVisibilityObserver;
     private final PaneTransitionHelper mPaneTransitionHelper;
     private final PaneOrderController mPaneOrderController;
+    private final @PaneId int mDefaultPaneId;
 
     /**
      * Create a {@link PaneManagerImpl}.
@@ -33,15 +34,19 @@ public class PaneManagerImpl implements PaneManager {
      * @param paneListBuilder The {@link PaneListBuilder} consumed to build the list of {@link
      *     Pane}s to manage.
      * @param hubVisibilitySupplier The supplier for visibility of the Hub.
+     * @param defaultPaneId The default pane's Id.
      */
     public PaneManagerImpl(
-            PaneListBuilder paneListBuilder, ObservableSupplier<Boolean> hubVisibilitySupplier) {
+            PaneListBuilder paneListBuilder,
+            ObservableSupplier<Boolean> hubVisibilitySupplier,
+            @PaneId int defaultPaneId) {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
         mHubVisibilityObserver = this::onHubVisibilityChanged;
         mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
         mPaneTransitionHelper = new PaneTransitionHelper(this);
         mPaneOrderController = paneListBuilder.getPaneOrderController();
+        mDefaultPaneId = defaultPaneId;
     }
 
     /** Destroys the {@link PaneManager}. */
@@ -103,6 +108,16 @@ public class PaneManagerImpl implements PaneManager {
                         + " does not match the paneId it was registered with "
                         + paneId;
         return pane;
+    }
+
+    @Override
+    public @Nullable Pane getDefaultPane() {
+        return getPaneForId(getDefaultPaneId());
+    }
+
+    @Override
+    public @PaneId int getDefaultPaneId() {
+        return mDefaultPaneId;
     }
 
     private boolean isHubVisible() {
