@@ -271,7 +271,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // any variation ids are malformed or duplicated. Returns true otherwise.
   bool AddVariationIdsToSet(const std::vector<std::string>& variation_ids,
                             bool should_dedupe,
-                            VariationIDEntrySet* target_set) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+                            VariationIDEntrySet* target_set)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Parses a comma-separated string of variation ids and trigger variation ids
   // and adds them to `target_set`. If `should_dedupe` is true, ids that have
