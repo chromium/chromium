@@ -991,8 +991,7 @@ class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
     // inactive after view is removed from hierarchy.
     EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
               ui::TouchSelectionController::ActiveStatus::INSERTION_ACTIVE);
-    ui::ViewAndroid* view_android = rwhv_android_->GetNativeView();
-    view_android->RemoveFromParent();
+    rwhv_android_->UpdateNativeViewTree(nullptr, nullptr);
     EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
               ui::TouchSelectionController::ActiveStatus::INACTIVE);
   }
