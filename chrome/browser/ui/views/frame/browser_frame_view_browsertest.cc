@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -57,17 +57,15 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
 
 }  // namespace
 
-class BrowserNonClientFrameViewBrowserTest
-    : public extensions::ExtensionBrowserTest {
+class BrowserFrameViewBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  BrowserNonClientFrameViewBrowserTest() = default;
+  BrowserFrameViewBrowserTest() = default;
 
-  BrowserNonClientFrameViewBrowserTest(
-      const BrowserNonClientFrameViewBrowserTest&) = delete;
-  BrowserNonClientFrameViewBrowserTest& operator=(
-      const BrowserNonClientFrameViewBrowserTest&) = delete;
+  BrowserFrameViewBrowserTest(const BrowserFrameViewBrowserTest&) = delete;
+  BrowserFrameViewBrowserTest& operator=(const BrowserFrameViewBrowserTest&) =
+      delete;
 
-  ~BrowserNonClientFrameViewBrowserTest() override = default;
+  ~BrowserFrameViewBrowserTest() override = default;
 
   void SetUp() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -110,7 +108,7 @@ class BrowserNonClientFrameViewBrowserTest
   // Frame view may get reset after theme change, so always access from the
   // browser view and don't retain the pointer.
   // TODO(crbug.com/40656280): Make it not do this and only refresh the Widget.
-  BrowserNonClientFrameView* GetAppFrameView() {
+  BrowserFrameView* GetAppFrameView() {
     return app_browser_view_->frame()->GetFrameView();
   }
 
@@ -131,13 +129,11 @@ class BrowserNonClientFrameViewBrowserTest
 };
 
 // Tests the frame color for a normal browser window.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       BrowserFrameColorThemed) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, BrowserFrameColorThemed) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  const BrowserNonClientFrameView* frame_view =
-      browser_view->frame()->GetFrameView();
+  const BrowserFrameView* frame_view = browser_view->frame()->GetFrameView();
   const ui::ColorProvider* color_provider = frame_view->GetColorProvider();
   const SkColor expected_active_color =
       color_provider->GetColor(ui::kColorFrameActive);
@@ -151,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests the frame color for a bookmark app when a theme is applied.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        BookmarkAppFrameColorCustomTheme) {
   // The theme color should not affect the window, but the theme must not be the
   // default GTK theme for Linux so we install one anyway.
@@ -165,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
 // Tests the frame color for a bookmark app when a theme is applied, with the
 // app itself having no theme color.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        BookmarkAppFrameColorCustomThemeNoThemeColor) {
   InstallAndLaunchBookmarkApp();
   const SkColor color_without_theme =
@@ -179,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
 // Tests that an opaque frame color is used for a web app with a transparent
 // theme color.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        OpaqueFrameColorForTransparentWebAppThemeColor) {
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
@@ -193,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests the frame color for a bookmark app when the system theme is applied.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        BookmarkAppFrameColorSystemTheme) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
@@ -220,8 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Verifies that the incognito window frame is always the right color.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       IncognitoIsCorrectColor) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
   // Set the color that's expected to be ignored.
   auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
   theme->set_user_color(gfx::kGoogleBlue400);
@@ -231,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
   BrowserWidget* frame = view->frame();
-  BrowserNonClientFrameView* frame_view = frame->GetFrameView();
+  BrowserFrameView* frame_view = frame->GetFrameView();
 
   color_utils::HSL frame_color_hsl;
   SkColorToHSL(frame_view->GetFrameColor(BrowserFrameActiveState::kActive),
@@ -244,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
 // Checks that the title bar for hosted app windows is hidden when in fullscreen
 // for tab mode.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        FullscreenForTabTitlebarHeight) {
   InstallAndLaunchBookmarkApp();
   static_cast<content::WebContentsDelegate*>(app_browser_)
@@ -262,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 #define MAYBE_CustomTabBarIsVisibleInFullscreen \
   CustomTabBarIsVisibleInFullscreen
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        MAYBE_CustomTabBarIsVisibleInFullscreen) {
   InstallAndLaunchBookmarkApp();
 
@@ -276,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        HTMLMetaThemeColorOverridesManifest) {
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
@@ -415,8 +410,7 @@ class SaveCardOfferObserver
 
 // TODO(crbug.com/40866991): Test is flaky.
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       DISABLED_SaveCardIcon) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, DISABLED_SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
   ASSERT_TRUE(autofill_manager_injector_[web_contents_]->WaitForFormsSeen(1));
@@ -436,10 +430,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       BrowserFrameWindowMask) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, BrowserFrameWindowMask) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameView* frame_view = browser_view->frame()->GetFrameView();
+  BrowserFrameView* frame_view = browser_view->frame()->GetFrameView();
   SkPath path;
   frame_view->GetWindowMask(frame_view->bounds().size(), &path);
   EXPECT_TRUE(path.isEmpty());

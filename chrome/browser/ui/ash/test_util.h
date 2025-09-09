@@ -14,7 +14,7 @@
 #include "ui/aura/window_observer.h"
 
 class Browser;
-class BrowserNonClientFrameViewChromeOS;
+class BrowserFrameViewChromeOS;
 class BrowserView;
 
 namespace views {
@@ -77,7 +77,7 @@ class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
                                     content::WebContents* web_contents);
 
   // Returns the non-client frame view for `browser_view`.
-  static BrowserNonClientFrameViewChromeOS* GetFrameViewChromeOS(
+  static BrowserFrameViewChromeOS* GetFrameViewChromeOS(
       BrowserView* browser_view);
 
  private:

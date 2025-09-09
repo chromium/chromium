@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
@@ -335,7 +335,7 @@ void WebAppFrameToolbarTestHelper::SetViews(Browser* app_browser) {
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
   views::NonClientFrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  frame_view_ = static_cast<BrowserFrameView*>(frame_view);
   root_view_ = browser_view_->GetWidget()->GetRootView();
 
   web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();

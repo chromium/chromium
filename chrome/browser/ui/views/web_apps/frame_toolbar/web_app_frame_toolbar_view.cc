@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -391,8 +391,7 @@ WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
 }
 
 void WebAppFrameToolbarView::UpdateCachedColors() {
-  const BrowserNonClientFrameView* frame_view =
-      browser_view_->frame()->GetFrameView();
+  const BrowserFrameView* frame_view = browser_view_->frame()->GetFrameView();
   DCHECK(frame_view);
 
   active_background_color_ =

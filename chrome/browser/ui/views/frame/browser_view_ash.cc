@@ -42,7 +42,7 @@ void BrowserViewAsh::Layout(PassKey) {
   // in the layout or visibility of these contents (devtools opened, devtools
   // docked placement change, side panel open etc), we might need to update
   // which corners are currently rounded. See
-  // `BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
+  // `BrowserFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
   // details.
   DCHECK(GetWidget());
   GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();

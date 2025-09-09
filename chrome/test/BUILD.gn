@@ -4312,7 +4312,7 @@ if (!is_android) {
         "../browser/ui/fullscreen_util_mac_browsertest.cc",
         "../browser/ui/test/test_browser_dialog_mac.h",
         "../browser/ui/test/test_browser_dialog_mac.mm",
-        "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.mm",
+        "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
@@ -5057,7 +5057,7 @@ if (!is_android) {
         "../browser/ui/views/external_protocol_dialog_browsertest.cc",
         "../browser/ui/views/file_system_access/file_system_access_browsertest.cc",
         "../browser/ui/views/file_system_access/file_system_access_usage_bubble_view_browsertest.cc",
-        "../browser/ui/views/frame/browser_non_client_frame_view_browsertest.cc",
+        "../browser/ui/views/frame/browser_frame_view_browsertest.cc",
         "../browser/ui/views/frame/browser_root_view_browsertest.cc",
         "../browser/ui/views/frame/browser_view_browsertest.cc",
         "../browser/ui/views/frame/browser_widget_browsertest.cc",
@@ -5179,7 +5179,9 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
       if (is_chromeos) {
-        sources += [ "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc" ]
+        sources += [
+          "../browser/ui/views/frame/system_web_app_frame_view_browsertest.cc",
+        ]
         deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
       } else {
         sources += [
@@ -5319,7 +5321,7 @@ if (!is_android) {
         "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",
         "../browser/ui/views/extensions/extension_dialog_bounds_browsertest.cc",
         "../browser/ui/views/frame/browser_frame_ash_browsertest.cc",
-        "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
+        "../browser/ui/views/frame/browser_frame_view_chromeos_browsertest.cc",
         "../browser/ui/views/frame/immersive_mode_browser_view_test.cc",
         "../browser/ui/views/frame/immersive_mode_controller_chromeos_browsertest.cc",
         "../browser/ui/views/frame/system_menu_model_builder_browsertest_chromeos.cc",
@@ -10449,7 +10451,7 @@ test("unit_tests") {
       "../browser/ui/views/extensions/extensions_toolbar_unittest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_unittest.h",
       "../browser/ui/views/extensions/media_galleries_dialog_views_unittest.cc",
-      "../browser/ui/views/frame/browser_non_client_frame_view_unittest.cc",
+      "../browser/ui/views/frame/browser_frame_view_unittest.cc",
       "../browser/ui/views/frame/browser_view_layout_unittest.cc",
       "../browser/ui/views/frame/browser_view_unittest.cc",
       "../browser/ui/views/frame/multi_contents_drop_target_view_unittest.cc",
@@ -10564,7 +10566,7 @@ test("unit_tests") {
         "../browser/media_galleries/mac/mtp_device_delegate_impl_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/screen_capture_permission_checker_mac_unittest.mm",
-        "../browser/ui/views/frame/browser_non_client_frame_view_mac_unittest.mm",
+        "../browser/ui/views/frame/browser_frame_view_mac_unittest.mm",
       ]
     }
     if (is_mac || is_linux) {

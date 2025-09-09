@@ -495,7 +495,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserWidget* frame,
     BrowserView* browser_view)
-    : BrowserNonClientFrameView(frame, browser_view),
+    : BrowserFrameView(frame, browser_view),
       top_bar_color_animation_(this),
       move_camera_button_to_left_animation_(this),
       move_camera_button_to_right_animation_(gfx::MultiAnimation::Parts{
@@ -720,7 +720,7 @@ PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserNonClientFrameView implementations:
+// BrowserFrameView implementations:
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
@@ -743,7 +743,7 @@ void PictureInPictureBrowserFrameView::ShowOverlayIfNeeded() {
 }
 
 void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
-  BrowserNonClientFrameView::OnBrowserViewInitViewsComplete();
+  BrowserFrameView::OnBrowserViewInitViewsComplete();
 
 #if BUILDFLAG(IS_WIN)
   const gfx::Insets insets = GetClientAreaInsets(
@@ -909,7 +909,7 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
     view->SetIconColor(color_provider->GetColor(kColorPipWindowForeground));
   }
 
-  BrowserNonClientFrameView::OnThemeChanged();
+  BrowserFrameView::OnThemeChanged();
 }
 
 void PictureInPictureBrowserFrameView::Layout(PassKey) {
@@ -925,7 +925,7 @@ void PictureInPictureBrowserFrameView::Layout(PassKey) {
   }
 #endif
 
-  LayoutSuperclass<BrowserNonClientFrameView>(this);
+  LayoutSuperclass<BrowserFrameView>(this);
 }
 
 void PictureInPictureBrowserFrameView::AddedToWidget() {
@@ -993,7 +993,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
       this);
 
-  BrowserNonClientFrameView::AddedToWidget();
+  BrowserFrameView::AddedToWidget();
 }
 
 void PictureInPictureBrowserFrameView::RemovedFromWidget() {
@@ -1014,7 +1014,7 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
       this);
   tucker_.reset();
 
-  BrowserNonClientFrameView::RemovedFromWidget();
+  BrowserFrameView::RemovedFromWidget();
 }
 
 void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
@@ -1048,7 +1048,7 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
   if (!base::FeatureList::IsEnabled(
           media::kDocumentPictureInPictureAnimateResize) ||
       !gfx::Animation::ShouldRenderRichAnimation() || is_tucking_forced_) {
-    BrowserNonClientFrameView::SetFrameBounds(adjusted_bounds);
+    BrowserFrameView::SetFrameBounds(adjusted_bounds);
 
     // If we're forced to tuck, then re-tuck after the size adjustment. Note
     // that we also always skip the bounds change animation when tucking is

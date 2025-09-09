@@ -105,7 +105,7 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their
-    // browser windows, see |CreateBrowserNonClientFrameView()|.
+    // browser windows, see |CreateBrowserFrameView()|.
     bool is_opaque_browser_frame_view =
         views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
 #if BUILDFLAG(IS_LINUX)
@@ -334,7 +334,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their
-    // browser windows, see |CreateBrowserNonClientFrameView()|.
+    // browser windows, see |CreateBrowserFrameView()|.
     bool is_opaque_browser_frame_view =
         views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
 

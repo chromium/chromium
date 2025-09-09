@@ -1148,10 +1148,10 @@ class BrowserView : public BrowserWindow,
   // Menu button and page status icons. Only used by web-app windows.
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
-  // Normally the BrowserNonClientFrameView is responsible for rendering the
-  // title of a window when appropriate. However for web applications the title
-  // needs to be more integrated with other UI components part of BrowserView,
-  // so have a title Label for them here.
+  // Normally the BrowserFrameView is responsible for rendering the title of a
+  // window when appropriate. However for web applications the title needs to be
+  // more integrated with other UI components part of BrowserView, so have a
+  // title Label for them here.
   raw_ptr<views::Label> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.

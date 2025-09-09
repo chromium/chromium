@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
@@ -19,9 +19,8 @@
 class BrowserView;
 class BrowserCaptionButtonContainer;
 
-class BrowserFrameViewWin : public BrowserNonClientFrameView,
-                            public TabIconViewModel {
-  METADATA_HEADER(BrowserFrameViewWin, BrowserNonClientFrameView)
+class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
+  METADATA_HEADER(BrowserFrameViewWin, BrowserFrameView)
 
  public:
   // Constructs a non-client view for an BrowserWidget.
@@ -30,7 +29,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   BrowserFrameViewWin& operator=(const BrowserFrameViewWin&) = delete;
   ~BrowserFrameViewWin() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
   gfx::Rect GetBoundsForTabStripRegion(
@@ -79,7 +78,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   const TabIconView* window_icon_for_testing() const { return window_icon_; }
 
  protected:
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   BoundsAndMargins GetCaptionButtonBounds() const override;
   void PaintAsActiveChanged() override;
 

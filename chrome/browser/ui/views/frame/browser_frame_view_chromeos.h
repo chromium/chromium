@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_CHROMEOS_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
@@ -33,31 +33,28 @@ class FrameCaptionButtonContainerView;
 class HighlightBorderOverlay;
 }  // namespace chromeos
 
-// Provides the BrowserNonClientFrameView for Chrome OS.
-class BrowserNonClientFrameViewChromeOS
-    : public BrowserNonClientFrameView,
+// Provides the BrowserFrameView for Chrome OS.
+class BrowserFrameViewChromeOS
+    : public BrowserFrameView,
       public BrowserFrameHeaderChromeOS::AppearanceProvider,
       public display::DisplayObserver,
       public TabIconViewModel,
       public aura::WindowObserver,
       public ImmersiveModeController::Observer,
       public apps::AppRegistryCache::Observer {
-  METADATA_HEADER(BrowserNonClientFrameViewChromeOS, BrowserNonClientFrameView)
+  METADATA_HEADER(BrowserFrameViewChromeOS, BrowserFrameView)
 
  public:
-  BrowserNonClientFrameViewChromeOS(BrowserWidget* frame,
-                                    BrowserView* browser_view);
-  BrowserNonClientFrameViewChromeOS(const BrowserNonClientFrameViewChromeOS&) =
-      delete;
-  BrowserNonClientFrameViewChromeOS& operator=(
-      const BrowserNonClientFrameViewChromeOS&) = delete;
-  ~BrowserNonClientFrameViewChromeOS() override;
+  BrowserFrameViewChromeOS(BrowserWidget* frame, BrowserView* browser_view);
+  BrowserFrameViewChromeOS(const BrowserFrameViewChromeOS&) = delete;
+  BrowserFrameViewChromeOS& operator=(const BrowserFrameViewChromeOS&) = delete;
+  ~BrowserFrameViewChromeOS() override;
 
-  static BrowserNonClientFrameViewChromeOS* Get(aura::Window* window);
+  static BrowserFrameViewChromeOS* Get(aura::Window* window);
 
   void Init();
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
@@ -143,13 +140,13 @@ class BrowserNonClientFrameViewChromeOS
   bool IsTrustedPinned() const;
 
  protected:
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   void PaintAsActiveChanged() override;
   void AddedToWidget() override;
   BoundsAndMargins GetCaptionButtonBounds() const override;
 
  private:
-  friend class BrowserNonClientFrameViewChromeOSTestApi;
+  friend class BrowserFrameViewChromeOSTestApi;
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
   class ProfileChangeObserver;
@@ -264,8 +261,7 @@ class BrowserNonClientFrameViewChromeOS
   // `contents_web_view()` native view following a theme changed event.
   base::CancelableOnceCallback<void(bool)> theme_changed_animation_callback_;
 
-  base::WeakPtrFactory<BrowserNonClientFrameViewChromeOS> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<BrowserFrameViewChromeOS> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_CHROMEOS_H_

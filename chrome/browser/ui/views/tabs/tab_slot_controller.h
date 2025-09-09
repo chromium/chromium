@@ -256,7 +256,7 @@ class TabSlotController {
 
   virtual Browser* GetBrowser() = 0;
 
-  // See BrowserNonClientFrameView::IsFrameCondensed().
+  // See BrowserFrameView::IsFrameCondensed().
   virtual bool IsFrameCondensed() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
