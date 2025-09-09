@@ -1275,9 +1275,9 @@
       status: "experimental",
     },
     {
-      // https://github.com/w3c/csswg-drafts/issues/8376#issuecomment-2751161553
+      // https://drafts.csswg.org/css-conditional-5/#typedef-style-range
       name: "CSSContainerStyleQueriesRange",
-      status: "test",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
