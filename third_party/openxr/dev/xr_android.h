@@ -214,4 +214,54 @@ typedef XrResult(XRAPI_PTR* PFN_xrAcquireDepthSwapchainImagesANDROID)(
     XrDepthAcquireResultANDROID* acquireResult);
 #endif  // XR_ANDROID_depth_texture
 
+#ifndef XR_ANDROID_spatial_discovery_raycast
+#define XR_ANDROID_spatial_discovery_raycast 1
+#define XR_ANDROID_spatial_discovery_raycast_SPEC_VERSION 1
+#define XR_ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME \
+  "XR_ANDROID_spatial_discovery_raycast"
+
+#define XR_TYPE_SPATIAL_BOUNDS_RAYCAST_ANDROID ((XrStructureType)1000786001U)
+#define XR_TYPE_SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID \
+  ((XrStructureType)1000786002U)
+#define XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID \
+  ((XrStructureType)1000786000U)
+
+#define XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID \
+  ((XrSpatialCapabilityEXT)1000786000U)
+#define XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID \
+  ((XrSpatialComponentTypeEXT)1000786000U)
+
+typedef struct XrSpatialRaycastResultANDROID {
+    XrPosef    hitPose;
+    float      distanceSquared;
+} XrSpatialRaycastResultANDROID;
+
+typedef struct XrSpatialCapabilityConfigurationDepthRaycastANDROID {
+    XrStructureType                     type;
+    const void* XR_MAY_ALIAS            next;
+    XrSpatialCapabilityEXT              capability;
+    uint32_t                            enabledComponentCount;
+    const XrSpatialComponentTypeEXT*    enabledComponents;
+} XrSpatialCapabilityConfigurationDepthRaycastANDROID;
+
+// XrSpatialBoundsRaycastANDROID extends XrSpatialDiscoverySnapshotCreateInfoEXT
+typedef struct XrSpatialBoundsRaycastANDROID {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrSpace                     space;
+    XrTime                      time;
+    XrVector3f                  origin;
+    XrVector3f                  direction;
+    float                       maxDistance;
+} XrSpatialBoundsRaycastANDROID;
+
+// XrSpatialComponentRaycastResultListANDROID extends XrSpatialComponentDataQueryResultEXT
+typedef struct XrSpatialComponentRaycastResultListANDROID {
+    XrStructureType                   type;
+    void* XR_MAY_ALIAS                next;
+    uint32_t                          raycastResultCount;
+    XrSpatialRaycastResultANDROID*    raycastResults;
+} XrSpatialComponentRaycastResultListANDROID;
+#endif  // XR_ANDROID_spatial_discovery_raycast
+
 #endif  // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_

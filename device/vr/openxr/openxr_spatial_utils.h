@@ -17,6 +17,14 @@ std::vector<XrSpatialCapabilityEXT> GetCapabilities(
     XrInstance instance,
     XrSystemId system);
 
+// Returns a vector of XrSpatialComponentTypeEXT for the given capability.
+std::vector<XrSpatialComponentTypeEXT> GetSupportedComponentTypes(
+    PFN_xrEnumerateSpatialCapabilityComponentTypesEXT
+        xrEnumerateSpatialCapabilityComponentTypesEXT,
+    XrInstance instance,
+    XrSystemId system,
+    XrSpatialCapabilityEXT capability);
+
 }  // namespace device
 
 #endif  // DEVICE_VR_OPENXR_OPENXR_SPATIAL_UTILS_H_

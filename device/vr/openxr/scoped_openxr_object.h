@@ -53,7 +53,7 @@ class ScopedOpenXrObject {
 
 // Template specializations for Free() must be provided for each type.
 template <>
-void ScopedOpenXrObject<XrSpatialSnapshotEXT>::Free() {
+inline void ScopedOpenXrObject<XrSpatialSnapshotEXT>::Free() {
   if (object_ != XR_NULL_HANDLE) {
     extension_helper_->ExtensionMethods().xrDestroySpatialSnapshotEXT(object_);
   }

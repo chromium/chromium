@@ -233,6 +233,8 @@ if (enable_vr) {
         "openxr/openxr_spatial_capability_configuration_base.h",
         "openxr/openxr_spatial_framework_manager.cc",
         "openxr/openxr_spatial_framework_manager.h",
+        "openxr/openxr_spatial_hit_test_manager.cc",
+        "openxr/openxr_spatial_hit_test_manager.h",
         "openxr/openxr_spatial_plane_manager.cc",
         "openxr/openxr_spatial_plane_manager.h",
         "openxr/openxr_spatial_utils.cc",

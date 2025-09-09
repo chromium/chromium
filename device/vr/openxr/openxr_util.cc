@@ -15,6 +15,18 @@
 #include "ui/gfx/geometry/transform_util.h"
 namespace device {
 
+namespace {
+// This represents a 90 degree (or pi/2) rotation about the X axis. Suitable
+// for turning "+Z" from being up to "+Y" being up.
+// clang-format off
+static constexpr gfx::Transform kZNormalToYNormalTransform =
+  gfx::Transform::RowMajor(1,  0,  0, 0,
+                            0,  0, -1, 0,
+                            0,  1,  0, 0,
+                            0,  0,  0, 1);
+// clang-format on
+}  // namespace
+
 XrPosef PoseIdentity() {
   XrPosef pose{};
   pose.orientation.w = 1;
@@ -37,6 +49,17 @@ device::Pose XrPoseToDevicePose(const XrPosef& pose) {
                               pose.orientation.z, pose.orientation.w};
   gfx::Point3F position{pose.position.x, pose.position.y, pose.position.z};
   return device::Pose{position, orientation};
+}
+
+device::Pose ZNormalXrPoseToYNormalDevicePose(const XrPosef& pose) {
+  auto z_normal = XrPoseToGfxTransform(pose);
+  auto y_normal = z_normal * kZNormalToYNormalTransform;
+  auto maybe_pose = device::Pose::Create(y_normal);
+
+  // Our XrPose is guaranteed parseable, and applying a simple rotation should
+  // not change that.
+  CHECK(maybe_pose);
+  return *maybe_pose;
 }
 
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {

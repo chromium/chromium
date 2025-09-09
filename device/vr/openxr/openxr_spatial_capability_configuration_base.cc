@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -18,15 +19,14 @@ OpenXrSpatialCapabilityConfigurationBase::
   // The `type` of the XrSpatialCapabilityConfigurationBaseHeaderEXT struct has
   // a 1:1 correlation with the `capability` that it is being provided for.
   XrStructureType type = XR_TYPE_UNKNOWN;
-  switch (capability) {
-    case XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT:
-      type = XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT;
-      break;
-    case XR_SPATIAL_CAPABILITY_ANCHOR_EXT:
-      type = XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT;
-      break;
-    default:
-      NOTREACHED() << __func__ << " Unhandled capability type: " << capability;
+  if (capability == XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT) {
+    type = XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT;
+  } else if (capability == XR_SPATIAL_CAPABILITY_ANCHOR_EXT) {
+    type = XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT;
+  } else if (capability == XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID) {
+    type = XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID;
+  } else {
+    NOTREACHED() << __func__ << " Unhandled capability type: " << capability;
   }
 
   config_ = XrSpatialCapabilityConfigurationBaseHeaderEXT{

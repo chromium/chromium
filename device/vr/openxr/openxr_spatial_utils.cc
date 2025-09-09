@@ -27,4 +27,31 @@ std::vector<XrSpatialCapabilityEXT> GetCapabilities(
   return capabilities;
 }
 
+std::vector<XrSpatialComponentTypeEXT> GetSupportedComponentTypes(
+    PFN_xrEnumerateSpatialCapabilityComponentTypesEXT
+        xrEnumerateSpatialCapabilityComponentTypesEXT,
+    XrInstance instance,
+    XrSystemId system,
+    XrSpatialCapabilityEXT capability) {
+  std::vector<XrSpatialComponentTypeEXT> supported_components;
+  XrSpatialCapabilityComponentTypesEXT component_types{
+      XR_TYPE_SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT};
+  if (XR_FAILED(xrEnumerateSpatialCapabilityComponentTypesEXT(
+          instance, system, capability, &component_types))) {
+    return supported_components;
+  }
+
+  supported_components.resize(component_types.componentTypeCountOutput);
+  component_types.componentTypeCapacityInput =
+      component_types.componentTypeCountOutput;
+  component_types.componentTypes = supported_components.data();
+
+  if (XR_FAILED(xrEnumerateSpatialCapabilityComponentTypesEXT(
+          instance, system, capability, &component_types))) {
+    supported_components.clear();
+  }
+
+  return supported_components;
+}
+
 }  // namespace device

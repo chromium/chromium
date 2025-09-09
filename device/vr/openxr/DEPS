@@ -12,7 +12,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # The extension helper needs access to the prototype android headers so that
+  # it can hold and extract the function pointers.
   "openxr_extension_helper\..*" : [
+    "+third_party/openxr/dev/xr_android.h",
+  ],
+  # The spatial framework extensions can depend on android headers as there
+  # are some android headers that provide supplemental functionality. This
+  # functionality is not really big enough to easily extract to it's own file
+  # and there are not quite enough instances to create a better pattern than
+  # direct usage at this time.
+  "openxr_spatial_.*" : [
     "+third_party/openxr/dev/xr_android.h",
   ]
 }

@@ -93,7 +93,9 @@ class OpenXrApiWrapper {
 
   XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
 
+  XrInstance instance() const { return instance_; }
   XrSession session() const { return session_; }
+  XrSystemId system() const { return system_; }
 
   XrResult BeginFrame();
   XrResult EndFrame();
