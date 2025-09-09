@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include <oleacc.h>
+#include <windows.h>  // Must be before the UIA header.
 #include <wrl/client.h>
+
+#include <uiautomation.h>
 
 #include "base/containers/circular_deque.h"
 #include "base/strings/string_util.h"
@@ -27,8 +30,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
 
 // We could move this into a utility file in the future if it ends up
@@ -261,4 +266,97 @@ IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
       break;
     }
   }
+}
+
+class NarratorContainmentEnabledBrowserTest : public InProcessBrowserTest {
+ public:
+  NarratorContainmentEnabledBrowserTest() = default;
+
+ protected:
+  void SetUp() override {
+    features_.InitAndEnableFeature(
+        ::features::kFixNarratorWebContentContainment);
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(NarratorContainmentEnabledBrowserTest,
+                       ParentClassNameIsChrome_WidgetWin_1) {
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+  WinAccessibilityEventMonitor monitor(EVENT_OBJECT_SHOW, EVENT_OBJECT_SHOW);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<!doctype html><html></html>")));
+
+  // Wait until we see the new document appear.
+  DWORD ev;
+  HWND ev_hwnd;
+  UINT role;
+  UINT state;
+  std::string name;
+  do {
+    monitor.WaitForNextEvent(&ev, &ev_hwnd, &role, &state, &name);
+  } while (!(ev == EVENT_OBJECT_SHOW && role == ROLE_SYSTEM_DOCUMENT));
+
+  // Query UIA starting from the top-level Chrome HWND.
+  Microsoft::WRL::ComPtr<IUIAutomation> uia;
+  ASSERT_HRESULT_SUCCEEDED(CoCreateInstance(
+      CLSID_CUIAutomation, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&uia)));
+
+  HWND top_hwnd =
+      views::HWNDForNativeWindow(browser()->window()->GetNativeWindow());
+  ASSERT_NE(nullptr, top_hwnd);
+
+  Microsoft::WRL::ComPtr<IUIAutomationElement> hwnd_elem;
+  ASSERT_HRESULT_SUCCEEDED(uia->ElementFromHandle(top_hwnd, &hwnd_elem));
+  ASSERT_TRUE(hwnd_elem);
+
+  // Find the document element in the subtree.
+  Microsoft::WRL::ComPtr<IUIAutomationCondition> is_document;
+  {
+    VARIANT v;
+    VariantInit(&v);
+    v.vt = VT_I4;
+    v.lVal = UIA_DocumentControlTypeId;
+    ASSERT_HRESULT_SUCCEEDED(uia->CreatePropertyCondition(
+        UIA_ControlTypePropertyId, v, &is_document));
+  }
+  Microsoft::WRL::ComPtr<IUIAutomationElement> document;
+  ASSERT_HRESULT_SUCCEEDED(
+      hwnd_elem->FindFirst(TreeScope_Subtree, is_document.Get(), &document));
+  ASSERT_TRUE(document);
+
+  Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> control_walker;
+  ASSERT_HRESULT_SUCCEEDED(uia->get_ControlViewWalker(&control_walker));
+  Microsoft::WRL::ComPtr<IUIAutomationElement> parent_elem;
+  ASSERT_HRESULT_SUCCEEDED(
+      control_walker->GetParentElement(document.Get(), &parent_elem));
+  ASSERT_TRUE(parent_elem);
+
+  base::win::ScopedBstr class_name;
+  ASSERT_HRESULT_SUCCEEDED(
+      parent_elem->get_CurrentClassName(class_name.Receive()));
+  ASSERT_TRUE(class_name.Get());
+
+  // Windows Narrator’s Scan Mode only contains navigation within web content when the UIA
+  // parent of the document reports the class name "Chrome_WidgetWin_1". Chromium currently
+  // supplies that via a temporary mitigation in ViewAccessibility::OnViewAddedToWidget(),
+  // gated by features::kFixNarratorWebContentContainment.
+  //
+  // If this test fails:
+  //  1) You likely broke Narrator’s web-content containment (users may arrow
+  //     out of the page in Scan Mode).
+  //  2) If the failure is due to a class name change, update the string we set
+  //     in ViewAccessibility::OnViewAddedToWidget() to the new expected value,
+  //     and adjust this assertion to match.
+  //  3) If the behavior changed or you’re unsure, reach out to the Accessibility team.
+  //
+  // Notes:
+  //  - This intentionally asserts the *exact* UIA class name.
+  //  - This is a stopgap until Narrator updates its tab-boundary heuristic.
+  //  - See https://crbug.com/443225250 for background.
+  EXPECT_STREQ(L"Chrome_WidgetWin_1", class_name.Get());
 }
