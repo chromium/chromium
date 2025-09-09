@@ -26,6 +26,7 @@ namespace save_to_drive {
 namespace {
 
 using ::save_to_drive::testing::GetTestAccount;
+using ::save_to_drive::testing::GetTestAccounts;
 
 AccountChosenCallback GetOnAccountChosenCallback(
     const AccountInfo& expected_account,
@@ -95,6 +96,27 @@ class AccountChooserControllerInteractiveUiTest
         [this, &account]() { MakeAccountAvailableInIdentityTestEnv(account); });
   }
 
+  // Stores the persisted account in the out parameter `persisted_account`.
+  auto MakeAccountAvailable(const AccountInfo& account,
+                            AccountInfo* persisted_account) {
+    return Do([this, &account, persisted_account]() {
+      *persisted_account = MakeAccountAvailableInIdentityTestEnv(account);
+    });
+  }
+
+  // Stores the persisted accounts in the out parameter `persisted_accounts`.
+  auto MakeAccountsAvailable(const std::vector<AccountInfo>& accounts,
+                             std::vector<AccountInfo>* persisted_accounts) {
+    return Do([this, &accounts, persisted_accounts]() {
+      persisted_accounts->clear();
+      for (const auto& account : accounts) {
+        AccountInfo persisted_account =
+            MakeAccountAvailableInIdentityTestEnv(account);
+        persisted_accounts->push_back(std::move(persisted_account));
+      }
+    });
+  }
+
   AccountInfo MakeAccountAvailableInIdentityTestEnv(
       const AccountInfo& account) {
     signin::IdentityTestEnvironment* identity_test_env =
@@ -139,6 +161,28 @@ class AccountChooserControllerInteractiveUiTest
     return CheckResult(
         []() -> size_t { return BrowserList::GetInstance()->size(); }, 1u,
         "Expect one browser.");
+  }
+
+  auto MakeAccountAvailableAndSimulateOnExtendedAccountInfoUpdated(
+      const AccountInfo& account) {
+    return Do([this, &account]() {
+      AccountInfo persisted_account =
+          MakeAccountAvailableInIdentityTestEnv(account);
+      account_chooser_controller_->OnExtendedAccountInfoUpdated(
+          persisted_account);
+    });
+  }
+
+  auto
+  RemoveAccountFromIdentityTestEnvAndSimulateOnRefreshTokenRemovedForAccount(
+      AccountInfo* account) {
+    return Do([this, account]() {
+      signin::IdentityTestEnvironment* identity_test_env =
+          identity_test_environment_adaptor_->identity_test_env();
+      identity_test_env->RemoveRefreshTokenForAccount(account->account_id);
+      account_chooser_controller_->OnRefreshTokenRemovedForAccount(
+          account->account_id);
+    });
   }
 
  protected:
@@ -216,6 +260,96 @@ IN_PROC_BROWSER_TEST_F(
                   PressButton(AccountChooserView::kAddAccountButtonId),
                   VerifyPopupOpened(), ClosePopup(), VerifyPopupClosed(),
                   EnsurePresent(AccountChooserView::kTopViewId));
+}
+
+// Steps:
+// 1. Call GetAccount with one account.
+// 2. Add an account.
+// 3. Verify the popup window is shown.
+// 4. Select the new account.
+// 5. Verify the account is selected.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       AddAccountWithExistingAccount) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  AccountInfo chosen_account =
+      GetTestAccount("fern", "test.com", /*gaia_id=*/2);
+  content::WaiterHelper waiter;
+  AccountChosenCallback on_account_chosen_callback =
+      GetOnAccountChosenCallback(chosen_account, waiter);
+  RunTestSequence(
+      // 1. Call GetAccount with one account.
+      CreateAccountChooserController(), MakeAccountAvailable(account),
+      GetAccount(std::move(on_account_chosen_callback)),
+      WaitForShow(AccountChooserView::kTopViewId),
+      WaitForShow(AccountChooserView::kAddAccountButtonId),
+      PressButton(AccountChooserView::kAddAccountButtonId), VerifyPopupOpened(),
+      MakeAccountAvailableAndSimulateOnExtendedAccountInfoUpdated(
+          chosen_account),
+      VerifyPopupClosed(), WaitForShow(AccountChooserView::kTopViewId),
+      WaitForShow(AccountChooserView::kSaveButtonId),
+      PressButton(AccountChooserView::kSaveButtonId),
+      // Verify the account is selected.
+      Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
+}
+
+// Steps:
+// 1. Call GetAccount with multiple accounts.
+// 2. Remove an account.
+// 3. Verify the account chooser is shown.
+// 4. Verify the account is selected.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       RemoveOneAccountFromMultipleAccounts) {
+  std::vector<AccountInfo> accounts =
+      GetTestAccounts({"pothos", "fern"}, "test.com");
+  // Populate the persisted accounts with two empty accounts so it is legal to
+  // access the elements in RunTestSequence, even though the persisted_accounts
+  // will be modified.
+  std::vector<AccountInfo> persisted_accounts = {AccountInfo(), AccountInfo()};
+  content::WaiterHelper waiter;
+  std::vector<AccountInfo>* persisted_accounts_ptr = &persisted_accounts;
+  AccountChosenCallback on_account_chosen_callback = base::BindLambdaForTesting(
+      [persisted_accounts_ptr, &waiter](std::optional<AccountInfo> account) {
+        ASSERT_TRUE(!persisted_accounts_ptr->empty());
+        ASSERT_TRUE(account.has_value());
+        // The first account should be selected because we removed the
+        // second account.
+        const AccountInfo& expected_account = persisted_accounts_ptr->at(0);
+        EXPECT_EQ(account->full_name, expected_account.full_name);
+        EXPECT_EQ(account->email, expected_account.email);
+        waiter.OnEvent();
+      });
+  RunTestSequence(
+      CreateAccountChooserController(),
+      MakeAccountsAvailable(accounts, &persisted_accounts),
+      GetAccount(std::move(on_account_chosen_callback)),
+      WaitForShow(AccountChooserView::kTopViewId),
+      RemoveAccountFromIdentityTestEnvAndSimulateOnRefreshTokenRemovedForAccount(
+          // Arbitrarily remove the second account.
+          &persisted_accounts[1]),
+      WaitForShow(AccountChooserView::kTopViewId),
+      WaitForShow(AccountChooserView::kSaveButtonId),
+      PressButton(AccountChooserView::kSaveButtonId),
+      // Verify the first account is selected.
+      Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
+}
+
+// Steps:
+// 1. Call GetAccount with one account.
+// 2. Remove the account.
+// 3. Verify the popup window is shown.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       RemoveAllAccounts) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  AccountInfo persisted_account;
+  RunTestSequence(
+      CreateAccountChooserController(),
+      MakeAccountAvailable(account, &persisted_account),
+      GetAccount(base::DoNothing()),
+      WaitForShow(AccountChooserView::kTopViewId),
+      RemoveAccountFromIdentityTestEnvAndSimulateOnRefreshTokenRemovedForAccount(
+          // Arbitrarily remove the one account.
+          &persisted_account),
+      VerifyPopupOpened());
 }
 
 }  // namespace

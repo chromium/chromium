@@ -98,15 +98,26 @@ AccountChooserController::~AccountChooserController() {
 void AccountChooserController::GetAccount(
     AccountChosenCallback on_account_chosen_callback) {
   CHECK(on_account_chosen_callback);
+  scoped_identity_manager_observation_.Observe(identity_manager_);
   on_account_chosen_callback_ = std::move(on_account_chosen_callback);
-  ProfileInfo profile_info = GetProfileInfo();
-  Show(std::move(profile_info));
+  Show();
 }
 
 void AccountChooserController::OnExtendedAccountInfoUpdated(
-    const AccountInfo& info) {}
+    const AccountInfo& info) {
+  // If the account is not fully populated, then we should not show the account
+  // chooser dialog.
+  if (info.full_name.empty() || info.email.empty() ||
+      info.account_image.IsEmpty()) {
+    return;
+  }
+  Show();
+}
+
 void AccountChooserController::OnRefreshTokenRemovedForAccount(
-    const CoreAccountId& account_id) {}
+    const CoreAccountId& account_id) {
+  Show();
+}
 
 void AccountChooserController::OnAddAccountPopupDestroyed() {
   // The popup window is going away, make sure we don't keep a dangling pointer.
@@ -120,16 +131,25 @@ void AccountChooserController::OnAddAccountPopupDestroyed() {
   }
 }
 
-void AccountChooserController::Show(ProfileInfo profile_info) {
+void AccountChooserController::Show() {
+  ProfileInfo profile_info = GetProfileInfo();
   if (profile_info.accounts.empty()) {
+    CloseDialogs();
     ShowAddAccountDialog();
   } else {
+    CloseAddAccountPopup();
     ShowAccountChooserDialog(std::move(profile_info));
   }
 }
 
 void AccountChooserController::ShowAccountChooserDialog(
     ProfileInfo profile_info) {
+  if (account_chooser_view_) {
+    account_chooser_view_->UpdateView(profile_info.accounts,
+                                      profile_info.primary_account_id);
+    tab_->GetTabFeatures()->tab_dialog_manager()->UpdateModalDialogBounds();
+    return;
+  }
   std::unique_ptr<AccountChooserView> account_chooser_view =
       std::make_unique<AccountChooserView>(this, profile_info.accounts,
                                            profile_info.primary_account_id);
@@ -166,6 +186,7 @@ void AccountChooserController::OnAddAccountButtonClicked() {
 
 void AccountChooserController::OnFlowCancelled() {
   if (on_account_chosen_callback_) {
+    scoped_identity_manager_observation_.Reset();
     CloseDialogs();
     std::move(on_account_chosen_callback_).Run(std::nullopt);
   }
@@ -179,6 +200,7 @@ void AccountChooserController::OnAccountSelected(
 void AccountChooserController::OnSaveButtonClicked() {
   if (on_account_chosen_callback_) {
     CHECK(selected_account_.has_value());
+    scoped_identity_manager_observation_.Reset();
     CloseDialogs();
     std::move(on_account_chosen_callback_).Run(selected_account_);
   }

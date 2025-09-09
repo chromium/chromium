@@ -73,20 +73,18 @@ class AccountChooserController
 
   // If no accounts are present, shows the add account dialog. Otherwise,
   // shows the account chooser dialog.
-  void Show(ProfileInfo profile_info);
+  void Show();
   // Shows the account chooser dialog.
   void ShowAccountChooserDialog(ProfileInfo profile_info);
   // Shows the add account dialog.
   void ShowAddAccountDialog();
-  // User clicked "Use different account" button in the account chooser dialog.
+
+  // AccountChooserViewDelegate:
   void OnAddAccountButtonClicked() override;
-  // User clicked "cancel" or closed the add account pop-up with no accounts
-  // present
   void OnFlowCancelled() override;
-  // User clicked on an account
   void OnAccountSelected(const AccountInfo& account_info) override;
-  // User clicked "Save" button in the account chooser dialog.
   void OnSaveButtonClicked() override;
+
   // Gets accounts associated with the profile.
   ProfileInfo GetProfileInfo();
   // Cleans up the account chooser widget.
@@ -105,9 +103,9 @@ class AccountChooserController
 
   raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  // base::ScopedObservation<signin::IdentityManager,
-  //                         signin::IdentityManager::Observer>
-  //     scoped_identity_manager_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 
   // All dialogs MUST be closed if this callback has been run.
   AccountChosenCallback on_account_chosen_callback_;
