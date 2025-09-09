@@ -91,12 +91,6 @@ class TestGLES2Interface : public FakeGLES2Interface {
 class SharedGpuContextTest
     : public SharedGpuContextTestBase<TestGLES2Interface> {};
 
-class MailboxMockGLES2Interface : public TestGLES2Interface {
- public:
-  MOCK_METHOD1(GenSyncTokenCHROMIUM, void(GLbyte*));
-  MOCK_METHOD1(GenUnverifiedSyncTokenCHROMIUM, void(GLbyte*));
-};
-
 // Test fixure that simulate a graphics context creation failure, when using gpu
 // compositing.
 class BadSharedGpuContextTest : public Test {
