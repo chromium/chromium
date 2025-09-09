@@ -27,8 +27,10 @@ import sys
 import tempfile
 import time
 
+
 assert sys.platform != 'win32', \
-  "This doesn't work on Windows due to https://crbug.com/3790230222"
+  "This doesn't work on Windows, https://crbug.com/379023022"
+
 
 # Matches mangled symbols containing 'absl' or starting with 'Absl'. This is
 # a good enough heuristic to select Abseil symbols to list in the .def file.
@@ -36,20 +38,6 @@ assert sys.platform != 'win32', \
 # which describes decorations under different calling conventions. We mostly
 # just attempt to handle any leading underscore for C names (as in __cdecl).
 ABSL_SYM_RE = r'0* [BT] (?P<symbol>[?]+[^?].*absl.*|_?Absl.*)'
-if sys.platform == 'win32':
-  # Typical dumpbin /symbol lines look like this:
-  # 04B 0000000C SECT14 notype       Static       | ?$S1@?1??SetCurrent
-  # ThreadIdentity@base_internal@absl@@YAXPAUThreadIdentity@12@P6AXPAX@Z@Z@4IA
-  #  (unsigned int `void __cdecl absl::base_internal::SetCurrentThreadIdentity...
-  # We need to start on "| ?" and end on the first " (" (stopping on space would
-  # also work).
-  # This regex is identical inside the () characters except for the ? after .*,
-  # which is needed to prevent greedily grabbing the undecorated version of the
-  # symbols.
-  ABSL_SYM_RE = r'.*External     \| (?P<symbol>[?]+[^?].*?absl.*?|_?Absl.*?)($| \(.*)'
-  # Typical exported symbols in dumpbin /directives look like:
-  #    /EXPORT:?kHexChar@numbers_internal@absl@@3QBDB,DATA
-  ABSL_EXPORTED_RE = r'.*/EXPORT:(.*),.*'
 
 
 def _DebugOrRelease(is_debug):
@@ -75,15 +63,11 @@ def _GenerateDefFileBuild(cpu, is_debug, extra_gn_args, suffix, out_dir, cwd):
 
   gn = 'gn'
   autoninja = 'autoninja'
-  symbol_dumper = ['third_party/llvm-build/Release+Asserts/bin/llvm-nm']
+  llvm_nm = ['third_party/llvm-build/Release+Asserts/bin/llvm-nm']
   if sys.platform == 'win32':
     gn = 'gn.bat'
     autoninja = 'autoninja.bat'
-    symbol_dumper = ['dumpbin', '/symbols']
-    import shutil
-    if not shutil.which('dumpbin'):
-      logging.error('dumpbin not found. Run tools\\win\\setenv.bat.')
-      exit(1)
+    llvm_nm += '.exe'
 
   logging.info('[%s - %s] Creating tmp out dir in %s', cpu, flavor, out_dir)
   subprocess.check_call([gn, 'gen', out_dir, '--args=' + ' '.join(gn_args)],
@@ -103,39 +87,15 @@ def _GenerateDefFileBuild(cpu, is_debug, extra_gn_args, suffix, out_dir, cwd):
   logging.info('[%s - %s] Found %d object files.', cpu, flavor, len(obj_files))
 
   absl_symbols = set()
-  dll_exports = set()
-  if sys.platform == 'win32':
-    for f in obj_files:
-      # Track all of the functions exported with __declspec(dllexport) and
-      # don't list them in the .def file - double-exports are not allowed. The
-      # error is "lld-link: error: duplicate /export option".
-      exports_out = subprocess.check_output(['dumpbin', '/directives', f], cwd=os.getcwd())
-      for line in exports_out.splitlines():
-        line = line.decode('utf-8')
-        match = re.match(ABSL_EXPORTED_RE, line)
-        if match:
-          dll_exports.add(match.groups()[0])
   for f in obj_files:
-    stdout = subprocess.check_output(symbol_dumper + [f], cwd=os.getcwd())
+    stdout = subprocess.check_output(llvm_nm + [f], cwd=os.getcwd())
     for line in stdout.splitlines():
-      try:
-        line = line.decode('utf-8')
-      except UnicodeDecodeError:
-        # Due to a dumpbin bug there are sometimes invalid utf-8 characters in
-        # the output. This only happens on an unimportant line so it can
-        # safely and silently be skipped.
-        # https://developercommunity.visualstudio.com/content/problem/1091330/dumpbin-symbols-produces-randomly-wrong-output-on.html
-        continue
+      line = line.decode('utf-8')
       match = re.match(ABSL_SYM_RE, line)
       if match:
         symbol = match.group('symbol')
         assert symbol.count(' ') == 0, ('Regex matched too much, probably got '
                                         'undecorated name as well')
-        # Avoid getting names exported with dllexport, to avoid
-        # "lld-link: error: duplicate /export option" on symbols such as:
-        # ?kHexChar@numbers_internal@absl@@3QBDB
-        if symbol in dll_exports:
-          continue
         # Avoid to export deleting dtors since they trigger
         # "lld-link: error: export of deleting dtor" linker errors, see
         # crbug.com/1201277.
@@ -176,10 +136,6 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
 
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.INFO)
-
-  if sys.version_info.major == 2:
-    logging.error('This script requires Python 3.')
-    exit(1)
 
   if not os.getcwd().endswith('src') or not os.path.exists('chrome/browser'):
     logging.error('Run this script from a chromium/src/ directory.')
