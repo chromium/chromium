@@ -111,35 +111,30 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       main_thread_task_runner_(main_thread_task_runner),
       filtering_ruleset_(filtering_ruleset) {
-  if (main_thread_task_runner_) {
-    // It's only possible to retrieve a `RenderFrame` given a `LocalFrameToken`
-    // on the main render thread.
-    auto set_activation_computed_callback =
-        [](base::OnceCallback<RendererAgent*()> renderer_agent_getter,
-           RendererAgent::ActivationComputedCallback
-               activation_computed_callback) {
-          auto* renderer_agent = std::move(renderer_agent_getter).Run();
-          if (!renderer_agent) {
-            return;
-          }
+  // It's only possible to retrieve a `RenderFrame` given a `LocalFrameToken`
+  // on the main render thread.
+  CHECK(main_thread_task_runner_);
 
-          renderer_agent->AddActivationComputedCallback(
-              std::move(activation_computed_callback));
-        };
+  auto set_activation_computed_callback =
+      [](base::OnceCallback<RendererAgent*()> renderer_agent_getter,
+         RendererAgent::ActivationComputedCallback
+             activation_computed_callback) {
+        auto* renderer_agent = std::move(renderer_agent_getter).Run();
+        if (!renderer_agent) {
+          return;
+        }
 
-    auto activated_computed_callback = base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&RendererURLLoaderThrottle::OnActivationComputed,
-                       weak_factory_.GetWeakPtr()));
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(set_activation_computed_callback,
-                                  std::move(renderer_agent_getter),
-                                  std::move(activated_computed_callback)));
-  } else {
-    activation_computed_ = true;
-    activation_state_ = ActivationState();
-    on_subresource_evaluated_callback_ = base::DoNothing();
-    load_policy_ = LoadPolicy::ALLOW;
-  }
+        renderer_agent->AddActivationComputedCallback(
+            std::move(activation_computed_callback));
+      };
+
+  auto activated_computed_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&RendererURLLoaderThrottle::OnActivationComputed,
+                     weak_factory_.GetWeakPtr()));
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(set_activation_computed_callback,
+                                std::move(renderer_agent_getter),
+                                std::move(activated_computed_callback)));
 }
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() = default;
