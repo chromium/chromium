@@ -42,9 +42,11 @@ class TabContextualizationController : public content::WebContentsObserver {
   using GetPageContextCallback = base::OnceCallback<void(
       std::unique_ptr<lens::ContextualInputData> page_content_data)>;
 
-  // Callback type alias for when the page context eligibility is retrieved.
-  using GetPageContextEligibilityCallback =
-      base::OnceCallback<void(bool page_context_eligible)>;
+  // Callback type alias for when the page context and eligibility are
+  // retrieved. The frame metadata will be empty if the page is not eligible.
+  using GetApcResultCallback = base::OnceCallback<void(
+      bool page_context_eligible,
+      std::optional<optimization_guide::AIPageContentResult> apc)>;
 
   using GetAnnotatedPageContentCallback = base::OnceCallback<void(
       std::optional<optimization_guide::AIPageContentResult> result)>;
@@ -53,8 +55,7 @@ class TabContextualizationController : public content::WebContentsObserver {
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
   // empty frame_metadata. Only needed for the Chromnient use case, lower
   // priority to implement.
-  void GetInitialPageContextEligibility(
-      GetPageContextEligibilityCallback callback);
+  void GetInitialPageContextEligibility(GetApcResultCallback callback);
 
   // Returns whether the page is context eligible based on the latest cached
   // state. If the page context eligibility API has not been loaded, this will
@@ -66,10 +67,12 @@ class TabContextualizationController : public content::WebContentsObserver {
   virtual void GetPageContext(GetPageContextCallback callback);
 
   // Updates current page eligibility once received.
-  void OnEligibilityChecked(bool is_page_context_eligible);
+  void OnEligibilityChecked(
+      bool is_page_context_eligible,
+      std::optional<optimization_guide::AIPageContentResult> apc);
 
   // Starts the steps needed to update the page context eligibility.
-  void UpdatePageContextEligibility(GetPageContextEligibilityCallback callback);
+  void UpdatePageContextEligibility(GetApcResultCallback callback);
 
  private:
   // content::WebContentsObserver:
@@ -80,18 +83,23 @@ class TabContextualizationController : public content::WebContentsObserver {
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  // Gets the annotated page content from the page context eligibility API.
   void GetAnnotatedPageContent(GetAnnotatedPageContentCallback callback);
 
-  // Retrieves annotated page contents.
+  // Callback for when the annotated page content is received. Checks if the
+  // page is eligible and returns the result to the callback.
   void OnAnnotatedPageContentReceived(
-      GetPageContextEligibilityCallback callback,
+      GetApcResultCallback callback,
       std::optional<optimization_guide::AIPageContentResult> result);
 
-  // Gets whether page context is eligible and returns it to the callback.
-  void IsPageContextEligible(
-      const GURL& main_frame_url,
-      std::vector<optimization_guide::FrameMetadata> frame_metadata,
-      GetPageContextEligibilityCallback callback);
+  // GetApcResultCallback for when the APC and eligibility are received
+  // for the GetPageContext flow. Adds the APC to the contextual input data and
+  // returns it to the callback.
+  void OnApcAndEligibilityReceivedForGetPageContext(
+      GetPageContextCallback callback,
+      std::unique_ptr<lens::ContextualInputData> data,
+      bool page_context_eligible,
+      std::optional<optimization_guide::AIPageContentResult> result);
 
 #if BUILDFLAG(ENABLE_PDF)
   void OnPdfBytesReceived(std::unique_ptr<lens::ContextualInputData> data,
@@ -101,8 +109,11 @@ class TabContextualizationController : public content::WebContentsObserver {
                           uint32_t page_count);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // Captures the screenshot of the tab and returns it to the callback.
   void CaptureScreenshot(base::OnceCallback<void(const SkBitmap&)> callback);
 
+  // Callback for when the screenshot is captured. Adds the screenshot to the
+  // contextual input data and returns it to the callback.
   void OnScreenshotCaptured(GetPageContextCallback callback,
                             std::unique_ptr<lens::ContextualInputData> data,
                             const SkBitmap& screenshot);
