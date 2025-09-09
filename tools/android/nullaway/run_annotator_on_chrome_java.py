@@ -69,7 +69,7 @@ def prep_errorprone_run(enable_annotator, parser):
         _CHROME_JAVA_TURBINE_JAR,
     ]
     classpath += _read_build_config_value(
-        'gen/chrome/android/chrome_java.build_config.json',
+        'gen/chrome/android/chrome_java.javac.build_config.json',
         'javac_full_interface_classpath')
 
     processor_path = [_NULLAWAY_JAR] + _read_build_config_value(
