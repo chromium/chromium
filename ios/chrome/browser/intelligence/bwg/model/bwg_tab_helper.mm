@@ -302,7 +302,5 @@ void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
 
   if (cached_snapshot_) {
     snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
-  } else {
-    snapshot_tab_helper->UpdateSnapshotWithCallback(nil);
   }
 }
