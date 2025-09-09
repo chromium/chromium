@@ -78,6 +78,10 @@ void ContentAnalysisInfo::InitializeRequest(
 }
 
 std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
+  if (!CanRetrieveActiveUser(tab_url())) {
+    return "";
+  }
+
   std::string email = GetActiveContentAreaUser(identity_manager(), tab_url());
   if (!email.empty()) {
     return email;

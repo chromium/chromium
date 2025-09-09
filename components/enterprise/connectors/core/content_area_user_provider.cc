@@ -129,4 +129,8 @@ std::string GetActiveFrameUser(signin::IdentityManager* im,
   return GetEmailFromUrl(im, frame_url);
 }
 
+bool CanRetrieveActiveUser(const GURL& tab_url) {
+  return IncludeContentAreaAccountEmail(tab_url, GoogleDomains());
+}
+
 }  // namespace enterprise_connectors

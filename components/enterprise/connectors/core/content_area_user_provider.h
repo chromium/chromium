@@ -31,6 +31,11 @@ std::string GetActiveFrameUser(signin::IdentityManager* im,
                                const GURL& tab_url,
                                const GURL& frame_url);
 
+// Returns true if the main tab should be able to have its active user
+// retrieved. If this returns false, none of the other functions in this file
+// should be called.
+bool CanRetrieveActiveUser(const GURL& tab_url);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_AREA_USER_PROVIDER_H_
