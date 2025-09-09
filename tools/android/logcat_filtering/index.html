@@ -142,34 +142,33 @@ found in the LICENSE file.
       <span id="prev-test-feedback" class="feedback-text hidden-element"></span>
     </div>
 
-    <div id="checkbox-controls">
-      <div class="checkbox-column">
-        <label>
+    <div class="dropdown">
+      <div id="dropdown-header-settings" class="dropdown-header">
+        <i class="material-icons">settings</i> Settings
+      </div>
+      <ol id="dropdown-list-settings" class="dropdown-list hidden-element">
+        <li class="dropdown-item">
           <input type="checkbox" id="hide-date-time-checkbox">
-          <span>Hide Date &amp; Time</span>
-        </label>
-        <label>
+          <label>Hide Date & Time</label>
+        </li>
+        <li class="dropdown-item">
           <input type="checkbox" id="wrap-text-checkbox">
-          <span>Wrap Lines</span>
-        </label>
-      </div>
-      <div class="checkbox-column">
-        <label>
+          <label>Wrap Lines</label>
+        </li>
+        <li class="dropdown-item selected">
           <input type="checkbox" id="display-non-logcat-checkbox" checked>
-          <span>Show Non-Logcat Lines</span>
-        </label>
-        <label>
-          <input type="checkbox"
-                 id="always-show-activity-manager-checkbox" checked>
-          <span>Always Show ActivityManager</span>
-        </label>
-      </div>
-      <div class="checkbox-column">
-        <label>
+          <label>Show Non-Logcat Lines</label>
+        </li>
+        <li class="dropdown-item selected">
+          <input type="checkbox" id="always-show-activity-manager-checkbox"
+                 checked>
+          <label>Always Show ActivityManager</label>
+        </li>
+        <li class="dropdown-item">
           <input type="checkbox" id="toggle-dark-mode-checkbox">
-          <span>Dark Mode</span>
-        </label>
-      </div>
+          <label>Dark Mode</label>
+        </li>
+      </ol>
     </div>
   </div>
 

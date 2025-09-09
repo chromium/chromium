@@ -56,6 +56,9 @@ const nextTestButton = document.getElementById('next-test-button');
 const nextTestFeedback = document.getElementById('next-test-feedback');
 const prevTestButton = document.getElementById('prev-test-button');
 const prevTestFeedback = document.getElementById('prev-test-feedback');
+const dropdownHeaderSettings = document.getElementById(
+  'dropdown-header-settings');
+const dropdownListSettings = document.getElementById('dropdown-list-settings');
 const hideDateTimeCheckbox = document.getElementById('hide-date-time-checkbox');
 const wrapTextCheckbox = document.getElementById('wrap-text-checkbox');
 const displayNonLogcatCheckbox = document.getElementById(
@@ -114,34 +117,13 @@ nextTestButton.addEventListener('click', jumpToNextTest);
 
 prevTestButton.addEventListener('click', jumpToPreviousTest);
 
-hideDateTimeCheckbox.addEventListener('change', updateTextDisplayArea);
-
-wrapTextCheckbox.addEventListener('change', () => {
-  const shouldWrapText = wrapTextCheckbox.checked;
-  if (shouldWrapText) {
-    textDisplayArea.classList.add('wrap-text');
-    textDisplayArea.classList.remove('not-wrap-text');
-  } else {
-    textDisplayArea.classList.add('not-wrap-text');
-    textDisplayArea.classList.remove('wrap-text');
-  }
+dropdownHeaderSettings.addEventListener('click', (event) => {
+  // Prevent this click from propagating to the document
+  event.stopPropagation();
+  toggleDropdown(dropdownListSettings);
 });
 
-displayNonLogcatCheckbox.addEventListener('change', updateTextDisplayArea);
-
-alwaysShowActivityManagerCheckbox.addEventListener('change',
-  updateTextDisplayArea);
-
-toggleDarkModeCheckbox.addEventListener('change', () => {
-  const isDarkMode = toggleDarkModeCheckbox.checked;
-  if (isDarkMode) {
-    document.body.classList.add('dark-mode');
-    document.body.classList.remove('light-mode');
-  } else {
-    document.body.classList.add('light-mode');
-    document.body.classList.remove('dark-mode');
-  }
-});
+dropdownListSettings.addEventListener('click', handleSettingsOptionClick);
 
 // Global click listener to close dropdowns when clicking outside
 document.addEventListener('click', (event) => {
@@ -705,6 +687,53 @@ function updateDisplayAllPrioritySelection() {
     filterOption => filterOption.checkbox.checked);
   displayAllPriorities.li.classList.toggle('selected', allSelected);
   displayAllPriorities.checkbox.checked = allSelected;
+}
+
+/**
+ * This function is called when the user clicks on an option in the settings.
+ * @param {Event} event
+ */
+function handleSettingsOptionClick(event) {
+  const listItem = event.target.closest('li');
+  if (!listItem) return;
+
+  const checkbox = listItem.querySelector('input[type="checkbox"]');
+  const id = checkbox.id;
+
+  listItem.classList.toggle('selected');
+  if (event.target.type !== 'checkbox') {
+    checkbox.checked = !checkbox.checked;
+  }
+
+  if (id === 'hide-date-time-checkbox') {
+    updateTextDisplayArea();
+
+  } else if (id === 'wrap-text-checkbox') {
+    const shouldWrapText = wrapTextCheckbox.checked;
+    if (shouldWrapText) {
+      textDisplayArea.classList.add('wrap-text');
+      textDisplayArea.classList.remove('not-wrap-text');
+    } else {
+      textDisplayArea.classList.add('not-wrap-text');
+      textDisplayArea.classList.remove('wrap-text');
+    }
+
+  } else if (id === 'display-non-logcat-checkbox') {
+    updateTextDisplayArea();
+
+  } else if (id === 'always-show-activity-manager-checkbox') {
+    updateTextDisplayArea();
+
+  } else if (id === 'toggle-dark-mode-checkbox') {
+    const isDarkMode = toggleDarkModeCheckbox.checked;
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
+    }
+  }
 }
 
 /**

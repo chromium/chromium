@@ -241,41 +241,6 @@ body {
   white-space: nowrap;
 }
 
-#checkbox-controls {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-}
-
-#checkbox-controls .checkbox-column {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#checkbox-controls .checkbox-column:last-of-type {
-  margin-right: 40px;
-}
-
-#checkbox-controls label {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: var(--checkbox-label-text-color);
-  cursor: pointer;
-  margin-bottom: 6px;
-  margin-right: 12px;
-  /* Do not allow text wrapping */
-  white-space: nowrap;
-}
-
-#checkbox-controls input[type="checkbox"] {
-  margin-right: 8px;
-  accent-color: var(--checkbox-accent-color);
-  border: 1.5px solid var(--checkbox-border-color);
-  border-radius: 2px;
-}
-
 #text-display-area {
   /* Monospace font for code-like text */
   font-family: 'Roboto Mono', monospace;
