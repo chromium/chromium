@@ -156,7 +156,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
     if (webrtc_receiver_->media_type() == webrtc::MediaType::AUDIO) {
       encoded_audio_transformer_ =
           std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
-      webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
+      webrtc_receiver_->SetFrameTransformer(
           encoded_audio_transformer_->Delegate());
     } else {
       CHECK(webrtc_receiver_->media_type() == webrtc::MediaType::VIDEO);
@@ -166,7 +166,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
                                      kRTCAlignReceivedEncodedVideoTransforms)
                                      ? std::move(decode_metronome)
                                      : nullptr);
-      webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
+      webrtc_receiver_->SetFrameTransformer(
           encoded_video_transformer_->Delegate());
     }
     DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
