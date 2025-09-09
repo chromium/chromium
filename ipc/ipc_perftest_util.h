@@ -37,34 +37,6 @@ namespace IPC {
 
 scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner();
 
-// This channel listener just replies to all messages with the exact same
-// message. It assumes each message has one string parameter. When the string
-// "quit" is sent, it will exit.
-class ChannelReflectorListener : public Listener {
- public:
-  ChannelReflectorListener();
-
-  ~ChannelReflectorListener() override;
-
-  void Init(ChannelProxy* channel, base::OnceClosure quit_closure);
-
-  bool OnMessageReceived(const Message& message) override;
-
-  void OnHello();
-
-  void OnPing(const std::string& payload);
-
-  void OnSyncPing(const std::string& payload, std::string* response);
-
-  void OnQuit();
-
-  void Send(IPC::Message* message);
-
- private:
-  raw_ptr<ChannelProxy> channel_;
-  base::OnceClosure quit_closure_;
-};
-
 // This class locks the current thread to a particular CPU core. This is
 // important because otherwise the different threads and processes of these
 // tests end up on different CPU cores which means that all of the cores are
