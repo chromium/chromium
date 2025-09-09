@@ -1973,9 +1973,9 @@ void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
             manager.GetServerPredictionsForForm(form_id,
                                                 field_ids_for_renderer_form));
         break;
-
       case FieldTypeSource::kHeuristicsOrAutocomplete:
-        if (base::FeatureList::IsEnabled(
+        if (apply_client_side_prediction_override_ ||
+            base::FeatureList::IsEnabled(
                 password_manager::features::
                     kApplyClientsideModelPredictionsForPasswordTypes)) {
           auto model_predictions = manager.GetHeursticPredictionForForm(

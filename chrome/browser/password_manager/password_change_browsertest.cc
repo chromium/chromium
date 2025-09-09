@@ -822,6 +822,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
 
   EXPECT_EQ(tab_strip->count(), 2);
   EXPECT_EQ(tab_strip->active_index(), 1);
+
+  EXPECT_FALSE(ChromePasswordManagerClient::FromWebContents(WebContents())
+                   ->apply_client_side_prediction_override_for_testing());
+  EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(
+                  tab_strip->GetActiveWebContents())
+                  ->apply_client_side_prediction_override_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
