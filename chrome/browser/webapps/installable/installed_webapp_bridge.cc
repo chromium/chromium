@@ -9,6 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
 #include "url/gurl.h"
 
@@ -52,7 +55,13 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
         Java_InstalledWebappBridge_getOriginFromPermission(env, j_permission));
     ContentSetting setting = IntToContentSetting(
         Java_InstalledWebappBridge_getSettingFromPermission(env, j_permission));
-    rules.push_back(std::make_pair(origin, setting));
+    PermissionSetting permission_setting = setting;
+    if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      permission_setting =
+          GeolocationSetting{content_settings::ToPermissionOption(setting),
+                             content_settings::ToPermissionOption(setting)};
+    }
+    rules.emplace_back(origin, permission_setting);
   }
 
   return rules;

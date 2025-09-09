@@ -19,7 +19,7 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
  public:
   // Although not used in the interface of this class, RuleList is the type for
   // the underlying data that this Provider holds.
-  using RuleList = std::vector<std::pair<GURL, ContentSetting>>;
+  using RuleList = std::vector<std::pair<GURL, PermissionSetting>>;
 
   InstalledWebappProvider();
 

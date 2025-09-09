@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -58,7 +60,7 @@ public class InstalledWebappPermissionManager {
 
     static InstalledWebappBridge.Permission[] getPermissions(
             @ContentSettingsType.EnumType int type) {
-        if (type == ContentSettingsType.GEOLOCATION) {
+        if (type == getGeolocationType()) {
             if (!isRunningTwa()) {
                 return new InstalledWebappBridge.Permission[0];
             }
@@ -128,7 +130,7 @@ public class InstalledWebappPermissionManager {
         NotificationChannelPreserver.restoreChannelIfNeeded(origin);
 
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.NOTIFICATIONS);
-        InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION);
+        InstalledWebappBridge.notifyPermissionsChange(getGeolocationType());
     }
 
     @UiThread
@@ -190,6 +192,7 @@ public class InstalledWebappPermissionManager {
                     return settingValue;
                 }
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 {
                     String packageName = getDelegatePackageName(origin);
                     Boolean enabled = hasAndroidLocationPermission(packageName);
@@ -214,8 +217,7 @@ public class InstalledWebappPermissionManager {
                     @ContentSetting
                     int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
 
-                    updatePermission(
-                            origin, packageName, ContentSettingsType.GEOLOCATION, settingValue);
+                    updatePermission(origin, packageName, getGeolocationType(), settingValue);
 
                     return settingValue;
                 }

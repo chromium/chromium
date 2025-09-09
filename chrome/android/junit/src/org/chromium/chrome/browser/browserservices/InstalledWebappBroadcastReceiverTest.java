@@ -30,10 +30,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import java.util.Set;
 /** Tests for {@link InstalledWebappBroadcastReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 public class InstalledWebappBroadcastReceiverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public Context mContext;

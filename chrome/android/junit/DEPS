@@ -27,6 +27,7 @@ include_rules = [
   "+components/browser_ui/settings/android",
   "+components/browser_ui/test/android",
   "+components/browser_ui/widget/android",
+  "+components/permissions/android/java",
   "+components/collaboration/public/android/java",
   "+components/commerce/core",
   "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",

@@ -545,7 +545,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbarTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/permissions/android:core_java",
+    ]
   }
 
   robolectric_library(
