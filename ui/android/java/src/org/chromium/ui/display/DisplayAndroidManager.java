@@ -247,7 +247,6 @@ public class DisplayAndroidManager {
                         display, displayAbsoluteCoordinates, sDisableHdrSdkRatioCallback);
         assert mIdMap.get(sdkDisplayId) == null;
         mIdMap.put(sdkDisplayId, displayAndroid);
-        displayAndroid.updateFromDisplay(display);
         return displayAndroid;
     }
 

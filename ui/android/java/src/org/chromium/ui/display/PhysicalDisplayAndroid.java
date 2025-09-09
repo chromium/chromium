@@ -196,6 +196,7 @@ import java.util.function.Consumer;
             mWindowManager = null;
             mComponentCallbacks = null;
             mDisplay = display;
+            updateFromDisplay(display);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE

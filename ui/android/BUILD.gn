@@ -736,6 +736,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/display/DisplayAndroidManagerTest.java",
     "junit/src/org/chromium/ui/display/DisplayAndroidTest.java",
     "junit/src/org/chromium/ui/display/DisplayUtilTest.java",
+    "junit/src/org/chromium/ui/display/PhysicalDisplayAndroidTest.java",
     "junit/src/org/chromium/ui/dragdrop/AnimatedImageDragShadowBuilderUnitTest.java",
     "junit/src/org/chromium/ui/dragdrop/DragAndDropDelegateImplUnitTest.java",
     "junit/src/org/chromium/ui/dragdrop/DragDropGlobalStateTest.java",
