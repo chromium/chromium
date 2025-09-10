@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -32,6 +34,7 @@ WaylandWpColorManagementSurface::WaylandWpColorManagementSurface(
     wp_color_management_surface_feedback_v1_add_listener(
         feedback_surface_.get(), &kListener, this);
   }
+  color_manager_observation_.Observe(connection_->wp_color_manager());
 }
 
 WaylandWpColorManagementSurface::~WaylandWpColorManagementSurface() = default;
@@ -80,13 +83,11 @@ void WaylandWpColorManagementSurface::OnImageDescription(
     scoped_refptr<WaylandWpImageDescription> image_description) {
   if (!image_description) {
     LOG(ERROR) << "Failed to get image description.";
-    return;
+    display_color_spaces_.reset();
+  } else {
+    display_color_spaces_ = image_description->AsDisplayColorSpaces();
   }
-
-  if (WaylandWindow* root = wayland_surface_->root_window()) {
-    root->OnDisplayColorSpacesChanged(
-        image_description->AsDisplayColorSpaces());
-  }
+  OnHdrEnabledChanged(connection_->wp_color_manager()->hdr_enabled());
 }
 
 // static
@@ -105,6 +106,19 @@ void WaylandWpColorManagementSurface::OnPreferredChanged(
       std::move(image_description_object), self->connection_, std::nullopt,
       base::BindOnce(&WaylandWpColorManagementSurface::OnImageDescription,
                      self->weak_factory_.GetWeakPtr()));
+}
+
+void WaylandWpColorManagementSurface::OnHdrEnabledChanged(bool hdr_enabled) {
+  WaylandWindow* root = wayland_surface_->root_window();
+  if (!root) {
+    return;
+  }
+
+  auto display_color_spaces = hdr_enabled ? display_color_spaces_ : nullptr;
+  root->OnDisplayColorSpacesChanged(
+      display_color_spaces
+          ? display_color_spaces
+          : base::MakeRefCounted<gfx::DisplayColorSpacesRef>());
 }
 
 }  // namespace ui

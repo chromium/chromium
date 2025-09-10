@@ -23,11 +23,11 @@ class StubGpuPlatformSupportHost : public GpuPlatformSupportHost {
 
 }  // namespace
 
-GpuPlatformSupportHost::GpuPlatformSupportHost() {
-}
+GpuPlatformSupportHost::GpuPlatformSupportHost() = default;
 
-GpuPlatformSupportHost::~GpuPlatformSupportHost() {
-}
+GpuPlatformSupportHost::~GpuPlatformSupportHost() = default;
+
+void GpuPlatformSupportHost::OnHdrEnabledChanged(bool hdr_enabled) {}
 
 GpuPlatformSupportHost* CreateStubGpuPlatformSupportHost() {
   return new StubGpuPlatformSupportHost;

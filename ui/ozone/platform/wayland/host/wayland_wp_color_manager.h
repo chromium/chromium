@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -28,6 +29,13 @@ class WaylandConnection;
 class WaylandWpColorManager
     : public wl::GlobalObjectRegistrar<WaylandWpColorManager> {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnHdrEnabledChanged(bool hdr_enabled) = 0;
+  };
+
   static constexpr char kInterfaceName[] = "wp_color_manager_v1";
 
   static void Instantiate(WaylandConnection* connection,
@@ -54,6 +62,11 @@ class WaylandWpColorManager
   wl::Object<wp_color_management_surface_feedback_v1>
   CreateColorManagementFeedbackSurface(wl_surface* surface);
 
+  void OnHdrEnabledChanged(bool hdr_enabled);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   uint32_t version() const {
     return wp_color_manager_v1_get_version(manager_.get());
   }
@@ -68,6 +81,8 @@ class WaylandWpColorManager
       wp_color_manager_v1_transfer_function transfer_function) const;
 
   bool ready() const { return ready_; }
+
+  bool hdr_enabled() const { return hdr_enabled_; }
 
  private:
   using ImageDescription = std::pair<gfx::ColorSpace, gfx::HDRMetadata>;
@@ -120,6 +135,10 @@ class WaylandWpColorManager
   uint32_t supported_primaries_ = 0;
 
   bool ready_ = false;
+
+  bool hdr_enabled_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<WaylandWpColorManager> weak_factory_{this};
 };

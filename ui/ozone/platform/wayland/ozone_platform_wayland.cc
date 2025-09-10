@@ -290,7 +290,7 @@ class OzonePlatformWayland : public OzonePlatform,
     }
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
-        connection_->buffer_manager_host());
+        connection_.get(), connection_->buffer_manager_host());
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());
     input_controller_ = std::make_unique<StubInputController>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());

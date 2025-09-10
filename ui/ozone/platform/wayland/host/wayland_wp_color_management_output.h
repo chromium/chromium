@@ -11,9 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_image_description.h"
 
 namespace ui {
@@ -22,7 +24,7 @@ class WaylandOutput;
 class WaylandConnection;
 
 // Wraps the `wp_color_management_output_v1` object.
-class WaylandWpColorManagementOutput {
+class WaylandWpColorManagementOutput : public WaylandWpColorManager::Observer {
  public:
   WaylandWpColorManagementOutput(
       wp_color_management_output_v1* color_management_output,
@@ -32,18 +34,18 @@ class WaylandWpColorManagementOutput {
       delete;
   WaylandWpColorManagementOutput& operator=(
       const WaylandWpColorManagementOutput&) = delete;
-  ~WaylandWpColorManagementOutput();
+  ~WaylandWpColorManagementOutput() override;
 
-  const gfx::DisplayColorSpaces* display_color_spaces() const {
-    return display_color_spaces_ ? &display_color_spaces_->color_spaces()
-                                 : nullptr;
-  }
+  const gfx::DisplayColorSpaces* GetDisplayColorSpaces() const;
 
  private:
   // wp_color_management_output_v1_listener
   static void OnImageDescriptionChanged(
       void* data,
       wp_color_management_output_v1* management_output);
+
+  // WaylandWpColorManager::Observer:
+  void OnHdrEnabledChanged(bool hdr_enabled) override;
 
   void GetCurrentColorSpace();
   void OnImageDescription(
@@ -55,6 +57,10 @@ class WaylandWpColorManagementOutput {
 
   scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces_;
   scoped_refptr<WaylandWpImageDescription> image_description_;
+
+  base::ScopedObservation<WaylandWpColorManager,
+                          WaylandWpColorManager::Observer>
+      color_manager_observation_{this};
 
   base::WeakPtrFactory<WaylandWpColorManagementOutput> weak_factory_{this};
 };

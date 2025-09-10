@@ -333,6 +333,21 @@ WaylandWpColorManager::CreateColorManagementFeedbackSurface(
       wp_color_manager_v1_get_surface_feedback(manager_.get(), surface));
 }
 
+void WaylandWpColorManager::OnHdrEnabledChanged(bool hdr_enabled) {
+  hdr_enabled_ = hdr_enabled;
+  for (auto& observer : observers_) {
+    observer.OnHdrEnabledChanged(hdr_enabled);
+  }
+}
+
+void WaylandWpColorManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WaylandWpColorManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool WaylandWpColorManager::IsSupportedRenderIntent(
     wp_color_manager_v1_render_intent intent) const {
   return supported_intents_ & (1 << intent);

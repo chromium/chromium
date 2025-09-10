@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_image_description.h"
 
 namespace ui {
@@ -22,7 +24,7 @@ class WaylandSurface;
 
 // Wraps `wp_color_management_surface_v1` and
 // `wp_color_management_surface_feedback_v1`.
-class WaylandWpColorManagementSurface {
+class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
  public:
   WaylandWpColorManagementSurface(
       WaylandSurface* wayland_surface,
@@ -33,7 +35,7 @@ class WaylandWpColorManagementSurface {
       delete;
   WaylandWpColorManagementSurface& operator=(
       const WaylandWpColorManagementSurface&) = delete;
-  ~WaylandWpColorManagementSurface();
+  ~WaylandWpColorManagementSurface() override;
 
   void SetColorSpace(const gfx::ColorSpace& color_space,
                      const gfx::HDRMetadata& hdr_metadata);
@@ -44,6 +46,9 @@ class WaylandWpColorManagementSurface {
       void* data,
       wp_color_management_surface_feedback_v1* feedback_surface,
       uint32_t identity);
+
+  // WaylandWpColorManager::Observer:
+  void OnHdrEnabledChanged(bool hdr_enabled) override;
 
   void OnSetColorSpace(
       scoped_refptr<WaylandWpImageDescription> image_description);
@@ -57,6 +62,11 @@ class WaylandWpColorManagementSurface {
   wl::Object<wp_color_management_surface_feedback_v1> feedback_surface_;
 
   scoped_refptr<WaylandWpImageDescription> image_description_;
+  scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces_;
+
+  base::ScopedObservation<WaylandWpColorManager,
+                          WaylandWpColorManager::Observer>
+      color_manager_observation_{this};
 
   base::WeakPtrFactory<WaylandWpColorManagementSurface> weak_factory_{this};
 };

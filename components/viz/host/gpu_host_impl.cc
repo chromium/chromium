@@ -90,6 +90,13 @@ FontRenderParams& GetFontRenderParams() {
   return *instance;
 }
 
+#if BUILDFLAG(IS_OZONE)
+bool IsHdrEnabledForGpuInfo(const gpu::GPUInfo& gpu_info) {
+  return gpu_info.skia_backend_type != gpu::SkiaBackendType::kUnknown &&
+         gpu_info.skia_backend_type != gpu::SkiaBackendType::kNone;
+}
+#endif
+
 }  // namespace
 
 GpuHostImpl::InitParams::InitParams() = default;
@@ -455,6 +462,12 @@ void GpuHostImpl::OnChannelEstablished(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "GpuHostImpl::OnChannelEstablished");
 
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::GetInstance()
+      ->GetGpuPlatformSupportHost()
+      ->OnHdrEnabledChanged(IsHdrEnabledForGpuInfo(gpu_info));
+#endif  // BUILDFLAG(IS_OZONE)
+
   auto it = channel_requests_.find(client_id);
   if (it == channel_requests_.end())
     return;
@@ -597,6 +610,11 @@ void GpuHostImpl::GetIsolationKey(
 
 void GpuHostImpl::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
   delegate_->DidUpdateGPUInfo(gpu_info);
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::GetInstance()
+      ->GetGpuPlatformSupportHost()
+      ->OnHdrEnabledChanged(IsHdrEnabledForGpuInfo(gpu_info));
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 #if BUILDFLAG(IS_WIN)

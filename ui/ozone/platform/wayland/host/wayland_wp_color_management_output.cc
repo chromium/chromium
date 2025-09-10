@@ -25,11 +25,27 @@ WaylandWpColorManagementOutput::WaylandWpColorManagementOutput(
   wp_color_management_output_v1_add_listener(color_management_output_.get(),
                                              &kListener, this);
 
+  color_manager_observation_.Observe(connection_->wp_color_manager());
+
   // Get the initial color space.
   GetCurrentColorSpace();
 }
 
 WaylandWpColorManagementOutput::~WaylandWpColorManagementOutput() = default;
+
+const gfx::DisplayColorSpaces*
+WaylandWpColorManagementOutput::GetDisplayColorSpaces() const {
+  if (!connection_->wp_color_manager()->hdr_enabled()) {
+    return nullptr;
+  }
+
+  return display_color_spaces_ ? &display_color_spaces_->color_spaces()
+                               : nullptr;
+}
+
+void WaylandWpColorManagementOutput::OnHdrEnabledChanged(bool hdr_enabled) {
+  wayland_output_->TriggerDelegateNotifications();
+}
 
 void WaylandWpColorManagementOutput::GetCurrentColorSpace() {
   auto image_description_object = wl::Object<wp_image_description_v1>(
