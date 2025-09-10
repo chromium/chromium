@@ -45,6 +45,9 @@
   // Indicates whether the user has already seen the post restore default
   // browser promo in the current app session.
   BOOL _postRestorePromoSeenInCurrentSession;
+  // Prevents multiple calls to promo registration logic in the same session
+  // when the scene transitions to the foreground active state.
+  BOOL _foregroundPromoHandled;
 }
 
 #pragma mark - Private
@@ -377,6 +380,12 @@
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
     return;
   }
+
+  // Ensures promo registration runs only once per session.
+  if (_foregroundPromoHandled) {
+    return;
+  }
+  _foregroundPromoHandled = YES;
 
   DCHECK(self.promosManager);
 
