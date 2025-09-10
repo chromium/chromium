@@ -218,14 +218,6 @@ const char kAndroidDesktopDensityDescription[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kAndroidNativePagesInNewTabName[] =
-    "Open downloads, history and bookmarks in new tab";
-const char kAndroidNativePagesInNewTabDescription[] =
-    "Open downloads, history, bookmarks in new tab instead of clobbering "
-    "existing tab";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const char kAndroidOpenIncognitoAsWindowName[] =
     "Open incognito tabs in new window";
 const char kAndroidOpenIncognitoAsWindowDescription[] =

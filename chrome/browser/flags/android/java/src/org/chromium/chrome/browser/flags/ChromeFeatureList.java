@@ -183,7 +183,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
-    public static final String ANDROID_NATIVE_PAGES_IN_NEW_TAB = "AndroidNativePagesInNewTab";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =
@@ -1303,8 +1302,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
-    public static final MutableFlagWithSafeDefault sAndroidNativePagesInNewTab =
-            newMutableFlagWithSafeDefault(ANDROID_NATIVE_PAGES_IN_NEW_TAB, true);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
     public static final MutableFlagWithSafeDefault
@@ -1894,22 +1891,6 @@ public abstract class ChromeFeatureList {
 
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
-    public static final MutableBooleanParamWithSafeDefault
-            sAndroidNativePagesInNewTabBookmarksEnabled =
-                    sAndroidNativePagesInNewTab.newBooleanParam(
-                            "android_native_pages_in_new_tab_bookmarks_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault
-            sAndroidNativePagesInNewTabDownloadsEnabled =
-                    sAndroidNativePagesInNewTab.newBooleanParam(
-                            "android_native_pages_in_new_tab_downloads_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault
-            sAndroidNativePagesInNewTabHistoryEnabled =
-                    sAndroidNativePagesInNewTab.newBooleanParam(
-                            "android_native_pages_in_new_tab_history_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault
-            sAndroidNativePagesInNewTabRecentTabsEnabled =
-                    sAndroidNativePagesInNewTab.newBooleanParam(
-                            "android_native_pages_in_new_tab_recent_tabs_enabled", true);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(

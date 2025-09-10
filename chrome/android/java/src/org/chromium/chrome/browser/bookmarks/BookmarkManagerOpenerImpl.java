@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -124,13 +123,9 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_CHROME_UI);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        if (ChromeFeatureList.sAndroidNativePagesInNewTab.isEnabled()
-                && ChromeFeatureList.sAndroidNativePagesInNewTabBookmarksEnabled.getValue()) {
-            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isIncognito);
-            intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, tab != null ? tab.getId() : 0);
-        }
+        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isIncognito);
+        intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, tab != null ? tab.getId() : 0);
 
         if (componentName != null) {
             ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);

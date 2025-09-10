@@ -10468,13 +10468,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-native-pages-in-new-tab",
-     flag_descriptions::kAndroidNativePagesInNewTabName,
-     flag_descriptions::kAndroidNativePagesInNewTabDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidNativePagesInNewTab)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"android-progress-bar-visual-update",
      flag_descriptions::kAndroidProgressBarVisualUpdateName,
      flag_descriptions::kAndroidProgressBarVisualUpdateDescription, kOsAndroid,

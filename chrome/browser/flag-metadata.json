@@ -306,11 +306,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "android-native-pages-in-new-tab",
-    "owners": ["agazal@google.com", "wenyufu@google.com"],
-    "expiry_milestone": 170
-  },
-  {
     "name": "android-no-surface-sync-for-browser-controls",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130

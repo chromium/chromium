@@ -152,11 +152,6 @@ extern const char kAndroidSpellcheckFullApiBlinkDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kAndroidNativePagesInNewTabName[];
-extern const char kAndroidNativePagesInNewTabDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidOpenIncognitoAsWindowName[];
 extern const char kAndroidOpenIncognitoAsWindowDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
