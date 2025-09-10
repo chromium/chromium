@@ -726,6 +726,15 @@ void CanvasResourceSharedImage::OnMemoryDump(
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
+CanvasResourceProvider* CanvasResourceSharedImage::Provider() {
+  return provider_.get();
+}
+
+base::WeakPtr<CanvasResourceProvider>
+CanvasResourceSharedImage::WeakProvider() {
+  return provider_;
+}
+
 // ExternalCanvasResource
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
@@ -1046,6 +1055,14 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       back_buffer_shared_image_->mailbox());
   raster_interface->BeginSharedImageAccessDirectCHROMIUM(
       back_buffer_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+}
+
+CanvasResourceProvider* CanvasResourceSwapChain::Provider() {
+  return provider_.get();
+}
+
+base::WeakPtr<CanvasResourceProvider> CanvasResourceSwapChain::WeakProvider() {
+  return provider_;
 }
 
 }  // namespace blink

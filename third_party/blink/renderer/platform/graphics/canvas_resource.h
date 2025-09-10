@@ -53,6 +53,7 @@ class RasterInterface;
 namespace blink {
 
 class CanvasResourceProvider;
+class CanvasResourceProviderSharedImage;
 class StaticBitmapImage;
 
 // Generic resource interface, used for locking (RAII) and recycling pixel
@@ -284,10 +285,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       bool needs_verified_token) override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
-  CanvasResourceProvider* Provider() override { return provider_.get(); }
-  base::WeakPtr<CanvasResourceProvider> WeakProvider() override {
-    return provider_;
-  }
+  CanvasResourceProvider* Provider() override;
+  base::WeakPtr<CanvasResourceProvider> WeakProvider() override;
 
   CanvasResourceSharedImage(
       gfx::Size size,
@@ -449,10 +448,8 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   const SkAlphaType alpha_type_;
   base::WeakPtr<CanvasResourceProvider> provider_;
 
-  CanvasResourceProvider* Provider() override { return provider_.get(); }
-  base::WeakPtr<CanvasResourceProvider> WeakProvider() override {
-    return provider_;
-  }
+  CanvasResourceProvider* Provider() override;
+  base::WeakPtr<CanvasResourceProvider> WeakProvider() override;
 };
 
 }  // namespace blink
