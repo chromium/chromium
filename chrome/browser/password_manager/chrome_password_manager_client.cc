@@ -1972,7 +1972,8 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
         auto predictions = manager.GetHeursticPredictionForForm(
             autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
             field_ids);
-        if (base::FeatureList::IsEnabled(
+        if (apply_client_side_prediction_override_ ||
+            base::FeatureList::IsEnabled(
                 password_manager::features::
                     kApplyClientsideModelPredictionsForPasswordTypes)) {
           password_manager_.ProcessClassificationModelPredictions(driver, form,

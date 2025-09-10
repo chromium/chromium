@@ -159,6 +159,11 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
   autofill_client_provider.CreateClientForWebContents(new_web_contents.get());
   ChromePasswordManagerClient::CreateForWebContents(new_web_contents.get());
 
+  // Apply client side predictions for WebContents where password change is
+  // happening. This helps with correctly identifying change password form.
+  ChromePasswordManagerClient::FromWebContents(new_web_contents.get())
+      ->ApplyClientSidePredictionOverride();
+
   new_web_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
   // Provide more height so that the change password button is visible on

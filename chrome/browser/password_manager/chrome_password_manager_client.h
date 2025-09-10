@@ -413,6 +413,13 @@ class ChromePasswordManagerClient
   bool IsActorTaskActive() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  bool apply_client_side_prediction_override_for_testing() const {
+    return apply_client_side_prediction_override_;
+  }
+  void ApplyClientSidePredictionOverride() {
+    apply_client_side_prediction_override_ = true;
+  }
+
  protected:
   // Callable for tests.
   explicit ChromePasswordManagerClient(content::WebContents* web_contents);
@@ -607,6 +614,8 @@ class ChromePasswordManagerClient
 
   password_manager::UndoPasswordChangeController
       undo_password_change_controller_;
+
+  bool apply_client_side_prediction_override_ = false;
 
   base::WeakPtrFactory<ChromePasswordManagerClient> weak_ptr_factory_{this};
 
