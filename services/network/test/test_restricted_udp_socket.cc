@@ -18,16 +18,6 @@ TestRestrictedUDPSocket::TestRestrictedUDPSocket(
 
 TestRestrictedUDPSocket::~TestRestrictedUDPSocket() = default;
 
-void TestRestrictedUDPSocket::JoinGroup(const net::IPAddress& ip_address,
-                                        JoinGroupCallback callback) {
-  udp_socket_->JoinGroup(ip_address, std::move(callback));
-}
-
-void TestRestrictedUDPSocket::LeaveGroup(const net::IPAddress& ip_address,
-                                         LeaveGroupCallback callback) {
-  udp_socket_->LeaveGroup(ip_address, std::move(callback));
-}
-
 void TestRestrictedUDPSocket::ReceiveMore(uint32_t num_additional_datagrams) {
   udp_socket_->ReceiveMore(num_additional_datagrams);
 }

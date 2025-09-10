@@ -10,11 +10,6 @@ const assertEq = (actual, expected) => {
   }
 };
 
-// It is fine to reuse the same address, because
-// the port will be generated unique on this machine.
-// multicast addresses are in range 224.0.0.0 to 239.255.255.255.
-const multicastGroupAddress = '237.132.100.17';
-
 async function launchUdpEchoServer(server, requiredBytes, clientAddress, clientPort) {
   let bytesEchoed = 0;
 
@@ -117,99 +112,6 @@ async function readUdpAfterSocketClose(options) {
     return 'readUdpAferSocketClose succeeded.';
   } catch (error) {
     return ('readUdpAfterSocketClose failed: ' + error);
-  }
-}
-
-async function joinGroup(options, ipAddress) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-
-    await multicastController.joinGroup(ipAddress);
-    await udpSocket.close();
-    return 'joinGroup succeeded.';
-  } catch (error) {
-    return ('joinGroup failed: ' + error);
-  }
-}
-
-async function joinGroupTwice(options) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-
-    await multicastController.joinGroup(multicastGroupAddress);
-    await multicastController.joinGroup(multicastGroupAddress);
-    await udpSocket.close();
-    return 'joinGroupTwice succeeded.';
-  } catch (error) {
-    return ('joinGroupTwice failed: ' + error);
-  }
-}
-
-async function leaveGroupAfterJoin(options) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-    assertEq(multicastController.joinedGroups.length, 0);
-
-    await multicastController.joinGroup(multicastGroupAddress);
-
-    assertEq(multicastController.joinedGroups.length, 1);
-    assertEq(multicastController.joinedGroups[0], multicastGroupAddress);
-
-    await multicastController.leaveGroup(multicastGroupAddress);
-    assertEq(multicastController.joinedGroups.length, 0);
-
-    await udpSocket.close();
-    return 'leaveGroupAfterJoin succeeded.';
-  } catch (error) {
-    return ('leaveGroupAfterJoin failed: ' + error);
-  }
-}
-
-async function leaveGroupTwiceAfterJoin(options) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-
-    await multicastController.joinGroup(multicastGroupAddress);
-    await multicastController.leaveGroup(multicastGroupAddress);
-    await multicastController.leaveGroup(multicastGroupAddress);
-
-    await udpSocket.close();
-    return 'leaveGroupTwiceAfterJoin succeeded.';
-  } catch (error) {
-    return ('leaveGroupTwiceAfterJoin failed: ' + error);
-  }
-}
-
-async function joinGroupAfterClose(options) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-    await udpSocket.close();
-
-    await multicastController.joinGroup(multicastGroupAddress);
-    return 'joinGroupAfterClose succeeded.';
-  } catch (error) {
-    return ('joinGroupAfterClose failed: ' + error);
-  }
-}
-
-async function leaveGroupAfterClose(options) {
-  try {
-    let udpSocket = new UDPSocket(options);
-    const {multicastController} = await udpSocket.opened;
-
-    await multicastController.joinGroup(multicastGroupAddress);
-    await udpSocket.close();
-
-    await multicastController.leaveGroup(multicastGroupAddress);
-
-    return 'leaveGroupAfterClose succeeded.';
-  } catch (error) {
-    return ('leaveGroupAfterClose failed: ' + error);
   }
 }
 
@@ -329,86 +231,6 @@ async function exchangeUdpPacketsBetweenClientAndServer() {
     return "exchangeUdpPacketsBetweenClientAndServer succeeded.";
   } catch (error) {
     return "exchangeUdpPacketsBetweenClientAndServer failed: " + error;
-  }
-}
-
-async function exchangeUdpMulticastPackets() {
-  const kRequiredDatagrams = 35;
-  const kRequiredBytes = kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
-
-  try {
-    const receiverSocket = new UDPSocket({
-      localAddress: '0.0.0.0',
-    });
-    const {localPort: multicastPort, multicastController} =
-        await receiverSocket.opened;
-    multicastController.joinGroup(multicastGroupAddress);
-
-    const senderSocket = new UDPSocket({
-      remoteAddress: multicastGroupAddress,
-      remotePort: multicastPort,
-      multicastTimeToLive: 0,
-      multicastLoopback: true
-    });
-
-    const sendLoopPromise = sendLoop(senderSocket, kRequiredBytes);
-    const readLoopPromise = readLoop(receiverSocket, kRequiredBytes);
-
-    await Promise.all([sendLoopPromise, readLoopPromise]);
-
-    await senderSocket.close();
-    await receiverSocket.close();
-
-    return 'exchangeUdpMulticastPackets succeeded.';
-  } catch (error) {
-    return 'exchangeUdpMulticastPackets failed: ' + error;
-  }
-}
-
-async function exchangeUdpMulticastPacketsMultipleReceivers() {
-  const kRequiredDatagrams = 35;
-  const kRequiredBytes = kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
-
-  try {
-    // Create receiver 1.
-    const receiverSocket1 = new UDPSocket(
-        {localAddress: '0.0.0.0', multicastAllowAddressSharing: true});
-    const {
-      localPort: multicastPort,
-      multicastController: multicastController1
-    } = await receiverSocket1.opened;
-    multicastController1.joinGroup(multicastGroupAddress);
-
-    // Create receiver 2.
-    const receiverSocket2 = new UDPSocket({
-      localAddress: '0.0.0.0',
-      localPort: multicastPort,
-      multicastAllowAddressSharing: true
-    });
-    const {multicastController: multicastController2} =
-        await receiverSocket2.opened;
-    multicastController2.joinGroup(multicastGroupAddress);
-
-    const senderSocket = new UDPSocket({
-      remoteAddress: multicastGroupAddress,
-      remotePort: multicastPort,
-      multicastTimeToLive: 0,
-      multicastLoopback: true
-    });
-
-    const readLoopPromise1 = readLoop(receiverSocket1, kRequiredBytes);
-    const readLoopPromise2 = readLoop(receiverSocket2, kRequiredBytes);
-    const sendLoopPromise = sendLoop(senderSocket, kRequiredBytes);
-
-    await Promise.all([sendLoopPromise, readLoopPromise1, readLoopPromise2]);
-
-    await senderSocket.close();
-    await receiverSocket1.close();
-    await receiverSocket2.close();
-
-    return 'exchangeUdpMulticastPackets succeeded.';
-  } catch (error) {
-    return 'exchangeUdpMulticastPackets failed: ' + error;
   }
 }
 

@@ -93,7 +93,6 @@ void MockNetworkContext::CreateRestrictedUDPSocket(
     network::mojom::RestrictedUDPSocketParamsPtr params,
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
-    bool allow_multicast,
     CreateRestrictedUDPSocketCallback callback) {
   auto socket = CreateMockUDPSocket(std::move(listener));
   DCHECK_EQ(mode, network::mojom::RestrictedUDPSocketMode::CONNECTED);

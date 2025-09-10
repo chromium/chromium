@@ -61,7 +61,6 @@ void SocketFactory::CreateRestrictedUDPSocket(
     mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     std::unique_ptr<SimpleHostResolver> resolver,
-    bool allow_multicast,
     mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback) {
   auto udp_socket = std::make_unique<UDPSocket>(std::move(listener), net_log_);
   switch (mode) {
@@ -77,8 +76,7 @@ void SocketFactory::CreateRestrictedUDPSocket(
       break;
   }
   auto restricted_udp_socket = std::make_unique<RestrictedUDPSocket>(
-      std::move(udp_socket), traffic_annotation, std::move(resolver),
-      allow_multicast);
+      std::move(udp_socket), traffic_annotation, std::move(resolver));
 #if BUILDFLAG(IS_CHROMEOS)
   if (params && params->connection_tracker) {
     restricted_udp_socket->AttachConnectionTracker(
