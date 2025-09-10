@@ -19451,31 +19451,6 @@
             ]
         }
     ],
-    "ProgrammaticScrollAnimationOverride": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "cubic_bezier_x1": "0.4",
-                        "cubic_bezier_x2": "0.0",
-                        "cubic_bezier_y1": "0.0",
-                        "cubic_bezier_y2": "1.0",
-                        "max_animation_duration": "1.5s"
-                    },
-                    "enable_features": [
-                        "ProgrammaticScrollAnimationOverride"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProgressiveAccessibility": [
         {
             "platforms": [
