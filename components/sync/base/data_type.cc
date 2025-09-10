@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(55 == syncer::GetNumDataTypes(),
+static_assert(56 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(55 == syncer::GetNumDataTypes(),
+static_assert(56 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -110,6 +110,8 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
          AUTOFILL_VALUABLE},
         {sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
          SHARED_TAB_GROUP_ACCOUNT_DATA},
+        {sync_pb::EntitySpecifics::kAutofillValuableSettingFieldNumber,
+         AUTOFILL_VALUABLE_SETTING},
         {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
@@ -278,6 +280,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case AUTOFILL_VALUABLE:
       specifics->mutable_autofill_valuable();
       break;
+    case AUTOFILL_VALUABLE_SETTING:
+      specifics->mutable_autofill_valuable_setting();
+      break;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       specifics->mutable_shared_tab_group_account_data();
       break;
@@ -404,6 +409,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
     case AUTOFILL_VALUABLE:
       return sync_pb::EntitySpecifics::kAutofillValuableFieldNumber;
+    case AUTOFILL_VALUABLE_SETTING:
+      return sync_pb::EntitySpecifics::kAutofillValuableSettingFieldNumber;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
     case SHARED_COMMENT:
@@ -426,7 +433,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(55 == syncer::GetNumDataTypes(),
+  static_assert(56 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -585,6 +592,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_autofill_valuable()) {
     return AUTOFILL_VALUABLE;
   }
+  if (specifics.has_autofill_valuable_setting()) {
+    return AUTOFILL_VALUABLE_SETTING;
+  }
   if (specifics.has_shared_tab_group_account_data()) {
     return SHARED_TAB_GROUP_ACCOUNT_DATA;
   }
@@ -613,7 +623,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(55 == syncer::GetNumDataTypes(),
+  static_assert(56 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -758,6 +768,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Plus Address Setting";
     case AUTOFILL_VALUABLE:
       return "Autofill Valuable";
+    case AUTOFILL_VALUABLE_SETTING:
+      return "Autofill Valuable Setting";
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return "Shared Tab Group Account Data";
     case SHARED_COMMENT:
@@ -881,6 +893,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "SHARED_COMMENT";
     case NIGORI:
       return "NIGORI";
+    case AUTOFILL_VALUABLE_SETTING:
+      return "AUTOFILL_VALUABLE_SETTING";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
   NOTREACHED();
@@ -992,6 +1006,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kPlusAddressSettings;
     case AUTOFILL_VALUABLE:
       return DataTypeForHistograms::kAutofillValuable;
+    case AUTOFILL_VALUABLE_SETTING:
+      return DataTypeForHistograms::kAutofillValuableSetting;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return DataTypeForHistograms::kSharedTabGroupAccountData;
     case SHARED_COMMENT:
@@ -1126,6 +1142,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "plus_address_setting";
     case AUTOFILL_VALUABLE:
       return "autofill_valuable";
+    case AUTOFILL_VALUABLE_SETTING:
+      return "autofill_valuable_setting";
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return "shared_tab_group_account_data";
     case SHARED_COMMENT:

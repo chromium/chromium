@@ -19,6 +19,7 @@ import "components/sync/protocol/arc_package_specifics.proto";
 import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
 import "components/sync/protocol/autofill_valuable_specifics.proto";
+import "components/sync/protocol/autofill_valuable_setting_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
@@ -161,6 +162,7 @@ message EntitySpecifics {
     AutofillValuableSpecifics autofill_valuable = 1419865;
     SharedTabGroupAccountDataSpecifics shared_tab_group_account_data = 1429255;
     SharedCommentSpecifics shared_comment = 1484017;
+    AutofillValuableSettingSpecifics autofill_valuable_setting = 1438954;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

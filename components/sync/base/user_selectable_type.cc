@@ -48,7 +48,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
     // TODO(crbug.com/412602018): Remove this parameter once the feature is
     // launched.
     bool skip_feature_checks_if_early = false) {
-  static_assert(55 == syncer::GetNumDataTypes(),
+  static_assert(56 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -126,7 +126,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
               AUTOFILL_WALLET_DATA,
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-               AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE}};
+               AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE,
+               AUTOFILL_VALUABLE_SETTING}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};

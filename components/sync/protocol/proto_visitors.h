@@ -728,7 +728,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(55 == GetNumDataTypes(),
+  static_assert(56 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -740,6 +740,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(autofill_offer);
   VISIT(autofill_profile);
   VISIT(autofill_valuable);
+  VISIT(autofill_valuable_setting);
   VISIT(autofill_wallet);
   VISIT(autofill_wallet_credential);
   VISIT(autofill_wallet_usage);
@@ -2064,6 +2065,13 @@ VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {
   VISIT(arrival_airport);
   VISIT(departure_date_unix_epoch_micros);
   VISIT(arrival_date_unix_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSettingSpecifics& proto) {
+  VISIT(name);
+  VISIT(bool_value);
+  VISIT(string_value);
+  VISIT(int_value);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {

@@ -174,7 +174,13 @@ enum DataType {
   // Comments for shared contexts.
   SHARED_COMMENT,
 
-  LAST_USER_DATA_TYPE = SHARED_COMMENT,
+  // Settings for AUTOFILL_VALUABLE forwarded from the user's account. Since the
+  // settings originate from the user's Wallet account settings, this is not
+  // reusing any of the standard syncable prefs.
+  // Read-only on the client.
+  AUTOFILL_VALUABLE_SETTING,
+
+  LAST_USER_DATA_TYPE = AUTOFILL_VALUABLE_SETTING,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -275,7 +281,8 @@ enum class DataTypeForHistograms {
   kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
   kSharedComment = 71,
-  kMaxValue = kSharedComment,
+  kAutofillValuableSetting = 72,
+  kMaxValue = kAutofillValuableSetting,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -398,7 +405,7 @@ constexpr DataTypeSet SharedTypes() {
 // any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      55 == GetNumDataTypes(),
+      56 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
       "data. The warning offers the user to either proceed with sign-out "

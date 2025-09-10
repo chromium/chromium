@@ -406,7 +406,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(55 == GetNumDataTypes(),
+  static_assert(56 == GetNumDataTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync, aka"
                 " roaming profiles on Windows.");
@@ -415,6 +415,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     // Note: AUTOFILL_WALLET_CREDENTIAL *is* supported - the user can still save
     // CVVs for local credit cards.
     types.Remove(AUTOFILL_VALUABLE);
+    types.Remove(AUTOFILL_VALUABLE_SETTING);
     types.Remove(AUTOFILL_WALLET_DATA);
     types.Remove(AUTOFILL_WALLET_METADATA);
     types.Remove(AUTOFILL_WALLET_OFFER);

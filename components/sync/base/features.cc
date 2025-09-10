@@ -16,6 +16,10 @@ BASE_FEATURE(kSyncAutofillLoyaltyCard,
              "SyncAutofillLoyaltyCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncAutofillValuableSettings,
+             "SyncAutofillValuableSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncMoveValuablesToProfileDb,
              "SyncMoveValuablesToProfileDb",
              base::FEATURE_DISABLED_BY_DEFAULT);
