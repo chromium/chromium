@@ -111,6 +111,7 @@ _SUITES = {
         'module_internal_nosig',
         'base_nosig',
         'base_sig',
+        'cta_test_sig',
     ],
     'all_chrome_java': [
         'chrome_nosig',
@@ -135,12 +136,16 @@ _SUITES = {
 @dataclasses.dataclass
 class Benchmark:
     name: str
-    is_incremental: bool = True
-    can_build: bool = True
-    can_install: bool = True
     from_string: str = ''
     to_string: str = ''
     change_file: str = ''
+
+    # Both of these require an emulator to be present.
+    can_install: bool = False
+    can_run: bool = False
+
+    # Useful for large test apks to not run every test in it.
+    test_filter: str = ''
 
 
 _BENCHMARKS = [
@@ -150,6 +155,7 @@ _BENCHMARKS = [
         to_string='Different<sub>UniqueString";',
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
+        can_install=True,
     ),
     Benchmark(
         name='chrome_sig',
@@ -158,6 +164,7 @@ _BENCHMARKS = [
         'public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
+        can_install=True,
     ),
     Benchmark(
         name='module_public_sig',
@@ -165,6 +172,7 @@ _BENCHMARKS = [
         to_string='INVALID_WINDOW_INDEX = -<sub>',
         change_file=
         'chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
+        can_install=True,
     ),
     Benchmark(
         name='module_internal_nosig',
@@ -172,39 +180,49 @@ _BENCHMARKS = [
         to_string='"DifferentUnique<sub>String',
         change_file=
         'chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+        can_install=True,
     ),
     Benchmark(
         name='base_nosig',
         from_string='"PathUtil',
         to_string='"PathUtil<sub>1',
         change_file='base/android/java/src/org/chromium/base/PathUtils.java',
+        can_install=True,
     ),
     Benchmark(
         name='base_sig',
         from_string='PathUtils";',
         to_string='PathUtils";public void NewInterface<sub>Method(){}',
         change_file='base/android/java/src/org/chromium/base/PathUtils.java',
+        can_install=True,
     ),
     Benchmark(
         name='turbine_headers',
         from_string='# found in the LICENSE file.',
         to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/turbine.py',
-        can_install=False,
     ),
     Benchmark(
         name='compile_java',
         from_string='# found in the LICENSE file.',
         to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/compile_java.py',
-        can_install=False,
     ),
     Benchmark(
         name='write_build_config',
         from_string='# found in the LICENSE file.',
         to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/write_build_config.py',
-        can_install=False,
+    ),
+    Benchmark(
+        name='cta_test_sig',
+        from_string='public void testStartOnBlankPage() {',
+        to_string=
+        'public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',  # pylint: disable=line-too-long
+        change_file=
+        'chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',  # pylint: disable=line-too-long
+        can_run=True,
+        test_filter='*ExampleFreshCtaTest*',
     ),
 ]
 
@@ -365,15 +383,32 @@ def _run_install(out_dir: pathlib.Path, target: str,
     return _run_and_time_cmd(cmd)
 
 
-def _run_and_maybe_install(
-        name: str, out_dir: pathlib.Path, target: str,
+def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
+              test_filter: str) -> float:
+    # Example script path: out/Debug/bin/run_chrome_public_test_apk
+    script_path = out_dir / 'bin' / f'run_{target}'
+    cmd = [str(script_path), '--fast-local-dev', '--device', device_serial]
+    if test_filter:
+        cmd += ['-f', test_filter]
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        cmd += ['-vv']
+    return _run_and_time_cmd(cmd)
+
+
+def _execute_benchmark_stages(
+        benchmark: Benchmark, out_dir: pathlib.Path, target: str,
         emulator: Optional[device_utils.DeviceUtils]
 ) -> List[Tuple[str, float]]:
-    results = [(f'{name}_compile', _compile(out_dir, target))]
-    if emulator:
-        results.append(
-            (f'{name}_install', _run_install(out_dir, target,
-                                             emulator.serial)))
+    if benchmark.can_install or benchmark.can_run:
+        assert emulator, f'An emulator is required for {benchmark}'
+    results = [(f'{benchmark.name}_compile', _compile(out_dir, target))]
+    if benchmark.can_install:
+        results.append((f'{benchmark.name}_install',
+                        _run_install(out_dir, target, emulator.serial)))
+    if benchmark.can_run:
+        results.append((f'{benchmark.name}_run',
+                        _run_test(out_dir, target, emulator.serial,
+                                  benchmark.test_filter)))
     return results
 
 
@@ -383,9 +418,7 @@ def _run_benchmark(
 ) -> List[Tuple[str, float]]:
     # This ensures that the only change is the one that this script makes.
     logging.info('Prepping benchmark...')
-    if not benchmark.can_install:
-        emulator = None
-    results = _run_and_maybe_install(benchmark.name, out_dir, target, emulator)
+    results = _execute_benchmark_stages(benchmark, out_dir, target, emulator)
     for name, elapsed in results:
         logging.info(f'Took {elapsed:.1f}s to prep {name}.')
     logging.info('Starting actual test...')
@@ -405,8 +438,7 @@ def _run_benchmark(
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(benchmark.name, out_dir, target,
-                                      emulator)
+        return _execute_benchmark_stages(benchmark, out_dir, target, emulator)
 
 
 def _format_result(time_taken: List[float]) -> str:

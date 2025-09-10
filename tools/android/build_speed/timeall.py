@@ -142,7 +142,9 @@ def main():
     ]
 
     # shuffle bos
-    if not args.debug:
+    if args.debug:
+        bos = [bos[0]]
+    else:
         random.shuffle(bos)
 
     _log(pformat(bos))
