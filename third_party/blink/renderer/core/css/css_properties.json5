@@ -4565,7 +4565,7 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "overscroll-anchor-name",
+      name: "overscroll-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
       include_paths: ["third_party/blink/renderer/core/style/scoped_css_name.h"],
       type_name: "ScopedCSSNameList",
@@ -4573,7 +4573,7 @@
       default_value: "nullptr",
       field_group: "*",
       field_template: "external",
-      converter: "ConvertOverscrollAnchorName",
+      converter: "ConvertOverscrollArea",
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,

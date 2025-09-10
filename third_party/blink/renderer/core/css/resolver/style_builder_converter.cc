@@ -2687,7 +2687,7 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertViewTransitionClass(
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
-ScopedCSSNameList* StyleBuilderConverter::ConvertOverscrollAnchorName(
+ScopedCSSNameList* StyleBuilderConverter::ConvertOverscrollArea(
     StyleResolverState& state,
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());

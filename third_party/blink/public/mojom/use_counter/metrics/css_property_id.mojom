@@ -942,7 +942,7 @@ enum CSSSampleId {
     kContinue = 880,
     kMaxLines = 881,
     kBlockEllipsis = 882,
-    kOverscrollAnchorName = 883,
+    kOverscrollArea = 883,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

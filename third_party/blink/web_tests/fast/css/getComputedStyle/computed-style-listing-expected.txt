@@ -302,7 +302,7 @@ overflow-wrap: normal
 overflow-x: visible
 overflow-y: visible
 overlay: none
-overscroll-anchor-name: none
+overscroll-area: none
 overscroll-behavior-block: auto
 overscroll-behavior-inline: auto
 padding-block-end: 0px
