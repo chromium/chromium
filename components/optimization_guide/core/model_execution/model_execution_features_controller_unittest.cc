@@ -489,7 +489,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
                 UserVisibleFeatureKey::kHistorySearch));
 #else
   EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kVisibleFieldTrialEnabled,
+                kNotVisibleHardwareUnsupported,
             controller()->GetSettingsVisibility(
                 UserVisibleFeatureKey::kHistorySearch));
 #endif
