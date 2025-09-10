@@ -3229,7 +3229,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NavigationSuggestion.GetDomainInfoDelayBeforeAllowingNavigation"
-    units="ms" expires_after="2024-11-03">
+    units="ms" expires_after="2026-11-03">
   <owner>meacer@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -3240,12 +3240,14 @@ chromium-metrics-reviews@google.com.
     LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
     (i.e., not those that result in showing interstitials and/or digital asset
     manifest checks).
+
+    Note this histogram was expired between 2024-11 and 2025-09.
   </summary>
 </histogram>
 
 <histogram
     name="NavigationSuggestion.IsLookalikeUrlDelayBeforeAllowingNavigation"
-    units="ms" expires_after="2024-11-03">
+    units="ms" expires_after="2026-11-03">
   <owner>meacer@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -3256,12 +3258,14 @@ chromium-metrics-reviews@google.com.
     LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
     (i.e., not those that result in showing interstitials and/or digital asset
     manifest checks).
+
+    Note this histogram was expired between 2024-11 and 2025-09.
   </summary>
 </histogram>
 
 <histogram
     name="NavigationSuggestion.PerformChecksDelayBeforeAllowingNavigation"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2026-06-30">
   <owner>meacer@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -3272,6 +3276,8 @@ chromium-metrics-reviews@google.com.
     LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
     (i.e., not those that result in showing interstitials and/or digital asset
     manifest checks).
+
+    Note this histogram was expired between 2024-06 and 2025-09.
   </summary>
 </histogram>
 
