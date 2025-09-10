@@ -242,7 +242,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                  GLuint64* params);
 
   // ClientFontManager::Client implementation.
-  void* MapFontBuffer(uint32_t size) override;
+  base::span<uint8_t> MapFontBuffer(uint32_t size) override;
 
   void set_max_inlined_entry_size_for_testing(uint32_t max_size) {
     max_inlined_entry_size_ = max_size;

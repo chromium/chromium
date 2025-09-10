@@ -1169,25 +1169,27 @@ void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
   return raster_mapped_buffer_->address();
 }
 
-void* RasterImplementation::MapFontBuffer(uint32_t size) {
+base::span<uint8_t> RasterImplementation::MapFontBuffer(uint32_t size) {
+  DCHECK(size > 0);
   if (font_mapped_buffer_) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM",
                "already mapped");
-    return nullptr;
+    return {};
   }
   if (!raster_mapped_buffer_) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM",
                "mapped font buffer with no raster buffer");
-    return nullptr;
+    return {};
   }
 
   font_mapped_buffer_.emplace(size, helper_, mapped_memory_.get());
   if (!font_mapped_buffer_->valid()) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM", "size too big");
     font_mapped_buffer_ = std::nullopt;
-    return nullptr;
+    return {};
   }
-  return font_mapped_buffer_->address();
+
+  return font_mapped_buffer_->as_byte_span();
 }
 
 void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,

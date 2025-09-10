@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 #include "gpu/raster_export.h"
@@ -23,7 +24,7 @@ class RASTER_EXPORT ClientFontManager
    public:
     virtual ~Client() {}
 
-    virtual void* MapFontBuffer(uint32_t size) = 0;
+    virtual base::span<uint8_t> MapFontBuffer(uint32_t size) = 0;
   };
 
   ClientFontManager(Client* client, CommandBuffer* command_buffer);
