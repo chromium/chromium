@@ -150,7 +150,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
       waitForUIElementToAppearWithMatcher:CardUnmaskPromptNavigationBarTitle()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionIsShownForVirtualCard {
+// TODO(crbug.com/444083194): Test is flaky.
+- (void)FLAKY_testCardUnmaskAuthenticationSelectionIsShownForVirtualCard {
   [self showAuthenticationSelection];
 
   // Verify that the card unmask prompt was shown.
