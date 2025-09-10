@@ -12,9 +12,11 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_omnibox_client.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
@@ -109,10 +111,10 @@ void ComposeboxHandler::OpenUrl(GURL url,
   web_contents_->OpenURL(params, base::DoNothing());
 }
 
-void ComposeboxHandler::AddFile(
+void ComposeboxHandler::AddFileContext(
     composebox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
-    AddFileCallback callback) {
+    AddFileContextCallback callback) {
   base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
@@ -151,7 +153,23 @@ void ComposeboxHandler::AddFile(
                                          std::move(image_options));
 }
 
-void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
+void ComposeboxHandler::AddTabContext(int32_t tab_id,
+                                      AddTabContextCallback callback) {
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+  lens::TabContextualizationController* controller =
+      tab->GetTabFeatures()->tab_contextualization_controller();
+  DCHECK(controller);
+  auto token = base::UnguessableToken::Create();
+  controller->GetPageContext(
+      base::BindOnce(&ComposeboxHandler::OnGetTabPageContext,
+                     weak_ptr_factory_.GetWeakPtr(), token));
+
+  std::move(callback).Run(token);
+}
+
+void ComposeboxHandler::DeleteContext(
+    const base::UnguessableToken& file_token) {
   ComposeboxQueryController::FileInfo* file_info =
       query_controller_->GetFileInfo(file_token);
   lens::MimeType file_type =
@@ -164,8 +182,15 @@ void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
   bool success = query_controller_->DeleteFile(file_token);
   metrics_recorder_->RecordFileDeletedMetrics(success, file_type, file_status);
   if (!success) {
-    handler_.ReportBadMessage("An invalid file token was sent to DeleteFile");
+    handler_.ReportBadMessage("An invalid token was sent to DeleteContext");
   }
+}
+
+void ComposeboxHandler::OnGetTabPageContext(
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  query_controller_->StartFileUploadFlow(
+      context_token, std::move(page_content_data), std::nullopt);
 }
 
 void ComposeboxHandler::ClearFiles() {
@@ -177,7 +202,8 @@ void ComposeboxHandler::OnFileUploadStatusChanged(
     lens::MimeType mime_type,
     composebox_query::mojom::FileUploadStatus file_upload_status,
     const std::optional<FileUploadErrorType>& error_type) {
-  page_->OnFileUploadStatusChanged(file_token, file_upload_status, error_type);
+  page_->OnContextualInputStatusChanged(file_token, file_upload_status,
+                                        error_type);
   metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
                                                error_type);
 }
