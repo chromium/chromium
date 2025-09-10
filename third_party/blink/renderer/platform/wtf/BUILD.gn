@@ -348,6 +348,7 @@ source_set("wtf_unittests_sources") {
     "text/text_codec_utf8_test.cc",
     "text/text_encoding_test.cc",
     "text/text_offset_map_test.cc",
+    "text/utf8_test.cc",
     "text/wtf_string_test.cc",
     "threading_primitives_test.cc",
     "type_traits_test.cc",

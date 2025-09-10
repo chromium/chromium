@@ -233,16 +233,18 @@ bool IsLegalUtf8(const base::span<const uint8_t> source) {
             return false;
           break;
         case 0xED:
-          if (a > 0x9F)
+          if (a < 0x80 || a > 0x9F) {
             return false;
+          }
           break;
         case 0xF0:
           if (a < 0x90)
             return false;
           break;
         case 0xF4:
-          if (a > 0x8F)
+          if (a < 0x80 || a > 0x8F) {
             return false;
+          }
           break;
         default:
           if (a < 0x80)
