@@ -79,6 +79,11 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enables Actor Login permissions UI in Password Manager settings
+BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables the Mojo JavaScript API for the password manager, replacing the
 // legacy passwordsPrivate extension API.
 BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApi);
