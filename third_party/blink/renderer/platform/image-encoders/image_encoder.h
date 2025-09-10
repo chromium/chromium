@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/encode/SkWebpEncoder.h"
 
 namespace blink {
@@ -55,7 +55,7 @@ class PLATFORM_EXPORT ImageEncoder {
 
   static bool Encode(Vector<unsigned char>* dst,
                      const SkPixmap& src,
-                     const SkPngEncoder::Options&);
+                     SkPngRustEncoder::CompressionLevel);
 
   static bool Encode(Vector<unsigned char>* dst,
                      const SkPixmap& src,
@@ -72,9 +72,10 @@ class PLATFORM_EXPORT ImageEncoder {
                                               const SkPixmap& src,
                                               const SkJpegEncoder::Options&);
 
-  static std::unique_ptr<ImageEncoder> Create(Vector<unsigned char>* dst,
-                                              const SkPixmap& src,
-                                              const SkPngEncoder::Options&);
+  static std::unique_ptr<ImageEncoder> Create(
+      Vector<unsigned char>* dst,
+      const SkPixmap& src,
+      SkPngRustEncoder::CompressionLevel);
 
   bool encodeRows(int numRows) { return encoder_->encodeRows(numRows); }
 

@@ -246,12 +246,11 @@ void CanvasHibernationHandler::Encode(
       break;
     case CompressionAlgorithm::kZstd: {
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
-      // When the compression level is set to 0, no compression is done. Then we
-      // can pass the result to ZSTD. This won't produce a valid PNG, but it
-      // doesn't matter, as we don't write it to disk, and restore it ourselves.
-      constexpr int kZLibCompressionLevel = 0;
-      sk_sp<SkData> encoded_uncompressed = skia::EncodePngAsSkData(
-          nullptr, params->image.get(), kZLibCompressionLevel);
+      // Do minimal PNG compression and then pass the result to ZSTD. This won't
+      // produce a valid PNG, but it doesn't matter, as we don't write it to
+      // disk, and restore it ourselves.
+      sk_sp<SkData> encoded_uncompressed =
+          skia::FastEncodePngAsSkData(nullptr, params->image.get());
 
       TRACE_EVENT_BEGIN2("blink", "ZstdCompression", "original_size", 0, "size",
                          0);

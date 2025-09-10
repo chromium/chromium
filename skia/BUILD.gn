@@ -266,7 +266,6 @@ component("skia") {
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.h",
-    "rusty_png_feature.h",
   ]
   sources = [
     # Chrome sources.
@@ -297,7 +296,6 @@ component("skia") {
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
-    "rusty_png_feature.cc",
   ]
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]

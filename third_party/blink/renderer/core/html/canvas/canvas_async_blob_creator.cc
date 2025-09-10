@@ -37,8 +37,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace blink {
 
@@ -605,10 +605,8 @@ bool CanvasAsyncBlobCreator::InitializeEncoder(double quality) {
     // TODO(zakerinasab): Progressive encoding on webp image formats
     // (crbug.com/571399)
     DCHECK_EQ(kMimeTypePng, mime_type_);
-    SkPngEncoder::Options options;
-    options.fFilterFlags = SkPngEncoder::FilterFlag::kSub;
-    options.fZLibLevel = 3;
-    encoder_ = ImageEncoder::Create(&encoded_image_, src_data_, options);
+    encoder_ = ImageEncoder::Create(&encoded_image_, src_data_,
+                                    SkPngRustEncoder::CompressionLevel::kLow);
   }
 
   return encoder_.get();

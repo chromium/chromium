@@ -19,9 +19,8 @@ namespace skia {
 SK_API sk_sp<SkData> EncodePngAsSkData(const SkPixmap& src);
 SK_API sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
                                        const SkImage* src);
-SK_API sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
-                                       const SkImage* src,
-                                       int zlib_compression_level);
+SK_API sk_sp<SkData> FastEncodePngAsSkData(GrDirectContext* context,
+                                           const SkImage* src);
 SK_API std::string EncodePngAsDataUri(const SkPixmap& src);
 
 // This is not thread safe and should only be called via startup

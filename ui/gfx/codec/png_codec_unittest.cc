@@ -26,7 +26,6 @@
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/zlib/zlib.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 

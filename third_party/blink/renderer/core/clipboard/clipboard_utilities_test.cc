@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace blink {
 
@@ -60,12 +60,9 @@ TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
   bitmap.peekPixels(&pixmap);
 
   // Set encoding options to favor speed over size.
-  SkPngEncoder::Options options;
-  options.fZLibLevel = 1;
-  options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
   Vector<uint8_t> png_data;
-  EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap, options));
+  EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap,
+                                   SkPngRustEncoder::CompressionLevel::kLow));
 
   std::string markup = PNGToImageMarkup(png_data).Utf8();
 

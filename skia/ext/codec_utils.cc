@@ -7,38 +7,31 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "skia/ext/skia_utils_base.h"
-#include "skia/rusty_png_feature.h"
+#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace skia {
 
 namespace {
 
 sk_sp<SkData> EncodePngAsSkData(const SkPixmap& src,
-                                const SkPngEncoder::Options& options) {
+                                const SkPngRustEncoder::Options& options) {
   SkDynamicMemoryWStream stream;
-  if (!skia::EncodePng(&stream, src, options)) {
+  if (!SkPngRustEncoder::Encode(&stream, src, options)) {
     return nullptr;
   }
   return stream.detachAsData();
 }
 
-}  // namespace
-
-sk_sp<SkData> EncodePngAsSkData(const SkPixmap& src) {
-  const SkPngEncoder::Options kDefaultOptions = {};
-  return EncodePngAsSkData(src, kDefaultOptions);
-}
-
-sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
-                                const SkImage* src,
-                                int zlib_compression_level) {
+sk_sp<SkData> EncodePngAsSkData(
+    GrDirectContext* context,
+    const SkImage* src,
+    SkPngRustEncoder::CompressionLevel compression_level) {
   if (!src) {
     return nullptr;
   }
@@ -54,16 +47,27 @@ sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
   // `peekPixels` should always succeed for raster images.
   CHECK(success);
 
-  const SkPngEncoder::Options options = {.fZLibLevel = zlib_compression_level};
+  const SkPngRustEncoder::Options options = {.fCompressionLevel =
+                                                 compression_level};
   return EncodePngAsSkData(pixmap, options);
 }
 
-sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context, const SkImage* src) {
-  // This is the default level in
-  // `third_party/skia/include/encode/SkPngEncoder.h`.
-  const int kDefaultZlibCompressionLevel = 6;
+}  // namespace
 
-  return EncodePngAsSkData(context, src, kDefaultZlibCompressionLevel);
+sk_sp<SkData> EncodePngAsSkData(const SkPixmap& src) {
+  const SkPngRustEncoder::Options kDefaultOptions = {};
+  return EncodePngAsSkData(src, kDefaultOptions);
+}
+
+sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context, const SkImage* src) {
+  return EncodePngAsSkData(context, src,
+                           SkPngRustEncoder::CompressionLevel::kMedium);
+}
+
+sk_sp<SkData> FastEncodePngAsSkData(GrDirectContext* context,
+                                    const SkImage* src) {
+  return EncodePngAsSkData(context, src,
+                           SkPngRustEncoder::CompressionLevel::kLow);
 }
 
 std::string EncodePngAsDataUri(const SkPixmap& src) {
