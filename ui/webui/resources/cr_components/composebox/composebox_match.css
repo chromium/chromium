@@ -73,3 +73,18 @@
   font-size: 16px;
   padding-inline-start: var(--input-inline-spacing);
 }
+
+#remove {
+  --cr-icon-button-fill-color:
+      var(--color-searchbox-results-icon-selected);
+  --cr-icon-button-icon-size: 16px;
+  display: none;
+  position: absolute;
+  top: 6px;
+  right: 12px;
+}
+
+.container:hover #remove,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
+  display: inline-flex;
+}

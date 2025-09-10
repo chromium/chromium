@@ -372,18 +372,6 @@ ntp-composebox-dropdown {
   opacity: 100%;
 }
 
-#label {
-  align-content: center;
-  bottom: var(--input-bottom-spacing);
-  color: var(--color-new-tab-page-composebox-label);
-  font-size: 14px;
-  font-weight: 500;
-  height: 40px;
-  line-height: 20px;
-  position: absolute;
-  right: 16px;
-}
-
 /* Controls the opacity of the icons when the composebox is expanded/collapsed. */
 .icon-fade {
   opacity: 0;

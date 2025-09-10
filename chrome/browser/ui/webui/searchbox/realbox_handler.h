@@ -55,8 +55,6 @@ class RealboxHandler : public SearchboxHandler {
   void RemoveObserver(OmniboxWebUIPopupChangeObserver* observer);
   bool HasObserver(const OmniboxWebUIPopupChangeObserver* observer) const;
 
-  // searchbox::mojom::PageHandler:
-  void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,
                      const GURL& url,

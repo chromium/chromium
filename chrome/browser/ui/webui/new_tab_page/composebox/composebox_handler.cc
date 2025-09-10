@@ -260,10 +260,6 @@ void ComposeboxHandler::OnFileUploadStatusChanged(
                                                error_type);
 }
 
-void ComposeboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
-  NOTREACHED();
-}
-
 void ComposeboxHandler::ExecuteAction(uint8_t line,
                                       uint8_t action_index,
                                       const GURL& url,

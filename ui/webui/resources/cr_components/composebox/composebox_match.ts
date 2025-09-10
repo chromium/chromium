@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -9,6 +12,12 @@ import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote}
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
+
+export interface ComposeboxMatchElement {
+  $: {
+    remove: HTMLElement,
+  };
+}
 
 // Displays an autocomplete match
 export class ComposeboxMatchElement extends CrLitElement {
@@ -37,6 +46,8 @@ export class ComposeboxMatchElement extends CrLitElement {
        * of events such as deletion, click, etc.
        */
       matchIndex: {type: Number},
+
+      removeButtonTitle_: {type: String},
     };
   }
 
@@ -44,6 +55,9 @@ export class ComposeboxMatchElement extends CrLitElement {
 
   accessor matchIndex: number;
   private searchboxHandler_: SearchboxPageHandlerRemote;
+
+  protected accessor removeButtonTitle_: string =
+      loadTimeData.getString('removeSuggestion');
 
   constructor() {
     super();
@@ -61,6 +75,13 @@ export class ComposeboxMatchElement extends CrLitElement {
       return '';
     }
     return mojoString16ToString(this.match.contents);
+  }
+
+  protected computeRemoveButtonAriaLabel_(): string {
+    if (!this.match) {
+      return '';
+    }
+    return mojoString16ToString(this.match.removeButtonA11yLabel);
   }
 
   protected iconPath_(): string {
@@ -87,6 +108,23 @@ export class ComposeboxMatchElement extends CrLitElement {
         e.metaKey, e.shiftKey);
 
     this.fire('match-click');
+  }
+
+  protected onRemoveButtonClick_(e: MouseEvent) {
+    if (e.button !== 0) {
+      // Only handle main (generally left) button presses.
+      return;
+    }
+
+    e.preventDefault();   // Prevents default browser action (navigation).
+    e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+
+    this.searchboxHandler_.deleteAutocompleteMatch(
+        this.matchIndex, this.match.destinationUrl);
+  }
+
+  protected onRemoveButtonMouseDown_(e: Event) {
+    e.preventDefault();  // Prevents default browser action (focus).
   }
 }
 

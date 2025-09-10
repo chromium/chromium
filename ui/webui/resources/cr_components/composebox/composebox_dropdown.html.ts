@@ -14,10 +14,11 @@ export function getHtml(this: ComposeboxDropdownElement) {
   <div>
     ${this.result?.matches.map((item, index) => html`
       <ntp-composebox-match
+          aria-label="${this.computeAriaLabel_(item)}"
           tabindex="0"
           role="option"
           .match="${item}"
-          .matchIndex="${this.matchIndex_(item)}"
+          .matchIndex="${index}"
           ?selected="${this.isSelected_(item)}"
           ?is-last="${this.isLastMatch_(index)}">
       </ntp-composebox-match>

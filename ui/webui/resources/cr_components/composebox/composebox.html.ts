@@ -105,9 +105,6 @@ export function getHtml(this: ComposeboxElement) {
           ?disabled="${!this.submitEnabled_}">
         </cr-icon-button>
       </div>
-      <div id="label" class="icon-fade" part="label">
-        $i18n{searchboxComposeButtonText}
-      </div>
     </div>
   </div>
   <input type="file"

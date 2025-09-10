@@ -135,17 +135,6 @@ void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
   }
 }
 
-void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
-  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
-  if (!match || !match->SupportsDeletion()) {
-    // This can happen due to asynchronous updates changing the result while
-    // the web UI is referencing a stale match.
-    return;
-  }
-  omnibox_controller()->StopAutocomplete(/*clear_result=*/false);
-  autocomplete_controller()->DeleteMatch(*match);
-}
-
 void RealboxHandler::ExecuteAction(uint8_t line,
                                    uint8_t action_index,
                                    const GURL& url,
