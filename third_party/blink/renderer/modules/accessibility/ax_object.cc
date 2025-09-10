@@ -6525,12 +6525,13 @@ AXObject* AXObject::UnignoredChildAtSlow(int index) const {
 }
 
 AXObject* AXObject::UnignoredNextSiblingSlow() const {
-  if (IsIgnored()) {
+  if (!IsIgnoredButIncludedInTree() && IsIgnored()) {
     // TODO(crbug.com/1407397): Make sure this no longer fires then turn this
     // block into CHECK(!IsIgnored());
     DUMP_WILL_BE_NOTREACHED()
         << "We don't support finding unignored siblings for ignored "
-           "objects because it is not clear whether to search for the "
+           "not-included in tree objects because it is not clear whether to "
+           "search for the "
            "sibling in the unignored tree or in the whole tree: "
         << this;
     return nullptr;
@@ -6570,9 +6571,10 @@ AXObject* AXObject::UnignoredNextSiblingSlow() const {
 }
 
 AXObject* AXObject::UnignoredPreviousSiblingSlow() const {
-  if (IsIgnored()) {
+  if (!IsIgnoredButIncludedInTree() && IsIgnored()) {
     NOTREACHED() << "We don't support finding unignored siblings for ignored "
-                    "objects because it is not clear whether to search for the "
+                    "not-included in tree objects because it is not clear "
+                    "whether to search for the "
                     "sibling in the unignored tree or in the whole tree: "
                  << this;
   }

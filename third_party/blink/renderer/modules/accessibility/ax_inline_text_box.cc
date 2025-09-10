@@ -294,29 +294,12 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
     if (candidate) {
       return candidate;
     }
-    // It may be that the previous item has ignored content we must step over.
-    // Ignored content isn't guarenteed to have its line attributes serialized,
-    // so we must step over them.
-    // TODO: Investigate whether this should be applied more broadly.
-    candidate = ParentObject()->PreviousSiblingIncludingIgnored();
-    // Shadow content does not bubble its line breaking status to the host.
-    // TODO: Investigate if this should be refactored into IsLineBreakingObject.
-    // This could be considered breaking if this is in the same tree, so
-    // any future refactoring of IsLineBreakingObject would need this additional
-    // context to work as expected.
+
+    candidate = ParentObject()->UnignoredPreviousSiblingSlow();
     if (candidate && candidate->IsLineBreakingObject() &&
         (candidate->GetClosestNode()->GetTreeScope() ==
          GetClosestNode()->GetTreeScope())) {
       return nullptr;
-    }
-    while (candidate && candidate->IsIgnored()) {
-      if (candidate->IsLineBreakingObject() &&
-          (candidate->GetClosestNode()->GetTreeScope() ==
-           GetClosestNode()->GetTreeScope())) {
-        // If the candidate is a line breaking object, we need to return.
-        return nullptr;
-      }
-      candidate = candidate->PreviousSiblingIncludingIgnored();
     }
     return candidate;
   }
