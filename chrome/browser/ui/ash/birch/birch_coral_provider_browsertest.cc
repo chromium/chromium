@@ -72,7 +72,8 @@ MATCHER_P2(AppEq, title, id, "") {
 }
 
 // Tests that the coral provider collects correct in-session tab and app data.
-IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
+// TODO(crbug.com/398348784): flaky.
+IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, DISABLED_CollectInSessionData) {
   // Close existing browser windows.
   CloseAllBrowsers();
 
