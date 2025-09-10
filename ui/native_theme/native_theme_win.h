@@ -201,11 +201,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   void UpdatePrefersReducedTransparency();
   void UpdateInvertedColors();
 
-  // True if Windows supports dark mode. This does NOT indicate whether the
-  // system is in dark mode, only that it is supported by this version of
-  // Windows.
-  const bool supports_windows_dark_mode_;
-
   // Dark Mode/Transparency registry key.
   base::win::RegKey hkcu_themes_regkey_;
 

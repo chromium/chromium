@@ -263,42 +263,45 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
   }
 }
 
-NativeThemeWin::NativeThemeWin()
-    : supports_windows_dark_mode_(base::win::IsDarkModeAvailable()) {
+NativeThemeWin::NativeThemeWin() {
   // By default UI should not use the system accent color.
   set_should_use_system_accent_color(false);
 
-  // If there's no sequenced task runner handle, we can't be called back for
-  // registry changes. This generally happens in tests.
-  const bool observers_can_operate =
-      base::SequencedTaskRunner::HasCurrentDefault();
+  // The below code attempts calls to user32.dll, so avoid it if those calls are
+  // not possible.
+  if (base::win::IsUser32AndGdi32Available()) {
+    // If there's no sequenced task runner handle, we can't be called back for
+    // registry changes. This generally happens in tests.
+    const bool observers_can_operate =
+        base::SequencedTaskRunner::HasCurrentDefault();
 
-  hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-  if (hkcu_themes_regkey_.Valid()) {
-    if (!IsForcedDarkMode() && !IsForcedHighContrast()) {
-      UpdateDarkModeStatus();
+    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+    if (hkcu_themes_regkey_.Valid()) {
+      if (!IsForcedDarkMode() && !IsForcedHighContrast()) {
+        UpdateDarkModeStatus();
+      }
+      UpdatePrefersReducedTransparency();
+      if (observers_can_operate) {
+        RegisterThemeRegkeyObserver();
+      }
     }
-    UpdatePrefersReducedTransparency();
-    if (observers_can_operate) {
-      RegisterThemeRegkeyObserver();
+
+    hkcu_color_filtering_regkey_ =
+        OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
+    if (hkcu_color_filtering_regkey_.Valid()) {
+      UpdateInvertedColors();
+      if (observers_can_operate) {
+        RegisterColorFilteringRegkeyObserver();
+      }
     }
+
+    if (!IsForcedHighContrast()) {
+      set_forced_colors(IsUsingHighContrastThemeInternal());
+    }
+
+    UpdateSystemColors();
   }
 
-  hkcu_color_filtering_regkey_ =
-      OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
-  if (hkcu_color_filtering_regkey_.Valid()) {
-    UpdateInvertedColors();
-    if (observers_can_operate) {
-      RegisterColorFilteringRegkeyObserver();
-    }
-  }
-
-  if (!IsForcedHighContrast()) {
-    set_forced_colors(IsUsingHighContrastThemeInternal());
-  }
-
-  // Initialize the cached system colors.
-  UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   SetPreferredContrast(CalculatePreferredContrast());
 
@@ -347,7 +350,8 @@ void NativeThemeWin::ConfigureWebInstance() {
 
 std::optional<base::TimeDelta> NativeThemeWin::GetPlatformCaretBlinkInterval()
     const {
-  static const size_t system_value = ::GetCaretBlinkTime();
+  static const size_t system_value =
+      base::win::IsUser32AndGdi32Available() ? ::GetCaretBlinkTime() : 0;
   if (system_value != 0) {
     return (system_value == INFINITE) ? base::TimeDelta()
                                       : base::Milliseconds(system_value);
@@ -1605,7 +1609,7 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
       handle = OpenThemeData(nullptr, L"Combobox");
       break;
     case SCROLLBAR:
-      handle = OpenThemeData(nullptr, supports_windows_dark_mode_
+      handle = OpenThemeData(nullptr, base::win::IsDarkModeAvailable()
                                           ? L"Explorer::Scrollbar"
                                           : L"Scrollbar");
       break;
