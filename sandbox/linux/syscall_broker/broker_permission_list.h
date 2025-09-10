@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
@@ -112,7 +113,7 @@ class BrokerPermissionList {
   const std::vector<BrokerFilePermission> permissions_;
   // permissions_array_ is set up to point to the backing store of
   // permissions_ and is used in async signal safe methods.
-  raw_ptr<const BrokerFilePermission, AllowPtrArithmetic> permissions_array_;
+  base::raw_span<const BrokerFilePermission, AllowPtrArithmetic> permissions_array_;
   const size_t num_of_permissions_;
 };
 
