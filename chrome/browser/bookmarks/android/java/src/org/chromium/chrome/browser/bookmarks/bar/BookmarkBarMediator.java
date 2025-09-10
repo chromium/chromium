@@ -573,22 +573,17 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         // The final width is the smaller of the desired max width and the available screen width.
         int finalWidth = Math.min(maxWidthPx, availableWidth);
 
-        // Measure size of menu_list. measuredHeight is the total height of all the items
-        // inside menu_list plus padding.
-        int[] measuredDimensions = popupListMenu.getMenuDimensions();
-        int measuredHeight = measuredDimensions[1];
+        // When we are in the empty state, there is a set height defined by the UI spec.
+        if (count == 0) {
+            mAnchoredPopupWindow.setDesiredContentSize(
+                    finalWidth,
+                    resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_min_height));
+            return;
+        }
 
-        // Configure the height. When we are in the empty state, there should be a minimum height as
-        // defined by the UI spec. If there are bookmark items, the pop-up should shrink to wrap
-        // those items without a minimum height.
-        int minHeightPx =
-                count == 0
-                        ? resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_min_height)
-                        : measuredHeight;
-
-        // Ensures that the height is at least minHeightPx.
-        int heightFloor = Math.max(minHeightPx, measuredHeight);
-        mAnchoredPopupWindow.setDesiredContentSize(finalWidth, heightFloor);
+         // Measure the size of the menu_list, which includes all items plus padding.
+         int[] measuredDimensions = popupListMenu.getMenuDimensions();
+         mAnchoredPopupWindow.setDesiredContentSize(finalWidth, measuredDimensions[1]);
     }
 
     private int getIndexInBookmarksBar(BookmarkItem item) {
