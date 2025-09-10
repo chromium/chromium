@@ -19,12 +19,18 @@ const int kCurrentVersionNumber = 1;
 const int kCompatibleVersionNumber = 1;
 
 constexpr char kTabsTableName[] = "tab_state";
+constexpr char kTabCollectionsTableName[] = "tab_collections";
+
+bool CreateTable(sql::Database* db, base::cstring_view table_creation_script) {
+  DCHECK(db->IsSQLValid(table_creation_script));
+  return db->Execute(table_creation_script);
+}
 
 bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
   DCHECK(db->HasActiveTransactions());
 
   static constexpr char kCreateTabSchemaSql[] =
-      "CREATE TABLE IF NOT EXISTS tabs("
+      "CREATE TABLE IF NOT EXISTS tab_state("
       "id INTEGER PRIMARY KEY NOT NULL,"
       "parent INTEGER NOT NULL,"
       "position TEXT NOT NULL,"
@@ -32,20 +38,31 @@ bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
       "payload TEXT NOT NULL)"
       "WITHOUT ROWID";
 
-  DCHECK(db->IsSQLValid(kCreateTabSchemaSql));
-  return db->Execute(kCreateTabSchemaSql);
+  if (!CreateTable(db, kCreateTabSchemaSql)) {
+    return false;
+  }
+
+  static constexpr char kCreateTabCollectionSchemaSql[] =
+      "CREATE TABLE IF NOT EXISTS tab_collections("
+      "parent_id INTEGER NOT NULL,"
+      "id INTEGER NOT NULL,"
+      "position TEXT NOT NULL,"
+      "PRIMARY KEY (parent_id, position))";
+  return CreateTable(db, kCreateTabCollectionSchemaSql);
 }
 
 bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
   bool has_metatable = meta_table->DoesTableExist(db);
   bool has_schema = db->DoesTableExist(kTabsTableName);
+  bool has_collections_schema = db->DoesTableExist(kTabCollectionsTableName);
 
-  if (!has_metatable && has_schema) {
+  if (!has_metatable && (has_schema || has_collections_schema)) {
     db->Raze();
   }
 
   sql::Transaction transaction(db);
   if (!transaction.Begin()) {
+    DLOG(ERROR) << "Transaction could not be started.";
     return false;
   }
 
@@ -57,7 +74,8 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  if (!has_schema && !CreateSchema(db, meta_table)) {
+  if ((!has_schema || !has_collections_schema) &&
+      !CreateSchema(db, meta_table)) {
     return false;
   }
 
@@ -110,8 +128,14 @@ bool TabStateStorageDatabase::SaveTabState(int id,
                                            std::string position,
                                            tabs_pb::TabState tab_state) {
   CHECK(db_);
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
   static constexpr char kInsertTabSql[] =
-      "INSERT OR REPLACE INTO tabs"
+      "INSERT OR REPLACE INTO tab_state"
       "(id, parent, position, type, payload)"
       "VALUES (?,?,?,?,?)";
 
@@ -128,12 +152,36 @@ bool TabStateStorageDatabase::SaveTabState(int id,
   tab_state.SerializeToString(&data);
   write_statement.BindString(4, data);
 
-  return write_statement.Run();
+  if (!write_statement.Run()) {
+    DLOG(ERROR) << "Could not write to tabs table.";
+    return false;
+  }
+
+  static constexpr char kInsertTabCollectionSql[] =
+      "INSERT OR REPLACE INTO tab_collections"
+      "(parent_id, id, position)"
+      "VALUES (?,?,?)";
+
+  DCHECK(db_->IsSQLValid(kInsertTabCollectionSql));
+
+  sql::Statement collection_write_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTabCollectionSql));
+
+  collection_write_statement.BindInt(0, parent);
+  collection_write_statement.BindInt(1, id);
+  collection_write_statement.BindString(2, position);
+
+  if (!collection_write_statement.Run()) {
+    DLOG(ERROR) << "Could not write to tab_collection table.";
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
 std::vector<tabs_pb::TabState> TabStateStorageDatabase::LoadAllTabStates() {
   std::vector<tabs_pb::TabState> tab_states;
-  static constexpr char kSelectAllTabsSql[] = "SELECT payload FROM tabs";
+  static constexpr char kSelectAllTabsSql[] = "SELECT payload FROM tab_state";
   sql::Statement select_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectAllTabsSql));
   while (select_statement.Step()) {
