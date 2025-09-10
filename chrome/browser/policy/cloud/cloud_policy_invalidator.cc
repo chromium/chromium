@@ -359,12 +359,6 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   // performed.
   base::TimeDelta delay = base::RandTimeDelta(kMinFetchDelay, max_fetch_delay_);
 
-  // If there is no payload, the refresh must only run after at least
-  // `kMissingPayloadDelay` minutes.
-  if (is_missing_payload) {
-    delay += kMissingPayloadDelay;
-  }
-
   // Schedule the policy to be refreshed.
   task_runner_->PostDelayedTask(
       FROM_HERE,

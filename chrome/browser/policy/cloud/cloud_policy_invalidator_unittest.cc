@@ -427,9 +427,8 @@ TEST_F(CloudPolicyInvalidatorTest, HandlesInvalidationWithoutPayload) {
   EnableInvalidationListener();
 
   // Fire an invalidation and check that it triggered a policy refresh only
-  // after kMissingPayloadDelay + random delay.
+  // after a random delay.
   const invalidation::DirectInvalidation inv = FireInvalidation(V(12), "");
-  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
 
   // Verify that invalidation is not yet handled as we did not pass random
   // delay.
@@ -788,7 +787,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   // Fire expired invalidation without a payload.
   inv = FireInvalidation(GetVersion(expired_invalidation_timestamp), "");
   FastForwardByInvalidationDelay();
-  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 0);
 
   // Invalidations fired after the last fetch should not be ignored.
@@ -798,7 +796,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   // Fire a fine invalidation without a payload.
   inv = FireInvalidation(GetVersion(non_expired_invalidaiton_timestamp), "");
   FastForwardByInvalidationDelay();
-  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 1);
 

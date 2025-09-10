@@ -37,10 +37,6 @@ class CloudPolicyInvalidator
       public CloudPolicyCore::Observer,
       public CloudPolicyStore::Observer {
  public:
-  // The number of minutes to delay a policy refresh after receiving an
-  // invalidation with no payload.
-  static constexpr base::TimeDelta kMissingPayloadDelay = base::Minutes(5);
-
   // The value for minimal delay of triggering a policy refresh after an
   // received invalidation.
   static constexpr base::TimeDelta kMinFetchDelay = base::Milliseconds(20);
