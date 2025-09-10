@@ -109,13 +109,13 @@ TEST_F(BorealisWindowManagerTest, ObserversNotifiedOnManagerShutdown) {
   window_manager.AddObserver(&life_observer);
 
   EXPECT_CALL(anon_observer, OnWindowManagerDeleted(&window_manager))
-      .WillOnce(testing::Invoke([&anon_observer](BorealisWindowManager* wm) {
+      .WillOnce([&anon_observer](BorealisWindowManager* wm) {
         wm->RemoveObserver(&anon_observer);
-      }));
+      });
   EXPECT_CALL(life_observer, OnWindowManagerDeleted(&window_manager))
-      .WillOnce(testing::Invoke([&life_observer](BorealisWindowManager* wm) {
+      .WillOnce([&life_observer](BorealisWindowManager* wm) {
         wm->RemoveObserver(&life_observer);
-      }));
+      });
 }
 
 TEST_F(BorealisWindowManagerTest, ObserverCalledForAnonymousApp) {

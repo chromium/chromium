@@ -151,12 +151,11 @@ TEST_F(BorealisContextManagerTest, NoTasksImpliesSuccess) {
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/0, /*success=*/true);
   EXPECT_CALL(callback_expectation, Call(testing::_))
-      .WillOnce(
-          testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
-            EXPECT_TRUE(result.has_value());
-            // Even with no tasks, the context will give the VM a name.
-            EXPECT_EQ(result.value()->vm_name(), "borealis");
-          }));
+      .WillOnce([](BorealisContextManager::ContextOrFailure result) {
+        EXPECT_TRUE(result.has_value());
+        // Even with no tasks, the context will give the VM a name.
+        EXPECT_EQ(result.value()->vm_name(), "borealis");
+      });
   context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
@@ -277,12 +276,10 @@ using ShutdownCallbackFactory =
 TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   StartupCallbackFactory callback_expectation;
   EXPECT_CALL(callback_expectation, Call(testing::_))
-      .WillOnce(
-          testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
-            EXPECT_FALSE(result.has_value());
-            EXPECT_EQ(result.error().error(),
-                      BorealisStartupResult::kCancelled);
-          }));
+      .WillOnce([](BorealisContextManager::ContextOrFailure result) {
+        EXPECT_FALSE(result.has_value());
+        EXPECT_EQ(result.error().error(), BorealisStartupResult::kCancelled);
+      });
 
   ShutdownCallbackFactory shutdown_callback_handler;
   EXPECT_CALL(shutdown_callback_handler,
@@ -359,13 +356,13 @@ TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
   StartupCallbackFactory callback_expectation;
   testing::StrictMock<testing::MockFunction<void()>> something_expectation;
 
-  EXPECT_CALL(context_manager, GetTasks).WillOnce(testing::Invoke([&]() {
+  EXPECT_CALL(context_manager, GetTasks).WillOnce([&]() {
     base::queue<std::unique_ptr<BorealisTask>> tasks;
     tasks.push(std::make_unique<TaskThatDoesSomethingAfterCompletion>(
         base::BindOnce(&testing::MockFunction<void()>::Call,
                        base::Unretained(&something_expectation))));
     return tasks;
-  }));
+  });
   EXPECT_CALL(something_expectation, Call());
   EXPECT_CALL(callback_expectation, Call(testing::_));
   context_manager.StartBorealis(callback_expectation.BindOnce());
