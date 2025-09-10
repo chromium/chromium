@@ -5130,11 +5130,6 @@ are declared in tools/grit/grit_args.gni.
         Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
       </message>
 
-      <if expr="is_chromeos">
-        <message name="IDS_UTILITY_PROCESS_IPP_PARSER_SERVICE_NAME" desc="The name of the utility process used for parsing IPP requests out-of-process.">
-          IPP Parser
-        </message>
-      </if>
       <message name="IDS_UTILITY_PROCESS_FILE_UTILITY_NAME" desc="The name of the utility process used for various Chrome specific file operations.">
           Chrome File Utilities
       </message>

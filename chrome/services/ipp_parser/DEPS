@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/services/cups_proxy/public/cpp",
-  "+content/public/browser",
-]

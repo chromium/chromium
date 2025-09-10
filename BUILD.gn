@@ -771,10 +771,6 @@ group("gn_all") {
         "//third_party/ukey2/fuzzers",
         "//third_party/zlib/contrib/tests/fuzzers",
       ]
-
-      if (is_chromeos) {
-        deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
-      }
     }
 
     if (((is_linux || is_chromeos) && use_ozone) || is_fuchsia) {

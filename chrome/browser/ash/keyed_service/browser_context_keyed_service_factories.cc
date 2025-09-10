@@ -130,10 +130,6 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(USE_CUPS)
-#include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
-#endif
-
 namespace ash {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
@@ -178,9 +174,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   crostini::CrostiniUpgraderFactory::GetInstance();
   CupsPrintersManagerFactory::GetInstance();
   CupsPrintJobManagerFactory::GetInstance();
-#if BUILDFLAG(USE_CUPS)
-  CupsProxyServiceManagerFactory::GetInstance();
-#endif
   data_migration::DataMigrationFactory::GetInstance();
   EarlyPrefsExportServiceFactory::GetInstance();
   eche_app::EcheAppManagerFactory::GetInstance();

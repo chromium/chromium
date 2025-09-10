@@ -16,7 +16,7 @@ namespace ash {
 
 // Provides a DBus service which emits a signal to indicate that the available
 // printers has changed.  Clients are intended to listen for the signal then
-// make a request for more printers through a side channel e.g. cups_proxy.
+// make a request for more printers through a side channel.
 class PrintersServiceProvider
     : public CrosDBusService::ServiceProviderInterface,
       public CupsPrintersManager::Observer {

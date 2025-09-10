@@ -35,7 +35,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
@@ -166,7 +165,6 @@ void InitializeDBus() {
   InitializeDBusClient<CrosDisksClient>(bus);
   InitializeDBusClient<CryptohomeMiscClient>(bus);
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
-  InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<DebugDaemonClient>(bus);
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
@@ -342,7 +340,6 @@ void ShutdownDBus() {
   DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
   DebugDaemonClient::Shutdown();
-  CupsProxyClient::Shutdown();
   CryptohomePkcs11Client::Shutdown();
   CryptohomeMiscClient::Shutdown();
   CrosDisksClient::Shutdown();

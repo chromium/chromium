@@ -241,13 +241,6 @@ static_library("utility") {
     if (!is_android) {
       deps += [ "//chrome/services/printing:lib" ]
     }
-
-    if (is_chromeos) {
-      deps += [
-        "//chrome/services/ipp_parser",
-        "//chrome/services/ipp_parser/public/mojom",
-      ]
-    }
   }
 
   if (safe_browsing_mode == 1) {

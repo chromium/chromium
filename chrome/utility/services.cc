@@ -110,8 +110,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 static_assert(BUILDFLAG(ENABLE_PDF), "ChromeOS Ash must enable PDF");
 static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
-#include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
-#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"  // nogncheck
 #include "chrome/services/pdf/pdf_service.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/sharing/sharing_impl.h"
@@ -272,13 +270,6 @@ auto RunSpeechRecognitionService(
 auto RunScreenAIServiceFactory(
     mojo::PendingReceiver<screen_ai::mojom::ScreenAIServiceFactory> receiver) {
   return std::make_unique<screen_ai::ScreenAIService>(std::move(receiver));
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-auto RunCupsIppParser(
-    mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
-  return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
 }
 #endif
 
@@ -493,10 +484,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  services.Add(RunCupsIppParser);
-#endif
 
 #if BUILDFLAG(IS_MAC)
   services.Add(RunMacNotificationService);

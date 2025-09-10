@@ -93,12 +93,6 @@ static_library("printing") {
       "cups_print_job_manager_impl.cc",
       "cups_print_job_manager_utils.cc",
       "cups_print_job_manager_utils.h",
-      "cups_proxy_service_delegate_impl.cc",
-      "cups_proxy_service_delegate_impl.h",
-      "cups_proxy_service_manager.cc",
-      "cups_proxy_service_manager.h",
-      "cups_proxy_service_manager_factory.cc",
-      "cups_proxy_service_manager_factory.h",
       "printer_info_cups.cc",
     ]
   } else {
@@ -129,7 +123,6 @@ static_library("printing") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus",
-    "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",
@@ -145,10 +138,7 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [
-      "//chrome/browser/chromeos/printing",
-      "//chrome/services/cups_proxy",
-    ]
+    deps += [ "//chrome/browser/chromeos/printing" ]
   }
 
   if (enable_oop_printing) {

@@ -1,8 +1,6 @@
 include_rules = [
   "+chrome/grit",
   "+chrome/installer/util",
-  "+chrome/services/ipp_parser/ipp_parser.h",
-  "+chrome/services/ipp_parser/public/mojom",
   "+chrome/services/file_util/document_analysis_service.h",
   "+chrome/services/file_util/file_util_service.h",
   "+chrome/services/file_util/public/mojom",

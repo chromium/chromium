@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/install_static",
   "+chrome/installer/util",
   "+chrome/notification_helper/notification_helper_constants.h",
-  "+chrome/services/cups_proxy",
   "+chrome/services/file_util/public",
   "+chrome/services/mac_notifications/public",
   "+chrome/services/media_gallery_util/public",
