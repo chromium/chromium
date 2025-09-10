@@ -10039,6 +10039,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY" desc="The body for completion of quick tab switch split view IPH tutorial.">
         You can now use split view to compare, multitask, and more
       </message>
+      <message name="IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL" desc="A label for the drag entrypoint indicating it can create a split view.">
+        Create split view
+      </message>
 
       <!-- Vertical Tab Strings -->
       <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
