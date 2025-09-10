@@ -13,8 +13,8 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_display_handler.h",
   "+ios/chrome/browser/first_run/ui_bundled/features.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/features.h",
-  "+ios/chrome/browser/passwords/model/features.h",
   "+ios/chrome/browser/safari_data_import/coordinator/safari_data_import_reminder_promo_display_handler.h",
+  "+ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h",
 ]
 
 specific_include_rules = {

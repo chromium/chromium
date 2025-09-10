@@ -19,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin_sync/signin_sync_coordinator.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_feature.h",
+  "+ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h",
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h",
   "+ios/chrome/browser/settings/ui_bundled/sync/utils/sync_util.h",
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h",

@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
@@ -566,7 +565,7 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self downloadsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
-  if (ShouldShowSafariImportWorkflow(_profile)) {
+  if (ShouldShowSafariDataImportEntryPoint(_profile)) {
     [model addItem:[self safariDataImportSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
@@ -1381,7 +1380,7 @@ struct EnhancedSafeBrowsingActivePromoData
       [self showTabsSettings];
       break;
     case SettingsItemTypeSafariDataImport: {
-      CHECK(ShouldShowSafariImportWorkflow(_profile));
+      CHECK(ShouldShowSafariDataImportEntryPoint(_profile));
       base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
       id<ApplicationCommands> handler = HandlerForProtocol(
           _browser->GetCommandDispatcher(), ApplicationCommands);

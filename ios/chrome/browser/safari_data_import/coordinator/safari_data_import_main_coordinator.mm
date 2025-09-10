@@ -10,7 +10,6 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
@@ -54,7 +53,10 @@
 }
 
 - (void)start {
-  CHECK(ShouldShowSafariImportWorkflow(self.profile));
+  if (!self.profile) {
+    return;
+  }
+  CHECK(ShouldShowSafariDataImportEntryPoint(self.profile));
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
   _viewController.showReminderButton =
       _entryPoint != SafariDataImportEntryPoint::kSetting;
