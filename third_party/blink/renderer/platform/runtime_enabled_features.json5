@@ -3693,6 +3693,11 @@
       name: "PointerLockOnAndroid",
     },
     {
+      // https://crbug.com/404479704
+      name: "PointerRawUpdateOnlyInSecureContext",
+      status: "experimental",
+    },
+    {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
     },

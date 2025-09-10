@@ -4971,6 +4971,7 @@ enum WebFeature {
   kLocalNetworkAccessWebSocketResourceNotKnownPrivate = 5660,
   kCSSPseudoElementUsesImplicitAnchor = 5661,
   kLineClampByLinesOverflows = 5662,
+  kPointerRawUpdateEventsInInsecureContext = 5663,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -615,8 +615,21 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
     const Vector<WebPointerEvent>& predicted_events) {
   if (event.GetType() == WebInputEvent::Type::kPointerRawUpdate) {
     if (!frame_->GetEventHandlerRegistry().HasEventHandlers(
-            EventHandlerRegistry::kPointerRawUpdateEvent))
+            EventHandlerRegistry::kPointerRawUpdateEvent)) {
       return WebInputEventResult::kHandledSystem;
+    }
+
+    bool is_secure_context =
+        frame_->GetDocument()->domWindow() &&
+        frame_->GetDocument()->domWindow()->IsSecureContext();
+    if (!is_secure_context) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kPointerRawUpdateEventsInInsecureContext);
+      if (RuntimeEnabledFeatures::
+              PointerRawUpdateOnlyInSecureContextEnabled()) {
+        return WebInputEventResult::kHandledSystem;
+      }
+    }
 
     // If the page has pointer lock active and the event was from
     // mouse use the locked target as the target.
@@ -1057,9 +1070,22 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
           EventHandlerRegistry::kPointerRawUpdateEvent)) {
     // This is a chorded button move event. We need to also send a
     // pointerrawupdate for it.
-    DispatchPointerEvent(
-        effective_target,
-        pointer_event_factory_.CreatePointerRawUpdateEvent(pointer_event));
+
+    bool is_secure_context =
+        frame_->GetDocument()->domWindow() &&
+        frame_->GetDocument()->domWindow()->IsSecureContext();
+
+    if (!is_secure_context) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kPointerRawUpdateEventsInInsecureContext);
+    }
+
+    if (!RuntimeEnabledFeatures::PointerRawUpdateOnlyInSecureContextEnabled() ||
+        is_secure_context) {
+      DispatchPointerEvent(
+          effective_target,
+          pointer_event_factory_.CreatePointerRawUpdateEvent(pointer_event));
+    }
   }
 
   WebInputEventResult result =
