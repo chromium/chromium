@@ -377,8 +377,16 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
 
 // Test that WebNavigation API does not emit the same event twice when providing
 // filters in addListener. Regression test for https://crbug.com/439995191.
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40276609): Re-enable this test on Mac.
+#define MAYBE_MultipleListenersWithFilterDontDuplicateEvents \
+  DISABLED_MultipleListenersWithFilterDontDuplicateEvents
+#else
+#define MAYBE_MultipleListenersWithFilterDontDuplicateEvents \
+  MultipleListenersWithFilterDontDuplicateEvents
+#endif
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest,
-                       MultipleListenersWithFilterDontDuplicateEvents) {
+                       MAYBE_MultipleListenersWithFilterDontDuplicateEvents) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   TestExtensionDir test_dir;
