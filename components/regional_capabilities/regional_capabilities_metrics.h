@@ -53,8 +53,11 @@ enum class SearchEngineChoiceScreenConditions {
   // The user made the choice in the guest session and opted to save it across
   // guest sessions.
   kUsingPersistedGuestSessionChoice = 17,
+  // The user's current location is not compatible with the regional scope *and*
+  // the regional program requires restricting to its associated countries.
+  kIncompatibleCurrentLocation = 18,
 
-  kMaxValue = kUsingPersistedGuestSessionChoice,
+  kMaxValue = kIncompatibleCurrentLocation,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 }  // namespace search_engines

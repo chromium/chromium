@@ -53,12 +53,14 @@ class FakeRegionalCapabilitiesServiceClient
 
   CountryId GetVariationsLatestCountryId() override;
 
+  void SetCountryId(CountryId country_id);
+
 #if BUILDFLAG(IS_ANDROID)
   Program GetDeviceProgram() override;
 #endif
 
  private:
-  const CountryId country_id_;
+  CountryId country_id_;
 };
 
 using HistogramExpectation =

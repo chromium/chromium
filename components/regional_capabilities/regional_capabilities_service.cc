@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -292,6 +293,20 @@ bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
   return GetChoiceScreenEligibilityConfig().has_value();
 }
 
+bool RegionalCapabilitiesService::
+    IsChoiceScreenCompatibleWithCurrentLocation() {
+  CHECK(GetChoiceScreenEligibilityConfig().has_value())
+      << "No choice screen config is present so it won't be shown. "
+         "Checking the compatibility with the current location in "
+         "this context is irrelevant and should not have happened.";
+  if (!GetChoiceScreenEligibilityConfig()->restrict_to_associated_countries) {
+    return true;
+  }
+
+  return base::Contains(GetActiveProgramSettings().associated_countries,
+                        client_->GetVariationsLatestCountryId());
+}
+
 std::optional<RegionalCapabilitiesService::ChoiceScreenDesign>
 RegionalCapabilitiesService::GetChoiceScreenDesign() {
   // TODO(crbug.com/440549533): Investigate minimizing apk size by excluding
@@ -340,6 +355,11 @@ bool RegionalCapabilitiesService::IsInEeaCountry() {
   // TODO(crbug.com/328040066): Introduce granular program settings APIs and
   // deprecate `IsInEeaCountry()` in favour of these.
   return GetActiveProgramSettings().program == Program::kWaffle;
+}
+
+RegionalCapabilitiesService::Client&
+RegionalCapabilitiesService::GetClientForTesting() {
+  return *client_;
 }
 
 CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
@@ -442,7 +462,8 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   }
 }
 
-ActiveRegionalProgram RegionalCapabilitiesService::GetActiveProgramForMetrics() {
+ActiveRegionalProgram
+RegionalCapabilitiesService::GetActiveProgramForMetrics() {
   switch (GetActiveProgramSettings().program) {
     case Program::kDefault:
       return ActiveRegionalProgram::kDefault;

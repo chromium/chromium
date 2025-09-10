@@ -262,6 +262,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent:
     case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
     case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
+    case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
       return regional_capabilities::FunnelStage::kNotEligible;
   }
   NOTREACHED();
@@ -412,6 +413,11 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service) ||
       status == ChoiceStatus::kCurrentIsSetByPolicy) {
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
+  }
+
+  if (!regional_capabilities_service_
+          ->IsChoiceScreenCompatibleWithCurrentLocation()) {
+    return SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation;
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;

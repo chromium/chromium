@@ -21,6 +21,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -34,6 +35,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/util.h"
+#include "components/variations/variations_switches.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -432,6 +434,9 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
+  static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
+      regional_capabilities_service().GetClientForTesting())
+      .SetCountryId(CountryId("JP"));
 
   // First, check the state with Google as the default search engine
   ASSERT_TRUE(
@@ -486,6 +491,9 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
+  static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
+      regional_capabilities_service().GetClientForTesting())
+      .SetCountryId(CountryId("JP"));
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
@@ -500,6 +508,31 @@ TEST_F(SearchEngineChoiceEligibilityTest,
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
   EXPECT_EQ(GetDynamicConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityTest,
+       ChoiceScreenConditions_DontPromptForCustom_OutsideTaiyakiGeoLocation) {
+  if (!kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry, "JP");
+  // Explicitly set the variations country to a non-Taiyaki country to ensure
+  // that the choice screen is not triggered due to the user's current
+  // location.
+  static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
+      regional_capabilities_service().GetClientForTesting())
+      .SetCountryId(CountryId("PL"));
+
+  EXPECT_EQ(
+      GetStaticConditions(),
+      IfSupported(
+          SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation));
+  // Do not check the dynamic conditions, as the choice screen would be
+  // suppressed before evaluating the dynamic conditions.
 }
 #endif  // BUILDFLAG(IS_IOS)
 

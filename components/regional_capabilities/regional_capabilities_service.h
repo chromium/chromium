@@ -112,6 +112,11 @@ class RegionalCapabilitiesService : public KeyedService {
   // show a search engine choice screen.
   bool IsInSearchEngineChoiceScreenRegion();
 
+  // Returns true when the choice screen eligibility check against country
+  // association is not required, or if the current location is compatible with
+  // the regional scope.
+  bool IsChoiceScreenCompatibleWithCurrentLocation();
+
   // Returns the appropriate choice screen design strings for the active
   // program, if one is required. Returns `std::nullopt` if the region does not
   // require a search engine choice screen.
@@ -164,6 +169,9 @@ class RegionalCapabilitiesService : public KeyedService {
 
   // -- JNI Interface End -----------------------------------------------------
 #endif
+
+  // Returns a reference to the client, for tests.
+  Client& GetClientForTesting();
 
  private:
   // Returns how features should adjust themselves based on the active country

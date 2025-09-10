@@ -51,6 +51,12 @@ struct ChoiceScreenEligibilityConfig {
   // Relates to default search engine selections associated with a non-Google
   // service.
   bool should_preserve_non_google_dse;
+  // When `true`, the choice screen is only shown if the current country as
+  // indicated by variations country is one of the associated countries. When
+  // restriction is requested, the choice screen won't be presented if the
+  // current country is not available (unknown country is not considered an
+  // associated country).
+  bool restrict_to_associated_countries;
 };
 
 // Describes how features should adjust themselves based on the program.

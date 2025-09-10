@@ -28,6 +28,7 @@ constexpr ProgramSettings kWaffleSettings{
             .should_preserve_non_prepopulated_dse = true,
             .should_preserve_imported_choice = false,
             .should_preserve_non_google_dse = true,
+            .restrict_to_associated_countries = false,
         },
 };
 
@@ -41,6 +42,7 @@ constexpr ProgramSettings kTaiyakiSettings{
             .should_preserve_non_prepopulated_dse = false,
             .should_preserve_imported_choice = true,
             .should_preserve_non_google_dse = false,
+            .restrict_to_associated_countries = true,
         },
 };
 

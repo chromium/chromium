@@ -44,6 +44,10 @@ FakeRegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
   return country_id_;
 }
 
+void FakeRegionalCapabilitiesServiceClient::SetCountryId(CountryId country_id) {
+  country_id_ = country_id;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 Program FakeRegionalCapabilitiesServiceClient::GetDeviceProgram() {
   return Program::kDefault;

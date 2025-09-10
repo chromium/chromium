@@ -423,6 +423,9 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Dialog is already shown in the same browser"/>
   <int value="17"
       label="Skipped by using a choice persisted across guest sessions"/>
+  <int value="18"
+      label="Skipped because the current location does not match the active
+             program's requirement to be in one of the associated countries"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:SearchEngineChoiceScreenConditions) -->
