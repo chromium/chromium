@@ -109,6 +109,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         }
 
         @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            scrollToPositionWithOffset(0, 0);
+            super.onLayoutChildren(recycler, state);
+        }
+
+        @Override
         public int scrollVerticallyBy(
                 int requestedDeltaY, RecyclerView.Recycler recycler, RecyclerView.State state) {
             int resultingDeltaY = super.scrollVerticallyBy(requestedDeltaY, recycler, state);
