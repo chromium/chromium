@@ -808,13 +808,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // when the fix for the payment sheet across iframes is enabled. This makes sure
 // that crbug.com/417449733 doesn't occur.
 - (void)testFillXframeCreditCardForm_WithPaymentSheetFix {
-// TODO(crbug.com/435607096): Re-enable the test on iOS26.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   // Mock reauth so it allows filling sensitive information without the need for
   // real authentication.
   [AutofillAppInterface setUpMockReauthenticationModule];
