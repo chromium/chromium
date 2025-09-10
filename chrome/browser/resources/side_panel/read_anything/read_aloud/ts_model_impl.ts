@@ -17,13 +17,21 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   private currentIndex_: number = -1;
   private initialized_: boolean = false;
 
-  // TODO: crbug.com/440400392- Sentence highlighting won't work consistently
-  // until NodeStore is updated to refresh the DomNodes for highlighting.
-  getHighlightForCurrentSegmentIndex(_index: number, _phrases: boolean):
+  getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
       Segment[] {
-    // TODO: crbug.com/440400392 - Implement word and phrase highlighting.
-    // For now, just return the current sentence.
-    return this.getCurrentTextSegments();
+    if (this.currentIndex_ < 0 || !this.sentences_[this.currentIndex_]) {
+      return [];
+    }
+    const currentSentence = this.sentences_[this.currentIndex_]!;
+
+    // TODO: crbug.com/440400392 - Implement phrase highlighting.
+    if (phrases) {
+      // For now, just return the current sentence.
+      return this.getCurrentTextSegments();
+    }
+
+    // Word highlighting.
+    return this.getWordHighlightSegment(currentSentence, index);
   }
 
   getCurrentTextSegments(): Segment[] {
@@ -190,5 +198,78 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       }
     }
     return textNodes;
+  }
+
+  private getWordHighlightSegment(
+      currentSentence: SegmentedSentence, index: number): Segment[] {
+    const sentenceText = currentSentence.sentenceInfo.text;
+    const remainingText = sentenceText.substring(index);
+    const wordEndInRemaining =
+        this.textSegmenter_.getNextWordEnd(remainingText);
+    const highlightEndIndex = index + wordEndInRemaining;
+
+    const sentenceSegments = currentSentence.segments;
+    const highlightSegments: Segment[] = [];
+    let textSoFarIndex = 0;
+
+    for (const segment of sentenceSegments) {
+      const segmentStart = textSoFarIndex;
+
+      // Stop iterating if segmentStart is ever greater than the highlight end
+      // index.
+      if (segmentStart >= highlightEndIndex) {
+        break;
+      }
+
+      const highlightSegment = this.createHighlightSegment(
+          segment,
+          segmentStart,
+          index,  // highlightStart
+          highlightEndIndex,
+      );
+
+      if (highlightSegment) {
+        highlightSegments.push(highlightSegment);
+      }
+
+      textSoFarIndex += segment.length;
+    }
+
+    return highlightSegments;
+  }
+
+  // Returns the part of the given sentenceSegment that should be highlighted.
+  private createHighlightSegment(
+      sentenceSegment: Segment,
+      segmentStart: number,
+      highlightStart: number,
+      highlightEnd: number,
+      ): Segment|null {
+    const segmentEnd = segmentStart + sentenceSegment.length;
+
+    // If the segment is entirely before or after the highlight
+    // range, the highlight does not overlap with any valid part of the segment,
+    // so there can be no valid highlight.
+    if (segmentEnd <= highlightStart || segmentStart >= highlightEnd) {
+      return null;
+    }
+
+    // Find the boundaries of region of the highlight that overlaps with the
+    // segment.
+    const overlapStart = Math.max(highlightStart, segmentStart);
+    const overlapEnd = Math.min(highlightEnd, segmentEnd);
+    const overlapLength = overlapEnd - overlapStart;
+
+    if (overlapLength > 0) {
+      return {
+        node: sentenceSegment.node,
+        // Adjust the start position relative to the beginning of the original
+        // segment's node.
+        start: sentenceSegment.start + (overlapStart - segmentStart),
+        length: overlapLength,
+      };
+    }
+
+    return null;
   }
 }

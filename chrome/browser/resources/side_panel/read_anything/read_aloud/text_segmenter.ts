@@ -37,6 +37,24 @@ export class TextSegmenter {
         .length;
   }
 
+
+  // Returns the end index of the first word in the given segment of text.
+  // If there are no words, returns 0.
+  getNextWordEnd(text: string): number {
+    try {
+      const segments = this.wordSegmenter_.segment(text);
+      for (const segment of segments) {
+        if (segment.isWordLike) {
+          return segment.index + segment.segment.length;
+        }
+      }
+    } catch (e) {
+      // Intl.Segmenter may throw an error for invalid locales.
+    }
+    return 0;
+  }
+
+
   getSentences(text: string): Sentence[] {
     const segments = this.sentenceSegmenter_.segment(text);
     // TODO: crbug.com/440400392- Filter out "sentences" that are just

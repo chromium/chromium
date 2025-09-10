@@ -383,3 +383,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
   RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
                    "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
+                       WordHighlighting) {
+  RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
+                   "mocha.run()");
+}

@@ -162,20 +162,21 @@ export class ReadAloudHighlighter {
       return highlight;
     }
 
-    if (chrome.readingMode.isTsTextSegmentationEnabled ||
-        this.wordBoundaries_.notSupported() ||
+    if (this.wordBoundaries_.notSupported() ||
         isEspeak(this.voiceLanguageController_.getCurrentVoice())) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.
-      // Until ts_model_impl supports word highlighting, always fallback to
-      // sentence highlighting.
       return chrome.readingMode.sentenceHighlighting;
     }
 
+    // Until ts_model_impl supports phrase highlighting, always fallback to
+    // sentence highlighting.
+
     const currentSpeechRate: number = getCurrentSpeechRate();
 
-    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled ||
+        chrome.readingMode.isTsTextSegmentationEnabled) {
       // Choose sentence highlighting for fast voices.
       if (currentSpeechRate > 1.2 &&
           highlight === chrome.readingMode.autoHighlighting) {

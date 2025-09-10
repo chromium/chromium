@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, ReadAloudHighlighter, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLE, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -72,6 +72,9 @@ suite('WordHighlighting', () => {
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     ContentController.setInstance(new ContentController());
+
+    // Reset the browser proxy.
+    setInstance(null);
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
@@ -145,7 +148,12 @@ suite('WordHighlighting', () => {
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     assertTrue(!!currentHighlight);
-    assertEquals('4:', currentHighlight.textContent);
+    let expectedHighlight = '4';
+    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+      // The V8 model appends the colon to the highlight.
+      expectedHighlight += ':';
+    }
+    assertEquals(expectedHighlight, currentHighlight.textContent);
   });
 
   test('word highlighting date across nodes with charLength', () => {
@@ -301,7 +309,12 @@ suite('WordHighlighting', () => {
     // Verify that we're highlighting from the selected point.
     assertTrue(!!currentHighlight);
     assertTrue(!!currentHighlight.textContent);
-    assertEquals('This ', currentHighlight.textContent);
+    let expectedHighlight = 'This';
+    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+      // The V8 model appends a space in the word highlight.
+      expectedHighlight += ' ';
+    }
+    assertEquals(expectedHighlight, currentHighlight.textContent);
     // Verify that the word boundary state has been reset.
     assertFalse(wordBoundaries.hasBoundaries());
   });

@@ -44,7 +44,7 @@ export function getReadAloudModel(): ReadAloudModelBrowserProxy {
            instance = new V8ModelImpl());
 }
 
-export function setInstance(obj: ReadAloudModelBrowserProxy) {
+export function setInstance(obj: ReadAloudModelBrowserProxy|null) {
   instance = obj;
 }
 

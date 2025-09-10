@@ -116,4 +116,32 @@ suite('TextSegmenter', () => {
     assertEquals(sentence2, sentences[1]!.text);
     assertEquals(sentence1.length, sentences[1]!.index);
   });
+
+  test('getNextWordEnd', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+    const word1 = 'onomatopoeia';
+    const word2 = 'party';
+    const text = word1 + ' ' + word2;
+    const endIndex = textSegmenter.getNextWordEnd(text);
+    assertEquals(word1.length, endIndex);
+    assertEquals(word1, text.slice(0, endIndex));
+  });
+
+  test('getNextWordEnd only one word', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+    const text = 'happiness';
+    const endIndex = textSegmenter.getNextWordEnd(text);
+    assertEquals(text.length, endIndex);
+    assertEquals(text, text.slice(0, endIndex));
+  });
+
+  test('getNextWordEnd with text beginning with non-words', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+    const nonWordText = '... \ ? ';
+    const word = 'axolotl';
+    const text = nonWordText + word;
+    const endIndex = textSegmenter.getNextWordEnd(text);
+    assertEquals(text.length, endIndex);
+    assertEquals(text, text.slice(0, endIndex));
+  });
 });
