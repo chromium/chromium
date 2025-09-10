@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(BrowserFrameViewMacTest, GetCenteredTitleBounds) {
+TEST(BrowserNonClientFrameViewMacTest, GetCenteredTitleBounds) {
   struct {
     int frame_width;
     int frame_height;
@@ -32,8 +32,9 @@ TEST(BrowserFrameViewMacTest, GetCenteredTitleBounds) {
     gfx::Rect available_space(test_case.left_inset_x, 0,
                               test_case.right_inset_x - test_case.left_inset_x,
                               test_case.frame_height);
-    gfx::Rect title_bounds = BrowserFrameViewMac::GetCenteredTitleBounds(
-        frame, available_space, test_case.title_width);
+    gfx::Rect title_bounds =
+        BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
+            frame, available_space, test_case.title_width);
     gfx::Rect expected_title_bounds =
         gfx::Rect(test_case.expected_title_x, 0, test_case.expected_title_width,
                   test_case.frame_height);

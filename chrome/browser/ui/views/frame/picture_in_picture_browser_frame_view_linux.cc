@@ -62,7 +62,7 @@ PictureInPictureBrowserFrameViewLinux::
     ~PictureInPictureBrowserFrameViewLinux() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameView: implementations:
+// BrowserNonClientFrameView: implementations:
 
 gfx::Insets
 PictureInPictureBrowserFrameViewLinux::RestoredMirroredFrameBorderInsets()
@@ -143,7 +143,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
         frame()->tiled());
   }
 
-  BrowserFrameView::OnPaint(canvas);
+  BrowserNonClientFrameView::OnPaint(canvas);
 }
 
 bool PictureInPictureBrowserFrameViewLinux::ShouldDrawFrameShadow() const {

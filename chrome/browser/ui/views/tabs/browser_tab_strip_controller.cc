@@ -1040,11 +1040,12 @@ void BrowserTabStripController::OnSplitTabChanged(
   }
 }
 
-BrowserFrameView* BrowserTabStripController::GetFrameView() {
+BrowserNonClientFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->frame()->GetFrameView();
 }
 
-const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
+const BrowserNonClientFrameView* BrowserTabStripController::GetFrameView()
+    const {
   return browser_view_->frame()->GetFrameView();
 }
 

@@ -19,7 +19,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -48,7 +48,7 @@ class WindowEventObserver;
 }  // namespace
 
 class PictureInPictureBrowserFrameView
-    : public BrowserFrameView,
+    : public BrowserNonClientFrameView,
       public ChromeLocationBarModelDelegate,
       public LocationIconView::Delegate,
       public IconLabelBubbleView::Delegate,
@@ -56,7 +56,7 @@ class PictureInPictureBrowserFrameView
       public views::WidgetObserver,
       public PictureInPictureWindow,
       public gfx::AnimationDelegate {
-  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserFrameView)
+  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 
  public:
   PictureInPictureBrowserFrameView(BrowserWidget* frame,
@@ -67,7 +67,7 @@ class PictureInPictureBrowserFrameView
       const PictureInPictureBrowserFrameView&) = delete;
   ~PictureInPictureBrowserFrameView() override;
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(

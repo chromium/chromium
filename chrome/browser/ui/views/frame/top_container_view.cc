@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -37,7 +37,7 @@ void TopContainerView::OnImmersiveRevealUpdated() {
 
 void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 // For ChromeOS, we don't need to manually call
-// `BrowserFrameViewChromeOS::Paint` here since it will be triggered by
+// `BrowserNonClientFrameViewChromeOS::Paint` here since it will be triggered by
 // BrowserRootView::PaintChildren() on immersive revealed.
 // TODO (b/287068468): Verify if it's needed on MacOS, once it's verified, we
 // can decide whether keep or remove this function.

@@ -22,7 +22,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 class Browser;
-class BrowserFrameView;
+class BrowserNonClientFrameView;
 class Tab;
 class TabGroup;
 
@@ -168,8 +168,8 @@ class BrowserTabStripController : public TabStripController,
  private:
   class TabContextMenuContents;
 
-  BrowserFrameView* GetFrameView();
-  const BrowserFrameView* GetFrameView() const;
+  BrowserNonClientFrameView* GetFrameView();
+  const BrowserNonClientFrameView* GetFrameView() const;
 
   // Invokes tabstrip_->SetTabData.
   void SetTabDataAt(content::WebContents* web_contents, int model_index);

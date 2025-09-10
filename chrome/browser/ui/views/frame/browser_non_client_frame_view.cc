@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include <string_view>
 
@@ -55,7 +55,7 @@ constexpr std::string_view kShowBrowserFrameRegionsCommandLineSwitch =
 class ShowBrowserFrameRegionsView : public views::View {
   METADATA_HEADER(ShowBrowserFrameRegionsView, views::View)
  public:
-  explicit ShowBrowserFrameRegionsView(BrowserFrameView& frame)
+  explicit ShowBrowserFrameRegionsView(BrowserNonClientFrameView& frame)
       : frame_(frame) {
     SetCanProcessEventsWithinSubtree(false);
     GetViewAccessibility().SetIsIgnored(true);
@@ -100,21 +100,21 @@ class ShowBrowserFrameRegionsView : public views::View {
   }
 
  private:
-  const raw_ref<BrowserFrameView> frame_;
+  const raw_ref<BrowserNonClientFrameView> frame_;
 };
 
 BEGIN_METADATA(ShowBrowserFrameRegionsView)
 END_METADATA
 }  // namespace
 
-gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
+gfx::Rect BrowserNonClientFrameView::BoundsAndMargins::ToEnclosingRect() const {
   gfx::RectF temp = bounds;
   temp.Outset(margins);
   return gfx::ToEnclosingRect(temp);
 }
 
-BrowserFrameView::BrowserFrameView(BrowserWidget* frame,
-                                   BrowserView* browser_view)
+BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserWidget* frame,
+                                                     BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
   DCHECK(frame_);
   DCHECK(browser_view_);
@@ -124,9 +124,9 @@ BrowserFrameView::BrowserFrameView(BrowserWidget* frame,
   }
 }
 
-BrowserFrameView::~BrowserFrameView() = default;
+BrowserNonClientFrameView::~BrowserNonClientFrameView() = default;
 
-BrowserLayoutParams BrowserFrameView::GetBrowserLayoutParams() const {
+BrowserLayoutParams BrowserNonClientFrameView::GetBrowserLayoutParams() const {
   BrowserLayoutParams params;
   params.visual_client_area = GetBoundsForClientView();
   const auto caption_bounds = GetCaptionButtonBounds();
@@ -154,31 +154,31 @@ BrowserLayoutParams BrowserFrameView::GetBrowserLayoutParams() const {
   return params;
 }
 
-void BrowserFrameView::OnBrowserViewInitViewsComplete() {
+void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
   UpdateMinimumSize();
 }
 
-void BrowserFrameView::OnFullscreenStateChanged() {}
+void BrowserNonClientFrameView::OnFullscreenStateChanged() {}
 
-bool BrowserFrameView::CaptionButtonsOnLeadingEdge() const {
+bool BrowserNonClientFrameView::CaptionButtonsOnLeadingEdge() const {
   return false;
 }
 
-void BrowserFrameView::UpdateFullscreenTopUI() {}
+void BrowserNonClientFrameView::UpdateFullscreenTopUI() {}
 
-bool BrowserFrameView::ShouldHideTopUIForFullscreen() const {
+bool BrowserNonClientFrameView::ShouldHideTopUIForFullscreen() const {
   return frame_->IsFullscreen();
 }
 
-bool BrowserFrameView::CanUserExitFullscreen() const {
+bool BrowserNonClientFrameView::CanUserExitFullscreen() const {
   return true;
 }
 
-bool BrowserFrameView::IsFrameCondensed() const {
+bool BrowserNonClientFrameView::IsFrameCondensed() const {
   return frame_->IsMaximized() || frame_->IsFullscreen();
 }
 
-bool BrowserFrameView::HasVisibleBackgroundTabShapes(
+bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
   DCHECK(browser_view_->GetSupportsTabStrip());
 
@@ -220,32 +220,32 @@ bool BrowserFrameView::HasVisibleBackgroundTabShapes(
              *GetColorProvider()) != GetFrameColor(active_state);
 }
 
-bool BrowserFrameView::EverHasVisibleBackgroundTabShapes() const {
+bool BrowserNonClientFrameView::EverHasVisibleBackgroundTabShapes() const {
   return HasVisibleBackgroundTabShapes(BrowserFrameActiveState::kActive) ||
          HasVisibleBackgroundTabShapes(BrowserFrameActiveState::kInactive);
 }
 
-bool BrowserFrameView::CanDrawStrokes() const {
+bool BrowserNonClientFrameView::CanDrawStrokes() const {
   // Web apps should not draw strokes if they don't have a tab strip.
   return !browser_view_->browser()->app_controller() ||
          browser_view_->browser()->app_controller()->has_tab_strip();
 }
 
-SkColor BrowserFrameView::GetCaptionColor(
+SkColor BrowserNonClientFrameView::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   return GetColorProvider()->GetColor(ShouldPaintAsActiveForState(active_state)
                                           ? kColorFrameCaptionActive
                                           : kColorFrameCaptionInactive);
 }
 
-SkColor BrowserFrameView::GetFrameColor(
+SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return GetColorProvider()->GetColor(ShouldPaintAsActiveForState(active_state)
                                           ? ui::kColorFrameActive
                                           : ui::kColorFrameInactive);
 }
 
-std::optional<int> BrowserFrameView::GetCustomBackgroundId(
+std::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
   const bool incognito = browser_view_->GetIncognito();
@@ -270,35 +270,36 @@ std::optional<int> BrowserFrameView::GetCustomBackgroundId(
   return has_custom_image ? std::make_optional(id) : std::nullopt;
 }
 
-void BrowserFrameView::UpdateMinimumSize() {}
+void BrowserNonClientFrameView::UpdateMinimumSize() {}
 
-gfx::Insets BrowserFrameView::RestoredMirroredFrameBorderInsets() const {
+gfx::Insets BrowserNonClientFrameView::RestoredMirroredFrameBorderInsets()
+    const {
   NOTREACHED();
 }
 
-gfx::Insets BrowserFrameView::GetInputInsets() const {
+gfx::Insets BrowserNonClientFrameView::GetInputInsets() const {
   NOTREACHED();
 }
 
-SkRRect BrowserFrameView::GetRestoredClipRegion() const {
+SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
   NOTREACHED();
 }
 
-int BrowserFrameView::GetTranslucentTopAreaHeight() const {
+int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {
   return 0;
 }
 
-void BrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
+void BrowserNonClientFrameView::SetFrameBounds(const gfx::Rect& bounds) {
   frame_->SetBounds(bounds);
 }
 
-void BrowserFrameView::PaintAsActiveChanged() {
+void BrowserNonClientFrameView::PaintAsActiveChanged() {
   // Changing the activation state may change the visible frame color.
   SchedulePaint();
 }
 
-BrowserFrameView::BoundsAndMargins BrowserFrameView::GetCaptionButtonBounds()
-    const {
+BrowserNonClientFrameView::BoundsAndMargins
+BrowserNonClientFrameView::GetCaptionButtonBounds() const {
   // This is a hacky solution that uses existing logic to compute bounds.
   // It should ideally be overridden with platform-appropriate code.
   const int fallback_height = TabStyle::Get()->GetStandardHeight();
@@ -318,14 +319,14 @@ BrowserFrameView::BoundsAndMargins BrowserFrameView::GetCaptionButtonBounds()
   return BoundsAndMargins{bounds};
 }
 
-bool BrowserFrameView::ShouldPaintAsActiveForState(
+bool BrowserNonClientFrameView::ShouldPaintAsActiveForState(
     BrowserFrameActiveState active_state) const {
   return (active_state == BrowserFrameActiveState::kUseCurrent)
              ? NonClientFrameView::ShouldPaintAsActive()
              : (active_state == BrowserFrameActiveState::kActive);
 }
 
-gfx::ImageSkia BrowserFrameView::GetFrameImage(
+gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_image_id = ShouldPaintAsActiveForState(active_state)
@@ -337,7 +338,7 @@ gfx::ImageSkia BrowserFrameView::GetFrameImage(
              : gfx::ImageSkia();
 }
 
-gfx::ImageSkia BrowserFrameView::GetFrameOverlayImage(
+gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
   if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType()) {
     return gfx::ImageSkia();
@@ -352,7 +353,7 @@ gfx::ImageSkia BrowserFrameView::GetFrameOverlayImage(
              : gfx::ImageSkia();
 }
 
-void BrowserFrameView::Layout(PassKey p) {
+void BrowserNonClientFrameView::Layout(PassKey p) {
   LayoutSuperclass<NonClientFrameView>(this);
   // If the show browser frame view is present, make it fills this entire frame.
   if (auto* view = ShowBrowserFrameRegionsView::Find(*this)) {
@@ -360,7 +361,7 @@ void BrowserFrameView::Layout(PassKey p) {
   }
 }
 
-views::View::Views BrowserFrameView::GetChildrenInZOrder() {
+views::View::Views BrowserNonClientFrameView::GetChildrenInZOrder() {
   auto views = NonClientFrameView::GetChildrenInZOrder();
   // If the show browser frame view is in the list, move it to the end so it
   // paints over everything.
@@ -377,7 +378,7 @@ views::View::Views BrowserFrameView::GetChildrenInZOrder() {
 // default window proc does not bring up the system menu on long press, so we
 // use the gesture recognizer to turn it into a LONG_TAP gesture and handle it
 // here. See https://crbug.com/1327506 for more info.
-void BrowserFrameView::OnGestureEvent(ui::GestureEvent* event) {
+void BrowserNonClientFrameView::OnGestureEvent(ui::GestureEvent* event) {
   gfx::Point event_loc = event->location();
   // This opens the title bar system context menu on long press in the titlebar.
   // NonClientHitTest returns HTCAPTION if `event_loc` is in the empty space on
@@ -392,7 +393,7 @@ void BrowserFrameView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-int BrowserFrameView::GetSystemMenuY() const {
+int BrowserNonClientFrameView::GetSystemMenuY() const {
   if (!browser_view()->GetTabStripVisible()) {
     return GetTopInset(false);
   }
@@ -407,7 +408,7 @@ int BrowserFrameView::GetSystemMenuY() const {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-BEGIN_METADATA(BrowserFrameView)
+BEGIN_METADATA(BrowserNonClientFrameView)
 END_METADATA
 
 std::ostream& operator<<(std::ostream& os,

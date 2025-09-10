@@ -98,7 +98,7 @@ constexpr int kIconTitleSpacing = 5;
 
 BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* frame,
                                          BrowserView* browser_view)
-    : BrowserFrameView(frame, browser_view) {
+    : BrowserNonClientFrameView(frame, browser_view) {
   // We initialize all fields despite some of them being unused in some modes,
   // since it's possible for modes to flip dynamically (e.g. if the user enables
   // a high-contrast theme). Throbber icons are only used when ShowSystemIcon()
@@ -146,7 +146,7 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* frame,
 BrowserFrameViewWin::~BrowserFrameViewWin() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewWin, BrowserFrameView implementation:
+// BrowserFrameViewWin, BrowserNonClientFrameView implementation:
 
 BrowserLayoutParams BrowserFrameViewWin::GetBrowserLayoutParams() const {
   BrowserLayoutParams params;
@@ -270,11 +270,11 @@ BrowserFrameViewWin::GetCaptionButtonBounds() const {
 }
 
 void BrowserFrameViewWin::PaintAsActiveChanged() {
-  BrowserFrameView::PaintAsActiveChanged();
+  BrowserNonClientFrameView::PaintAsActiveChanged();
 
   // When window controls overlay is enabled, the caption button container is
   // painted to a layer and is not repainted by
-  // BrowserFrameView::PaintAsActiveChanged. Schedule a re-paint here
+  // BrowserNonClientFrameView::PaintAsActiveChanged. Schedule a re-paint here
   // to update the caption button colors.
   if (caption_button_container_->layer()) {
     caption_button_container_->SchedulePaint();
@@ -309,7 +309,7 @@ gfx::Rect BrowserFrameViewWin::GetWindowBoundsForClientBounds(
 }
 
 int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
-  int super_component = BrowserFrameView::NonClientHitTest(point);
+  int super_component = BrowserNonClientFrameView::NonClientHitTest(point);
   if (super_component != HTNOWHERE) {
     return super_component;
   }
@@ -430,12 +430,12 @@ void BrowserFrameViewWin::UpdateWindowTitle() {
 }
 
 void BrowserFrameViewWin::ResetWindowControls() {
-  BrowserFrameView::ResetWindowControls();
+  BrowserNonClientFrameView::ResetWindowControls();
   caption_button_container_->ResetWindowControls();
 }
 
 void BrowserFrameViewWin::OnThemeChanged() {
-  BrowserFrameView::OnThemeChanged();
+  BrowserNonClientFrameView::OnThemeChanged();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
     SetSystemMicaTitlebarAttributes();
   }
@@ -487,7 +487,7 @@ void BrowserFrameViewWin::Layout(PassKey) {
     LayoutTitleBar();
   }
   LayoutClientView();
-  LayoutSuperclass<BrowserFrameView>(this);
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 
 #include <algorithm>
 #include <vector>
@@ -69,11 +69,12 @@ FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, public:
+// BrowserNonClientFrameViewMac, public:
 
-BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
-                                         BrowserView* browser_view)
-    : BrowserFrameView(frame, browser_view),
+BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
+    BrowserWidget* frame,
+    BrowserView* browser_view)
+    : BrowserNonClientFrameView(frame, browser_view),
       fullscreen_session_timer_(std::make_unique<base::OneShotTimer>()) {
   if (web_app::AppBrowserController::IsWebApp(browser_view->browser())) {
     auto* provider =
@@ -83,8 +84,9 @@ BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
   } else {
     show_fullscreen_toolbar_.Init(
         prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
-        base::BindRepeating(&BrowserFrameViewMac::UpdateFullscreenTopUI,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
+            base::Unretained(this)));
   }
   if (!browser_view->UsesImmersiveFullscreenMode()) {
     fullscreen_toolbar_controller_ =
@@ -103,7 +105,7 @@ BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
   }
 }
 
-BrowserFrameViewMac::~BrowserFrameViewMac() {
+BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
   if ([fullscreen_toolbar_controller_ isInFullscreen]) {
     [fullscreen_toolbar_controller_ exitFullscreenMode];
   }
@@ -111,9 +113,9 @@ BrowserFrameViewMac::~BrowserFrameViewMac() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, BrowserFrameView implementation:
+// BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
-void BrowserFrameViewMac::OnFullscreenStateChanged() {
+void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
   // Record the start of a browser fullscreen session. Content fullscreen is
   // ignored.
   if (browser_view()->IsFullscreen() &&
@@ -125,8 +127,9 @@ void BrowserFrameViewMac::OnFullscreenStateChanged() {
     // hours to get the count emitted faster.
     fullscreen_session_timer_->Start(
         FROM_HERE, base::Days(1),
-        base::BindOnce(&BrowserFrameViewMac::EmitFullscreenSessionHistograms,
-                       base::Unretained(this)));
+        base::BindOnce(
+            &BrowserNonClientFrameViewMac::EmitFullscreenSessionHistograms,
+            base::Unretained(this)));
   } else {
     fullscreen_session_timer_->Stop();
     EmitFullscreenSessionHistograms();
@@ -155,7 +158,7 @@ void BrowserFrameViewMac::OnFullscreenStateChanged() {
   browser_view()->DeprecatedLayoutImmediately();
 }
 
-bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
+bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
   // In "partial" RTL mode (where the OS is in LTR mode while Chrome is in RTL
   // mode, or vice versa), the traffic lights are on the trailing edge rather
   // than the leading edge.
@@ -163,7 +166,7 @@ bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
                                  NSUserInterfaceLayoutDirectionRightToLeft);
 }
 
-gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
+gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   // TODO(weili): In the future, we should hide the title bar, and show the
   // tab strip directly under the menu bar. For now, just lay our content
@@ -192,7 +195,7 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
   return bounds;
 }
 
-gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
+gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
   if (ShouldHideTopUIForFullscreen()) {
     return gfx::Rect();
@@ -208,11 +211,11 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
   return bounds;
 }
 
-int BrowserFrameViewMac::GetTopInset(bool restored) const {
+int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
   return 0;
 }
 
-void BrowserFrameViewMac::UpdateFullscreenTopUI() {
+void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
   Browser* browser = browser_view()->browser();
   // Update to the new toolbar style if needed.
   FullscreenToolbarStyle new_style;
@@ -279,7 +282,7 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
   }
 }
 
-void BrowserFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
+void BrowserNonClientFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
     const webapps::AppId& app_id,
     bool show) {
   if (web_app::AppBrowserController::IsForWebApp(browser_view()->browser(),
@@ -288,11 +291,11 @@ void BrowserFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
   }
 }
 
-void BrowserFrameViewMac::OnAppRegistrarDestroyed() {
+void BrowserNonClientFrameViewMac::OnAppRegistrarDestroyed() {
   always_show_toolbar_in_fullscreen_observation_.Reset();
 }
 
-bool BrowserFrameViewMac::ShouldHideTopUIForFullscreen() const {
+bool BrowserNonClientFrameViewMac::ShouldHideTopUIForFullscreen() const {
   if (frame()->IsFullscreen()) {
     return [fullscreen_toolbar_controller_ toolbarStyle] !=
            FullscreenToolbarStyle::TOOLBAR_PRESENT;
@@ -300,25 +303,25 @@ bool BrowserFrameViewMac::ShouldHideTopUIForFullscreen() const {
   return false;
 }
 
-void BrowserFrameViewMac::UpdateThrobber(bool running) {}
+void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {}
 
-void BrowserFrameViewMac::PaintAsActiveChanged() {
+void BrowserNonClientFrameViewMac::PaintAsActiveChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
-  BrowserFrameView::PaintAsActiveChanged();
+  BrowserNonClientFrameView::PaintAsActiveChanged();
 }
 
-void BrowserFrameViewMac::OnThemeChanged() {
+void BrowserNonClientFrameViewMac::OnThemeChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
-  BrowserFrameView::OnThemeChanged();
+  BrowserNonClientFrameView::OnThemeChanged();
 }
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, views::NonClientFrameView implementation:
+// BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
-gfx::Rect BrowserFrameViewMac::GetBoundsForClientView() const {
+gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
   return bounds();
 }
 
-gfx::Rect BrowserFrameViewMac::GetWindowBoundsForClientBounds(
+gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   int top_inset = GetTopInset(false);
 
@@ -335,8 +338,8 @@ gfx::Rect BrowserFrameViewMac::GetWindowBoundsForClientBounds(
                    client_bounds.width(), client_bounds.height() + top_inset);
 }
 
-int BrowserFrameViewMac::NonClientHitTest(const gfx::Point& point) {
-  int super_component = BrowserFrameView::NonClientHitTest(point);
+int BrowserNonClientFrameViewMac::NonClientHitTest(const gfx::Point& point) {
+  int super_component = BrowserNonClientFrameView::NonClientHitTest(point);
   if (super_component != HTNOWHERE) {
     return super_component;
   }
@@ -349,11 +352,11 @@ int BrowserFrameViewMac::NonClientHitTest(const gfx::Point& point) {
                                                               : component;
 }
 
-void BrowserFrameViewMac::UpdateMinimumSize() {
+void BrowserNonClientFrameViewMac::UpdateMinimumSize() {
   GetWidget()->OnSizeConstraintsChanged();
 }
 
-void BrowserFrameViewMac::WindowControlsOverlayEnabledChanged() {
+void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     caption_button_placeholder_container_ =
         AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
@@ -363,9 +366,9 @@ void BrowserFrameViewMac::WindowControlsOverlayEnabledChanged() {
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, views::View implementation:
+// BrowserNonClientFrameViewMac, views::View implementation:
 
-gfx::Size BrowserFrameViewMac::GetMinimumSize() const {
+gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = frame()->client_view()->GetMinimumSize();
   if (browser_view()->browser()->is_type_normal()) {
     client_size.SetToMax(browser_view()->tab_strip_view()->GetMinimumSize());
@@ -380,7 +383,7 @@ gfx::Size BrowserFrameViewMac::GetMinimumSize() const {
   return client_size;
 }
 
-void BrowserFrameViewMac::PaintChildren(const views::PaintInfo& info) {
+void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   // In immersive fullscreen, the browser view's top container relies on the
   // non-client frame view to paint the frame (see comment in
   // TopContainerView::PaintChildren). We want the frame view to paint *only*
@@ -394,12 +397,12 @@ void BrowserFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   // 1400287.
   if (browser_view()->UsesImmersiveFullscreenTabbedMode() ||
       !browser_view()->immersive_mode_controller()->IsRevealed()) {
-    BrowserFrameView::PaintChildren(info);
+    BrowserNonClientFrameView::PaintChildren(info);
   }
 }
 
-BrowserFrameViewMac::BoundsAndMargins
-BrowserFrameViewMac::GetCaptionButtonBoundsNative() const {
+BrowserNonClientFrameViewMac::BoundsAndMargins
+BrowserNonClientFrameViewMac::GetCaptionButtonBoundsNative() const {
   BoundsAndMargins result;
 
   // Verify that this is not an out-of-process window.
@@ -476,8 +479,8 @@ BrowserFrameViewMac::GetCaptionButtonBoundsNative() const {
   return result;
 }
 
-BrowserFrameViewMac::BoundsAndMargins
-BrowserFrameViewMac::GetCaptionButtonBounds() const {
+BrowserNonClientFrameViewMac::BoundsAndMargins
+BrowserNonClientFrameViewMac::GetCaptionButtonBounds() const {
   BoundsAndMargins result = GetCaptionButtonBoundsNative();
   if (!result.bounds.IsEmpty()) {
     return result;
@@ -499,7 +502,7 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
 }
 
 // LINT.IfChange(MacTabStripInsets)
-gfx::Insets BrowserFrameViewMac::GetCaptionButtonInsets(
+gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets(
     int visual_overlap) const {
   const gfx::Rect bounds = GetCaptionButtonBounds().ToEnclosingRect();
   int caption_button_inset =
@@ -519,11 +522,11 @@ gfx::Insets BrowserFrameViewMac::GetCaptionButtonInsets(
 // LINT.ThenChange(//chrome/browser/ui/views/frame/immersive_mode_controller_mac.mm:MacTabStripInsets)
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, protected:
+// BrowserNonClientFrameViewMac, protected:
 
 // views::View:
 
-void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
+void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
   if (!browser_view()->GetIsNormalType() &&
       !browser_view()->GetIsWebAppType()) {
     return;
@@ -539,17 +542,17 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void BrowserFrameViewMac::Layout(PassKey) {
+void BrowserNonClientFrameViewMac::Layout(PassKey) {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     LayoutWindowControlsOverlay();
   }
-  LayoutSuperclass<BrowserFrameView>(this);
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, private:
+// BrowserNonClientFrameViewMac, private:
 
-gfx::Rect BrowserFrameViewMac::GetCenteredTitleBounds(
+gfx::Rect BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
     gfx::Rect frame,
     gfx::Rect available_space,
     int preferred_title_width) {
@@ -562,8 +565,8 @@ gfx::Rect BrowserFrameViewMac::GetCenteredTitleBounds(
   return frame;
 }
 
-void BrowserFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
-  // On macOS the origin of the BrowserFrameViewMac is (0,0) so no
+void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
+  // On macOS the origin of the BrowserNonClientFrameViewMac is (0,0) so no
   // further modification is necessary. See
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point theme_image_offset =
@@ -578,7 +581,7 @@ void BrowserFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
   canvas->DrawImageInt(overlay, 0, 0);
 }
 
-int BrowserFrameViewMac::TopUIFullscreenYOffset() const {
+int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
   if (!browser_view()->GetTabStripVisible() ||
       !browser_view()->IsFullscreen() ||
       browser_view()->UsesImmersiveFullscreenMode()) {
@@ -606,7 +609,7 @@ int BrowserFrameViewMac::TopUIFullscreenYOffset() const {
          (menu_bar_height + title_bar_height);
 }
 
-void BrowserFrameViewMac::LayoutWindowControlsOverlay() {
+void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   const int frame_available_height =
       browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
       2 * kWebAppMenuMargin;
@@ -618,7 +621,8 @@ void BrowserFrameViewMac::LayoutWindowControlsOverlay() {
   caption_button_placeholder_container_->SetBoundsRect(container_bounds);
 }
 
-void BrowserFrameViewMac::UpdateCaptionButtonPlaceholderContainerBackground() {
+void BrowserNonClientFrameViewMac::
+    UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
         views::CreateSolidBackground(
@@ -626,7 +630,7 @@ void BrowserFrameViewMac::UpdateCaptionButtonPlaceholderContainerBackground() {
   }
 }
 
-void BrowserFrameViewMac::EmitFullscreenSessionHistograms() {
+void BrowserNonClientFrameViewMac::EmitFullscreenSessionHistograms() {
   if (!fullscreen_session_start_.has_value()) {
     return;
   }

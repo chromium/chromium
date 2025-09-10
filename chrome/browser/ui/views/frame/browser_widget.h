@@ -18,7 +18,7 @@
 #include <optional>
 #endif
 
-class BrowserFrameView;
+class BrowserNonClientFrameView;
 class BrowserRootView;
 enum class BrowserThemeChangeType;
 class BrowserView;
@@ -107,7 +107,7 @@ class BrowserWidget : public views::Widget,
   void UpdateThrobber(bool running);
 
   // Returns the NonClientFrameView of this frame.
-  BrowserFrameView* GetFrameView() const;
+  BrowserNonClientFrameView* GetFrameView() const;
 
   // Returns |true| if we should use the custom frame.
   bool UseCustomFrame() const;
@@ -201,8 +201,8 @@ class BrowserWidget : public views::Widget,
   // functions that only exist on BrowserRootView (versus RootView).
   raw_ptr<BrowserRootView> root_view_;
 
-  // A pointer to our NonClientFrameView as a BrowserFrameView.
-  raw_ptr<BrowserFrameView> browser_frame_view_;
+  // A pointer to our NonClientFrameView as a BrowserNonClientFrameView.
+  raw_ptr<BrowserNonClientFrameView> browser_frame_view_;
 
   // The BrowserView is our ClientView. This is a pointer to it.
   raw_ptr<BrowserView> browser_view_;

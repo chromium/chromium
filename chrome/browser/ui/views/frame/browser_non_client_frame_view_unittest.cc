@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -19,30 +19,33 @@
 #include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
 
-class BrowserFrameViewTest : public TestWithBrowserView {
+class BrowserNonClientFrameViewTest : public TestWithBrowserView {
  public:
-  explicit BrowserFrameViewTest(Browser::Type type)
+  explicit BrowserNonClientFrameViewTest(Browser::Type type)
       : TestWithBrowserView(type) {}
 
-  BrowserFrameViewTest(const BrowserFrameViewTest&) = delete;
-  BrowserFrameViewTest& operator=(const BrowserFrameViewTest&) = delete;
+  BrowserNonClientFrameViewTest(const BrowserNonClientFrameViewTest&) = delete;
+  BrowserNonClientFrameViewTest& operator=(
+      const BrowserNonClientFrameViewTest&) = delete;
 
   // TestWithBrowserView override:
   void SetUp() override {
     TestWithBrowserView::SetUp();
     views::Widget* widget = browser_view()->GetWidget();
-    frame_view_ =
-        static_cast<BrowserFrameView*>(widget->non_client_view()->frame_view());
+    frame_view_ = static_cast<BrowserNonClientFrameView*>(
+        widget->non_client_view()->frame_view());
   }
 
  protected:
   // Owned by the browser view.
-  raw_ptr<BrowserFrameView, DanglingUntriaged> frame_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
 };
 
-class BrowserFrameViewPopupTest : public BrowserFrameViewTest {
+class BrowserNonClientFrameViewPopupTest
+    : public BrowserNonClientFrameViewTest {
  public:
-  BrowserFrameViewPopupTest() : BrowserFrameViewTest(Browser::TYPE_POPUP) {}
+  BrowserNonClientFrameViewPopupTest()
+      : BrowserNonClientFrameViewTest(Browser::TYPE_POPUP) {}
 };
 
 // TODO(crbug.com/41478509): Flaky on Linux TSAN and ASAN.
@@ -52,7 +55,7 @@ class BrowserFrameViewPopupTest : public BrowserFrameViewTest {
 #else
 #define MAYBE_HitTestPopupTopChrome HitTestPopupTopChrome
 #endif
-TEST_F(BrowserFrameViewPopupTest, MAYBE_HitTestPopupTopChrome) {
+TEST_F(BrowserNonClientFrameViewPopupTest, MAYBE_HitTestPopupTopChrome) {
   constexpr gfx::Rect kLeftOfFrame(-1, 4, 1, 1);
   EXPECT_FALSE(frame_view_->HitTestRect(kLeftOfFrame));
 
@@ -64,9 +67,11 @@ TEST_F(BrowserFrameViewPopupTest, MAYBE_HitTestPopupTopChrome) {
   EXPECT_TRUE(frame_view_->HitTestRect(in_browser_view));
 }
 
-class BrowserFrameViewTabbedTest : public BrowserFrameViewTest {
+class BrowserNonClientFrameViewTabbedTest
+    : public BrowserNonClientFrameViewTest {
  public:
-  BrowserFrameViewTabbedTest() : BrowserFrameViewTest(Browser::TYPE_NORMAL) {}
+  BrowserNonClientFrameViewTabbedTest()
+      : BrowserNonClientFrameViewTest(Browser::TYPE_NORMAL) {}
 };
 
 // TODO(crbug.com/40101869): Flaky on Linux TSAN.
@@ -76,7 +81,7 @@ class BrowserFrameViewTabbedTest : public BrowserFrameViewTest {
 #define MAYBE_HitTestTabstrip HitTestTabstrip
 #endif
 
-TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
+TEST_F(BrowserNonClientFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
   // Add a tab because the browser starts out without any tabs at all.
   AddTab(browser(), GURL("about:blank"));
 

@@ -207,7 +207,8 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   auto* window = platform_window();
   auto window_state = window->GetPlatformWindowState();
   float scale = device_scale_factor();
-  auto* view = static_cast<BrowserFrameView*>(browser_widget_->GetFrameView());
+  auto* view =
+      static_cast<BrowserNonClientFrameView*>(browser_widget_->GetFrameView());
   const gfx::Size widget_size =
       view->GetWidget()->GetWindowBoundsInScreen().size();
 
@@ -361,7 +362,8 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     return gfx::Insets();
   }
 
-  return static_cast<BrowserFrameView*>(browser_widget_->GetFrameView())
+  return static_cast<BrowserNonClientFrameView*>(
+             browser_widget_->GetFrameView())
       ->RestoredMirroredFrameBorderInsets();
 }
 

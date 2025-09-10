@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_MAC_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_MAC_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
 
 #import <CoreGraphics/CGBase.h>
 
@@ -11,7 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/prefs/pref_member.h"
@@ -29,18 +29,19 @@ enum class ToolbarVisibilityStyle;
 
 class CaptionButtonPlaceholderContainer;
 
-class BrowserFrameViewMac : public BrowserFrameView,
-                            public web_app::WebAppRegistrarObserver {
+class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
+                                     public web_app::WebAppRegistrarObserver {
  public:
-  // Mac implementation of BrowserFrameView.
-  BrowserFrameViewMac(BrowserWidget* frame, BrowserView* browser_view);
+  // Mac implementation of BrowserNonClientFrameView.
+  BrowserNonClientFrameViewMac(BrowserWidget* frame, BrowserView* browser_view);
 
-  BrowserFrameViewMac(const BrowserFrameViewMac&) = delete;
-  BrowserFrameViewMac& operator=(const BrowserFrameViewMac&) = delete;
+  BrowserNonClientFrameViewMac(const BrowserNonClientFrameViewMac&) = delete;
+  BrowserNonClientFrameViewMac& operator=(const BrowserNonClientFrameViewMac&) =
+      delete;
 
-  ~BrowserFrameViewMac() override;
+  ~BrowserNonClientFrameViewMac() override;
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   void OnFullscreenStateChanged() override;
   bool CaptionButtonsOnLeadingEdge() const override;
   gfx::Rect GetBoundsForTabStripRegion(
@@ -79,12 +80,13 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   BoundsAndMargins GetCaptionButtonBounds() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserFrameViewMacTest, GetCenteredTitleBounds);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFrameViewMacTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
+                           GetCenteredTitleBounds);
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
                            GetCaptionButtonPlaceholderBounds);
 
   // Fetches the caption button bounds from the buttons themselves.
@@ -145,4 +147,4 @@ class BrowserFrameViewMac : public BrowserFrameView,
       current_toolbar_style_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_MAC_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_

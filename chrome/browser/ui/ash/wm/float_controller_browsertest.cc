@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
@@ -30,7 +30,7 @@ namespace {
 
 // Tuck a window to the bottom right corner by generating a fling.
 void TuckWindow(aura::Window* window) {
-  auto* frame_view = static_cast<BrowserFrameViewChromeOS*>(
+  auto* frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
       views::Widget::GetWidgetForNativeView(window)
           ->non_client_view()
           ->frame_view());

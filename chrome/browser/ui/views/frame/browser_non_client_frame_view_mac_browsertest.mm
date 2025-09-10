@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -82,7 +82,7 @@ class TextChangeWaiter {
 
 enum class PrefixTitles { kEnabled, kDisabled };
 
-using BrowserFrameViewMacBrowserTestTitlePrefixed =
+using BrowserNonClientFrameViewMacBrowserTestTitlePrefixed =
     web_app::WebAppBrowserTestBase;
 
 // This will always be flaky on mac due to RemoteCocoa, the way it mocks out
@@ -94,7 +94,7 @@ using BrowserFrameViewMacBrowserTestTitlePrefixed =
 #else
 #define MAYBE_TitleUpdates TitleUpdates
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTestTitlePrefixed,
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
                        MAYBE_TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTestTitlePrefixed,
   }
 }
 
-using BrowserFrameViewMacBrowserTest = web_app::WebAppBrowserTestBase;
+using BrowserNonClientFrameViewMacBrowserTest = web_app::WebAppBrowserTestBase;
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
@@ -148,7 +148,7 @@ using BrowserFrameViewMacBrowserTest = web_app::WebAppBrowserTestBase;
 #define MAYBE_ToolbarLayoutFullscreenTransition \
   ToolbarLayoutFullscreenTransition
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest,
                        MAYBE_ToolbarLayoutFullscreenTransition) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
@@ -157,8 +157,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTest,
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  BrowserFrameView* const frame_view = static_cast<BrowserFrameView*>(
-      browser_view->GetWidget()->non_client_view()->frame_view());
+  BrowserNonClientFrameView* const frame_view =
+      static_cast<BrowserNonClientFrameView*>(
+          browser_view->GetWidget()->non_client_view()->frame_view());
 
   // Trigger a layout on the view tree to address any invalid layouts waiting
   // for a re-layout.

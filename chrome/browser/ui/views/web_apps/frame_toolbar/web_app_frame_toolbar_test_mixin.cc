@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -44,7 +44,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
   views::NonClientFrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserFrameView*>(frame_view);
+  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
 
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);

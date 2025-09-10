@@ -33,7 +33,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   BrowserFrameViewLayoutLinux* layout() { return layout_; }
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   gfx::Insets RestoredMirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;

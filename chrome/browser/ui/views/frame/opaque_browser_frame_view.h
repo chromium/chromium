@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
@@ -38,10 +38,10 @@ class FrameBackground;
 class Label;
 }  // namespace views
 
-class OpaqueBrowserFrameView : public BrowserFrameView,
+class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
-  METADATA_HEADER(OpaqueBrowserFrameView, BrowserFrameView)
+  METADATA_HEADER(OpaqueBrowserFrameView, BrowserNonClientFrameView)
 
  public:
   // Constructs a non-client view for an BrowserWidget.
@@ -57,7 +57,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   // constructor because it relies on virtual method calls.
   void InitViews();
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
@@ -128,7 +128,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // BrowserFrameView:
+  // BrowserNonClientFrameView:
   BoundsAndMargins GetCaptionButtonBounds() const override;
 
   // Paint various sub-components of this view.  The *FrameBorder() functions
