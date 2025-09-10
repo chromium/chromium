@@ -75,6 +75,18 @@ AwOriginMatchedHeader::GetCombinedMatchingHeaders(
   return combined_headers;
 }
 
+bool AwOriginMatchedHeader::MatchesNameValue(
+    const std::string& target_name,
+    const std::optional<std::string>& target_value) const {
+  if (name_ != target_name) {
+    return false;
+  }
+  if (!target_value) {
+    return true;
+  }
+  return value_ == *target_value;
+}
+
 jni_zero::ScopedJavaLocalRef<jobject> AwOriginMatchedHeader::ToJavaObject(
     JNIEnv* env) {
   return Java_AwOriginMatchedHeader_create(env, name_, value_,

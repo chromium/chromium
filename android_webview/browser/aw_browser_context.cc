@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
@@ -793,30 +794,30 @@ bool AwBrowserContext::HasOriginMatchedHeader(JNIEnv* env,
 std::vector<scoped_refptr<AwOriginMatchedHeader>>
 AwBrowserContext::FindOriginMatchedHeaders(
     JNIEnv* env,
-    std::optional<std::string> header_name,
-    std::optional<std::string> header_value) {
+    const std::optional<std::string>& header_name,
+    const std::optional<std::string>& header_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!header_name) {
     return origin_matched_headers_;
   }
   std::vector<scoped_refptr<AwOriginMatchedHeader>> matches;
-  std::ranges::copy_if(
-      origin_matched_headers_, std::back_inserter(matches),
-      [&header_name,
-       &header_value](const scoped_refptr<AwOriginMatchedHeader>& header) {
-        return header->name() == *header_name &&
-               (!header_value || header->value() == *header_value);
-      });
+  std::ranges::copy_if(origin_matched_headers_, std::back_inserter(matches),
+                       [&header_name, &header_value](const auto& header) {
+                         return header->MatchesNameValue(*header_name,
+                                                         header_value);
+                       });
   return matches;
 }
 
 void AwBrowserContext::ClearOriginMatchedHeader(
     JNIEnv* env,
-    const std::string& header_name) {
+    const std::string& header_name,
+    const std::optional<std::string>& header_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::erase_if(origin_matched_headers_, [&header_name](const auto& it) {
-    return it->name() == header_name;
-  });
+  std::erase_if(origin_matched_headers_,
+                [&header_name, &header_value](const auto& header) {
+                  return header->MatchesNameValue(header_name, header_value);
+                });
 }
 
 void AwBrowserContext::ClearAllOriginMatchedHeaders(JNIEnv* env) {

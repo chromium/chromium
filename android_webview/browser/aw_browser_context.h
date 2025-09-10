@@ -235,10 +235,15 @@ class AwBrowserContext : public content::BrowserContext,
   // it will return values where both match.
   std::vector<scoped_refptr<AwOriginMatchedHeader>> FindOriginMatchedHeaders(
       JNIEnv* env,
-      std::optional<std::string> header_name,
-      std::optional<std::string> header_value);
+      const std::optional<std::string>& header_name,
+      const std::optional<std::string>& header_value);
 
-  void ClearOriginMatchedHeader(JNIEnv* env, const std::string& header_name);
+  // Removes origin matched headers that match the `header_name` and
+  // `header_value`. If `header_value` is `std::nullopt`, it only uses
+  // `header_name` for matching.
+  void ClearOriginMatchedHeader(JNIEnv* env,
+                                const std::string& header_name,
+                                const std::optional<std::string>& header_value);
 
   void ClearAllOriginMatchedHeaders(JNIEnv* env);
 

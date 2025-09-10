@@ -428,7 +428,14 @@ public class AwBrowserContext implements BrowserContextHandle {
 
     public void clearOriginMatchedHeader(@NonNull String headerName) {
         ThreadUtils.assertOnUiThread();
-        AwBrowserContextJni.get().clearOriginMatchedHeader(mNativeAwBrowserContext, headerName);
+        AwBrowserContextJni.get()
+                .clearOriginMatchedHeader(mNativeAwBrowserContext, headerName, null);
+    }
+
+    public void clearOriginMatchedHeader(@NonNull String headerName, @NonNull String headerValue) {
+        ThreadUtils.assertOnUiThread();
+        AwBrowserContextJni.get()
+                .clearOriginMatchedHeader(mNativeAwBrowserContext, headerName, headerValue);
     }
 
     public void clearAllOriginMatchedHeaders() {
@@ -574,7 +581,9 @@ public class AwBrowserContext implements BrowserContextHandle {
                 @Nullable @JniType("std::optional<std::string>") String value);
 
         void clearOriginMatchedHeader(
-                long nativeAwBrowserContext, @JniType("std::string") String headerName);
+                long nativeAwBrowserContext,
+                @JniType("std::string") String headerName,
+                @Nullable @JniType("std::optional<std::string>") String headerValue);
 
         void clearAllOriginMatchedHeaders(long nativeAwBrowserContext);
 

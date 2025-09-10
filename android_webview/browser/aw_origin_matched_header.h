@@ -38,6 +38,11 @@ class AwOriginMatchedHeader
     return std::tie(name_, value_);
   }
 
+  // Utility function to help filter headers with standard library algorithms.
+  // If `value` is std::nullopt, this function only matches on name.
+  bool MatchesNameValue(const std::string& name,
+                        const std::optional<std::string>& value) const;
+
   bool MatchesOrigin(const url::Origin& origin) const;
 
   // Returns a new AwOriginMatchedHeader which has the combined ruleset of
