@@ -18,6 +18,14 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
 
+// Enables the allowsChangingSelectedContent property on the native macOS
+// picker (SCContentSharingPicker). This allows users to select a new window or
+// screen to share without restarting the stream and enables the capture to
+// follow an app into its fullscreen presentation mode.
+// TODO(crbug.com/409475502): Remove this feature once it has been rolled out to
+// stable for a few milestones.
+BASE_FEATURE(kAllowChangingSelectedContent, base::FEATURE_DISABLED_BY_DEFAULT);
+
 using Source = webrtc::DesktopCapturer::Source;
 using PickerCallback = base::OnceCallback<void(Source)>;
 using PickerCancelCallback = base::OnceClosure;
@@ -261,10 +269,11 @@ void NativeScreenCapturePickerMac::Open(
     ++next_id_;
     picker.active = true;
     SCContentSharingPickerConfiguration* config = [picker defaultConfiguration];
-    // TODO(https://crbug.com/360781940): Add support for changing selected
-    // content. The problem to solve is how this should interact with stream
-    // restart.
-    config.allowsChangingSelectedContent = false;
+    if (base::FeatureList::IsEnabled(kAllowChangingSelectedContent)) {
+      config.allowsChangingSelectedContent = true;
+    } else {
+      config.allowsChangingSelectedContent = false;
+    }
     NSNumber* max_stream_count = @(kMaxContentShareCountValue.Get());
     if (type == DesktopMediaID::Type::TYPE_SCREEN) {
       config.allowedPickerModes = SCContentSharingPickerModeSingleDisplay;
