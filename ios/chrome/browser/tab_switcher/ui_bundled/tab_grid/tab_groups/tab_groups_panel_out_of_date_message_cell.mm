@@ -50,6 +50,23 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
     [contentView addSubview:_updateButton];
     [contentView addSubview:_closeButton];
 
+    self.isAccessibilityElement = YES;
+    self.accessibilityLabel = l10n_util::GetNSString(
+        IDS_COLLABORATION_SHARED_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT);
+    self.accessibilityCustomActions = @[
+      [[UIAccessibilityCustomAction alloc]
+          initWithName:
+              l10n_util::GetNSString(
+                  IDS_IOS_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_UPDATE_BUTTON)
+                target:self
+              selector:@selector(updateButtonTapped)],
+      [[UIAccessibilityCustomAction alloc]
+          initWithName:l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)
+                target:self
+              selector:@selector(closeButtonTapped)],
+
+    ];
+
     _accessibilityConstraints = @[
       [_textLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
@@ -150,7 +167,7 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
 - (UIButton*)createUpdateButton {
   __weak __typeof(self) weakSelf = self;
   UIAction* updateAction = [UIAction actionWithHandler:^(UIAction* action) {
-    [weakSelf.delegate updateButtonTappedForOutOfDateMessageCell:weakSelf];
+    [weakSelf updateButtonTapped];
   }];
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -183,6 +200,11 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
   return button;
 }
 
+// Helper method to respond to update action.
+- (void)updateButtonTapped {
+  [self.delegate updateButtonTappedForOutOfDateMessageCell:self];
+}
+
 // Returns a configured close button.
 - (UIButton*)createCloseButton {
   UIImage* buttonImage = DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolSize);
@@ -191,7 +213,7 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
   [buttonConfiguration setImage:buttonImage];
   __weak __typeof(self) weakSelf = self;
   UIAction* closeAction = [UIAction actionWithHandler:^(UIAction* action) {
-    [weakSelf.delegate closeButtonTappedForOutOfDateMessageCell:weakSelf];
+    [weakSelf closeButtonTapped];
   }];
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:closeAction];
@@ -200,6 +222,11 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
   button.accessibilityIdentifier =
       kTabGroupsPanelCloseOutOfDateMessageIdentifier;
   return button;
+}
+
+// Helper method to respond to close action.
+- (void)closeButtonTapped {
+  [self.delegate closeButtonTappedForOutOfDateMessageCell:self];
 }
 
 // Updates the constraints to be appropriate for the current content size
