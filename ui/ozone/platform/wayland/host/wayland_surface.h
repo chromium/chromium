@@ -215,6 +215,10 @@ class WaylandSurface {
     return preferred_scale_factor_;
   }
 
+  // Some states do not take effect if the surface commit has no buffer.
+  // E.g. `xdg_surface.set_window_geometry`
+  bool has_buffer() const { return state_.buffer_id; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);

@@ -1318,9 +1318,10 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
 
   // If we get a configure which is immediately applied and latched (meaning
   // that the configure does nothing), we will have immediately acked it, and we
-  // can immediately commit it. See crbug.com/340500574.
+  // can immediately commit it if the window is already mapped. See
+  // crbug.com/340500574.
   if (state == applied_state_ && state == latched_state_ &&
-      in_flight_requests_.empty()) {
+      in_flight_requests_.empty() && root_surface()->has_buffer()) {
     root_surface_->Commit(/*flush=*/true);
   }
 }
