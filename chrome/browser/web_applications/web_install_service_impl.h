@@ -135,6 +135,15 @@ class WebInstallServiceImpl
       const GURL& manifest_id,
       std::unique_ptr<WebAppInstallInfo> install_info);
 
+  // Triggers the icon launch dialog after any behavior has been applied on the
+  // icon, like masking.
+  void OnIconFinalizedTriggerDialog(
+      InstallCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      const GURL& manifest_id,
+      std::u16string app_title,
+      const SkBitmap icon_to_use);
+
   // Used by the launch dialog to report whether the user accepted the launch.
   void OnBackgroundAppLaunchDialogClosed(
       InstallCallbackWithMetrics callback_with_metrics,

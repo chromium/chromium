@@ -761,4 +761,30 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_BorderlessUrlPatterns) {
               testing::ElementsAre(foo_pattern));
 }
 
+TEST(WebAppInstallUtils, ReplaceManifestIconsInTrusted) {
+  auto web_app_info = CreateWebAppInstallInfoFromStartUrl(StartUrl());
+  web_app_info.title = u"App Name";
+
+  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                              web_app_info.start_url());
+  auto web_app = std::make_unique<WebApp>(app_id);
+
+  apps::IconInfo icon_info1(GURL("https://icon1.png"), /*size=*/128);
+  apps::IconInfo icon_info2(GURL("https://icon2.png"), /*size=*/96);
+  web_app_info.manifest_icons = {icon_info1, icon_info2};
+
+  SetWebAppManifestFields(web_app_info, *web_app,
+                          /*skip_icons_on_download_failure=*/false,
+                          /*should_consider_manifest_icons_as_trusted=*/false);
+
+  EXPECT_THAT(web_app->trusted_icons(), testing::IsEmpty());
+
+  SetWebAppManifestFields(web_app_info, *web_app,
+                          /*skip_icons_on_download_failure=*/false,
+                          /*should_consider_manifest_icons_as_trusted=*/true);
+
+  EXPECT_THAT(web_app->trusted_icons(),
+              testing::ElementsAre(icon_info1, icon_info2));
+}
+
 }  // namespace web_app

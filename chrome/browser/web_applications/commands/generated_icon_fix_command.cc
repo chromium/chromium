@@ -76,10 +76,11 @@ void GeneratedIconFixCommand::StartWithLock(
   // Set title and start_url for PopulateProductIcons() in case it tries to
   // generate icons again.
   install_info_->title = base::UTF8ToUTF16(app->untranslated_name());
-  // TODO(crbug.com/427566193) : Populate trusted_icons from the app correctly
-  // if the trusted icons are empty.
   install_info_->trusted_icons = app->trusted_icons();
   for (const apps::IconInfo& icon_info : install_info_->manifest_icons) {
+    icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
+  }
+  for (const apps::IconInfo& icon_info : install_info_->trusted_icons) {
     icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
   icon_downloader_->Start(
@@ -98,6 +99,8 @@ void GeneratedIconFixCommand::OnIconsDownloaded(
   }
 
   PopulateProductIcons(install_info_.get(), &icons_map);
+  PopulateTrustedIconBitmaps(*install_info_.get(), icons_map);
+
   if (install_info_->is_generated_icon) {
     Stop(GeneratedIconFixResult::kStillGenerated, FROM_HERE);
     return;
@@ -120,7 +123,10 @@ void GeneratedIconFixCommand::OnIconsWritten(bool success) {
 
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
-    SetWebAppProductIconFields(*install_info_, *update->UpdateApp(app_id_));
+    WebApp* web_app = update->UpdateApp(app_id_);
+    SetWebAppProductIconFields(
+        *install_info_, *web_app,
+        (web_app->IsPolicyInstalledApp() || web_app->IsPreinstalledApp()));
   }
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   Stop(GeneratedIconFixResult::kSuccess, FROM_HERE);

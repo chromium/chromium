@@ -155,7 +155,8 @@ class WebAppInstallFinalizer {
       const WebAppInstallInfo& web_app_info,
       std::unique_ptr<WebApp> web_app,
       CommitCallback commit_callback,
-      bool skip_icon_writes_on_download_failure);
+      bool skip_icon_writes_on_download_failure,
+      bool overwrite_trusted_icons_with_manifest_ones);
 
   void WriteTranslations(
       const webapps::AppId& app_id,

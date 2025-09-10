@@ -56,6 +56,8 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
     web_app_info->title = u"Abc";
     web_app_info->icon_bitmaps.any[WebAppUpdateIdentityView::kLogoSize] =
         old_icon_;
+    web_app_info->trusted_icon_bitmaps
+        .any[WebAppUpdateIdentityView::kLogoSize] = old_icon_;
     app_id_ = web_app::test::InstallWebApp(browser()->profile(),
                                            std::move(web_app_info));
     update_.old_title = u"Abc";

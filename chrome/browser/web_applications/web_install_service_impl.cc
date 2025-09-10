@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -510,25 +511,34 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
   // Choose the icon bitmap based on OS specific icon guidelines. See
   // crbug.com/423906188 for more information. Regardless of OS, we expect an
   // icon of size 32x32 to be available.
-  SkBitmap icon_bitmap;
-  IconBitmaps& icon_bitmaps = install_info->icon_bitmaps;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  if (icon_bitmaps.maskable.empty()) {
-    CHECK(icon_bitmaps.any.contains(kIconSizeForLaunchDialog));
-    icon_bitmap = icon_bitmaps.any[kIconSizeForLaunchDialog];
-  } else {
-    CHECK(icon_bitmaps.maskable.contains(kIconSizeForLaunchDialog));
-    icon_bitmap = icon_bitmaps.maskable[kIconSizeForLaunchDialog];
-  }
-#else
-  CHECK(icon_bitmaps.any.contains(kIconSizeForLaunchDialog));
-  icon_bitmap = icon_bitmaps.any[kIconSizeForLaunchDialog];
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  DialogImageInfo dialog_info = install_info->GetIconBitmapsForSecureSurfaces();
+  CHECK(base::Contains(dialog_info.bitmaps, kIconSizeForLaunchDialog));
+  SkBitmap icon_bitmap_to_use = dialog_info.bitmaps[kIconSizeForLaunchDialog];
 
   // Name to display in the dialog.
   std::u16string app_title = install_info->title;
   base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
+  if (!dialog_info.is_maskable) {
+    OnIconFinalizedTriggerDialog(std::move(callback_with_metrics), app_id,
+                                 manifest_id, app_title,
+                                 std::move(icon_bitmap_to_use));
+    return;
+  }
 
+  web_app::MaskIconOnOs(
+      std::move(icon_bitmap_to_use),
+      base::BindOnce(&WebInstallServiceImpl::OnIconFinalizedTriggerDialog,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_with_metrics), app_id, manifest_id,
+                     app_title));
+}
+
+void WebInstallServiceImpl::OnIconFinalizedTriggerDialog(
+    InstallCallbackWithMetrics callback_with_metrics,
+    webapps::AppId app_id,
+    const GURL& manifest_id,
+    std::u16string app_title,
+    const SkBitmap icon_to_use) {
   auto* profile =
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   auto* provider = WebAppProvider::GetForWebApps(profile);
@@ -537,7 +547,7 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
       content::WebContents::FromRenderFrameHost(&render_frame_host());
 
   provider->ui_manager().TriggerLaunchDialogForBackgroundInstall(
-      web_contents, app_id, profile, base::UTF16ToUTF8(app_title), icon_bitmap,
+      web_contents, app_id, profile, base::UTF16ToUTF8(app_title), icon_to_use,
       base::BindOnce(&WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_with_metrics), manifest_id));

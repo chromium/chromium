@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
@@ -76,7 +77,7 @@ class KioskWebAppData : public KioskAppDataBase {
 
   void UpdateAppInfo(const std::string& title,
                      const GURL& start_url,
-                     const web_app::IconBitmaps& icon_bitmaps);
+                     const web_app::SizeToBitmap& icon_bitmaps);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 

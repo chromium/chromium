@@ -114,13 +114,16 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
 // Updates |web_app| using |web_app_info|
-void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
-                             WebApp& web_app,
-                             bool skip_icons_on_download_failure = false);
+void SetWebAppManifestFields(
+    const WebAppInstallInfo& web_app_info,
+    WebApp& web_app,
+    bool skip_icons_on_download_failure = false,
+    bool should_consider_manifest_icons_as_trusted = false);
 
 // Updates product icon fields of |web_app| using |web_app_info|.
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
-                                WebApp& web_app);
+                                WebApp& web_app,
+                                bool should_consider_manifest_icons_as_trusted);
 
 // Update |web_app_info| using |install_params|.
 // TODO(crbug.com/354981650): Remove this method after moving fields that modify

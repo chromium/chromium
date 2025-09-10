@@ -273,16 +273,16 @@ GURL KioskWebAppData::GetLaunchableUrl() const {
 void KioskWebAppData::UpdateFromWebAppInfo(
     const web_app::WebAppInstallInfo& app_info) {
   UpdateAppInfo(base::UTF16ToUTF8(app_info.title), app_info.start_url(),
-                app_info.icon_bitmaps);
+                app_info.GetIconBitmapsForSecureSurfaces().bitmaps);
 }
 
 void KioskWebAppData::UpdateAppInfo(const std::string& title,
                                     const GURL& start_url,
-                                    const web_app::IconBitmaps& icon_bitmaps) {
+                                    const web_app::SizeToBitmap& icon_bitmaps) {
   name_ = title;
 
-  auto it = icon_bitmaps.any.find(kIconSize);
-  if (it != icon_bitmaps.any.end()) {
+  auto it = icon_bitmaps.find(kIconSize);
+  if (it != icon_bitmaps.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     icon_.MakeThreadSafe();

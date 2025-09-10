@@ -28,6 +28,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
+  "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
