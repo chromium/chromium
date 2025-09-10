@@ -28,6 +28,11 @@ class DesktopDisplayInfo;
 class DesktopDisplayInfoMonitor;
 class DesktopResizer;
 
+struct RateLimitState {
+  base::TimeTicks previous_time;
+  base::OneShotTimer timer;
+};
+
 // TODO(alexeypa): Rename this class to reflect that it is not
 // HostStatusObserver any more.
 
@@ -97,8 +102,7 @@ class ResizingHostObserver : public ScreenControls {
   ScreenResolution pending_resolution_request_;
 
   // State to manage rate-limiting of desktop resizes.
-  base::OneShotTimer deferred_resize_timer_;
-  base::TimeTicks previous_resize_time_;
+  std::map<webrtc::ScreenId, RateLimitState> rate_limiters_;
   raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};

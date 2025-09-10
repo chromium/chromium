@@ -153,25 +153,18 @@ class ResizingHostObserverTest : public testing::Test {
     resizing_host_observer_->SetClockForTesting(&clock_);
   }
 
-  void SetScreenResolution(const ScreenResolution& client_size) {
-    resizing_host_observer_->SetScreenResolution(client_size, std::nullopt);
-    if (auto_advance_clock_) {
-      clock_.Advance(base::Seconds(1));
-    }
-  }
-
   void SetScreenResolution(const ScreenResolution& client_size,
-                           webrtc::ScreenId id) {
+                           std::optional<webrtc::ScreenId> id = std::nullopt) {
     resizing_host_observer_->SetScreenResolution(client_size, id);
     if (auto_advance_clock_) {
       clock_.Advance(base::Seconds(1));
     }
   }
 
-  // Should be used only for single-monitor tests.
-  ScreenResolution GetBestResolution(const ScreenResolution& client_size) {
-    SetScreenResolution(client_size);
-    return monitors_.begin()->second;
+  ScreenResolution GetBestResolution(const ScreenResolution& client_size,
+                           std::optional<webrtc::ScreenId> id = std::nullopt) {
+    SetScreenResolution(client_size, id);
+    return id.has_value() ? monitors_[*id] : monitors_.begin()->second;
   }
 
   // Should be used only for single-monitor tests.
@@ -365,6 +358,21 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
 
   // If the QuitClosure fired before the final resize, it's a test failure.
   EXPECT_EQ(MakeResolution(300, 300), monitors_[123]);
+}
+
+// Check that desktop resizes for different monitors are not rate-limited.
+TEST_F(ResizingHostObserverTest, NotRateLimitedForDifferentMonitors) {
+  InitDesktopResizer(
+      {{123, MakeResolution(640, 480)}, {234, MakeResolution(800, 600)}}, true,
+      std::vector<ScreenResolution>(), false);
+  NotifyDisplayInfo();
+  auto_advance_clock_ = false;
+
+  EXPECT_EQ(MakeResolution(100, 100),
+            GetBestResolution(MakeResolution(100, 100), 123));
+  clock_.Advance(base::Milliseconds(900));
+  EXPECT_EQ(MakeResolution(200, 200),
+            GetBestResolution(MakeResolution(200, 200), 234));
 }
 
 TEST_F(ResizingHostObserverTest, PendingResolutionAppliedToFirstMonitor) {
