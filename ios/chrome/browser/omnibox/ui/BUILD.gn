@@ -19,7 +19,7 @@ source_set("omnibox_popup_shared") {
 # See the comment above on omnibox_suggestion_icon_util
 # for why these two targets are separated.
 source_set("omnibox_util") {
-  sources = [ "omnibox_text_field_delegate.h" ]
+  sources = [ "omnibox_text_input_delegate.h" ]
   deps = [
     "//base",
     "//components/omnibox/browser",
@@ -36,7 +36,10 @@ source_set("omnibox_util") {
 # Build target allowed while moving files from ui_bundled to other folders.
 # TODO(crbug.com/394567614): Move model files to model folder.
 source_set("model_interface") {
-  sources = [ "omnibox_text_field_ios.h" ]
+  sources = [
+    "omnibox_text_field_ios.h",
+    "omnibox_text_input.h",
+  ]
 
   deps = [
     ":omnibox_popup_shared",
@@ -109,6 +112,7 @@ source_set("unit_tests") {
   sources = [ "omnibox_text_field_ios_unittest.mm" ]
   deps = [
     ":omnibox_internal",
+    ":omnibox_util",
     ":resources_unit_tests",
     ":ui",
     "//base/test:test_support",
