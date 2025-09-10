@@ -91,6 +91,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
       lookalikes::GetDomainInfo(response_url);
   // Empty domain_and_registry happens on private domains.
   if (navigated_domain.domain_and_registry.empty()) {
+    std::move(callback).Run(CreateAllowDecision());
     return;
   }
 
