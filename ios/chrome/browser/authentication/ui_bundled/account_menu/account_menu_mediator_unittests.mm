@@ -495,7 +495,8 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   // Simulate AuthenticationFlow failure.
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResultCanceledByUser];
+          SigninCoordinatorResultCanceledByUser
+                                                identity:nil];
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -543,7 +544,8 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResult::SigninCoordinatorResultInterrupted];
+          SigninCoordinatorResult::SigninCoordinatorResultInterrupted
+                                                identity:nil];
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
@@ -593,7 +595,8 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResultSuccess];
+          SigninCoordinatorResultSuccess
+                                                identity:kSecondaryIdentity];
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.

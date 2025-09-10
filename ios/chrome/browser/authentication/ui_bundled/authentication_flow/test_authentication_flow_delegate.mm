@@ -49,7 +49,9 @@
 #pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result {
+            (SigninCoordinatorResult)result
+                                                  identity:(id<SystemIdentity>)
+                                                               identity {
   CHECK(_signinCompletion);
   CHECK(!_callbackCalled);
   _callbackCalled = YES;

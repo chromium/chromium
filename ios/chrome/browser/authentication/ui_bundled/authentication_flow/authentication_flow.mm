@@ -702,10 +702,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     // deallocated, it means the view is closed, so it’s acceptable
     // not to call its method.
     __weak id<AuthenticationFlowDelegate> delegate = [self takeDelegate];
-    // Not using a call call to a method on self, because self will be
+    // Not using a call to a method on self, because self will be
     // deallocated by the time the `signinCompletion` is executed.
     _signInInProfileCompletion = ^(SigninCoordinatorResult result) {
-      [delegate authenticationFlowDidSignInInSameProfileWithResult:result];
+      [delegate
+          authenticationFlowDidSignInInSameProfileWithResult:result
+                                                    identity:identityToSignIn];
       CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
                                 accessPoint);
     };
@@ -788,8 +790,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case CancelationReason::kNotCanceled:
       NOTREACHED();
   }
-  [[self takeDelegate]
-      authenticationFlowDidSignInInSameProfileWithResult:result];
+  [[self takeDelegate] authenticationFlowDidSignInInSameProfileWithResult:result
+                                                                 identity:nil];
   [self continueFlow];
 }
 

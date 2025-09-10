@@ -151,7 +151,8 @@ class ConsistencyPromoSigninMediatorTest
       // The mediator_ is the AuthenticationFlow’s delegate.
       CHECK(authentication_flow_mock_delegate_);
       [authentication_flow_mock_delegate_
-          authenticationFlowDidSignInInSameProfileWithResult:result];
+          authenticationFlowDidSignInInSameProfileWithResult:result
+                                                    identity:identity];
     };
     OCMExpect([authentication_flow_mock_
         setDelegate:[OCMArg

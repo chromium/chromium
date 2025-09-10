@@ -318,7 +318,9 @@ enum class SigninScreenState {
 #pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result {
+            (SigninCoordinatorResult)result
+                                                  identity:(id<SystemIdentity>)
+                                                               identity {
   _signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   if (result != SigninCoordinatorResultSuccess) {

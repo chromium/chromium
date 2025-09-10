@@ -226,7 +226,9 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 #pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result {
+            (SigninCoordinatorResult)result
+                                                  identity:(id<SystemIdentity>)
+                                                               identity {
   if (!_identityManager) {
     // The mediator was already disconnected, nothing to do.
     return;

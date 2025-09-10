@@ -80,9 +80,6 @@
   NSString* _primaryAccountDisplayedEmail;
   NSString* _primaryAccountDisplayedUserFullName;
   UIImage* _primaryAccountDisplayedAvatar;
-  // If the authentication flow started, the identity is switching to this
-  // profile.
-  id<SystemIdentity> _identityToSignin;
   // The URL which the the account menu was viewed from when
   // AccountMenuAccessPoint::kWeb.
   GURL _url;
@@ -286,19 +283,19 @@
     return;
   }
 
-  CHECK(!_identityToSignin, base::NotFatalUntil::M140);
+  id<SystemIdentity> identityToSignin = nil;
   for (id<SystemIdentity> identity : _identities) {
     if (identity.gaiaID == gaiaID) {
-      _identityToSignin = identity;
+      identityToSignin = identity;
       break;
     }
   }
-  CHECK(_identityToSignin);
+  CHECK(identityToSignin);
   [self.consumer switchingStarted];
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
 
-  _authenticationFlow = [self.delegate authenticationFlow:_identityToSignin
+  _authenticationFlow = [self.delegate authenticationFlow:identityToSignin
                                                anchorRect:targetRect];
   _authenticationFlow.delegate = self;
   [_authenticationFlow startSignIn];
@@ -421,7 +418,9 @@
 #pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result {
+            (SigninCoordinatorResult)result
+                                                  identity:(id<SystemIdentity>)
+                                                               identity {
   [_delegate signinFinished];
   if (_accessPoint == AccountMenuAccessPoint::kWeb &&
       result == SigninCoordinatorResultSuccess) {
@@ -432,15 +431,15 @@
     // The mediator was disconnected. No need to update it.
     return;
   }
-  CHECK(_identityToSignin, base::NotFatalUntil::M140);
   CHECK(_primaryIdentityBeforeSignin, base::NotFatalUntil::M140);
   _authenticationFlow = nil;
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
+    CHECK(identity, base::NotFatalUntil::M145);
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:result
-                           signedIdentity:_identityToSignin
+                           signedIdentity:identity
                           userTappedClose:NO];
   } else if (_accountManagerService->IsValidIdentity(
                  _primaryIdentityBeforeSignin)) {
@@ -457,7 +456,6 @@
                            signedIdentity:nil
                           userTappedClose:NO];
   }
-  _identityToSignin = nil;
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
