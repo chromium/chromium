@@ -1588,12 +1588,11 @@ bool PDFiumEngine::OnMiddleMouseDown(const blink::WebMouseEvent& event) {
   DCHECK_EQ(blink::WebPointerProperties::Button::kMiddle, event.button);
 
   SetMouseLeftButtonDown(false);
-  mouse_middle_button_down_ = true;
   mouse_middle_button_last_position_ = event.PositionInWidget();
 
   ClearTextSelection();
 
-  auto point_data = GetPointData(mouse_middle_button_last_position_);
+  auto point_data = GetPointData(mouse_middle_button_last_position_.value());
   mouse_down_state_.Set(point_data.area, point_data.target);
 
   // Decide whether to open link or not based on user action in mouse up and
@@ -1714,7 +1713,7 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
   if (event.button == blink::WebPointerProperties::Button::kLeft) {
     SetMouseLeftButtonDown(false);
   } else if (event.button == blink::WebPointerProperties::Button::kMiddle) {
-    mouse_middle_button_down_ = false;
+    mouse_middle_button_last_position_.reset();
   }
 
   const gfx::PointF& point = event.PositionInWidget();
@@ -1794,13 +1793,14 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
       SetFormSelectedText(form(), pages_[last_focused_page_]->GetPage());
     }
 
-    if (kViewerImplementedPanning && mouse_middle_button_down_) {
+    if (kViewerImplementedPanning &&
+        mouse_middle_button_last_position_.has_value()) {
       // Subtract (origin - destination) so delta is already the delta for
       // moving the page, rather than the delta the mouse moved.
       // `event.movement_x` and `event.movement_y` do not work here, as small
       // mouse movements are considered zero.
-      gfx::Vector2d page_position_delta =
-          gfx::ToRoundedVector2d(mouse_middle_button_last_position_ - point);
+      gfx::Vector2d page_position_delta = gfx::ToRoundedVector2d(
+          mouse_middle_button_last_position_.value() - point);
       if (page_position_delta.x() != 0 || page_position_delta.y() != 0) {
         client_->ScrollBy(page_position_delta);
         mouse_middle_button_last_position_ = point;
@@ -1830,7 +1830,8 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
 
 ui::mojom::CursorType PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
                                                         int form_type) const {
-  if (kViewerImplementedPanning && mouse_middle_button_down_) {
+  if (kViewerImplementedPanning &&
+      mouse_middle_button_last_position_.has_value()) {
     return ui::mojom::CursorType::kHand;
   }
 
@@ -1872,14 +1873,11 @@ ui::mojom::CursorType PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
 void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
   if (event.GetModifiers() &
       blink::WebInputEvent::Modifiers::kMiddleButtonDown) {
-    if (!mouse_middle_button_down_) {
-      mouse_middle_button_down_ = true;
+    if (!mouse_middle_button_last_position_.has_value()) {
       mouse_middle_button_last_position_ = event.PositionInWidget();
     }
   } else {
-    if (mouse_middle_button_down_) {
-      mouse_middle_button_down_ = false;
-    }
+    mouse_middle_button_last_position_.reset();
   }
 }
 
