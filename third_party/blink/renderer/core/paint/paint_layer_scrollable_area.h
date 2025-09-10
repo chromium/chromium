@@ -49,6 +49,7 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
@@ -357,13 +358,15 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
-  bool ScrollToAbsolutePosition(const gfx::PointF& position,
-                                mojom::blink::ScrollBehavior scroll_behavior =
-                                    mojom::blink::ScrollBehavior::kInstant,
-                                mojom::blink::ScrollType scroll_type =
-                                    mojom::blink::ScrollType::kProgrammatic) {
+  bool ScrollToAbsolutePosition(
+      const gfx::PointF& position,
+      mojom::blink::ScrollBehavior scroll_behavior =
+          mojom::blink::ScrollBehavior::kInstant,
+      mojom::blink::ScrollType scroll_type =
+          mojom::blink::ScrollType::kProgrammatic,
+      ScrollSourceType source_type = ScrollSourceType::kNone) {
     return SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
-                           scroll_type, scroll_behavior);
+                           scroll_type, scroll_behavior, source_type);
   }
 
   // This will set the scroll position without clamping, and it will do all
@@ -675,6 +678,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void RemoveScrollMarkerGroupContainerData(
       ScrollMarkerGroupData* scroll_marker_group_data);
 
+  ContainerScrollDirection LastScrollDirectionHorizontal() const {
+    return last_scroll_direction_horizontal_;
+  }
+  ContainerScrollDirection LastScrollDirectionVertical() const {
+    return last_scroll_direction_vertical_;
+  }
+
  private:
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
   int ComputeHypotheticalScrollbarThickness(
@@ -693,8 +703,16 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void UpdateScrollbarProportions();
 
   void UpdateScrollOffset(const ScrollOffset&,
-                          mojom::blink::ScrollType) override;
+                          mojom::blink::ScrollType,
+                          ScrollSourceType) override;
   void InvalidatePaintForScrollOffsetChange();
+
+  // Only relative scrolls [0] should affect scroll-state() query last direction
+  // feature. This function is used to update `ScrollStateQuerySnapshot` last
+  // direction. [0] https://drafts.csswg.org/css-scroll-snap-1/#relative-scroll
+  void UpdateLastScrollDirection(const ScrollOffset& previous_offset,
+                                 const ScrollOffset& new_offset,
+                                 ScrollSourceType);
 
   int VerticalScrollbarStart() const;
   int HorizontalScrollbarStart() const;
@@ -858,6 +876,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   gfx::PointF last_cull_rect_update_scroll_position_;
 
+  ContainerScrollDirection last_scroll_direction_horizontal_ =
+      ContainerScrollDirection::kNone;
+  ContainerScrollDirection last_scroll_direction_vertical_ =
+      ContainerScrollDirection::kNone;
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,
         public DisplayItemClient {

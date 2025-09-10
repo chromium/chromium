@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -73,19 +74,10 @@ bool ScrollStateQuerySnapshot::UpdateSnapshot() {
             static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
       }
       if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
-        if (previous_scroll_position_.x() > offset.x()) {
-          scroll_direction_horizontal = ContainerScrollDirection::kStart;
-        }
-        if (previous_scroll_position_.x() < offset.x()) {
-          scroll_direction_horizontal = ContainerScrollDirection::kEnd;
-        }
-        if (previous_scroll_position_.y() > offset.y()) {
-          scroll_direction_vertical = ContainerScrollDirection::kStart;
-        }
-        if (previous_scroll_position_.y() < offset.y()) {
-          scroll_direction_vertical = ContainerScrollDirection::kEnd;
-        }
-        previous_scroll_position_ = offset;
+        scroll_direction_vertical =
+            scrollable_area->LastScrollDirectionVertical();
+        scroll_direction_horizontal =
+            scrollable_area->LastScrollDirectionHorizontal();
       }
     }
   }

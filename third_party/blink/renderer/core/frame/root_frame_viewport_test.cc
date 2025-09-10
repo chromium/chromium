@@ -101,7 +101,8 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
     return CompositorElementId();
   }
   void UpdateScrollOffset(const ScrollOffset& offset,
-                          mojom::blink::ScrollType) override {
+                          mojom::blink::ScrollType,
+                          ScrollSourceType) override {
     scroll_offset_ = offset;
   }
   bool ShouldUseIntegerScrollOffset() const override { return true; }
@@ -232,6 +233,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // but visual viewport should.
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(300, 0),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 0), visual_viewport->GetScrollOffset());
@@ -240,6 +242,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // Vertical scrolling should be unaffected.
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(0, 300),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 150), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 75), visual_viewport->GetScrollOffset());
@@ -264,6 +267,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // but visual viewport should.
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(0, 300),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 75), visual_viewport->GetScrollOffset());
@@ -272,6 +276,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // Horizontal scrolling should be unaffected.
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(300, 0),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(100, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 75), visual_viewport->GetScrollOffset());
@@ -312,6 +317,7 @@ TEST_F(RootFrameViewportTest, TestScrollAnimatorUpdatedBeforeScroll) {
 
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(-50, 0),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 75), root_frame_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 75), visual_viewport->GetScrollOffset());
@@ -326,6 +332,7 @@ TEST_F(RootFrameViewportTest, TestScrollAnimatorUpdatedBeforeScroll) {
 
   root_frame_viewport->UserScroll(ui::ScrollGranularity::kScrollByPrecisePixel,
                                   ScrollOffset(-100, 0),
+                                  ScrollableArea::ScrollSourceType::kNone,
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 150), root_frame_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 150), layout_viewport->GetScrollOffset());

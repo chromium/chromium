@@ -1537,7 +1537,7 @@
     },
     {
       name: "CSSScrollDirectionContainerQueries",
-      status: "test",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-initial-target

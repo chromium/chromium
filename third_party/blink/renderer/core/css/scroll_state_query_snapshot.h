@@ -62,7 +62,6 @@ class ScrollStateQuerySnapshot
       ContainerScrollDirection::kNone;
   ContainerScrollDirection scroll_direction_vertical_ =
       ContainerScrollDirection::kNone;
-  ScrollOffset previous_scroll_position_;
 };
 
 }  // namespace blink

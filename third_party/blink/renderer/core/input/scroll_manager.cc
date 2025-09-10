@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -221,6 +223,8 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     ScrollableArea* scrollable_area = ScrollableArea::GetForScrolling(box);
     DCHECK(scrollable_area);
 
+    ScrollableArea::ScrollSourceType source_type =
+        ScrollableArea::ScrollSourceType::kNone;
     // Pressing the arrow key is considered as a scroll with intended direction
     // only. Pressing the PgUp/PgDn key is considered as a scroll with intended
     // direction and end position. Pressing the Home/End key is considered as a
@@ -230,18 +234,21 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         if (scrollable_area->SnapForDirection(physical_direction)) {
           return true;
         }
+        source_type = ScrollableArea::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByPage: {
         if (scrollable_area->SnapForPageScroll(physical_direction)) {
           return true;
         }
+        source_type = ScrollableArea::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByDocument: {
         if (scrollable_area->SnapForDocumentScroll(physical_direction)) {
           return true;
         }
+        source_type = ScrollableArea::ScrollSourceType::kAbsoluteScroll;
         break;
       }
       default:
@@ -286,7 +293,8 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
             &(frame_->GetEventHandler().GetKeyboardEventManager())),
         scrolling_via_key));
     ScrollResult result = scrollable_area->UserScroll(
-        granularity, ToScrollDelta(physical_direction, 1), std::move(callback));
+        granularity, ToScrollDelta(physical_direction, 1), source_type,
+        std::move(callback));
 
     if (result.DidScroll())
       return true;

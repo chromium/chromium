@@ -65,85 +65,84 @@
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.htb.ltr");
-    scroller.scrollLeft = 150;
+    scroller.scrollBy(150, 0);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.h.htb.ltr", { "--inline-end": true, "--right": true });
   }, "scroll-state(direction) horizontal scrollbar horizontal-tb/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.htb.rtl");
-    scroller.scrollLeft = -150;
+    scroller.scrollBy(-150, 0);
     await waitForAnimationFrames(2);
-    assert_equals(scroller.scrollLeft, -150);
     match_scroll_direction(".direction.h.htb.rtl", { "--inline-end": true, "--left": true });
   }, "scroll-state(direction) horizontal scrollbar horizontal-tb/rtl");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.vlr.ltr");
-    scroller.scrollLeft = 150;
+    scroller.scrollBy(150, 0);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.h.vlr.ltr", { "--block-end": true, "--right": true });
   }, "scroll-state(direction) horizontal scrollbar vertical-lr/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.vlr.rtl");
-    scroller.scrollLeft = 150;
+    scroller.scrollBy(150, 0);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.h.vlr.rtl", { "--block-end": true, "--right": true });
   }, "scroll-state(direction) horizontal scrollbar vertical-lr/rtl");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.vrl.ltr");
-    scroller.scrollLeft = -150;
+    scroller.scrollBy(-150, 0);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.h.vrl.ltr", { "--block-end": true, "--left": true });
   }, "scroll-state(direction) horizontal scrollbar vertical-rl/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.h.vrl.rtl");
-    scroller.scrollLeft = -150;
+    scroller.scrollBy(-150, 0);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.h.vrl.rtl", { "--block-end": true, "--left": true });
   }, "scroll-state(direction) horizontal scrollbar vertical-rl/rtl");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.htb.ltr");
-    scroller.scrollTop = 150;
+    scroller.scrollBy(0, 150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.htb.ltr", { "--block-end": true, "--bottom": true });
   }, "scroll-state(direction) vertical scrollbar horizontal-tb/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.htb.rtl");
-    scroller.scrollTop = 150;
+    scroller.scrollBy(0, 150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.htb.rtl", { "--block-end": true, "--bottom": true });
   }, "scroll-state(direction) vertical scrollbar horizontal-tb/rtl");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.vlr.ltr");
-    scroller.scrollTop = 150;
+    scroller.scrollBy(0, 150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.vlr.ltr", { "--inline-end": true, "--bottom": true });
   }, "scroll-state(direction) vertical scrollbar vertical-lr/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.vlr.rtl");
-    scroller.scrollTop = -150;
+    scroller.scrollBy(0, -150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.vlr.rtl", { "--inline-end": true, "--top": true });
   }, "scroll-state(direction) vertical scrollbar vertical-lr/rtl");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.vrl.ltr");
-    scroller.scrollTop = 150;
+    scroller.scrollBy(0, 150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.vrl.ltr", { "--inline-end": true, "--bottom": true });
   }, "scroll-state(direction) vertical scrollbar vertical-rl/ltr");
 
   promise_test(async t => {
     let scroller = document.querySelector(".direction.v.vrl.rtl");
-    scroller.scrollTop = -150;
+    scroller.scrollBy(0, -150);
     await waitForAnimationFrames(2);
     match_scroll_direction(".direction.v.vrl.rtl", { "--inline-end": true, "--top": true });
   }, "scroll-state(direction) vertical scrollbar vertical-rl/rtl");

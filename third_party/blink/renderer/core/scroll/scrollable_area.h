@@ -118,8 +118,15 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Used to scale a length in dip units into a length in layout/paint units.
   virtual float ScaleFromDIP() const;
 
+  enum class ScrollSourceType {
+    kNone,
+    kAbsoluteScroll,
+    kRelativeScroll,
+    kStationaryScroll,
+  };
   virtual ScrollResult UserScroll(ui::ScrollGranularity,
                                   const ScrollOffset&,
+                                  ScrollSourceType source_type,
                                   ScrollCallback on_finish);
 
   // See https://crbug.com/413002675: `on_finish` is not always executed at the
@@ -129,11 +136,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                mojom::blink::ScrollType,
                                mojom::blink::ScrollBehavior,
                                ScrollCallback on_finish,
-                               bool targeted_scroll = false);
+                               bool targeted_scroll = false,
+                               ScrollSourceType = ScrollSourceType::kNone);
   virtual bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
-      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant);
+      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
+      ScrollSourceType = ScrollSourceType::kNone);
   void ScrollBy(
       const ScrollOffset&,
       mojom::blink::ScrollType,
@@ -179,7 +188,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   }
   virtual bool SnapContainerDataNeedsUpdate() const { return false; }
   virtual void SetSnapContainerDataNeedsUpdate(bool) {}
-  void SnapAfterScrollbarScrolling(ScrollbarOrientation);
+  void SnapAfterScrollbarScrolling(ScrollbarOrientation, ScrollSourceType);
   virtual void UpdateFocusDataForSnapAreas() {}
 
   // SnapAtCurrentPosition(), SnapForEndPosition(), SnapForDirection(), and
@@ -195,11 +204,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool SnapAtCurrentPosition(
       bool scrolled_x,
       bool scrolled_y,
+      ScrollSourceType source_type,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
   bool SnapForEndPosition(
       const gfx::PointF& end_position,
       bool scrolled_x,
       bool scrolled_y,
+      ScrollSourceType source_type,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
   bool SnapForDirection(ScrollDirectionPhysical direction);
   bool SnapForPageScroll(ScrollDirectionPhysical direction);
@@ -641,7 +652,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Needed to let the animators call scrollOffsetChanged.
   friend class ScrollAnimatorCompositorCoordinator;
-  void ScrollOffsetChanged(const ScrollOffset&, mojom::blink::ScrollType);
+  void ScrollOffsetChanged(const ScrollOffset&,
+                           mojom::blink::ScrollType,
+                           ScrollSourceType);
 
   void ClearNeedsPaintInvalidationForScrollControls() {
     horizontal_scrollbar_needs_paint_invalidation_ = false;
@@ -685,15 +698,19 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool ProgrammaticScrollHelper(const ScrollOffset&,
                                 mojom::blink::ScrollBehavior,
                                 gfx::Vector2d animation_adjustment,
-                                ScrollCallback on_finish);
-  void UserScrollHelper(const ScrollOffset&, mojom::blink::ScrollBehavior);
+                                ScrollCallback on_finish,
+                                ScrollSourceType);
+  void UserScrollHelper(const ScrollOffset&,
+                        mojom::blink::ScrollBehavior,
+                        ScrollSourceType);
 
   void FadeOverlayScrollbarsTimerFired(TimerBase*);
 
   // This function should be overridden by subclasses to perform the actual
   // scroll of the content.
   virtual void UpdateScrollOffset(const ScrollOffset&,
-                                  mojom::blink::ScrollType) = 0;
+                                  mojom::blink::ScrollType,
+                                  ScrollSourceType) = 0;
 
   float ScrollStartValueToOffsetAlongAxis(const ScrollStartData&,
                                           cc::SnapAxis) const;
@@ -708,6 +725,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Returns true if a snap point was found.
   bool PerformSnapping(
       const cc::SnapSelectionStrategy& strategy,
+      ScrollSourceType source_type,
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kSmooth,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner(),

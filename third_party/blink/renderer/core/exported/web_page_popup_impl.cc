@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -785,7 +786,11 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     }
     ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
                                -event.data.scroll_update.delta_y);
+    // TODO(crbug.com/414556050) We might have absolute scroll event types here,
+    // like scrollbar drag or panning touch gesture scroll. Need to add a way to
+    // identify them and pass correct `ScrollSourceType` below.
     scrollable->UserScroll(event.data.scroll_update.delta_units, scroll_offset,
+                           ScrollableArea::ScrollSourceType::kRelativeScroll,
                            ScrollableArea::ScrollCallback());
     return WebInputEventResult::kHandledSystem;
   }

@@ -192,11 +192,13 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior,
                        ScrollCallback on_finish,
-                       bool targeted_scroll = false) override;
-  bool SetScrollOffset(const ScrollOffset&,
-                       mojom::blink::ScrollType,
-                       mojom::blink::ScrollBehavior =
-                           mojom::blink::ScrollBehavior::kInstant) override;
+                       bool targeted_scroll = false,
+                       ScrollSourceType = ScrollSourceType::kNone) override;
+  bool SetScrollOffset(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
+      ScrollSourceType = ScrollSourceType::kNone) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -229,7 +231,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool ScrollAnimatorEnabled() const override;
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
   void UpdateScrollOffset(const ScrollOffset&,
-                          mojom::blink::ScrollType) override;
+                          mojom::blink::ScrollType,
+                          ScrollSourceType) override;
   cc::Layer* LayerForScrolling() const;
   cc::Layer* LayerForHorizontalScrollbar() const override;
   cc::Layer* LayerForVerticalScrollbar() const override;

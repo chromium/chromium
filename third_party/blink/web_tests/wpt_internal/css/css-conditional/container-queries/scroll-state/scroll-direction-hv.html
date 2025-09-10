@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) changed after scroll</title>
+<title>@container: scroll-state(direction) state is persisted across horizontal and vertical scrolling</title>
 <link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-rule">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6400">
 <script src="/resources/testharness.js"></script>
@@ -11,8 +11,7 @@
     width: 200px;
     height: 200px;
     container-type: scroll-state;
-    overflow-x: scroll;
-    overflow-y: scroll;
+    overflow: scroll;
   }
   #filler {
     height: 600px;
@@ -21,10 +20,8 @@
   #target {
     --top: no;
     --bottom: no;
-    --y: no;
     --left: no;
     --right: no;
-    --x: no;
     --none: no;
     @container scroll-state(direction: top) {
       --top: yes;
@@ -32,17 +29,11 @@
     @container scroll-state(direction: bottom) {
       --bottom: yes;
     }
-    @container scroll-state(direction: y) {
-      --y: yes;
-    }
     @container scroll-state(direction: left) {
       --left: yes;
     }
     @container scroll-state(direction: right) {
       --right: yes;
-    }
-    @container scroll-state(direction: x) {
-      --x: yes;
     }
     @container scroll-state(direction: none) {
       --none: yes;
@@ -61,49 +52,34 @@
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
 
-    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "no");
-
     assert_equals(getComputedStyle(target).getPropertyValue("--left"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
   }, "Check that scroll-state(direction) state before scrolling");
 
   promise_test(async t => {
-    scroller.scrollTop = 300;
+    scroller.scrollBy(300, 0);
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "yes");
-    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
-    assert_equals(scroller.scrollTop, 300);
-  }, "scroll-state(direction) after scrolling bottom");
-
-  promise_test(async t => {
-    scroller.scrollTop = 100;
-    await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
-    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
-    assert_equals(scroller.scrollTop, 100);
-  }, "scroll-state(direction) after scrolling top");
-
-  promise_test(async t => {
-    scroller.scrollLeft = 300;
+    scroller.scrollBy(0, 100);
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target).getPropertyValue("--left"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "yes");
-    assert_equals(getComputedStyle(target).getPropertyValue("--x"), "yes");
     assert_equals(scroller.scrollLeft, 300);
-  }, "scroll-state(direction) after scrolling right");
+    assert_equals(scroller.scrollTop, 100);
+  }, "Check that scroll-state(direction) horizontal state is persisted across vertical scroll event");
 
   promise_test(async t => {
-    scroller.scrollLeft = 100;
+    scroller.scrollBy(0, 100);
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--left"), "yes");
-    assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--x"), "yes");
+    scroller.scrollBy(0, -100);
+    await waitForAnimationFrames(2);
+    scroller.scrollBy(-200, 0);
+    await waitForAnimationFrames(2);
+    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
+    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
     assert_equals(scroller.scrollLeft, 100);
-  }, "scroll-state(direction) after scrolling left");
+    assert_equals(scroller.scrollTop, 100);
+  }, "Check that scroll-state(direction) vertical state is persisted across horizontal scroll event");
 
 </script>

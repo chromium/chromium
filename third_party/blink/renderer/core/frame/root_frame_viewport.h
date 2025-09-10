@@ -62,7 +62,8 @@ class CORE_EXPORT RootFrameViewport final
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior,
                        ScrollCallback on_finish,
-                       bool targeted_scroll = false) override;
+                       bool targeted_scroll = false,
+                       ScrollSourceType = ScrollSourceType::kNone) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -82,7 +83,8 @@ class CORE_EXPORT RootFrameViewport final
   bool IsScrollCornerVisible() const override;
   gfx::Rect ScrollCornerRect() const override;
   void UpdateScrollOffset(const ScrollOffset&,
-                          mojom::blink::ScrollType) override;
+                          mojom::blink::ScrollType,
+                          ScrollSourceType) override;
   gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const override;
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override;
@@ -107,6 +109,7 @@ class CORE_EXPORT RootFrameViewport final
                                  kIgnoreOverlayScrollbarSize) const override;
   ScrollResult UserScroll(ui::ScrollGranularity,
                           const ScrollOffset&,
+                          ScrollSourceType,
                           ScrollableArea::ScrollCallback on_finish) override;
   CompositorElementId GetScrollElementId() const override;
   CompositorElementId GetScrollbarElementId(
@@ -192,7 +195,8 @@ class CORE_EXPORT RootFrameViewport final
       mojom::blink::ScrollType,
       mojom::blink::ScrollBehavior,
       ViewportToScrollFirst,
-      ScrollCallback on_finish = ScrollCallback());
+      ScrollCallback on_finish = ScrollCallback(),
+      ScrollSourceType = ScrollSourceType::kNone);
 
   // If either of the layout or visual viewports are scrolled explicitly (i.e.
   // not through this class), their updated offset will not be reflected in this

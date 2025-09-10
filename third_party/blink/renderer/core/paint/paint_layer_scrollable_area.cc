@@ -423,7 +423,8 @@ int PaintLayerScrollableArea::ScrollSize(
 
 void PaintLayerScrollableArea::UpdateScrollOffset(
     const ScrollOffset& new_offset,
-    mojom::blink::ScrollType scroll_type) {
+    mojom::blink::ScrollType scroll_type,
+    ScrollSourceType source_type) {
   if (HasBeenDisposed() || GetScrollOffset() == new_offset)
     return;
 
@@ -434,6 +435,8 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   LocalFrameView* frame_view = GetLayoutBox()->GetFrameView();
   CHECK(frame_view);
+
+  UpdateLastScrollDirection(scroll_offset_, new_offset, source_type);
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
@@ -534,6 +537,27 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   if (AXObjectCache* cache =
           GetLayoutBox()->GetDocument().ExistingAXObjectCache())
     cache->HandleScrollPositionChanged(GetLayoutBox());
+}
+
+void PaintLayerScrollableArea::UpdateLastScrollDirection(
+    const ScrollOffset& previous_offset,
+    const ScrollOffset& new_offset,
+    ScrollSourceType source_type) {
+  if (source_type != ScrollSourceType::kRelativeScroll) {
+    return;
+  }
+  if (previous_offset.x() > new_offset.x()) {
+    last_scroll_direction_horizontal_ = ContainerScrollDirection::kStart;
+  }
+  if (previous_offset.x() < new_offset.x()) {
+    last_scroll_direction_horizontal_ = ContainerScrollDirection::kEnd;
+  }
+  if (previous_offset.y() > new_offset.y()) {
+    last_scroll_direction_vertical_ = ContainerScrollDirection::kStart;
+  }
+  if (previous_offset.y() < new_offset.y()) {
+    last_scroll_direction_vertical_ = ContainerScrollDirection::kEnd;
+  }
 }
 
 void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
@@ -994,7 +1018,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type) {
   CancelScrollAnimation();
-  ScrollOffsetChanged(offset, scroll_type);
+  ScrollOffsetChanged(offset, scroll_type, ScrollSourceType::kNone);
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {

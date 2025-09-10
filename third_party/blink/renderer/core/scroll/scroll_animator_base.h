@@ -65,9 +65,11 @@ class CORE_EXPORT ScrollAnimatorBase
   // currently somewhat different on Mac - see ScrollAnimatorMac.mm.
   virtual ScrollResult UserScroll(ui::ScrollGranularity,
                                   const ScrollOffset& delta,
+                                  ScrollableArea::ScrollSourceType,
                                   ScrollableArea::ScrollCallback on_finish);
 
-  virtual void ScrollToOffsetWithoutAnimation(const ScrollOffset&);
+  virtual void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
+                                              ScrollableArea::ScrollSourceType);
 
   void SetCurrentOffset(const ScrollOffset&);
   ScrollOffset CurrentOffset() const;
@@ -92,10 +94,17 @@ class CORE_EXPORT ScrollAnimatorBase
 
   void Trace(Visitor*) const override;
 
+  ScrollableArea::ScrollSourceType GetScrollSourceType() const {
+    return source_type_;
+  }
+
  protected:
   Member<ScrollableArea> scrollable_area_;
 
   ScrollOffset current_offset_;
+
+  // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
+  ScrollableArea::ScrollSourceType source_type_;
 };
 
 }  // namespace blink

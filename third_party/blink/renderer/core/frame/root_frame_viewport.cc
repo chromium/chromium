@@ -314,7 +314,8 @@ bool RootFrameViewport::SetScrollOffset(
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     ScrollCallback on_finish,
-    bool targeted_scroll) {
+    bool targeted_scroll,
+    ScrollSourceType source_type) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)
@@ -323,18 +324,19 @@ bool RootFrameViewport::SetScrollOffset(
   if (scroll_type == mojom::blink::ScrollType::kAnchoring) {
     return DistributeScrollBetweenViewports(offset, scroll_type,
                                             scroll_behavior, kLayoutViewport,
-                                            std::move(on_finish));
+                                            std::move(on_finish), source_type);
   }
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kSmooth) {
     return DistributeScrollBetweenViewports(offset, scroll_type,
                                             scroll_behavior, kVisualViewport,
-                                            std::move(on_finish));
+                                            std::move(on_finish), source_type);
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
   return ScrollableArea::SetScrollOffset(clamped_offset, scroll_type,
-                                         scroll_behavior, std::move(on_finish));
+                                         scroll_behavior, std::move(on_finish),
+                                         false, source_type);
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
@@ -408,12 +410,12 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
   return rect_in_absolute;
 }
 
-void RootFrameViewport::UpdateScrollOffset(
-    const ScrollOffset& offset,
-    mojom::blink::ScrollType scroll_type) {
-  DistributeScrollBetweenViewports(offset, scroll_type,
-                                   mojom::blink::ScrollBehavior::kInstant,
-                                   kVisualViewport);
+void RootFrameViewport::UpdateScrollOffset(const ScrollOffset& offset,
+                                           mojom::blink::ScrollType scroll_type,
+                                           ScrollSourceType source_type) {
+  DistributeScrollBetweenViewports(
+      offset, scroll_type, mojom::blink::ScrollBehavior::kInstant,
+      kVisualViewport, ScrollCallback(), source_type);
 }
 
 bool RootFrameViewport::DistributeScrollBetweenViewports(
@@ -421,7 +423,8 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior behavior,
     ViewportToScrollFirst scroll_first,
-    ScrollCallback on_finish) {
+    ScrollCallback on_finish,
+    ScrollSourceType source_type) {
   // Make sure we use the scroll offsets as reported by each viewport's
   // ScrollAnimatorBase, since its ScrollableArea's offset may have the
   // fractional part truncated off.
@@ -468,10 +471,10 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   // is dispatched to the DOMWindow before the VisualViewport.
   bool did_scroll = LayoutViewport().SetScrollOffset(
       scroll_first == kLayoutViewport ? primary_offset : secondary_offset,
-      scroll_type, behavior, all_done);
+      scroll_type, behavior, all_done, false, source_type);
   did_scroll |= GetVisualViewport().SetScrollOffset(
       scroll_first == kVisualViewport ? primary_offset : secondary_offset,
-      scroll_type, behavior, all_done);
+      scroll_type, behavior, all_done, false, source_type);
   return did_scroll;
 }
 
@@ -545,6 +548,7 @@ cc::Layer* RootFrameViewport::LayerForScrollCorner() const {
 ScrollResult RootFrameViewport::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
+    ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // TODO(bokan/ymalik): Once smooth scrolling is permanently enabled we
   // should be able to remove this method override and use the base class
@@ -610,7 +614,8 @@ ScrollResult RootFrameViewport::UserScroll(
   if (visual_consumed_delta == pixel_delta) {
     ScrollResult visual_result =
         GetVisualViewport().GetScrollAnimator().UserScroll(
-            granularity, visual_consumed_delta, std::move(on_finish));
+            granularity, visual_consumed_delta, source_type,
+            std::move(on_finish));
     return visual_result;
   }
 
@@ -621,7 +626,8 @@ ScrollResult RootFrameViewport::UserScroll(
   if (layout_consumed_delta == pixel_delta) {
     ScrollResult layout_result =
         LayoutViewport().GetScrollAnimator().UserScroll(
-            granularity, scrollable_axis_delta, std::move(on_finish));
+            granularity, scrollable_axis_delta, source_type,
+            std::move(on_finish));
     return layout_result;
   }
 
@@ -629,10 +635,10 @@ ScrollResult RootFrameViewport::UserScroll(
 
   ScrollResult visual_result =
       GetVisualViewport().GetScrollAnimator().UserScroll(
-          granularity, visual_consumed_delta, all_done);
+          granularity, visual_consumed_delta, source_type, all_done);
 
   ScrollResult layout_result = LayoutViewport().GetScrollAnimator().UserScroll(
-      granularity, scrollable_axis_delta, all_done);
+      granularity, scrollable_axis_delta, source_type, all_done);
 
   // Remember to add any delta not used because of !userInputScrollable to the
   // unusedScrollDelta in the result.
