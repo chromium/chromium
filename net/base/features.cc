@@ -584,8 +584,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPartitionProxyChains, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

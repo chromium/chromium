@@ -168,8 +168,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
 TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {net::features::kPartitionConnectionsByNetworkIsolationKey},
-      {net::features::kPartitionProxyChains});
+      {net::features::kPartitionConnectionsByNetworkIsolationKey}, {});
   Initialize();
 
   // Set up a connection via proxy1, to proxy2, to example.org, all using QUIC.
@@ -356,8 +355,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   // Check that the session through the proxy uses the version from the request.
   EXPECT_EQ(session->GetQuicVersion(), version_);
 
-  // Check that the session to proxy1 uses an empty NAK (due to
-  // !kPartitionProxyChains) and RFCv1.
+  // Check that the session to proxy1 uses an empty NAK and RFCv1.
   auto proxy_nak = NetworkAnonymizationKey();
   QuicChromiumClientSession* proxy1_session =
       GetActiveSession(proxy1_origin, PRIVACY_MODE_DISABLED, proxy_nak,
@@ -395,8 +393,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
 TEST_P(QuicSessionPoolProxyJobTest, PoolDeletedDuringSessionCreation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {net::features::kPartitionConnectionsByNetworkIsolationKey},
-      {net::features::kPartitionProxyChains});
+      {net::features::kPartitionConnectionsByNetworkIsolationKey}, {});
   Initialize();
 
   // Set up a connection via proxy1, to proxy2, to example.org, all using QUIC.

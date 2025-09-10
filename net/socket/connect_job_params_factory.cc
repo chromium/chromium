@@ -175,9 +175,8 @@ ConnectJobParams CreateProxyParams(
   // it need not be partitioned based on the ultimate destination's NAK. If the
   // session is to the destination, then partition using that destination's NAK.
   // This allows sharing of connections to proxies in multi-server proxy chains.
-  bool use_empty_nak =
-      !base::FeatureList::IsEnabled(net::features::kPartitionProxyChains) &&
-      proxy_chain_index < proxy_chain.length() - 1;
+  bool use_empty_nak = proxy_chain_index < proxy_chain.length() - 1;
+
   // Note that C++ extends the lifetime of this value such that the reference
   // remains valid as long as the reference.
   const NetworkAnonymizationKey& network_anonymization_key =

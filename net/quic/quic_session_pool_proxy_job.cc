@@ -174,11 +174,7 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
   // [proxy1, proxy2, proxy3], the connections to proxy1 and proxy2 need not be
   // partitioned and can use an empty NAK. This situation is identified by the
   // session usage of the tunneled connection being kProxy.
-  bool use_empty_nak = false;
-  if (!base::FeatureList::IsEnabled(net::features::kPartitionProxyChains) &&
-      session_key.session_usage() == SessionUsage::kProxy) {
-    use_empty_nak = true;
-  }
+  bool use_empty_nak = session_key.session_usage() == SessionUsage::kProxy;
 
   // Disable cert verification network fetches since those network requests may
   // need to go through the proxy chain too.
