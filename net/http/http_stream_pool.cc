@@ -394,10 +394,12 @@ bool HttpStreamPool::CanUseQuic(
                                               /*is_websocket=*/false)) {
     return true;
   }
+
+  // Note that this does not check RequiresHTTP11(), as despite its name, it
+  // only means H2 is not allowed.
   return http_network_session()->IsQuicEnabled() &&
          enable_alternative_services &&
          GURL::SchemeIsCryptographic(destination.scheme()) &&
-         !RequiresHTTP11(destination, network_anonymization_key) &&
          !IsQuicBroken(destination, network_anonymization_key);
 }
 

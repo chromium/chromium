@@ -423,7 +423,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     session_context.http_user_agent_settings = &http_user_agent_settings_;
     session_context.quic_context = &quic_context_;
     session_ = std::make_unique<HttpNetworkSession>(params, session_context);
-    factory_ = static_cast<HttpStreamFactory*>(session_->http_stream_factory());
+    factory_ = session_->http_stream_factory();
     if (create_job_controller_) {
       auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
           factory_, &request_delegate_, session_.get(), &job_factory_,
@@ -544,6 +544,16 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
       bool async_quic_session);
   void TestDoNotDelayMainJobIfHasAvailableSpdySession(bool async_quic_session);
 
+  bool happy_eyeballs_v3_enabled() const { return happy_eyeballs_v3_enabled_; }
+
+  // Convenience method to create a basic HttpRequestInfo.
+  HttpRequestInfo CreateRequestInfo() {
+    HttpRequestInfo request_info;
+    request_info.url = GURL("https://a.test/");
+    request_info.method = "GET";
+    return request_info;
+  }
+
   quic::ParsedQuicVersion version_ = DefaultSupportedQuicVersions().front();
   RecordingNetLogObserver net_log_observer_;
   NetLogWithSource net_log_with_source_{
@@ -637,6 +647,161 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
   DestroySession();
   // Destroying the session (and the request) should destroy the socket.
   EXPECT_FALSE(tcp_data_->socket());
+}
+
+// Test the case of preconnecting to an origin with an alt service record, where
+// establishing an H3 connection succeeds quickly, and so TCP should not be
+// attempted.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest,
+       PreconnectToHostWithValidAltSvc) {
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(1);
+
+  // Wait for preconnect to complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+
+  // There should be no H1/H2 connection.
+  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
+                                     NetworkAnonymizationKey(),
+                                     SecureDnsPolicy::kAllow,
+                                     /*disable_cert_network_fetches=*/false);
+  TransportClientSocketPool* socket_pool =
+      reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
+          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
+  EXPECT_FALSE(socket_pool->HasGroupForTesting(group_id));
+
+  // There should be a QUIC session.
+  QuicSessionKey session_key(
+      HostPortPair::FromSchemeHostPort(server), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
+}
+
+// Test the case of preconnecting to an origin with an alt service record, where
+// establishing an H3 connection succeeds quickly, and so TCP should not be
+// attempted. In this case, the origin is marked as HTTP/1.1 only, but that only
+// applies to H2 connections, despite its name, so should have no effect.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest,
+       PreconnectToHostWithValidAltSvcWithHttp11Only) {
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  SetPreconnect();
+  Initialize(request_info);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  session_->http_server_properties()->SetHTTP11Required(
+      server, NetworkAnonymizationKey());
+
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(1);
+
+  // Wait for preconnect to complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+
+  // There should be no H1/H2 connection.
+  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
+                                     NetworkAnonymizationKey(),
+                                     SecureDnsPolicy::kAllow,
+                                     /*disable_cert_network_fetches=*/false);
+  TransportClientSocketPool* socket_pool =
+      reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
+          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
+  EXPECT_FALSE(socket_pool->HasGroupForTesting(group_id));
+
+  // There should be a QUIC session.
+  QuicSessionKey session_key(
+      HostPortPair::FromSchemeHostPort(server), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
+}
+
+// Check the case where the attempt to connect to the alt service destination
+// succeeds. The destination is marked as HTTP/1.1 only, but that should not
+// affect H3 connections, only H2 ones.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest,
+       AltSvcAttemptSucceedsWithHttp11Only) {
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+
+  // In the HEv3 case, UDP and TCP connections are made at the same time, so
+  // need to create mock TCP connections. In the non-HEv3 case, UDP connections
+  // are made immediately, and then post a task to complete connection
+  // establishment, and the task to start the TCP job is always posted
+  // asynchronously. As a result, the main job is then never started.
+  if (happy_eyeballs_v3_enabled()) {
+    tcp_data_ = std::make_unique<SequencedSocketData>();
+    tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  }
+
+  HttpRequestInfo request_info = CreateRequestInfo();
+  Initialize(request_info);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  session_->http_server_properties()->SetHTTP11Required(
+      server, NetworkAnonymizationKey());
+
+  request_ =
+      job_controller_->Start(&request_delegate_, nullptr, net_log_with_source_,
+                             HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+
+  // Wait for the request to succeed.
+  EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _));
+  base::RunLoop().RunUntilIdle();
+
+  // There should be no H1/H2 connection.
+  ClientSocketPool::GroupId group_id(server, PRIVACY_MODE_DISABLED,
+                                     NetworkAnonymizationKey(),
+                                     SecureDnsPolicy::kAllow,
+                                     /*disable_cert_network_fetches=*/false);
+  TransportClientSocketPool* socket_pool =
+      reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
+          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
+  EXPECT_FALSE(socket_pool->HasGroupForTesting(group_id));
+
+  // There should be a QUIC session.
+  QuicSessionKey session_key(
+      HostPortPair::FromSchemeHostPort(server), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
@@ -4123,33 +4288,6 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   FastForwardBy(base::Microseconds(15));
 
   FastForwardUntilNoTasksRemain();
-}
-
-TEST_F(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
-  quic_data_ = std::make_unique<MockQuicData>(version_);
-  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
-  quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-
-  HttpRequestInfo request_info;
-  request_info.method = "GET";
-  request_info.url = GURL("https://www.example.com");
-  SetPreconnect();
-
-  Initialize(request_info);
-
-  url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
-                                         443);
-  SetAlternativeService(request_info, alternative_service);
-
-  job_controller_->Preconnect(1);
-  EXPECT_TRUE(job_controller_->main_job());
-  EXPECT_EQ(HttpStreamFactory::PRECONNECT,
-            job_controller_->main_job()->job_type());
-  EXPECT_FALSE(job_controller_->alternative_job());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
 // When preconnect to a H2 supported server, only 1 connection is opened.
