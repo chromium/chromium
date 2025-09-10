@@ -162,7 +162,7 @@ bool WebInputMethodControllerImpl::CommitText(
         text,
         PlainTextRange(replacement_range.StartOffset(),
                        replacement_range.EndOffset()),
-        InputMethodController::MoveCaretBehavior::kDoNotMove);
+        relative_caret_position);
   }
 
   return GetInputMethodController().CommitText(

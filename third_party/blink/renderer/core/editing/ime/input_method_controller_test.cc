@@ -1096,9 +1096,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "world!".
   Controller().SetEditableSelectionOffsets(PlainTextRange(6, 12));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 5),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
   // The selection is still "world!".
   EXPECT_EQ(3u, Controller().GetSelectionOffsets().Start());
@@ -1111,9 +1109,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 5),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
 
   // The new selection is "Hi".
@@ -1127,17 +1123,14 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "He" with "Hi".
-  Controller().ReplaceTextAndMoveCaret(
-      "Hi", PlainTextRange(0, 2),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 2));
   EXPECT_EQ("Hillo world!", input->Value());
   // The selection is still "Hillo".
   EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(5u, Controller().GetSelectionOffsets().End());
 }
 
-TEST_F(InputMethodControllerTest,
-       ReplaceTextAndMoveCursorAfterTheReplacementText) {
+TEST_F(InputMethodControllerTest, ReplaceTextAndMoveCaret) {
   auto* input =
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
@@ -1151,9 +1144,7 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 4));
   // Replace "morning" with "night". The replaced range does not overlap with
   // the selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
@@ -1166,9 +1157,7 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(5, 12));
   // Replace "morning" with "night". The replaced range is the same as the
   // selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
@@ -1181,13 +1170,24 @@ TEST_F(InputMethodControllerTest,
   Controller().SetEditableSelectionOffsets(PlainTextRange(3, 7));
   // Replace "morning" with "night". The replaced range partially overlaps with
   // the selection range.
-  Controller().ReplaceTextAndMoveCaret(
-      "night", PlainTextRange(5, 12),
-      InputMethodController::MoveCaretBehavior::kMoveCaretAfterText);
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), 0);
   EXPECT_EQ("Good night!", input->Value());
   // The caret should be after "night".
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(10u, Controller().GetSelectionOffsets().End());
+
+  input->SetValue("Good morning!");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ("Good morning!", input->Value());
+  // Select "d mo".
+  Controller().SetEditableSelectionOffsets(PlainTextRange(3, 7));
+  // Replace "morning" with "night". The replaced range partially overlaps with
+  // the selection range.
+  Controller().ReplaceTextAndMoveCaret("night", PlainTextRange(5, 12), -4);
+  EXPECT_EQ("Good night!", input->Value());
+  // The caret should be after "night".
+  EXPECT_EQ(6u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(6u, Controller().GetSelectionOffsets().End());
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionForInputWithNewCaretPositions) {

@@ -697,12 +697,34 @@ bool InputMethodController::CommitText(
   return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
 }
 
+bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
+                                                        PlainTextRange range) {
+  EventQueueScope scope;
+  const PlainTextRange old_selection(GetSelectionOffsets());
+  if (!SetSelectionOffsets(range)) {
+    return false;
+  }
+  if (!InsertText(text)) {
+    return false;
+  }
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  wtf_size_t selection_delta = text.length() - range.length();
+  wtf_size_t start = old_selection.Start();
+  wtf_size_t end = old_selection.End();
+  return SetSelectionOffsets(
+      {start >= range.End() ? start + selection_delta : start,
+       end >= range.End() ? end + selection_delta : end});
+}
+
 bool InputMethodController::ReplaceTextAndMoveCaret(
     const String& text,
     PlainTextRange range,
-    MoveCaretBehavior move_caret_behavior) {
+    int relative_caret_position) {
   EventQueueScope scope;
-  const PlainTextRange old_selection(GetSelectionOffsets());
   if (!SetSelectionOffsets(range))
     return false;
   if (!InsertText(text))
@@ -711,21 +733,9 @@ bool InputMethodController::ReplaceTextAndMoveCaret(
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  switch (move_caret_behavior) {
-    case MoveCaretBehavior::kMoveCaretAfterText: {
-      wtf_size_t absolute_caret_position = range.Start() + text.length();
-      return SetSelectionOffsets(
-          {absolute_caret_position, absolute_caret_position});
-    }
-    case MoveCaretBehavior::kDoNotMove: {
-      wtf_size_t selection_delta = text.length() - range.length();
-      wtf_size_t start = old_selection.Start();
-      wtf_size_t end = old_selection.End();
-      return SetSelectionOffsets(
-          {start >= range.End() ? start + selection_delta : start,
-           end >= range.End() ? end + selection_delta : end});
-    }
-  }
+  return SetSelectionOffsets(
+      {range.Start() + text.length() + relative_caret_position,
+       range.Start() + text.length() + relative_caret_position});
 }
 
 bool InputMethodController::ReplaceComposition(const String& text) {
@@ -1600,7 +1610,7 @@ void InputMethodController::ExtendSelectionAndReplace(
       PlainTextRange(
           std::max(static_cast<int>(selection_offsets.Start()) - before, 0),
           selection_offsets.End() + after),
-      MoveCaretBehavior::kMoveCaretAfterText);
+      /*relative_caret_position=*/0);
 }
 
 void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
