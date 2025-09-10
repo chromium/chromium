@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from collections.abc import Collection
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
@@ -181,46 +182,89 @@ class WorkDir(contextlib.AbstractContextManager):
     checkout state (staging, untracked files, `//.gemini/extensions/`).
     """
 
-    def __init__(self, name: str, clean: bool, verbose: bool, force: bool):
-        self.name = name
-        self.path = None
+    def __init__(
+        self,
+        name: str,
+        src_root_dir: pathlib.Path,
+        clean: bool,
+        verbose: bool,
+        force: bool,
+        btrfs: bool,
+    ):
+        self.path = src_root_dir.parent.joinpath(name)
+        self.src_root_dir = src_root_dir
         self.clean = clean
         self.verbose = verbose
         self.force = force
+        self.btrfs = btrfs
 
     def __enter__(self) -> 'WorkDir':
-        # TODO(crbug.com/436274253): Consider some optimizations once the test
-        # suite grows large enough:
-        # 1. Parallelization
-        # 2. WorkDir reuse
-        result = subprocess.run(
-            ['gclient', 'root'],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        root_path = pathlib.Path(result.stdout.strip())
-        self.path = root_path.parent.joinpath(self.name)
         if self.path.exists():
             if self.force:
-                logging.info('Removing existing workdir: %s', self.path)
-                shutil.rmtree(self.path)
+                self._clean()
             else:
                 raise FileExistsError(
                     f'Workdir already exists at: {self.path}. Remove it '
                     'manually or use --force to remove it.')
 
         logging.info('Creating new workdir: %s', self.path)
-        subprocess.check_call(
-            ['gclient-new-workdir.py', root_path, self.path],
-            stdout=subprocess.STDOUT if self.verbose else subprocess.DEVNULL,
-        )
+        start_time = time.time()
+        if self.btrfs:
+            # gclient-new-workdir does the same thing but reflinks the .git dirs
+            # which we don't need to waste time on
+            subprocess.check_call(
+                ['btrfs', 'subvol', 'snapshot', self.src_root_dir, self.path],
+                stdout=None if self.verbose else subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
+            )
+        else:
+            subprocess.check_call(
+                ['gclient-new-workdir.py', self.src_root_dir, self.path],
+                stdout=None if self.verbose else subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
+            )
+        logging.debug('Took %s seconds', time.time() - start_time)
         return self
 
     def __exit__(self, *_exc_info) -> None:
         if self.clean:
-            logging.info('Cleaning %s', self.path)
+            self._clean()
+
+    def _clean(self) -> None:
+        logging.info('Removing existing workdir: %s', self.path)
+        cmd = ['sudo', 'btrfs', 'subvolume', 'delete', self.path]
+        start_time = time.time()
+        if self.btrfs:
+            if self.force:
+                cmd.insert(1, '-n')
+            result = subprocess.call(
+                cmd,
+                stdout=None if self.verbose else subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
+            )
+            if result != 0:
+                logging.debug('Failed to remove with subvolume delete.')
+        if not self.btrfs or result != 0:
+            logging.debug('Removing with shutil')
             shutil.rmtree(self.path)
+        logging.debug('Took %s seconds', time.time() - start_time)
+
+
+def _check_btrfs(root_path) -> bool:
+    result = subprocess.run(
+        ['stat', '-c', '%i', root_path],
+        capture_output=True,
+        check=True,
+    )
+    inode_number = int(result.stdout.strip())
+    btrfs = inode_number == 256
+    logging.debug('btrfs (%d)' if btrfs else 'Not in btrfs (%d)', inode_number)
+    if not btrfs:
+        logging.warning(
+            'Warning: This is not running in a btrfs environment which will '
+            'lead to a much slower runtime. Please see the README.md for '
+            'btrfs setup instructions.')
+    return btrfs
 
 
 def discover_testcase_files() -> list[pathlib.Path]:
@@ -281,6 +325,20 @@ def main() -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format='%(message)s',
     )
+
+    result = subprocess.run(
+        ['gclient', 'root'],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    root_path = pathlib.Path(result.stdout.strip())
+    src_path = root_path / 'src'
+
+    is_btrfs = _check_btrfs(root_path)
+    if is_btrfs and not args.force:
+        subprocess.run(['sudo', '-v'])
+
     promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
     promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
                                  args.promptfoo_version)
@@ -293,12 +351,8 @@ def main() -> int:
         logging.info('No tests to run')
 
     for config in configs_to_run:
-        with WorkDir(
-                'workdir',
-                not args.no_clean,
-                args.verbose,
-                args.force,
-        ) as workdir:
+        with WorkDir('workdir', root_path, not args.no_clean, args.verbose,
+                     args.force, is_btrfs) as workdir:
             command = [
                 'eval',
                 '-j',
