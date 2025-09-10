@@ -60,9 +60,8 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
           chrome::kChromeUIEnterpriseReportingHost);
 
   // Populate device info.
-  std::string device_info_json;
-  base::JSONWriter::Write(GetDeviceInfo(web_ui), &device_info_json);
-  html_source->AddString("deviceInfo", device_info_json);
+  html_source->AddString("deviceInfo",
+                         base::WriteJson(GetDeviceInfo(web_ui)).value_or(""));
 
   // Add required resources.
   webui::SetupWebUIDataSource(

@@ -182,9 +182,7 @@ std::string InternetConfigDialog::GetDialogArgs() const {
             *prefilled_wifi_config_);
     args.Set("prefilledProperties", std::move(prefilled_properties));
   }
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 // InternetConfigDialogUI

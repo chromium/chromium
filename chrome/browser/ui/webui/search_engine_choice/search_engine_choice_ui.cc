@@ -52,9 +52,7 @@ std::string GetChoiceListJSON(
     choice_value.Set("showMarketingSnippet", false);
     choice_value_list.Append(std::move(choice_value));
   }
-  std::string json_choice_list;
-  base::JSONWriter::Write(choice_value_list, &json_choice_list);
-  return json_choice_list;
+  return base::WriteJson(choice_value_list).value_or("");
 }
 }  // namespace
 

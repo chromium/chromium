@@ -235,10 +235,9 @@ std::string InlineLoginDialog::GetDialogArgs() const {
     return std::string();
   }
 
-  std::string json;
-  base::JSONWriter::Write(
-      AccountAdditionOptionsToValue(add_account_options_.value()), &json);
-  return json;
+  return base::WriteJson(
+             AccountAdditionOptionsToValue(add_account_options_.value()))
+      .value_or("");
 }
 
 // static

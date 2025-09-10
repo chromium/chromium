@@ -160,9 +160,7 @@ std::string InternetDetailDialog::GetDialogArgs() const {
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
   args.Set("name", network_name_);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 // InternetDetailDialogUI

@@ -364,8 +364,7 @@ void HandleAccessibilityRequestCallback(
   SetNodeCounts(ui::AXPlatformNodeWin::GetCounts(), data);
 #endif
 
-  std::string json_string;
-  base::JSONWriter::Write(data, &json_string);
+  std::string json_string = base::WriteJson(data).value_or("");
 
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));

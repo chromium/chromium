@@ -101,9 +101,7 @@ void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
 std::string SmbCredentialsDialog::GetDialogArgs() const {
   base::Value::Dict args;
   args.Set("path", share_path_);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)

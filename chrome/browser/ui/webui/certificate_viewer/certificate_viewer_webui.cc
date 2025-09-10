@@ -326,9 +326,7 @@ std::string DialogArgsForCertList(
     cert_info.Set("certMetadata", std::move(dict));
   }
 
-  base::JSONWriter::Write(cert_info, &data);
-
-  return data;
+  return base::WriteJson(cert_info).value_or("");
 }
 
 }  // namespace

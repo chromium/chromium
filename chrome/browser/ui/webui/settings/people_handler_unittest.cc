@@ -173,9 +173,7 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
   result.Set("typedUrlsSynced",
              types.Has(syncer::UserSelectableType::kHistory));
 
-  std::string args;
-  base::JSONWriter::Write(result, &args);
-  return args;
+  return base::WriteJson(result).value_or("");
 }
 
 // Checks whether the passed |dictionary| contains a |key| with the given
