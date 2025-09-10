@@ -54,7 +54,7 @@ struct ContextualInputData {
   std::optional<SkBitmap> viewport_screenshot;
 #endif  // BUILDFLAG(IS_IOS)
   // Whether or not webpage or pdf context is eligible.
-  bool is_page_context_eligible;
+  std::optional<bool> is_page_context_eligible;
 };
 
 }  // namespace lens

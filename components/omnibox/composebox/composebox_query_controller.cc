@@ -314,6 +314,16 @@ void ComposeboxQueryController::StartFileUploadFlow(
   UpdateFileUploadStatus(file_token, FileUploadStatus::kProcessing,
                          std::nullopt);
 
+  // If the is_page_context_eligible is set to false, then fail early.
+  if (contextual_input_data->is_page_context_eligible.has_value() &&
+      !contextual_input_data->is_page_context_eligible.value()) {
+    // TODO(crbug.com/444276947): Consider adding a new error type for this.
+    UpdateFileUploadStatus(
+        file_token, FileUploadStatus::kValidationFailed,
+        composebox_query::mojom::FileUploadErrorType::kBrowserProcessingError);
+    return;
+  }
+
 #if BUILDFLAG(IS_IOS)
   bool has_viewport_screenshot =
       contextual_input_data->viewport_screenshot_bytes.has_value();
