@@ -1181,7 +1181,8 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   visits.clear();
   QueryOptions query_options;
   query_options.max_count = 1;
-  backend_->db()->GetVisibleVisitsInRange(query_options, &visits);
+  backend_->db()->GetVisibleVisitsInRange(
+      query_options, VisitQuery404sPolicy::kInclude404s, &visits);
   EXPECT_TRUE(visits.empty());
 
   // Going back to the same entry should not increment the typed count.

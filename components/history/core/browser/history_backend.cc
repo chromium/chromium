@@ -2277,8 +2277,10 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   //  `VisitContextAnnotations`. Probably we need to expand `QueryOptions`.
   VisitVector visit_rows;
 
-  // Set the optional out-param if it's non-nullptr.
-  bool limited = db_->GetVisibleVisitsInRange(options, &visit_rows);
+  // Set the optional out-param if it's non-nullptr. Exclude 404 visits, as this
+  // method is intended for UI features that don't want 404 visits.
+  bool limited = db_->GetVisibleVisitsInRange(
+      options, VisitQuery404sPolicy::kExclude404s, &visit_rows);
   if (limited_by_max_count) {
     *limited_by_max_count = limited;
   }
@@ -2711,7 +2713,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
                                        QueryResults* result) {
   // First get all visits.
   VisitVector visits;
-  bool has_more_results = db_->GetVisibleVisitsInRange(options, &visits);
+  // TODO: crbug.com/441157318 - Take `policy_for_404s` as a param and pass its
+  //   value to `GetVisibleVisitsInRange()`, instead of hardcoding
+  //   `kExclude404s`.
+  bool has_more_results = db_->GetVisibleVisitsInRange(
+      options, VisitQuery404sPolicy::kExclude404s, &visits);
   DCHECK_LE(static_cast<int>(visits.size()), options.EffectiveMaxCount());
 
   VisitSourceMap sources;

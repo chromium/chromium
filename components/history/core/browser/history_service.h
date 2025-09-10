@@ -617,15 +617,16 @@ class HistoryService : public KeyedService,
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
+  using GetAnnotatedVisitsCallback =
+      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
   // `options`. Uses the same de-duplication and visibility logic as
-  // `HistoryService::QueryHistory()`.
+  // `HistoryService::QueryHistory()`. Won't return visits that had an HTTP
+  // response code of 404, even if those visits exist.
   //
   // If `compute_redirect_chain_start_properties` is true, the opener and
   // referring visit IDs for the start of the redirect chain will be computed.
   // Virtual for testing.
-  using GetAnnotatedVisitsCallback =
-      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   virtual base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       const QueryOptions& options,
       bool compute_redirect_chain_start_properties,

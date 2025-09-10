@@ -177,6 +177,7 @@ class VisitDatabase {
   // Returns true if there are more results available, i.e. if the number of
   // results was restricted by `options.max_count`.
   bool GetVisibleVisitsInRange(const QueryOptions& options,
+                               const VisitQuery404sPolicy policy_for_404s,
                                VisitVector* visits);
 
   // Returns the visit ID for the most recent visit of the given URL ID, or 0
