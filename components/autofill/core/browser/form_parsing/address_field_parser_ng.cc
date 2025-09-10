@@ -318,7 +318,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
   address_field->scanner_ = &scanner;
   address_field->initial_field_ = &scanner.Cursor();
 
-  DVLOG(1) << "Parse recursively starting at " << saved_cursor << " "
+  DVLOG(1) << "Parse recursively starting at " << scanner.GetOffset() << " "
            << scanner.Cursor().label();
 
   address_field->ParseRecursively();
@@ -334,7 +334,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
   // the scanner in the initial state.
   if (!address_field->best_classification_.assignments.empty()) {
     scanner.RewindTo(
-        address_field->best_classification_.last_classified_field_index);
+        *address_field->best_classification_.last_classified_field_index);
     scanner.Advance();
     return address_field;
   }
@@ -704,10 +704,10 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
 }
 
 void AddressFieldParserNG::ParseRecursively() {
-  const std::string log_prefix(scanner_->SaveCursor(), ' ');
+  auto log_prefix = [&]() { return std::string(scanner_->GetOffset(), ' '); };
   if (scanner_->IsEnd()) {
-    DVLOG(1) << log_prefix << "END of input";
-    DVLOG(1) << log_prefix
+    DVLOG(1) << log_prefix() << "END of input";
+    DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
              << SequenceToScoreString(best_classification_)
@@ -715,7 +715,7 @@ void AddressFieldParserNG::ParseRecursively() {
     // Store classification if it's better.
     if (partial_classification_.BetterThan(best_classification_) &&
         IsClassificationPlausible()) {
-      DVLOG(1) << log_prefix << "NEW BEST SOLUTION";
+      DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
     return;
@@ -731,14 +731,14 @@ void AddressFieldParserNG::ParseRecursively() {
     // Skip trying field_type if it's incompatible with already assigned types.
     if (partial_classification_.contained_types.contains_any(
             field_types_->incompatible_field_types(field_type))) {
-      DVLOG(1) << log_prefix << "---- " << FieldTypeToStringView(field_type)
+      DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " conflict.";
       continue;
     }
 
     std::optional<double> extra_score = FindScoreOfBestMatchingRule(field_type);
     if (!extra_score) {
-      DVLOG(1) << log_prefix << "---- " << FieldTypeToStringView(field_type)
+      DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " non-match.";
       continue;
     }
@@ -747,20 +747,20 @@ void AddressFieldParserNG::ParseRecursively() {
 
     // Perform new assignment.
     const double old_score = partial_classification_.score;
-    const size_t old_last_classified_field_index =
+    const std::optional<size_t> old_last_classified_field_index =
         partial_classification_.last_classified_field_index;
     if (field_type != UNKNOWN_TYPE) {
       partial_classification_.contained_types.insert(field_type);
       partial_classification_.assignments[field_type] = &scanner_->Cursor();
       partial_classification_.last_classified_field_index =
-          scanner_->SaveCursor();
+          scanner_->GetOffset();
     }
     partial_classification_.score += *extra_score;
 
-    DVLOG(1) << log_prefix << "++++ " << FieldTypeToStringView(field_type)
+    DVLOG(1) << log_prefix() << "++++ " << FieldTypeToStringView(field_type)
              << " match. new score is " << partial_classification_.score;
 
-    const size_t old_position = scanner_->SaveCursor();
+    const size_t old_position = scanner_->GetOffset();
     scanner_->Advance();
     ParseRecursively();
     scanner_->RewindTo(old_position);
@@ -782,15 +782,15 @@ void AddressFieldParserNG::ParseRecursively() {
     }
   }
   if (!found_extra_assignment) {
-    DVLOG(1) << log_prefix << "END did not find another classification.";
-    DVLOG(1) << log_prefix
+    DVLOG(1) << log_prefix() << "END did not find another classification.";
+    DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
              << SequenceToScoreString(best_classification_)
              << ", plausible=" << IsClassificationPlausible();
     if (partial_classification_.BetterThan(best_classification_) &&
         IsClassificationPlausible()) {
-      DVLOG(1) << log_prefix << "NEW BEST SOLUTION";
+      DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
   }

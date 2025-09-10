@@ -540,20 +540,29 @@ FormFieldParser::FieldMatchesMatchPatternRef(
 // static
 bool FormFieldParser::ParseField(
     ParsingContext& context,
-    AutofillScanner& scanner,
+    const FormFieldData& field,
     std::string_view regex_name,
     std::optional<FieldAndMatchInfo>* match,
     MatchParams (*projection)(const MatchParams&)) {
-  if (scanner.IsEnd()) {
-    return false;
-  }
-
-  const FormFieldData& field = scanner.Cursor();
   if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
           context, field, regex_name, {projection})) {
     if (match) {
       *match = {&field, *match_info};
     }
+    return true;
+  }
+  return false;
+}
+
+// static
+bool FormFieldParser::ParseField(
+    ParsingContext& context,
+    AutofillScanner& scanner,
+    std::string_view regex_name,
+    std::optional<FieldAndMatchInfo>* match,
+    MatchParams (*projection)(const MatchParams&)) {
+  if (!scanner.IsEnd() &&
+      ParseField(context, scanner.Cursor(), regex_name, match, projection)) {
     scanner.Advance();
     return true;
   }

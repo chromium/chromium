@@ -131,32 +131,24 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     // identification number", and others listed in the regex pattern used
     // below.
 
+    const FormFieldData* predecessor = scanner.Predecessor();
+    size_t cvc_pos = scanner.CursorPosition();
     if (!credit_card_field->verification_ &&
         ParseField(context, scanner, "CREDIT_CARD_VERIFICATION_CODE",
                    &credit_card_field->verification_)) {
-      // A couple of sites have multiple verification codes right after another.
-      // Allow the classification of these codes one by one.
-      FieldAndMatchInfo saved_cvv = *credit_card_field->verification_;
-
       // Check if the verification code is the first detected field in the newly
       // started card.
       if (credit_card_field->numbers_.empty() &&
           !credit_card_field->HasExpiration() &&
-          !credit_card_field->cardholder_ && scanner.SaveCursor() > 1) {
+          !credit_card_field->cardholder_ && predecessor) {
         // Check if the previous field was a verification code.
-        scanner.RewindTo(scanner.SaveCursor() - 2);
-
-        if (ParseField(context, scanner, "CREDIT_CARD_VERIFICATION_CODE",
-                       &credit_card_field->verification_)) {
-          // Reset the current cvv (The verification parse overwrote it).
-          credit_card_field->verification_ = saved_cvv;
-          // Put the scanner back to the field right after the current cvv.
-          scanner.Advance();
+        if (ParseField(context, *predecessor,
+                       "CREDIT_CARD_VERIFICATION_CODE")) {
           return std::move(credit_card_field);
         } else {
           // Chances that verification field is the first of a card are really
           // low.
-          scanner.Advance();
+          scanner.RewindTo(cvc_pos);
           credit_card_field->verification_.reset();
         }
       } else {

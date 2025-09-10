@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -53,8 +54,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
   size_t saved_cursor = scanner.SaveCursor();
 
   // Allow address fields to appear in any order.
-  size_t begin_trailing_non_labeled_fields = 0;
-  bool has_trailing_non_labeled_fields = false;
+  std::optional<size_t> begin_trailing_non_labeled_fields;
   while (!scanner.IsEnd()) {
     const size_t cursor = scanner.SaveCursor();
     // Ignore "Address Lookup" field. http://crbug.com/427622
@@ -70,7 +70,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
     } else if (address_field->ParseAddress(context, scanner) ||
                address_field->ParseAddressField(context, scanner) ||
                address_field->ParseCompany(context, scanner)) {
-      has_trailing_non_labeled_fields = false;
+      begin_trailing_non_labeled_fields = std::nullopt;
       continue;
     } else if (ParseField(context, scanner, "ATTENTION_IGNORED") ||
                ParseField(context, scanner, "REGION_IGNORED")) {
@@ -87,8 +87,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       // types after any non-labeled fields, and we want email address fields to
       // have precedence since some pages contain fields labeled
       // "Email address".
-      if (!has_trailing_non_labeled_fields) {
-        has_trailing_non_labeled_fields = true;
+      if (!begin_trailing_non_labeled_fields) {
         begin_trailing_non_labeled_fields = cursor;
       }
 
@@ -115,8 +114,9 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       address_field->overflow_and_landmark_ || address_field->overflow_ ||
       address_field->street_location_ || address_field->house_number_and_apt_) {
     // Don't slurp non-labeled fields at the end into the address.
-    if (has_trailing_non_labeled_fields)
-      scanner.RewindTo(begin_trailing_non_labeled_fields);
+    if (begin_trailing_non_labeled_fields) {
+      scanner.RewindTo(*begin_trailing_non_labeled_fields);
+    }
     return std::move(address_field);
   }
 

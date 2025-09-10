@@ -58,4 +58,8 @@ size_t AutofillScanner::CursorPosition() {
   return static_cast<size_t>(cursor_ - begin_);
 }
 
+size_t AutofillScanner::GetOffset() const {
+  return cursor_ - begin_;
+}
+
 }  // namespace autofill

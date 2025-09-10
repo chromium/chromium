@@ -50,6 +50,9 @@ class AutofillScanner {
   // Returns the current cursor position.
   size_t CursorPosition();
 
+  // Returns the distance since the beginning.
+  size_t GetOffset() const;
+
  private:
   // Indicates the current position in the stream, represented as a vector.
   base::span<const FormFieldData>::const_iterator cursor_;
