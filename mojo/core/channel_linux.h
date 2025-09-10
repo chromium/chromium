@@ -12,8 +12,7 @@
 #include "build/build_config.h"
 #include "mojo/core/channel_posix.h"
 
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 class DataAvailableNotifier;
 
@@ -44,9 +43,7 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
 
   // SetSharedMemParams will control whether shared memory is used for this
   // channel.
-  static void SetSharedMemParameters(bool enabled,
-                                     uint32_t num_pages,
-                                     bool use_zero_on_wake);
+  static void SetSharedMemParameters(bool enabled, uint32_t num_pages);
 
   // ChannelPosix impl:
   void Write(MessagePtr message) override;
@@ -91,7 +88,6 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   std::vector<uint8_t> read_buf_;
 };
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
 
 #endif  // MOJO_CORE_CHANNEL_LINUX_H_

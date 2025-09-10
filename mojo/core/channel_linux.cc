@@ -47,12 +47,7 @@
 #include "mojo/buildflags.h"
 #include "mojo/core/embedder/features.h"
 
-#ifndef EFD_ZERO_ON_WAKE
-#define EFD_ZERO_ON_WAKE O_NOFOLLOW
-#endif
-
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 // DataAvailableNotifier is a simple interface which allows us to
 // substitute how we notify the reader that we've made data available,
@@ -91,18 +86,19 @@ constexpr int kMemFDSeals = F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW;
 
 std::atomic_bool g_params_set{false};
 std::atomic_bool g_use_shared_mem{false};
-std::atomic_bool g_use_zero_on_wake{false};
 std::atomic_uint32_t g_shared_mem_pages{4};
 
 struct UpgradeOfferMessage {
   constexpr static int kEventFdNotifier = 1;
-  constexpr static int kEventFdZeroWakeNotifier = 2;
+
+  // Obsolete. New clients reject offers with this version.
+  // constexpr static int kEventFdZeroWakeNotifier = 2;
 
   constexpr static int kDefaultVersion = kEventFdNotifier;
   constexpr static int kDefaultPages = 4;
 
   static bool IsValidVersion(int version) {
-    return (version == kEventFdNotifier || version == kEventFdZeroWakeNotifier);
+    return version == kEventFdNotifier;
   }
 
   int version = kDefaultVersion;
@@ -166,21 +162,13 @@ class EventFDNotifier : public DataAvailableNotifier,
   static constexpr int kEfdFlags = EFD_CLOEXEC | EFD_NONBLOCK;
 
   static std::unique_ptr<EventFDNotifier> CreateWriteNotifier() {
-    static bool zero_on_wake_supported = []() -> bool {
-      base::ScopedFD fd(
-          syscall(__NR_eventfd2, 0, kEfdFlags | EFD_ZERO_ON_WAKE));
-      return fd.is_valid();
-    }();
-
-    bool use_zero_on_wake = zero_on_wake_supported && g_use_zero_on_wake;
-    int extra_flags = use_zero_on_wake ? EFD_ZERO_ON_WAKE : 0;
-    int fd = syscall(__NR_eventfd2, 0, kEfdFlags | extra_flags);
+    int fd = syscall(__NR_eventfd2, 0, kEfdFlags);
     if (fd < 0) {
       PLOG(ERROR) << "Unable to create an eventfd";
       return nullptr;
     }
 
-    return WrapFD(base::ScopedFD(fd), use_zero_on_wake);
+    return WrapFD(base::ScopedFD(fd));
   }
 
   // The EventFD read notifier MUST be created on the IOThread. Luckily you're
@@ -189,13 +177,11 @@ class EventFDNotifier : public DataAvailableNotifier,
   static std::unique_ptr<EventFDNotifier> CreateReadNotifier(
       base::ScopedFD efd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake) {
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
     DCHECK(io_task_runner->RunsTasksInCurrentSequence());
     DCHECK(cb);
 
-    return WrapFDWithCallback(std::move(efd), std::move(cb), io_task_runner,
-                              zero_on_wake);
+    return WrapFDWithCallback(std::move(efd), std::move(cb), io_task_runner);
   }
 
   static bool KernelSupported() {
@@ -209,11 +195,6 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   // DataAvailableNotifier impl:
   bool Clear() override {
-    // When using EFD_ZERO_ON_WAKE we don't have to do anything.
-    if (zero_on_wake_) {
-      return true;
-    }
-
     uint64_t value = 0;
     ssize_t res = HANDLE_EINTR(
         read(fd_.get(), reinterpret_cast<void*>(&value), sizeof(value)));
@@ -253,36 +234,29 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   int fd() { return fd_.get(); }
 
-  bool zero_on_wake() const { return zero_on_wake_; }
-
  private:
-  explicit EventFDNotifier(base::ScopedFD fd, bool zero_on_wake)
-      : zero_on_wake_(zero_on_wake), fd_(std::move(fd)) {}
+  explicit EventFDNotifier(base::ScopedFD fd) : fd_(std::move(fd)) {}
   explicit EventFDNotifier(
       base::ScopedFD fd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake)
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : DataAvailableNotifier(std::move(cb)),
-        zero_on_wake_(zero_on_wake),
         fd_(std::move(fd)),
         io_task_runner_(io_task_runner) {
     WaitForEventFDOnIOThread();
   }
 
-  static std::unique_ptr<EventFDNotifier> WrapFD(base::ScopedFD fd,
-                                                 bool zero_on_wake) {
+  static std::unique_ptr<EventFDNotifier> WrapFD(base::ScopedFD fd) {
     return base::WrapUnique<EventFDNotifier>(
-        new EventFDNotifier(std::move(fd), zero_on_wake));
+        new EventFDNotifier(std::move(fd)));
   }
 
   static std::unique_ptr<EventFDNotifier> WrapFDWithCallback(
       base::ScopedFD fd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake) {
-    return base::WrapUnique<EventFDNotifier>(new EventFDNotifier(
-        std::move(fd), std::move(cb), io_task_runner, zero_on_wake));
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+    return base::WrapUnique<EventFDNotifier>(
+        new EventFDNotifier(std::move(fd), std::move(cb), io_task_runner));
   }
 
   void WaitForEventFDOnIOThread() {
@@ -292,7 +266,6 @@ class EventFDNotifier : public DataAvailableNotifier,
         base::IOWatcher::FdWatchMode::kRead, *this);
   }
 
-  bool zero_on_wake_ = false;
   base::ScopedFD fd_;
   std::unique_ptr<base::IOWatcher::FdWatch> watch_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -684,14 +657,11 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
       }
 
       std::unique_ptr<DataAvailableNotifier> read_notifier;
-      if (msg->version == UpgradeOfferMessage::kEventFdNotifier ||
-          msg->version == UpgradeOfferMessage::kEventFdZeroWakeNotifier) {
-        bool zero_on_wake =
-            msg->version == UpgradeOfferMessage::kEventFdZeroWakeNotifier;
+      if (msg->version == UpgradeOfferMessage::kEventFdNotifier) {
         read_notifier = EventFDNotifier::CreateReadNotifier(
             handles[1].TakeFD(),
             base::BindRepeating(&ChannelLinux::SharedMemReadReady, this),
-            io_task_runner_, zero_on_wake);
+            io_task_runner_);
       }
 
       if (!read_notifier) {
@@ -857,11 +827,6 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
     return;
   }
 
-  if (write_notifier->zero_on_wake()) {
-    // The notifier was created using EFD_ZERO_ON_WAKE
-    notifier_version = UpgradeOfferMessage::kEventFdZeroWakeNotifier;
-  }
-
   std::vector<PlatformHandle> fds;
   fds.emplace_back(std::move(memfd));
   fds.emplace_back(write_notifier->take_dup());
@@ -918,14 +883,10 @@ bool ChannelLinux::UpgradesEnabled() {
 }
 
 // static
-void ChannelLinux::SetSharedMemParameters(bool enabled,
-                                          uint32_t num_pages,
-                                          bool use_zero_on_wake) {
+void ChannelLinux::SetSharedMemParameters(bool enabled, uint32_t num_pages) {
   g_params_set.store(true);
   g_use_shared_mem.store(enabled);
   g_shared_mem_pages.store(num_pages);
-  g_use_zero_on_wake.store(use_zero_on_wake);
 }
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core

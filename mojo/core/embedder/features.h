@@ -21,9 +21,6 @@ BASE_DECLARE_FEATURE(kMojoLinuxChannelSharedMem);
 
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages;
-
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
-extern const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

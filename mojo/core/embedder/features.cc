@@ -14,9 +14,6 @@ namespace core {
 BASE_FEATURE(kMojoLinuxChannelSharedMem, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages{
     &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemPages", 4};
-const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake{
-    &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemEfdZeroOnWake",
-    false};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
