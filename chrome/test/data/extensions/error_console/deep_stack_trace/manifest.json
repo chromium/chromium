@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
 
   "name": "Deep Stack",
   "description": "Extension that fails with a stack trace deeper than 1 layer.",
@@ -8,6 +8,6 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy2nNgh7mSA6cLNE7xCpCOhmBmPL7CuNf+Y7gR/HgvugVVCXqKec2JGlNmkkrylhIiEwJyF15xiPCezVduN4WqDQbSmhLrhPFEtBnVHkj8kEZRRe6YEDfbf3shd4PPkOdgsLwYJ/E94SCJslrzTw9b8mSpLZhjbDtYROaSt2xUBOnXj6bVqcZjwCP5LSdm3i3yYI14nHdKNz5c6MMUmS2p05A5iAzyx2d0X08VSj4pAftUbOWR/y4cr/Mfh6BWe8/egmHGsDUNCoC2nPAhkQB+4F0qwuzEyE0Mbr8ugJldUxrRFDjPT47llgidTGsu17Yce6dpvuxD0Vowxi4UQ0CCwIDAQAB",
 
   "background": {
-    "scripts": [ "code.js" ]
+    "service_worker": "code.js"
   }
 }
