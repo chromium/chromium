@@ -1,20 +1,24 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
 <style>
-  div {
-    padding: 10px;
-    transition: background-color 1s ease;
-    display: inline-block;
+html {
+  body {
+      div {
+          padding: 10px;
+          transition: background-color 1s ease;
+          display: inline-block;
 
-    @starting-style {
-      background-color: yellow;
-    }
+          @starting-style {
+              background-color: yellow;
+          }
+      }
   }
+}
 </style>
 <div></div>
-`, 'rule with nested @starting-style rule that has bare declarations');
+`, 'Nested @starting-style (mutliple levels)');
 
-  let CSSHelper = await testRunner.loadScript('../../resources/css-helper.js');
+  let CSSHelper = await testRunner.loadScript('../../../resources/css-helper.js');
   let cssHelper = new CSSHelper(testRunner, dp);
 
   await dp.DOM.enable();

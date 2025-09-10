@@ -2284,6 +2284,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
   if (isNodeScrollable(node)) {
     value->setIsScrollable(true);
   }
+  if (AffectedByStartingStyles(node)) {
+    value->setAffectedByStartingStyles(true);
+  }
   return value;
 }
 
@@ -2696,6 +2699,15 @@ bool InspectorDOMAgent::isNodeScrollable(Node* node) {
   return false;
 }
 
+bool InspectorDOMAgent::AffectedByStartingStyles(Node* node) {
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return false;
+  }
+
+  return element->AffectedByStartingStyles();
+}
+
 void InspectorDOMAgent::DidPushShadowRoot(Element* host, ShadowRoot* root) {
   if (!host->ownerDocument())
     return;
@@ -2821,6 +2833,22 @@ void InspectorDOMAgent::UpdateScrollableFlag(
   GetFrontend()->scrollableFlagUpdated(nodeId, override_flag.has_value()
                                                    ? override_flag.value()
                                                    : isNodeScrollable(node));
+}
+
+void InspectorDOMAgent::UpdateAffectedByStartingStylesFlag(
+    Node* node,
+    std::optional<bool> override_flag) {
+  if (!node) {
+    return;
+  }
+  int nodeId = BoundNodeId(node);
+  // If node is not mapped yet -> ignore the event.
+  if (!nodeId) {
+    return;
+  }
+  GetFrontend()->affectedByStartingStylesFlagUpdated(
+      nodeId, override_flag.has_value() ? override_flag.value()
+                                        : AffectedByStartingStyles(node));
 }
 
 namespace {

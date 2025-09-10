@@ -5,18 +5,16 @@
     padding: 10px;
     transition: background-color 1s ease;
     display: inline-block;
-  }
 
-  @starting-style {
-    div {
+    @starting-style {
       background-color: yellow;
     }
   }
 </style>
 <div></div>
-`, '@starting-style with nested rule');
+`, 'rule with nested @starting-style rule that has bare declarations');
 
-  let CSSHelper = await testRunner.loadScript('../../resources/css-helper.js');
+  let CSSHelper = await testRunner.loadScript('../../../resources/css-helper.js');
   let cssHelper = new CSSHelper(testRunner, dp);
 
   await dp.DOM.enable();

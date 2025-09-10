@@ -102,6 +102,7 @@
         "FrameOwnerContentUpdated",
         "NodeCreated",
         "UpdateScrollableFlag",
+        "UpdateAffectedByStartingStylesFlag",
         "PseudoElementCreated",
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",

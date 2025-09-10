@@ -240,4 +240,5 @@ interface CoreProbes {
   void DidInitializeFrameWidget(LocalFrame* document);
   void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
   void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
+  void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
 }

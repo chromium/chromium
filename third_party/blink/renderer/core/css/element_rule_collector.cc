@@ -560,7 +560,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     if (is_pseudo_element && !selector.MatchesPseudoElement()) {
       continue;
     }
-    if (reject_starting_styles && rule_data.IsStartingStyle()) {
+    if (rule_data.IsStartingStyle() && reject_starting_styles) {
       continue;
     }
 

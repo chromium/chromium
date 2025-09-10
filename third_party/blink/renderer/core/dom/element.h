@@ -1631,6 +1631,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool HasBeenExplicitlyScrolled() const;
   void SetHasBeenExplicitlyScrolled();
 
+  void SetAffectedByStartingStyles();
+  bool AffectedByStartingStyles() const;
+
   bool AffectedBySubjectHas() const;
   void SetAffectedBySubjectHas();
   bool AffectedByNonSubjectHas() const;

@@ -311,6 +311,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
   void UpdateScrollableFlag(Node* node, std::optional<bool>);
+  void UpdateAffectedByStartingStylesFlag(Node* node, std::optional<bool>);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;
@@ -414,6 +415,7 @@ class CORE_EXPORT InspectorDOMAgent final
   InspectorRevalidateDOMTask* RevalidateTask();
 
   bool isNodeScrollable(Node*);
+  bool AffectedByStartingStyles(Node*);
 
   v8::Isolate* isolate_;  // null after Dispose().
   Member<InspectedFrames> inspected_frames_;

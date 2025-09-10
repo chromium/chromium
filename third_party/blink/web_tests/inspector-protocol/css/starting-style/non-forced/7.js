@@ -20,7 +20,7 @@
   <div></div>
   `, '@starting-style with custom property');
 
-    let CSSHelper = await testRunner.loadScript('../../resources/css-helper.js');
+    let CSSHelper = await testRunner.loadScript('../../../resources/css-helper.js');
     let cssHelper = new CSSHelper(testRunner, dp);
 
     await dp.DOM.enable();

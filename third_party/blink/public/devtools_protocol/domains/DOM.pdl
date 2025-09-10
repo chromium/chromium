@@ -177,6 +177,7 @@ domain DOM
       optional CompatibilityMode compatibilityMode
       optional BackendNode assignedSlot
       experimental optional boolean isScrollable
+      experimental optional boolean affectedByStartingStyles
 
   # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
   type DetachedElementInfo extends object
@@ -897,6 +898,14 @@ domain DOM
       DOM.NodeId nodeId
       # If the node is scrollable.
       boolean isScrollable
+
+  # Fired when a node's starting styles changes.
+  experimental event affectedByStartingStylesFlagUpdated
+    parameters
+      # The id of the node.
+      DOM.NodeId nodeId
+      # If the node has starting styles.
+      boolean affectedByStartingStyles
 
   # Called when a pseudo element is removed from an element.
   experimental event pseudoElementRemoved

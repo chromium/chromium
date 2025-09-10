@@ -3103,7 +3103,8 @@ protocol::Response InspectorCSSAgent::forceStartingStyle(int node_id,
     node_id_to_forced_starting_style_.erase(node_id);
   }
 
-  element->GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
+  element->SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
   return protocol::Response::Success();
 }

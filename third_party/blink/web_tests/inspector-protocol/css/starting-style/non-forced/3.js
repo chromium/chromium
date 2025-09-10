@@ -18,7 +18,7 @@
   <div></div>
 `, 'Nested @starting-style with nested rule');
 
-    let CSSHelper = await testRunner.loadScript('../../resources/css-helper.js');
+    let CSSHelper = await testRunner.loadScript('../../../resources/css-helper.js');
     let cssHelper = new CSSHelper(testRunner, dp);
 
     await dp.DOM.enable();

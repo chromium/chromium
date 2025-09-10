@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
@@ -4465,6 +4466,14 @@ const ComputedStyle* Element::StyleForLayoutObject(
       DCHECK(IsPseudoElement());
       return nullptr;
     }
+
+    // This sets the flag on the element when starting style are detected. There
+    // is no reliable way to detect whether starting styles no longer affect an
+    // element, so this flag is "sticky".
+    if (!AffectedByStartingStyles()) {
+      SetAffectedByStartingStyles();
+      probe::UpdateAffectedByStartingStylesFlag(this, /*override_flag=*/true);
+    }
   }
 
   DisplayLockContext* context = GetDisplayLockContext();
@@ -8265,6 +8274,17 @@ void Element::SetHasBeenExplicitlyScrolled() {
 bool Element::AffectedBySubjectHas() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->AffectedBySubjectHas();
+  }
+  return false;
+}
+
+void Element::SetAffectedByStartingStyles() {
+  EnsureElementRareData().SetAffectedByStartingStyles();
+}
+
+bool Element::AffectedByStartingStyles() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedByStartingStyles();
   }
   return false;
 }

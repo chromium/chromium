@@ -365,7 +365,12 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void ClearFocusgroupFlags() {
     fields_.focusgroup_flags = FocusgroupFlags::kNone;
   }
-
+  void SetAffectedByStartingStyles() {
+    fields_.affected_by_starting_styles = true;
+  }
+  bool AffectedByStartingStyles() const {
+    return fields_.affected_by_starting_styles;
+  }
   bool AffectedBySubjectHas() const {
     return fields_.has_invalidation_flags.affected_by_subject_has;
   }
@@ -466,6 +471,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     unsigned may_be_implicit_anchor : 1 = false;
     HasInvalidationFlags has_invalidation_flags;
     FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
+    unsigned affected_by_starting_styles : 1 = false;
   };
   Fields fields_;
 };
