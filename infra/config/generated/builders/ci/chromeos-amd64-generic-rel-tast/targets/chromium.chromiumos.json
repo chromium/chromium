@@ -10,6 +10,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromeos:chrome_all_tast_tests/",
         "name": "chrome_all_tast_tests",
         "resultdb": {
           "enable": true,
@@ -50,6 +51,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromeos:chrome_criticalstaging_tast_tests/",
         "name": "chrome_criticalstaging_tast_tests",
         "resultdb": {
           "enable": true,
@@ -90,6 +92,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromeos:chrome_disabled_tast_tests/",
         "name": "chrome_disabled_tast_tests",
         "resultdb": {
           "enable": true,
@@ -129,6 +132,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chromeos:disk_usage_tast_test/",
         "name": "disk_usage_tast_test",
         "resultdb": {
           "enable": true,
