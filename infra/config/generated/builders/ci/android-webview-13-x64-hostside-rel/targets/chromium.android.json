@@ -17,6 +17,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_hostside_tests/",
         "name": "webview_trichrome_64_cts_hostside_tests full_mode",
         "resultdb": {
           "enable": true,
@@ -74,6 +75,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_hostside_tests/",
         "name": "webview_trichrome_64_cts_hostside_tests instant_mode",
         "resultdb": {
           "enable": true,

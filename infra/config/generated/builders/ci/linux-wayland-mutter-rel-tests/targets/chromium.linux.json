@@ -13,6 +13,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests/",
         "name": "browser_tests",
         "retry_only_failed_tests": true,
         "swarming": {
@@ -37,6 +38,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "content_browsertests",
         "retry_only_failed_tests": true,
         "swarming": {
@@ -62,6 +64,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:interactive_ui_tests/",
         "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
