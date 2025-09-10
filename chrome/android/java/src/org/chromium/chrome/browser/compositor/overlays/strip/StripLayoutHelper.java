@@ -994,6 +994,15 @@ public class StripLayoutHelper
      * @return The opacity to use for the fade.
      */
     private float getFadeOpacity(boolean isLeft) {
+        // If there isn’t enough room to show even a single unpinned tab (pinned-only strip), force
+        // show the end edge fade, because the end fade is used to mask the cut-off tab area so it
+        // doesn't appear under the NTB.
+        boolean noSpaceForUnpinnedTabs =
+                getAvailableTabWidthForResizing() <= mCachedTabWidthSupplier.get();
+        boolean rtl = LocalizationUtils.isLayoutRtl();
+        boolean isEndFade = rtl ? isLeft : !isLeft;
+        if (noSpaceForUnpinnedTabs && isEndFade) return 1.f;
+
         float edgeOffset = mScrollDelegate.getEdgeOffset(isLeft);
         if (edgeOffset <= 0.f) {
             return 0.f;
