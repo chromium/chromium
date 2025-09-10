@@ -106,8 +106,11 @@ void IceTransportChannel::Connect(const std::string& name,
                                      ice_password);
   channel_->SetIceParameters(webrtc::IceParameters(
       ice_username_fragment_, ice_password, /*ice_renomination=*/false));
-  channel_->SignalCandidateGathered.connect(
-      this, &IceTransportChannel::OnCandidateGathered);
+  channel_->SubscribeCandidateGathered(
+      [this](webrtc::IceTransportInternal* transport,
+             const webrtc::Candidate& candidate) {
+        OnCandidateGathered(transport, candidate);
+      });
   channel_->SignalRouteChange.connect(this,
                                       &IceTransportChannel::OnRouteChange);
   channel_->SignalWritableState.connect(this,
