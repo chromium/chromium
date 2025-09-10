@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -459,7 +458,7 @@ void LocationBarView::Init() {
     }
   }
 
-  if (browser_ && lens::IsLensOverlayEduActionChipEnabled()) {
+  if (browser_ && lens::features::IsLensOverlayEduActionChipEnabled()) {
     // Position in the leading position, like the expanding entrypoint for
     // kLensOverlay above. While both chips may be enabled, they will not appear
     // at the same time due to different focus behavior.

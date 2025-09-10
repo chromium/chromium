@@ -70,26 +70,4 @@ bool IsAimM3Enabled(Profile* profile) {
   return aim_eligibility_service->IsAimEligible();
 }
 
-bool IsLensOverlayEduActionChipEnabled() {
-  if (!lens::features::IsLensOverlayEduActionChipEnabled()) {
-    return false;
-  }
-
-  if (!g_browser_process) {
-    DCHECK(g_browser_process) << "g_browser_process is null";
-    return false;
-  }
-
-  // Features and locale storage should exist.
-  auto* features = g_browser_process->GetFeatures();
-  if (!features || !features->application_locale_storage()) {
-    return false;
-  }
-
-  // Enable for English only. Three-letter language codes for non-English
-  // languages are theoretically possible so make sure we don't enable on them.
-  std::string locale = features->application_locale_storage()->Get();
-  return locale == "en" || locale.starts_with("en-");
-}
-
 }  // namespace lens
