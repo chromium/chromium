@@ -4354,6 +4354,7 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
+      "//chrome/browser/device_notifications",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
