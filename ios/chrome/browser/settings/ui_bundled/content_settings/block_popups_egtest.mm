@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/block_popups_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,6 +83,10 @@ class ScopedBlockPopupsException {
 // Opens the block popups settings page and verifies that accessibility is set
 // up properly.
 - (void)testAccessibilityOfBlockPopupSettings {
+  // TODO(crbug.com/444168578): Re-enable the test.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
   [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
