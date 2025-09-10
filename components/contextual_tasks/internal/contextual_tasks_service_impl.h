@@ -42,6 +42,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
   std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
       SessionID session_id) const override;
 
+  size_t GetSessionIdMapSizeForTesting() const;
+
  private:
   // The set of all tasks currently managed by the service, indexed by their
   // unique task ID for efficient lookup.

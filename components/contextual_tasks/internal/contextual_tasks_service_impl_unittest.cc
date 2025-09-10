@@ -267,6 +267,21 @@ TEST_F(ContextualTasksServiceImplTest, AttachSessionIdToTask) {
   EXPECT_EQ(task.GetTaskId(), recent_task->GetTaskId());
 }
 
+TEST_F(ContextualTasksServiceImplTest, AttachSessionIdToInvalidTask) {
+  ContextualTask task = service_.CreateTask();
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  base::Uuid task_id = task.GetTaskId();
+  service_.DeleteTask(task_id);
+
+  // The session Id is not added, as the task is deleted.
+  service_.AttachSessionIdToTask(task_id, session_id);
+
+  std::optional<ContextualTask> recent_task =
+      service_.GetMostRecentContextualTaskForSessionID(session_id);
+  ASSERT_FALSE(recent_task.has_value());
+  EXPECT_EQ(0u, service_.GetSessionIdMapSizeForTesting());
+}
+
 TEST_F(ContextualTasksServiceImplTest, DetachSessionIdFromTask) {
   ContextualTask task = service_.CreateTask();
   SessionID session_id = SessionID::FromSerializedValue(1);

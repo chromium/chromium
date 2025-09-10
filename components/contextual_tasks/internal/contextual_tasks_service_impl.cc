@@ -95,9 +95,9 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
 void ContextualTasksServiceImpl::AttachSessionIdToTask(
     const base::Uuid& task_id,
     SessionID session_id) {
-  session_to_task_[session_id] = task_id;
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
+    session_to_task_[session_id] = task_id;
     it->second.AddSessionId(session_id);
   }
 }
@@ -123,6 +123,10 @@ ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
     }
   }
   return std::nullopt;
+}
+
+size_t ContextualTasksServiceImpl::GetSessionIdMapSizeForTesting() const {
+  return session_to_task_.size();
 }
 
 }  // namespace contextual_tasks
