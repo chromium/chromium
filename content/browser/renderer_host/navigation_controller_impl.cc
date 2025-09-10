@@ -608,27 +608,6 @@ NavigationControllerImpl::ScopedPendingEntryReentrancyGuard::
   controller_->in_navigate_to_pending_entry_ = false;
 }
 
-// NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier--------
-
-NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier::
-    ScopedDeferredNavigationStateChangeNotifier(
-        raw_ptr<NavigationControllerDelegate> delegate)
-    : delegate_(delegate) {}
-
-NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier::
-    ~ScopedDeferredNavigationStateChangeNotifier() {
-  if (requested_) {
-    delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
-  }
-}
-
-void NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier::
-    RequestDeferredNotification() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kSkipRedundantNavigationStateNotification));
-  requested_ = true;
-}
-
 // NavigationControllerImpl ----------------------------------------------------
 
 const size_t kMaxEntryCountForTestingNotSet = static_cast<size_t>(-1);
@@ -1545,13 +1524,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
 
-  // Create a scoped object that will ensure at most one NavigationStateChanged
-  // notification is sent (if any) at the end of RendererDidNavigate. This
-  // avoids redundant notifications (which can be expensive) without risking a
-  // missed notification (which can cause URL spoof vulnerabilities if the
-  // address bar is stale).
-  ScopedDeferredNavigationStateChangeNotifier deferred_notifier(delegate_);
-
   // Note: validation checks and renderer kills due to invalid commit messages
   // must happen before getting here, in
   // RenderFrameHostImpl::ValidateDidCommitParams. By the time we get here, some
@@ -1741,24 +1713,23 @@ bool NavigationControllerImpl::RendererDidNavigate(
       RendererDidNavigateToNewEntry(
           rfh, params, details->is_same_document, details->did_replace_entry,
           previous_document_had_history_intervention_activation,
-          navigation_request, details, &deferred_notifier);
+          navigation_request, details);
       break;
     case NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY:
-      RendererDidNavigateToExistingEntry(
-          rfh, params, details->is_same_document, was_restored,
-          navigation_request, keep_pending_entry, details, &deferred_notifier);
+      RendererDidNavigateToExistingEntry(rfh, params, details->is_same_document,
+                                         was_restored, navigation_request,
+                                         keep_pending_entry, details);
       break;
     case NAVIGATION_TYPE_NEW_SUBFRAME:
       RendererDidNavigateNewSubframe(
           rfh, params, details->is_same_document, details->did_replace_entry,
           previous_document_had_history_intervention_activation,
-          navigation_request, details, &deferred_notifier);
+          navigation_request, details);
       break;
     case NAVIGATION_TYPE_AUTO_SUBFRAME:
       if (!RendererDidNavigateAutoSubframe(
               rfh, params, details->is_same_document,
-              was_on_initial_empty_document, navigation_request, details,
-              &deferred_notifier)) {
+              was_on_initial_empty_document, navigation_request, details)) {
         // We don't send a notification about auto-subframe PageState during
         // UpdateStateForFrame, since it looks like nothing has changed.  Send
         // it here at commit time instead.
@@ -1784,9 +1755,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // point. Clear it again in case any error cases above forgot to do so.
   // TODO(pbos): Consider a CHECK here that verifies that the pending entry has
   // been cleared instead of protecting against it.
-  if (!keep_pending_entry) {
-    DiscardNonCommittedEntriesInternal(&deferred_notifier);
-  }
+  if (!keep_pending_entry)
+    DiscardNonCommittedEntriesWithCommitDetails(details);
 
   // All committed entries should have nonempty content state so WebKit doesn't
   // get confused when we go back to them (see the function for details).
@@ -1876,7 +1846,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   active_entry->SetIsOverridingUserAgent(
       navigation_request->is_overriding_user_agent());
 
-  NotifyNavigationEntryCommitted(details, &deferred_notifier);
+  NotifyNavigationEntryCommitted(details);
 
   if (overriding_user_agent_changed)
     delegate_->UpdateOverridingUserAgent();
@@ -1902,7 +1872,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
 
   return true;
-  // `deferred_notifier` deleted here.
 }
 
 NavigationType NavigationControllerImpl::ClassifyNavigation(
@@ -2144,7 +2113,7 @@ void NavigationControllerImpl::CreateInitialEntry() {
 
   InsertOrReplaceEntry(std::move(new_entry), false /* replace_entry */,
                        false /* was_post_commit_error */,
-                       is_in_fenced_frame_tree);
+                       is_in_fenced_frame_tree, nullptr /* commit_details */);
 }
 
 void NavigationControllerImpl::RendererDidNavigateToNewEntry(
@@ -2154,8 +2123,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     bool replace_entry,
     bool previous_document_had_history_intervention_activation,
     NavigationRequest* request,
-    LoadCommittedDetails* commit_details,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* commit_details) {
   std::unique_ptr<NavigationEntryImpl> new_entry;
   const std::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
@@ -2285,7 +2253,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // navigation. Now we know that the renderer has updated its state accordingly
   // and it is safe to also clear the browser side history.
   if (params.history_list_was_cleared) {
-    DiscardNonCommittedEntriesInternal(deferred_notifier);
+    DiscardNonCommittedEntriesWithCommitDetails(commit_details);
     entries_.clear();
     last_committed_entry_index_ = -1;
   }
@@ -2325,7 +2293,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
                        was_post_commit_error, rfh->IsNestedWithinFencedFrame(),
-                       deferred_notifier);
+                       commit_details);
 }
 
 void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
@@ -2335,8 +2303,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     bool was_restored,
     NavigationRequest* request,
     bool keep_pending_entry,
-    LoadCommittedDetails* commit_details,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* commit_details) {
   DCHECK(GetLastCommittedEntry()) << "ClassifyNavigation should guarantee "
                                   << "that a last committed entry exists.";
 
@@ -2445,7 +2412,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     entry->GetFavicon() = FaviconStatus();
 
   // Update the last committed index to reflect the committed entry. Do this
-  // before calling DiscardNonCommittedEntriesInternal, so that the
+  // before calling DiscardNonCommittedEntriesWithCommitDetails, so that the
   // delegate sees the correct committed index when notified of navigation
   // state changes. (Otherwise CanGoBack may incorrectly return true, as in
   // https://crbug.com/1439948.)
@@ -2459,9 +2426,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   //
   // Note that we need to use the "internal" version since we don't want to
   // actually change any other state, just kill the pointer.
-  if (!keep_pending_entry) {
-    DiscardNonCommittedEntriesInternal(deferred_notifier);
-  }
+  if (!keep_pending_entry)
+    DiscardNonCommittedEntriesWithCommitDetails(commit_details);
 }
 
 void NavigationControllerImpl::RendererDidNavigateNewSubframe(
@@ -2471,8 +2437,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
     bool replace_entry,
     bool previous_document_had_history_intervention_activation,
     NavigationRequest* request,
-    LoadCommittedDetails* commit_details,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* commit_details) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                       ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
   // The NEW_SUBFRAME path should never result in an initial NavigationEntry.
@@ -2544,7 +2509,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // delete the |frame_entry| when the function exits if it doesn't get used.
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry, false,
-                       rfh->IsNestedWithinFencedFrame(), deferred_notifier);
+                       rfh->IsNestedWithinFencedFrame(), commit_details);
 }
 
 bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
@@ -2553,8 +2518,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
     bool is_same_document,
     bool was_on_initial_empty_document,
     NavigationRequest* request,
-    LoadCommittedDetails* commit_details,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* commit_details) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME));
 
@@ -2595,7 +2559,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       // We only need to discard the pending entry in this history navigation
       // case.  For newly created subframes, there was no pending entry.
       last_committed_entry_index_ = entry_index;
-      DiscardNonCommittedEntriesInternal(deferred_notifier);
+      DiscardNonCommittedEntriesWithCommitDetails(commit_details);
 
       // History navigations should send a commit notification.
       send_commit_notification = true;
@@ -3223,7 +3187,7 @@ void NavigationControllerImpl::InsertOrReplaceEntry(
     bool replace,
     bool was_post_commit_error,
     bool in_fenced_frame_tree,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* commit_details) {
   // Fenced frame trees should always have `ui::PAGE_TRANSITION_AUTO_SUBFRAME`
   // set because:
   // 1) They don't influence the history of the outer page.
@@ -3246,7 +3210,7 @@ void NavigationControllerImpl::InsertOrReplaceEntry(
   if (pending_entry_ && pending_entry_index_ == -1)
     entry->set_unique_id(pending_entry_->GetUniqueID());
 
-  DiscardNonCommittedEntriesInternal(deferred_notifier);
+  DiscardNonCommittedEntriesWithCommitDetails(commit_details);
 
   // When replacing, don't prune the forward history.
   if (replace || was_post_commit_error) {
@@ -4514,8 +4478,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 }
 
 void NavigationControllerImpl::NotifyNavigationEntryCommitted(
-    LoadCommittedDetails* details,
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+    LoadCommittedDetails* details) {
   details->entry = GetLastCommittedEntry();
 
   // We need to notify the ssl_manager_ before the WebContents so the
@@ -4523,17 +4486,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
   // when it wants to draw.  See http://crbug.com/11157
   ssl_manager_.DidCommitProvisionalLoad(*details);
 
-  // The notification below might be redundant within RendererDidNavigate calls.
-  // That function passes in a pointer for `deferred_notifier`, which tells this
-  // function to not send the notification immediately. The notification will be
-  // sent when RendererDidNavigate returns.
-  if (deferred_notifier &&
-      base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
-    deferred_notifier->RequestDeferredNotification();
-  } else {
-    delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
-  }
+  delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
   delegate_->NotifyNavigationEntryCommitted(*details);
 }
 
@@ -4679,11 +4632,11 @@ void NavigationControllerImpl::FinishRestore(int selected_index,
 }
 
 void NavigationControllerImpl::DiscardNonCommittedEntries() {
-  DiscardNonCommittedEntriesInternal(nullptr);
+  DiscardNonCommittedEntriesWithCommitDetails(nullptr /* commit_details */);
 }
 
-void NavigationControllerImpl::DiscardNonCommittedEntriesInternal(
-    ScopedDeferredNavigationStateChangeNotifier* deferred_notifier) {
+void NavigationControllerImpl::DiscardNonCommittedEntriesWithCommitDetails(
+    LoadCommittedDetails* commit_details) {
   // Avoid sending a notification if there is nothing to discard.
   // TODO(mthiesse): Temporarily checking failed_pending_entry_id_ to help
   // diagnose https://bugs.chromium.org/p/chromium/issues/detail?id=1007570.
@@ -4692,21 +4645,8 @@ void NavigationControllerImpl::DiscardNonCommittedEntriesInternal(
   }
   DiscardPendingEntry(false);
 
-  if (!delegate_) {
+  if (!delegate_)
     return;
-  }
-
-  // The notification below might be redundant within RendererDidNavigate calls.
-  // That function passes in a pointer for `deferred_notifier`, which tells this
-  // function to not send the notification immediately. The notification will be
-  // sent when RendererDidNavigate returns.
-  if (deferred_notifier &&
-      base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
-    deferred_notifier->RequestDeferredNotification();
-    return;
-  }
-
   delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
 }
 

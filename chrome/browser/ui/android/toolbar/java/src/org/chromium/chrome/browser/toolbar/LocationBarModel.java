@@ -177,25 +177,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mAlreadyUpdatedUrlBarForSameDocNav;
     private boolean mAlreadyChangedSecurityStateForSameDocNav;
 
-    // Whether the URL returned in getUrlOfVisibleNavigationEntry() should match the trusted CDN
-    // publisher URL, if any exists.
-    private final boolean mMatchTrustedCdnUrl;
-
-    public LocationBarModel(
-            Context context,
-            NewTabPageDelegate newTabPageDelegate,
-            UrlFormatter urlFormatter,
-            OfflineStatus offlineStatus,
-            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
-        this(
-                context,
-                newTabPageDelegate,
-                urlFormatter,
-                offlineStatus,
-                toolbarPositionSupplier,
-                /* matchTrustedCdnUrl= */ false);
-    }
-
     /**
      * Default constructor for this class.
      *
@@ -204,17 +185,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @param urlFormatter Formatter returning the formatted version of the original version of URL
      *     of a distillation.
      * @param offlineStatus Offline-related status provider.
-     * @param toolbarPositionSupplier The on-screen position of the Toolbar.
-     * @param matchTrustedCdnUrl Whether the URL returned in getUrlOfVisibleNavigationEntry() should
-     *     match the trusted CDN publisher URL, if any exists.
+     * @param searchEngineUtils Utils to query the state of the search engine logos feature.
      */
     public LocationBarModel(
             Context context,
             NewTabPageDelegate newTabPageDelegate,
             UrlFormatter urlFormatter,
             OfflineStatus offlineStatus,
-            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
-            boolean matchTrustedCdnUrl) {
+            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
@@ -224,7 +202,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mUrlForDisplay = "";
         mFormattedFullUrl = "";
         mToolbarPositionSupplier = toolbarPositionSupplier;
-        mMatchTrustedCdnUrl = matchTrustedCdnUrl;
     }
 
     /** Handle any initialization that must occur after native has been initialized. */
@@ -841,12 +818,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (mNativeLocationBarModelAndroid == 0) return GURL.emptyGURL();
         if (mNtpDelegate.isCurrentlyVisible()) {
             return getTab().getUrl();
-        }
-        if (mMatchTrustedCdnUrl && mTab != null && !mTab.isDestroyed()) {
-            @Nullable GURL publisherUrl = TrustedCdn.getPublisherUrl(mTab);
-            if (publisherUrl != null) {
-                return publisherUrl;
-            }
         }
 
         return LocationBarModelJni.get()

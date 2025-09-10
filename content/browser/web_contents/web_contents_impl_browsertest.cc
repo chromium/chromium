@@ -3507,13 +3507,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
 
   // Set up all the expected title change in the original WebContents.
   std::queue<std::u16string> original_expected_title_changes;
-  if (!base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
-    // The first "title change" is not an actual title change, it's triggered by
-    // a INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
-    // NavigationControllerImpl::DiscardNonCommittedEntries().
-    original_expected_title_changes.push(u"");
-  }
+  // The first "title change" is not an actual title change, it's triggered by a
+  // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
+  // NavigationControllerImpl::DiscardNonCommittedEntries().
+  original_expected_title_changes.push(u"");
   // When the navigation to `main_url` commits, the document title is not set
   // yet, so we use the URL as the title.
   original_expected_title_changes.push(main_url_as_title);
@@ -3561,18 +3558,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
 
   // Set up all the expected title change in the new WebContents.
   std::queue<std::u16string> new_expected_title_changes;
-  if (!base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
-    // Similar to the original WebContents' case above, the first "title change"
-    // is not an actual title change, but instead triggered by a
-    // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
-    // NavigationControllerImpl::DiscardNonCommittedEntries(). For the original
-    // WebContents' case we expect an empty title because there's no entries and
-    // GetNavigationEntryForTitle() returns null. However, in the new
-    // WebContents we already have the restored entry, so we will use the
-    // entry's title.
-    new_expected_title_changes.push(main_title);
-  }
+  // Similar to the original WebContents' case above, the first "title change"
+  // is not an actual title change, but instead triggered by a
+  // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
+  // NavigationControllerImpl::DiscardNonCommittedEntries(). For the
+  // original WebContents' case we expect an empty title because there's no
+  // entries and GetNavigationEntryForTitle() returns null. However, in the new
+  // WebContents we already have the restored entry, so we will use the entry's
+  // title.
+  new_expected_title_changes.push(main_title);
   // When the navigation to `main_url` commits, we also got another "update"
   // that is not really a title change, but it is triggered by a
   // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
