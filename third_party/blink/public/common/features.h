@@ -1764,8 +1764,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUrgentMainFrameForInput);
 // to canonicalize URL properties. See https://crbug.com/409350827
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLPatternDummyURLCanonicalization);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseCommitUrlInsteadOfRedirectUrl);
-
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePageViewportInLCP);
