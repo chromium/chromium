@@ -358,6 +358,8 @@ namespace {
 constexpr char kOpenLinkAsProfileHistogram[] =
     "RenderViewContextMenu.OpenLinkAsProfile";
 
+constexpr int kTabMenuIconSize = 16;
+
 base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
   static base::NoDestructor<base::OnceCallback<void(RenderViewContextMenu*)>>
       callback;
@@ -1682,8 +1684,11 @@ void RenderViewContextMenu::AppendLinkItems() {
       Browser* const browser = GetBrowser();
       if (base::FeatureList::IsEnabled(features::kSideBySide) && browser &&
           browser->is_type_normal()) {
-        menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
-                                        IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+        menu_model_.AddItemWithStringIdAndIcon(
+            IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+            IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
+                                           kTabMenuIconSize));
         const int command_index =
             menu_model_
                 .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
