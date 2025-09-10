@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Image load should not trigger load event for non-initial javascript URL load
+  assert_true: iframeLoaded expected true got false
+Harness: the test ran to completion.
+

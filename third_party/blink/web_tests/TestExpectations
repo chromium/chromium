@@ -2993,6 +2993,7 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/444012412 external/wpt/css/css-transforms/transform-scroll-child-tweak-crash.html [ Timeout ]
 crbug.com/443965740 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
 crbug.com/443965740 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
@@ -3255,6 +3256,7 @@ crbug.com/431030815 [ Mac14 ] external/wpt/IndexedDB/nested-cloning-large-multip
 crbug.com/431038524 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?2001-3000 [ Timeout ]
 crbug.com/431031177 [ Win10.20h2 ] external/wpt/bluetooth/bidi/device/gattserverdisconnected-event/disconnected_gc.https.window.html [ Pass Timeout ]
 crbug.com/431031177 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Pass Timeout ]
+crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Pass Timeout ]
 crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-get-different-service-after-reconnection-with-uuid.https.window.html [ Pass Timeout ]
 crbug.com/431036875 [ Mac12 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
 crbug.com/431036875 [ Mac14 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
@@ -9308,7 +9310,13 @@ crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.
 # This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
 # TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.
 crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
-crbug.com/381407888 [ Mac ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac12 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac12-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac13-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac14 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac14-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac15 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac15-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 
 # Gardener 2024-11-27
 crbug.com/381142479 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]

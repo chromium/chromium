@@ -6,6 +6,7 @@
 <script src="/resources/check-layout-th.js"></script>
 <script src="support/test-common.js"></script>
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<link rel="preload" href="/fonts/Ahem.ttf" as="font" />
 <style>
 .container {
   font-family: Ahem;
@@ -19,14 +20,6 @@
 .abspos {
   position: absolute;
 }
-.columns {
-  column-count: 2;
-  column-fill: auto;
-  column-gap: 10px;
-  column-width: 100px;
-  width: 210px;
-  height: 100px;
-}
 .anchor {
   anchor-name: --a1;
   background: orange;
@@ -39,7 +32,7 @@
 }
 </style>
 <body onload="checkLayoutForAnchorPos('.target')">
-  <div class="container relpos xcolumns">
+  <div class="container relpos">
     <div style="height: 150px"></div>
     <div class="relpos">
       <span class="target" data-expected-width=20></span>
