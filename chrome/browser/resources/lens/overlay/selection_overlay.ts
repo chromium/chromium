@@ -249,11 +249,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       selectionOverlayRect: Object,
       isSearchboxFocused: Boolean,
       areLanguagePickersOpen: Boolean,
-      isBackToPageEnabled: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isBackToPageEnabled'),
-        reflectToAttribute: true,
-      },
       sidePanelOpened: {
         type: Boolean,
         reflectToAttribute: true,
@@ -292,8 +287,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether any of the language pickers are currently open. Passed in from
   // parent.
   declare private areLanguagePickersOpen: boolean;
-  // Whether the back to page button is enabled.
-  declare private isBackToPageEnabled: boolean;
 
   // The selected region on which the context menu is being displayed. Used as
   // argument for copy and save as image calls.
@@ -1427,12 +1420,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private onNotifyResultsPanelOpened() {
     assert(!this.sidePanelOpened);
-    // If back to page is enabled, the close button should be showing on the
-    // selection overlay. Record this as a close button impression if the side
-    // panel was not already opened.
-    if (this.isBackToPageEnabled) {
-      recordLensOverlaySelectionCloseButtonShown(INVOCATION_SOURCE);
-    }
+    // The close button should be showing on the selection overlay. Record this
+    // as a close button impression if the side panel was not already opened.
+    recordLensOverlaySelectionCloseButtonShown(INVOCATION_SOURCE);
     this.sidePanelOpened = true;
   }
 

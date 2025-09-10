@@ -1290,18 +1290,12 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
 
-    // If back to page feature is enabled and the page changes, only the overlay
-    // needs to be hidden, possibly leaving the side panel open. The search
-    // controller will handle whether the side panel should stay open or the
-    // entire session should terminate.
-    if (lens::features::IsLensOverlayBackToPageEnabled()) {
-      lens_overlay_controller_->lens_search_controller_->HideOverlay(
-          lens::LensOverlayDismissalSource::kPageChanged);
-      return;
-    }
-
-    lens_overlay_controller_->lens_search_controller_->CloseLensSync(
+    // If the page changes, only the overlay needs to be hidden, possibly
+    // leaving the side panel open. The search controller will handle whether
+    // the side panel should stay open or the entire session should terminate.
+    lens_overlay_controller_->lens_search_controller_->HideOverlay(
         lens::LensOverlayDismissalSource::kPageChanged);
+    return;
   }
 
   void PrimaryMainFrameRenderProcessGone(
@@ -2278,24 +2272,12 @@ void LensOverlayController::AddBackgroundBlur() {
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
-  if (lens::features::IsLensOverlayBackToPageEnabled()) {
-    lens_search_controller_->HideOverlay(
-        lens::LensOverlayDismissalSource::kOverlayCloseButton);
-    return;
-  }
-
-  lens_search_controller_->CloseLensAsync(
+  lens_search_controller_->HideOverlay(
       lens::LensOverlayDismissalSource::kOverlayCloseButton);
 }
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
-  if (lens::features::IsLensOverlayBackToPageEnabled()) {
-    lens_search_controller_->HideOverlay(
-        lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
-    return;
-  }
-
-  lens_search_controller_->CloseLensAsync(
+  lens_search_controller_->HideOverlay(
       lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
 }
 
@@ -2840,11 +2822,9 @@ void LensOverlayController::ClearAllSelections() {
 void LensOverlayController::HandleRegionBitmapCreated(
     const SkBitmap& region_bitmap) {
   // Do not update the selected region bitmap if the overlay is off or if the
-  // region bitmap is already set. This is only enabled when the back to page
-  // feature is enabled.
+  // region bitmap is already set.
   if (state_ == State::kOff ||
-      !initialization_data_->selected_region_bitmap_.drawsNothing() ||
-      !lens::features::IsLensOverlayBackToPageEnabled()) {
+      !initialization_data_->selected_region_bitmap_.drawsNothing()) {
     return;
   }
 

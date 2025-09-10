@@ -120,10 +120,6 @@ BASE_FEATURE(kLensOverlayPermissionBubbleAlt,
              "LensOverlayPermissionBubbleAlt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayBackToPage,
-             "LensOverlayBackToPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1226,10 +1222,6 @@ bool IsLensOverlayKeyboardSelectionEnabled() {
 
 bool IsLensOverlayPermissionBubbleAltEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayPermissionBubbleAlt);
-}
-
-bool IsLensOverlayBackToPageEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayBackToPage);
 }
 
 bool IsLensSearchNotFoundOnPageToastEnabled() {

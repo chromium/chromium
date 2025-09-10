@@ -14742,24 +14742,6 @@
             ]
         }
     ],
-    "LensOverlayBackToLivePage": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "LensOverlayBackToLivePageEnabled",
-                    "enable_features": [
-                        "LensOverlayBackToPage"
-                    ]
-                }
-            ]
-        }
-    ],
     "LibraryPrefetcherMadvise": [
         {
             "platforms": [

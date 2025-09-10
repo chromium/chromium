@@ -2575,10 +2575,6 @@ const char kLensOverlayName[] = "Lens overlay";
 const char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";
 
-const char kLensOverlayBackToPageName[] = "Lens overlay back to page";
-const char kLensOverlayBackToPageDescription[] =
-    "Enables the back to live page functionality in the Lens overlay.";
-
 const char kLensOverlayEduActionChipName[] = "Lens Overlay EDU action chip";
 const char kLensOverlayEduActionChipDescription[] =
     "Enables Lens Overlay EDU action chip. Intended for testing the chip "

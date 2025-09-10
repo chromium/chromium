@@ -3858,11 +3858,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "enable-lens-overlay-back-to-page",
-    "owners": [ "juanmojica@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "enable-lens-overlay-edu-action-chip",
     "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 145

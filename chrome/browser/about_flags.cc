@@ -12889,15 +12889,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableDownstreamCardAwarenessIph)},
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-    {"enable-lens-overlay-back-to-page",
-     flag_descriptions::kLensOverlayBackToPageName,
-     flag_descriptions::kLensOverlayBackToPageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayBackToPage)},
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
     {"supervised-user-interstitial-without-approvals",
      flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsName,

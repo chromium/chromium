@@ -1056,19 +1056,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifiedSelectionCUJTest,
           WaitForState(kTextCopiedState, true)));
 }
 
-class LensOverlayControllerReturnToPageCUJTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerReturnToPageCUJTest() = default;
-  ~LensOverlayControllerReturnToPageCUJTest() override = default;
-  LensOverlayControllerReturnToPageCUJTest(
-      const LensOverlayControllerReturnToPageCUJTest&) = delete;
-  void operator=(const LensOverlayControllerReturnToPageCUJTest&) = delete;
-
-  void SetUpFeatureList() override {
-    feature_list_.InitAndEnableFeature(lens::features::kLensOverlayBackToPage);
-  }
-};
+using LensOverlayControllerReturnToPageCUJTest = LensOverlayControllerCUJTest;
 
 // This tests the following CUJ:
 //  (1) User navigates to a website.

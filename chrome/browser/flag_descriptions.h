@@ -1495,9 +1495,6 @@ extern const char kLanguageDetectionAPIDescription[];
 extern const char kLensOverlayName[];
 extern const char kLensOverlayDescription[];
 
-extern const char kLensOverlayBackToPageName[];
-extern const char kLensOverlayBackToPageDescription[];
-
 extern const char kLensOverlayEduActionChipName[];
 extern const char kLensOverlayEduActionChipDescription[];
 
