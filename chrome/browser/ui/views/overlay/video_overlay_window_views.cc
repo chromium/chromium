@@ -2450,6 +2450,12 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
   } else if (GetHangUpButtonBounds().Contains(event->location())) {
     controller_->HangUp();
     event->SetHandled();
+  } else if (GetReplay10SecondsButtonBounds().Contains(event->location())) {
+    Replay10Seconds();
+    event->SetHandled();
+  } else if (GetForward10SecondsButtonBounds().Contains(event->location())) {
+    Forward10Seconds();
+    event->SetHandled();
   } else if (GetLiveCaptionButtonBounds().Contains(event->location())) {
     OnLiveCaptionButtonPressed();
     event->SetHandled();
