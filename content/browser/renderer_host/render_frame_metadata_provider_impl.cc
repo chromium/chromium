@@ -117,6 +117,11 @@ void RenderFrameMetadataProviderImpl::ResetFrameTokenMessageQueue() {
   frame_token_message_queue_.Reset();
 }
 
+base::WeakPtr<RenderFrameMetadataProviderImpl>
+RenderFrameMetadataProviderImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
     uint32_t frame_token,
     const cc::RenderFrameMetadata& metadata) {

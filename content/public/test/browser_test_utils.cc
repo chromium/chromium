@@ -2927,7 +2927,8 @@ bool RequestFrame(WebContents* web_contents) {
 
 RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
     RenderFrameMetadataProviderImpl* render_frame_metadata_provider)
-    : render_frame_metadata_provider_(render_frame_metadata_provider) {
+    : render_frame_metadata_provider_(
+          render_frame_metadata_provider->GetWeakPtr()) {
   render_frame_metadata_provider_->AddObserver(this);
   render_frame_metadata_provider_->ReportAllFrameSubmissionsForTesting(true);
 }
@@ -2950,8 +2951,10 @@ RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
           RenderFrameMetadataProviderFromRenderFrameHost(rfh)) {}
 
 RenderFrameSubmissionObserver::~RenderFrameSubmissionObserver() {
-  render_frame_metadata_provider_->RemoveObserver(this);
-  render_frame_metadata_provider_->ReportAllFrameSubmissionsForTesting(false);
+  if (render_frame_metadata_provider_) {
+    render_frame_metadata_provider_->RemoveObserver(this);
+    render_frame_metadata_provider_->ReportAllFrameSubmissionsForTesting(false);
+  }
 }
 
 void RenderFrameSubmissionObserver::WaitForAnyFrameSubmission() {

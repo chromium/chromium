@@ -74,6 +74,8 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
   void ResetFrameTokenMessageQueue();
 
+  base::WeakPtr<RenderFrameMetadataProviderImpl> GetWeakPtr();
+
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;

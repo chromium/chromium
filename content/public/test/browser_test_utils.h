@@ -1586,7 +1586,7 @@ class RenderFrameSubmissionObserver
   // OnRenderFrameMetadataChangedAfterActivation.
   bool break_on_any_frame_ = false;
 
-  const raw_ptr<RenderFrameMetadataProviderImpl>
+  const base::WeakPtr<RenderFrameMetadataProviderImpl>
       render_frame_metadata_provider_;
   base::OnceClosure quit_closure_;
   // If non-null, run when metadata changes.
