@@ -36,6 +36,10 @@ config("glib_common_config") {
     "-Werror=pointer-sign",
   ]
 
+  # gvariant.c triggers a -Walloc-size warning which seems benign; see
+  # crbug.com/443913107#comment1.
+  cflags_c += [ "-Wno-alloc-size" ]
+
   include_dirs = [ "include" ]
 }
 
