@@ -287,8 +287,15 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
   reloading_extensions_.erase(extension->id());
 
   if (registry_->enabled_extensions().Contains(extension_id)) {
+    // Put the pending removal extension in disabled set because underlying
+    // code of `DeactivateExtension` needs to access it.
+    // See https://crbug.com/443038597
+    registry_->AddDisabled(extension);
+
     registry_->RemoveEnabled(extension_id);
     DeactivateExtension(extension.get(), reason);
+
+    registry_->RemoveDisabled(extension_id);
   } else {
     // The extension was already deactivated from the call to
     // DisableExtension().
