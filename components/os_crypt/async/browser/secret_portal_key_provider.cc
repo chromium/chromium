@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/utils/name_has_owner.h"
@@ -109,11 +110,11 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(
   read_fd_ = base::ScopedFD(fds[0]);
   base::ScopedFD write_fd(fds[1]);
 
-  dbus_xdg::Dictionary options;
+  DbusDictionary options;
   if (local_state_->HasPrefPath(kOsCryptTokenPrefName)) {
     const std::string token = local_state_->GetString(kOsCryptTokenPrefName);
     if (!token.empty()) {
-      options["token"] = dbus_utils::Variant::Wrap<"s">(token);
+      options.PutAs("token", DbusString(token));
     }
   }
 
@@ -121,10 +122,10 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(
       GetSecretServiceName(), dbus::ObjectPath(kObjectPathSecret));
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, secret_proxy, kInterfaceSecret, kMethodRetrieveSecret,
-      std::move(options),
+      DbusUnixFd(std::move(write_fd)), std::move(options),
       base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecret,
                      weak_ptr_factory_.GetWeakPtr()),
-      GetSecretServiceName(), std::move(write_fd));
+      GetSecretServiceName());
 }
 
 void SecretPortalKeyProvider::OnSignalConnected(
@@ -140,7 +141,7 @@ void SecretPortalKeyProvider::OnSignalConnected(
 }
 
 void SecretPortalKeyProvider::OnRetrieveSecret(
-    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!results.has_value()) {
@@ -172,15 +173,11 @@ void SecretPortalKeyProvider::OnRetrieveSecret(
 
   // Though it is documented in the spec, xdg-desktop-portal does not currently
   // implement returning a token.
-  dbus_xdg::Dictionary result_dict = std::move(*results);
-  std::optional<std::string> token;
-  if (auto it = result_dict.find("token"); it != result_dict.end()) {
-    token = std::move(it->second).Take<std::string>();
-  }
+  auto* token = results->GetAs<DbusString>("token");
   if (token) {
-    local_state_->SetString(kOsCryptTokenPrefName, *token);
+    local_state_->SetString(kOsCryptTokenPrefName, token->value());
   }
-  base::UmaHistogramBoolean(kUmaGotTokenBoolean, token.has_value());
+  base::UmaHistogramBoolean(kUmaGotTokenBoolean, token);
 }
 
 void SecretPortalKeyProvider::OnFdReadable() {

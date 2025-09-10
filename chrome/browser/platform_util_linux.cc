@@ -31,6 +31,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/xdg/request.h"
@@ -207,9 +208,8 @@ class ShowItemHelper {
           kFreedesktopPortalName, dbus::ObjectPath(kFreedesktopPortalPath));
     }
 
-    dbus_xdg::Dictionary options;
-    options[kActivationTokenKey] =
-        dbus_utils::Variant::Wrap<"s">(activation_token);
+    DbusDictionary options;
+    options.PutAs(kActivationTokenKey, DbusString(activation_token));
     // In the rare occasion that another request comes in before the response is
     // received, we will end up overwriting this request object with the new one
     // and the response from the first request will not be handled in that case.
@@ -218,17 +218,18 @@ class ShowItemHelper {
     // effort basis.
     portal_open_directory_request_ = std::make_unique<dbus_xdg::Request>(
         bus_, portal_object_proxy_, kFreedesktopPortalOpenURI,
-        kMethodOpenDirectory, std::move(options),
+        kMethodOpenDirectory,
+        MakeDbusParameters(DbusString(""), DbusUnixFd(std::move(fd))),
+        std::move(options),
         base::BindOnce(&ShowItemHelper::ShowItemUsingPortalResponse,
                        // Unretained is safe, the ShowItemHelper instance is
                        // never destroyed.
-                       base::Unretained(this), full_path),
-        std::string(), std::move(fd));
+                       base::Unretained(this), full_path));
   }
 
   void ShowItemUsingPortalResponse(
       const base::FilePath& full_path,
-      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     portal_open_directory_request_.reset();
     if (!results.has_value()) {

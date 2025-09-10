@@ -13,6 +13,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/xdg/request.h"
@@ -26,18 +27,6 @@
 namespace ui {
 
 namespace {
-
-template <typename T>
-std::optional<T> TakeFromDict(dbus_xdg::Dictionary& dict,
-                              const std::string& key) {
-  auto it = dict.find(key);
-  if (it == dict.end()) {
-    return std::nullopt;
-  }
-  auto result = std::move(it->second).Take<T>();
-  dict.erase(it);
-  return result;
-}
 
 std::string GetShortcutPrefix(const std::string& accelerator_group_id,
                               const std::string& profile_id) {
@@ -107,12 +96,10 @@ void GlobalAcceleratorListenerLinux::CreateSession() {
   dbus::ObjectPath session_path(session_path_str);
   session_proxy_ = bus_->GetObjectProxy(kPortalServiceName, session_path);
 
-  dbus_xdg::Dictionary options;
-  options["session_handle_token"] =
-      dbus_utils::Variant::Wrap<"s">(session_token_);
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
-      kMethodCreateSession, std::move(options),
+      kMethodCreateSession, DbusParameters(),
+      MakeDbusDictionary("session_handle_token", DbusString(session_token_)),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnCreateSession,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -184,7 +171,7 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
 }
 
 void GlobalAcceleratorListenerLinux::OnCreateSession(
-    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
     VLOG(1) << "Failed to call CreateSession (error code "
             << static_cast<int>(results.error()) << ").";
@@ -192,40 +179,44 @@ void GlobalAcceleratorListenerLinux::OnCreateSession(
     return;
   }
 
-  auto session_handle = TakeFromDict<std::string>(*results, "session_handle");
+  auto* session_handle = results->GetAs<DbusString>("session_handle");
   if (!session_handle ||
-      session_proxy_->object_path().value() != *session_handle) {
+      session_proxy_->object_path().value() != session_handle->value()) {
     LOG(ERROR) << "Expected session handle does not match.";
     session_proxy_ = nullptr;
     return;
   }
 
   // Now that the session is created, bind all accumulated shortcuts.
+  dbus::MethodCall method_call(kGlobalShortcutsInterface, kMethodListShortcuts);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendObjectPath(session_proxy_->object_path());
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
-      kMethodListShortcuts, dbus_xdg::Dictionary(),
+      kMethodListShortcuts, DbusObjectPath(session_proxy_->object_path()),
+      DbusDictionary(),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnListShortcuts,
-                     weak_ptr_factory_.GetWeakPtr()),
-      session_proxy_->object_path());
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GlobalAcceleratorListenerLinux::OnListShortcuts(
-    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
     LOG(ERROR) << "Failed to call ListShortcuts (error code "
                << static_cast<int>(results.error()) << ").";
     return;
   }
 
-  auto shortcuts = TakeFromDict<DbusShortcuts>(*results, "shortcuts");
+  auto* shortcuts = results->GetAs<DbusShortcuts>("shortcuts");
   if (!shortcuts) {
-    LOG(ERROR) << "Failed to parse shortcuts from ListShortcuts response.";
+    LOG(ERROR) << "No shortcuts in ListShortcuts response.";
     return;
   }
 
   std::set<std::string> registered_ids;
-  for (const DbusShortcut& shortcut : *shortcuts) {
-    registered_ids.insert(std::get<0>(shortcut));
+  for (const DbusShortcut& shortcut : shortcuts->value()) {
+    const DbusString& id = std::get<0>(shortcut.value());
+    registered_ids.insert(id.value());
   }
 
   // If any bound command is not found among the registered shortcuts, bind
@@ -239,34 +230,41 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
 }
 
 void GlobalAcceleratorListenerLinux::BindShortcuts(
-    DbusShortcuts& old_shortcuts) {
+    const DbusShortcuts& old_shortcuts) {
+  dbus::MethodCall method_call(kGlobalShortcutsInterface, kMethodBindShortcuts);
+  dbus::MessageWriter writer(&method_call);
+
+  writer.AppendObjectPath(session_proxy_->object_path());
+
   DbusShortcuts shortcuts;
-  for (auto& old_shortcut : old_shortcuts) {
-    const std::string& id = std::get<0>(old_shortcut);
-    dbus_xdg::Dictionary& properties = std::get<1>(old_shortcut);
-    dbus_xdg::Dictionary new_props;
-    auto description = TakeFromDict<std::string>(properties, "description");
-    if (description) {
-      new_props["description"] =
-          dbus_utils::Variant::Wrap<"s">(std::move(*description));
+  for (const auto& old_shortcut : old_shortcuts.value()) {
+    const std::string& id = std::get<0>(old_shortcut.value()).value();
+    const DbusDictionary& properties = std::get<1>(old_shortcut.value());
+    DbusDictionary new_props;
+    if (auto* desc = properties.GetAs<DbusString>("description")) {
+      new_props.PutAs("description", DbusString(desc->value()));
     }
-    shortcuts.emplace_back(id, std::move(new_props));
+    shortcuts.value().emplace_back(DbusString(id), std::move(new_props));
   }
 
   for (const auto& [modified_id, bound_cmd] : bound_commands_) {
-    dbus_xdg::Dictionary props;
-    props["description"] = dbus_utils::Variant::Wrap<"s">(
-        base::UTF16ToUTF8(bound_cmd.command.description()));
-    shortcuts.emplace_back(modified_id, std::move(props));
+    DbusDictionary props = MakeDbusDictionary(
+        "description",
+        DbusString(base::UTF16ToUTF8(bound_cmd.command.description())));
+    shortcuts.value().push_back(
+        MakeDbusStruct(DbusString(modified_id), std::move(props)));
   }
 
   bind_state_ = BindState::kBindCalled;
+  DbusString empty_parent_window;
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
-      kMethodBindShortcuts, dbus_xdg::Dictionary(),
+      kMethodBindShortcuts,
+      MakeDbusParameters(DbusObjectPath(session_proxy_->object_path()),
+                         std::move(shortcuts), std::move(empty_parent_window)),
+      DbusDictionary(),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnBindShortcuts,
-                     weak_ptr_factory_.GetWeakPtr()),
-      session_proxy_->object_path(), std::move(shortcuts), std::string());
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GlobalAcceleratorListenerLinux::CloseSession() {
@@ -282,7 +280,7 @@ void GlobalAcceleratorListenerLinux::CloseSession() {
 }
 
 void GlobalAcceleratorListenerLinux::OnBindShortcuts(
-    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
     LOG(ERROR) << "Failed to call BindShortcuts (error code "
                << static_cast<int>(results.error()) << ").";

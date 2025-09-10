@@ -113,7 +113,7 @@ class SecretPortalKeyProvider : public KeyProvider {
   void OnPortalServiceStarted(std::optional<bool> service_started);
 
   void OnRetrieveSecret(
-      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
 
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
