@@ -540,7 +540,8 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
                 new KeyCombo(KeyEvent.KEYCODE_E, KeyEvent.META_CTRL_ON),
                 R.string.keyboard_shortcut_search,
-                R.string.keyboard_shortcut_chrome_feature_group_header);
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                new KeyCombo[] {new KeyCombo(KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON)});
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
                 new KeyCombo(KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON),
