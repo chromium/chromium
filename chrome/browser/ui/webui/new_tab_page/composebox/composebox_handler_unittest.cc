@@ -16,7 +16,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
@@ -484,10 +483,6 @@ class ComposeboxHandlerTabsTest : public ComposeboxHandlerTest {
     return content::WebContentsTester::CreateTestWebContents(profile(),
                                                              nullptr);
   }
-  base::TimeTicks IncrementTimeTicksAndGet() {
-    last_active_time_ticks_ += base::Seconds(1);
-    return last_active_time_ticks_;
-  }
 
   tabs::TabInterface* AddTab(GURL url) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
@@ -495,8 +490,6 @@ class ComposeboxHandlerTabsTest : public ComposeboxHandlerTest {
     content::WebContentsTester::For(contents_unique_ptr.get())
         ->NavigateAndCommit(url);
     content::WebContents* content_ptr = contents_unique_ptr.get();
-    content::WebContentsTester::For(content_ptr)->SetLastActiveTimeTicks(
-        IncrementTimeTicksAndGet());
     tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
     tabs::TabInterface* tab_interface =
         tab_strip_model()->GetTabForWebContents(content_ptr);
@@ -521,7 +514,6 @@ class ComposeboxHandlerTabsTest : public ComposeboxHandlerTest {
   }
 
  private:
-  base::TimeTicks last_active_time_ticks_;
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_{&delegate_, profile()};
   ui::UnownedUserDataHost user_data_host_;
@@ -564,43 +556,16 @@ TEST_F(ComposeboxHandlerTabsTest, AddTabContext) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(ComposeboxHandlerTabsTest, GetRecentTabs) {
-  base::FieldTrialParams params;
-  params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ntp_composebox::kNtpComposebox, params);
-
-  // Add only 1 valid tab, and ensure it is the only one returned.
-  auto* about_blank_tab = AddTab(GURL("about:blank"));
+TEST_F(ComposeboxHandlerTabsTest, GetTabs) {
+  AddTab(GURL("about:blank"));
   AddTab(GURL("chrome://webui-is-ignored"));
 
-  base::test::TestFuture<std::vector<composebox::mojom::TabInfoPtr>> future1;
-  handler().GetRecentTabs(future1.GetCallback());
-  auto tabs = future1.Take();
-  ASSERT_EQ(tabs.size(), 1u);
-  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
-
-  // Add more tabs, and ensure no more than the max allowed tabs are returned.
-  AddTab(GURL("https://www.google.com"));
-  auto* youtube_tab = AddTab(GURL("https://www.youtube.com"));
-  auto* gmail_tab = AddTab(GURL("https://www.gmail.com"));
-
-  base::test::TestFuture<std::vector<composebox::mojom::TabInfoPtr>> future2;
-  handler().GetRecentTabs(future2.GetCallback());
-  tabs = future2.Take();
-  ASSERT_EQ(tabs.size(), 2u);
-  EXPECT_EQ(tabs[0]->tab_id, gmail_tab->GetHandle().raw_value());
-  EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
-
-  // Activate an older tab, and ensure it is returned first.
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
-      ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
-  base::test::TestFuture<std::vector<composebox::mojom::TabInfoPtr>> future3;
-  handler().GetRecentTabs(future3.GetCallback());
-  tabs = future3.Take();
-  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
-  EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
+  auto callback = base::BindLambdaForTesting(
+      [](std::vector<composebox::mojom::TabInfoPtr> tabs) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->title, "about:blank");
+      });
+  handler().GetTabs(std::move(callback));
 }
 
 class ComposeboxHandlerFileUploadStatusTest

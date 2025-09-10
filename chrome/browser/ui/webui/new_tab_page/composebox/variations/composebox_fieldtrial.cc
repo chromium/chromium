@@ -169,10 +169,6 @@ const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "ShowContextMenu",
                                                 false);
-const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
-    &kNtpComposebox,
-    "ContextMenuMaxTabSuggestions",
-    5);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

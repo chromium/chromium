@@ -46,7 +46,7 @@ suite('ContextMenuEntrypoint', () => {
   });
 
   test('clicking entrypoint shows context menu', async () => {
-    handler.setResultFor('getRecentTabs', Promise.resolve([]));
+    handler.setResultFor('getTabs', Promise.resolve([]));
 
     // Act.
     entrypoint.$.entrypoint.click();
@@ -115,7 +115,7 @@ suite('ContextMenuEntrypoint', () => {
             `clicking ${selector} propagates ${eventName} before closing menu`,
             async () => {
               // Arrange.
-              handler.setResultFor('getRecentTabs', Promise.resolve([]));
+              handler.setResultFor('getTabs', Promise.resolve([]));
               entrypoint.$.entrypoint.click();
               await microtasksFinished();
               assertTrue(entrypoint.$.menu.open);

@@ -214,7 +214,7 @@ void ComposeboxHandler::ClearFiles() {
   query_controller_->ClearFiles();
 }
 
-void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
+void ComposeboxHandler::GetTabs(GetTabsCallback callback) {
   std::vector<composebox::mojom::TabInfoPtr> tabs;
 
   auto* browser_window_interface =
@@ -225,9 +225,9 @@ void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   }
 
   // Iterate through the tab strip model, getting the data for each tab
+  // TODO(crbug.com/442881833): Limit the number of tabs returned.
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); i++) {
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
     tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
     TabRendererData tab_renderer_data =
         TabRendererData::FromTabInModel(tab_strip_model, i);
@@ -242,24 +242,8 @@ void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->tab_id = tab->GetHandle().raw_value();
     tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
     tab_data->url = last_committed_url;
-    tab_data->last_active =
-        std::max(web_contents->GetLastActiveTimeTicks(),
-                 web_contents->GetLastInteractionTimeTicks());
     tabs.push_back(std::move(tab_data));
   }
-
-  // Sort the tabs by last active time, and truncate to the maximum number of
-  // tabs to return.
-  int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()),
-               ntp_composebox::kContextMenuMaxTabSuggestions.Get());
-  std::partial_sort(
-      tabs.begin(), tabs.begin() + max_tab_suggestions, tabs.end(),
-      [](const composebox::mojom::TabInfoPtr& a,
-         const composebox::mojom::TabInfoPtr& b) {
-        return a->last_active > b->last_active;
-      });
-  tabs.resize(max_tab_suggestions);
 
   // Invoke the callback with the results.
   std::move(callback).Run(std::move(tabs));

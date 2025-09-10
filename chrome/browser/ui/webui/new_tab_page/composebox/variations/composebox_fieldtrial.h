@@ -35,8 +35,6 @@ extern const base::FeatureParam<bool> kShowComposeboxTypedSuggest;
 // Whether to show the + entrypoint and contextual input menu in the realbox and
 // composebox.
 extern const base::FeatureParam<bool> kShowContextMenu;
-// The maximum number of tab suggestions to show in the composebox context menu.
-extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 

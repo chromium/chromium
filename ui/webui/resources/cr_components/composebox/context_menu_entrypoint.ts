@@ -60,7 +60,7 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   }
 
   protected async onEntrypointClick_() {
-    const {tabs} = await this.pageHandler_.getRecentTabs();
+    const {tabs} = await this.pageHandler_.getTabs();
     this.tabSuggestions_ = tabs;
 
     this.$.menu.showAt(this.$.entrypointIcon, {
