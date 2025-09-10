@@ -300,6 +300,7 @@ source_set("headers") {
     "subresource_load_metrics.h",
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
+    "tracing_support.h",
     "unique_name/unique_name_helper.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",

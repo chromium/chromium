@@ -88,6 +88,7 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/memory_pressure_listener.h"
@@ -1615,6 +1616,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // will be set to false when the process is taken from the
   // SpareRenderProcessHostManager.
   bool has_spare_renderer_priority_ = false;
+
+  // Tracing track used to emit async event related to lifecycle.
+  perfetto::NamedTrack tracing_track_;
 
   // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost

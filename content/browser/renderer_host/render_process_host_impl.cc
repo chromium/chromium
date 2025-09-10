@@ -160,6 +160,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/resource_coordinator_service.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/tracing_support.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webrtc_log.h"
 #include "content/public/common/content_client.h"
@@ -1578,12 +1579,15 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
       storage_partition_impl_(storage_partition_impl->GetWeakPtr()),
-      flags_(flags) {
+      flags_(flags),
+      tracing_track_(
+          perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
+                                            this,
+                                            GetChildProcessTracingTrack(id_))) {
   CHECK(!browser_context->ShutdownStarted());
   TRACE_EVENT("shutdown", "RenderProcessHostImpl",
               ChromeTrackEvent::kRenderProcessHost, *this);
-  TRACE_EVENT_BEGIN("shutdown", "Browser.RenderProcessHostImpl",
-                    perfetto::Track::FromPointer(this),
+  TRACE_EVENT_BEGIN("shutdown", "Browser.RenderProcessHostImpl", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -1717,10 +1721,10 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
       max_outermost_main_frames_);
 
   // "Cleanup in progress"
-  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("shutdown", tracing_track_,
                   ChromeTrackEvent::kRenderProcessHost, *this);
   // "Browser.RenderProcessHostImpl"
-  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("shutdown", tracing_track_,
                   ChromeTrackEvent::kRenderProcessHost, *this);
 }
 
@@ -3270,8 +3274,7 @@ bool RenderProcessHostImpl::IsSpare() const {
 void RenderProcessHostImpl::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {
-  TRACE_EVENT_BEGIN("shutdown", "Lock process",
-                    perfetto::Track::FromPointer(this),
+  TRACE_EVENT_BEGIN("shutdown", "Lock process", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
       isolation_context, GetDeprecatedID(), !IsUnused(), process_lock);
@@ -3285,7 +3288,7 @@ void RenderProcessHostImpl::SetProcessLock(
   NotifyRendererOfLockedStateUpdate();
 
   // "Lock process"
-  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("shutdown", tracing_track_,
                   ChromeTrackEvent::kRenderProcessHost, *this);
 }
 
@@ -4268,8 +4271,7 @@ void RenderProcessHostImpl::Cleanup() {
 
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup : Starting cleanup.",
               ChromeTrackEvent::kRenderProcessHost, *this);
-  TRACE_EVENT_BEGIN("shutdown", "Cleanup in progress",
-                    perfetto::Track::FromPointer(this),
+  TRACE_EVENT_BEGIN("shutdown", "Cleanup in progress", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
   // We cannot delete `this` twice; if this fails, there is an issue with our

@@ -5,6 +5,7 @@
 #include "content/public/browser/tracing_support.h"
 
 #include "base/hash/hash.h"
+#include "third_party/blink/public/common/tracing_support.h"
 
 namespace content {
 namespace {
@@ -24,6 +25,14 @@ perfetto::NamedTrack CreateTracingTrackUnderChildProcess(
     uint64_t id) {
   return perfetto::NamedTrack(name, id,
                               GetChildProcessTracingTrack(process_id));
+}
+
+perfetto::NamedTrack GetLocalFrameTracingTrack(
+    const blink::LocalFrameToken& frame_token,
+    bool is_main_frame,
+    ChildProcessId process_id) {
+  return blink::GetLocalFrameTracingTrack(
+      frame_token, is_main_frame, GetChildProcessTracingTrack(process_id));
 }
 
 }  // namespace content

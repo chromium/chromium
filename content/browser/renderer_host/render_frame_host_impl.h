@@ -181,6 +181,7 @@
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_mode.h"
@@ -5553,6 +5554,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   PrerenderStateChangedCallback prerender_state_callback_;
 
   base::OnceClosure on_process_before_unload_completed_for_testing_;
+
+  // Tracing track used to emit async event related to lifecycle.
+  perfetto::NamedTrack tracing_track_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

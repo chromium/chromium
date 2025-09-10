@@ -20,28 +20,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/tracing_support.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace performance_manager {
-
 namespace {
-
-// Creates a tracing track for the FrameNode identified by `token` under
-// `parent_track`.
-const perfetto::NamedTrack CreateFrameNodeTrack(
-    perfetto::Track parent,
-    const blink::LocalFrameToken& frame_token,
-    bool is_main_frame,
-    content::RenderFrameHost* render_frame_host) {
-  // FrameNode appears under the associated renderer process track.
-  auto track =
-      perfetto::NamedTrack(
-          perfetto::StaticString(is_main_frame ? "MainFrameNode" : "FrameNode"),
-          base::UnguessableTokenHash()(frame_token.value()), parent)
-          .disable_sibling_merge();
-  return base::trace_event::InitializeTrack(track);
-}
 
 perfetto::StaticString FrameNodeVisibilityToString(
     const FrameNode::Visibility& visibility) {
@@ -92,11 +76,10 @@ FrameNodeImpl::FrameNodeImpl(
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
-      tracing_track_(
-          CreateFrameNodeTrack(process_node_->tracing_track(),
-                               frame_token,
-                               /*is_main_frame=*/parent_frame_node_ == nullptr,
-                               render_frame_host_proxy_.Get())),
+      tracing_track_(blink::GetLocalFrameTracingTrack(
+          frame_token,
+          /*is_main_frame=*/parent_frame_node_ == nullptr,
+          process_node_->tracing_track())),
       is_current_(is_current),
       is_active_(is_active),
       priority_and_reason_(
