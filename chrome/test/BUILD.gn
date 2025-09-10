@@ -533,6 +533,7 @@ static_library("test_support") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/zoom",
+    "//chrome/browser/usb",
     "//chrome/browser/webdata_services",
     "//chrome/common/search:mojo_bindings",
     "//components/application_locale_storage",
@@ -2541,6 +2542,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/webui/watermark",
       "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/usb:browser_tests",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -3739,10 +3741,6 @@ if (!is_android) {
       "../browser/ui/webui/webui_url_hashes_browsertest.cc",
       "../browser/ukm_worker_browsertest.cc",
       "../browser/unload_browsertest.cc",
-      "../browser/usb/chrome_usb_browsertest.cc",
-      "../browser/usb/usb_browser_test_utils.cc",
-      "../browser/usb/usb_browser_test_utils.h",
-      "../browser/usb/web_usb_detector_browsertest.cc",
       "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/visited_url_ranking/desktop_tab_model_url_visit_data_fetcher_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
@@ -4011,6 +4009,7 @@ if (!is_android) {
       "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations:browser_tests",
       "//chrome/browser/ui/window_name_prompt:browser_tests",
+      "//chrome/browser/usb",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/webauthn",
       "//chrome/browser/webdata_services",
@@ -7387,6 +7386,7 @@ test("unit_tests") {
     "//chrome/browser/history",
     "//chrome/browser/serial",
     "//chrome/browser/ui/toolbar:test_support",
+    "//chrome/browser/usb",
     "//chrome/browser/webdata_services",
   ]
 
@@ -8265,16 +8265,6 @@ test("unit_tests") {
       "../browser/ui/webui/webui_allowlist_provider_unittest.cc",
       "../browser/ui/webui/webui_embedding_context_unittest.cc",
       "../browser/ui/webui/webui_util_desktop_unittest.cc",
-      "../browser/usb/chrome_usb_delegate_unittest.cc",
-      "../browser/usb/usb_blocklist_unittest.cc",
-      "../browser/usb/usb_chooser_context_mock_device_observer.cc",
-      "../browser/usb/usb_chooser_context_mock_device_observer.h",
-      "../browser/usb/usb_chooser_context_unittest.cc",
-      "../browser/usb/usb_chooser_controller_unittest.cc",
-      "../browser/usb/usb_connection_tracker_unittest.cc",
-      "../browser/usb/usb_policy_allowed_devices_unittest.cc",
-      "../browser/usb/usb_test_utils.cc",
-      "../browser/usb/usb_test_utils.h",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/challenge_url_fetcher_unittest.cc",
@@ -8363,6 +8353,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/privacy_sandbox:unit_tests",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
+      "//chrome/browser/usb:unit_tests",
       "//chrome/browser/user_education",
       "//chrome/browser/user_education:unit_tests",
       "//chrome/browser/vr",
@@ -8700,7 +8691,6 @@ test("unit_tests") {
       "../browser/download/bubble/download_display_controller_unittest.cc",
       "../browser/download/download_ui_context_menu_unittest.cc",
       "../browser/hid/hid_status_icon_unittest.cc",
-      "../browser/usb/usb_status_icon_unittest.cc",
     ]
 
     deps += [
@@ -8847,7 +8837,6 @@ test("unit_tests") {
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
-      "../browser/usb/usb_pinned_notification_unittest.cc",
       "../browser/webauthn/unexportable_key_utils_chromeos_unittest.cc",
       "../common/chrome_constants_ash_unittest.cc",
       "../renderer/ash_merge_session_loader_throttle_unittest.cc",
@@ -12760,7 +12749,6 @@ if (is_linux || is_mac || is_win) {
     sources = [
       "../browser/bluetooth/chrome_bluetooth_realtarget_browsertest.cc",
       "../browser/hid/chrome_hid_realtarget_browsertest.cc",
-      "../browser/usb/chrome_usb_realtarget_browsertest.cc",
     ]
     deps = [
       ":browser_tests_runner",
@@ -12768,6 +12756,7 @@ if (is_linux || is_mac || is_win) {
       "//chrome:packed_resources",
       "//chrome/browser/serial:device_realtarget_browsertests",
       "//chrome/browser/ui/hid",
+      "//chrome/browser/usb:device_realtarget_browsertests",
     ]
   }
 }

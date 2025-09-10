@@ -1716,6 +1716,7 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui",
+    "//chrome/browser/usb",
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",
     "//components/privacy_sandbox:privacy_sandbox_prefs",

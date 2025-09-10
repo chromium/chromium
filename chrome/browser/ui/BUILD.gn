@@ -1431,6 +1431,7 @@ static_library("ui") {
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
+      "//chrome/browser/usb",
 
       # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",

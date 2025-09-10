@@ -1614,22 +1614,6 @@ static_library("browser") {
     "universal_web_contents_observers.h",
     "update_client/chrome_update_query_params_delegate.cc",
     "update_client/chrome_update_query_params_delegate.h",
-    "usb/chrome_usb_delegate.cc",
-    "usb/chrome_usb_delegate.h",
-    "usb/usb_blocklist.cc",
-    "usb/usb_blocklist.h",
-    "usb/usb_chooser_context.cc",
-    "usb/usb_chooser_context.h",
-    "usb/usb_chooser_context_factory.cc",
-    "usb/usb_chooser_context_factory.h",
-    "usb/usb_chooser_controller.cc",
-    "usb/usb_chooser_controller.h",
-    "usb/usb_policy_allowed_devices.cc",
-    "usb/usb_policy_allowed_devices.h",
-    "usb/web_usb_chooser.cc",
-    "usb/web_usb_chooser.h",
-    "usb/web_usb_histograms.cc",
-    "usb/web_usb_histograms.h",
     "user_bypass/user_bypass_web_contents_observer.cc",
     "user_bypass/user_bypass_web_contents_observer.h",
     "v8_compile_hints/v8_compile_hints_tab_helper.cc",
@@ -1843,6 +1827,16 @@ static_library("browser") {
     # c/b/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
     # c/b/browser_process_platform_part.h"
     "//chrome/browser/autocomplete:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
+    # headers get componentized:
+    # - c/b/browser_features.h"
+    # - c/b/device_notifications/device_status_icon_renderer.h"
+    # - c/b/device_notifications/device_system_tray_icon_renderer.h"
+    # - c/b/net/referrer.h"
+    # - c/b/notifications/system_notification_helper.h"
+    # - c/b/profiles/profile_manager.h"
+    "//chrome/browser/usb:impl",
   ]
 
   public_deps = [
@@ -2072,6 +2066,8 @@ static_library("browser") {
     "//chrome/browser/ui/sync:impl",
     "//chrome/browser/ui/translate",
     "//chrome/browser/ui/webid",
+    "//chrome/browser/usb",
+    "//chrome/browser/usb:impl",
     "//chrome/browser/webauthn",
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
@@ -3321,9 +3317,6 @@ static_library("browser") {
       "translate/android/translate_bridge.h",
       "trusted_vault/trusted_vault_client_android.cc",
       "trusted_vault/trusted_vault_client_android.h",
-      "usb/android/usb_bridge.cc",
-      "usb/android/web_usb_chooser_android.cc",
-      "usb/android/web_usb_chooser_android.h",
       "visited_url_ranking/android_tab_model_url_visit_data_fetcher.cc",
       "visited_url_ranking/android_tab_model_url_visit_data_fetcher.h",
       "wallet/android/boarding_pass_bridge.cc",
@@ -3477,7 +3470,6 @@ static_library("browser") {
       "//chrome/browser/ui/plus_addresses",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
-      "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",
       "//chrome/common:non_code_constants",
       "//chrome/common/wallet:mojo_bindings",
@@ -4270,16 +4262,6 @@ static_library("browser") {
       "support_tool/system_log_source_data_collector_adaptor.h",
       "tab_contents/form_interaction_tab_helper.cc",
       "tab_contents/form_interaction_tab_helper.h",
-      "usb/usb_connection_tracker.cc",
-      "usb/usb_connection_tracker.h",
-      "usb/usb_connection_tracker_factory.cc",
-      "usb/usb_connection_tracker_factory.h",
-      "usb/usb_system_tray_icon.cc",
-      "usb/usb_system_tray_icon.h",
-      "usb/web_usb_chooser_desktop.cc",
-      "usb/web_usb_chooser_desktop.h",
-      "usb/web_usb_detector.cc",
-      "usb/web_usb_detector.h",
       "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.cc",
       "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.h",
       "webapps/webapps_client_desktop.cc",
@@ -4780,8 +4762,6 @@ static_library("browser") {
         "signin/signin_manager.h",
         "signin/signin_manager_factory.cc",
         "signin/signin_manager_factory.h",
-        "usb/usb_status_icon.cc",
-        "usb/usb_status_icon.h",
       ]
 
       deps += [
@@ -5225,8 +5205,6 @@ static_library("browser") {
       "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
       "ui/ash/shelf/chrome_shelf_metrics_provider.h",
-      "usb/usb_pinned_notification.cc",
-      "usb/usb_pinned_notification.h",
       "webauthn/unexportable_key_utils_chromeos.cc",
       "webshare/chromeos/sharesheet_client.cc",
       "webshare/chromeos/sharesheet_client.h",

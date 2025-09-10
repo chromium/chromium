@@ -86,6 +86,7 @@ source_set("permissions") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/usb",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
