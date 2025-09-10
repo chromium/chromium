@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v8.1.0...chromium-bidi-v9.0.0) (2025-09-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 142.0.7394.0 ([#3682](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3682))
+
+### Features
+
+* **chrome:** update the pinned browser version to 142.0.7394.0 ([#3682](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3682)) ([76a9580](https://github.com/GoogleChromeLabs/chromium-bidi/commit/76a95807035e44dc5e0bd9f1d0c17ced44d4d4a9))
+
+
+### Bug Fixes
+
+* correct broken realm lookup ([#3703](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3703)) ([031ba15](https://github.com/GoogleChromeLabs/chromium-bidi/commit/031ba1564de3730ea97f90936bc564370be8f168))
+* do no duplicate headers ([#3701](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3701)) ([9c384d4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9c384d41f1ec22153ca8b0121385b9478dfa1e13))
+* handle target config errors gracefully ([#3699](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3699)) ([fd88aa5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fd88aa54fd51db2ed4d6aabd9c05aecce6d105be))
+
 ## [8.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v8.0.0...chromium-bidi-v8.1.0) (2025-09-03)
 
 
