@@ -626,6 +626,9 @@
       <message name="IDS_IOS_BEST_FEATURES_LENS_SUBTITLE" desc="Subtitle for the Lens Chrome iOS Best Features Promo">
         Shop, translate, and identify what you see using your camera and photo gallery
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_LENS_TITLE" desc="Title for the Lens Chrome iOS Best Features Promo">
+        Search with Google Lens
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_CAPTION" desc="Caption for the Locked Incognito tabs button on the Chrome iOS Best Features Promo">
         Keep your browsing private
       </message>
@@ -660,7 +663,7 @@
         Open Passwords
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_AUTOFILL_SETTINGS" desc="The third step to enable Passwords in other apps. OS must be iOS 18 or later.">
-        Open Autofill &amp; Password settings
+        Open AutoFill &amp; Passwords
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_PASSWORD_OPTIONS" desc="The third step to enable Passwords in other apps. OS must be below iOS 18.">
         Open Password Options

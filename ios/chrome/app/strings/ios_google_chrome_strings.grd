@@ -213,9 +213,6 @@
         Chrome has features that help you manage your internet data and how quickly you're able to load webpages.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_BEST_FEATURES_LENS_TITLE" desc="Title for the Lens Chrome iOS Best Features Promo">
-        Search with Google Lens
-      </message>
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_FIRST_STEP" desc="The first step to setting up Locked Incognito tabs">
         Open Chrome Settings
       </message>
