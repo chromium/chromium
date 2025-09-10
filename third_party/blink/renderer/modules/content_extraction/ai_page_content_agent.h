@@ -60,6 +60,7 @@ class MODULES_EXPORT AIPageContentAgent final
   void DidFinishPostLifecycleSteps(const LocalFrameView&) override;
 
   String DumpContentNodeTreeForTest();
+  String DumpContentNodeForTest(Node* node);
 
  private:
   void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,

@@ -14,9 +14,14 @@ function runTest() {
 </script>
 </head>
 <body onload="runTest()">
-  <details>
-    <summary>Expandable</summary>
-    Contents.
-  </details>
+  <!--
+  Expected: Base text with ruby annotations (pronunciation guides).
+  Challenge: Handling relationship between base text and annotations.
+  -->
+  <ruby>
+    base1 <rt>anno1</rt>
+    base2 <rt>anno2</rt>
+    base3 <rt>anno3</rt>
+  </ruby>
 </body>
 </html>

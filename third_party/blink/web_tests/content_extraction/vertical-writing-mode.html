@@ -13,10 +13,14 @@ function runTest() {
 }
 </script>
 </head>
+
 <body onload="runTest()">
-  <details>
-    <summary>Expandable</summary>
-    Contents.
-  </details>
+  <!--
+  Expected: Vertical text fragmented between characters (no spaces) with horizontal inline element.
+  Challenge: Mixed writing directions with character-level fragmentation in content extraction.
+  -->
+  <div style="writing-mode: vertical-rl; width: 100px; height: 60px;">
+    ABCDEFGHIJKL<span style="writing-mode: horizontal-tb;">horizontal</span>MNOPQRSTU
+  </div>
 </body>
 </html>

@@ -2601,6 +2601,27 @@ String Internals::dumpContentNodeTree(Document* document,
   return DumpContentNodeTreeForTest(WebLocalFrameImpl::FromFrame(frame));
 }
 
+String Internals::dumpContentNode(Node* node,
+                                  ExceptionState& exception_state) const {
+  DCHECK(node);
+  Document* document = &node->GetDocument();
+  if (!document->GetFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The node's document is invalid.");
+    return String();
+  }
+
+  LocalFrame* frame = DynamicTo<LocalFrame>(document->GetFrame());
+  if (!frame) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "The node's document must be in a local frame.");
+    return String();
+  }
+
+  return DumpContentNodeForTest(WebLocalFrameImpl::FromFrame(frame), node);
+}
+
 String Internals::mainThreadScrollingReasons(
     Document* document,
     ExceptionState& exception_state) const {

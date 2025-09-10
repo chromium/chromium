@@ -364,6 +364,7 @@ class Internals final : public ScriptWrappable {
   String layerTreeAsText(Document*, ExceptionState&) const;
 
   String dumpContentNodeTree(Document*, ExceptionState&) const;
+  String dumpContentNode(Node*, ExceptionState&) const;
 
   String mainThreadScrollingReasons(Document*, ExceptionState&) const;
 

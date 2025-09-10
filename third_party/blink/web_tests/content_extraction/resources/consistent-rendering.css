@@ -14,6 +14,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 /* 2. Consistent Font and Global Layout
  *--------------------------------------------------------------------------*/
 ::-webkit-scrollbar {
@@ -24,10 +29,6 @@
 body {
   /* Use Ahem for perfectly consistent character boxes. */
   font: 10px/1 Ahem;
-
-  /* This non-standard property is the only way to disable
-     anti-aliasing for maximum pixel consistency in Chromium. */
-  -webkit-font-smoothing: none;
 }
 
 /* 3. Consistent Form Controls (no platform-specific layout)

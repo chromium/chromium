@@ -63,10 +63,20 @@ enum AIPageContentAnnotatedRole {
 
 struct AIPageContentGeometry {
   // The bounding box of the content node, in the page coordinate system.
+  // IOW, the outerBox is relative to the root of the top (root) document.
   gfx.mojom.Rect outer_bounding_box;
 
   // Subset of this node visible on the page. Empty if offscreen.
+  // Relative to viewport origin (unlike the outer bounding box).
   gfx.mojom.Rect visible_bounding_box;
+
+  // Multiple boxes are used when there are multiple rectangles belonging to
+  // the same node, e.g.: across multiple lines, columns or pages. In layout
+  // terms, a node that does this is called a fragmentainer.
+  // Each rectangle represents a hit testable fragment belonging to the node.
+  // An empty array indicates that the node is not fragmented or is entirely
+  // offscreen. Relative to viewport origin.
+  array<gfx.mojom.Rect> fragment_visible_bounding_boxes;
 
   // Whether the content node is fixed or sticky position. This may suggest
   // that the node is a header, footer, or sidebar.

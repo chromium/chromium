@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link href="./resources/consistent-rendering.css" rel="stylesheet" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/content-extraction-test-helpers.js"></script>
+<script src="../resources/ahem.js"></script>
+
+<script>
+  function scrollAndFinishTest() {
+    // Expectations are that the fragment boxes are both clipped and shifted by 15px.
+    // Fragment #1: ABC DEF GHI
+    // Fragment #2: JKL MNO
+    // Fragment #3: PQR STU
+    const iframe = document.querySelector('iframe');
+
+    assert_true(!!iframe);
+
+    const iframeDoc = iframe.contentDocument;
+    assert_true(!!iframeDoc);
+
+    const textNode = iframeDoc.querySelector('p').firstChild;
+
+    let resultText = 'Before scroll:\n' + dumpContentNode(textNode);
+
+    document.scrollingElement.scrollBy(15, 15);
+
+    resultText += '\n\nAfter scroll:\n' + dumpContentNode(textNode);
+
+    if (window.testRunner) {
+      testRunner.setCustomTextOutput(resultText);
+      testRunner.notifyDone();
+    }
+  }
+</script>
+
+<style>
+  body {
+    margin: 0;
+  }
+
+  iframe {
+    border: unset;
+    width: 100px;
+    height: 200px;
+  }
+
+  /* Add extra space to ensure the page is scrollable */
+  .spacer {
+    height: 1500px;
+    /* Arbitrary large height to enable scrolling. */
+    width: 1500px;
+    /* Arbitrary large width to enable scrolling. */
+    background: #f0f0f0;
+  }
+</style>
+</head>
+<body onload="scrollAndFinishTest()">
+  <!-- Use scrolling=no to hide scrollbars (still allows programmatic scrolls).
+  Also repeat the consistent rendering rules. -->
+  <iframe scrolling="no" srcdoc="
+    <link href='./resources/consistent-rendering.css' rel='stylesheet' />
+    <script src='../resources/ahem.js'></script>
+    <html style='height: 100%'>
+      <body style='height: 100%'>
+        <p style='background-color: red; margin: 0; height: 100%'>ABC DEF GHI JKL MNO PQR STU</p>">
+  </iframe>
+<div class="spacer"></div>
+</body>
+
+</html>

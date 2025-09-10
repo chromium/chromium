@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -83,16 +84,53 @@ ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
   return kContinueHitTesting;
 }
 
+// Computes the visible portion of a LayoutObject's bounding box.
+//
+// This function calculates what part of the object is actually visible in the
+// viewport, taking into account:
+// - The object's local bounding box (its natural size and position)
+// - Viewport clipping (objects outside the viewport are clipped)
+// - Scroll offsets (objects scrolled out of view are clipped)
+// - CSS overflow clipping from ancestor containers
+//
+// The returned rectangle is in viewport coordinates (relative to the top-left
+// of the visible area), which is why coordinates are always >= 0.
 gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
-  gfx::RectF visible_bounding_box =
+  // Layout must be complete before computing bounding boxes.
+  DCHECK(object.GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean)
+      << "ComputeVisibleBoundingBox only works when layout is complete";
+
+  // Get the object's local bounding box before viewport clipping.
+  gfx::RectF object_rect =
       ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
           object.LocalBoundingBoxRectForAccessibility());
 
+  // Transform the local bounding box to viewport coordinates, applying:
+  // 1. All CSS transforms (translate, scale, rotate, etc.)
+  // 2. Scroll offsets from all ancestor scroll containers
+  // 3. Clipping from overflow:hidden containers
+  // 4. Viewport clipping (anything outside the viewport is clipped)
+  //
+  // The nullptr ancestor means "map to the root of the document". When used
+  // with kVisualRectFlags, this gives us viewport-relative coordinates.
   // TODO(khushalsagar): It might be more optimal to derive this from output of
   // paint.
-  object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
-                                        kVisualRectFlags);
-  return ToEnclosingRect(visible_bounding_box);
+  object.MapToVisualRectInAncestorSpace(nullptr, object_rect, kVisualRectFlags);
+
+  gfx::Rect visible_box_in_viewport_coords = ToEnclosingRect(object_rect);
+
+  // The visible bounding box should always have non-negative coordinates since
+  // it's relative to the viewport. Negative coordinates would indicate a bug
+  // in the coordinate transformation.
+  DCHECK_GE(visible_box_in_viewport_coords.x(), 0)
+      << "Visible bounding box should be viewport-relative with x >= 0, got: "
+      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+  DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
+      << "Visible bounding box should be viewport-relative with y >= 0, got: "
+      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+
+  return visible_box_in_viewport_coords;
 }
 
 gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
@@ -106,6 +144,50 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
   }
 
   return object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
+}
+
+// Processes fragment bounding boxes for layout objects that can be split.
+//
+// Uses QuadsInAncestor() to retrieve quads for each object, then converts them
+// to integer bounding rects.
+//
+// In CSS layout, some objects can be "fragmented" - split across multiple
+// visual areas. This includes:
+// - Text that wraps across multiple lines
+// - Content that flows across CSS columns
+//
+// Each fragment represents a visual piece of the same logical object.
+// We only store fragment boxes when there are multiple fragments (size > 1),
+// as single fragments are redundant with the main bounding box.
+void ComputeFragmentBoundingBoxes(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentGeometry& geometry) {
+  Vector<gfx::QuadF> fragment_quads_in_viewport_coords;
+  object.QuadsInAncestor(fragment_quads_in_viewport_coords,
+                         /*ancestor=*/nullptr, kMapCoordinatesFlags);
+
+  Vector<gfx::Rect> fragment_rects_in_viewport_coords;
+  for (const auto& fragment_quad_in_viewport_coords :
+       fragment_quads_in_viewport_coords) {
+    gfx::Rect fragment_enclosing_rect_in_viewport_coords =
+        gfx::ToEnclosingRect(fragment_quad_in_viewport_coords.BoundingBox());
+    // Clip to the viewport by intersecting with the element's visible bounding
+    // box (viewport-relative).
+    fragment_enclosing_rect_in_viewport_coords.Intersect(
+        geometry.visible_bounding_box);
+    if (!fragment_enclosing_rect_in_viewport_coords.IsEmpty()) {
+      fragment_rects_in_viewport_coords.push_back(
+          fragment_enclosing_rect_in_viewport_coords);
+    }
+  }
+
+  // AddFragmentRectsAfterClipping(object, geometry.visible_bounding_box,
+  //                               fragment_rects_in_viewport_coords);
+
+  if (fragment_rects_in_viewport_coords.size() > 1) {
+    geometry.fragment_visible_bounding_boxes =
+        std::move(fragment_rects_in_viewport_coords);
+  }
 }
 
 // Validates the relationship between outer and visible bounding boxes.
@@ -703,6 +785,25 @@ bool NeedsSyncExtraction(const mojom::blink::AIPageContentOptions& options) {
   return options.on_critical_path;
 }
 
+const mojom::blink::AIPageContentNode* FindContentNode(
+    const mojom::blink::AIPageContentNode* current_node,
+    DOMNodeId target_id) {
+  if (!current_node) {
+    return nullptr;
+  }
+  if (current_node->content_attributes &&
+      current_node->content_attributes->dom_node_id == target_id) {
+    return current_node;
+  }
+  for (const auto& child : current_node->children_nodes) {
+    if (const mojom::blink::AIPageContentNode* found =
+            FindContentNode(child.get(), target_id)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -827,6 +928,31 @@ String AIPageContentAgent::DumpContentNodeTreeForTest() {
   CHECK(content->root_node);
 
   return ContentNodeTreeToString(content->root_node.get());
+}
+
+String AIPageContentAgent::DumpContentNodeForTest(Node* node) {
+  CHECK(node);
+
+  mojom::blink::AIPageContentOptions options;
+  options.on_critical_path = true;
+  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  auto content = GetAIPageContentInternal(options);
+  CHECK(content);
+  CHECK(content->root_node);
+
+  DOMNodeId target_id = node->GetDomNodeId();
+  if (target_id == kInvalidDOMNodeId) {
+    return "Error: node has no DOMNodeId";
+  }
+
+  const mojom::blink::AIPageContentNode* found_node =
+      FindContentNode(content->root_node.get(), target_id);
+
+  if (!found_node) {
+    return "Error: content node not found for the given DOM node";
+  }
+
+  return ContentNodeToString(found_node, /*format_on_single_line=*/false);
 }
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
@@ -1396,9 +1522,29 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     return;
   }
 
+  // Layout must be complete before computing geometry.
+  DCHECK(object.GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean)
+      << "AddNodeGeometry only works when layout is complete for object: "
+      << object;
+
   attributes.geometry = mojom::blink::AIPageContentGeometry::New();
   mojom::blink::AIPageContentGeometry& geometry = *attributes.geometry;
 
+  // Compute the two fundamental bounding boxes:
+  //
+  // 1. outer_bounding_box: The object's full bounding box in document
+  // coordinates
+  //    This includes the entire object regardless of viewport visibility
+  //
+  // 2. visible_bounding_box: The portion visible in the viewport
+  //    This is clipped by viewport bounds and scroll positions
+  //
+  // These boxes serve different purposes:
+  // - outer_bounding_box: Used for hit-testing and determining object size
+  // (page coordinates)
+  // - visible_bounding_box: Used for determining what's actually visible to
+  // users (viewport coordinates)
   geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
 
@@ -1407,6 +1553,14 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   ValidateBoundingBoxes(geometry.outer_bounding_box,
                         geometry.visible_bounding_box, object);
 #endif
+
+  // Compute fragment bounding boxes for objects that split across multiple
+  // lines or containers (fragmentation). This happens when:
+  // - Text wraps across multiple lines
+  // - Content splits across columns (CSS multi-column layout)
+  //
+  // Fragment boxes help understand the visual layout of split content.
+  ComputeFragmentBoundingBoxes(object, geometry);
 
   geometry.is_fixed_or_sticky_position =
       object.Style()->GetPosition() == EPosition::kFixed ||

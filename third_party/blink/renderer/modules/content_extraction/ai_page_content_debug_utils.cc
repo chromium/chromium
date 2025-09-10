@@ -59,43 +59,108 @@ const char* AttributeTypeToString(
 }
 
 void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
-                         StringBuilder& builder) {
+                         StringBuilder& builder,
+                         bool single_line = true) {
   if (!node) {
     builder.Append("<null>");
     return;
   }
 
-  builder.Append('<');
-  builder.Append(
-      AttributeTypeToString(node->content_attributes->attribute_type));
-  builder.Append('>');
+  if (single_line) {
+    // Single-line format for tree dumps
+    builder.Append('<');
+    builder.Append(
+        AttributeTypeToString(node->content_attributes->attribute_type));
+    builder.Append('>');
 
-  if (node->content_attributes->text_info) {
-    builder.Append(' ');
-    builder.Append('"');
-    String text_content =
-        node->content_attributes->text_info->text_content.Replace('\n', ' ');
-    builder.Append(text_content);
-    builder.Append('"');
-  }
+    if (node->content_attributes->text_info) {
+      builder.Append(' ');
+      builder.Append('"');
+      String text_content =
+          node->content_attributes->text_info->text_content.Replace('\n', ' ');
+      builder.Append(text_content);
+      builder.Append('"');
+    }
 
-  if (node->content_attributes->geometry) {
-    bool is_same_box = node->content_attributes->geometry->outer_bounding_box ==
-                       node->content_attributes->geometry->visible_bounding_box;
-    if (is_same_box) {
-      builder.Append(" [box: ");
-      builder.Append(String::FromUTF8(
-          node->content_attributes->geometry->outer_bounding_box.ToString()));
-      builder.Append(']');
-    } else {
-      builder.Append(" [outerBox: ");
-      builder.Append(String::FromUTF8(
-          node->content_attributes->geometry->outer_bounding_box.ToString()));
-      builder.Append(']');
-      builder.Append(" [visibleBox: ");
-      builder.Append(String::FromUTF8(
-          node->content_attributes->geometry->visible_bounding_box.ToString()));
-      builder.Append(']');
+    if (node->content_attributes->geometry) {
+      bool is_same_box =
+          node->content_attributes->geometry->outer_bounding_box ==
+          node->content_attributes->geometry->visible_bounding_box;
+      if (is_same_box) {
+        builder.Append(" [box: ");
+        builder.Append(String::FromUTF8(
+            node->content_attributes->geometry->outer_bounding_box.ToString()));
+        builder.Append(']');
+      } else {
+        builder.Append(" [outerBox: ");
+        builder.Append(String::FromUTF8(
+            node->content_attributes->geometry->outer_bounding_box.ToString()));
+        builder.Append(']');
+        builder.Append(" [visibleBox: ");
+        builder.Append(String::FromUTF8(node->content_attributes->geometry
+                                            ->visible_bounding_box.ToString()));
+        builder.Append(']');
+      }
+      int fragment_index = 0;
+      for (const auto& fragment_rect : node->content_attributes->geometry
+                                           ->fragment_visible_bounding_boxes) {
+        builder.Append(" [fragmentBox#");
+        builder.AppendNumber(fragment_index++);
+        builder.Append(' ');
+        builder.Append(String::FromUTF8(fragment_rect.ToString()));
+        builder.Append(']');
+      }
+    }
+  } else {
+    // Multi-line format for individual nodes
+    String type_name =
+        AttributeTypeToString(node->content_attributes->attribute_type);
+    builder.Append(type_name.LowerASCII());
+
+    if (node->content_attributes->text_info) {
+      builder.Append(' ');
+      builder.Append('"');
+      String text_content =
+          node->content_attributes->text_info->text_content.Replace('\n', ' ');
+      builder.Append(text_content);
+      builder.Append('"');
+    }
+
+    if (node->content_attributes->geometry) {
+      bool is_same_box =
+          node->content_attributes->geometry->outer_bounding_box ==
+          node->content_attributes->geometry->visible_bounding_box;
+
+      builder.Append('\n');
+      if (is_same_box) {
+        builder.Append("  bounding_box: [");
+        builder.Append(String::FromUTF8(
+            node->content_attributes->geometry->outer_bounding_box.ToString()));
+        builder.Append(']');
+      } else {
+        builder.Append("  outer_bounding_box: [");
+        builder.Append(String::FromUTF8(
+            node->content_attributes->geometry->outer_bounding_box.ToString()));
+        builder.Append("]\n");
+        builder.Append("  visible_bounding_box: [");
+        builder.Append(String::FromUTF8(node->content_attributes->geometry
+                                            ->visible_bounding_box.ToString()));
+        builder.Append(']');
+      }
+
+      if (!node->content_attributes->geometry->fragment_visible_bounding_boxes
+               .empty()) {
+        builder.Append('\n');
+        builder.Append("  fragment_visible_bounding_boxes:");
+        for (const auto& fragment_rect :
+             node->content_attributes->geometry
+                 ->fragment_visible_bounding_boxes) {
+          builder.Append('\n');
+          builder.Append("    [");
+          builder.Append(String::FromUTF8(fragment_rect.ToString()));
+          builder.Append(']');
+        }
+      }
     }
   }
 }
@@ -186,6 +251,13 @@ String ContentNodeParentChainToString(
     AppendNodeToBuilder(node, builder);
     builder.Append('\n');
   }
+  return builder.ToString();
+}
+
+String ContentNodeToString(const mojom::blink::AIPageContentNode* target,
+                           bool format_on_single_line) {
+  StringBuilder builder;
+  AppendNodeToBuilder(target, builder, format_on_single_line);
   return builder.ToString();
 }
 

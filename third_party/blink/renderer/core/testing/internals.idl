@@ -201,6 +201,7 @@ interface Internals {
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
     [RaisesException] DOMString dumpContentNodeTree(Document document);
+    [RaisesException] DOMString dumpContentNode(Node node);
 
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
 

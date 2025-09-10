@@ -27,6 +27,10 @@ MODULES_EXPORT String
 ContentNodeParentChainToString(const mojom::blink::AIPageContentNode* root,
                                const mojom::blink::AIPageContentNode* target);
 
+MODULES_EXPORT String
+ContentNodeToString(const mojom::blink::AIPageContentNode* target,
+                    bool format_on_single_line = true);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_DEBUG_UTILS_H_
