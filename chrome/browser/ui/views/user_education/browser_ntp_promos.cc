@@ -24,7 +24,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_metadata.h"
@@ -142,11 +141,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
 
   registry.AddPromo(NtpPromoSpecification(
       kNtpSignInPromoId,
-      NtpPromoContent("account_circle",
-                      base::FeatureList::IsEnabled(
-                          syncer::kReplaceSyncPromosWithSignInPromos)
-                          ? IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS
-                          : IDS_NTP_SIGN_IN_PROMO,
+      NtpPromoContent("account_circle", IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS,
                       IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
       base::BindRepeating(&CheckSignInPromoEligibility),
       base::BindRepeating(&SignInPromoShown),
