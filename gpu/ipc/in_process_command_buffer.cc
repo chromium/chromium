@@ -451,13 +451,14 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       }
 
       decoder_ = std::move(gles2_decoder);
+      if (!context_group_->has_program_cache() &&
+          !context_group_->feature_info()
+               ->workarounds()
+               .disable_program_cache) {
+        context_group_->set_program_cache(task_executor_->program_cache());
+      }
+      DCHECK(context_->default_surface());
     }
-
-    if (!context_group_->has_program_cache() &&
-        !context_group_->feature_info()->workarounds().disable_program_cache) {
-      context_group_->set_program_cache(task_executor_->program_cache());
-    }
-    DCHECK(context_->default_surface());
   }
 
   if (task_executor_->gpu_preferences().enable_gpu_service_logging)

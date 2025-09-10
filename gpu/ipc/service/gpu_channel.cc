@@ -805,15 +805,8 @@ CommandBufferStub* GpuChannel::LookupCommandBuffer(int32_t route_id) {
 }
 
 bool GpuChannel::HasActiveStatefulContext() const {
-  for (auto& kv : stubs_) {
-    ContextType context_type = kv.second->context_type();
-    if (context_type == CONTEXT_TYPE_WEBGL1 ||
-        context_type == CONTEXT_TYPE_WEBGL2 ||
-        context_type == CONTEXT_TYPE_WEBGPU) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      stubs_, [](const auto& kv) { return kv.second->has_stateful_context(); });
 }
 
 void GpuChannel::MarkAllContextsLost() {
