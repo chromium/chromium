@@ -62,8 +62,6 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   using TestingFactory =
       base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS* profile)>;
 
-  using ProfileTestingFactory = TestingFactory;
-
   // Constructor accepts zero or more traits.
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>

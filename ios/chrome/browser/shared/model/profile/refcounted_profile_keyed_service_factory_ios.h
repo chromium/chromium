@@ -65,8 +65,6 @@ class RefcountedProfileKeyedServiceFactoryIOS
       base::OnceCallback<scoped_refptr<RefcountedKeyedService>(
           ProfileIOS* profile)>;
 
-  using ProfileTestingFactory = TestingFactory;
-
   // Constructor accepts zero or more traits.
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
