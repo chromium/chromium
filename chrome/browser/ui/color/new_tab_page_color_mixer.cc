@@ -301,6 +301,10 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
   mixer[kColorNewTabPageComposeboxSuggestionActivity] = {
       ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorNewTabPageComposeboxTypeAhead] = {
+      ui::SetAlpha({ui::kColorRefNeutral10}, 0x60)};
+  mixer[kColorNewTabPageComposeboxTypeAheadChip] = {
+      ui::SetAlpha({ui::kColorRefNeutral10}, 0x1E)};
   mixer[kColorNewTabPageComposeboxUploadButton] = {ui::kColorRefNeutral10};
   mixer[kColorNewTabPageComposeboxUploadButtonDisabled] = {
       dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)

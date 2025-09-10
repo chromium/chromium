@@ -756,16 +756,14 @@ suite('NewTabPageComposeboxTest', () => {
       composed: true,  // So it propagates across shadow DOM boundary.
       key: 'ArrowDown',
     });
-    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
 
-    // First match remains selected and does not get focus while focus is in the
-    // input.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world', composeboxElement.$.input.value);
-    assertEquals(
-        composeboxElement.$.input, composeboxElement.shadowRoot.activeElement);
+    composeboxElement.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertFalse(arrowDownEvent.defaultPrevented);
+
+    // First match is not selected as focus is in input
+    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('', composeboxElement.$.input.value);
 
     // Move the focus to the second match.
     matchEls[1]!.focus();
@@ -820,6 +818,36 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     assertEquals('compose', composeboxElement.getSmartComposeForTesting());
+  });
+
+  test('tab adds smart compose to input', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add input.
+    composeboxElement.$.input.value = 'smart ';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16('smart '),
+          matches: [],
+          smartComposeInlineHint: stringToMojoString16('compose'),
+        }));
+    await microtasksFinished();
+
+    const tabEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'Tab',
+    });
+
+    composeboxElement.$.input.dispatchEvent(tabEvent);
+    await microtasksFinished();
+    assertTrue(tabEvent.defaultPrevented);
+
+    assertEquals('smart compose', composeboxElement.$.input.value);
   });
 
   test('composebox does not open match when only file present', async () => {

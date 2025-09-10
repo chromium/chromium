@@ -226,33 +226,72 @@
   width: 24px;
 }
 
+#inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+#input,
+#smartCompose {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 24px;
+  min-height: 48px;
+  max-height: 190px;
+  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 12px;
+  scrollbar-width: none;
+  width: 100%;
+}
+
 #input {
   animation: color-change 5s infinite;
   background-color: inherit;
   border: none;
-  box-sizing: border-box;
   caret-color: var(--google-blue-500);
   color: var(--color-new-tab-page-composebox-font-light);
-  display: block;
-  field-sizing: content;
-  font-family: inherit;
-  font-size: inherit;
-  line-height: 24px;
+  height: 48px;
   mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
-  max-height: calc-size(fit-content, min(size - 24px, 190px));
-  min-height: 72px;
   outline: none;
-  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 12px;
   position: relative;
   resize: none;
-  scrollbar-width: none;
   transition: padding var(--height-expand-duration) var(--standard-curve);
-  width: 100%;
 }
 
-:host([expanded_]) #input {
+#smartCompose {
+  pointer-events: none;
+  position: absolute;
+  overflow: scroll;
+  top: 0;
+  left: 0;
+}
+
+#invisibleText {
+  color: transparent;
+  white-space: pre-wrap;
+}
+
+#ghostText {
+  color: var(--color-new-tab-page-composebox-type-ahead);
+  white-space: pre-wrap;
+}
+
+#tabChip {
+  align-items: center;
+  border: 1px solid var(--color-new-tab-page-composebox-type-ahead-chip);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--color-new-tab-page-composebox-type-ahead-chip);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 28px;
+  margin-left: 4px;
+  padding: 6px 8px;
+}
+
+:host([expanded_]) #input,
+:host([expanded_]) #smartCompose {
   --text-input-top-spacing: 12px;
-  min-height: 48px;
 }
 
 :host([expanded_][is-collapsible]) #input {

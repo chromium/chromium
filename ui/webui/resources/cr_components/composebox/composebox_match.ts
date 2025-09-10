@@ -55,7 +55,6 @@ export class ComposeboxMatchElement extends CrLitElement {
 
   accessor matchIndex: number;
   private searchboxHandler_: SearchboxPageHandlerRemote;
-
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
 
