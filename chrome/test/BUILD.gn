@@ -1567,6 +1567,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/gcm/gcm_apitest.cc",
       "../browser/extensions/api/history/history_apitest.cc",
       "../browser/extensions/api/i18n/i18n_apitest.cc",
+      "../browser/extensions/api/identity/identity_apitest.cc",
       "../browser/extensions/api/idle/idle_apitest.cc",
       "../browser/extensions/api/instance_id/instance_id_apitest.cc",
       "../browser/extensions/api/messaging/externally_connectable_messaging_apitest.cc",
@@ -1660,6 +1661,8 @@ source_set("platform_browser_tests") {
       "//extensions:test_support",
       "//extensions/browser/updater",
       "//extensions/strings",
+      "//ui/base/idle",
+      "//ui/base/idle:test_support",
       "//ui/webui:test_support",
     ]
     if (!is_android) {
@@ -1675,7 +1678,10 @@ source_set("platform_browser_tests") {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/ash/net",
+        "//chrome/browser/ash/test:test_support",
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
+        "//chromeos/ash/components/browser_context_helper",
         "//chromeos/services/tts",
       ]
     }
@@ -4579,7 +4585,6 @@ if (!is_android) {
         "../browser/extensions/api/feedback_private/feedback_browsertest.cc",
         "../browser/extensions/api/file_system/file_system_apitest.cc",
         "../browser/extensions/api/identity/gaia_remote_consent_flow_browsertest.cc",
-        "../browser/extensions/api/identity/identity_apitest.cc",
         "../browser/extensions/api/identity/web_auth_flow_browsertest.cc",
         "../browser/extensions/api/idltest/idltest_apitest.cc",
         "../browser/extensions/api/image_writer_private/extractor_browsertest.cc",
