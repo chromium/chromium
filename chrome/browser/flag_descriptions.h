@@ -1998,6 +1998,9 @@ extern const char kPrerender2Description[];
 extern const char kPrerender2ReuseHostName[];
 extern const char kPrerender2ReuseHostDescription[];
 
+extern const char kBookmarkBarPrefetchName[];
+extern const char kBookmarkBarPrefetchDescription[];
+
 extern const char kPrivacySandboxAdTopicsContentParityName[];
 extern const char kPrivacySandboxAdTopicsContentParityDescription[];
 

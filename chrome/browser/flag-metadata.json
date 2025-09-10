@@ -8099,6 +8099,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "prefetch-bookmarkbar-trigger",
+    "owners": [
+      "robertling@google.com",
+      "//content/browser/preloading/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "preinstalled-web-app-always-migrate-calculator",
     "owners": ["alancutter@chromium.org", "crosdev-commerce-eng@google.com"],
     "expiry_milestone": 148
