@@ -18,7 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.DIVIDER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -156,6 +159,27 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
+    public void testNoDividerWithUserInfo() {
+        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final AccessorySheetData testData =
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "", // Backend sends no title if a password exists.
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        mCoordinator.registerDataProvider(testProvider);
+
+        // Providing a User Info doesn't add a separator, even with footers present:
+        testData.getUserInfoList().add(new UserInfo("example.com", true));
+        testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
+        testProvider.notifyObservers(testData);
+
+        assertThat(mSheetDataPieces.size(), is(2));
+        assertThat(getType(mSheetDataPieces.get(0)), is(PASSWORD_INFO));
+        assertThat(getType(mSheetDataPieces.get(1)), is(FOOTER_COMMAND));
+    }
+
+    @Test
     public void testUsesTabTitleOnlyForEmptyLists() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
@@ -170,7 +194,7 @@ public class PasswordAccessorySheetControllerTest {
         testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(3));
+        assertThat(mSheetDataPieces.size(), is(4));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
         assertThat(
                 mSheetDataPieces.get(0).getDataPiece(),
@@ -179,7 +203,8 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(
                 mSheetDataPieces.get(1).getDataPiece(),
                 is(equalTo("No plus addresses for this domain")));
-        assertThat(getType(mSheetDataPieces.get(2)), is(FOOTER_COMMAND));
+        assertThat(getType(mSheetDataPieces.get(2)), is(DIVIDER));
+        assertThat(getType(mSheetDataPieces.get(3)), is(FOOTER_COMMAND));
     }
 
     @Test

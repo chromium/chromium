@@ -35,6 +35,7 @@ class AddressAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.ADDRESS_INFO:
                 return new AddressInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;

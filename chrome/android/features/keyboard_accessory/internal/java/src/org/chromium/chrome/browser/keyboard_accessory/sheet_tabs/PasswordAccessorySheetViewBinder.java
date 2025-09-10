@@ -51,6 +51,7 @@ class PasswordAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.TITLE:
                 return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
             case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }

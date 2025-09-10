@@ -58,6 +58,7 @@ class CreditCardAccessorySheetViewBinder {
                 return new LoyaltyCardInfoViewHolder(
                         parent, uiConfiguration.loyaltyCardDrawableFunction);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
