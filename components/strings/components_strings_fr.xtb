@@ -1366,7 +1366,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3270041629388773465">Payez plus rapidement quand vos codes CVC sont enregistrés</translation>
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
-<translation id="3271648667212143903"><ph name="ORIGIN" /> tente de se connecter</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> souhaite se connecter</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Entrez le code de validation (<ph name="NUMBER_OF_DIGITS" /> chiffres)</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
@@ -1417,7 +1417,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3360103848165129075">Feuille du gestionnaire de paiement</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3362968246557010467">Cette règle a été copiée automatiquement depuis la règle obsolète "<ph name="OLD_POLICY" />". Vous devez utiliser cette nouvelle règle à la place.</translation>
-<translation id="3364869320075768271">Le site <ph name="URL" /> souhaite utiliser vos données et votre appareil de réalité virtuelle</translation>
+<translation id="3364869320075768271"><ph name="URL" /> souhaite utiliser vos données et appareils de réalité virtuelle</translation>
 <translation id="3369192424181595722">Erreur de l'horloge</translation>
 <translation id="3370855919511944393">Paramètres de Wallet</translation>
 <translation id="3371064404604898522">Définir Chrome comme navigateur par défaut</translation>
@@ -1729,7 +1729,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3831065134033923230">Vérifier vos mots de passe enregistrés</translation>
 <translation id="3831915413245941253">L'administrateur du domaine <ph name="ENROLLMENT_DOMAIN" /> a installé des extensions permettant d'utiliser des fonctions supplémentaires. Ces extensions ont accès à certaines de vos données.</translation>
 <translation id="3832522519263485449">Multiple perforation à gauche</translation>
-<translation id="3835233591525155343">Savoir si vous utilisez l'appareil</translation>
+<translation id="3835233591525155343">Utilisation de votre appareil</translation>
 <translation id="3836246517890985658">Petit électroménager</translation>
 <translation id="383710924053593293">Remplissez plus de champs, plus rapidement</translation>
 <translation id="3839220096695873023">Véhicules hybrides et alternatifs</translation>
@@ -2676,7 +2676,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5421408724705443535">Rock</translation>
 <translation id="5423269318075950257">Suivre les prix</translation>
 <translation id="5425082381151187189">Décoration de maison et d'intérieur</translation>
-<translation id="5426179911063097041">"<ph name="SITE" />" souhaite vous envoyer des notifications</translation>
+<translation id="5426179911063097041"><ph name="SITE" /> souhaite vous envoyer des notifications</translation>
 <translation id="5430298929874300616">Supprimer le favori</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5433756542371550806">Variations de ligne de commande</translation>
@@ -3461,7 +3461,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6711464428925977395">Le serveur proxy présente une erreur, ou l'adresse est incorrecte.</translation>
 <translation id="6711700233707023861">Chaîne de variantes copiée dans le presse-papiers</translation>
 <translation id="6716039223770814796">Comparer <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> éléments</translation>
-<translation id="6716672519412350405"><ph name="URL" /> cherche à créer un plan 3D de votre environnement et à suivre la position de la caméra</translation>
+<translation id="6716672519412350405"><ph name="URL" /> souhaite créer un plan 3D de votre environnement et suivre la position de la caméra</translation>
 <translation id="6717692133381953670">Onglet envoyé depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="6718524733720986924">Enregistrez vos informations pour que la saisie automatique puisse remplir plus de champs la prochaine fois</translation>
 <translation id="6718612893943028815">Utiliser la caméra ?</translation>
@@ -4801,7 +4801,7 @@ Informations supplémentaires :
 <translation id="8987663052629670333">Services d'impression photo</translation>
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="899688752321268742"><ph name="URL" /> souhaite savoir si vous utilisez activement cet appareil</translation>
+<translation id="899688752321268742"><ph name="URL" /> souhaite savoir quand vous utilisez activement cet appareil</translation>
 <translation id="8997023839087525404">Le certificat présenté par le serveur n'a pas été communiqué au public. Selon les règles de transparence des certificats, certains certificats doivent obligatoirement être communiqués publiquement pour garantir qu'ils sont dignes de confiance et qu'ils protègent contre les individus malveillants.</translation>
 <translation id="9000145382638074673">Vos appareils</translation>
 <translation id="9001074447101275817">Le proxy <ph name="DOMAIN" /> nécessite un nom d'utilisateur et un mot de passe.</translation>

@@ -90,7 +90,7 @@
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
 <translation id="1272079795634619415">إيقاف</translation>
-<translation id="12741168609094094">يمكن اختيار أي محتوى على الشاشة للبحث عنه أو نسخ نص منه وغير ذلك</translation>
+<translation id="12741168609094094">يمكنك اختيار أي محتوى على الشاشة للبحث عنه أو نسخ نص منه وغير ذلك</translation>
 <translation id="1275285675049378717">شحن <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1276975447697633661">اختيار الملف، ثم الضغط على <ph name="KEY" /></translation>
@@ -266,7 +266,7 @@
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">تفعيل إذن الوصول إلى بيانات الموقع الجغرافي</translation>
 <translation id="1830308660060964064">تم إلغاء تثبيت <ph name="ITEM_TITLE" /></translation>
-<translation id="1831565490995294689">انقر هنا لفتح <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1831565490995294689">يمكنك النقر هنا لفتح <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">إعدادات "وضع التركيز"</translation>
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
 <translation id="1840920496749066704">درجة مئوية</translation>
@@ -482,7 +482,7 @@
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
 <translation id="2619052155095999743">إدخال</translation>
 <translation id="2619326010008283367">الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: يمكنك العثور على إعدادات جهازك عبر "مشغِّل التطبيقات". يمكنك تخصيص <ph name="PRODUCT_NAME" /> عبر "الإعدادات"، مثل تغيير الخلفية أو ضبط شاشة الاستراحة.</translation>
-<translation id="2620016719323068571">البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
+<translation id="2620016719323068571">يمكنك البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
@@ -2245,7 +2245,7 @@
 <translation id="8287009018010202411">تطبيقات الإنتاجية</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
-<translation id="8300451473979404345">المقبض المحدَّد، يمكن استخدام مفاتيح الأسهم لتحريكه</translation>
+<translation id="8300451473979404345">تم تحديد المقبض، يمكنك استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="8308637677604853869">القائمة السابقة</translation>
 <translation id="830868413617744215">تجريبي</translation>
 <translation id="8314772463905284467">‏مفتاح Caps Lock قيد التفعيل</translation>

@@ -44,7 +44,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1508931164824684991">Sites can use JavaScript</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
-<translation id="1538031354170655462">Sites usually use Near Field Communication (NFC) to work with nearby tags or devices, like scanning badges or paying contactless</translation>
+<translation id="1538031354170655462">Sites usually use Near Field Communication (NFC) to work with nearby tags or devices, such as scanning badges or paying contactless</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1569054338208717605">Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
@@ -640,7 +640,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
-<translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
+<translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>
 <translation id="847433688444405067">Browse across devices</translation>
 <translation id="8487700953926739672">Available offline</translation>

@@ -19,7 +19,7 @@
 <translation id="1407843355326180937">‏כדאי להיכנס לחשבון באתר הזה וב-Chrome כדי שהסימניות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="1462727070346936664">‏כדי לקבל את החוויה הכי טובה ש-Chrome מציע, צריך להיכנס לחשבון.</translation>
 <translation id="1493827051843127077">‏הגדרה של Chrome כדפדפן ברירת המחדל כדי לסנכרן את הכרטיסיות, הסיסמאות ופרטי התשלומים שלך בכל המכשירים שלך</translation>
-<translation id="1504372625950710826">‏Chrome לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
+<translation id="1504372625950710826">‏מערכת Chrome לא הצליחה לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="1516692594929310090">‏תיפתח תצוגת הכרטיסיות ב-Chrome.</translation>
 <translation id="1526327845902180576">‏כשהאפשרות פועלת:
 <ph name="BEGIN_INDENT" />  • עוזרים לשפר את Chrome אצל אנשים שמשתמשים בדפדפן בצורה דומה לך.<ph name="END_INDENT" />
@@ -70,7 +70,7 @@
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏רוצה ש-Google Chrome יציע בפעם הבאה לתרגם דפים בשפה <ph name="LANGUAGE_NAME" /> מהאתר הזה?</translation>
 <translation id="2668242166988961773">‏חיפוש קולי ב-Chrome.</translation>
-<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
+<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, צריך<ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב בהמשך.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>

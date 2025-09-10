@@ -126,7 +126,7 @@
 <translation id="1480152980057770392">הצגת רשימת הקריאה</translation>
 <translation id="1485907716209290998">מעקב אחר חבילה</translation>
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
-<translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
+<translation id="1491277525950327607">כדי להחליף את מצב ההגדרה יש ללחוץ לחיצה כפולה</translation>
 <translation id="1491965206608166851">רוצה להיכנס באמצעות הסיסמאות ומפתחות הגישה השמורים שלך מכל אפליקציה?</translation>
 <translation id="1492417797159476138">כבר שמרת את שם המשתמש הזה באתר הזה</translation>
 <translation id="1497590942294823549">תפריט ← מנהל הסיסמאות</translation>
@@ -248,7 +248,7 @@
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>
 <translation id="1955773397805078763">הוספת אמצעי תשלום</translation>
-<translation id="1956138802718275401">גישה לסיסמאות במסך הבית</translation>
+<translation id="1956138802718275401">גישה לסיסמאות ממסך הבית</translation>
 <translation id="1959441496380398824">לוחצים לחיצה ארוכה על התאריך.</translation>
 <translation id="1962348300797608157">שותפה איתכם סיסמה לאתר <ph name="WEBSITE" /> על ידי <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /></translation>
 <translation id="1962969542251276847">נעילת מסך</translation>
@@ -315,7 +315,7 @@
 <translation id="218350106843433823">מילוי אוטומטי של סיסמאות ומפתחות גישה</translation>
 <translation id="2184272387334793084">לאחר הכניסה לחשבון, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="2186206192313702726">Google Lens</translation>
-<translation id="2188993354115194873">לוחצים על <ph name="BEGIN_BOLD" />שמירה ב"הורדות"<ph name="END_BOLD" /></translation>
+<translation id="2188993354115194873">צריך ללחוץ על <ph name="BEGIN_BOLD" />שמירה ב-"הורדות"<ph name="END_BOLD" /></translation>
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2196428379625389579">חיפוש באינטרנט</translation>
@@ -414,7 +414,7 @@
 <translation id="2538103551183528357">נסתר, סיסמה</translation>
 <translation id="2539748786028143624">הפעלת ההגנה המשופרת…</translation>
 <translation id="2540111494300686866">הסתרת תיבות דו-שיח</translation>
-<translation id="2542268842667970959">הסתרת האפשרות 'בדיקת אבטחה'</translation>
+<translation id="2542268842667970959">הסתרת האפשרות "בדיקת אבטחה"</translation>
 <translation id="2551153019974022505">שגיאה בחשבון</translation>
 <translation id="2559843230610279254">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות.</translation>
 <translation id="2573117291489209663">סיום</translation>
@@ -425,7 +425,7 @@
 <translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
 <translation id="260378315836159338">בחלק העליון של המסך, לחצו על +</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
-<translation id="261305050785128654">יש אפשרות להגדיר את השפות שדוברים כך שהן יהיו ידועות לאתרים. יוצג בהם תוכן בשפות האלה, כשהדבר יתאפשר.</translation>
+<translation id="261305050785128654">כדאי לאפשר לאתרים לדעת באילו שפות נעשה שימוש. כשהדבר אפשרי, יוצג תוכן בשפות האלה</translation>
 <translation id="2613747923081026172">יצירת קבוצה</translation>
 <translation id="261735223792457154">הצגת הכול…</translation>
 <translation id="261739049332372104">‏כדי לקבל עדכונים על תוכן שחשוב לך, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
@@ -501,7 +501,7 @@
 <translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
 <translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
 <translation id="2902312830803030883">פעולות נוספות</translation>
-<translation id="2904788871580817212">זוהתה ירידה במחיר בכרטיסייה הפתוחה שלך, מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN" /></translation>
+<translation id="2904788871580817212">המערכת זיהתה ירידה במחיר מוצר או יותר בכרטיסייה הפתוחה שלך, מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">יש לך <ph name="NUMBER_OF_PASSWORDS" /> סיסמאות בשימוש חוזר שעלולות לסכן את האבטחה שלך.</translation>
 <translation id="29153882450867370">הסתרת האפשרות "מעקב אחר מחירים"</translation>
 <translation id="291754862089661335">‏צריך למקם את קוד ה-QR או הברקוד במסגרת הזו</translation>
@@ -662,7 +662,7 @@
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="3595252146048399851">‏תמיד אפשר לבחור מה לסנכרן דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />. יכול להיות ש-Google תתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
-<translation id="3602260545951981695">בוחרים באפשרות 'הגנה משופרת'</translation>
+<translation id="3602260545951981695">יש לבחור באפשרות "הגנה משופרת"</translation>
 <translation id="3610041351087301930">הסתרת "קורא"</translation>
 <translation id="3610866916973186448">כן, למחוק</translation>
 <translation id="3622175633937495219">חיפוש בהיסטוריה (התקבלו <ph name="COUNT" /> תוצאות)</translation>
@@ -1197,7 +1197,7 @@
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">לעבור לחשבון השני? נתוני החשבון שלא נשמרו יימחקו.</translation>
 <translation id="5683499062697987550">‏כדי להשתמש בסיסמאות ולשמור אותן בחשבון Google, עליך לאמת את הזהות שלך.</translation>
-<translation id="5684761169742812828">‏הסיסמה הזו נחשפה בעקבות פרצה באבטחת מידע באינטרנט. אם אין לך זמן לשנות את ההודעה הזו כרגע, Google ממליצה לשמור את האזהרה הזו כדי להזכיר לך במועד מאוחר יותר.</translation>
+<translation id="5684761169742812828">‏הסיסמה הזו נחשפה בעקבות פרצה באבטחת מידע באינטרנט. אם אין לך זמן לשנות את הסיסמה הזו כרגע, Google ממליצה לשמור את האזהרה הזו כדי להזכיר לך בהמשך.</translation>
 <translation id="5688739340234490129">{count,plural, =1{כרטיס אחד ({count})}one{‫{count} כרטיסים}two{‫{count} כרטיסים}other{‫{count} כרטיסים}}</translation>
 <translation id="5694848685995373177">‏הקובץ נשמר ב-Drive של <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">אפשר לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב"הגדרות" ואז ב"הגדרות תוכן"</translation>
@@ -1230,7 +1230,7 @@
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ושעלולה לסכן את האבטחה שלך. עליך לשנות אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ושעלולות לסכן את האבטחה שלך. עליך לשנות אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ושעלולות לסכן את האבטחה שלך. עליך לשנות אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ושעלולות לסכן את האבטחה שלך. עליך לשנות אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
 <translation id="5803566855766646066">בחרת למחוק את הכרטיס החדש. להמשיך?</translation>
-<translation id="5804012843049740908">‏אפשר לקבל טיפים לתהליך ההגדרה שיעזרו לך להפיק את המירב מ-Chrome</translation>
+<translation id="5804012843049740908">‏אפשר לקבל טיפים לתהליך ההגדרה שיעזרו לך לקבל את כל הטוב שיש ב-Chrome</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="58081802114142635">‏הפעילות שלך משפרת את Google AI.</translation>
 <translation id="5813223718099710537">‏כשמשתמשים בתכונה הזו, כתובות ה-URL ותוכן הדפים נשלחים ל-Google. ניתן להשבית את האפשרות הזו בכל שלב.</translation>

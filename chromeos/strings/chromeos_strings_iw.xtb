@@ -563,7 +563,7 @@
 <translation id="3487866404496702283">‏משוב על תכונת Mahi</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3492882532495507361">משרד בסגנון <ph name="OFFICE_STYLE" /> עם נגיעות בעיצוב <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">‏הנתונים נמדדים על ידי מכשיר Chromebook שלך. יכול להיות שהנתונים האלה יהיו שונים מנתוני הספק.</translation>
+<translation id="3493187369049186498">‏הנתונים נמדדים על ידי מכשיר ה-Chromebook שלך. יכול להיות שהנתונים האלה יהיו שונים מנתוני הספק.</translation>
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
@@ -843,7 +843,7 @@
 <translation id="4683762547447150570">כדי למקד את הקצאת המקשים יש ללחוץ על הכפתור</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
-<translation id="4697260493945012995">בחירה של סוג אמצעי הבקרה</translation>
+<translation id="4697260493945012995">יש לבחור אמצעי בקרה מבין השניים</translation>
 <translation id="4712940987669302829">אפקט בוקה</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4733200407105375152">לא בכלי העזר להוראה</translation>
@@ -1384,7 +1384,7 @@
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
 <translation id="7103793063702494489">השפה שבחרת</translation>
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
-<translation id="7108668606237948702">הזנת מפתח</translation>
+<translation id="7108668606237948702">הזנת המפתח</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב בהמשך</translation>
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
@@ -1639,7 +1639,7 @@
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
-<translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
+<translation id="8226628635270268143">אפשר לבחור את התמונות והאלבומים האהובים שלך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8238771987802558562">‏בחירת APN</translation>
@@ -1842,7 +1842,7 @@
 <translation id="910415269708673980">חידוש הכרטיס ל-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9108856746036501072">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
-<translation id="9111102763498581341">ביטול נעילה</translation>
+<translation id="9111102763498581341">לפתוח נעילה</translation>
 <translation id="9122492456897874028">מקבלים סיכומים של תוכן, הגדרות של מונחים ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9122865513525855321">זן</translation>

@@ -11,7 +11,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1070329623210597193">Fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
-<translation id="1074758928858737435">Vous pouvez demander à voir la version classique des sites</translation>
+<translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur des sites</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1178015372320901893">Bottom sheet Mes raccourcis</translation>
 <translation id="1178581264944972037">Suspendre</translation>
@@ -147,7 +147,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
 <translation id="2626708220538466178">Bottom sheet du navigateur par défaut fermé</translation>
 <translation id="2653659639078652383">Envoyer</translation>
-<translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images de votre presse-papiers</translation>
+<translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images du presse-papiers</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2682367912565197520">Supprimer le niveau de zoom enregistré</translation>
 <translation id="2683434792633810741">Supprimer et réinitialiser ?</translation>
@@ -179,7 +179,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3004438526346162184">Les sites peuvent utiliser cette fonctionnalité pour gérer les fenêtres sur tous vos écrans</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
-<translation id="3064871050034234884">Le son des sites est activé</translation>
+<translation id="3064871050034234884">Les sites peuvent lire du son</translation>
 <translation id="3065787901655140044">La Protection Avancée est activée</translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
@@ -252,7 +252,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="381841723434055211">Numéros de téléphone</translation>
 <translation id="3826050100957962900">Connexion tierce</translation>
-<translation id="3835233591525155343">Savoir si vous utilisez l'appareil</translation>
+<translation id="3835233591525155343">Utilisation de votre appareil</translation>
 <translation id="3843916486309149084">Chrome bloquera de nouveau les cookies aujourd'hui</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3859306556332390985">Avance rapide</translation>
@@ -277,7 +277,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
-<translation id="4077310749977440510">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
+<translation id="4077310749977440510">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme conserver la mise en forme du texte copié</translation>
 <translation id="4082080074595021446">Les exceptions pour des sites Web spécifiques ne sont pas autorisées, car l'appareil Android n'a pas assez de RAM.</translation>
 <translation id="4149890623864272035">Voulez-vous vraiment supprimer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
@@ -511,13 +511,13 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
-<translation id="6842868554183332230">En général, les sites détectent quand vous utilisez activement votre appareil pour définir votre disponibilité dans les applis de chat</translation>
+<translation id="6842868554183332230">Les sites détectent généralement les moments où vous êtes en train d'utiliser votre appareil, afin d'indiquer si vous êtes disponible dans les applications de chat</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
 <translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
 <translation id="6900883974539674431">Créez des groupes d'onglets qui sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="6912998170423641340">Interdire aux sites d'accéder en lecture au texte et aux images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
-<translation id="6950072572526089586">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
+<translation id="6950072572526089586">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté à ce site ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Supprimer les données du site ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilité</translation>
@@ -664,7 +664,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Rechercher des contacts</translation>
-<translation id="8707904142362025782">Le site peut demander à utiliser votre caméra</translation>
+<translation id="8707904142362025782">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Faites glisser votre doigt du haut vers le bas et balayez l'écran depuis le bord gauche ou droit pour quitter le plein écran.</translation>
 <translation id="8719283222052720129">Activez l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -689,7 +689,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8926666909099850184">La fonctionnalité NFC est désactivée pour cet appareil. Activez-la dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Empêcher les sites de consulter et de modifier des informations sur des appareils NFC</translation>
 <translation id="8944485226638699751">Limités</translation>
-<translation id="895054485242522631">Les sites peuvent utiliser des capteurs de mouvement</translation>
+<translation id="895054485242522631">Les sites peuvent utiliser les capteurs de mouvement</translation>
 <translation id="8959122750345127698">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="8990043154272859344">Vous allez être déconnecté de tous les sites</translation>
 <translation id="8993853206419610596">Développer toutes les demandes</translation>
@@ -697,7 +697,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="9011903857143958461">Autorisation accordée : <ph name="SITE_NAME" /></translation>
 <translation id="9017522656123387064">Mode de sélection quitté</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
-<translation id="902236149563113779">Les sites suivent généralement la position de votre caméra pour offrir des fonctionnalités de réalité augmentée, comme des jeux ou des indications d'itinéraire</translation>
+<translation id="902236149563113779">Les sites suivent généralement la position de votre caméra pour certaines fonctionnalités de RA, comme des jeux ou des indications d'itinéraire</translation>
 <translation id="9039697262778250930">Vous serez peut-être déconnecté de ces sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Supprimer les cookies ?</translation>

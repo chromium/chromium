@@ -151,7 +151,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2682367912565197520">Kayıtlı yakınlaştırma seviyesini sil</translation>
 <translation id="2683434792633810741">Veriler silinip sıfırlansın mı?</translation>
-<translation id="2685514716378236873">İzin Verilmiyor</translation>
+<translation id="2685514716378236873">İzin verilmiyor</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
 <translation id="2726059656860238749">Chrome'u çok amaçlı adres çubuğu odaklı başlatın. Böylece, düşük özellikli cihazlarda başlatma süresi kısalır.</translation>
@@ -689,7 +689,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8926666909099850184">NFC bu cihazda kapalı. Bu özelliği <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda açın.</translation>
 <translation id="8928445016601307354">NFC cihazlarda sitelerin bilgileri görmesini ve değiştirmesini engelle</translation>
 <translation id="8944485226638699751">Sınırlı</translation>
-<translation id="895054485242522631">Siteler hareket sensörleri kullanabilir</translation>
+<translation id="895054485242522631">Siteler hareket sensörlerini kullanabilir</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Tüm sitelerdeki oturumunuz kapatılacak</translation>
 <translation id="8993853206419610596">Tüm istekleri genişlet</translation>

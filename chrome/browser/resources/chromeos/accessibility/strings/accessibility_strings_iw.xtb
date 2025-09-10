@@ -268,7 +268,7 @@
 <translation id="267442004702508783">רענון</translation>
 <translation id="2675533876313964202">ירקרק</translation>
 <translation id="2684412629217766642">‏סגירת מערך השיעור של ChromeVox</translation>
-<translation id="2692503699962701720">שינוי גובה הצליל כשמזכירים סוגים שונים של רכיבים וטקסט מעוצב</translation>
+<translation id="2692503699962701720">שינוי גובה הצליל בהקראת רכיבים וטקסט מעוצב</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">מועמד להמרת טקסט</translation>
 <translation id="270523456882008230">רמז: להפעלת הפריט הנוכחי, יש ללחוץ לחיצה כפולה בעזרת אצבע אחת.</translation>
@@ -1093,7 +1093,7 @@
 <translation id="8146613869421949343">‏בשלב הזה נלמד על מקש החיפוש. במקש החיפוש משתמשים בשילוב עם מקשים אחרים לביצוע פקודות ChromeVox. מקש החיפוש נמצא בדיוק מעל מקש Shift השמאלי. כדי להמשיך, יש ללחוץ על מקש החיפוש.</translation>
 <translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">בחירת הכול</translation>
-<translation id="816818801578874684">‏זו הכותרת הראשונה. יש להקיש על מקש החיפוש + H כדי לעבור לכותרת הבאה.</translation>
+<translation id="816818801578874684">‏זו הכותרת הראשונה. כדי לעבור לכותרת הבאה יש ללחוץ על מקש החיפוש ועל H יחד.</translation>
 <translation id="8173092779156526980">החלקה שמאלה עם ארבע אצבעות</translation>
 <translation id="817529114347680055">מסך מופעל</translation>
 <translation id="8179976553408161302">Enter</translation>

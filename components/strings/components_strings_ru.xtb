@@ -1547,7 +1547,7 @@
 <translation id="357244642999988503">Удалить столбец</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3574520980813687946">Обновить адрес</translation>
-<translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
+<translation id="3575121482199441727">Разрешить для этого сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Выбран вариант "Улица"</translation>
 <translation id="3576616784287504635">Подтвердите действие на странице <ph name="SITE" /></translation>
@@ -2440,7 +2440,7 @@
 <translation id="5030338702439866405">Кем выдан</translation>
 <translation id="503069730517007720">Необходимый корневой сертификат для программы "<ph name="SOFTWARE_NAME" />" не установлен. Чтобы устранить проблему, попросите системного администратора ознакомиться с инструкциями по настройке программы "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Добавить для сравнения?</translation>
-<translation id="503498442187459473">Сайт <ph name="HOST" /> запрашивает доступ к камере и микрофону.</translation>
+<translation id="503498442187459473">Сайт <ph name="HOST" /> запрашивает доступ к камере и микрофону</translation>
 <translation id="5035135400558156732">Садоводство</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Размер шрифта</translation>
@@ -3685,7 +3685,7 @@
 <translation id="7107249414147762907">Этот файл PDF недоступен. Нет извлеченного текста.</translation>
 <translation id="7107427078069498123">Цифровые отпечатки сертификата с подписью SHA-256</translation>
 <translation id="7108338896283013870">Скрыть</translation>
-<translation id="7108634116785509031">Сайт <ph name="HOST" /> запрашивает доступ к камере.</translation>
+<translation id="7108634116785509031">Сайт <ph name="HOST" /> запрашивает доступ к камере</translation>
 <translation id="7108819624672055576">Разрешено расширением</translation>
 <translation id="7109510814665441393">Симуляторы вождения и гоночные игры</translation>
 <translation id="7110116949943042888">Временные и сезонные вакансии</translation>

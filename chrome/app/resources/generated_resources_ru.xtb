@@ -1829,7 +1829,7 @@
 <translation id="2252017960592955005">Защита от чужих взглядов (бета-версия)</translation>
 <translation id="2253318212986772520">Не удалось получить PPD-файл для принтера "<ph name="PRINTER_NAME" />".</translation>
 <translation id="2253797136365098595">Подробнее о поиске в истории браузера</translation>
-<translation id="2253927598983295051">Выберите, какие данные вы хотите передать приложению "<ph name="APP_NAME" />"</translation>
+<translation id="2253927598983295051">Выберите, чем поделиться с <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Устройство уже заблокировано в другом домене или режиме.</translation>
 <translation id="2255317897038918278">Штамп времени Microsoft</translation>
 <translation id="2256115617011615191">Перезапустить</translation>
@@ -3716,7 +3716,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3572031449439748861">Расширения (<ph name="NUM_EXTENSIONS" />) отключены</translation>
-<translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
+<translation id="3575121482199441727">Разрешить для этого сайта</translation>
 <translation id="3575224072358507281">Сбор IP-адреса и результатов оценки сети для Measurement Lab в соответствии с политикой конфиденциальности этой платформы (measurementlab.net/privacy)</translation>
 <translation id="3577036603268648505">Защити себя в интернете</translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
