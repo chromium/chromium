@@ -261,6 +261,12 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_AutoOpenNotIncluded) {
   candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
   GetTabMetadata(candidates[3]).parent_tab_id = 123;
 
+  // Root node which points to itself as parent, and not opened by user.
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 123));
+  GetTabMetadata(candidates[3]).parent_tab_id = 123;
+  GetTabMetadata(candidates[1]).tab_origin =
+      TabMetadata::TabOrigin::kOpenedWithoutUserAction;
+
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
 
@@ -269,7 +275,7 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_AutoOpenNotIncluded) {
   const auto& suggestion = suggestions->suggestions[0];
   EXPECT_EQ(GroupSuggestion::SuggestionReason::kSimilarSource,
             suggestion.suggestion_reason);
-  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 113, 114));
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 113, 114, 123));
 }
 
 TEST_F(GroupingHeuristicsTest,
