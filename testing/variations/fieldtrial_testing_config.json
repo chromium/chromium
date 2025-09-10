@@ -28246,6 +28246,21 @@
             ]
         }
     ],
+    "WinSboxNoDbghelpWarmup": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxNoDbghelpWarmup"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [

@@ -7,13 +7,20 @@
 #include <windows.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/win/delayload_helpers.h"
 #include "sandbox/policy/win/hook_util/hook_util.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox::policy {
 
 namespace {
+
+// TODO(crbug.com/443286263) allows symbolizations inside sandboxes to be
+// tracked down and fixed. When enabled this prevents prewarming dbghelp.dll
+// before entering lockdown.
+BASE_FEATURE(kWinSboxNoDbghelpWarmup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Stores the default lcid.
 LCID g_user_default_lcid = 0;
@@ -59,6 +66,12 @@ bool HookDwriteGetUserDefaultLCID() {
     }
   }
   return false;
+}
+
+void MaybeDelayloadDbghelp() {
+  if (!base::FeatureList::IsEnabled(kWinSboxNoDbghelpWarmup)) {
+    std::ignore = base::win::LoadAllImportsForDll("dbghelp.dll");
+  }
 }
 
 }  // namespace sandbox::policy
