@@ -583,6 +583,21 @@
             ]
         }
     ],
+    "AndroidAudioDeviceListener": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAudioDeviceListener"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAutofillForwardIframeOrigin": [
         {
             "platforms": [
