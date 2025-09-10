@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
+
+#include <memory>
+#include <string_view>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
+#include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
+#include "chromeos/ash/components/boca/receiver/boca_device_auth_token_service.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
+#include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "content/public/browser/web_ui.h"
+#include "google_apis/common/auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace ash::boca_receiver {
+
+ReceiverHandlerDelegateImpl::ReceiverHandlerDelegateImpl(content::WebUI* web_ui)
+    : web_ui_(web_ui) {}
+
+ReceiverHandlerDelegateImpl::~ReceiverHandlerDelegateImpl() = default;
+
+std::unique_ptr<boca::InvalidationServiceImpl>
+ReceiverHandlerDelegateImpl::CreateInvalidationService(
+    boca::InvalidationServiceDelegate* invalidation_service_delegate) const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  gcm::GCMDriver* gcm_driver =
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
+  instance_id::InstanceIDDriver* instance_id_driver =
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver();
+  return std::make_unique<boca::InvalidationServiceImpl>(
+      gcm_driver, instance_id_driver, invalidation_service_delegate);
+}
+
+std::unique_ptr<google_apis::RequestSender>
+ReceiverHandlerDelegateImpl::CreateRequestSender(
+    std::string_view requester_id,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      profile->GetURLLoaderFactory();
+  auto auth_service = std::make_unique<
+      BocaDeviceAuthTokenService<DeviceOAuth2TokenServiceFactory>>(
+      OAuth2AccessTokenManager::ScopeSet{boca::kSchoolToolsAuthScope},
+      requester_id);
+  return std::make_unique<google_apis::RequestSender>(
+      std::move(auth_service), url_loader_factory,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+      /*custom_user_agent=*/"", traffic_annotation);
+}
+
+}  // namespace ash::boca_receiver

@@ -8,6 +8,7 @@ static_library("receiver") {
   sources = [
     "boca_device_auth_token_service.cc",
     "boca_device_auth_token_service.h",
+    "receiver_handler_delegate.h",
     "register_receiver_request.cc",
     "register_receiver_request.h",
   ]
