@@ -414,7 +414,10 @@ UITextView* CreateSubtitleTextView() {
   // allowing the scroll view to take the full screen width.
   UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
   // This is the layout guide to compute the bottom margin of the "Set as
-  // Default" button.
+  // Default" button in the float container.
+  // And the height of this layout guide is applied to
+  // `inlineContainerButtonBottomMargin`.
+  // With this, the floating and the inline containers have the same height.
   UILayoutGuide* buttonBottomMargin = [[UILayoutGuide alloc] init];
   [view addLayoutGuide:buttonBottomMargin];
   // This layout guide is to map `buttonBottomMargin` height into the inline
@@ -493,7 +496,9 @@ UITextView* CreateSubtitleTextView() {
     [_searchEngineStackView.trailingAnchor
         constraintEqualToAnchor:scrollContentView.trailingAnchor],
 
-    // Button bottom margin constraints.
+    // Button bottom margin constraints. The bottom margin the "Set as Default"
+    // button is different according if there is a safe area or not.
+    // This works with `buttonBottomMarginConstraint` defined below.
     [buttonBottomMargin.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
     [buttonBottomMargin.topAnchor
         constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
@@ -513,7 +518,9 @@ UITextView* CreateSubtitleTextView() {
     [_inlineSetAsDefaultButtonContainer.bottomAnchor
         constraintEqualToAnchor:scrollContentView.bottomAnchor],
 
-    // inlineContainerButtonBottomMargin constraints.
+    // inlineContainerButtonBottomMargin constraints. With those constraints,
+    // the bottom margin of the inline button is the same as the one of the
+    // floating button.
     [inlineContainerButtonBottomMargin.bottomAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer
                                     .bottomAnchor],
@@ -573,6 +580,12 @@ UITextView* CreateSubtitleTextView() {
     [_floatingSetAsDefaultButton.centerXAnchor
         constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
   ]];
+  // This contraint makes sure `buttonBottomMargin` is as small as possible.
+  NSLayoutConstraint* buttonBottomMarginConstraint =
+      [buttonBottomMargin.topAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor];
+  buttonBottomMarginConstraint.priority = UILayoutPriorityDefaultLow;
+  buttonBottomMarginConstraint.active = YES;
   // No need to update the more and SetAsDefault buttons. They will be updated
   // when the view will be appearing.
   [self loadSearchEngineButtons];
