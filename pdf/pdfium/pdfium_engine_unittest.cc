@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
@@ -78,6 +79,9 @@ using ::testing::Pair;
 using ::testing::Return;
 using ::testing::StrictMock;
 
+constexpr char kSelectTextExpectedText[] =
+    "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
+
 MATCHER_P2(LayoutWithSize, width, height, "") {
   return arg.size() == gfx::Size(width, height);
 }
@@ -112,6 +116,14 @@ blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
       .SetType(blink::WebInputEvent::Type::kMouseMove)
       .SetPosition(position)
       .Build();
+}
+
+std::string GetPlatformTextExpectation(std::string expectation) {
+#if BUILDFLAG(IS_WIN)
+  base::ReplaceSubstringsAfterOffset(&expectation, /*start_offset=*/0, "\n",
+                                     "\r\n");
+#endif
+  return expectation;
 }
 
 class MockTestClient : public TestClient {
@@ -789,16 +801,6 @@ TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
   EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
 }
 
-namespace {
-#if BUILDFLAG(IS_WIN)
-constexpr char kSelectTextExpectedText[] =
-    "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
-#else
-constexpr char kSelectTextExpectedText[] =
-    "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
-#endif
-}  // namespace
-
 TEST_P(PDFiumEngineTest, SelectText) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -810,7 +812,8 @@ TEST_P(PDFiumEngineTest, SelectText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectTextBackwards) {
@@ -831,12 +834,9 @@ TEST_P(PDFiumEngineTest, SelectTextBackwards) {
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kFirstPageEndPosition)));
 
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "bye, world!\r\nHello, world!\r\nGoodby";
-#else
   constexpr char kExpectedText[] = "bye, world!\nHello, world!\nGoodby";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectTextWithCopyRestriction) {
@@ -851,7 +851,8 @@ TEST_P(PDFiumEngineTest, SelectTextWithCopyRestriction) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectCroppedText) {
@@ -863,12 +864,9 @@ TEST_P(PDFiumEngineTest, SelectCroppedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "world!\r\n";
-#else
   constexpr char kExpectedText[] = "world!\n";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
@@ -1051,12 +1049,9 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kMiddlePosition)));
 
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "Link Annotations - Page 1\r\nL";
-#else
   constexpr char kExpectedText[] = "Link Annotations - Page 1\nL";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 
   constexpr gfx::PointF kEndPosition(430, 230);
   EXPECT_FALSE(engine->HandleInputEvent(
@@ -1064,7 +1059,8 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
 
   // This is still `kExpectedText` because of the unit test's uncanny ability to
   // move the mouse to `kEndPosition` in one move.
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
@@ -1086,35 +1082,25 @@ TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
       CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kEndPosition)));
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedForwardSelection[] = "world!\r\nGoodbye,";
-#else
   static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye,";
-#endif
-  EXPECT_EQ(kExpectedForwardSelection, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedForwardSelection),
+            engine->GetSelectedText());
 
   // Backward selection.
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kStartPosition)));
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedBackwardSelection[] = "world!\r\nGoodbye,";
-#else
   static constexpr char kExpectedBackwardSelection[] = "world!\nGoodbye,";
-#endif
-  EXPECT_EQ(kExpectedBackwardSelection, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedBackwardSelection),
+            engine->GetSelectedText());
 
   // Select all.
   engine->SelectAll();
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedAllSelection[] =
-      "Hello, world!\r\nGoodbye, world!";
-#else
   static constexpr char kExpectedAllSelection[] =
       "Hello, world!\nGoodbye, world!";
-#endif
-  EXPECT_EQ(kExpectedAllSelection, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedAllSelection),
+            engine->GetSelectedText());
 }
 
 TEST_P(PDFiumEngineTest, SelectTextWithDoubleClickOnEmptyPage) {
@@ -1304,7 +1290,8 @@ TEST_P(PDFiumEngineTest, ClearTextSelection) {
 
   // Select text.
   engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
 
   // Clear selected text.
   engine->ClearTextSelection();
@@ -2207,7 +2194,8 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
   // Select text before going into read-only mode.
   EXPECT_FALSE(engine->IsReadOnly());
   engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
 
   // Setting read-only mode should unselect the text.
   engine->SetReadOnly(true);
@@ -2401,12 +2389,9 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
   constexpr gfx::PointF kEndPosition(75.0f, 480.0f);
   EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
 
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "Goodbye, world!\r\nHello, ";
-#else
   constexpr char kExpectedText[] = "Goodbye, world!\nHello, ";
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 
 #if BUILDFLAG(IS_WIN)
   constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 52.664f, 62.48f};
