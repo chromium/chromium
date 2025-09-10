@@ -60,6 +60,7 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
+    ModuleScheme,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -407,7 +408,8 @@ class WPTResultsProcessor:
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
-        self.sink = sink or ResultSinkReporter(host=port.typ_host())
+        self.sink = sink or ResultSinkReporter(
+            host=port.typ_host(), module_scheme=ModuleScheme.WEBTEST)
         self.path_finder = path_finder.PathFinder(self.fs)
         self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
