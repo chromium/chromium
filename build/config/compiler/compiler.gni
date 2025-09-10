@@ -132,8 +132,7 @@ declare_args() {
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
-  use_ml_inliner = host_os == "linux" && is_android &&
-                   !llvm_android_mainline  # https://crbug.com/1468680
+  use_ml_inliner = host_os == "linux" && is_android
 
   # Whether we should consider the profile we're using to be accurate. Accurate
   # profiles have the benefit of (potentially substantial) binary size

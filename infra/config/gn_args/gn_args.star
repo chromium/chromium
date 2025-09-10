@@ -474,17 +474,6 @@ gn_args.config(
     ],
 )
 
-gn_args.config(
-    name = "cronet_android_mainline_clang",
-    args = {
-        "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
-        "clang_use_chrome_plugins": False,
-        "default_min_sdk_version": 29,
-        # https://crbug.com/1481060
-        "llvm_android_mainline": True,
-    },
-)
-
 # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
 gn_args.config(
     name = "cronet_common",

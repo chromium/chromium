@@ -18,12 +18,6 @@ declare_args() {
   # in //tools/clang/scripts/update.py.
   rust_force_head_revision = false
 
-  # Cronet is shipped in AOSP, where it is built using the Android Mainline
-  # Clang. Please refer to go/cronet-builders-with-mainline-clang-design for
-  # more information.
-  # If this arg is set to true, we use the Android Mainline LLVM.
-  llvm_android_mainline = false
-
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
 
@@ -38,11 +32,7 @@ declare_args() {
 }
 
 declare_args() {
-  if (llvm_android_mainline) {  # https://crbug.com/1481060
-    clang_version = "17"
-  } else {
-    clang_version = "22"
-  }
+  clang_version = "22"
 }
 
 # Extension for shared library files (including leading dot).
