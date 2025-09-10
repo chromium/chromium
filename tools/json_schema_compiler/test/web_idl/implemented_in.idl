@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[implemented_in="path/to/implementation.h"]
+interface ImplementedInAPI {
+};
+
+// Schema to test the implementedIn extended attribute.
+partial interface Browser {
+  static attribute ImplementedInAPI implementedInAPI;
+};

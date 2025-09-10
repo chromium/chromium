@@ -755,7 +755,7 @@ class Namespace:
     description = ProcessNodeDescription(self.namespace).description
     nodoc = False
     platforms = None
-    compiler_options = OrderedDict()
+    compiler_options = {}
     deprecated = None
 
     # Functions are defined as Operations on the API Interface definition.
@@ -783,6 +783,9 @@ class Namespace:
         nodoc = True
       elif attribute_name == 'platforms':
         platforms = extended_attribute.GetProperty('VALUE')
+      elif attribute_name == 'implemented_in':
+        compiler_options['implemented_in'] = extended_attribute.GetProperty(
+            'VALUE')
       else:
         raise SchemaCompilerError(
             f'Unknown extended attribute with name "{attribute_name}" when'

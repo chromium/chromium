@@ -779,6 +779,17 @@ class WebIdlSchemaTest(unittest.TestCase):
     expected = ['chromeos']
     self.assertEqual(expected, platforms_schema[0]['platforms'])
 
+  # Tests that the 'implemented_in' extended attribute on an interface
+  # definition is copied into the resulting namespace after processing.
+  def testImplementedInExtendedAttribute(self):
+    idl = web_idl_schema.Load('test/web_idl/implemented_in.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    self.assertEqual('implementedInAPI', schema['namespace'])
+    self.assertEqual('path/to/implementation.h',
+                     schema['compiler_options']['implemented_in'])
+
   # Tests a variety of default values that are set on an API namespace when they
   # are not specified in the source IDL file.
   def testNonSpecifiedDefaultValues(self):
