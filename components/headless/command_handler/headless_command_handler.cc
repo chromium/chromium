@@ -366,8 +366,7 @@ void HeadlessCommandHandler::DocumentOnLoadCompletedInPrimaryMainFrame() {
                           base::Unretained(this)));
   devtools_client_.SendCommand("Inspector.enable");
 
-  std::string json_commands;
-  base::JSONWriter::Write(commands, &json_commands);
+  std::string json_commands = base::WriteJson(commands).value_or("");
   std::string script = "executeCommands(JSON.parse('" + json_commands + "'))";
 
   base::Value::Dict params;

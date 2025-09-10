@@ -449,8 +449,7 @@ void PerfTest(const char* json_args) {
   }
 
   // Write |results| into results file.
-  std::string results_string;
-  base::JSONWriter::Write(results, &results_string);
+  std::string results_string = base::WriteJson(results).value_or("");
   FILE* results_file = fopen(GetConfigString("RESULTS_FILE").c_str(), "wb");
   UNSAFE_TODO(
       fwrite(results_string.c_str(), results_string.length(), 1, results_file));

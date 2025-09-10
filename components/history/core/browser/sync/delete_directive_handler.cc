@@ -41,9 +41,7 @@ std::string DeleteDirectiveToString(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   base::Value value =
       syncer::HistoryDeleteDirectiveSpecificsToValue(delete_directive);
-  std::string str;
-  base::JSONWriter::Write(value, &str);
-  return str;
+  return base::WriteJson(value).value_or("");
 }
 
 // Compare time range directives first by start time, then by end time.

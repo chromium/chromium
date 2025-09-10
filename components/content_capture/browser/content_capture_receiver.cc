@@ -64,9 +64,7 @@ std::string ContentCaptureReceiver::ToJSON(
     }
     favicon_array.Append(std::move(favicon));
   }
-  std::string result;
-  base::JSONWriter::Write(favicon_array, &result);
-  return result;
+  return base::WriteJson(favicon_array).value_or("");
 }
 
 ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)

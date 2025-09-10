@@ -243,8 +243,7 @@ void AccountChecker::OnPriceEmailPrefChanged() {
       base::Value::Dict().Set(
           kPriceTrackEmailPref,
           pref_service_->GetBoolean(kPriceEmailNotificationsEnabled)));
-  std::string post_data;
-  base::JSONWriter::Write(post_json, &post_data);
+  std::string post_data = base::WriteJson(post_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(

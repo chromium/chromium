@@ -625,8 +625,10 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // for decoding.
   // TODO(donnd): remove soon (once the server is updated);
   if (const base::Value* rsearches_json_value =
-          dict->Find(kRelatedSearchesSuggestions))
-    base::JSONWriter::Write(*rsearches_json_value, related_searches_json);
+          dict->Find(kRelatedSearchesSuggestions)) {
+    *related_searches_json =
+        base::WriteJson(*rsearches_json_value).value_or("");
+  }
 }
 
 // Extract the Start/End of the mentions in the surrounding text

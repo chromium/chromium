@@ -164,11 +164,9 @@ std::vector<SettingsItem> GetSettingItems(
 
     if (NSString* setting_str = base::apple::ObjCCast<NSString>(value_ptr)) {
       if (setting_str.length <= kMaxStringSizeInBytes) {
-        std::string setting_json_string;
-        base::JSONWriter::Write(
-            base::Value(base::SysNSStringToUTF8(setting_str)),
-            &setting_json_string);
-        item.setting_json_value = setting_json_string;
+        item.setting_json_value =
+            base::WriteJson(base::Value(base::SysNSStringToUTF8(setting_str)))
+                .value_or("");
       }
     } else if (NSNumber* value_num =
                    base::apple::ObjCCast<NSNumber>(value_ptr)) {

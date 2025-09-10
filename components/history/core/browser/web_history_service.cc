@@ -416,8 +416,7 @@ void WebHistoryService::ExpireHistory(
     }
   }
   delete_request.Set("del", std::move(deletions));
-  std::string post_data;
-  base::JSONWriter::Write(delete_request, &post_data);
+  std::string post_data = base::WriteJson(delete_request).value_or("");
 
   GURL url(kHistoryDeleteHistoryUrl);
 

@@ -63,11 +63,10 @@ std::optional<PartitionKey> PartitionKey::Deserialize(const std::string& data) {
 }
 
 std::string PartitionKey::Serialize() const {
-  std::string out;
-  base::JSONWriter::Write(
-      base::Value::List().Append(domain_).Append(name_).Append(in_memory_),
-      &out);
-  return out;
+  return base::WriteJson(
+             base::Value::List().Append(domain_).Append(name_).Append(
+                 in_memory_))
+      .value_or("");
 }
 
 PartitionKey::PartitionKey(const PartitionKey& key) = default;

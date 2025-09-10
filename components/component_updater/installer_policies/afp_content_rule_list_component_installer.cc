@@ -124,14 +124,12 @@ std::string AntiFingerprintingContentRuleListComponentInstallerPolicy::
       base::UmaHistogramEnumeration(
           "FingerprintingProtection.IOSDryRun.TransformResult",
           IOSDryRunTransformResult::kSuccessRulesTransformed);
-      std::string modified_json;
-      base::JSONWriter::Write(*value, &modified_json);
-      return modified_json;
-    } else {
-      base::UmaHistogramEnumeration(
-          "FingerprintingProtection.IOSDryRun.TransformResult",
-          IOSDryRunTransformResult::kSuccessNoRulesToTransform);
+      return base::WriteJson(*value).value_or("");
     }
+
+    base::UmaHistogramEnumeration(
+        "FingerprintingProtection.IOSDryRun.TransformResult",
+        IOSDryRunTransformResult::kSuccessNoRulesToTransform);
   }
 #endif  // BUILDFLAG(IS_IOS)
   return json;

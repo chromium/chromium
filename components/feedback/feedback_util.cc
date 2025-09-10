@@ -106,7 +106,7 @@ void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
       dict.Remove("mainFrameUrl");
     }
   }
-  base::JSONWriter::Write(*autofill_data, &autofill_metadata);
+  autofill_metadata = base::WriteJson(*autofill_data).value_or("");
   return;
 }
 

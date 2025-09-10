@@ -216,9 +216,7 @@ std::string AccountId::Serialize() const {
   value.Set(kAccountTypeKey, AccountTypeToString(GetAccountType()));
   value.Set(kEmailKey, user_email_);
 
-  std::string serialized;
-  base::JSONWriter::Write(value, &serialized);
-  return serialized;
+  return base::WriteJson(value).value_or("");
 }
 
 // static

@@ -116,9 +116,7 @@ CommerceHeuristicsData::GetHintHeuristicsJSONForDomain(
   }
   base::Value::Dict res_dic;
   res_dic.Set(domain, std::move(domain_heuristics));
-  std::string res_string;
-  base::JSONWriter::Write(res_dic, &res_string);
-  return std::optional<std::string>(res_string);
+  return base::WriteJson(res_dic).value_or("");
 }
 
 std::optional<std::string> CommerceHeuristicsData::GetGlobalHeuristicsJSON() {

@@ -251,24 +251,21 @@ const std::string GetErrorPageJs() {
 
 const std::string GetSetTitleJs(std::string title) {
 #if BUILDFLAG(IS_IOS)
-  base::Value suffixValue("");
+  base::Value suffix_value("");
 #else  // Desktop and Android.
   std::string suffix(
       l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX));
-  base::Value suffixValue(" - " + suffix);
+  base::Value suffix_value(" - " + suffix);
 #endif
-  base::Value titleValue(title);
-  std::string suffixJs;
-  base::JSONWriter::Write(suffixValue, &suffixJs);
-  std::string titleJs;
-  base::JSONWriter::Write(titleValue, &titleJs);
-  return "setTitle(" + titleJs + ", " + suffixJs + ");";
+  base::Value title_value(title);
+  std::string suffix_js = base::WriteJson(suffix_value).value_or("");
+  std::string title_js = base::WriteJson(title_value).value_or("");
+  return "setTitle(" + title_js + ", " + suffix_js + ");";
 }
 
 const std::string GetSetTextDirectionJs(const std::string& direction) {
   base::Value value(direction);
-  std::string output;
-  base::JSONWriter::Write(value, &output);
+  std::string output = base::WriteJson(value).value_or("");
   return "setTextDirection(" + output + ");";
 }
 
@@ -301,8 +298,9 @@ const std::string GetUnsafeArticleContentJs(
 }
 
 const std::string GetAddToPageJs(const std::string& unsafe_content) {
-  std::string output(EnsureNonEmptyContent(unsafe_content));
-  base::JSONWriter::Write(base::Value(output), &output);
+  std::string output =
+      base::WriteJson(base::Value(EnsureNonEmptyContent(unsafe_content)))
+          .value_or("");
   return "addToPage(" + output + ");";
 }
 

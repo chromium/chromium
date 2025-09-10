@@ -112,9 +112,7 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   }
   request_dict.Set("payment_details", std::move(payment_details));
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(

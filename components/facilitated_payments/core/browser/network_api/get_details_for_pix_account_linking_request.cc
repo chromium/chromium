@@ -69,9 +69,7 @@ std::string GetDetailsForPixAccountLinkingRequest::GetRequestContent() {
           // within the dict.
           .Set("pix_account_linking_info", base::Value::Dict());
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 void GetDetailsForPixAccountLinkingRequest::ParseResponse(

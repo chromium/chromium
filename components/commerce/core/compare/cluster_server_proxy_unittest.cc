@@ -73,9 +73,7 @@ std::string GetPostData() {
     })";
   std::optional<base::Value::Dict> dict =
       base::JSONReader::ReadDict(post_data_string);
-  std::string post_data;
-  base::JSONWriter::Write(dict.value(), &post_data);
-  return post_data;
+  return base::WriteJson(dict.value()).value_or("");
 }
 
 class FakeClusterServerProxy : public ClusterServerProxy {
