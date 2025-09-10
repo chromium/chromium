@@ -308,6 +308,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
+  client_->GetSafeBrowsingService();
   if (!safe_browsing_service->CanCheckUrl(request_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());

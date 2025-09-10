@@ -76,7 +76,8 @@ void ReaderModePanelItemConfiguration::ReaderModeTabHelperDestroyed(
 }
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateDidLoadContent(
-    ReaderModeTabHelper* tab_helper) {
+    ReaderModeTabHelper* tab_helper,
+    web::WebState* web_state) {
   if (IsProfileEligibleForBwg()) {
     Invalidate();
   }
@@ -84,6 +85,7 @@ void ReaderModePanelItemConfiguration::ReaderModeWebStateDidLoadContent(
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
+    web::WebState* web_state,
     ReaderModeDeactivationReason reason) {}
 
 void ReaderModePanelItemConfiguration::ReaderModeDistillationFailed(

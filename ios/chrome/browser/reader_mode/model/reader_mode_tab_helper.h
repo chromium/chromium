@@ -19,7 +19,6 @@
 
 @protocol SnackbarCommands;
 @protocol ReaderModeCommands;
-class FullscreenController;
 
 // Observes changes to the web state to perform reader mode operations.
 class ReaderModeTabHelper : public web::WebStateObserver,
@@ -30,10 +29,12 @@ class ReaderModeTabHelper : public web::WebStateObserver,
    public:
     // Called when Reader mode content became available in this tab.
     virtual void ReaderModeWebStateDidLoadContent(
-        ReaderModeTabHelper* tab_helper) = 0;
+        ReaderModeTabHelper* tab_helper,
+        web::WebState* web_state) = 0;
     // Called when Reader mode content will become unavailable in this tab.
     virtual void ReaderModeWebStateWillBecomeUnavailable(
         ReaderModeTabHelper* tab_helper,
+        web::WebState* web_state,
         ReaderModeDeactivationReason reason) = 0;
 
     // Called when distillation fails.
@@ -102,10 +103,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // the `url` content.
   void HandleReaderModeHeuristicResult(const GURL& url,
                                        ReaderModeHeuristicResult result);
-
-  // Sets the full screen controller that will passed to the
-  // `ReaderModeContentTabHelper`.
-  void SetFullscreenController(FullscreenController* fullscreen_controller);
 
   // web::WebStateObserver overrides:
   void DidStartNavigation(web::WebState* web_state,

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_web_state_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -79,6 +80,18 @@
 - (void)disconnect {
   // Stop observing the WebStateList before destroying the bridge object.
   _dependencyInstallerBridge.StopObserving();
+}
+
+#pragma mark - ReaderModeBrowserAgentWebStateDelegate
+
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+       didCreateReaderWebState:(web::WebState*)webState {
+  [self webStateInserted:webState];
+}
+
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+     willDestroyReaderWebState:(web::WebState*)webState {
+  [self webStateRemoved:webState];
 }
 
 #pragma mark - TabsDependencyInstalling

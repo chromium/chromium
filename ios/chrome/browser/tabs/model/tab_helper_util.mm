@@ -155,6 +155,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kPrerender);
   const bool for_lens_overlay =
       IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kLensOverlay);
+  const bool for_reader_mode =
+      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kReaderMode);
 
   // When adding a new tab helper, please consider whether it should be filtered
   // out when the web_state is presented in the following context:
@@ -207,7 +209,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     AppLauncherTabHelper::CreateForWebState(
         web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
 
-    if (IsReaderModeAvailable()) {
+    if (IsReaderModeAvailable() && !for_reader_mode) {
       ReaderModeTabHelper::CreateForWebState(
           web_state, DistillerServiceFactory::GetForProfile(profile));
     }
@@ -236,12 +238,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   AnnotationsTabHelper::CreateForWebState(web_state);
 
-  SafeBrowsingClient* client =
-      SafeBrowsingClientFactory::GetForProfile(profile);
-  SafeBrowsingQueryManager::CreateForWebState(web_state, client);
-  SafeBrowsingTabHelper::CreateForWebState(web_state, client);
-  SafeBrowsingUrlAllowList::CreateForWebState(web_state);
-  SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
+  if (!for_reader_mode) {
+    SafeBrowsingClient* client =
+        SafeBrowsingClientFactory::GetForProfile(profile);
+    SafeBrowsingQueryManager::CreateForWebState(web_state, client);
+    SafeBrowsingTabHelper::CreateForWebState(web_state, client);
+    SafeBrowsingUrlAllowList::CreateForWebState(web_state);
+    SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
+  }
 
   TailoredSecurityTabHelper::CreateForWebState(
       web_state, TailoredSecurityServiceFactory::GetForProfile(profile));

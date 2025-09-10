@@ -33,8 +33,7 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
     test_browser_ = std::make_unique<TestBrowser>(profile());
     ReaderModeBrowserAgent::CreateForBrowser(test_browser_.get());
 
-    delegate_ =
-        OCMStrictProtocolMock(@protocol(ReaderModeBrowserAgentDelegate));
+    delegate_ = OCMProtocolMock(@protocol(ReaderModeBrowserAgentDelegate));
     GetReaderModeBrowserAgent()->SetDelegate(delegate_);
 
     side_swipe_handler_ = OCMProtocolMock(@protocol(PageSideSwipeCommands));

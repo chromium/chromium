@@ -10,7 +10,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
@@ -38,6 +37,11 @@ ReaderModeBrowserAgent::~ReaderModeBrowserAgent() = default;
 void ReaderModeBrowserAgent::SetDelegate(
     id<ReaderModeBrowserAgentDelegate> delegate) {
   delegate_ = delegate;
+}
+
+void ReaderModeBrowserAgent::SetWebStateDelegate(
+    id<ReaderModeBrowserAgentWebStateDelegate> delegate) {
+  web_state_delegate_ = delegate;
 }
 
 #pragma mark - Private
@@ -140,24 +144,28 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
 #pragma mark - ReaderModeTabHelper::Observer
 
 void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
-    ReaderModeTabHelper* tab_helper) {
-  FullscreenController* fullscreen_controller =
-      FullscreenController::FromBrowser(browser_);
-  tab_helper->SetFullscreenController(fullscreen_controller);
+    ReaderModeTabHelper* tab_helper,
+    web::WebState* web_state) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   ShowReaderModeUI(/* animated= */ YES);
+
+  [web_state_delegate_ readerModeBrowserAgent:this
+                      didCreateReaderWebState:web_state];
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
+    web::WebState* web_state,
     ReaderModeDeactivationReason reason) {
-  tab_helper->SetFullscreenController(nullptr);
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
   const bool animated =
       reason == ReaderModeDeactivationReason::kUserDeactivated;
   HideReaderModeUI(animated);
+
+  [web_state_delegate_ readerModeBrowserAgent:this
+                    willDestroyReaderWebState:web_state];
 }
 
 void ReaderModeBrowserAgent::ReaderModeDistillationFailed(

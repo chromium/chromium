@@ -7,6 +7,7 @@
 
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_web_state_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -32,6 +33,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   // Sets the `delegate_`.
   void SetDelegate(id<ReaderModeBrowserAgentDelegate> delegate);
+  void SetWebStateDelegate(id<ReaderModeBrowserAgentWebStateDelegate> delegate);
 
  private:
   friend class BrowserUserData<ReaderModeBrowserAgent>;
@@ -53,10 +55,11 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // ReaderModeTabHelper::Observer methods.
-  void ReaderModeWebStateDidLoadContent(
-      ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeWebStateDidLoadContent(ReaderModeTabHelper* tab_helper,
+                                        web::WebState* web_state) override;
   void ReaderModeWebStateWillBecomeUnavailable(
       ReaderModeTabHelper* tab_helper,
+      web::WebState* web_state,
       ReaderModeDeactivationReason reason) override;
   void ReaderModeDistillationFailed(ReaderModeTabHelper* tab_helper) override;
   void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
@@ -66,6 +69,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   // The delegate for this agent.
   id<ReaderModeBrowserAgentDelegate> delegate_;
+  id<ReaderModeBrowserAgentWebStateDelegate> web_state_delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_

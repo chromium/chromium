@@ -18,7 +18,6 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -307,7 +306,8 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     ReaderModeContentTabHelper* reader_mode_content_tab_helper) {
   reader_mode_web_state_content_loaded_ = true;
   for (auto& observer : observers_) {
-    observer.ReaderModeWebStateDidLoadContent(this);
+    observer.ReaderModeWebStateDidLoadContent(this,
+                                              reader_mode_web_state_.get());
   }
 
   // Apply translation to the page if it was applied on the original page.
@@ -387,18 +387,6 @@ void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
     const GURL& url,
     const base::Value* result) {
   HandleReaderModeHeuristicResult(url, GetReaderModeHeuristicResult(result));
-}
-
-void ReaderModeTabHelper::SetFullscreenController(
-    FullscreenController* fullscreen_controller) {
-  if (!reader_mode_web_state_) {
-    return;
-  }
-  ReaderModeContentTabHelper* content_tab_helper =
-      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
-  if (content_tab_helper) {
-    content_tab_helper->SetFullscreenController(fullscreen_controller);
-  }
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
@@ -557,7 +545,8 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
     tab_helper->SetOverridingWebViewProxy(nil);
   }
   for (auto& observer : observers_) {
-    observer.ReaderModeWebStateWillBecomeUnavailable(this, reason);
+    observer.ReaderModeWebStateWillBecomeUnavailable(
+        this, reader_mode_web_state_.get(), reason);
   }
   reader_mode_web_state_content_loaded_ = false;
 

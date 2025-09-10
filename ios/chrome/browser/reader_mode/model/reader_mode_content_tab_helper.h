@@ -15,7 +15,6 @@
 #import "ios/web/public/web_state_user_data.h"
 
 class ReaderModeContentDelegate;
-class FullscreenController;
 
 // Tab helper for the WebState rendering Reader mode content. Blocks navigations
 // and forwards them to its delegate instead.
@@ -35,8 +34,6 @@ class ReaderModeContentTabHelper
   // Attaches tab helpers that were available in the `original_web_state` to
   // continue supporting a subset of WebState based features.
   void AttachSupportedTabHelpers(web::WebState* web_state);
-  // Sets the full screen controller that will passed to the `FindTabHelper`.
-  void SetFullscreenController(FullscreenController* fullscreen_controller);
   // Activates translation on the Reader Mode web state.
   void ActivateTranslateOnPage(const std::string& source_code,
                                const std::string& target_code);
