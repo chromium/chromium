@@ -7,8 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +36,10 @@ namespace blink {
 const KURL GetSourcePageURL(const String& relative_url) {
   static const String kSourcePageURL = "https://example.com";
   return KURL(kSourcePageURL + relative_url);
+}
+
+scoped_refptr<const SecurityOrigin> GetOrigin(const String& url) {
+  return SecurityOrigin::Create(KURL(url));
 }
 
 // The default priority for FetchLater request without FetchPriorityHint or
@@ -153,11 +155,17 @@ class DeferredFetchPolicyTestBase : public SimTest {
   }
 
   // Renders a series of sibling <iframe> elements with the given `iframe_urls`.
-  static String RenderWithIframes(const Vector<String>& iframe_urls) {
+  static String RenderWithIframes(
+      const Vector<String>& iframe_urls,
+      const String& sandbox_policy = g_empty_string) {
     StringBuilder html;
     for (const auto& url : iframe_urls) {
       html.Append("<iframe src=\"");
       html.Append(url);
+      if (!sandbox_policy.empty()) {
+        html.Append("\" sandbox=\"");
+        html.Append(sandbox_policy);
+      }
       html.Append("\"></iframe>");
     }
     return html.ToString();
@@ -322,7 +330,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, SingleSameOriginFrame) {
   // Manually calling `GetContainerDeferredFetchPolicyOnNavigation()` again to
   // verify it actually returns `kDeferredFetch`.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_a->Owner(), KURL(frame_a_url)),
+                frame_a->Owner(), GetOrigin(frame_a_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetch);
 }
 
@@ -344,7 +352,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
   auto* frame_a = root->Tree().FirstChild();
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_a->Owner(), KURL(frame_a_url)),
+                frame_a->Owner(), GetOrigin(frame_a_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -376,18 +384,18 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
   auto* frame_d = frame_c->Tree().NextSibling();
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_a->Owner(), KURL(frame_a_url)),
+                frame_a->Owner(), GetOrigin(frame_a_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetch);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_b->Owner(), KURL(frame_b_url)),
+                frame_b->Owner(), GetOrigin(frame_b_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetch);
 
   // Frame C and Frame D should have minimal quota policy set.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_c->Owner(), KURL(frame_c_url)),
+                frame_c->Owner(), GetOrigin(frame_c_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_d->Owner(), KURL(frame_d_url)),
+                frame_d->Owner(), GetOrigin(frame_d_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -414,7 +422,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
   auto* frame_b = frame_d->Tree().FirstChild();
 
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_a->Owner(), KURL(frame_a_url)),
+                frame_a->Owner(), GetOrigin(frame_a_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetch);
   // Frame B will have NO quota, as
   // (1) its "inherited policy" from its parent Frame D, which is a cross-origin
@@ -422,15 +430,15 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
   // "deferred-fetch-minimal".
   // (2) its parent Frame D does not share same quota with root frame.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_b->Owner(), KURL(frame_b_url)),
+                frame_b->Owner(), GetOrigin(frame_b_url)),
             mojom::blink::DeferredFetchPolicy::kDisabled);
 
   // Frame C and Frame D should have minimal quota policy set.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_c->Owner(), KURL(frame_c_url)),
+                frame_c->Owner(), GetOrigin(frame_c_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
-                frame_d->Owner(), KURL(frame_d_url)),
+                frame_d->Owner(), GetOrigin(frame_d_url)),
             mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -472,6 +480,50 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
   EXPECT_EQ(frame->Owner()->GetFramePolicy().deferred_fetch_policy,
             mojom::blink::DeferredFetchPolicy::kDisabled)
       << i + 1 << "-th cross-origin iframe";
+}
+
+// Tests that a sandboxed iframe (without allow-same-origin) should receive the
+// `kDeferredFetchMinimal` policy by default as it's considered cross-origin.
+TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
+       SandboxedIframeGetsMinimalPolicyByDefault) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}, "allow-scripts"),
+             {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  // Simulates a navigation target in a sandbox frame.
+  auto to_origin = GetOrigin(frame_a_url)->DeriveNewOpaqueOrigin();
+
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), to_origin),
+            mojom::blink::DeferredFetchPolicy::kDeferredFetchMinimal);
+}
+
+// Tests that a sandboxed iframe with 'allow-same-origin' receives the
+// `kDeferredFetch` policy, as it is treated as a same-origin frame.
+TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
+       SandboxedIframeWithAllowSameOriginGetsNormalPolicy) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed, allow-same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(
+      root_url,
+      RenderWithIframes({frame_a_url}, "allow-scripts allow-same-origin"),
+      {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  // Simulates a navigation target in a sandbox "allow-same-origin" frame.
+  auto to_origin = GetOrigin(frame_a_url);
+
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), to_origin),
+            mojom::blink::DeferredFetchPolicy::kDeferredFetch);
 }
 
 class GetDeferredFetchControlFrameTest : public DeferredFetchPolicyTestBase {};
@@ -574,6 +626,43 @@ TEST_F(GetDeferredFetchControlFrameTest, MultipleLevelFrames) {
   EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_b), frame_b);
   EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_c), frame_c);
   EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_d), frame_d);
+}
+
+// Tests that a sandboxed iframe (without allow-same-origin) is correctly
+// identified as its own deferred-fetch control frame, as it's cross-origin.
+TEST_F(GetDeferredFetchControlFrameTest, SandboxedIframeIsItsOwnControlFrame) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}, "allow-scripts"),
+             {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), frame_a);
+}
+
+// Tests that a sandboxed iframe with 'allow-same-origin' shares its parent's
+// deferred-fetch control frame.
+TEST_F(GetDeferredFetchControlFrameTest,
+       SandboxedIframeWithAllowSameOriginSharesControlFrame) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed, allow-same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(
+      root_url,
+      RenderWithIframes({frame_a_url}, "allow-scripts allow-same-origin"),
+      {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), root);
 }
 
 class ToReservedDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {};
@@ -687,6 +776,40 @@ TEST_F(AreSameOriginTest, MultipleLevelFrames) {
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_d));
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_c));
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_d));
+}
+
+// Tests that a sandboxed iframe (without allow-same-origin) is correctly
+// identified as cross-origin to its parent.
+TEST_F(AreSameOriginTest, SandboxedIframeIsCrossOrigin) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}, "allow-scripts"),
+             {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(root, frame_a));
+}
+
+// Tests that a sandboxed iframe with the 'allow-same-origin' token is
+// correctly identified as same-origin with its parent.
+TEST_F(AreSameOriginTest, SandboxedIframeWithAllowSameOriginIsSameOrigin) {
+  // The structure of the document:
+  // root -> frame_a (sandboxed, allow-same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  NavigateTo(
+      root_url,
+      RenderWithIframes({frame_a_url}, "allow-scripts allow-same-origin"),
+      {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(root, frame_a));
 }
 
 using ShouldClearDeferredFetchPolicyTest = DeferredFetchPolicyTestBase;
@@ -987,6 +1110,121 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, MultipleLevelFrames) {
             kMinimalReservedDeferredFetchQuota);
   EXPECT_EQ(GetAvailableQuota(frame_d, new_request_url),
             kMinimalReservedDeferredFetchQuota);
+}
+
+// Tests that multiple sandboxed iframes by default (without allow-same-origin)
+// only gets a small 8KB quota from "deferred-fetch-minimal" permissions policy.
+// Note that this test doesn't cover the behavior whether child sandboxed frames
+// consuming parent frame quota or not, which is covered in WPT.
+TEST_F(GetAvailableDeferredFetchQuotaTest, SandboxedIframes) {
+  // The structure of the document:
+  // root -> 8 sandboxed iframes
+  String root_url = kMainUrl;
+  Vector<String> frame_urls = {
+      kMainUrl + "frame-0.html", kMainUrl + "frame-1.html",
+      kMainUrl + "frame-2.html", kMainUrl + "frame-3.html",
+      kMainUrl + "frame-4.html", kMainUrl + "frame-5.html",
+      kMainUrl + "frame-6.html", kMainUrl + "frame-7.html",
+  };
+  RequestUrlAndDataType url_and_data = {
+      {kMainUrl + "frame-0.html", ""}, {kMainUrl + "frame-1.html", ""},
+      {kMainUrl + "frame-2.html", ""}, {kMainUrl + "frame-3.html", ""},
+      {kMainUrl + "frame-4.html", ""}, {kMainUrl + "frame-5.html", ""},
+      {kMainUrl + "frame-6.html", ""}, {kMainUrl + "frame-7.html", ""},
+  };
+
+  NavigateTo(root_url, RenderWithIframes(frame_urls, "allow-scripts"),
+             url_and_data);
+
+  auto* root = GetMainFrame();
+  auto* frame0 = root->Tree().FirstChild();
+  auto* frame1 = frame0->Tree().NextSibling();
+  auto* frame2 = frame1->Tree().NextSibling();
+  auto* frame3 = frame2->Tree().NextSibling();
+  auto* frame4 = frame3->Tree().NextSibling();
+  auto* frame5 = frame4->Tree().NextSibling();
+  auto* frame6 = frame5->Tree().NextSibling();
+  auto* frame7 = frame6->Tree().NextSibling();
+  auto new_request_url = KURL(kMainUrl + "test.html");
+
+  // The main frame should have the default quota.
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+
+  // All child frames are sandboxed and only comes with a small 8KB quota from
+  // the "deferred-fetch-minimal" permissions policy.
+  EXPECT_EQ(GetAvailableQuota(frame1, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame2, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame3, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame4, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame5, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame6, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+  EXPECT_EQ(GetAvailableQuota(frame7, new_request_url),
+            kMinimalReservedDeferredFetchQuota);
+}
+
+// Tests that multiple sandboxed iframes with `allow-same-origin`
+// gets shared quota with the root frame.
+// Note that this test doesn't cover the behavior whether child sandboxed frames
+// consuming parent frame quota or not, which is covered in WPT.
+TEST_F(GetAvailableDeferredFetchQuotaTest, SandboxedIframeWithAllowSameOrigin) {
+  // The structure of the document:
+  // root -> 8 sandboxed iframes (allow-same-origin)
+  String root_url = kMainUrl;
+  Vector<String> frame_urls = {
+      kMainUrl + "frame-0.html", kMainUrl + "frame-1.html",
+      kMainUrl + "frame-2.html", kMainUrl + "frame-3.html",
+      kMainUrl + "frame-4.html", kMainUrl + "frame-5.html",
+      kMainUrl + "frame-6.html", kMainUrl + "frame-7.html",
+  };
+  RequestUrlAndDataType url_and_data = {
+      {kMainUrl + "frame-0.html", ""}, {kMainUrl + "frame-1.html", ""},
+      {kMainUrl + "frame-2.html", ""}, {kMainUrl + "frame-3.html", ""},
+      {kMainUrl + "frame-4.html", ""}, {kMainUrl + "frame-5.html", ""},
+      {kMainUrl + "frame-6.html", ""}, {kMainUrl + "frame-7.html", ""},
+  };
+
+  NavigateTo(root_url,
+             RenderWithIframes(frame_urls, "allow-scripts allow-same-origin"),
+             url_and_data);
+
+  auto* root = GetMainFrame();
+  auto* frame0 = root->Tree().FirstChild();
+  auto* frame1 = frame0->Tree().NextSibling();
+  auto* frame2 = frame1->Tree().NextSibling();
+  auto* frame3 = frame2->Tree().NextSibling();
+  auto* frame4 = frame3->Tree().NextSibling();
+  auto* frame5 = frame4->Tree().NextSibling();
+  auto* frame6 = frame5->Tree().NextSibling();
+  auto* frame7 = frame6->Tree().NextSibling();
+  auto new_request_url = KURL(kMainUrl + "test.html");
+
+  // The main frame and all child sandbox frames have their shared
+  // kMaxPerRequestOriginScheduledDeferredBytes quota.
+  EXPECT_EQ(GetAvailableQuota(root, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame0, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame1, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame2, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame3, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame4, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame5, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame6, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
+  EXPECT_EQ(GetAvailableQuota(frame7, new_request_url),
+            kMaxPerRequestOriginScheduledDeferredBytes);
 }
 
 class CalculateRequestSizeTestBase : public testing::Test {

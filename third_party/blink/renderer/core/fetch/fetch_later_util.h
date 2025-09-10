@@ -24,6 +24,10 @@ class CalculateRequestSizeTestBase;
 class CountDescendantsWithReservedMinimalQuotaTest;
 
 // The ResourceType of FetchLater requests.
+class FrameOwner;
+class SecurityOrigin;
+
+// The ResourceType of FetchLater requests.
 inline constexpr ResourceType kFetchLaterResourceType = ResourceType::kRaw;
 
 // The minimal quota is 8 kibibytes, one of the possible values for
@@ -65,7 +69,8 @@ class CORE_EXPORT FetchLaterUtil {
   // https://whatpr.org/fetch/1647.html#reserve-deferred-fetch-quota
   //
   // `container_frame` is a FrameOwner, i.e. an iframe, on navigation.
-  // `to_url` is the target URL the iframe is navigating to.
+  // `to_origin` is the security origin of the frame for a given navigation,
+  // taking into account the frame's sandbox flags.
   //
   // Returns an enum that can be mapped to a "reserved deferred-fetch quota" by
   // calling `ToReservedDeferredFetchQuota()`.
@@ -73,8 +78,9 @@ class CORE_EXPORT FetchLaterUtil {
   // This must be called during "Beginning navigation" as described in
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
   static mojom::blink::DeferredFetchPolicy
-  GetContainerDeferredFetchPolicyOnNavigation(FrameOwner* container_frame,
-                                              const KURL& to_url);
+  GetContainerDeferredFetchPolicyOnNavigation(
+      FrameOwner* container_frame,
+      scoped_refptr<const SecurityOrigin> to_origin);
 
   // Returns the "deferred-fetch control document" for the given `frame`.
   // https://whatpr.org/fetch/1647.html#deferred-fetch-control-document
@@ -111,6 +117,9 @@ class CORE_EXPORT FetchLaterUtil {
   FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest,
                            MultipleDifferentOriginSiblingFrames);
   FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest, MultipleLevelFrames);
+  FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest, SandboxedIframeIsCrossOrigin);
+  FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest,
+                           SandboxedIframeWithAllowSameOriginIsSameOrigin);
 
   FRIEND_TEST_ALL_PREFIXES(CountDescendantsWithReservedMinimalQuotaTest,
                            SingleCrossOriginFrame);

@@ -306,6 +306,11 @@ class FetchLaterIframeOptions {
     this.allowDeferredFetch;
 
     /**
+     * @type {string=} The sandbox attribute to apply to the iframe.
+     */
+    this.sandbox;
+
+    /**
      * @type {FetchLaterIframeExpectation=} The expectation on the iframe's
      * behavior.
      */
@@ -457,6 +462,7 @@ async function loadFetchLaterIframe(origin, {
   bodyType = undefined,
   bodySize = undefined,
   allowDeferredFetch = false,
+  sandbox = undefined,
   expect = undefined
 } = {}) {
   if (uuid && targetUrl && !targetUrl.includes(uuid)) {
@@ -485,6 +491,9 @@ async function loadFetchLaterIframe(origin, {
   const iframe = document.createElement('iframe');
   if (allowDeferredFetch) {
     iframe.allow = 'deferred-fetch';
+  }
+  if (sandbox) {
+    iframe.sandbox = sandbox;
   }
   iframe.src = url;
 

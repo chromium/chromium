@@ -892,7 +892,17 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       origin_window->GetFrame() == frame_->Parent()) {
     if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(frame_->Owner());
         owner) {
-      owner->UpdateDeferredFetchPolicy(url);
+      // Determine the origin of the navigation target `url`.
+      // This is not available from `frame` security context yet as navigation
+      // is just starting. It has to take frame's sandbox flags into account.
+      scoped_refptr<const SecurityOrigin> to_origin =
+          SecurityOrigin::Create(url);
+      if ((owner->GetFramePolicy().sandbox_flags &
+           network::mojom::blink::WebSandboxFlags::kOrigin) !=
+          network::mojom::blink::WebSandboxFlags::kNone) {
+        to_origin = to_origin->DeriveNewOpaqueOrigin();
+      }
+      owner->UpdateDeferredFetchPolicy(std::move(to_origin));
     }
   }
 
