@@ -614,7 +614,7 @@ targets.mixin(
     args = [
         # FieldTrial is disabled on ChromeOS builders but not in this builder.
         # Notify Tast to handle the different UI by that.
-        "tast.setup.FieldTrialConfig=enable",
+        "setup.FieldTrialConfig=enable",
 
         # Tests using the default gaia pool cannot be run by public builders.
         # These variables are fed by private bundles, thus not for public builders.

@@ -21,7 +21,7 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable",
+          "setup.FieldTrialConfig=enable",
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
@@ -56,7 +56,7 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable",
+          "setup.FieldTrialConfig=enable",
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
@@ -92,7 +92,7 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable",
+          "setup.FieldTrialConfig=enable",
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
