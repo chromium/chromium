@@ -82,7 +82,7 @@ class BaseAutofillAiTest : public testing::Test {
                               features::kAutofillAiNationalIdCard,
                               features::kAutofillAiKnownTravelerNumber,
                               features::kAutofillAiRedressNumber,
-                              features::kAutofillAiFlightReservation},
+                              features::kAutofillAiWalletFlightReservation},
         /*disabled_features=*/{});
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(

@@ -96,6 +96,6 @@
     "strike keys": [],
     "disambiguation order": [ "Departure airport", "Arrival airport" ],
     "syncable": true,
-    "experiment feature": "AutofillAiFlightReservation"
+    "experiment feature": "AutofillAiWalletFlightReservation"
   }
 ]

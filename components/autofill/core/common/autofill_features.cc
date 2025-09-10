@@ -85,11 +85,6 @@ BASE_FEATURE(kAutofillAiCreateEntityDataManager,
 #endif
 );
 
-// If enabled, AutofillAi supports flight reservations.
-BASE_FEATURE(kAutofillAiFlightReservation,
-             "AutofillAiFlightReservation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, no account-level capabilities are checked to determine whether
 // a user is eligible for AutofillAI.
 BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,
@@ -176,6 +171,18 @@ BASE_FEATURE(kAutofillAiServerModel,
              "AutofillAiServerModel",
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, AutofillAi supports flight reservation entities from Google
+// Wallet.
+BASE_FEATURE(kAutofillAiWalletFlightReservation,
+             "AutofillAiWalletFlightReservation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, AutofillAi supports vehicle registration entities from Google
+// Wallet.
+BASE_FEATURE(kAutofillAiWalletVehicleRegistration,
+             "AutofillAiWalletVehicleRegistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The maximum duration for which an AutofillAI server model response is kept in
 // the local cache. NOTE: It is advisable to choose a value that is at least as
