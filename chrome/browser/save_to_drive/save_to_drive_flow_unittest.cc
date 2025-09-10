@@ -126,18 +126,23 @@ TEST_F(SaveToDriveFlowTest, AccountChooserCanceled) {
 }
 
 TEST_F(SaveToDriveFlowTest, ContentReadFails) {
-  test_api_->SimulateAccountChooserAction(CreateAccountInfo());
+  AccountInfo account_info = CreateAccountInfo();
+  account_info.hosted_domain = "example.com";
+  test_api_->SimulateAccountChooserAction(std::move(account_info));
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated))));
   EXPECT_CALL(content_reader(), Open)
       .WillOnce(base::test::RunOnceCallback<0>(/*success=*/false));
   EXPECT_CALL(content_reader(), Read).Times(0);
-  EXPECT_CALL(event_dispatcher(),
-              Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kUploadFailed),
-                           Field(&SaveToDriveProgress::error_type,
-                                 SaveToDriveErrorType::kUnknownError))));
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(
+          Field(&SaveToDriveProgress::status, SaveToDriveStatus::kUploadFailed),
+          Field(&SaveToDriveProgress::error_type,
+                SaveToDriveErrorType::kUnknownError),
+          Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+          Field(&SaveToDriveProgress::account_is_managed, true))));
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
@@ -147,11 +152,14 @@ TEST_F(SaveToDriveFlowTest, CreatesMultipartUploaderForSmallFile) {
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated))));
   // Since IdentityManager is not set up, the OAuth fetch will fail.
-  EXPECT_CALL(event_dispatcher(),
-              Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kUploadFailed),
-                           Field(&SaveToDriveProgress::error_type,
-                                 SaveToDriveErrorType::kOauthError))))
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(
+          Field(&SaveToDriveProgress::status, SaveToDriveStatus::kUploadFailed),
+          Field(&SaveToDriveProgress::error_type,
+                SaveToDriveErrorType::kOauthError),
+          Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+          Field(&SaveToDriveProgress::account_is_managed, false))))
       .WillOnce([&]() {
         auto* drive_uploader = test_api_->drive_uploader();
         ASSERT_TRUE(drive_uploader);
@@ -170,11 +178,14 @@ TEST_F(SaveToDriveFlowTest, CreatesResumableUploaderForLargeFile) {
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated))));
   // Since IdentityManager is not set up, the OAuth fetch will fail.
-  EXPECT_CALL(event_dispatcher(),
-              Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kUploadFailed),
-                           Field(&SaveToDriveProgress::error_type,
-                                 SaveToDriveErrorType::kOauthError))))
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(
+          Field(&SaveToDriveProgress::status, SaveToDriveStatus::kUploadFailed),
+          Field(&SaveToDriveProgress::error_type,
+                SaveToDriveErrorType::kOauthError),
+          Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+          Field(&SaveToDriveProgress::account_is_managed, false))))
       .WillOnce([&]() {
         auto* drive_uploader = test_api_->drive_uploader();
         ASSERT_TRUE(drive_uploader);

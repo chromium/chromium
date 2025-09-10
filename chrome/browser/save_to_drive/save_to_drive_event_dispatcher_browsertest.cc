@@ -91,6 +91,8 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest, Notify) {
     progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
     progress.uploaded_bytes = 50;
     progress.file_size_bytes = 100;
+    progress.account_email = "test@mail.com";
+    progress.account_is_managed = false;
     return progress;
   };
 

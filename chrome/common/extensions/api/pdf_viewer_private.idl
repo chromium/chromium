@@ -79,6 +79,14 @@ namespace pdfViewerPrivate {
     // The name of the parent folder. It is only set if the upload was
     // successful, i.e. if `status` is `UPLOAD_COMPLETED`.
     DOMString? parentFolderName;
+
+    // The email of the account that is chosen to save the PDF to Drive. It is
+    // only set after the account is selected.
+    DOMString? accountEmail;
+
+    // Whether the account is a managed account. It is only set after the
+    // account is selected.
+    boolean? accountIsManaged;
   };
 
   // Nearly identical to mimeHandlerPrivate.StreamInfo, but without a mime type

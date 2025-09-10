@@ -22,6 +22,7 @@
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -102,6 +103,10 @@ void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
     OnUploadProgress(std::move(progress));
     return;
   }
+  save_to_drive_account_info_ = {
+      .email = account_info->email,
+      .is_managed = account_info->IsManaged() == signin::Tribool::kTrue,
+  };
   auto open_content_callback = base::BindOnce(&SaveToDriveFlow::OnOpenContent,
                                               weak_ptr_factory_.GetWeakPtr(),
                                               std::move(account_info.value()));
@@ -140,6 +145,10 @@ void SaveToDriveFlow::OnOpenContent(AccountInfo account_info, bool success) {
 void SaveToDriveFlow::OnUploadProgress(SaveToDriveProgress progress) {
   bool should_stop = progress.status == SaveToDriveStatus::kUploadCompleted ||
                      progress.status == SaveToDriveStatus::kUploadFailed;
+  if (save_to_drive_account_info_) {
+    progress.account_email = save_to_drive_account_info_->email;
+    progress.account_is_managed = save_to_drive_account_info_->is_managed;
+  }
   event_dispatcher_->Notify(std::move(progress));
   if (should_stop) {
     Stop();

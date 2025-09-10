@@ -77,6 +77,16 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   friend class content::DocumentUserData<SaveToDriveFlow>;
   friend class TestApi;
 
+  struct SaveToDriveAccountInfo {
+    // The email of the account that is chosen to save the PDF to Drive. It is
+    // used to construct the URL to open the file in Drive or manage the quota.
+    std::string email;
+
+    // Whether the account is a managed account. It is used to determine whether
+    // the account is a dasher account and show the correct manage storage URL.
+    bool is_managed = false;
+  };
+
   SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
                   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
                   std::unique_ptr<ContentReader> content_reader);
@@ -95,6 +105,9 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   // account info. `nullptr` means it was not set, while `std::nullopt` means
   // the account chooser was canceled.
   std::unique_ptr<std::optional<AccountInfo>> account_info_for_testing_;
+
+  // This is set when an account is chosen.
+  std::optional<SaveToDriveAccountInfo> save_to_drive_account_info_;
 
   base::WeakPtrFactory<SaveToDriveFlow> weak_ptr_factory_{this};
 
