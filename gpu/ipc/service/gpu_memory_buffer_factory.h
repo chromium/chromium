@@ -25,6 +25,7 @@ namespace gpu {
 
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
  public:
+  GpuMemoryBufferFactory() = default;
   GpuMemoryBufferFactory(const GpuMemoryBufferFactory&) = delete;
   GpuMemoryBufferFactory& operator=(const GpuMemoryBufferFactory&) = delete;
 
@@ -36,11 +37,16 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
       viz::VulkanContextProvider* vulkan_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Creation of native buffer handles is not supported on Android (the
+  // only way that a non-null GpuMemoryBufferHandle can be created on
+  // Android is by importing an external AHB).
   // Creates a native GpuMemoryBufferHandle for MappableSI.
   virtual gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       viz::SharedImageFormat format,
       gfx::BufferUsage usage) = 0;
+#endif
 
   // Fills |shared_memory| with the contents of the provided |buffer_handle|.
   // Returns whether the operation succeeded. Default implementation returns
@@ -48,9 +54,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
   virtual bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory);
-
- protected:
-  GpuMemoryBufferFactory() = default;
 };
 
 }  // namespace gpu

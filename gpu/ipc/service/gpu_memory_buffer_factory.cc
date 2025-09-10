@@ -24,29 +24,6 @@
 
 namespace gpu {
 
-#if BUILDFLAG(IS_ANDROID)
-namespace {
-
-class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
- public:
-  GpuMemoryBufferFactoryStub() = default;
-  GpuMemoryBufferFactoryStub(const GpuMemoryBufferFactoryStub&) = delete;
-  GpuMemoryBufferFactoryStub& operator=(const GpuMemoryBufferFactoryStub&) =
-      delete;
-  ~GpuMemoryBufferFactoryStub() override = default;
-
-  // GpuMemoryBufferFactory:
-  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage) override {
-    return gfx::GpuMemoryBufferHandle();
-  }
-};
-
-}  // namespace
-#endif
-
 // static
 std::unique_ptr<GpuMemoryBufferFactory>
 GpuMemoryBufferFactory::CreateNativeType(
@@ -56,10 +33,9 @@ GpuMemoryBufferFactory::CreateNativeType(
   return std::make_unique<GpuMemoryBufferFactoryIOSurface>();
 #elif BUILDFLAG(IS_ANDROID)
   // Android does not support creating native GMBs (i.e., from
-  // AHardwareBuffers), but the codebase is structured such that it is necessary
-  // to have a factory that vends invalid GMB handles rather than having no
-  // factory at all.
-  return std::make_unique<GpuMemoryBufferFactoryStub>();
+  // AHardwareBuffers), but the codebase is structured such that it is easier
+  // to create a dummy factory than create no factory.
+  return std::make_unique<GpuMemoryBufferFactory>();
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<GpuMemoryBufferFactoryNativePixmap>(
       vulkan_context_provider);
