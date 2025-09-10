@@ -138,6 +138,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
@@ -583,6 +584,10 @@ void OnListFamilyMembersResponse(
   [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+
+  if (IsShareExtensionForMultiprofileEnabled()) {
+    [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
+  }
 
   // Start observing the ProfileState. This needs to happen after the agents
   // as this may result in creation of the UI which can access to the agents.

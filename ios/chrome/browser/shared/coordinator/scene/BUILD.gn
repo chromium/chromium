@@ -172,6 +172,7 @@ source_set("scene") {
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/share_extension/model:agent",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",

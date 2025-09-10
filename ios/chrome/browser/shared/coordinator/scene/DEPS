@@ -42,6 +42,7 @@ include_rules = [
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/share_extension/model/share_extension_scene_agent.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/start_surface/ui_bundled",
