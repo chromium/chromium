@@ -186,8 +186,8 @@ void RasterImplementationGLES::CopySharedImage(
 void RasterImplementationGLES::CopySharedImage(
     const gpu::Mailbox& source_mailbox,
     const gpu::Mailbox& dest_mailbox,
-    gfx::Rect& source_rect,
-    gfx::Rect& dest_rect) {
+    const gfx::Rect& source_rect,
+    const gfx::Rect& dest_rect) {
   NOTREACHED();
 }
 

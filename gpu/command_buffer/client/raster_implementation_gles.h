@@ -67,8 +67,8 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                        GLsizei height) override;
   void CopySharedImage(const gpu::Mailbox& source_mailbox,
                        const gpu::Mailbox& dest_mailbox,
-                       gfx::Rect& source_rect,
-                       gfx::Rect& dest_rect) override;
+                       const gfx::Rect& source_rect,
+                       const gfx::Rect& dest_rect) override;
 
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,
