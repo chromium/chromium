@@ -9,11 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -22,7 +26,7 @@ namespace {
 struct ContentSettingsFromSupervisedSettingsEntry {
   const char* setting_name;
   ContentSettingsType content_type;
-  ContentSetting content_setting;
+  PermissionSetting content_setting;
 };
 
 const ContentSettingsFromSupervisedSettingsEntry
@@ -31,6 +35,12 @@ const ContentSettingsFromSupervisedSettingsEntry
             supervised_user::kGeolocationDisabled,
             ContentSettingsType::GEOLOCATION,
             CONTENT_SETTING_BLOCK,
+        },
+        {
+            supervised_user::kGeolocationDisabled,
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+            GeolocationSetting{PermissionOption::kDenied,
+                               PermissionOption::kDenied},
         },
         {
             supervised_user::kCameraMicDisabled,
@@ -86,11 +96,14 @@ SupervisedUserContentSettingsProvider::GetRule(
     bool off_the_record,
     const content_settings::PartitionKey& partition_key) const {
   base::AutoLock auto_lock(lock_);
-  ContentSetting setting = value_map_.GetContentSetting(content_type);
-  if (setting != CONTENT_SETTING_DEFAULT) {
+  auto setting = value_map_.GetPermissionSetting(content_type);
+  if (setting) {
+    auto* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            content_type);
     return std::make_unique<content_settings::Rule>(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        base::Value(setting), content_settings::RuleMetaData{});
+        info->delegate().ToValue(*setting), content_settings::RuleMetaData{});
   }
   return nullptr;
 }
@@ -102,16 +115,32 @@ void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
   {
     base::AutoLock auto_lock(lock_);
     for (const auto& entry : kContentSettingsFromSupervisedSettingsMap) {
-      ContentSetting new_setting = CONTENT_SETTING_DEFAULT;
+      bool approx_geo_enabled = base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission);
+      if (entry.content_type == ContentSettingsType::GEOLOCATION &&
+          approx_geo_enabled) {
+        continue;
+      }
+      if (entry.content_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
+          !approx_geo_enabled) {
+        continue;
+      }
+      auto* info =
+          content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+              entry.content_type);
+      if (!info) {
+        continue;
+      }
+      std::optional<PermissionSetting> new_setting;
       if (settings.Find(entry.setting_name)) {
         DCHECK(settings.Find(entry.setting_name)->is_bool());
         if (settings.FindBool(entry.setting_name).value_or(false)) {
           new_setting = entry.content_setting;
         }
       }
-      if (new_setting != value_map_.GetContentSetting(entry.content_type)) {
+      if (new_setting != value_map_.GetPermissionSetting(entry.content_type)) {
         to_notify.push_back(entry.content_type);
-        value_map_.SetContentSetting(entry.content_type, new_setting);
+        value_map_.SetPermissionSetting(entry.content_type, new_setting);
       }
     }
   }

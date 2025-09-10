@@ -5,11 +5,17 @@
 #include "components/content_settings/core/browser/content_settings_global_value_map.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
+#include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content_settings {
 
@@ -17,7 +23,10 @@ namespace {
 
 class RuleIteratorSimple : public RuleIterator {
  public:
-  explicit RuleIteratorSimple(ContentSetting setting) : setting_(setting) {}
+  explicit RuleIteratorSimple(ContentSettingsType type,
+                              PermissionSetting setting)
+      : setting_(setting),
+        info_(PermissionSettingsRegistry::GetInstance()->Get(type)) {}
 
   RuleIteratorSimple(const RuleIteratorSimple&) = delete;
   RuleIteratorSimple& operator=(const RuleIteratorSimple&) = delete;
@@ -27,13 +36,14 @@ class RuleIteratorSimple : public RuleIterator {
   std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
     is_done_ = true;
-    return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
-                                  ContentSettingsPattern::Wildcard(),
-                                  base::Value(setting_), RuleMetaData{});
+    return std::make_unique<Rule>(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        info_->delegate().ToValue(setting_), RuleMetaData{});
   }
 
  private:
-  const ContentSetting setting_;
+  const PermissionSetting setting_;
+  const raw_ptr<const PermissionSettingsInfo> info_;
   bool is_done_ = false;
 };
 
@@ -46,24 +56,27 @@ GlobalValueMap::~GlobalValueMap() = default;
 std::unique_ptr<RuleIterator> GlobalValueMap::GetRuleIterator(
     ContentSettingsType content_type) const {
   auto it = settings_.find(content_type);
-  if (it == settings_.end())
+  if (it == settings_.end()) {
     return nullptr;
+  }
 
-  return std::make_unique<RuleIteratorSimple>(it->second);
+  return std::make_unique<RuleIteratorSimple>(content_type, it->second);
 }
 
-void GlobalValueMap::SetContentSetting(ContentSettingsType content_type,
-                                       ContentSetting setting) {
-  if (setting == CONTENT_SETTING_DEFAULT)
+void GlobalValueMap::SetPermissionSetting(
+    ContentSettingsType content_type,
+    std::optional<PermissionSetting> setting) {
+  if (!setting) {
     settings_.erase(content_type);
-  else
-    settings_[content_type] = setting;
+  } else {
+    settings_[content_type] = *setting;
+  }
 }
 
-ContentSetting GlobalValueMap::GetContentSetting(
+std::optional<PermissionSetting> GlobalValueMap::GetPermissionSetting(
     ContentSettingsType content_type) const {
   auto it = settings_.find(content_type);
-  return it == settings_.end() ? CONTENT_SETTING_DEFAULT : it->second;
+  return it == settings_.end() ? std::nullopt : std::optional(it->second);
 }
 
 }  // namespace content_settings
