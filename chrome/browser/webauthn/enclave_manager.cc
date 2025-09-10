@@ -2041,18 +2041,17 @@ class EnclaveManager::StateMachine {
           trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
         event));
 
-    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult*
-        result = std::get_if<
-            trusted_vault::
-                DownloadAuthenticationFactorsRegistrationStateResult>(&event);
-    if (result->state ==
+    const auto& result = std::get<
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+        event);
+    if (result.state ==
         trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
             State::kError) {
       state_ = State::kStop;
       return;
     }
 
-    if (manager_->IsSecurityDomainReset(*result)) {
+    if (manager_->IsSecurityDomainReset(result)) {
       // The security domain has been reset. Clear the registration and bail
       // out.
       manager_->ClearRegistration();
@@ -2066,7 +2065,7 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (!result->gpm_pin_metadata && (is_pin_renewal_ || is_pin_update_)) {
+    if (!result.gpm_pin_metadata && (is_pin_renewal_ || is_pin_update_)) {
       // Chrome is trying to renew or update a PIN but the security domain
       // reports there is no PIN. Don't delete the local PIN state in case
       // there's a bug in the server, but also don't try renewing or updating it
@@ -2080,18 +2079,18 @@ class EnclaveManager::StateMachine {
       state_ = State::kStop;
       return;
     }
-    if (result->gpm_pin_metadata) {
+    if (result.gpm_pin_metadata) {
       // This code saves the PIN public key even if the security domain reports
       // it is not usable or if it is invalid. This is necessary because the
       // security domain requires the current PIN public key to be set when
       // joining a PIN, which Chrome will do later during processing.
-      if (result->gpm_pin_metadata->public_key) {
+      if (result.gpm_pin_metadata->public_key) {
         FIDO_LOG(EVENT) << "GPM PIN public key updated";
         action_->pin_public_key =
-            std::move(*result->gpm_pin_metadata->public_key);
+            std::move(*result.gpm_pin_metadata->public_key);
       }
-      if (result->gpm_pin_metadata->usable_pin_metadata) {
-        const auto& metadata = *result->gpm_pin_metadata->usable_pin_metadata;
+      if (result.gpm_pin_metadata->usable_pin_metadata) {
+        const auto& metadata = *result.gpm_pin_metadata->usable_pin_metadata;
         auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
         if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
             !CheckPINInvariants(*wrapped_pin).has_value()) {
@@ -2105,7 +2104,7 @@ class EnclaveManager::StateMachine {
       }
     }
 
-    if (is_set_pin_ && result->gpm_pin_metadata) {
+    if (is_set_pin_ && result.gpm_pin_metadata) {
       // There is already a PIN.
       state_ = State::kStop;
       return;
