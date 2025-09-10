@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/bindings/lazy_source_location.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -32,11 +33,11 @@ ScriptPromiseResolverBase::ScriptPromiseResolverBase(
       script_state_(script_state),
       exception_context_(exception_context) {
   if (RuntimeEnabledFeatures::LongAnimationFrameSourceCharPositionEnabled()) {
-    source_location_ =
-        CapturePartialSourceLocationFromStack(script_state->GetIsolate());
+    lazy_source_location_ =
+        LazySourceLocation::FromCurrentStack(script_state->GetIsolate());
   } else {
-    source_location_ = MakeGarbageCollected<SourceLocation>(
-        CaptureCurrentScriptUrl(script_state->GetIsolate()), -1);
+    lazy_source_location_ = MakeGarbageCollected<LazySourceLocation>(
+        CaptureCurrentScriptUrl(script_state->GetIsolate()));
   }
 }
 
@@ -173,7 +174,7 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
   probe::WillHandlePromise(
       GetExecutionContext(), script_state_, state_ == kResolving,
       exception_context_.GetClassName(), exception_context_.GetPropertyName(),
-      source_location_.Get());
+      lazy_source_location_.Get());
 
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
@@ -215,7 +216,7 @@ void ScriptPromiseResolverBase::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(resolver_);
   visitor->Trace(value_);
-  visitor->Trace(source_location_);
+  visitor->Trace(lazy_source_location_);
 }
 
 ExecutionContext* ScriptPromiseResolverBase::GetExecutionContext() {
