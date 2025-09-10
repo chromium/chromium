@@ -57,4 +57,10 @@ int FrameVisualProperties::MaxChildFrameScreenRectMovementForIOv2() {
 int FrameVisualProperties::MinScreenRectStableTimeMsForIOv2() {
   return s_legacy_min_screen_rect_stable_time_ms;
 }
+
+void FrameVisualProperties::ResetForTesting() {  // IN-TEST
+  max_child_frame_screen_rect_movement.reset();
+  min_screen_rect_stable_time_ms.reset();
+}
+
 }  // namespace blink

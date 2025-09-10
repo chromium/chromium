@@ -24,6 +24,12 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   static double MaxChildFrameScreenRectMovement();
   static int MinScreenRectStableTimeMs();
 
+  // MaxChildFrameScreenRectMovement and MinScreenRectStableTimeMs are
+  // initialized according to the field trial parameters, but once
+  // initialized, they will never be updated. This causes flaky failure
+  // of EventHandlerSimTest.DiscardEventsToRecentlyMovedIframe.
+  static void ResetForTesting();
+
   // TODO(szager): These values override the above two values for frames that
   // utilize IntersectionObserver V2 (i.e. occlusion detection). The purpose of
   // this specialization is to preserve existing behavior while the above two
