@@ -754,11 +754,11 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     UnitsHashMap& numeric_children,
                                     UnitsVector& all_children,
                                     bool is_in_nesting = false) {
-  const CSSPrimitiveValue::UnitType unit_type =
-      root->ResolvedUnitTypeForSimplification();
   // Go deeper inside the operation node if possible.
+  // But don't try to go inside complex-typed operations such as 1rem * 1px /
+  // 1px, as those should not be sorted, because we don't know their unit type.
   if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation &&
+      operation && !operation->HasNestedIntermediateResult() &&
       (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
                                         : operation->IsAddOrSubtract())) {
     const CSSMathOperator operation_op = operation->OperatorType();
@@ -776,6 +776,8 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
   }
   // If we have numeric with double value - combine under one unit type.
   if (IsNumericNodeWithDoubleValue(root)) {
+    const CSSPrimitiveValue::UnitType unit_type =
+        root->ResolvedUnitTypeForSimplification();
     double value = op == CSSMathOperator::kSubtract ? -root->DoubleValue()
                                                     : root->DoubleValue();
     if (auto it = numeric_children.find(unit_type);
@@ -802,8 +804,10 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     UnitsVector& complex_children,
                                     bool is_in_nesting = false) {
   // Go deeper inside the operation node if possible.
+  // But don't try to go inside complex-typed operations such as 1rem * 1px /
+  // 1px, as those should not be sorted, because we don't know their unit type.
   if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation &&
+      operation && !operation->HasNestedIntermediateResult() &&
       (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
                                         : operation->IsAddOrSubtract())) {
     const CSSMathOperator operation_op = operation->OperatorType();
@@ -819,10 +823,10 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                    is_in_nesting);
     return;
   }
-  CSSPrimitiveValue::UnitType unit_type =
-      root->ResolvedUnitTypeForSimplification();
   // If we have numeric with double value - collect in numeric_children.
   if (IsNumericNodeWithDoubleValue(root)) {
+    CSSPrimitiveValue::UnitType unit_type =
+        root->ResolvedUnitTypeForSimplification();
     if (auto it = numeric_children.find(unit_type);
         it != numeric_children.end()) {
       it->value->emplace_back(op, root);
@@ -941,22 +945,22 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
   for (const auto& child : all_children) {
     auto [op, node] = MaybeReplaceNodeWithCombined(
         child.node, child.op, numeric_children, is_multiply);
-    CSSPrimitiveValue::UnitType unit_type =
-        node->ResolvedUnitTypeForSimplification();
 
-    // Skip already used unit types, as they have been already combined.
     if (IsNumericNodeWithDoubleValue(node)) {
+      CSSPrimitiveValue::UnitType unit_type =
+          node->ResolvedUnitTypeForSimplification();
+      // Skip already used unit types, as they have been already combined.
       if (used_units.Contains(unit_type)) {
         continue;
       }
       used_units.insert(unit_type);
-    }
 
-    // Skip a constant factor of unity, unless it is the only factor.
-    if (is_multiply && unit_type == CSSPrimitiveValue::UnitType::kNumber &&
-        node->IsNumericLiteral() && node->DoubleValue() == 1.0 &&
-        (numeric_children.size() + all_children.size()) > 1) {
-      continue;
+      // Skip a constant factor of unity, unless it is the only factor.
+      if (is_multiply && unit_type == CSSPrimitiveValue::UnitType::kNumber &&
+          node->DoubleValue() == 1.0 &&
+          (numeric_children.size() + all_children.size()) > 1) {
+        continue;
+      }
     }
 
     if (!final_node) {
@@ -3008,6 +3012,17 @@ String CSSMathExpressionOperation::CustomCSSText() const {
         return operation->CustomCSSText();
       }
       UnitsVector terms = CollectSumOrProductInOrder(this);
+      // During sorting, we might have ended up with just one term for the case
+      // of complex-typed operation in form of Xpx * Ypx. That term would be the
+      // same as the original operation, so in this case we need to unwrap it
+      // into a product of two operands. This is a temporary workaround until we
+      // fix the sorting to properly work with complex-typed units.
+      if (terms.size() == 1) {
+        terms = {
+            {CSSMathOperator::kMultiply, operands_.front()},
+            {operator_, operands_.back()},
+        };
+      }
 
       // https://drafts.csswg.org/css-values-4/#serialize-a-calculation-tree
       //
