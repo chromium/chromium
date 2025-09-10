@@ -346,11 +346,12 @@ public class UiUtils {
     /**
      * Gets a drawable from the resources and applies the specified tint to it. Uses Support Library
      * for vector drawables and tinting on older Android versions.
+     *
      * @param drawableId The resource id for the drawable.
      * @param colorStateList The color state list to apply to the drawable.
      */
     public static Drawable getTintedDrawable(
-            Context context, @DrawableRes int drawableId, ColorStateList list) {
+            Context context, @DrawableRes int drawableId, @Nullable ColorStateList list) {
         Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
         assert drawable != null;
         drawable = DrawableCompat.wrap(drawable).mutate();
