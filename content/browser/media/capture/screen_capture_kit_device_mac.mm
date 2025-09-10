@@ -171,6 +171,14 @@ API_AVAILABLE(macos(12.3))
   IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
   if (!ioSurface)
     return;
+
+  for (size_t plane = 0; plane < IOSurfaceGetPlaneCount(ioSurface); ++plane) {
+    if (!IOSurfaceGetBaseAddressOfPlane(ioSurface, plane)) {
+      // Empty plane data.
+      return;
+    }
+  }
+
   _sampleCallback.Run(
       gfx::ScopedInUseIOSurface(ioSurface, base::scoped_policy::RETAIN),
       contentSize, visibleRect, scaleFactor, isPresenterOverlayLargeActive);
