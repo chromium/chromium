@@ -454,31 +454,26 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
   // This is most reliable for initial navigations in new SiteInstances where
   // original_url() accurately reflects the intended target. Return if the
   // embedder does not prefer reuse here.
-  // TODO(crbug.com/441934543): The
-  // ShouldReuseExistingProcessForNewMainFrameSiteInstance function is for the
-  // ProcessPreSiteForDSE experiment only, consider renaming the function.
   if (base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold) &&
-      !GetContentClient()
-           ->browser()
-           ->ShouldReuseExistingProcessForNewMainFrameSiteInstance(
-               site_instance->GetBrowserContext(),
-               site_instance->original_url())) {
+      GetContentClient()
+          ->browser()
+          ->ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
+              site_instance->GetBrowserContext(),
+              site_instance->original_url())) {
     RecordMainFrameProcessReuseBlockReason(
-        MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
-    return;
-  }
-
-  RecordMainFrameProcessReuseBlockReason(
-      MainFrameProcessReuseBlockReason::kNotBlocked);
-  if (base::FeatureList::IsEnabled(
-          features::kProcessPerSiteUpToMainFrameThreshold)) {
+        MainFrameProcessReuseBlockReason::kNotBlocked);
     site_instance->set_process_reuse_policy(
         ProcessReusePolicy::kReusePendingOrCommittedSiteWithMainFrameThreshold);
   } else if (base::FeatureList::IsEnabled(
                  features::kReusePrerenderingProcessForMainFrames)) {
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kNotBlocked);
     site_instance->set_process_reuse_policy(
         ProcessReusePolicy::kReusePrerenderingProcessForMainFrame);
+  } else {
+    RecordMainFrameProcessReuseBlockReason(
+        MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
   }
 }
 

@@ -1982,7 +1982,7 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
 }
 
 bool ChromeContentBrowserClient::
-    ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+    ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
         content::BrowserContext* browser_context,
         const GURL& site_instance_original_url) {
   // When `kProcessPerSiteForDSE` is disabled,
