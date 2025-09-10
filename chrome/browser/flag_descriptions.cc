@@ -1005,12 +1005,6 @@ const char kAutoPictureInPictureForVideoPlaybackName[] =
 const char kAutoPictureInPictureForVideoPlaybackDescription[] =
     "Enables auto picture in picture for video playback";
 
-const char kBackForwardCacheName[] = "Back-forward cache";
-const char kBackForwardCacheDescription[] =
-    "If enabled, caches eligible pages after cross-site navigations."
-    "To enable caching pages on same-site navigations too, choose 'enabled "
-    "same-site support'.";
-
 const char kBackForwardTransitionsName[] = "Back-forward visual transitions";
 const char kBackForwardTransitionsDescription[] =
     "If enabled, adds animated gesture transitions for back/forward session "

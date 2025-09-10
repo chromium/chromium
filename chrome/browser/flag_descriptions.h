@@ -602,9 +602,6 @@ extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 extern const char kAutoPictureInPictureForVideoPlaybackName[];
 extern const char kAutoPictureInPictureForVideoPlaybackDescription[];
 
-extern const char kBackForwardCacheName[];
-extern const char kBackForwardCacheDescription[];
-
 extern const char kBackForwardTransitionsName[];
 extern const char kBackForwardTransitionsDescription[];
 

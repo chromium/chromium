@@ -1107,11 +1107,6 @@
     "expiry_milestone": 148
   },
   {
-    "name": "back-forward-cache",
-    "owners": [ "bfcache-dev@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "back-forward-transitions",
     "owners": [ "liuwilliam@google.com", "acondor@google.com", "chrome-seamless-core@google.com" ],
     "expiry_milestone": 142
