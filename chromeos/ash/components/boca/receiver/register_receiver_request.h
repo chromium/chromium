@@ -24,6 +24,34 @@ class RegisterReceiverRequest : public boca::BocaRequest::Delegate {
  public:
   using ResponseCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
+  static constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation(
+          "ash_boca_receiver_register_receiver_request",
+          R"(
+        semantics {
+          sender: "School Tools"
+          description: "Register kiosk receiver device with School Tools "
+                        "server."
+          trigger: "Device starts in School Tools kiosk receiver mode."
+          data: "Device OAuth token for verification."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-edu-eng@google.com"
+            }
+          }
+          last_reviewed: "2025-09-09"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This request cannot be stopped in settings, but will only "
+                    "be sent if the device set to kiosk mode with the School "
+                    "Tools receiver URL set."
+          policy_exception_justification: "Not implemented."
+        })");
+
+  static constexpr std::string_view kUrl = "/v1/kioskReceiver:register";
+
   RegisterReceiverRequest(std::string_view fcm_token,
                           ResponseCallback callback);
 

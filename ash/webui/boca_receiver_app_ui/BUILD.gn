@@ -25,9 +25,39 @@ static_library("boca_receiver_app_ui") {
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/resources:boca_receiver_app_bundle_resources",
     "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:invalidation_delegate",
+    "//chromeos/ash/components/boca:invalidations",
     "//chromeos/ash/components/boca/receiver",
     "//content/public/browser",
     "//content/public/common",
+    "//google_apis/common",
+    "//net/traffic_annotation",
     "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "boca_receiver_untrusted_page_handler_unittest.cc" ]
+
+  deps = [
+    ":boca_receiver_app_ui",
+    "//ash/webui/boca_receiver_app_ui/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:invalidation_delegate",
+    "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca/receiver",
+    "//google_apis/common",
+    "//google_apis/common:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
   ]
 }

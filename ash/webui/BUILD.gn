@@ -20,6 +20,7 @@ test("ash_webui_unittests") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/boca_receiver_app_ui:unit_tests",
     "//ash/webui/boca_ui:unit_tests",
     "//ash/webui/camera_app_ui:unit_tests",
     "//ash/webui/common/backend:unit_tests",

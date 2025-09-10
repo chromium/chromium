@@ -31,7 +31,7 @@ RegisterReceiverRequest::RegisterReceiverRequest(std::string_view fcm_token,
 RegisterReceiverRequest::~RegisterReceiverRequest() = default;
 
 std::string RegisterReceiverRequest::GetRelativeUrl() {
-  return "/v1/kioskReceiver:register";
+  return std::string(kUrl);
 }
 
 std::optional<std::string> RegisterReceiverRequest::GetRequestBody() {

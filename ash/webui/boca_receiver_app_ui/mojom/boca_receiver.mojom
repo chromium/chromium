@@ -36,7 +36,7 @@ interface UntrustedPage {
   OnInitReceiverInfo(ReceiverInfo receiver_info);
 
   // Notifies the client that an error has occurred during initialization.
-  onInitReceiverError();
+  OnInitReceiverError();
 
   // Updates the renderer with the newly received frame.
   OnFrameReceived(skia.mojom.BitmapN32 frame_data);
