@@ -157,7 +157,7 @@ public class AppLanguagePreferenceDelegate {
                                 Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         if (mSnackbarManager.canShowSnackbar()) {
             mSnackbarManager.showSnackbar(snackbar);
         } else {

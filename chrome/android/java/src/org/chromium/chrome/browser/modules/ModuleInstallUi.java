@@ -131,7 +131,7 @@ public class ModuleInstallUi {
                         Snackbar.TYPE_ACTION,
                         Snackbar.UMA_MODULE_INSTALL_FAILURE);
         snackbar.setAction(context.getString(R.string.try_again), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
         assumeNonNull(snackbarManager);

@@ -136,7 +136,7 @@ public class PowerBookmarkUtils {
                             null,
                             Snackbar.TYPE_NOTIFICATION,
                             Snackbar.UMA_PRICE_TRACKING_FAILURE);
-            snackbar.setSingleLine(false);
+            snackbar.setDefaultLines(false);
             snackbarManager.showSnackbar(snackbar);
             callback.onResult(false);
             return;
@@ -187,7 +187,7 @@ public class PowerBookmarkUtils {
                                                                 .price_tracking_error_snackbar_action),
                                                 null);
                     }
-                    snackbar.setSingleLine(false);
+                    snackbar.setDefaultLines(false);
                     snackbarManager.showSnackbar(snackbar);
                     callback.onResult(success);
                 };

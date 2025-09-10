@@ -171,7 +171,7 @@ public class OfflinePageUtils {
                                     snackbarController,
                                     Snackbar.TYPE_ACTION,
                                     Snackbar.UMA_OFFLINE_PAGE_RELOAD)
-                            .setSingleLine(false)
+                            .setDefaultLines(false)
                             .setAction(context.getString(R.string.reload), tabId);
             snackbar.setDuration(sSnackbarDurationMs);
             snackbarManager.showSnackbar(snackbar);

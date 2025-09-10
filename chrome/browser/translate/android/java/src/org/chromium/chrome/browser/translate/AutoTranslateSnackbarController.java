@@ -105,7 +105,7 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
 
         Snackbar snackbar =
                 Snackbar.make(title, this, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_TRANSLATE)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setProfileImage(icon)
                         .setDuration(AUTO_TRANSLATE_SNACKBAR_DURATION_MS)
                         .setAction(resources.getString(R.string.undo), targetLanguageData);

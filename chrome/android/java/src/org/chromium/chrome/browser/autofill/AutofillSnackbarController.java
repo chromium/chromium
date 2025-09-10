@@ -86,7 +86,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
                         .setAction(action, /* actionData= */ null);
         // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
         // though.
-        snackBar.setSingleLine(false);
+        snackBar.setDefaultLines(false);
         snackBar.setDuration(duration);
         mSnackbarManager.showSnackbar(snackBar);
     }

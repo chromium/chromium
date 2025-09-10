@@ -224,7 +224,7 @@ public class IncognitoReauthPromoMessageService extends MessageService<@MessageT
                         : mContext.getColor(R.color.snackbar_background_color_baseline_dark);
         snackbar.setBackgroundColor(snackbarBackgroundColor);
         snackbar.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary_Baseline_Light);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         mSnackBarManager.showSnackbar(snackbar);
     }
 

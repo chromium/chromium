@@ -38,7 +38,7 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
                                 Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_PRIVACY_SANDBOX_PAGE_OPEN)
                         .setAction(mContext.getString(R.string.more), null)
-                        .setSingleLine(false));
+                        .setDefaultLines(false));
     }
 
     /** Dismisses the snackbar, if it is active. */

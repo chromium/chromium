@@ -501,7 +501,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             Snackbar snackbar =
                     Snackbar.make(
                             error, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_WINDOW_ERROR);
-            snackbar.setSingleLine(false);
+            snackbar.setDefaultLines(false);
             snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
             snackbarManager.showSnackbar(snackbar);
         }

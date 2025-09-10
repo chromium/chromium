@@ -754,7 +754,7 @@ public class ReaderModeManager extends EmptyTabObserver
                                             mTab.getContext().getString(R.string.chrome_dismiss),
                                             null)
                                     // Important to get the full message displayed to the user.
-                                    .setSingleLine(false));
+                                    .setDefaultLines(false));
                 });
     }
 
