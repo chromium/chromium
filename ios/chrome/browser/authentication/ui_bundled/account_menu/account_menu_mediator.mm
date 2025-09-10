@@ -368,6 +368,7 @@
   if (self.userInteractionsBlocked) {
     return;
   }
+  self.userInteractionsBlocked = YES;
   [self.delegate didTapManageYourGoogleAccount];
 }
 

@@ -582,6 +582,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)resetAccountDetailsControllerDismissCallback {
   _accountDetailsControllerDismissCallback.Reset();
+  [self.mediator accountMenuIsUsable];
 }
 
 - (void)configureHandlersForRootViewController:

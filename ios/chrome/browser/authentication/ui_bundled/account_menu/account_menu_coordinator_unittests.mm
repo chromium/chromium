@@ -242,6 +242,7 @@ TEST_P(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
                                            animated:YES
                                          completion:nil]);
   [coordinator_ didTapManageYourGoogleAccount];
+  OCMExpect([mediator_ accountMenuIsUsable]);
   AssertOpenAndStop();
 }
 
