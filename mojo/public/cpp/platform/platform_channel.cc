@@ -19,6 +19,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -76,9 +77,27 @@ void CreateChannel(PlatformHandle* local_endpoint,
   // Allow the handle to be inherited by child processes.
   SECURITY_ATTRIBUTES security_attributes = {sizeof(SECURITY_ATTRIBUTES),
                                              nullptr, TRUE};
+
+  // TODO(crbug.com/443055954): Sporadically, opening this named pipe fails with
+  // ERROR_PIPE_BUSY. This is unexpected as the pipe name is random. The
+  // leading hypothesis is that antivirus software is briefly interfering with
+  // the connection. To mitigate this as a transient issue, we wait for the
+  // pipe to become available and retry the connection once. If the retry
+  // succeeds, we dump the process state to help confirm the theory.
   *remote_endpoint = PlatformHandle(base::win::ScopedHandle(
       ::CreateFileW(pipe_name.c_str(), kDesiredAccess, 0, &security_attributes,
                     OPEN_EXISTING, kFlags, nullptr)));
+  if (!remote_endpoint->is_valid() && ::GetLastError() == ERROR_PIPE_BUSY) {
+    if (::WaitNamedPipe(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT)) {
+      *remote_endpoint = PlatformHandle(base::win::ScopedHandle(
+          ::CreateFileW(pipe_name.c_str(), kDesiredAccess, 0,
+                        &security_attributes, OPEN_EXISTING, kFlags, nullptr)));
+      if (remote_endpoint->is_valid()) {
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+  }
+
   PCHECK(remote_endpoint->is_valid());
 
   // Since a client has connected, ConnectNamedPipe() should return zero and
