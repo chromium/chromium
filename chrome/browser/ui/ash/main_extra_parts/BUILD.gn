@@ -63,6 +63,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/management_disclosure",
     "//chrome/browser/ui/ash/media_client",
+    "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/new_window",
     "//chrome/browser/ui/ash/projector",

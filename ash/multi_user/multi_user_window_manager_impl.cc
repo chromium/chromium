@@ -187,7 +187,8 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   // will add the children but not the owner to the transient children map.
   AddTransientOwnerRecursive(window, window);
 
-  if (!IsWindowOnDesktopOfUser(window, *current_account_id_)) {
+  if (current_account_id_.has_value() &&
+      !IsWindowOnDesktopOfUser(window, *current_account_id_)) {
     SetWindowVisibility(window, false);
   }
 }
@@ -345,8 +346,9 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanging(
 
 void MultiUserWindowManagerImpl::OnWindowVisibilityChanged(aura::Window* window,
                                                            bool visible) {
-  if (suppress_visibility_changes_)
+  if (suppress_visibility_changes_ || !current_account_id_.has_value()) {
     return;
+  }
 
   CHECK(current_account_id_.has_value());
 

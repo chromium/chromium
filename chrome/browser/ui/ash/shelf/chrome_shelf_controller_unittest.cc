@@ -507,6 +507,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
     BrowserWithTestWindowTest::SetUp();
+    MultiUserWindowManagerHelper::CreateInstance();
+
     // WallpaperControllerClientImpl should be created before Profile
     // instantiation happening in BrowserWithTestWindowTest::SetUp().
     // However, it should run after more global object set up, such as
@@ -714,6 +716,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     arc_test_.TearDown();
     shelf_controller_ = nullptr;
     wallpaper_controller_client_.reset();
+    MultiUserWindowManagerHelper::DeleteInstance();
     BrowserWithTestWindowTest::TearDown();
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
