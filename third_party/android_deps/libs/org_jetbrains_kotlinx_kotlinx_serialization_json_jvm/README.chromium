@@ -1,0 +1,16 @@
+Name: kotlinx-serialization-json
+Short Name: kotlinx-serialization-json-jvm
+URL: https://github.com/Kotlin/kotlinx.serialization
+Version: 1.7.2
+Update Mechanism: Manual
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Kotlin multiplatform serialization runtime library
+
+Local Modifications:
+No modifications.
