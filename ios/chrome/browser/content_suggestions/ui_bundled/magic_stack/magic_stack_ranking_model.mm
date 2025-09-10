@@ -11,9 +11,15 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
@@ -158,6 +164,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
   raw_ptr<TemplateURLService> _templateURLService;
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
 }
 
 - (instancetype)
@@ -170,7 +177,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                 moduleMediators:(NSArray*)moduleMediators
                     tipsManager:(TipsManagerIOS*)tipsManager
              templateURLService:(TemplateURLService*)templateURLService
-          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService {
+          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
@@ -181,6 +189,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     _localState = localState;
     _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
     _templateURLService = templateURLService;
+    _bookmarkModel = bookmarkModel;
 
     if (IsTipsMagicStackEnabled()) {
       CHECK(tipsManager);
@@ -764,7 +773,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::kShopCardFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           shopCardFreshnessImpressionCount));
-  __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
 
   if (base::FeatureList::IsEnabled(
@@ -786,7 +794,53 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   } else {
     options.on_demand_execution = true;
   }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kNumPriceDropsInShoppingList,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1.0f));
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    __weak MagicStackRankingModel* weakSelf = self;
+    GetAllPriceTrackedBookmarks(
+        _shoppingService, _bookmarkModel,
+        base::BindOnce(^(
+            std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+          inputContext->metadata_args.insert_or_assign(
+              segmentation_platform::kNumPriceDropsInShoppingList,
+              segmentation_platform::processing::ProcessedValue::FromFloat(
+                  [weakSelf getNumPriceDrops:subscriptions]));
+          [weakSelf getClassificationResult:options inputContext:inputContext];
+        }));
+  } else {
+    [self getClassificationResult:options inputContext:inputContext];
+  }
+}
+
+- (int)getNumPriceDrops:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  int num_price_drops = 0;
+  for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
+    if (!meta || !meta->has_shopping_specifics()) {
+      continue;
+    }
+    const power_bookmarks::ShoppingSpecifics& specifics =
+        meta->shopping_specifics();
+
+    if (specifics.previous_price().has_amount_micros() &&
+        specifics.previous_price().amount_micros() >= 0) {
+      num_price_drops++;
+    }
+  }
+  return num_price_drops;
+}
+
+- (void)getClassificationResult:
+            (const segmentation_platform::PredictionOptions&)options
+                   inputContext:
+                       (scoped_refptr<segmentation_platform::InputContext>)
+                           inputContext {
   ranking_fetch_start_time_ = base::TimeTicks::Now();
+  __weak MagicStackRankingModel* weakSelf = self;
   _segmentationService->GetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, options, inputContext,
       base::BindOnce(
@@ -1006,6 +1060,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   return lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
       LensEntrypoint::NewTabPage, isGoogleDefaultSearchProvider);
+}
+
+#pragma mark - Testing category methods
+- (int)getNumPriceDropsForTesting:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  return [self getNumPriceDrops:subscriptions];
 }
 
 @end

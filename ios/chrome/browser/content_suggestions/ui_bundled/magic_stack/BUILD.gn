@@ -20,6 +20,7 @@ source_set("public") {
 
 source_set("ranking_model") {
   sources = [
+    "magic_stack_ranking_model+testing.h",
     "magic_stack_ranking_model.h",
     "magic_stack_ranking_model.mm",
     "magic_stack_ranking_model_delegate.h",
@@ -30,9 +31,11 @@ source_set("ranking_model") {
     ":magic_stack",
     ":public",
     ":utils",
+    "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/password_manager/core/common",
+    "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search",

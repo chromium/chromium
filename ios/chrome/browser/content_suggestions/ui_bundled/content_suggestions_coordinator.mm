@@ -530,7 +530,9 @@ using segmentation_platform::TipIdentifier;
                templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
                                       self.profile)
             appStoreBundleService:AppStoreBundleServiceFactory::GetForProfile(
-                                      self.profile)];
+                                      self.profile)
+                    bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                      profile)];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
