@@ -34,7 +34,7 @@ public abstract class TokenBase {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
+        if (!(obj instanceof TokenBase)) {
             return false;
         }
         TokenBase other = (TokenBase) obj;

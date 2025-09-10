@@ -64,7 +64,7 @@ public class AuxiliarySearchDataEntry {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj == null || obj.getClass() != this.getClass()) {
+        if (!(obj instanceof AuxiliarySearchDataEntry)) {
             return false;
         }
 

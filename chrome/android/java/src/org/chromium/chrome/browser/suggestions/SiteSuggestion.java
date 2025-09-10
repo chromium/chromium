@@ -44,7 +44,7 @@ public class SiteSuggestion {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SiteSuggestion)) return false;
 
         SiteSuggestion that = (SiteSuggestion) o;
 

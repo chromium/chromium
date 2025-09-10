@@ -36,13 +36,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StaticAssignmentInConstructor',
 
     # Low priority.
-    'BadImport',
     'CatchAndPrintStackTrace',
-    'EffectivelyPrivate',
-    'EmptyCatch',
-    'EqualsGetClass',
     'EqualsHashCode',
-    'IdentityHashMapUsage',
     'JavaUtilDate',
     'OverrideThrowableToString',
     'PatternMatchingInstanceof',
@@ -59,6 +54,13 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
 
     # Never Enable:
     #
+    # Debatable whether it makes code less readable by forcing larger names for
+    # "Builder".
+    'BadImport',
+    # Such modifiers in nested classes do not hurt readability IMO.
+    'EffectivelyPrivate',
+    # Android APIs sometimes throw random exceptions that are safe to ignore.
+    'EmptyCatch',
     # Just use Android Studio refactors to inline things.
     'InlineMeInliner',
     'InlineMeSuggester',

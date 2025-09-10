@@ -597,9 +597,9 @@ public class PersonalDataManager implements Destroyable {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) return false;
+
             if (this == obj) return true;
-            if (getClass() != obj.getClass()) return false;
+            if (!(obj instanceof Iban)) return false;
 
             Iban otherIban = (Iban) obj;
 

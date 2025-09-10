@@ -113,11 +113,8 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
-
             if (o == this) return true;
-
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof RequestedBitmap)) return false;
 
             RequestedBitmap rb = (RequestedBitmap) o;
             return rb.mClipRect.equals(mClipRect)
@@ -149,11 +146,10 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
 
             if (o == this) return true;
 
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof ClickedPoint)) return false;
 
             ClickedPoint cp = (ClickedPoint) o;
             return cp.mFrameGuid.equals(mFrameGuid) && cp.mX == mX && cp.mY == mY;

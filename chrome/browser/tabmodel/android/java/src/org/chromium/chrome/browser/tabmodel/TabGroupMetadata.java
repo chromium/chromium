@@ -148,7 +148,7 @@ public class TabGroupMetadata {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (!(other instanceof TabGroupMetadata)) return false;
         TabGroupMetadata that = (TabGroupMetadata) other;
         return selectedTabId == that.selectedTabId
                 && sourceWindowId == that.sourceWindowId

@@ -85,11 +85,8 @@ public class PlayerFrameBitmapPainterTest {
 
             @Override
             public boolean equals(Object o) {
-                if (o == null) return false;
-
                 if (this == o) return true;
-
-                if (getClass() != o.getClass()) return false;
+                if (!(o instanceof DrawnBitmap)) return false;
 
                 DrawnBitmap od = (DrawnBitmap) o;
                 return mBitmap.equals(od.mBitmap) && mSrc.equals(od.mSrc) && mDst.equals(od.mDst);

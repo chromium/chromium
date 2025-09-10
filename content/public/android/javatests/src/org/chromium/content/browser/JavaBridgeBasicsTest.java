@@ -313,7 +313,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testCallingAsConstructorRaisesException() throws Throwable {
-        assertRaisesException("new TestController.setStringValue('foo')");
+        assertRaisesException("new testController.setStringValue('foo')");
     }
 
     @Test

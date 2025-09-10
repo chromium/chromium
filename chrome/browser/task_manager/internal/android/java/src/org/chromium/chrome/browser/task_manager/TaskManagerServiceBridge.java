@@ -38,8 +38,7 @@ public class TaskManagerServiceBridge {
         @Override
         public boolean equals(Object other) {
             if (this == other) return true;
-            if (other == null) return false;
-            if (getClass() != other.getClass()) return false;
+            if (!(other instanceof GpuMemoryUsage)) return false;
             GpuMemoryUsage that = (GpuMemoryUsage) other;
             return this.bytes == that.bytes && this.hasDuplicates == that.hasDuplicates;
         }

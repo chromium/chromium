@@ -28,7 +28,7 @@ public class ComponentInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || (getClass() != obj.getClass())) {
+        if (!(obj instanceof ComponentInfo)) {
             return false;
         }
 

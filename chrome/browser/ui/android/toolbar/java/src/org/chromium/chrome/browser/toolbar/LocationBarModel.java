@@ -92,7 +92,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof SpannableDisplayTextCacheKey)) {
                 return false;
             }
             SpannableDisplayTextCacheKey that = (SpannableDisplayTextCacheKey) o;

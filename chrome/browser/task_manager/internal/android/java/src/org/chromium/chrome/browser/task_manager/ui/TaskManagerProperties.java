@@ -45,8 +45,8 @@ class TaskManagerProperties {
         @Override
         public boolean equals(Object other) {
             if (this == other) return true;
-            if (other == null) return false;
-            if (this.getClass() != other.getClass()) return false;
+
+            if (!(other instanceof SortDescriptor)) return false;
             SortDescriptor that = (SortDescriptor) other;
             return key == that.key && ascending == that.ascending;
         }
