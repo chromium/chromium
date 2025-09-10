@@ -35,6 +35,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
+import org.chromium.components.embedder_support.virtual_structure.VirtualStructureProvider;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;

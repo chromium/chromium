@@ -622,6 +622,7 @@ if (_is_default_toolchain) {
       "//components/embedder_support/android:context_menu_java",
       "//components/embedder_support/android:simple_factory_key_java",
       "//components/embedder_support/android:util_java",
+      "//components/embedder_support/android:virtual_structure_java",
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/external_intents/android:java",
       "//components/externalauth/android:java",
@@ -2344,7 +2345,7 @@ if (_is_default_toolchain) {
       "//components/browser_ui/settings/android:unit_device_javatests",
       "//components/browser_ui/util/android:unit_device_javatests",
       "//components/browser_ui/widget/android:unit_device_javatests",
-      "//components/embedder_support/android:embedder_support_javatests",
+      "//components/embedder_support/android:unit_device_javatests",
       "//components/external_intents/android:unit_device_javatests",
       "//components/infobars/android:unit_device_javatests",
       "//components/installedapp/android:unit_device_javatests",
@@ -2410,6 +2411,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
       "//chrome/browser/ui/plus_addresses/android:javatests",
+      "//components/embedder_support/android:virtual_structure_javatests",
       "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 

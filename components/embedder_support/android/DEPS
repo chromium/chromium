@@ -19,3 +19,15 @@ include_rules = [
   "+ui/gfx",
   "+ui/menus/android"
 ]
+
+specific_include_rules = {
+  'PageContentProtoViewStructureBuilder\.java': [
+    "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
+  ],
+  'PageContentProtoViewStructureBuilderUnitTest\.java':[
+    "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
+  ],
+  'PageContentProtoViewStructureBuilderTest\.java':[
+     "+chrome/test/android",
+  ],
+}

@@ -134,6 +134,7 @@ specific_include_rules = {
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/delegate",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
+    "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/virtual_structure",
     "+components/url_formatter/android",
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java",

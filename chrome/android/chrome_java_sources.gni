@@ -1067,7 +1067,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/AutofillSessionLifetimeController.java",
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateClientImpl.java",
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTabHelper.java",
-  "java/src/org/chromium/chrome/browser/tab/PageContentProtoViewStructureBuilder.java",
   "java/src/org/chromium/chrome/browser/tab/RedirectHandlerTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/RequestDesktopUtils.java",
   "java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",

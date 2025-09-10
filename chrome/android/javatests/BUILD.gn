@@ -1257,7 +1257,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
 
   sources = [
     "src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTest.java",
-    "src/org/chromium/chrome/browser/tab/PageContentProtoViewStructureBuilderTest.java",
     "src/org/chromium/chrome/browser/tab/RepostFormWarningTest.java",
     "src/org/chromium/chrome/browser/tab/RequestDesktopSiteTest.java",
     "src/org/chromium/chrome/browser/tab/SadTabTest.java",

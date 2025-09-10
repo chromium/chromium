@@ -145,6 +145,7 @@ static_library("view") {
 android_library("content_view_java") {
   deps = [
     ":embedder_util_java",
+    ":virtual_structure_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/android_autofill/browser:features_java",
@@ -155,7 +156,21 @@ android_library("content_view_java") {
   ]
   sources = [
     "java/src/org/chromium/components/embedder_support/view/ContentView.java",
-    "java/src/org/chromium/components/embedder_support/view/VirtualStructureProvider.java",
+  ]
+}
+
+android_library("virtual_structure_java") {
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//components/optimization_guide/content/browser/android:optimization_guide_content_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilder.java",
+    "java/src/org/chromium/components/embedder_support/virtual_structure/VirtualStructureProvider.java",
   ]
 }
 
@@ -377,7 +392,7 @@ robolectric_library("components_embedder_support_junit_tests") {
   ]
 }
 
-android_library("embedder_support_javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.components.embedder_support"
 
@@ -401,5 +416,42 @@ android_library("embedder_support_javatests") {
     "//ui/android:ui_java_resources",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
+  ]
+}
+
+android_library("virtual_structure_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilderTest.java" ]
+  deps = [
+    ":content_view_java",
+    ":virtual_structure_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//chrome/test/android:chrome_java_transit",
+    "//components/android_autofill/browser/test_support:java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
+robolectric_library("virtual_structure_junit_tests") {
+  sources = [ "junit/src/org/chromium/components/embedder_support/virtual_structure/PageContentProtoViewStructureBuilderUnitTest.java" ]
+  deps = [
+    ":virtual_structure_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//components/android_autofill/browser/test_support:java",
+    "//components/optimization_guide/content/browser/android:optimization_guide_content_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/junit",
   ]
 }

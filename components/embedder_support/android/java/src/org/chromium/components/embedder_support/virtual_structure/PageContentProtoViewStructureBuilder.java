@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package org.chromium.components.embedder_support.virtual_structure;
 
 import android.app.assist.AssistStructure.ViewNode;
 import android.os.Bundle;
@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.embedder_support.view.VirtualStructureProvider;
 import org.chromium.components.optimization_guide.content.PageContentProtoProviderBridge;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.AnnotatedPageContent;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentAttributeType;
