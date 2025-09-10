@@ -446,10 +446,8 @@ public class HistogramWatcher implements AutoCloseable {
 
             int delta = finalBucket.mCount - totalInEquivalentStartingBuckets;
 
-            if (delta == 0) {
-                // Empty buckets don't need to be printed.
-                continue;
-            } else {
+            // Empty buckets don't need to be printed.
+            if (delta != 0) {
                 deltaBuckets.add(new HistogramBucket(finalBucket.mMin, finalBucket.mMax, delta));
             }
         }

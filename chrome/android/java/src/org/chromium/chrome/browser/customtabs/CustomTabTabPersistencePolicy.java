@@ -337,7 +337,6 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                     }
                 } catch (NumberFormatException ex) {
                     assert false : "Unexpected tab metadata file found: " + metadataFile.getName();
-                    continue;
                 }
             }
 

@@ -366,7 +366,6 @@ class VideoAcceleratorUtil {
                     } catch (RuntimeException e) {
                         // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
                         Log.w(TAG, "Unknown profile: " + cpl.profile + " for codec " + type);
-                        continue;
                     }
                 }
 
@@ -556,7 +555,6 @@ class VideoAcceleratorUtil {
                     } catch (RuntimeException e) {
                         // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
                         Log.w(TAG, "Unknown profile: " + cpl.profile + " for codec " + type);
-                        continue;
                     }
                 }
 

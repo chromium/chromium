@@ -97,7 +97,6 @@ class AndroidNetworkLibrary {
             try {
                 if (netIf.isUp() && !netIf.isLoopback()) return false;
             } catch (SocketException e) {
-                continue;
             }
         }
         return true;

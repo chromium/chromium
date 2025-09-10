@@ -1130,7 +1130,6 @@ public class WindowAndroid
                     && currentMode.getPhysicalHeight() == supportedModes.get(i).getPhysicalHeight()
                     && currentMode.getRefreshRate() != supportedModes.get(i).getRefreshRate()) {
                 supportedRefreshRateModes.add(supportedModes.get(i));
-                continue;
             }
         }
 

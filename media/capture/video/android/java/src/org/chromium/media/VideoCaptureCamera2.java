@@ -1594,7 +1594,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         return index;
                     }
                 } catch (NumberFormatException e) {
-                    continue;
                 }
             }
         } catch (CameraAccessException ex) {

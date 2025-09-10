@@ -13,8 +13,10 @@ from util import server_utils
 
 # Add a check here to cause the suggested fix to be applied while compiling.
 # Use this when trying to enable more checks.
-# BE SURE TO BUILD WITH --offline
-ERRORPRONE_CHECKS_TO_APPLY = []
+ERRORPRONE_CHECKS_TO_APPLY = [
+    # Be sure to first update "android/errorprone" within
+    # build/config/siso/android.star to set "remote": False.
+]
 
 # Checks to disable in tests.
 TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
@@ -44,7 +46,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'JavaUtilDate',
     'OverrideThrowableToString',
     'PatternMatchingInstanceof',
-    'RedundantControlFlow',
     'StatementSwitchToExpressionSwitch',
     'UndefinedEquals',
     'UseCorrectAssertInTests',
