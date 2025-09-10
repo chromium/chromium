@@ -27,8 +27,6 @@ class PreloadServingMetricsPageLoadMetricsObserver
   PreloadServingMetricsPageLoadMetricsObserver& operator=(
       const PreloadServingMetricsPageLoadMetricsObserver&) = delete;
 
-  static bool IsEnabled();
-
  private:
   // PageLoadMetricsObserver implementation:
   const char* GetObserverName() const override;

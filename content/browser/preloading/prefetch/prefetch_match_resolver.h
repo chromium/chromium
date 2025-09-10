@@ -254,7 +254,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // When `this` is for a prerender initial navigation, then
   // `prerender_host_for_metrics_` is the `PrerenderHost` of the prerender
   // initial navigation. Otherwise, `nullptr`. Also this is nullptr if
-  // `PreloadServingMetrics::IsEnabled()` is false.
+  // `PreloadServingMetricsCapsule::IsFeatureEnabled()` is false.
   base::WeakPtr<PrerenderHost> prerender_host_for_metrics_;
   std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics_;
 

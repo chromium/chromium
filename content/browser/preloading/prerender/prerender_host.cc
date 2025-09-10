@@ -690,7 +690,7 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     // If `DidFinishNavigation()` is called multiple times, ignore
     // `PreloadServingMetrics` of that navigation and keep the first one.
     if (!prerender_initial_preload_serving_metrics_) {
@@ -876,7 +876,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 
   // Associate `PreloadServingMetrics` of prerender initial navigation to ones
   // of activation.
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     auto& activation_preload_serving_metrics_holder =
         *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
             navigation_request);
@@ -1797,7 +1797,7 @@ void PrerenderHost::NotifyReused() {
 
 void PrerenderHost::OnWillBeCancelled(
     const PrerenderCancellationReason& reason) {
-  if (!PreloadServingMetrics::IsEnabled()) {
+  if (!PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     return;
   }
 

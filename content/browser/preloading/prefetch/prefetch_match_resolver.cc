@@ -119,7 +119,7 @@ void PrefetchMatchResolver::FindPrefetch(
   })();
 
   auto prerender_host = ([&]() -> base::WeakPtr<PrerenderHost> {
-    if (!PreloadServingMetrics::IsEnabled()) {
+    if (!PreloadServingMetricsCapsule::IsFeatureEnabled()) {
       return nullptr;
     }
 
@@ -293,7 +293,7 @@ void PrefetchMatchResolver::RegisterCandidate(
 
   // If the navigation is prerender initial navigation and a prefetch ahead of
   // prerender is a candidate, capture it for `PreloadServingMetrics`.
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     if (prerender_host_for_metrics_ &&
         prefetch_container.HasPreloadPipelineInfoForMetrics(
             prerender_host_for_metrics_->preload_pipeline_info())) {
@@ -367,7 +367,7 @@ void PrefetchMatchResolver::UnregisterCandidate(
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
       prefetch_match_metrics_
           ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
@@ -561,7 +561,7 @@ void PrefetchMatchResolver::MaybeUnblockForUnmatch(
     PrefetchPotentialCandidateServingResult serving_result) {
   TRACE_EVENT("loading", "PrefetchMatchResolver::MaybeUnblockForUnmatch");
 
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
       prefetch_match_metrics_
           ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
@@ -610,7 +610,7 @@ void PrefetchMatchResolver::UnblockInternal(
   // been unblocking.
   CHECK_EQ(candidates_.size(), 0u);
 
-  if (PreloadServingMetrics::IsEnabled()) {
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     PrefetchContainer* prefetch_container =
         serving_handle.GetPrefetchContainer();
     prefetch_match_metrics_->prefetch_container_metrics =

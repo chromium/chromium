@@ -26,7 +26,7 @@ void PreloadServingMetricsHolder::SetDestructorCallbackForTesting(
 PreloadServingMetricsHolder::PreloadServingMetricsHolder(
     NavigationHandle& handle)
     : preload_serving_metrics_(std::make_unique<PreloadServingMetrics>()) {
-  CHECK(PreloadServingMetrics::IsEnabled());
+  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
 }
 
 PreloadServingMetricsHolder::~PreloadServingMetricsHolder() {

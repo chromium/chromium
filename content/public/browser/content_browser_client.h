@@ -3354,7 +3354,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // serving metrics of preloads.
   //
   // Some //content features enable the feature even if it's false. For
-  // details, see `PreloadServingMetrics::IsEnabled()`.
+  // details, see `PreloadServingMetricsCapsule::IsFeatureEnabled()`.
   //
   // We use `ContentBrowserClient` rather than //content public feature because
   // we have mulitple preload triggers in //chrome that want to enable the

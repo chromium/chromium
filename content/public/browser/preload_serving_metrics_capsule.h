@@ -17,8 +17,9 @@ class NavigationHandle;
 // Allows `PageLoadMetricsObserver` to get/hold/record `PreloadServingMetrics`.
 class CONTENT_EXPORT PreloadServingMetricsCapsule {
  public:
-  // Plumbs a feature param in //content to page load metrics observer.
-  static bool IsEnabled();
+  // Used to control entering paths of `PreloadServingMetrics`, which records
+  // serving metrics of preloads.
+  static bool IsFeatureEnabled();
 
   // Takes `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
   // `NavigationHandle`.

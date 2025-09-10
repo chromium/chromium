@@ -118,8 +118,6 @@ struct CONTENT_EXPORT PrefetchMatchMetrics final {
 //
 // The members are filled by `PreloadServingMetrics`.
 struct CONTENT_EXPORT PreloadServingMetrics final {
-  // Plumbs a feature param in //content to page load metrics observer.
-  static bool IsEnabled();
   // Take `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
   // `NavigationHandle`.
   //
@@ -171,7 +169,6 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
 class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
     : public PreloadServingMetricsCapsule {
  public:
-  static bool IsEnabled();
   // Take `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
   // `NavigationHandle`.
   static std::unique_ptr<PreloadServingMetricsCapsule> TakeFromNavigationHandle(

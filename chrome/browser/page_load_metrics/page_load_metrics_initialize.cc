@@ -59,6 +59,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/google/browser/from_gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "content/public/browser/preload_serving_metrics_capsule.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -241,7 +242,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
     tracker->AddObserver(
         std::make_unique<ThirdPartyCookieDeprecationMetricsObserver>(
             web_contents()->GetBrowserContext()));
-    if (PreloadServingMetricsPageLoadMetricsObserver::IsEnabled()) {
+    if (content::PreloadServingMetricsCapsule::IsFeatureEnabled()) {
       tracker->AddObserver(
           std::make_unique<PreloadServingMetricsPageLoadMetricsObserver>());
     }

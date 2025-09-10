@@ -9,12 +9,16 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 
 namespace content {
 
 // static
-bool PreloadServingMetricsCapsule::IsEnabled() {
-  return PreloadServingMetrics::IsEnabled();
+bool PreloadServingMetricsCapsule::IsFeatureEnabled() {
+  return features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
+         GetContentClient()->browser()->UsePreloadServingMetrics();
 }
 
 PreloadServingMetricsCapsule::~PreloadServingMetricsCapsule() = default;
