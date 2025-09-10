@@ -4,6 +4,7 @@
 
 #include "components/wallet/content/browser/content_walletable_pass_ingestion_controller.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,10 @@ void ContentWalletablePassIngestionController::DidFinishLoad(
   if (render_frame_host->IsInPrimaryMainFrame()) {
     StartWalletablePassDetectionFlow(validated_url);
   }
+}
+
+std::string ContentWalletablePassIngestionController::GetPageTitle() const {
+  return base::UTF16ToUTF8(web_contents()->GetTitle());
 }
 
 void ContentWalletablePassIngestionController::GetAnnotatedPageContent(

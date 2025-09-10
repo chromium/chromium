@@ -34,6 +34,8 @@ class ContentWalletablePassIngestionController
   ~ContentWalletablePassIngestionController() override;
 
   // WalletablePassIngestionController:
+  std::string GetPageTitle() const override;
+
   void GetAnnotatedPageContent(AnnotatedPageContentCallback callback) override;
 
   // content::WebContentsObserver:

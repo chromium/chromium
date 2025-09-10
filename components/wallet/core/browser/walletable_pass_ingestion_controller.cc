@@ -71,6 +71,7 @@ void WalletablePassIngestionController::ExtractWalletablePass(
   // Construct request
   optimization_guide::proto::WalletablePassExtractionRequest request;
   request.mutable_page_context()->set_url(url);
+  request.mutable_page_context()->set_title(GetPageTitle());
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(annotated_page_content);
 

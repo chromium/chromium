@@ -44,6 +44,7 @@ class MockWalletablePassIngestionController
   explicit MockWalletablePassIngestionController(WalletablePassClient* client)
       : WalletablePassIngestionController(client) {}
 
+  MOCK_METHOD(std::string, GetPageTitle, (), (const, override));
   MOCK_METHOD(void,
               GetAnnotatedPageContent,
               (AnnotatedPageContentCallback),
@@ -121,6 +122,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   optimization_guide::proto::AnnotatedPageContent content;
   content.set_tab_id(123);
 
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 
@@ -158,6 +160,7 @@ TEST_F(WalletablePassIngestionControllerTest,
           }));
 
   // Expect that the model executor is called when the content is retrieved.
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 

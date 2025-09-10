@@ -52,6 +52,9 @@ class WalletablePassIngestionController {
   // consulting an allowlist managed by the Optimization Guide.
   bool IsEligibleForExtraction(const GURL& url) const;
 
+  // Gets the title of current page.
+  virtual std::string GetPageTitle() const = 0;
+
   // Gets the annotated page content for the current page. `callback` is
   // invoked upon completion.
   virtual void GetAnnotatedPageContent(
