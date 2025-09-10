@@ -585,8 +585,6 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
 
   frame_drop_log_state_ = FrameDropLogState();
 
-  // TODO(crbug.com/1369085): Understand why we sometimes see old
-  // sub-capture-target versions.
   if (frame->metadata().sub_capture_target_version !=
       sub_capture_target_version_) {
     OnFrameDroppedOnVideoTaskRunner(
