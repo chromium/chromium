@@ -575,6 +575,9 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 #endif
   }
 
+  if (trial_name == "AIProofreadingAPI") {
+    return base::FeatureList::IsEnabled(features::kAIProofreadingAPI);
+  }
   return true;
 }
 
