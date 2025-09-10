@@ -33,18 +33,18 @@ TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
       u"123456XXX123456789", u"12345678XXX012345678_foo", u"1234567890123456",
       u"1234567XXX901234567890"};
   EXPECT_EQ(std::string_view("123456").size(),
-            FindLongestCommonAffixLength(strings, /*prefix=*/true));
+            FindLongestCommonAffixLengthForTest(strings, /*prefix=*/true));
   strings = {u"1234567890"};
   EXPECT_EQ(std::string_view("1234567890").size(),
-            FindLongestCommonAffixLength(strings, /*prefix=*/true));
+            FindLongestCommonAffixLengthForTest(strings, /*prefix=*/true));
   strings = {u"1234567890123456", u"4567890123456789", u"7890123456789012"};
-  EXPECT_EQ(0u, FindLongestCommonAffixLength(strings, /*prefix=*/true));
+  EXPECT_EQ(0u, FindLongestCommonAffixLengthForTest(strings, /*prefix=*/true));
   strings = {};
-  EXPECT_EQ(0u, FindLongestCommonAffixLength(strings, /*prefix=*/true));
+  EXPECT_EQ(0u, FindLongestCommonAffixLengthForTest(strings, /*prefix=*/true));
   strings = {u"a123", u"b123", u"c123"};
   EXPECT_EQ(std::string_view("123").size(),
-            FindLongestCommonAffixLength(strings,
-                                         /*prefix=*/false));
+            FindLongestCommonAffixLengthForTest(strings,
+                                                /*prefix=*/false));
 }
 
 // Tests that the parseable names are computed correctly.
@@ -52,20 +52,20 @@ TEST(NameProcessingUtil, ComputeParseableNames) {
   // No common prefix.
   std::vector<std::u16string_view> no_common_prefix = {u"abc", u"def", u"abcd",
                                                        u"abcdef"};
-  ComputeParseableNames(no_common_prefix);
+  ComputeParseableNamesForTest(no_common_prefix);
   EXPECT_THAT(no_common_prefix,
               ElementsAre(u"abc", u"def", u"abcd", u"abcdef"));
 
   // The prefix is too short to be removed.
   std::vector<std::u16string_view> short_prefix = {u"abcaazzz", u"abcbbzzz",
                                                    u"abccczzz"};
-  ComputeParseableNames(short_prefix);
+  ComputeParseableNamesForTest(short_prefix);
   EXPECT_THAT(short_prefix, ElementsAre(u"abcaazzz", u"abcbbzzz", u"abccczzz"));
 
   // Not enough strings to be considered for prefix removal.
   std::vector<std::u16string_view> not_enough_strings = {
       u"ccccccccccccccccaazzz", u"ccccccccccccccccbbzzz"};
-  ComputeParseableNames(not_enough_strings);
+  ComputeParseableNamesForTest(not_enough_strings);
   EXPECT_THAT(not_enough_strings,
               ElementsAre(u"ccccccccccccccccaazzz", u"ccccccccccccccccbbzzz"));
 
@@ -73,7 +73,7 @@ TEST(NameProcessingUtil, ComputeParseableNames) {
   std::vector<std::u16string_view> long_prefix = {u"1234567890ABCDEFGabcaazzz",
                                                   u"1234567890ABCDEFGabcbbzzz",
                                                   u"1234567890ABCDEFGabccczzz"};
-  ComputeParseableNames(long_prefix);
+  ComputeParseableNamesForTest(long_prefix);
   EXPECT_THAT(long_prefix, ElementsAre(u"aazzz", u"bbzzz", u"cczzz"));
 }
 

@@ -45,8 +45,9 @@ std::vector<std::u16string_view> SplitBySeparators(std::u16string_view label) {
   return components;
 }
 
-}  // namespace
-
+// The function returns a vector of the same size as `labels`, containing the
+// processed labels. Since the function operates on string_views, `label[i]` of
+// the result might reference (part of) `label[i-1]` of the input.
 std::vector<std::u16string_view> GetParseableLabels(
     std::vector<std::u16string_view> labels) {
   // The current label that may be shared with the subsequent fields.
@@ -86,6 +87,8 @@ std::vector<std::u16string_view> GetParseableLabels(
   return labels;
 }
 
+}  // namespace
+
 base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
     base::span<const raw_ptr<const FormFieldData>> fields) {
   std::vector<std::u16string_view> field_labels;
@@ -119,6 +122,11 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
     it++;
   }
   return label_map;
+}
+
+std::vector<std::u16string_view> GetParseableLabelsForTest(  // IN-TEST
+    std::vector<std::u16string_view> labels) {
+  return GetParseableLabels(labels);
 }
 
 }  // namespace autofill

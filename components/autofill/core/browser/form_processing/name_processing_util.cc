@@ -62,8 +62,9 @@ void MaybeRemoveAffix(base::span<std::u16string_view> strings,
   }
 }
 
-}  // namespace
-
+// Returns the length of the longest common affix of the `strings`. If `prefix`
+// is true, the prefixes are considered, otherwise the suffixes.
+// The runtime is O(strings.size() * length-of-longest-common-affix).
 size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
                                     bool prefix) {
   if (strings.empty())
@@ -82,6 +83,10 @@ size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
   return affix_len;
 }
 
+// While this function works on a general set of strings, it is solely used for
+// the purpose of "rationalizing" the names of `FormFieldData::name`. The result
+// is then referred to as the "parseable name" of the field. Hence the
+// terminology here.
 void ComputeParseableNames(base::span<std::u16string_view> field_names) {
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
     return;
@@ -89,6 +94,8 @@ void ComputeParseableNames(base::span<std::u16string_view> field_names) {
   if (lcp >= kMinCommonNamePrefixLength)
     MaybeRemoveAffix(field_names, lcp, /*prefix=*/true);
 }
+
+}  // namespace
 
 base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
     base::span<const raw_ptr<const FormFieldData>> fields) {
@@ -102,6 +109,17 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
     }
   }
   return name_map;
+}
+
+size_t FindLongestCommonAffixLengthForTest(  // IN-TEST
+    base::span<std::u16string_view> strings,
+    bool prefix) {
+  return FindLongestCommonAffixLength(strings, prefix);
+}
+
+void ComputeParseableNamesForTest(  // IN-TEST
+    base::span<std::u16string_view> field_names) {
+  ComputeParseableNames(field_names);
 }
 
 }  // namespace autofill

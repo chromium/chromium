@@ -32,18 +32,18 @@ raw_ptr<const FormFieldData> to_form_field_data(
 TEST(LabelProcessingUtil, GetParseableNameLabels) {
   std::vector<std::u16string_view> labels = {u"City", u"Street & House Number",
                                              u"", u"Zip"};
-  EXPECT_THAT(GetParseableLabels(labels),
+  EXPECT_THAT(GetParseableLabelsForTest(labels),
               ElementsAre(u"City", u"Street", u"House Number", u"Zip"));
 
   // The label is also split when consecutive fields share the same label.
   labels[2] = labels[1];
-  EXPECT_THAT(GetParseableLabels(labels),
+  EXPECT_THAT(GetParseableLabelsForTest(labels),
               ElementsAre(u"City", u"Street", u"House Number", u"Zip"));
 }
 
 TEST(LabelProcessingUtil, GetParseableNameLabels_ThreeComponents) {
   EXPECT_THAT(
-      GetParseableLabels(
+      GetParseableLabelsForTest(
           {u"City", u"Street & House Number & Floor", u"", u"", u"Zip"}),
       ElementsAre(u"City", u"Street", u"House Number", u"Floor", u"Zip"));
 }
@@ -52,19 +52,19 @@ TEST(LabelProcessingUtil, GetParseableNameLabels_TooManyComponents) {
   std::vector<std::u16string_view> labels = {
       u"City", u"Street & House Number & Floor & Stairs", u"", u"", u"",
       u"Zip"};
-  EXPECT_EQ(GetParseableLabels(labels), labels);
+  EXPECT_EQ(GetParseableLabelsForTest(labels), labels);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameLabels_UnmachtingComponents) {
   std::vector<std::u16string_view> labels = {
       u"City", u"Street & House Number & Floor", u"", u"Zip"};
-  EXPECT_EQ(GetParseableLabels(labels), labels);
+  EXPECT_EQ(GetParseableLabelsForTest(labels), labels);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameLabels_SplitableLabelAtEnd) {
   std::vector<std::u16string_view> labels = {u"City", u"", u"Zip",
                                              u"Street & House Number & Floor"};
-  EXPECT_EQ(GetParseableLabels(labels), labels);
+  EXPECT_EQ(GetParseableLabelsForTest(labels), labels);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameLabels_TooLongLabel) {
@@ -73,7 +73,7 @@ TEST(LabelProcessingUtil, GetParseableNameLabels_TooLongLabel) {
       u"Street & House Number with a lot of additional text that exceeds 40 "
       u"characters by far",
       u"", u"Zip"};
-  EXPECT_EQ(GetParseableLabels(labels), labels);
+  EXPECT_EQ(GetParseableLabelsForTest(labels), labels);
 }
 
 // Tests that (only) if kAutofillEnableSupportForParsingWithSharedLabels is
