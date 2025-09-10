@@ -34,6 +34,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/extensions/web_file_handlers/multiclient_util.h"
@@ -414,16 +416,22 @@ WebContents* OpenEnabledApplication(Profile* profile,
   return OpenEnabledApplicationHelper(profile, params, *extension);
 }
 
-Browser* FindBrowserForApp(Profile* profile, const std::string& app_id) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    std::string browser_app_id =
-        web_app::GetAppIdFromApplicationName(browser->app_name());
-    if (profile == browser->profile() && browser->is_type_app() &&
-        app_id == browser_app_id) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindBrowserForApp(Profile* profile,
+                                          const std::string& app_id) {
+  BrowserWindowInterface* browser_for_app = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        std::string browser_app_id = web_app::GetAppIdFromApplicationName(
+            browser->GetBrowserForMigrationOnly()->app_name());
+        if (profile == browser->GetProfile() &&
+            browser->GetType() == BrowserWindowInterface::TYPE_APP &&
+            app_id == browser_app_id) {
+          browser_for_app = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_for_app;
 }
 
 }  // namespace
@@ -565,10 +573,10 @@ void LaunchAppWithCallback(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
-        callback) {
+    base::OnceCallback<void(BrowserWindowInterface* browser,
+                            apps::LaunchContainer container)> callback) {
   apps::LaunchContainer container;
-  Browser* app_browser = nullptr;
+  BrowserWindowInterface* app_browser = nullptr;
   if (apps::OpenExtensionApplicationWindow(profile, app_id, command_line,
                                            current_directory)) {
     container = apps::LaunchContainer::kLaunchContainerWindow;

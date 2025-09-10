@@ -34,6 +34,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
@@ -390,7 +391,7 @@ bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
 void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
                           const base::CommandLine& command_line,
                           chrome::startup::IsFirstRun is_first_run,
-                          Browser* browser,
+                          BrowserWindowInterface* browser,
                           apps::LaunchContainer container) {
   if (!browser) {
     return;
@@ -400,17 +401,17 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
 
   switch (container) {
     case apps::LaunchContainer::kLaunchContainerWindow:
-      DCHECK(browser->is_type_app());
+      DCHECK(browser->GetType() == BrowserWindowInterface::TYPE_APP);
       mode = app_open_mode.value_or(OpenMode::kInWindowOther);
       break;
     case apps::LaunchContainer::kLaunchContainerTab:
-      DCHECK(!browser->is_type_app());
+      DCHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP);
       mode = OpenMode::kInTab;
       break;
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
     case apps::LaunchContainer::kLaunchContainerNone:
-      DCHECK(!browser->is_type_app());
+      DCHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP);
       break;
   }
 
@@ -419,8 +420,8 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
   base::UmaHistogramEnumeration("WebApp.OpenMode", mode);
 
   AddInfoBarsIfNecessary(
-      browser, browser->profile(), command_line, is_first_run,
-      /*is_web_app=*/true, HasPendingUncleanExit(browser->profile()),
+      browser, browser->GetProfile(), command_line, is_first_run,
+      /*is_web_app=*/true, HasPendingUncleanExit(browser->GetProfile()),
       StartupBrowserCreator::WasRestarted());
 
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
