@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;

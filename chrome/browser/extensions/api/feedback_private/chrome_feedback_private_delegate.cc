@@ -26,7 +26,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/string_split.h"

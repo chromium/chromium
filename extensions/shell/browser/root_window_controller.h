@@ -12,7 +12,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tree_host_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace aura {
 class WindowTreeHost;

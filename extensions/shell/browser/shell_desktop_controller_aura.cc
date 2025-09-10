@@ -29,7 +29,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_loader.h"

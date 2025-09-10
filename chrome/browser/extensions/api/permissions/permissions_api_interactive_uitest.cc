@@ -11,7 +11,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 using PermissionsApiInteractiveTest = ExtensionApiTest;

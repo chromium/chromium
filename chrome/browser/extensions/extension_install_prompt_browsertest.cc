@@ -13,7 +13,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"

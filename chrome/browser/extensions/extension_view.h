@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {

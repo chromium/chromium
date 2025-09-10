@@ -22,7 +22,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
