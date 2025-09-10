@@ -5496,15 +5496,6 @@
       base_feature: "none",
       public: true,
     },
-    // Methods for deserializing WebAuthn requests from JSON/serializing
-    // responses into JSON.
-    // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
-    // https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON
-    // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
-    {
-      name: "WebAuthenticationJSONSerialization",
-      status: "stable",
-    },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
