@@ -51,7 +51,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
-#include "ipc/ipc_mojo_message_helper.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message.h"
