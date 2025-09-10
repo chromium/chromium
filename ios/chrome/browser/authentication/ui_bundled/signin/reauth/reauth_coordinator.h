@@ -27,7 +27,7 @@ enum class ReauthResult : int {
 };
 
 // The delegate for the reauth flow.
-@protocol ReauthCoordinatorDelegate <BuggyAuthenticationViewOwner>
+@protocol ReauthCoordinatorDelegate
 
 // The reauth flow has completed with `result`.
 - (void)reauthFinishedWithResult:(ReauthResult)result;

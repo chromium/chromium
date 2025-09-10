@@ -235,13 +235,6 @@
                     completionIdentity:completionIdentity];
 }
 
-#pragma mark - BuggyAuthenticationViewOwner
-
-- (BOOL)viewWillPersist {
-  // This coordinator always display its navigation controller.
-  return YES;
-}
-
 #pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {

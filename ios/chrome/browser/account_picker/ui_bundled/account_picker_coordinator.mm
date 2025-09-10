@@ -264,13 +264,6 @@
   }
 }
 
-#pragma mark - BuggyAuthenticationViewOwner
-
-- (BOOL)viewWillPersist {
-  // This coordinator always presents a navigation controller.
-  return YES;
-}
-
 #pragma mark - AccountPickerLayoutDelegate
 
 - (AccountPickerSheetDisplayStyle)displayStyle {
