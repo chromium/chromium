@@ -2608,9 +2608,17 @@ message InputTransferHandler {
   optional TransferInputToVizResult transfer_result = 1;
 };
 
+message ResponseInfo {
+  // The HTTP response code. Will be left empty if the response code is unknown.
+  optional int64 response_code = 1;
+
+  // Whether the response was served from the HTTP cache.
+  optional bool was_http_cache = 2;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1077
+  // Next ID: 1078
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2775,5 +2783,7 @@ message ChromeTrackEvent {
     optional ChromeFrameReporter2 frame_reporter = 1075;
 
     optional InputTransferHandler input_transfer_handler = 1076;
+
+    optional ResponseInfo response_info = 1077;
   }
 }

@@ -4417,8 +4417,20 @@ void NavigationRequest::OnResponseStarted(
     SubresourceLoaderParams subresource_loader_params,
     EarlyHints early_hints) {
   receive_response_time_ = base::TimeTicks::Now();
-  TRACE_EVENT("navigation", "NavigationRequest::OnResponseStarted",
-              perfetto::Flow::FromPointer(this));
+  const int32_t http_response_code =
+      response_head->headers ? response_head->headers->response_code()
+                             : -1 /* no http_response_code */;
+  TRACE_EVENT(
+      "navigation", "NavigationRequest::OnResponseStarted",
+      perfetto::Flow::FromPointer(this), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* response_info = event->set_response_info();
+        if (http_response_code != -1) {
+          response_info->set_response_code(http_response_code);
+        }
+        response_info->set_was_http_cache(response_head->was_fetched_via_cache);
+      });
+
   ScopedCrashKeys crash_keys(*this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
@@ -4522,9 +4534,7 @@ void NavigationRequest::OnResponseStarted(
   UpdateNavigationHandleTimingsOnResponseReceived(/*is_redirect=*/false,
                                                   is_first_response);
 
-  commit_params_->http_response_code =
-      response_head_->headers ? response_head_->headers->response_code()
-                              : -1 /* no http_response_code */;
+  commit_params_->http_response_code = http_response_code;
 
   // Update fetch start timing. While NavigationRequest updates fetch start
   // timing for redirects, it's not aware of service worker interception so
