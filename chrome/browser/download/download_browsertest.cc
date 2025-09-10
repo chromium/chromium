@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -5244,10 +5245,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   EXPECT_FALSE(IsDownloadDetailedUiVisible(browser()->window()));
 
   // The download surface SHOULD be visible in the second window.
-  std::set<Browser*> original_browsers;
-  original_browsers.insert(browser());
-  Browser* download_browser =
-      ui_test_utils::GetBrowserNotInSet(original_browsers);
+  Browser* download_browser = ui_test_utils::GetBrowserNotInSet({browser()});
   ASSERT_TRUE(download_browser);
   EXPECT_NE(download_browser, browser());
   EXPECT_EQ(1, download_browser->tab_strip_model()->count());
