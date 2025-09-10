@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 
 namespace glic {
 
@@ -59,6 +60,10 @@ void GlicFloatingUi::Show() {
 std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
+  return GlicInactiveFloatingUi::From(*this);
 }
 
 }  // namespace glic

@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
-#define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
+#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_FLOATING_UI_H_
+#define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_FLOATING_UI_H_
 
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 
 namespace glic {
 
-class GlicSidePanelUi;
+class GlicFloatingUi;
 
 // A GlicUiEmbedder for inactive Glic instances. This will show a
 // blurred screenshot of the previously active UI.
-class GlicInactiveSidePanelUi : public GlicUiEmbedder {
+class GlicInactiveFloatingUi : public GlicUiEmbedder {
  public:
-  static std::unique_ptr<GlicInactiveSidePanelUi> From(
-      const GlicSidePanelUi& active_ui);
+  static std::unique_ptr<GlicInactiveFloatingUi> From(
+      const GlicFloatingUi& active_ui);
 
-  ~GlicInactiveSidePanelUi() override;
+  ~GlicInactiveFloatingUi() override;
 
   // GlicUiEmbedder:
   Host::Delegate* GetHostDelegate() override;
@@ -27,9 +27,9 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
  private:
-  GlicInactiveSidePanelUi();
+  GlicInactiveFloatingUi();
 };
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
+#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_FLOATING_UI_H_

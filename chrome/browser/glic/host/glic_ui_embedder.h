@@ -28,6 +28,9 @@ class GlicUiEmbedder {
 
   // Create the WebView in which to show glic.
   virtual std::unique_ptr<views::View> CreateView() = 0;
+
+  // Creates the inactive version of this embedder.
+  virtual std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const = 0;
 };
 
 }  // namespace glic

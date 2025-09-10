@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
 
+#include <variant>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +17,10 @@
 
 class BrowserWindowInterface;
 class Profile;
+
+namespace views {
+class View;
+}
 
 namespace tabs {
 class TabInterface;
@@ -55,7 +61,6 @@ class GlicInstance : public GlicInstanceDelegate {
 
   Profile* profile() { return profile_; }
   Host& host() { return *host_; }
-  GlicUiEmbedder& embedder();
 
   void DisassociateWindow();
 
@@ -66,14 +71,12 @@ class GlicInstance : public GlicInstanceDelegate {
   const ConversationId& conversation_id() const { return conversation_id_; }
 
   // These methods should only be called by the GlicInstanceCoordinator.
-  EmbedderType GetEmbedderType();
-  void SetEmbedderType(EmbedderType type);
-  void Show(tabs::TabInterface* tab);
+  void Show(EmbedderType type, tabs::TabInterface* tab);
   void Close();
-  void Toggle();
+  void Toggle(EmbedderType type, tabs::TabInterface* tab);
+  std::unique_ptr<views::View> CreateViewForSidePanel(tabs::TabInterface* tab);
 
   // Manages the association of this conversation with a tab.
-  void AssociateWithTab(tabs::TabInterface* tab);
   void DisassociateFromTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
 
@@ -89,15 +92,33 @@ class GlicInstance : public GlicInstanceDelegate {
   void GetZeroStateSuggestionsForFocusedTab() override;
 
  private:
+  // A tag type to represent the floating embedder key.
+  struct FloatingEmbedderKey {
+    auto operator<=>(const FloatingEmbedderKey&) const = default;
+  };
+
+  using EmbedderKey = std::variant<FloatingEmbedderKey, tabs::TabInterface*>;
+
+  struct EmbedderEntry {
+    EmbedderEntry();
+    ~EmbedderEntry();
+    EmbedderEntry(EmbedderEntry&&);
+    EmbedderEntry& operator=(EmbedderEntry&&);
+
+    std::unique_ptr<GlicUiEmbedder> embedder;
+    base::CallbackListSubscription destruction_subscription;
+  };
+
+  EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
+  GlicUiEmbedder* GetActiveEmbedder();
+  GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
+  void DeactivateCurrentEmbedder();
+  GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
                                 const ConversationId& conversation_id);
 
   raw_ptr<Profile> profile_;
-
-  // Replaces GlicWindowController on existing GlicKeyedService.
-  std::unique_ptr<GlicUiEmbedder> embedder_;
-  EmbedderType embedder_type_ = EmbedderType::kSidePanel;
 
   // The browser window this instance is associated with. This persists even
   // when detached.
@@ -105,8 +126,14 @@ class GlicInstance : public GlicInstanceDelegate {
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
   const ConversationId conversation_id_;
 
-  base::flat_map<tabs::TabInterface*, base::CallbackListSubscription>
-      associated_tab_subscriptions_;
+  // The single source of truth for all embedders.
+  // A tabs::TabInterface* key is a tab-bound side panel.
+  // A FloatingEmbedderKey key is the instance-bound floating panel.
+  base::flat_map<EmbedderKey, EmbedderEntry> embedders_;
+
+  // The single, unambiguous source of truth for the active UI.
+  std::optional<EmbedderKey> active_embedder_key_;
+
   std::unique_ptr<Host> host_;
   base::WeakPtrFactory<GlicInstance> weak_ptr_factory_{this};
 };

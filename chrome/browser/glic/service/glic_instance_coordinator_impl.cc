@@ -108,9 +108,11 @@ void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
-  if (!IsFloatingInstance(instance)) {
-    RemoveInstance(instance);
+  if (floating_instance_key_.has_value() &&
+      floating_instance_key_.value() == instance->conversation_id()) {
+    return;
   }
+  RemoveInstance(instance);
 }
 
 Host* GlicInstanceCoordinatorImpl::GetHostForTab(tabs::TabInterface* tab) {
@@ -336,7 +338,7 @@ GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface* tab) {
   }
   auto* instance = GetOrCreateGlicInstanceForTab(tab);
   CHECK(instance);
-  return instance->embedder().CreateView();
+  return instance->CreateViewForSidePanel(tab);
 }
 
 void GlicInstanceCoordinatorImpl::SidePanelShown(Browser* browser) {
@@ -409,19 +411,14 @@ GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
 }
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty() {
-  if (!floating_instance_) {
-    // Create a new floating instance if one doesn't exist.
-    floating_instance_ = CreateGlicInstance(/*bwi=*/nullptr);
-    floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
+  if (!floating_instance_key_.has_value()) {
+    floating_instance_key_ =
+        CreateGlicInstance(/*bwi=*/nullptr)->conversation_id();
   }
-
-  CHECK(floating_instance_->GetEmbedderType() ==
-        GlicInstance::EmbedderType::kFloating);
-  if (floating_instance_->IsShowing()) {
-    floating_instance_->Close();
-  } else {
-    floating_instance_->Show(/*tab=*/nullptr);
-  }
+  auto instance_iter = instances_.find(*floating_instance_key_);
+  CHECK(instance_iter != instances_.end());
+  GlicInstance* instance = instance_iter->second.get();
+  instance->Toggle(GlicInstance::EmbedderType::kFloating, nullptr);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
@@ -431,12 +428,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
   auto* instance = GetOrCreateGlicInstanceForTab(tab);
-  CHECK(instance->GetEmbedderType() == GlicInstance::EmbedderType::kSidePanel);
-  if (instance->IsShowing()) {
-    instance->Close();
-  } else {
-    instance->Show(tab);
-  }
+  instance->Toggle(GlicInstance::EmbedderType::kSidePanel, tab);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
@@ -446,14 +438,6 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
 bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
   return false;
-}
-
-bool GlicInstanceCoordinatorImpl::IsFloatingInstance(GlicInstance* instance) {
-  return floating_instance_ && floating_instance_ == instance;
-}
-
-void GlicInstanceCoordinatorImpl::ReattachFloatingInstance() {
-  NOTIMPLEMENTED();
 }
 
 }  // namespace glic

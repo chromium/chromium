@@ -133,8 +133,6 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
 
   void RemoveInstance(GlicInstance* instance);
   bool HasAttachedInstance(GlicInstance* instance);
-  bool IsFloatingInstance(GlicInstance* instance);
-  void ReattachFloatingInstance();
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
@@ -153,8 +151,8 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
 
   std::map<ConversationId, std::unique_ptr<GlicInstance>> instances_;
 
-  // Pointer to the instance (if any) that is currently floating.
-  raw_ptr<GlicInstance> floating_instance_ = nullptr;
+  // The conversation ID of the one instance that is currently floating.
+  std::optional<ConversationId> floating_instance_key_;
 
   std::unique_ptr<HostManager> host_manager_;
 

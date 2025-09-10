@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/service/glic_instance.h"
+#include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -79,6 +80,11 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
   glic_view->SetWebContents(instance_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   return glic_view;
+}
+
+std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
+    const {
+  return GlicInactiveSidePanelUi::From(*this);
 }
 
 }  // namespace glic
