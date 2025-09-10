@@ -69,7 +69,7 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // Used finch experiment to determine the best value. See b:330617490 for
   // details.
   renderer_settings.occlusion_culler_settings.quad_split_limit = 12;
