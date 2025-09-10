@@ -227,7 +227,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 }
 
 // Test to ensure the dialog's confirm button works correctly.
-- (void)testOtpInputDialogConfirm {
+// TODO(crbug.com/444045960): Test is flaky.
+- (void)DISABLED_testOtpInputDialogConfirm {
   [self showOtpInputDialog];
 
   [[EarlGrey selectElementWithMatcher:OtpInputDialogConfirmButton()]
