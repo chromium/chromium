@@ -292,6 +292,13 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // and (b) the refresh token is bound to a device.
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const;
+
+  // Returns whether all bound refresh tokens share the same binding key.
+  //
+  // Unbound tokens are ignored in this check. Returns `true` if there are zero
+  // or one bound tokens, or if all bound tokens use the same key. Returns
+  // `false` only if there are multiple bound tokens with different keys.
+  bool AllBoundTokensShareSameBindingKey() const;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   void set_max_authorization_token_fetch_retries_for_testing(int max_retries);

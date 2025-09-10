@@ -38,6 +38,7 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution) override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;
+  void OnReconcileError(const GoogleServiceAuthError& error) override;
 
   // Returns true if explicit browser sign in is enabled and Chrome isn't signed
   // in.

@@ -417,6 +417,14 @@ MutableProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
   return token_binding_helper_->GetWrappedBindingKey(account_id);
 }
 
+bool MutableProfileOAuth2TokenServiceDelegate::
+    AllBoundTokensShareSameBindingKey() const {
+  if (!token_binding_helper_) {
+    return true;
+  }
+  return token_binding_helper_->AreAllBindingKeysSame();
+}
+
 void MutableProfileOAuth2TokenServiceDelegate::
     GenerateRefreshTokenBindingKeyAssertionForMultilogin(
         const CoreAccountId& account_id,

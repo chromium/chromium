@@ -77,6 +77,9 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
     case SourceForRefreshTokenOperation::
         kEnterprisePolicy_AccountNotAllowedInContentArea:
       return "AccountsPolicyManager::RemoveUnallowedAccounts";
+    case SourceForRefreshTokenOperation::
+        kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys:
+      return "DiceAccountReconcilorDelegate::RefreshTokensBoundToDifferentKeys";
   }
 }
 

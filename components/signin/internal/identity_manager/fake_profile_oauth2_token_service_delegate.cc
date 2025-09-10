@@ -75,6 +75,24 @@ FakeProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
                                            : std::vector<uint8_t>();
 }
 
+bool FakeProfileOAuth2TokenServiceDelegate::AllBoundTokensShareSameBindingKey()
+    const {
+  const std::vector<uint8_t>* first_non_empty_key = nullptr;
+  for (const auto& account_id_and_key : wrapped_binding_keys_) {
+    if (account_id_and_key.second.empty()) {
+      continue;
+    }
+    if (!first_non_empty_key) {
+      first_non_empty_key = &account_id_and_key.second;
+      continue;
+    }
+    if (account_id_and_key.second != *first_non_empty_key) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void FakeProfileOAuth2TokenServiceDelegate::
     GenerateRefreshTokenBindingKeyAssertionForMultilogin(
         const CoreAccountId& account_id,

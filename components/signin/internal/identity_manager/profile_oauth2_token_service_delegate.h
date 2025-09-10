@@ -119,6 +119,13 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const = 0;
 
+  // Returns whether all bound refresh tokens share the same binding key.
+  //
+  // Unbound tokens are ignored in this check. Returns `true` if there are zero
+  // or one bound tokens, or if all bound tokens use the same key. Returns
+  // `false` only if there are multiple bound tokens with different keys.
+  virtual bool AllBoundTokensShareSameBindingKey() const = 0;
+
   // Asynchronously generates a binding key assertion for a refresh token
   // associated with `account_id` to be sent to the Gaia Multilogin endpoint.
   // The result is returned through `callback`.

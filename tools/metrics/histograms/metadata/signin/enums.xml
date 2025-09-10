@@ -1328,6 +1328,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/dice_web_signin_interceptor.h:SinginInterceptSupervisionState) -->
 
+<!-- LINT.IfChange(SourceForRefreshTokenOperation) -->
+
 <enum name="SourceForRefreshTokenOperation">
   <int value="0" label="Unknown"/>
   <int value="1" label="TokenService::LoadCredentials"/>
@@ -1364,7 +1366,13 @@ chromium-metrics-reviews@google.com.
   <int value="24"
       label="AccountsPolicyManager::RemoveUnallowedAccounts from
              ProfileSeparationDomainExceptionList policy."/>
+  <int value="25"
+      label="DiceAccountReconcilorDelegate::RefreshTokensBoundToDifferentKeys
+             if the error is persistent and the source of the error is LSTs
+             bound to different keys."/>
 </enum>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SourceForRefreshTokenOperation) -->
 
 <!-- LINT.IfChange(SuppressedReason) -->
 

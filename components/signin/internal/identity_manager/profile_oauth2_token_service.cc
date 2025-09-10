@@ -352,6 +352,10 @@ std::vector<uint8_t> ProfileOAuth2TokenService::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
   return delegate_->GetWrappedBindingKey(account_id);
 }
+
+bool ProfileOAuth2TokenService::AllBoundTokensShareSameBindingKey() const {
+  return delegate_->AllBoundTokensShareSameBindingKey();
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void ProfileOAuth2TokenService::

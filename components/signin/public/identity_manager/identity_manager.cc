@@ -307,6 +307,10 @@ IdentityManager::GetWrappedBindingKeyOfRefreshTokenForAccount(
   return token_service_->GetWrappedBindingKey(account_id);
 }
 
+bool IdentityManager::AllBoundTokensShareSameBindingKey() const {
+  return token_service_->AllBoundTokensShareSameBindingKey();
+}
+
 std::vector<uint8_t> IdentityManager::GetWrappedBindingKey() const {
   CHECK(AreRefreshTokensLoaded());
   // All bound tokens are supposed to use the same key. Having two different
