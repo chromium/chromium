@@ -157,7 +157,6 @@ crbug.com/1378476 [ mac arch-arm64 ] GpuProcess_no_swiftshader_for_webgl_without
 crbug.com/380269801 [ android android-sm-s911u1 ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-sm-a137f ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-sm-a236b ] GpuProcess_visibility [ Failure ]
-crbug.com/380269801 [ android android-pixel-4 ] GpuProcess_visibility [ RetryOnFailure ]
 crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
 
 #######################################################################
