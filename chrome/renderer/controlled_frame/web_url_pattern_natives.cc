@@ -161,6 +161,23 @@ std::vector<std::string> MatchPatternsFromUrlPattern(
     match_patterns.push_back(protocol_host_str + path_str + search_query_str);
   }
 
+  // If "*" protocol, supply "ws" and "wss" as matching protocols as well.
+  if (protocol_part.type == liburlpattern::PartType::kFullWildcard) {
+    std::vector<std::string> ws_wss_additional_patterns;
+    for (std::string& match_pattern : match_patterns) {
+      CHECK_EQ(match_pattern[0], '*');
+      std::string pattern_without_wildcard_protocol = match_pattern.substr(1);
+      ws_wss_additional_patterns.push_back("ws" +
+                                           pattern_without_wildcard_protocol);
+      ws_wss_additional_patterns.push_back("wss" +
+                                           pattern_without_wildcard_protocol);
+    }
+
+    match_patterns.insert(match_patterns.end(),
+                          ws_wss_additional_patterns.begin(),
+                          ws_wss_additional_patterns.end());
+  }
+
   return match_patterns;
 }
 }  // namespace
