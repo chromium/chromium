@@ -61,6 +61,9 @@ extern const char kAiModeOmniboxEntryPointDescription[];
 extern const char kAiSettingsPageEnterpriseDisabledName[];
 extern const char kAiSettingsPageEnterpriseDisabledDescription[];
 
+extern const char kOmniboxAimServerEligibilityName[];
+extern const char kOmniboxAimServerEligibilityDescription[];
+
 extern const char kAlignSurfaceLayerImplToPixelGridName[];
 extern const char kAlignSurfaceLayerImplToPixelGridDescription[];
 

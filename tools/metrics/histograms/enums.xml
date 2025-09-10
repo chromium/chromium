@@ -16519,6 +16519,7 @@ from previous Chrome versions.
   <int value="873323760" label="MediaFoundationClearPlayback:disabled"/>
   <int value="874614410" label="CSSOverflowForReplacedElements:enabled"/>
   <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
+  <int value="875647914" label="AimServerEligibilityEnabled:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
@@ -18362,6 +18363,7 @@ from previous Chrome versions.
   <int value="1536946541" label="LensOverlayStraightToSrp:enabled"/>
   <int value="1537685016" label="NtpDriveModuleSegmentation:disabled"/>
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
+  <int value="1537726884" label="AimServerEligibilityEnabled:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
   <int value="1539225325" label="AndroidOpenPdfInlineBackport:enabled"/>

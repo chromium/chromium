@@ -28,6 +28,10 @@ const char kAiSettingsPageEnterpriseDisabledDescription[] =
     "Enables settings UI for AI features that are disabled by enterprise "
     "policy.";
 
+const char kOmniboxAimServerEligibilityName[] = "AIM Server Eligibility";
+const char kOmniboxAimServerEligibilityDescription[] =
+    "Enable AIM server eligibility checks.";
+
 const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";

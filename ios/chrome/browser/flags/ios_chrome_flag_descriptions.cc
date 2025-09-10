@@ -753,6 +753,10 @@ const char kIOSOmniboxAimShortcutDescription[] =
     "When enabled, an aim shortcut entrypoint will be displayed when the "
     "omnibox is on edit mode.";
 
+const char kIOSOmniboxAimServerEligibilityName[] = "AIM Server Eligibility";
+const char kIOSOmniboxAimServerEligibilityDescription[] =
+    "Enable AIM server eligibility checks.";
+
 const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
     "Remove section break for address detection.";
 const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =

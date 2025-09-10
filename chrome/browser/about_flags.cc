@@ -128,6 +128,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/ntp_tiles/features.h"
 #include "components/offline_pages/core/offline_page_feature.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -6967,6 +6968,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeOmniboxEntryPointName,
      flag_descriptions::kAiModeOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint)},
+
+    {"aim-server-eligibility",
+     flag_descriptions::kOmniboxAimServerEligibilityName,
+     flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(kAimServerEligibilityEnabled)},
 
     {"hide-aim-omnibox-entrypoint-on-user-input",
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
