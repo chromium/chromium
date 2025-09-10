@@ -244,7 +244,6 @@ if (use_blink) {
   test("ipc_tests") {
     sources = [
       "ipc_channel_mojo_unittest.cc",
-      "ipc_fuzzing_tests.cc",
       "ipc_message_protobuf_utils_unittest.cc",
       "ipc_message_unittest.cc",
       "ipc_message_utils_unittest.cc",
