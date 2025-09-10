@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
@@ -176,6 +177,7 @@ class AutocompleteMediator
     // Observer watching for changes to the visual state of the omnibox suggestions.
     private Optional<AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver>
             mOmniboxSuggestionsVisualStateObserver = Optional.empty();
+    private final NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
 
     public AutocompleteMediator(
             Context context,
@@ -196,6 +198,7 @@ class AutocompleteMediator
             OmniboxSuggestionsDropdownEmbedder embedder,
             WindowAndroid windowAndroid,
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
+            NavigationAttachmentsCoordinator navigationAttachmentsCoordinator,
             boolean forcePhoneStyleOmnibox) {
         mContext = context;
         mDelegate = delegate;
@@ -207,6 +210,7 @@ class AutocompleteMediator
         mBringTabToFrontCallback = bringTabToFrontCallback;
         mBringTabGroupToFrontCallback = bringTabGroupToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
+        mNavigationAttachmentsCoordinator = navigationAttachmentsCoordinator;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mOmniboxActionDelegate = omniboxActionDelegate;
         mWindowAndroid = windowAndroid;
@@ -974,6 +978,19 @@ class AutocompleteMediator
             // For Hub Search, default behavior kicks off search by pressing enter, do not return.
         }
 
+        if (mNavigationAttachmentsCoordinator.shouldUseAimUrl()) {
+            AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
+            if (suggestionMatch == null) return;
+            loadUrlForOmniboxMatch(
+                    0,
+                    suggestionMatch,
+                    mNavigationAttachmentsCoordinator.getAimUrl(urlText),
+                    eventTime,
+                    /* openInNewTab= */ false,
+                    /* shouldUpdateSuggestionUrl= */ false);
+            return;
+        }
+
         if (mAutocomplete.isPresent()) {
             findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         } else {
@@ -991,26 +1008,28 @@ class AutocompleteMediator
      *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
      */
     private void findMatchAndLoadUrl(String urlText, long inputStart, boolean openInNewTab) {
-        AutocompleteMatch suggestionMatch;
+        AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
 
+        if (suggestionMatch == null) return;
+        loadUrlForOmniboxMatch(
+                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab, true);
+    }
+
+    private @Nullable AutocompleteMatch getSuggestionMatchForUrlText(String urlText) {
         if (getSuggestionCount() > 0
                 && mUrlTextAfterSuggestionsReceived != null
                 && urlText.trim().equals(mUrlTextAfterSuggestionsReceived.trim())) {
             // Common case: the user typed something, received suggestions, then pressed enter.
             // This triggers the Default Match.
-            suggestionMatch = getSuggestionAt(0);
+            return getSuggestionAt(0);
         } else {
             // Less common case: there are no valid omnibox suggestions. This can happen if the
             // user tapped the URL bar to dismiss the suggestions, then pressed enter. This can
             // also happen if the user presses enter before any suggestions have been received
             // from the autocomplete controller.
-            suggestionMatch = mAutocomplete.map(a -> a.classify(urlText)).orElse(null);
+            return mAutocomplete.map(a -> a.classify(urlText)).orElse(null);
             // If urlText couldn't be classified, bail.
         }
-
-        if (suggestionMatch == null) return;
-        loadUrlForOmniboxMatch(
-                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab, true);
     }
 
     /**
@@ -1023,6 +1042,8 @@ class AutocompleteMediator
      * @param openInNewTab Whether the suggestion will be loaded in a new tab. If {@code true}, the
      *     suggestion will be loaded in a new tab. If {@code false}, the suggestion will be loaded
      *     in the current tab.
+     * @param shouldUpdateSuggestionUrl Whether the suggestion url should be updated with additional
+     *     query formulation stats param.
      */
     private void loadUrlForOmniboxMatch(
             int matchIndex,

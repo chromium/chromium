@@ -73,6 +73,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 new ModelList(),
                                 mProfileSupplier));
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
+        doReturn(123L).when(mNativeMock).init(mProfile);
+        mMediator.initializeBridge(mProfile);
         Clipboard.setInstanceForTesting(mClipboard);
     }
 
@@ -138,8 +140,6 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void addAttachment_addAttachment() {
-        doReturn(123L).when(mNativeMock).init(mProfile);
-        mMediator.initializeBridge(mProfile);
         byte[] byteArray = new byte[] {1, 2, 3};
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(

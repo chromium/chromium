@@ -18,6 +18,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
@@ -79,5 +80,19 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
     @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
         return mViewHolder;
+    }
+
+    /**
+     * Whether the url returned by {@link #getAimUrl} should be used when the user submits a typed
+     * query.
+     */
+    public boolean shouldUseAimUrl() {
+        return mMediator != null && mMediator.isUsingAiMode();
+    }
+
+    /** Returns the URL associated with the current AIM session. */
+    public GURL getAimUrl(String queryText) {
+        if (mMediator == null) return GURL.emptyGURL();
+        return mMediator.getAimUrl(queryText);
     }
 }

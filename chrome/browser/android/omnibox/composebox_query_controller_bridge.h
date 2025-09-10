@@ -15,6 +15,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 class Profile;
+class GURL;
 
 class ComposeboxQueryControllerBridge
     : public ComposeboxQueryController::FileUploadStatusObserver {
@@ -28,6 +29,7 @@ class ComposeboxQueryControllerBridge
                std::string& file_name,
                std::string& file_type,
                const jni_zero::JavaParamRef<jobject>& file_data);
+  GURL GetAimUrl(JNIEnv* env, std::string& query_text);
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(

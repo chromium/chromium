@@ -23,6 +23,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,9 +40,11 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link NavigationAttachmentsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsCoordinatorUnitTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+    public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private @Mock ComposeBoxQueryControllerBridge.Natives mControllerMock;
+    private @Mock Profile mProfileMock;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -49,6 +54,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mControllerMock);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -73,6 +79,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         mCoordinator =
                 new NavigationAttachmentsCoordinator(
                         mActivity, mWindowAndroid, mParent, mProfileSupplier);
+        mProfileSupplier.set(mProfileMock);
         View navigationToolbar = mParent.findViewById(R.id.location_bar_navigation_toolbar);
         assertEquals(View.GONE, navigationToolbar.getVisibility());
 

@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
 
@@ -52,6 +53,10 @@ public class ComposeBoxQueryControllerBridge {
                 .addFile(mNativeInstance, fileName, fileType, byteBuffer);
     }
 
+    GURL getAimUrl(String queryText) {
+        return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
+    }
+
     @NativeMethods
     public interface Natives {
         long init(@JniType("Profile*") Profile profile);
@@ -71,5 +76,9 @@ public class ComposeBoxQueryControllerBridge {
                 @JniType("std::string") String fileName,
                 @JniType("std::string") String fileType,
                 ByteBuffer fileData);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        @JniType("GURL")
+        GURL getAimUrl(long nativeInstance, @JniType("std::string") String queryText);
     }
 }

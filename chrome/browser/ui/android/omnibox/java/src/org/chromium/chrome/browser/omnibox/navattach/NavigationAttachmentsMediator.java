@@ -38,6 +38,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ class NavigationAttachmentsMediator {
     private final ModelList mModelList;
     private final Drawable mFallbackDrawable;
     private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private boolean mUseAiMode;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -98,6 +100,7 @@ class NavigationAttachmentsMediator {
     }
 
     void onUseAiModeChanged(boolean enabled) {
+        mUseAiMode = enabled;
         if (!enabled) {
             mModelList.clear();
             mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
@@ -107,9 +110,22 @@ class NavigationAttachmentsMediator {
     /** Called when the URL focus changes. */
     void onUrlFocusChange(boolean hasFocus) {
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, hasFocus);
+        if (hasFocus) {
+            mComposeBoxQueryControllerBridge.notifySessionStarted();
+        }
         if (!hasFocus) {
+            mComposeBoxQueryControllerBridge.notifySessionAbandoned();
+            mModelList.clear();
             mPopup.dismiss();
         }
+    }
+
+    boolean isUsingAiMode() {
+        return mUseAiMode;
+    }
+
+    GURL getAimUrl(String queryText) {
+        return mComposeBoxQueryControllerBridge.getAimUrl(queryText);
     }
 
     @VisibleForTesting

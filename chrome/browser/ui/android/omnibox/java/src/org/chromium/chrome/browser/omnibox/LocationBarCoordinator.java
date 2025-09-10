@@ -257,6 +257,9 @@ public class LocationBarCoordinator
         mActivityLifecycleDispatcher.register(mLocationBarMediator);
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
+        mNavigationAttachmentsCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        context, windowAndroid, mLocationBarLayout, profileObservableSupplier);
         mUrlCoordinator =
                 new UrlBarCoordinator(
                         context,
@@ -287,7 +290,8 @@ public class LocationBarCoordinator
                         mActivityLifecycleDispatcher,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         windowAndroid,
-                        mDeferredIMEWindowInsetApplicationCallback);
+                        mDeferredIMEWindowInsetApplicationCallback,
+                        mNavigationAttachmentsCoordinator);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(
@@ -301,9 +305,6 @@ public class LocationBarCoordinator
                         pageInfoAction,
                         merchantTrustSignalsCoordinatorSupplier,
                         browserControlsVisibilityDelegate);
-        mNavigationAttachmentsCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        context, windowAndroid, mLocationBarLayout, profileObservableSupplier);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mNavigationAttachmentsCoordinator);
