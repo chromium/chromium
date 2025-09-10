@@ -199,16 +199,16 @@ found in the LICENSE file.
             android:layout="@layout/page_zoom_view" />
 
         <FrameLayout
-            android:id="@+id/tab_group_ui_dialog_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
-
-        <FrameLayout
             android:id="@+id/sheet_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false" />
+
+        <FrameLayout
+            android:id="@+id/tab_group_ui_dialog_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <ViewStub
             android:id="@+id/loading_stub"
