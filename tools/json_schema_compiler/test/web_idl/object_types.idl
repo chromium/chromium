@@ -1,0 +1,27 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary ObjectDict {
+  object requiredObject;
+  object? optionalObject;
+};
+
+dictionary AnyDict {
+  any requiredAny;
+  // Note: nullable any (i.e. 'any?') is not valid in WebIDL
+};
+
+// Schema to test various 'object' types in IDL.
+interface ObjectTypes {
+  static undefined objectParamFunction(
+      object requiredObjectParam,
+      optional object optionalObjectParam);
+  static undefined anyParamFunction(
+      any requiredAnyParam,
+      optional any optionalAnyParam);
+};
+
+partial interface Browser {
+  static attribute ObjectTypes objectTypes;
+};

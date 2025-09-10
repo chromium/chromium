@@ -567,7 +567,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedTypeClassError(self):
     expected_error_regex = (
-        r'.* Any\(\): Unsupported type class when processing type\.')
+        r'.* FrozenArray\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -810,6 +810,75 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('EnumTypeOne', types[1]['id'])
     self.assertEqual('ExampleDictTwo', types[2]['id'])
     self.assertEqual('EnumTypeTwo', types[3]['id'])
+
+  # Tests various 'any' and 'object' types on Dictionaries.
+  def testObjectTypes(self):
+    idl = web_idl_schema.Load('test/web_idl/object_types.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    object_dict = getType(schema, 'ObjectDict')
+    self.assertEqual('object', object_dict['type'])
+    self.assertEqual(
+        {
+            'type': 'object',
+            'name': 'requiredObject',
+            'additionalProperties': {
+                'type': 'any'
+            }
+        }, object_dict['properties']['requiredObject'])
+    self.assertEqual(
+        {
+            'type': 'object',
+            'optional': True,
+            'name': 'optionalObject',
+            'additionalProperties': {
+                'type': 'any'
+            }
+        }, object_dict['properties']['optionalObject'])
+
+    any_dict = getType(schema, 'AnyDict')
+    self.assertEqual('object', any_dict['type'])
+    # Note: we only test a required 'any' here as WebIDL doesn't support
+    # nullable 'any' (i.e. 'any?').
+    self.assertEqual({
+        'type': 'any',
+        'name': 'requiredAny'
+    }, any_dict['properties']['requiredAny'])
+
+  # Tests 'object' and 'any' types used as function parameters.
+  def testObjectFunctionParams(self):
+    idl = web_idl_schema.Load('test/web_idl/object_types.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    object_params = getFunctionParameters(schema, 'objectParamFunction')
+    self.assertEqual(
+        {
+            'type': 'object',
+            'name': 'requiredObjectParam',
+            'additionalProperties': {
+                'type': 'any'
+            }
+        }, object_params[0])
+    self.assertEqual(
+        {
+            'type': 'object',
+            'optional': True,
+            'name': 'optionalObjectParam',
+            'additionalProperties': {
+                'type': 'any'
+            }
+        }, object_params[1])
+
+    any_params = getFunctionParameters(schema, 'anyParamFunction')
+    self.assertEqual({'type': 'any', 'name': 'requiredAnyParam'}, any_params[0])
+    self.assertEqual(
+        {
+            'type': 'any',
+            'optional': True,
+            'name': 'optionalAnyParam'
+        }, any_params[1])
 
 
 if __name__ == '__main__':

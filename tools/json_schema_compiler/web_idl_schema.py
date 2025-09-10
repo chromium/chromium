@@ -305,6 +305,9 @@ class Type():
 
     if type_details.IsA('PrimitiveType', 'StringType'):
       properties['type'] = self._TranslateBasicType(type_details)
+      # 'object' types also have an 'additionalProperties' attribute.
+      if properties['type'] == 'object':
+        properties['additionalProperties'] = {'type': 'any'}
     elif type_details.IsA('Typeref'):
       # For custom types the name indicates the underlying referenced type.
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
@@ -325,6 +328,8 @@ class Type():
       # Sequences are used to represent array types, which have an associated
       # 'items' key that detail what type the array holds.
       properties['items'] = ArrayType(type_details).Process()
+    elif type_details.IsA('Any'):
+      properties['type'] = 'any'
     else:
       raise SchemaCompilerError('Unsupported type class when processing type.',
                                 type_details)
@@ -359,6 +364,8 @@ class Type():
       return 'integer'
     if type_name == 'DOMString':
       return 'string'
+    if type_name == 'object':
+      return 'object'
 
     raise SchemaCompilerError(
         'Unsupported basic type found when processing type.', type_details)
