@@ -5,6 +5,7 @@
 #include "pdf/pdfium/pdfium_range.h"
 
 #include <string>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -244,14 +245,17 @@ std::vector<PdfRect> PDFiumRange::GetRects() const {
 }
 
 std::u16string PDFiumRange::GetText() const {
+  if (char_count_ == 0) {
+    return std::u16string();
+  }
+
   int index = char_index_;
   int count = char_count_;
-  std::u16string result;
-  if (count == 0)
-    return result;
-
   AdjustForBackwardsRange(index, count);
-  if (count > 0) {
+  CHECK_GT(count, 0);
+
+  std::u16string result;
+  {
     // Note that the `expected_size` value includes the NUL terminator.
     //
     // Cannot set `check_expected_size` to true here because the fix to
@@ -269,35 +273,38 @@ std::u16string PDFiumRange::GetText() const {
     // FPDFText_GetText() returns 0 on failure. Never negative value.
     DCHECK_GE(written, 0);
     api_string_adapter.Close(written);
-
-    const gfx::RectF page_bounds = page_->GetCroppedRect();
-    std::u16string in_bound_text;
-    in_bound_text.reserve(result.size());
-
-    // If FPDFText_GetText() trimmed off characters, figure out how many were
-    // trimmed from the front. Store the result in `index_offset`, so the
-    // IsCharInPageBounds() calls below can have the correct index.
-    CHECK_GE(static_cast<size_t>(count), result.size());
-    size_t trimmed_count = static_cast<size_t>(count) - result.size();
-    int index_offset = 0;
-    while (trimmed_count) {
-      if (FPDFText_GetTextIndexFromCharIndex(page_->GetTextPage(),
-                                             index + index_offset) >= 0) {
-        break;
-      }
-      --trimmed_count;
-      ++index_offset;
-    }
-
-    for (size_t i = 0; i < result.size(); ++i) {
-      // Filter out characters outside the page bounds, which are semantically
-      // not part of the page.
-      if (page_->IsCharInPageBounds(index + index_offset + i, page_bounds))
-        in_bound_text += result[i];
-    }
-    result = in_bound_text;
-    std::erase_if(result, IsIgnorableCharacter);
+    // Let `api_string_adapter` go out of scope to avoid having a potentially
+    // dangling pointer to `result`.
   }
+
+  const gfx::RectF page_bounds = page_->GetCroppedRect();
+  std::u16string in_bound_text;
+  in_bound_text.reserve(result.size());
+
+  // If FPDFText_GetText() trimmed off characters, figure out how many were
+  // trimmed from the front. Store the result in `index_offset`, so the
+  // IsCharInPageBounds() calls below can have the correct index.
+  CHECK_GE(static_cast<size_t>(count), result.size());
+  size_t trimmed_count = static_cast<size_t>(count) - result.size();
+  int index_offset = index;
+  while (trimmed_count) {
+    if (FPDFText_GetTextIndexFromCharIndex(page_->GetTextPage(),
+                                           index_offset) >= 0) {
+      break;
+    }
+    --trimmed_count;
+    ++index_offset;
+  }
+
+  for (size_t i = 0; i < result.size(); ++i) {
+    // Filter out characters outside the page bounds, which are semantically
+    // not part of the page.
+    if (page_->IsCharInPageBounds(index_offset + i, page_bounds)) {
+      in_bound_text += result[i];
+    }
+  }
+  result = std::move(in_bound_text);
+  std::erase_if(result, IsIgnorableCharacter);
 
   return result;
 }
