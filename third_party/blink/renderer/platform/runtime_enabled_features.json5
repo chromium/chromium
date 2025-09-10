@@ -4647,13 +4647,6 @@
       name: "SpeakerSelection",
       status: "experimental",
     },
-    // Enables spec-compliant suffix matching for JSON MIME types
-    // (e.g., text/html+json, image/svg+json) by allowing *+json patterns.
-    // https://chromestatus.com/feature/5470594816278528
-    {
-      name: "SpecCompliantJsonMimeTypes",
-      status: "stable",
-    },
     // This is a flag that re-enables some deprecated/removed "special rules"
     // that apply to the styles of an <h1> element nested within <article>,
     // <aside>, <nav>, or <section>. It is disabled by default, and here as a
