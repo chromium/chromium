@@ -35,8 +35,7 @@ void Allocate(
   // TODO(kalman): Does this work with different encodings?
   // TODO(kalman): This is duplicating work that the leveldb delegate
   // implementation is about to do, and it would be nice to avoid this.
-  std::string value_as_json;
-  base::JSONWriter::Write(value, &value_as_json);
+  std::string value_as_json = base::WriteJson(value).value_or("");
   size_t new_size = key.size() + value_as_json.size();
   size_t existing_size = (*used_per_setting)[key];
 

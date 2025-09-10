@@ -1277,9 +1277,7 @@ class EnterpriseReportingPrivateGetFileSystemInfoTest
     request.options.push_back(GetFakeFileSystemOptionsParam());
     base::Value::List params;
     params.Append(request.ToValue());
-    std::string json_value;
-    base::JSONWriter::Write(params, &json_value);
-    return json_value;
+    return base::WriteJson(params).value_or("");
   }
 
   scoped_refptr<extensions::EnterpriseReportingPrivateGetFileSystemInfoFunction>
@@ -1449,9 +1447,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     request.options.push_back(GetFakeSettingsOptionsParam());
     base::Value::List params;
     params.Append(request.ToValue());
-    std::string json_value;
-    base::JSONWriter::Write(params, &json_value);
-    return json_value;
+    return base::WriteJson(params).value_or("");
   }
 
   scoped_refptr<extensions::EnterpriseReportingPrivateGetSettingsFunction>
@@ -1600,9 +1596,7 @@ std::string GetFakeUserContextJsonParams() {
   auto user_context = GetFakeUserContext();
   base::Value::List params;
   params.Append(user_context.ToValue());
-  std::string json_value;
-  base::JSONWriter::Write(params, &json_value);
-  return json_value;
+  return base::WriteJson(params).value_or("");
 }
 
 // Tests for API enterprise.reportingPrivate.getAvInfo

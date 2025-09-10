@@ -316,8 +316,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
     id_list.Append(extension_id);
   }
   dictionary.Set(kIdsKey, std::move(id_list));
-  std::string json;
-  base::JSONWriter::Write(dictionary, &json);
+  std::string json = base::WriteJson(dictionary).value_or("");
   if (json.empty()) {
     ReportErrorViaCallback();
     return;

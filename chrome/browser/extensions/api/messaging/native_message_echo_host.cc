@@ -54,9 +54,7 @@ void NativeMessageEchoHost::ProcessEcho(const base::Value::Dict& request) {
   response.Set("id", ++message_number_);
   response.Set("echo", request.Clone());
   response.Set("caller_url", kOrigins[0]);
-  std::string response_string;
-  base::JSONWriter::Write(response, &response_string);
-  client_->PostMessageFromNativeHost(response_string);
+  client_->PostMessageFromNativeHost(base::WriteJson(response).value_or(""));
 }
 
 void NativeMessageEchoHost::SendInvalidResponse() {

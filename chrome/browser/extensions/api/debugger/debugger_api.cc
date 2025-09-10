@@ -559,9 +559,7 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     protocol_request.Set("sessionId", session_id.value());
   }
 
-  std::string json;
-  base::JSONWriter::Write(protocol_request, &json);
-
+  std::string json = base::WriteJson(protocol_request).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json));
 }
 
@@ -904,9 +902,7 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
 
 void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
   if (base::Value* error_body = response.GetDict().Find("error")) {
-    std::string error;
-    base::JSONWriter::Write(*error_body, &error);
-    Respond(Error(std::move(error)));
+    Respond(Error(base::WriteJson(*error_body).value_or("")));
     return;
   }
 

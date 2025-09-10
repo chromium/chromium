@@ -38,11 +38,7 @@ void PopulateExtensionSettingSpecifics(
     sync_pb::ExtensionSettingSpecifics* specifics) {
   specifics->set_extension_id(extension_id);
   specifics->set_key(key);
-  {
-    std::string value_as_json;
-    base::JSONWriter::Write(value, &value_as_json);
-    specifics->set_value(value_as_json);
-  }
+  specifics->set_value(base::WriteJson(value).value_or(""));
 }
 
 void PopulateAppSettingSpecifics(const ExtensionId& extension_id,

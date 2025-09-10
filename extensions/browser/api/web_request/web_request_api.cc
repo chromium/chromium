@@ -1081,8 +1081,8 @@ WebRequestInternalEventHandledFunction::Run() {
         std::string name;
         std::string value;
         if (!FromHeaderDictionary(header_value, &name, &value)) {
-          std::string serialized_header;
-          base::JSONWriter::Write(header_value, &serialized_header);
+          std::string serialized_header =
+              base::WriteJson(header_value).value_or("");
           OnError(event_name, sub_event_name, request_id, render_process_id,
                   web_view_instance_id, std::move(response));
           return RespondNow(Error(keys::kInvalidHeader, serialized_header));

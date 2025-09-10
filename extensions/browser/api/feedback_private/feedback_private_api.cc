@@ -249,12 +249,8 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->page_url = page_url.spec();
   info->system_information.emplace();
   info->from_autofill = from_autofill;
-  std::string autofill_metadata_json;
-  base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
-  info->autofill_metadata = std::move(autofill_metadata_json);
-  std::string ai_metadata_json;
-  base::JSONWriter::Write(ai_metadata, &ai_metadata_json);
-  info->ai_metadata = std::move(ai_metadata_json);
+  info->autofill_metadata = base::WriteJson(autofill_metadata).value_or("");
+  info->ai_metadata = base::WriteJson(ai_metadata).value_or("");
 #if BUILDFLAG(IS_CHROMEOS)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;

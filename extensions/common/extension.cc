@@ -839,8 +839,7 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
   std::string warning;
   if (!IsManifestSupported(manifest_version_, GetType(), location(),
                            creation_flags_, &warning)) {
-    std::string json;
-    base::JSONWriter::Write(*manifest_->value(), &json);
+    std::string json = base::WriteJson(*manifest_->value()).value_or("");
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;
     *error = InvalidManifestVersionError(
         key_exists ? errors::kInvalidManifestVersionUnsupported

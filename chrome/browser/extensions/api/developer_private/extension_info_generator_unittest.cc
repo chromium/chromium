@@ -126,9 +126,7 @@ std::string SiteControlsToString(
     list.Append(control.ToValue());
   }
 
-  std::string json;
-  CHECK(base::JSONWriter::Write(list, &json));
-  return json;
+  return base::WriteJson(list).value_or("");
 }
 
 }  // namespace
@@ -289,8 +287,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         continue;
       }
       if (*actual_value != expected_value) {
-        base::JSONWriter::Write(expected_value, &expected_string);
-        base::JSONWriter::Write(*actual_value, &actual_string);
+        expected_string = base::WriteJson(expected_value).value_or("");
+        actual_string = base::WriteJson(*actual_value).value_or("");
         EXPECT_EQ(expected_string, actual_string)
             << field.first << paths_details;
       }

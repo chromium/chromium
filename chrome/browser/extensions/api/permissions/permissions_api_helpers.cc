@@ -247,8 +247,7 @@ std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
       permissions->permissions->push_back(api->name());
     } else {
       std::string name(api->name());
-      std::string json;
-      base::JSONWriter::Write(*value, &json);
+      std::string json = base::WriteJson(*value).value_or("");
       permissions->permissions->push_back(name + kDelimiter + json);
     }
   }
