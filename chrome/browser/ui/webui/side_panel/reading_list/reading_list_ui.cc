@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources.h"
@@ -64,6 +65,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
     webui::AddLocalizedString(source, str.name, str.id);
   }
 
+  source->AddBoolean("isWebUIBrowser", webui_browser::IsWebUIBrowserEnabled());
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   ReadingListModel* const reading_list_model =

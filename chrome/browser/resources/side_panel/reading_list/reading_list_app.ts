@@ -75,6 +75,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       readHeader_: {type: String},
       unreadExpanded_: {type: Boolean},
       readExpanded_: {type: Boolean},
+      isWebUIBrowser_: {type: Boolean},
     };
   }
 
@@ -94,6 +95,8 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private accessor readHeader_: string = loadTimeData.getString('readHeader');
   private accessor unreadExpanded_: boolean = true;
   private accessor readExpanded_: boolean = false;
+  private accessor isWebUIBrowser_: boolean =
+      loadTimeData.getBoolean('isWebUIBrowser');
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -116,6 +119,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    if (this.isWebUIBrowser_) {
+      this.classList.add('in-webui-browser');
+    }
 
     document.addEventListener(
         'visibilitychange', this.visibilityChangedListener_);
