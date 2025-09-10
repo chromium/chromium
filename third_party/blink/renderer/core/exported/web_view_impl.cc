@@ -3516,11 +3516,10 @@ void WebViewImpl::ActivatePrerenderedPage(
     }
   }
 
-  // A null `activation_start` is sent to the WebViewImpl that does not host the
-  // main frame, in which case we expect that it does not have any documents
-  // since cross-origin documents are not loaded during prerendering.
+  // Valid `activation_start` should be sent to only prerendered frames hosted
+  // by this WebViewImpl.
   DCHECK((!main_frame_document && child_frame_documents.size() == 0) ||
-         !prerender_page_activation_params->activation_start.is_null());
+         prerender_page_activation_params->activation_start.has_value());
   // We also only send view_transition_state to the main frame.
   DCHECK(main_frame_document ||
          !prerender_page_activation_params->view_transition_state);

@@ -80,9 +80,9 @@ struct PrerenderPageActivationParams {
   blink.mojom.WasActivatedOption was_user_activated;
 
   // Timestamp of the start of the activation navigation for use in
-  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
-  // host the main frame, to avoid sending the data cross-origin.
-  mojo_base.mojom.TimeTicks activation_start;
+  // PerformanceNavigationTiming. This is set only if this blink::WebViewImpl
+  // hosts a prerendered frame.
+  mojo_base.mojom.TimeTicks? activation_start;
 
   // Holds texture references (stored in the GPU process) and geometry state for
   // the previous Document displayed by this frame. This is used to support
