@@ -124,9 +124,10 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
   // Notify user that their address is saved only in Chrome and can be migrated
   // to their Google account.
   if (is_migration_to_account_) {
+    // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync is not used
+    // anymore, and thus IsSyncFeatureEnabledForAutofill() will always be false.
     return l10n_util::GetStringFUTF16(
-        personal_data_->address_data_manager()
-                .IsAutofillUserSelectableTypeEnabled()
+        personal_data_->address_data_manager().IsSyncFeatureEnabledForAutofill()
             ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
             : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
         base::UTF8ToUTF16(account->email));

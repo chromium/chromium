@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -91,11 +90,7 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    const bool is_syncing =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? pdm.address_data_manager().IsAutofillUserSelectableTypeEnabled()
-            : pdm.address_data_manager().IsSyncFeatureEnabledForAutofill();
-    int string_id = is_syncing
+    int string_id = pdm.address_data_manager().IsSyncFeatureEnabledForAutofill()
                         ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
                         : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
