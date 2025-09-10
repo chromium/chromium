@@ -708,8 +708,7 @@ void HostContentSettingsMap::SetPermissionSettingCustomScope(
     std::optional<PermissionSetting> setting,
     const content_settings::ContentSettingConstraints& constraints) {
   // Convert CONTENT_SETTING_DEFAULT to nullopt.
-  if (setting && std::holds_alternative<ContentSetting>(*setting) &&
-      std::get<ContentSetting>(*setting) == CONTENT_SETTING_DEFAULT) {
+  if (setting == PermissionSetting{CONTENT_SETTING_DEFAULT}) {
     setting.reset();
   }
   base::Value value;

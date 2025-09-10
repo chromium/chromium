@@ -664,8 +664,7 @@ void PageInfo::OnSitePermissionChanged(
     std::optional<url::Origin> requesting_origin,
     bool is_one_time) {
   // Check that we are passing nullopt instead of CONTENT_SETTING_DEFAULT.
-  CHECK(!setting || !std::holds_alternative<ContentSetting>(*setting) ||
-        std::get<ContentSetting>(*setting) != CONTENT_SETTING_DEFAULT);
+  CHECK_NE(setting, PermissionSetting{CONTENT_SETTING_DEFAULT});
   ContentSettingChangedViaPageInfo(type);
 
   auto* info =

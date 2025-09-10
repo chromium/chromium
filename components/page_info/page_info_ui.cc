@@ -218,8 +218,7 @@ PermissionSetting GetEffectiveSetting(
     const std::optional<PermissionSetting>& setting,
     const PermissionSetting& default_setting) {
   // Check that we are passing nullopt instead of CONTENT_SETTING_DEFAULT.
-  CHECK(!setting || !std::holds_alternative<ContentSetting>(*setting) ||
-        std::get<ContentSetting>(*setting) != CONTENT_SETTING_DEFAULT);
+  CHECK_NE(setting, PermissionSetting{CONTENT_SETTING_DEFAULT});
   return setting.value_or(default_setting);
 }
 

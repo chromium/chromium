@@ -1032,17 +1032,17 @@ TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithContentSetting) {
   GURL url("https://example.com");
 
   // Check that default is ask.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION)));
+  EXPECT_EQ(
+      PermissionSetting{CONTENT_SETTING_ASK},
+      map->GetPermissionSetting(url, url, ContentSettingsType::GEOLOCATION));
 
   // Set to allow.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
   content_settings::SettingInfo info;
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION, &info)));
+  EXPECT_EQ(PermissionSetting{CONTENT_SETTING_ALLOW},
+            map->GetPermissionSetting(url, url,
+                                      ContentSettingsType::GEOLOCATION, &info));
   EXPECT_EQ(info.source, SettingSource::kUser);
   EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
   EXPECT_EQ(info.secondary_pattern.ToString(), "*");
@@ -1050,9 +1050,9 @@ TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithContentSetting) {
   // Reset with nullopt.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, std::nullopt);
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION, &info)));
+  EXPECT_EQ(PermissionSetting{CONTENT_SETTING_ASK},
+            map->GetPermissionSetting(url, url,
+                                      ContentSettingsType::GEOLOCATION, &info));
   EXPECT_EQ(info.source, SettingSource::kUser);
   EXPECT_EQ(info.primary_pattern.ToString(), "*");
   EXPECT_EQ(info.secondary_pattern.ToString(), "*");
@@ -1060,16 +1060,16 @@ TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithContentSetting) {
   // Set to block
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION)));
+  EXPECT_EQ(
+      PermissionSetting{CONTENT_SETTING_BLOCK},
+      map->GetPermissionSetting(url, url, ContentSettingsType::GEOLOCATION));
 
   // Reset with DEFAULT.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION)));
+  EXPECT_EQ(
+      PermissionSetting{CONTENT_SETTING_ASK},
+      map->GetPermissionSetting(url, url, ContentSettingsType::GEOLOCATION));
 }
 
 TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithGeolocationSetting) {

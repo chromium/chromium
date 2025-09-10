@@ -2061,8 +2061,7 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownIfPreviouslySet) {
 
   // The permission should be shown because it has a non-default setting.
   ASSERT_NE(it, permissions.end());
-  EXPECT_EQ(std::get<ContentSetting>(it->setting.value()),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(it->setting.value(), PermissionSetting{CONTENT_SETTING_BLOCK});
 }
 
 TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
@@ -2084,8 +2083,7 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
         return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
       });
   ASSERT_NE(it, permissions.end());
-  EXPECT_EQ(std::get<ContentSetting>(it->default_setting),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(it->default_setting, PermissionSetting{CONTENT_SETTING_BLOCK});
 }
 
 TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoRegular) {
@@ -2107,8 +2105,7 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoRegular) {
         return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
       });
   ASSERT_NE(it, permissions.end());
-  EXPECT_EQ(std::get<ContentSetting>(it->default_setting),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(it->default_setting, PermissionSetting{CONTENT_SETTING_ALLOW});
 }
 #endif
 
