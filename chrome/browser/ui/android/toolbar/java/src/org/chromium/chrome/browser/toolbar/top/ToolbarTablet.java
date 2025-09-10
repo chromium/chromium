@@ -401,6 +401,8 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.LOCATION_BAR_MINIMUM] =
                 new LocationBarMinWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.INCOGNITO_INDICATOR] =
+                mIncognitoIndicatorCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
                 new OptionalButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
@@ -451,8 +453,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
         if (isToolbarTabletResizeRefactorEnabled()) {
-            int width = MeasureSpec.getSize(widthMeasureSpec);
             allocateAvailableToolbarWidth(mToolbarWidthConsumers, width);
         } else {
             // Hide or show toolbar buttons if needed. With the introduction of multi-window on
@@ -460,11 +462,19 @@ public class ToolbarTablet extends ToolbarLayout {
             // moved into the menu so that the location bar is usable. The buttons must be shown
             // in onMeasure() so that the location bar gets measured and laid out correctly.
             setToolbarButtonsVisible(
-                    MeasureSpec.getSize(widthMeasureSpec)
-                            >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(
-                                    getContext()));
+                    width >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(getContext()));
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // Trigger a second update if the incognito indicator was measured at a different width than
+        // originally expected, requiring another pass at allocating toolbar width.
+        // TODO(crbug.com/444068280): Revisit this approach to re-allocating width for variable
+        //  width components.
+        if (isToolbarTabletResizeRefactorEnabled()
+                && mIncognitoIndicatorCoordinator.needsUpdateBeforeShowing()) {
+            allocateAvailableToolbarWidth(mToolbarWidthConsumers, width);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
     @VisibleForTesting
@@ -706,11 +716,11 @@ public class ToolbarTablet extends ToolbarLayout {
                             mForwardButtonCoordinator.setVisibility(true);
                             mReloadButtonCoordinator.setVisibility(true);
                             mBackButtonCoordinator.setVisibility(true);
+                            mIncognitoIndicatorCoordinator.setVisibility(true);
                             // Set the padding at the start of the show animation so the toolbar
                             // buttons don't jump when the animation ends.
                             setStartPaddingBasedOnButtonVisibility(true);
                         }
-                        mIncognitoIndicatorCoordinator.setVisibility(mToolbarButtonsVisible);
                     }
 
                     @Override
@@ -725,6 +735,7 @@ public class ToolbarTablet extends ToolbarLayout {
                             mForwardButtonCoordinator.setVisibility(false);
                             mReloadButtonCoordinator.setVisibility(false);
                             mBackButtonCoordinator.setVisibility(false);
+                            mIncognitoIndicatorCoordinator.setVisibility(false);
                             // Set the padding at the end of the hide animation so the toolbar
                             // buttons don't jump when the animation starts.
                             setStartPaddingBasedOnButtonVisibility(false);
@@ -774,6 +785,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
     void setIncognitoIndicatorCoordinatorForTesting(IncognitoIndicatorCoordinator coordinator) {
         mIncognitoIndicatorCoordinator = coordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.INCOGNITO_INDICATOR] = coordinator;
     }
 
     void setForwardButtonCoordinatorForTesting(ForwardButtonCoordinator coordinator) {

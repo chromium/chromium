@@ -74,6 +74,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.LOCATION_BAR_MINIMUM,
                 ToolbarComponentId.PADDING,
                 ToolbarComponentId.BACK,
+                ToolbarComponentId.INCOGNITO_INDICATOR,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
                 ToolbarComponentId.RELOAD,
                 ToolbarComponentId.FORWARD,
@@ -87,6 +88,7 @@ public class ToolbarUtils {
         ToolbarComponentId.RELOAD,
         ToolbarComponentId.LOCATION_BAR_MINIMUM,
         ToolbarComponentId.ADAPTIVE_BUTTON,
+        ToolbarComponentId.INCOGNITO_INDICATOR,
         ToolbarComponentId.TAB_SWITCHER,
         ToolbarComponentId.MENU,
         ToolbarComponentId.PADDING,
@@ -100,10 +102,11 @@ public class ToolbarUtils {
         int RELOAD = 3;
         int LOCATION_BAR_MINIMUM = 4;
         int ADAPTIVE_BUTTON = 5;
-        int TAB_SWITCHER = 6;
-        int MENU = 7;
-        int PADDING = 8;
-        int COUNT = 9;
+        int INCOGNITO_INDICATOR = 6;
+        int TAB_SWITCHER = 7;
+        int MENU = 8;
+        int PADDING = 9;
+        int COUNT = 10;
     }
 
     /**

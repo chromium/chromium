@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 
 @NullMarked
 public class IncognitoIndicatorCoordinator extends ToolbarChild {
@@ -25,6 +26,8 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
     private @Nullable Boolean mIsIncognitoBranded;
     private boolean mVisible;
     private @Nullable View mIncognitoIndicator;
+    private final int mDefaultFallbackWidth;
+    private int mCachedWidth;
 
     /**
      * Creates an IncognitoIndicatorCoordinator for managing the incognito indicator on the top
@@ -45,6 +48,15 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
         mParentToolbar = parentToolbar;
         mVisible = visible;
         setVisibility(mVisible);
+
+        // Use a width of three toolbar buttons as a fallback for displaying the incognito
+        // indicator.
+        int buttonWidth =
+                mParentToolbar
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+        mDefaultFallbackWidth = 3 * buttonWidth;
     }
 
     @Override
@@ -85,7 +97,44 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
         throw new UnsupportedOperationException("This method call is not yet supported.");
     }
 
-    @Nullable View getIncognitoIndicatorViewForTesting() {
+    @Override
+    public int updateVisibility(int availableWidth) {
+        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
+        // Hide and consume no width if the incognito indicator feature is not enabled, or if the
+        // device is not in incognito mode. Do not cache the width of the indicator.
+        if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()
+                || Boolean.FALSE.equals(mIsIncognitoBranded)) {
+            setVisibility(false);
+            return 0;
+        }
+
+        // If the incognito indicator has been displayed, cache its measured width.
+        if (mIncognitoIndicator != null && mIncognitoIndicator.getMeasuredWidth() > 0) {
+            mCachedWidth = mIncognitoIndicator.getMeasuredWidth();
+        } else {
+            mCachedWidth = mDefaultFallbackWidth;
+        }
+
+        // Only display the indicator if there is enough available width. If the available width
+        // is less than necessary, though, that extra width should still be consumed to avoid
+        // showing any more buttons, as it might be confusing to users. This extra width will end up
+        // absorbed into the location bar.
+        setVisibility(availableWidth >= mCachedWidth);
+        return Math.min(availableWidth, mCachedWidth);
+    }
+
+    /**
+     * Returns whether the incognito indicator has a current measured width that is different from
+     * its allocated width, and therefore needs another allocation update before being shown.
+     */
+    public boolean needsUpdateBeforeShowing() {
+        if (!mVisible || Boolean.FALSE.equals(mIsIncognitoBranded) || mIncognitoIndicator == null) {
+            return false;
+        }
+        return mCachedWidth != mIncognitoIndicator.getMeasuredWidth();
+    }
+
+    public @Nullable View getIncognitoIndicatorView() {
         return mIncognitoIndicator;
     }
 }
