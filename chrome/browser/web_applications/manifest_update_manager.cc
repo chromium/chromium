@@ -318,7 +318,8 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
 
   // TODO(crbug.com/442643377): Don't do this here, and instead use a per-page
   // class to be notified when a valid manifest is attached to a page.
-  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
+      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
     provider_->scheduler().ScheduleManifestSilentUpdate(
         url, web_contents->GetWeakPtr(),
         base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
