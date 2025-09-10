@@ -900,6 +900,21 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: target_ip_address_space is "
           "set.");
+      const std::string target_ip_address_space = [&]() {
+        switch (request.target_ip_address_space) {
+          case mojom::IPAddressSpace::kUnknown:
+            return "unknown";
+          case mojom::IPAddressSpace::kPublic:
+            return "public";
+          case mojom::IPAddressSpace::kLocal:
+            return "local";
+          case mojom::IPAddressSpace::kLoopback:
+            return "loopback";
+        }
+        NOTREACHED();
+      }();
+      SCOPED_CRASH_KEY_STRING32("crbug443182219", "target_ip_address_space",
+                                target_ip_address_space);
       DumpWithoutCrashingIfPrefetch(request, FROM_HERE);
       return false;
     }
