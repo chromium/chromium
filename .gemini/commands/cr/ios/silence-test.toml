@@ -48,7 +48,10 @@ test name, the silencing type (`DISABLED` or `FLAKY`), and optional conditions.
                 selector to match the new test name (e.g.,
                 `@selector(testMyFeature)` ->
                 `@selector(<silencing_type>_testMyFeature)`). Search for usages
-                of the selector in the same file.
+                of the selector in the same file. Be aware of linebreaks in the
+                @selector statement where something like
+                `@selector(\ntestMyFeature)` is possible where the code is split
+                into multiple lines.
         *   **With Conditions (e.g., "iphone device", "ipad simulator", "no
             multiwindow"):**
 
@@ -100,8 +103,7 @@ test name, the silencing type (`DISABLED` or `FLAKY`), and optional conditions.
             <bot_link> from the user prompt.
         *   **Component ID:** Use the default component with id 1363614 if not
             provided.
-        *   **Hotlists:** Add the 5432803 (Test-Disabled) and 5437934
-            (Unconfirmed) hotlist ids.
+        *   **Hotlists:** Add the 5432803 (Test-Disabled) hotlist id.
         *   **Priority:** P1
         *   **Type:** Task
         *   **Bug Template:**: 1923683
@@ -119,12 +121,16 @@ test name, the silencing type (`DISABLED` or `FLAKY`), and optional conditions.
     *   Apply the silencing change to the test file.
     *   Make sure that the needed headers are included.
     *   If there are missing dependencies in the BUILD.gn file, add them.
+    *   Format the changes with `git cl format`.
     *   Add the file to git and commit the change. The commit message should be:
         ``` [iOS][Gardener] Disable flaky test <test_name>
 
         Bug: <bug_id> ```
 
         `<bug_id>` is the bug that you have created for silencing the test.
+
+        It is **REALLY IMPORTANT** to include the `Bug: <bug_id>` line in the
+        commit message.
 
 6.  **(Optional) Create and Upload a CL:**
 
