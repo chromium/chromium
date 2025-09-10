@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -240,6 +241,36 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
   ASSERT_TRUE(result.has_value());
 
   ASSERT_EQ(1, observer.num_callbacks);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
+  auto* service = tab_strip_service_mojo_handler_->GetTabStripService();
+
+  class ReallyBadObserver : public tabs_api::observation::TabStripApiObserver {
+   public:
+    explicit ReallyBadObserver(tabs_api::TabStripService* service)
+        : service_(service) {}
+    ~ReallyBadObserver() override = default;
+
+    void OnTabEvents(
+        const std::vector<tabs_api::mojom::TabsEventPtr>& events) override {
+      auto _ = service_->GetTabs();
+    }
+
+   private:
+    raw_ptr<tabs_api::TabStripService> service_;
+  };
+
+  ReallyBadObserver observer(service);
+
+  service->AddObserver(&observer);
+
+  // We have a really bad observer that will attempt to re-enter. Assert that
+  // this is disallowed.
+  EXPECT_CHECK_DEATH([&] {
+    auto _ = service->CreateTabAt(tabs_api::Position(0),
+                                  std::make_optional(GURL("www.foo.bear")));
+  }());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {

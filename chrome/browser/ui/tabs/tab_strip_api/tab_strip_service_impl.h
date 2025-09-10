@@ -60,6 +60,20 @@ class TabStripServiceImpl : public TabStripService {
   void AddObserver(observation::TabStripApiObserver* observer) override;
   void RemoveObserver(observation::TabStripApiObserver* observer) override;
 
+  // Used internally by the tab strip service to control API invocation rules.
+  // A session represents an ongoing API invocation.
+  class Session {
+   public:
+    virtual ~Session() {}
+  };
+
+  // Used to create sessions.
+  class SessionController {
+   public:
+    virtual ~SessionController() {}
+    virtual std::unique_ptr<Session> CreateSession() = 0;
+  };
+
  private:
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
@@ -68,6 +82,7 @@ class TabStripServiceImpl : public TabStripService {
   std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
   std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
 
+  std::unique_ptr<SessionController> session_controller_;
   // TODO(crbug.com/441256673): use observation list or something like that.
   std::vector<observation::TabStripApiObserver*> observers_;
 };
