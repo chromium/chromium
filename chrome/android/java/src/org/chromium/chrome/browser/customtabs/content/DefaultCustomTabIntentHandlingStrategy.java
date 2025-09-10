@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -21,6 +24,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
  * Default implementation of {@link CustomTabIntentHandlingStrategy}. Navigates the Custom Tab to
  * urls provided in intents.
  */
+@NullMarked
 public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHandlingStrategy {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
@@ -58,7 +62,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mVerifier,
                             mCurrentPageVerifier,
                             mNavigationController,
-                            mTabProvider.getTab().getWebContents(),
+                            assumeNonNull(mTabProvider.getTab()).getWebContents(),
                             mActivity);
             launchHandler.handleInitialIntent(intentDataProvider);
         }
@@ -87,9 +91,12 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
 
         boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
-        boolean hasCommitted = !tab.getWebContents().getLastCommittedUrl().isEmpty();
+        boolean hasCommitted = !assumeNonNull(tab.getWebContents()).getLastCommittedUrl().isEmpty();
         mCustomTabObserver.trackNextPageLoadForHiddenTab(
-                tab.getWebContents(), useSpeculation, hasCommitted, intentDataProvider.getIntent());
+                tab.getWebContents(),
+                useSpeculation,
+                hasCommitted,
+                assumeNonNull(intentDataProvider.getIntent()));
 
         if (useSpeculation) return;
 
@@ -129,7 +136,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mVerifier,
                             mCurrentPageVerifier,
                             mNavigationController,
-                            mTabProvider.getTab().getWebContents(),
+                            assumeNonNull(mTabProvider.getTab()).getWebContents(),
                             mActivity);
             launchHandler.handleNewIntent(intentDataProvider);
         } else {

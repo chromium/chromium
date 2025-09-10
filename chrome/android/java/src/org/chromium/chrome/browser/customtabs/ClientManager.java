@@ -989,7 +989,7 @@ class ClientManager {
     }
 
     public void setEngagementSignalsAvailableSupplierForSession(
-            SessionHolder<?> session, Supplier<Boolean> supplier) {
+            SessionHolder<?> session, @Nullable Supplier<Boolean> supplier) {
         callOnSession(session, params -> params.setEngagementSignalsAvailableSupplier(supplier));
     }
 

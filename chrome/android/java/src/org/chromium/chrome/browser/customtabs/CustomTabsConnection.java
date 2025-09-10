@@ -2022,7 +2022,7 @@ public class CustomTabsConnection {
     }
 
     public void setEngagementSignalsAvailableSupplier(
-            CustomTabsSessionToken session, Supplier<Boolean> supplier) {
+            CustomTabsSessionToken session, @Nullable Supplier<Boolean> supplier) {
         mClientManager.setEngagementSignalsAvailableSupplierForSession(
                 new SessionHolder<>(session), supplier);
     }
