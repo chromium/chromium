@@ -150,7 +150,6 @@ UITextView* CreateSubtitleTextView() {
   UITextView* subtitleTextView = [[UITextView alloc] init];
   subtitleTextView.backgroundColor = nil;
   subtitleTextView.adjustsFontForContentSizeCategory = YES;
-  [subtitleTextView setTextAlignment:NSTextAlignmentCenter];
   // Disable and hide scrollbar.
   subtitleTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
   subtitleTextView.scrollEnabled = NO;
@@ -319,6 +318,8 @@ UITextView* CreateSubtitleTextView() {
   UITextView* subtitle1TextView = CreateSubtitleTextView();
   [scrollContentView addSubview:subtitle1TextView];
   subtitle1TextView.attributedText = subtitle1Text;
+  // The text alignment needs to be set after the setting the attributed text.
+  subtitle1TextView.textAlignment = NSTextAlignmentCenter;
   subtitle1TextView.delegate = self;
 
   NSLayoutYAxisAnchor* subtitleBottomAnchor = subtitle1TextView.bottomAnchor;
@@ -337,6 +338,8 @@ UITextView* CreateSubtitleTextView() {
     subtitle2TextView = CreateSubtitleTextView();
     [scrollContentView addSubview:subtitle2TextView];
     subtitle2TextView.attributedText = subtitle2Text;
+    // The text alignment needs to be set after the setting the attributed text.
+    subtitle1TextView.textAlignment = NSTextAlignmentCenter;
 
     subtitleBottomAnchor = subtitle2TextView.bottomAnchor;
   }
