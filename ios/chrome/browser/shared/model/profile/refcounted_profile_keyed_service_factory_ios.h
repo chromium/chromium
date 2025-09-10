@@ -13,6 +13,7 @@
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 
 class ProfileIOS;
+class ProfileKeyedServiceFactoryIOS;
 
 // RefcountedProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific
 // interface forKeyedServiceFactory under //ios/chrome/browser.
@@ -103,6 +104,11 @@ class RefcountedProfileKeyedServiceFactoryIOS
   // Creates a new instance of the service for `profile`.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const = 0;
+
+  // The main public interface for declaring dependencies between services
+  // created by factories.
+  void DependsOn(ProfileKeyedServiceFactoryIOS* other);
+  void DependsOn(RefcountedProfileKeyedServiceFactoryIOS* other);
 
  private:
   // RefcountedKeyedServiceFactory implementation:

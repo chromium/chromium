@@ -8,6 +8,7 @@
 #include "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
+#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
 namespace {
 
@@ -48,6 +49,18 @@ KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetServiceForContext(profile, create);
+}
+
+void ProfileKeyedServiceFactoryIOS::DependsOn(
+    ProfileKeyedServiceFactoryIOS* other) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  KeyedServiceFactory::DependsOn(other);
+}
+
+void ProfileKeyedServiceFactoryIOS::DependsOn(
+    RefcountedProfileKeyedServiceFactoryIOS* other) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  KeyedServiceFactory::DependsOn(other);
 }
 
 void* ProfileKeyedServiceFactoryIOS::GetContextToUse(void* context) const {
