@@ -146,7 +146,7 @@ class PLATFORM_EXPORT CanvasResource
   }
 
  protected:
-  CanvasResource(base::WeakPtr<CanvasResourceProvider>);
+  CanvasResource();
 
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
@@ -161,8 +161,10 @@ class PLATFORM_EXPORT CanvasResource
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const = 0;
 
-  CanvasResourceProvider* Provider() { return provider_.get(); }
-  base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
+  virtual CanvasResourceProvider* Provider() { return nullptr; }
+  virtual base::WeakPtr<CanvasResourceProvider> WeakProvider() {
+    return nullptr;
+  }
 
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
@@ -184,7 +186,6 @@ class PLATFORM_EXPORT CanvasResource
     NOTREACHED();
   }
 
-  base::WeakPtr<CanvasResourceProvider> provider_;
   bool is_origin_clean_ = true;
   HighEntropyCanvasOpType high_entropy_canvas_op_types_ =
       HighEntropyCanvasOpType::kNone;
@@ -282,6 +283,11 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       bool needs_verified_token) override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
+  CanvasResourceProvider* Provider() override { return provider_.get(); }
+  base::WeakPtr<CanvasResourceProvider> WeakProvider() override {
+    return provider_;
+  }
+
   CanvasResourceSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -328,6 +334,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const bool use_oop_rasterization_;
   const SkAlphaType alpha_type_;
   OwningThreadData owning_thread_data_;
+  base::WeakPtr<CanvasResourceProvider> provider_;
 };
 
 // Resource type for a given opaque external resource described on construction
@@ -439,6 +446,12 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   gpu::SyncToken sync_token_;
   const bool use_oop_rasterization_;
   const SkAlphaType alpha_type_;
+  base::WeakPtr<CanvasResourceProvider> provider_;
+
+  CanvasResourceProvider* Provider() override { return provider_.get(); }
+  base::WeakPtr<CanvasResourceProvider> WeakProvider() override {
+    return provider_;
+  }
 };
 
 }  // namespace blink

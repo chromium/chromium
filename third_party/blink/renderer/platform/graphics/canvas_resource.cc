@@ -72,11 +72,10 @@ BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
 );
 }  // namespace
 
-CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider)
+CanvasResource::CanvasResource()
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
-          ThreadScheduler::Current()->CleanupTaskRunner()),
-      provider_(std::move(provider)) {}
+          ThreadScheduler::Current()->CleanupTaskRunner()) {}
 
 CanvasResource::~CanvasResource() {}
 
@@ -166,7 +165,7 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback = blink::BindOnce(&ReleaseFrameResources, provider_);
+  *out_callback = blink::BindOnce(&ReleaseFrameResources, WeakProvider());
 
   if (!out_resource)
     return true;
@@ -219,10 +218,10 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
-    : CanvasResource(std::move(provider)),
-      is_accelerated_(false),
+    : is_accelerated_(false),
       use_oop_rasterization_(false),
-      alpha_type_(alpha_type) {
+      alpha_type_(alpha_type),
+      provider_(std::move(provider)) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -270,14 +269,14 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<CanvasResourceProvider> provider,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : CanvasResource(std::move(provider)),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
+    : context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  .GetCapabilities()
                                  .gpu_rasterization),
-      alpha_type_(alpha_type) {
+      alpha_type_(alpha_type),
+      provider_(std::move(provider)) {
   auto* shared_image_interface =
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(shared_image_interface);
@@ -830,8 +829,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : CanvasResource(/*provider=*/nullptr),
-      client_si_(std::move(client_si)),
+    : client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       sync_token_(sync_token),
       resource_source_(resource_source),
@@ -992,12 +990,12 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
-    : CanvasResource(std::move(provider)),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
+    : context_provider_wrapper_(std::move(context_provider_wrapper)),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  .GetCapabilities()
                                  .gpu_rasterization),
-      alpha_type_(alpha_type) {
+      alpha_type_(alpha_type),
+      provider_(std::move(provider)) {
   CHECK(context_provider_wrapper_);
 
   // These SharedImages are both read and written by the raster interface (both
