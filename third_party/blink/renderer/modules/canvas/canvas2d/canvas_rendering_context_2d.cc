@@ -1010,7 +1010,14 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
       !IsHibernating() && resource_provider &&
       resource_provider->IsAccelerated()) {
-    GetHibernationHandler()->InitiateHibernationIfNecessary();
+    // Assuming 8-bit RGBA or similar, this means that we don't bother
+    // hibernating canvas elements smaller than 64kiB. Hibernation has a cost,
+    // and a lot of pages have very small canvas elements, according to metrics.
+    if (!(base::FeatureList::IsEnabled(
+              features::kCanvas2DHibernationNoSmallCanvas) &&
+          Height() * Width() < 128 * 128)) {
+      GetHibernationHandler()->InitiateHibernationIfNecessary();
+    }
   }
 
   // The impl tree may have dropped the transferable resource for this canvas

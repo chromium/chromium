@@ -353,6 +353,10 @@ BASE_FEATURE(kCanvas2DHibernation,
 BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
+// Don't hibernate small canvas elements.
+BASE_FEATURE(kCanvas2DHibernationNoSmallCanvas,
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to capture the source location of JavaScript execution, which is one
 // of the renderer eviction reasons for Back/Forward Cache.
 BASE_FEATURE(kCaptureJSExecutionLocation, base::FEATURE_ENABLED_BY_DEFAULT);

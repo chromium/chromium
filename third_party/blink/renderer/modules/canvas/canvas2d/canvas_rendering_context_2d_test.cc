@@ -456,6 +456,10 @@ void CanvasRenderingContext2DTestBase::SetUp() {
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
   web_view_helper_->Initialize();
 
+  // Default canvas size is 300x150, per the spec:
+  // https://www.w3.org/TR/2012/WD-html5-author-20120329/the-canvas-element.html#the-canvas-element
+  // This is above the threshold for canvas hibernation, even when small
+  // canvases are excluded.
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       String::FromUTF8(
           "<body><canvas id='c'></canvas><canvas id='d'></canvas></body>"));
@@ -2160,10 +2164,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Run the task that initiates hibernation, which has been posted as an idle
   // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  RunIdleTasks();
   ASSERT_TRUE(handler.IsHibernating());
 
   NonThrowableExceptionState exception_state;
@@ -2221,6 +2222,53 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, NoHibernationForSmallCanvas) {
+  base::test::ScopedFeatureList enable_hibernation{
+      features::kCanvas2DHibernation};
+  CreateContext(kNonOpaque);
+  canvas_element_->SetSize(gfx::Size(64, 64));
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kCanvas2DHibernationNoSmallCanvas);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+    RunIdleTasks();
+    EXPECT_TRUE(handler.IsHibernating());
+  }
+
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler.IsHibernating());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kCanvas2DHibernationNoSmallCanvas};
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+    RunIdleTasks();
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, AlwaysHibernateLargeCanvas) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kCanvas2DHibernation,
+       features::kCanvas2DHibernationNoSmallCanvas},
+      {});
+  CreateContext(kNonOpaque);
+  canvas_element_->SetSize(gfx::Size(200, 200));
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
+  EXPECT_TRUE(handler.IsHibernating());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -2951,7 +2999,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   CreateContext(kNonOpaque);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  gfx::Size size(100, 100);
+  gfx::Size size(200, 200);
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
