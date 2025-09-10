@@ -301,7 +301,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
 #if !BUILDFLAG(IS_ANDROID)
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
-    ShowBubble();
+    QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
     if (bubble_state_ != BubbleState::kShowingIcon) {

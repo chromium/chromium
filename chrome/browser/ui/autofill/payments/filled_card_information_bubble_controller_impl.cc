@@ -365,7 +365,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
   // to the tab.
   if (visibility == content::Visibility::VISIBLE && !bubble_has_been_shown_ &&
       should_icon_be_visible_) {
-    ShowBubble();
+    QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
   }
