@@ -46,8 +46,12 @@ const CGFloat kOuterBoxSize = 64.0;
 // Height of the separator line.
 const CGFloat kSeparatorHeight = 1.0;
 
-// Spacing between primary and secondary buttons.
+// Spacing for primary and secondary buttons.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+const CGFloat kSpacingPrimarySecondaryButtons = 4.0;
+#else
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
+#endif
 
 // Spacing between the scrollView and the buttons.
 const CGFloat kSpacingScrollViewAndButtons = 24.0;

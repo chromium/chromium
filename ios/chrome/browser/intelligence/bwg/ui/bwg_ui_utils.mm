@@ -6,36 +6,13 @@
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-const CGFloat kPrimarySecondaryButtonHeight = 50.0;
-const CGFloat kPrimarySecondaryButtonCornerRadius = 15.0;
-
-@interface BWGUIUtils ()
-
-// Configures common button properties.
-+ (UIButton*)configureCommonButton;
-
-@end
+#import "ios/chrome/common/ui/util/button_util.h"
 
 @implementation BWGUIUtils
 
-+ (UIButton*)configureCommonButton {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.layer.masksToBounds = YES;
-  [NSLayoutConstraint activateConstraints:@[
-    [button.heightAnchor
-        constraintEqualToConstant:kPrimarySecondaryButtonHeight]
-  ]];
-
-  return button;
-}
-
 + (UIButton*)createPrimaryButtonWithTitle:(NSString*)title {
-  UIButton* primaryButton = [self configureCommonButton];
-
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
+  ChromeButton* primaryButton = PrimaryActionButton();
+  UIButtonConfiguration* buttonConfiguration = primaryButton.configuration;
 
   UIFont* font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
@@ -43,32 +20,22 @@ const CGFloat kPrimarySecondaryButtonCornerRadius = 15.0;
       @{NSFontAttributeName : font};
   NSAttributedString* attributedTitle =
       [[NSAttributedString alloc] initWithString:title attributes:attributes];
-
   buttonConfiguration.attributedTitle = attributedTitle;
-
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kInvertedTextPrimaryColor];
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.background.cornerRadius =
-      kPrimarySecondaryButtonCornerRadius;
-
   primaryButton.configuration = buttonConfiguration;
 
   return primaryButton;
 }
 
 + (UIButton*)createSecondaryButtonWithTitle:(NSString*)title {
-  UIButton* secondaryButton = [self configureCommonButton];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  ChromeButton* secondaryButton = SecondaryActionButton();
+  UIButtonConfiguration* buttonConfiguration = secondaryButton.configuration;
   buttonConfiguration.title = title;
-  UIBackgroundConfiguration* backgroundConfig =
-      [UIBackgroundConfiguration clearConfiguration];
+  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  UIBackgroundConfiguration* backgroundConfig = buttonConfiguration.background;
   backgroundConfig.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
   buttonConfiguration.background = backgroundConfig;
+
   secondaryButton.configuration = buttonConfiguration;
 
   return secondaryButton;

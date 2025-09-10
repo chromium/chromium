@@ -38,8 +38,12 @@ const CGFloat kBoxesStackViewCornerRadius = 16.0;
 const CGFloat kInnerStackViewSpacing = 6.0;
 const CGFloat kInnerStackViewPadding = 12.0;
 
-// Spacing between primary and secondary buttons.
+// Spacing for primary and secondary buttons.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+const CGFloat kSpacingPrimarySecondaryButtons = 4.0;
+#else
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
+#endif
 
 // Action identifier on a tap on links in the footnote.
 NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
