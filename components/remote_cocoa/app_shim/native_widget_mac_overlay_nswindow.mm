@@ -6,6 +6,8 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/mac/mac_util.h"
+
 // Overlay windows are used to render top chrome components while in immersive
 // fullscreen. Those rendered views are hosted in a separate AppKit controlled
 // window. The overlay windows are a transparent overlay on top of the AppKit
@@ -24,6 +26,19 @@ constexpr unsigned long kAllowedCollectionBehaviorMask =
 - (void)setCollectionBehavior:(NSWindowCollectionBehavior)collectionBehavior {
   [super setCollectionBehavior:collectionBehavior &
                                kAllowedCollectionBehaviorMask];
+}
+
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    // Since macOS 26.0, when the main window enters full screen, the
+    // overlay child window’s position is automatically adjusted by the system
+    // to just below the menu bar location (even though the menu bar is hidden
+    // at that time). During this process, [NSWindow constrainFrameRect] is
+    // called and returns the system-adjusted position. Override this
+    // function to return the original value frameRect before the adjustment.
+    return frameRect;
+  }
+  return [super constrainFrameRect:frameRect toScreen:screen];
 }
 
 // Paint the window a mostly opaque color.
