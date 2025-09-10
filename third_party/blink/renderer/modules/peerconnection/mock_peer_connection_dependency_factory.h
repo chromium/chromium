@@ -186,8 +186,7 @@ class MockPeerConnectionDependencyFactory
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* frame,
       webrtc::PeerConnectionObserver* observer,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport) override;
+      ExceptionState& exception_state) override;
   scoped_refptr<webrtc::VideoTrackSourceInterface> CreateVideoTrackSourceProxy(
       webrtc::VideoTrackSourceInterface* source) override;
   scoped_refptr<webrtc::MediaStreamInterface> CreateLocalMediaStream(

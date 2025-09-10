@@ -316,8 +316,6 @@ class MODULES_EXPORT RTCPeerConnection final
   // state.
   void UpdateIceConnectionState();
 
-  RTCRtpTransport* rtpTransport() { return rtp_transport_; }
-
   void Trace(Visitor*) const override;
 
   using RtcPeerConnectionHandlerFactoryCallback =
@@ -556,8 +554,6 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Insertable streams.
   bool encoded_insertable_streams_;
-
-  Member<RTCRtpTransport> rtp_transport_;
 };
 
 }  // namespace blink

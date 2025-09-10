@@ -331,8 +331,7 @@ bool MockRTCPeerConnectionHandlerPlatform::Initialize(
     ExecutionContext*,
     const webrtc::PeerConnectionInterface::RTCConfiguration&,
     WebLocalFrame*,
-    ExceptionState&,
-    RTCRtpTransport*) {
+    ExceptionState&) {
   return true;
 }
 

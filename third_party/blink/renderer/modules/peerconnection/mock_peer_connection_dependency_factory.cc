@@ -347,8 +347,7 @@ MockPeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* frame,
     webrtc::PeerConnectionObserver* observer,
-    ExceptionState& exception_state,
-    RTCRtpTransport*) {
+    ExceptionState& exception_state) {
   return webrtc::make_ref_counted<MockPeerConnectionImpl>(this, observer);
 }
 

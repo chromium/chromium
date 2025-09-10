@@ -639,10 +639,7 @@ RTCPeerConnection::RTCPeerConnection(
       peer_handler_unregistered_(true),
       closed_(true),
       suppress_events_(true),
-      encoded_insertable_streams_(encoded_insertable_streams),
-      rtp_transport_(RuntimeEnabledFeatures::RTCRtpTransportEnabled(context)
-                         ? MakeGarbageCollected<RTCRtpTransport>(context)
-                         : nullptr) {
+      encoded_insertable_streams_(encoded_insertable_streams) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
   // WebRTC peer connections are not allowed in fenced frames.
@@ -692,7 +689,7 @@ RTCPeerConnection::RTCPeerConnection(
   auto* web_frame =
       static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(window->GetFrame()));
   if (!peer_handler_->Initialize(context, configuration, web_frame,
-                                 exception_state, rtp_transport_)) {
+                                 exception_state)) {
     DCHECK(exception_state.HadException());
     return;
   }
@@ -2949,7 +2946,6 @@ void RTCPeerConnection::Trace(Visitor* visitor) const {
   visitor->Trace(dtls_transports_by_native_transport_);
   visitor->Trace(ice_transports_by_native_transport_);
   visitor->Trace(sctp_transport_);
-  visitor->Trace(rtp_transport_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   MediaStreamObserver::Trace(visitor);

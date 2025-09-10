@@ -300,7 +300,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     DummyExceptionStateForTesting exception_state;
     EXPECT_TRUE(pc_handler_->InitializeForTest(
         webrtc::PeerConnectionInterface::RTCConfiguration(),
-        mock_tracker_.Get(), exception_state, /*rtp_transport=*/nullptr));
+        mock_tracker_.Get(), exception_state));
     mock_peer_connection_ = pc_handler_->native_peer_connection();
     ASSERT_TRUE(mock_peer_connection_);
     EXPECT_CALL(*mock_peer_connection_, Close());
@@ -1192,7 +1192,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   WebHeap::CollectAllGarbageForTesting();
   EXPECT_FALSE(pc_handler->Initialize(
       /*context=*/nullptr, webrtc::PeerConnectionInterface::RTCConfiguration(),
-      /*frame=*/nullptr, exception_state, /*rtp_transport=*/nullptr));
+      /*frame=*/nullptr, exception_state));
 }
 
 }  // namespace blink

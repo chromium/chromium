@@ -108,8 +108,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* web_frame,
       webrtc::PeerConnectionObserver* observer,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport);
+      ExceptionState& exception_state);
 
   // Creates a PortAllocator that uses Chrome IPC sockets and enforces privacy
   // controls according to the permissions granted on the page.

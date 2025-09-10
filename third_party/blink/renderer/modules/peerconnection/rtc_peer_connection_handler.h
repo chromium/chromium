@@ -50,7 +50,6 @@ class PeerConnectionTracker;
 class RTCAnswerOptionsPlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
-class RTCRtpTransport;
 class RTCSessionDescriptionInit;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
@@ -131,16 +130,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       PeerConnectionTracker* peer_connection_tracker,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport);
+      ExceptionState& exception_state);
 
   virtual bool Initialize(
       ExecutionContext* context,
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       WebLocalFrame* web_frame,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport);
+      ExceptionState& exception_state);
 
   virtual void Close();
   virtual void CloseAndUnregister();
