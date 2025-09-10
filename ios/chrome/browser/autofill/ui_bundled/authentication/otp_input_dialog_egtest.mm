@@ -215,7 +215,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 }
 
 // Test to ensure the dialog goes away once the cancel button is clicked.
-- (void)testOtpInputDialogCancel {
+// TODO(crbug.com/444093961): Test is flaky.
+- (void)FLAKY_testOtpInputDialogCancel {
   [self showOtpInputDialog];
 
   // Tap the cancel button.
