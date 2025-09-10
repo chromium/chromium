@@ -6,7 +6,6 @@
 
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_occlusion_notifier.h"
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -27,8 +26,7 @@ GlicInstanceComponents::GlicInstanceComponents(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               sharing_manager_.get(),
               &window_controller,
-              contextual_cueing_service)),
-      screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()) {}
+              contextual_cueing_service)) {}
 
 GlicInstanceComponents::~GlicInstanceComponents() = default;
 

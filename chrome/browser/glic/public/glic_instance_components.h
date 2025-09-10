@@ -17,7 +17,6 @@ namespace glic {
 class GlicMetrics;
 class GlicWindowController;
 class GlicSharingManagerImpl;
-class GlicScreenshotCapturer;
 class Host;
 
 class GlicInstanceComponents {
@@ -36,15 +35,11 @@ class GlicInstanceComponents {
   GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
     return *zero_state_suggestions_manager_;
   }
-  GlicScreenshotCapturer& screenshot_capturer() {
-    return *screenshot_capturer_;
-  }
 
  private:
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 };
 
 }  // namespace glic
