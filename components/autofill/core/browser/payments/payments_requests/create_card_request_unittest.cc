@@ -122,8 +122,7 @@ TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
                    .Set("cardholder_name", "Test User")
                    .Set("address", std::move(address))
                    .Set("upload_card_source", "UPSTREAM_SAVE_AND_FILL"));
-  std::string expected_json_content;
-  base::JSONWriter::Write(json_dict, &expected_json_content);
+  std::string expected_json_content = base::WriteJson(json_dict).value_or("");
 
   std::string expected_request_content = base::StringPrintf(
       "requestContentType=application/json; charset=utf-8&request=%s"

@@ -101,8 +101,7 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
       NOTREACHED();
   }
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   DVLOG(3) << "getdetailsforsavecard request body: " << request_content;
   return request_content;
 }
