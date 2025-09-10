@@ -117,9 +117,4 @@ fuzzer_test("unrar_fuzzer") {
     "//base",
   ]
   seed_corpus = "//chrome/test/data/safe_browsing/rar"
-
-  # TODO(https://crbug.com/433928503): Restore once the fuzzer does not change
-  # file permissions anymore, or once we are certain this fuzzer did not cause
-  # the issue.
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
