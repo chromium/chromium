@@ -20,6 +20,7 @@
   await session.evaluateAsync('dispatchConsoleTimeStamps();');
   await session.evaluateAsync('dispatchConsoleTimeStampsWithOptionalData();');
   await session.evaluateAsync('dispatchConsoleTimeStampsWithUnexpectedObjectParam();');
+  await session.evaluateAsync('dispatchConsoleTimeStampsForWorkerThread();');
   await session.evaluateAsync('dispatchUserTimings();');
   await session.evaluateAsync('dispatchAnimationFrame();');
   await session.evaluateAsync('dispatchTimer();');
@@ -31,6 +32,7 @@
   const timeStampWithLabels = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with labels");
   const timeStampWithOptionalData = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with optional data");
   const timeStampsWithUnexpectedObjectParam = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with unexpected object");
+  const timeStampsForWorkerThread = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp for worker thread");
   const markReference = tracingHelper.findEvent('Timestamp reference', Phase.INSTANT);
   const timeStampWithNumbers = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with numeric values");
   const consoleTimeEvents =
@@ -78,6 +80,9 @@
 
   testRunner.log('Got a TimeStamp event with unexpected object param:');
   tracingHelper.logEventShape(timeStampsWithUnexpectedObjectParam);
+
+  testRunner.log('Got a TimeStamp event for worker thread:');
+  tracingHelper.logEventShape(timeStampsForWorkerThread);
 
   testRunner.log('Got a TimeStamp event with numeric start and end:');
   tracingHelper.logEventShape(timeStampWithNumbers);

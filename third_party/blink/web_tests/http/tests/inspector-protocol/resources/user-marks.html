@@ -20,6 +20,14 @@
         function dispatchConsoleTimeStampsWithUnexpectedObjectParam() {
             console.timeStamp("Timestamp with unexpected object", {foo: 'bar'});
         }
+        function dispatchConsoleTimeStampsForWorkerThread() {
+              const workerCode = `
+                  const start = performance.now();
+                  console.timeStamp("Timestamp for worker thread", start, undefined, "WorkerTrack");`;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            const worker = new Worker(workerUrl);
+        }
         async function dispatchUserTimings() {
             let userTimingCallback;
             const userTimingPromise = new Promise(resolve => userTimingCallback = resolve);
