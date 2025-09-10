@@ -8,7 +8,8 @@ found in the LICENSE file.
 <!-- LINT.IfChange -->
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/popup_bg_24dp">
+    <item android:drawable="@drawable/popup_bg_24dp"/>
+    <item>
         <shape
             android:shape="rectangle">
             <solid android:color="@color/menu_bg_color"/>
