@@ -66,6 +66,7 @@ build_webui("build") {
     "dialogs/move_single_password_dialog.ts",
     "dialogs/multi_store_delete_password_dialog.ts",
     "dialogs/password_preview_item.ts",
+    "dialogs/remove_actor_login_permission_dialog.ts",
     "full_data_reset.ts",
     "password_change_details.ts",
     "password_details_section.ts",
