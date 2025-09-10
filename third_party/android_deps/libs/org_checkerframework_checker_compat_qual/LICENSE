@@ -17,6 +17,7 @@ the parts that you might want to include with your own program.
    third-party annotations (in checker/src/testannotations/,
    framework/src/main/java/org/jmlspecs/, and
    framework/src/main/java/com/google/).
+
  * Annotation Tools (in directory annotation-file-utilities/) uses the MIT
    license.
 

@@ -14,6 +14,7 @@
     "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime",
     "libs/org_jetbrains_kotlinx_atomicfu_jvm",
     "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava",
+    "libs/org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
     "libs/org_jsoup_jsoup",
     "libs/org_mockito_mockito_android",
     "libs/org_mockito_mockito_core",
