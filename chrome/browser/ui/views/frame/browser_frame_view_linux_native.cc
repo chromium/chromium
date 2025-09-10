@@ -40,7 +40,7 @@ bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
 }
 
 BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinuxNative* layout,
     std::unique_ptr<ui::NavButtonProvider> nav_button_provider)

@@ -104,7 +104,7 @@ TestingProfile* TestWithBrowserView::CreateProfile(
 
 std::unique_ptr<BrowserWindow> TestWithBrowserView::CreateBrowserWindow() {
   // Allow BrowserWithTestWindowTest to use Browser to create the default
-  // BrowserView and BrowserWidget.
+  // BrowserView and BrowserFrame.
   return nullptr;
 }
 

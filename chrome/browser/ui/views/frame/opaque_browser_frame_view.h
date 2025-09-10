@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,8 +44,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   METADATA_HEADER(OpaqueBrowserFrameView, BrowserNonClientFrameView)
 
  public:
-  // Constructs a non-client view for an BrowserWidget.
-  OpaqueBrowserFrameView(BrowserWidget* frame,
+  // Constructs a non-client view for an BrowserFrame.
+  OpaqueBrowserFrameView(BrowserFrame* frame,
                          BrowserView* browser_view,
                          OpaqueBrowserFrameViewLayout* layout);
   OpaqueBrowserFrameView(const OpaqueBrowserFrameView&) = delete;

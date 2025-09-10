@@ -12,7 +12,7 @@
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
 
-class BrowserWidget;
+class BrowserFrame;
 class BrowserView;
 
 // BrowserNativeWidgetAsh provides the frame for Chrome browser windows on
@@ -21,7 +21,7 @@ class BrowserNativeWidgetAsh : public views::NativeWidgetAura,
                                public BrowserNativeWidget,
                                public views::WidgetObserver {
  public:
-  BrowserNativeWidgetAsh(BrowserWidget* browser_widget,
+  BrowserNativeWidgetAsh(BrowserFrame* browser_frame,
                          BrowserView* browser_view);
 
   BrowserNativeWidgetAsh(const BrowserNativeWidgetAsh&) = delete;

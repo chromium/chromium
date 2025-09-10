@@ -22,7 +22,7 @@ class BrowserView;
 // code must not reference Browser*.
 //
 // Base class for BrowserView based unit tests. TestWithBrowserView creates
-// a Browser with a valid BrowserView and BrowserWidget with as little else as
+// a Browser with a valid BrowserView and BrowserFrame with as little else as
 // possible.
 class TestWithBrowserView : public BrowserWithTestWindowTest {
  public:

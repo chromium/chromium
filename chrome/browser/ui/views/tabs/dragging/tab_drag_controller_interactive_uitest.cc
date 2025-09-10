@@ -666,9 +666,9 @@ bool GetIsDragged(Browser* browser) {
 // Allows making ClearNativeFocus() invoke ReleaseCapture().
 class TestDesktopBrowserFrameAura : public DESKTOP_BROWSER_FRAME_AURA {
  public:
-  TestDesktopBrowserFrameAura(BrowserWidget* browser_widget,
+  TestDesktopBrowserFrameAura(BrowserFrame* browser_frame,
                               BrowserView* browser_view)
-      : DESKTOP_BROWSER_FRAME_AURA(browser_widget, browser_view) {}
+      : DESKTOP_BROWSER_FRAME_AURA(browser_frame, browser_view) {}
   TestDesktopBrowserFrameAura(const TestDesktopBrowserFrameAura&) = delete;
   TestDesktopBrowserFrameAura& operator=(const TestDesktopBrowserFrameAura&) =
       delete;
@@ -699,9 +699,9 @@ class TestBrowserNativeWidgetFactory : public BrowserNativeWidgetFactory {
       const TestBrowserNativeWidgetFactory&) = delete;
   ~TestBrowserNativeWidgetFactory() override = default;
 
-  BrowserNativeWidget* Create(BrowserWidget* browser_widget,
+  BrowserNativeWidget* Create(BrowserFrame* browser_frame,
                               BrowserView* browser_view) override {
-    return new TestDesktopBrowserFrameAura(browser_widget, browser_view);
+    return new TestDesktopBrowserFrameAura(browser_frame, browser_view);
   }
 };
 

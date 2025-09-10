@@ -33,7 +33,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
                                      public web_app::WebAppRegistrarObserver {
  public:
   // Mac implementation of BrowserNonClientFrameView.
-  BrowserNonClientFrameViewMac(BrowserWidget* frame, BrowserView* browser_view);
+  BrowserNonClientFrameViewMac(BrowserFrame* frame, BrowserView* browser_view);
 
   BrowserNonClientFrameViewMac(const BrowserNonClientFrameViewMac&) = delete;
   BrowserNonClientFrameViewMac& operator=(const BrowserNonClientFrameViewMac&) =

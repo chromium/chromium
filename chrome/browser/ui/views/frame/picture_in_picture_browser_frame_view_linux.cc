@@ -32,7 +32,7 @@ gfx::ShadowValues PictureInPictureBrowserFrameViewLinux::GetShadowValues() {
 }
 
 PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(frame, browser_view) {
   auto* profile = browser_view->browser()->profile();

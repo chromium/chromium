@@ -28,9 +28,9 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -72,7 +72,7 @@ FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
 // BrowserNonClientFrameViewMac, public:
 
 BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view),
       fullscreen_session_timer_(std::make_unique<base::OneShotTimer>()) {

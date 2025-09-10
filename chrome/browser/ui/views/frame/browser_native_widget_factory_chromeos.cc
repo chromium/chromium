@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget_ash.h"
 
 BrowserNativeWidget* BrowserNativeWidgetFactory::Create(
-    BrowserWidget* browser_widget,
+    BrowserFrame* browser_frame,
     BrowserView* browser_view) {
-  return new BrowserNativeWidgetAsh(browser_widget, browser_view);
+  return new BrowserNativeWidgetAsh(browser_frame, browser_view);
 }

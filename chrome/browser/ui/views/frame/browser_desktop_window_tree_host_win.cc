@@ -24,8 +24,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
 #include "chrome/browser/ui/views/frame/system_menu_insertion_delegate_win.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
@@ -220,11 +220,11 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserWidget* browser_widget)
+    BrowserFrame* browser_frame)
     : DesktopWindowTreeHostWin(native_widget_delegate,
                                desktop_native_widget_aura),
       browser_view_(browser_view),
-      browser_widget_(browser_widget),
+      browser_frame_(browser_frame),
       virtual_desktop_helper_(nullptr) {
   profile_observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
@@ -241,10 +241,10 @@ BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() = default;
 
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {
-    CHECK(browser_widget_);
+    CHECK(browser_frame_);
     SystemMenuInsertionDelegateWin insertion_delegate;
     system_menu_ = std::make_unique<views::NativeMenuWin>(
-        browser_widget_->GetSystemMenuModel(), GetHWND());
+        browser_frame_->GetSystemMenuModel(), GetHWND());
     system_menu_->Rebuild(&insertion_delegate);
   }
   return system_menu_.get();
@@ -366,7 +366,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   // an opaque frame, leading to graphical glitches behind the opaque frame.
   // Instead, we use that function below to tell us whether the frame is
   // currently native or opaque.
-  if (!browser_view_ || !browser_widget_ || !GetWidget()->client_view() ||
+  if (!browser_view_ || !browser_frame_ || !GetWidget()->client_view() ||
       !browser_view_->GetIsNormalType() ||
       !DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
     return false;
@@ -378,9 +378,8 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     *insets = gfx::Insets();
   } else {
     // The glass should extend to the bottom of the tabstrip.
-    gfx::Rect tabstrip_region_bounds(
-        browser_widget_->GetBoundsForTabStripRegion(
-            browser_view_->tab_strip_view()->GetMinimumSize()));
+    gfx::Rect tabstrip_region_bounds(browser_frame_->GetBoundsForTabStripRegion(
+        browser_view_->tab_strip_view()->GetMinimumSize()));
     tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);
 
@@ -546,7 +545,7 @@ void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {
   profile_observation_.Reset();
   system_menu_.reset();
   browser_window_property_manager_.reset();
-  browser_widget_ = nullptr;
+  browser_frame_ = nullptr;
   browser_view_ = nullptr;
   DesktopWindowTreeHostWin::ClientDestroyedWidget();
 }
@@ -654,8 +653,8 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserWidget* browser_widget) {
+    BrowserFrame* browser_frame) {
   return new BrowserDesktopWindowTreeHostWin(native_widget_delegate,
                                              desktop_native_widget_aura,
-                                             browser_view, browser_widget);
+                                             browser_view, browser_frame);
 }

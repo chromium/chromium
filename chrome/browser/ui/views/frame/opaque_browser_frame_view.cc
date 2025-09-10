@@ -13,8 +13,8 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
@@ -124,7 +124,7 @@ bool HitTestCaptionButton(views::Button* button, const gfx::Point& point) {
 // OpaqueBrowserFrameView, public:
 
 OpaqueBrowserFrameView::OpaqueBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view,
     OpaqueBrowserFrameViewLayout* layout)
     : BrowserNonClientFrameView(frame, browser_view),
@@ -189,19 +189,19 @@ void OpaqueBrowserFrameView::InitViews() {
   }
   InitWindowCaptionButton(
       minimize_button_,
-      base::BindRepeating(&BrowserWidget::Minimize, base::Unretained(frame())),
+      base::BindRepeating(&BrowserFrame::Minimize, base::Unretained(frame())),
       IDS_ACCNAME_MINIMIZE, VIEW_ID_MINIMIZE_BUTTON);
   InitWindowCaptionButton(
       maximize_button_,
-      base::BindRepeating(&BrowserWidget::Maximize, base::Unretained(frame())),
+      base::BindRepeating(&BrowserFrame::Maximize, base::Unretained(frame())),
       IDS_ACCNAME_MAXIMIZE, VIEW_ID_MAXIMIZE_BUTTON);
   InitWindowCaptionButton(
       restore_button_,
-      base::BindRepeating(&BrowserWidget::Restore, base::Unretained(frame())),
+      base::BindRepeating(&BrowserFrame::Restore, base::Unretained(frame())),
       IDS_ACCNAME_RESTORE, VIEW_ID_RESTORE_BUTTON);
   InitWindowCaptionButton(
       close_button_,
-      base::BindRepeating(&BrowserWidget::CloseWithReason,
+      base::BindRepeating(&BrowserFrame::CloseWithReason,
                           base::Unretained(frame()),
                           views::Widget::ClosedReason::kCloseButtonClicked),
       IDS_ACCNAME_CLOSE, VIEW_ID_CLOSE_BUTTON);

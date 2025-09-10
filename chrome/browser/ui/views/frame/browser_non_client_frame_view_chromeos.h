@@ -45,7 +45,7 @@ class BrowserNonClientFrameViewChromeOS
   METADATA_HEADER(BrowserNonClientFrameViewChromeOS, BrowserNonClientFrameView)
 
  public:
-  BrowserNonClientFrameViewChromeOS(BrowserWidget* frame,
+  BrowserNonClientFrameViewChromeOS(BrowserFrame* frame,
                                     BrowserView* browser_view);
   BrowserNonClientFrameViewChromeOS(const BrowserNonClientFrameViewChromeOS&) =
       delete;

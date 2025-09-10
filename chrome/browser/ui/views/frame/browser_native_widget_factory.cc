@@ -15,12 +15,12 @@ BrowserNativeWidgetFactory* factory = nullptr;
 
 // static
 BrowserNativeWidget* BrowserNativeWidgetFactory::CreateBrowserNativeWidget(
-    BrowserWidget* browser_widget,
+    BrowserFrame* browser_frame,
     BrowserView* browser_view) {
   if (!factory) {
     factory = new BrowserNativeWidgetFactory;
   }
-  return factory->Create(browser_widget, browser_view);
+  return factory->Create(browser_frame, browser_view);
 }
 
 // static

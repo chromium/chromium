@@ -9,18 +9,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget.h"
 
 BrowserNativeWidgetAuraLinux::BrowserNativeWidgetAuraLinux(
-    BrowserWidget* browser_widget,
+    BrowserFrame* browser_frame,
     BrowserView* browser_view)
-    : BrowserNativeWidgetAura(browser_widget, browser_view) {
+    : BrowserNativeWidgetAura(browser_frame, browser_view) {
   use_custom_frame_pref_.Init(
       prefs::kUseCustomChromeFrame,
       browser_view->browser()->profile()->GetPrefs(),
@@ -111,20 +111,20 @@ bool BrowserNativeWidgetAuraLinux::ShouldDrawRestoredFrameShadow() const {
 }
 
 void BrowserNativeWidgetAuraLinux::OnUseCustomChromeFrameChanged() {
-  if (!browser_widget()) {
+  if (!browser_frame()) {
     return;
   }
 
   // Tell the window manager to add or remove system borders.
-  browser_widget()->set_frame_type(
-      UseCustomFrame() ? views::Widget::FrameType::kForceCustom
-                       : views::Widget::FrameType::kForceNative);
-  browser_widget()->FrameTypeChanged();
+  browser_frame()->set_frame_type(UseCustomFrame()
+                                      ? views::Widget::FrameType::kForceCustom
+                                      : views::Widget::FrameType::kForceNative);
+  browser_frame()->FrameTypeChanged();
   host_->UpdateFrameHints();
 }
 
 BrowserNativeWidget* BrowserNativeWidgetFactory::Create(
-    BrowserWidget* browser_widget,
+    BrowserFrame* browser_frame,
     BrowserView* browser_view) {
-  return new BrowserNativeWidgetAuraLinux(browser_widget, browser_view);
+  return new BrowserNativeWidgetAuraLinux(browser_frame, browser_view);
 }

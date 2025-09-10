@@ -20,9 +20,9 @@
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -121,9 +121,9 @@ bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
 
 @end
 
-BrowserNativeWidgetMac::BrowserNativeWidgetMac(BrowserWidget* browser_widget,
+BrowserNativeWidgetMac::BrowserNativeWidgetMac(BrowserFrame* browser_frame,
                                                BrowserView* browser_view)
-    : views::NativeWidgetMac(browser_widget), browser_view_(browser_view) {
+    : views::NativeWidgetMac(browser_frame), browser_view_(browser_view) {
   if (GetRemoteCocoaApplicationHost()) {
     // Only add observer on PWA.
     chrome::AddCommandObserver(browser_view_->browser(), IDC_BACK, this);

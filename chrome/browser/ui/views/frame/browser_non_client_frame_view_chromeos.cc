@@ -33,8 +33,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -192,7 +192,7 @@ class BrowserNonClientFrameViewChromeOS::ProfileChangeObserver
 };
 
 BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(

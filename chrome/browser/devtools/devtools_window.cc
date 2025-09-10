@@ -1887,7 +1887,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
   bool resetPrefs = false;
   if (!prefs->GetDict(prefs::kAppWindowPlacement).Find(kDevToolsApp)) {
     // Ensure there is always a default size so that
-    // BrowserWidget::InitBrowserFrame can retrieve it later.
+    // BrowserFrame::InitBrowserFrame can retrieve it later.
     resetPrefs = true;
   } else {
     // Reset to default if stored window size is too small.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -58,31 +58,31 @@ ui::mojom::BrowserColorVariant GetColorVariant(
 
 }  // namespace
 
-class BrowserWidgetBoundsChecker : public ChromeViewsDelegate {
+class BrowserFrameBoundsChecker : public ChromeViewsDelegate {
  public:
-  BrowserWidgetBoundsChecker() = default;
+  BrowserFrameBoundsChecker() = default;
 
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,
       views::internal::NativeWidgetDelegate* delegate) override {
     ChromeViewsDelegate::OnBeforeWidgetInit(params, delegate);
-    if (params->name == "BrowserWidget") {
+    if (params->name == "BrowserFrame") {
       EXPECT_FALSE(params->bounds.IsEmpty());
     }
   }
 };
 
-class BrowserWidgetTest : public InProcessBrowserTest {
+class BrowserFrameTest : public InProcessBrowserTest {
  public:
-  BrowserWidgetTest()
-      : InProcessBrowserTest(std::make_unique<BrowserWidgetBoundsChecker>()) {}
+  BrowserFrameTest()
+      : InProcessBrowserTest(std::make_unique<BrowserFrameBoundsChecker>()) {}
 
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 // Verifies that the tools are loaded with initial bounds.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, DevToolsHasBoundsOnOpen) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest, DevToolsHasBoundsOnOpen) {
   // Open undocked tools.
   DevToolsWindow* devtools_ =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, DevToolsHasBoundsOnOpen) {
 }
 
 // Verifies that the web app is loaded with initial bounds.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, WebAppsHasBoundsOnOpen) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.org/"));
   webapps::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
@@ -116,10 +116,10 @@ class MockThemeObserver : public views::WidgetObserver {
 
 // Verifies that theme change notifications are propagated to child widgets for
 // browser theme changes.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, ChildWidgetsReceiveThemeUpdates) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest, ChildWidgetsReceiveThemeUpdates) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
 
-  // Create a child popup Widget for the BrowserWidget.
+  // Create a child popup Widget for the BrowserFrame.
   const auto child_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -139,46 +139,46 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, ChildWidgetsReceiveThemeUpdates) {
   // Add a bubble widget and set up the theme change observer.
   MockThemeObserver widget_child_observer(child_widget.get());
 
-  // Propagate a browser theme change notification to the root BrowserWidget
+  // Propagate a browser theme change notification to the root BrowserFrame
   // widget and ensure the child widget is forwarded the theme change
   // notification.
   EXPECT_CALL(widget_child_observer, OnWidgetThemeChanged(testing::_)).Times(1);
-  static_cast<BrowserWidget*>(browser_view->GetWidget())
+  static_cast<BrowserFrame*>(browser_view->GetWidget())
       ->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
 // Regression test for crbug.com/1476462. Ensures that browser theme change
-// notifications are always propagated correctly by the BrowserWidget with a
+// notifications are always propagated correctly by the BrowserFrame with a
 // default frame type.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest,
                        ReceivesBrowserThemeUpdatesForDefaultFrames) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserWidget* browser_widget =
-      static_cast<BrowserWidget*>(browser_view->GetWidget());
+  BrowserFrame* browser_frame =
+      static_cast<BrowserFrame*>(browser_view->GetWidget());
 
-  // Enure the BrowserWidget is set to the default (non-system) frame.
-  browser_widget->set_frame_type(views::Widget::FrameType::kDefault);
+  // Enure the BrowserFrame is set to the default (non-system) frame.
+  browser_frame->set_frame_type(views::Widget::FrameType::kDefault);
 
-  // Propagate a browser theme change notification to the root BrowserWidget
+  // Propagate a browser theme change notification to the root BrowserFrame
   // widget and ensure ThemeChanged() is called.
-  MockThemeObserver widget_observer(browser_widget);
+  MockThemeObserver widget_observer(browser_frame);
   EXPECT_CALL(widget_observer, OnWidgetThemeChanged(testing::_)).Times(1);
-  browser_widget->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
+  browser_frame->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
-class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
+class BrowserFrameColorProviderTest : public BrowserFrameTest {
  public:
-  BrowserWidgetColorProviderTest() = default;
+  BrowserFrameColorProviderTest() = default;
 
-  // BrowserWidgetTest:
+  // BrowserFrameTest:
   void SetUpOnMainThread() override {
-    BrowserWidgetTest::SetUpOnMainThread();
+    BrowserFrameTest::SetUpOnMainThread();
 
     test_native_theme_.SetDarkMode(false);
-    // TODO(tluk): BrowserWidget may update the NativeTheme when a theme update
+    // TODO(tluk): BrowserFrame may update the NativeTheme when a theme update
     // event is received, which may unset the test NativeTheme. There should be
     // a way to prevent updates resetting the test NativeTheme when set.
-    GetBrowserWidget(browser())->SetNativeThemeForTest(&test_native_theme_);
+    GetBrowserFrame(browser())->SetNativeThemeForTest(&test_native_theme_);
 
     // Set the default browser pref to follow system color mode.
     profile()->GetPrefs()->SetInteger(
@@ -188,7 +188,7 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
 
  protected:
   ui::ColorProviderKey GetColorProviderKey(Browser* browser) {
-    return GetBrowserWidget(browser)->GetColorProviderKeyForTesting();
+    return GetBrowserFrame(browser)->GetColorProviderKeyForTesting();
   }
 
   // Sets the `kBrowserColorScheme` pref for the `profile`.
@@ -218,8 +218,8 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
     GetThemeService(profile)->SetBrowserColorVariant(color_variant);
   }
 
-  BrowserWidget* GetBrowserWidget(Browser* browser) {
-    return static_cast<BrowserWidget*>(
+  BrowserFrame* GetBrowserFrame(Browser* browser) {
+    return static_cast<BrowserFrame*>(
         BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
   }
 
@@ -232,14 +232,14 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
   ui::TestNativeTheme test_native_theme_;
 };
 
-// Verifies the BrowserWidget honors the BrowserColorScheme pref.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+// Verifies the BrowserFrame honors the BrowserColorScheme pref.
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        TracksBrowserColorScheme) {
   SetFollowDevice(profile(), false);
 
   // Assert the browser follows the system color scheme (i.e. the color scheme
   // set on the associated native theme)
-  views::Widget* browser_widget = GetBrowserWidget(browser());
+  views::Widget* browser_frame = GetBrowserFrame(browser());
   test_native_theme_.SetDarkMode(false);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
             GetColorProviderKey(browser()).color_mode);
@@ -248,27 +248,26 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
-  // Set the BrowserColorScheme pref. The BrowserWidget should ignore the system
+  // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
   // color scheme.
   test_native_theme_.SetDarkMode(false);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
-  browser_widget->SetNativeThemeForTest(&test_native_theme_);
+  browser_frame->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
   test_native_theme_.SetDarkMode(true);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
-  browser_widget->SetNativeThemeForTest(&test_native_theme_);
+  browser_frame->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
             GetColorProviderKey(browser()).color_mode);
 }
 
 // Verifies incognito browsers will always use the dark ColorMode.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
-                       IncognitoAlwaysDarkMode) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest, IncognitoAlwaysDarkMode) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  views::Widget* incognito_browser_frame = GetBrowserWidget(incognito_browser);
+  views::Widget* incognito_browser_frame = GetBrowserFrame(incognito_browser);
   incognito_browser_frame->SetNativeThemeForTest(&test_native_theme_);
 
   // The incognito browser should reflect the dark color mode irrespective of
@@ -284,8 +283,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
             GetColorProviderKey(incognito_browser).color_mode);
 }
 
-// Verifies the BrowserWidget's user_color tracks the autogenerated theme color.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+// Verifies the BrowserFrame's user_color tracks the autogenerated theme color.
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        UserColorTracksAutogeneratedThemeColor) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Follow Device will override autogenerated theme if allowed (so set it to
@@ -319,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
             GetColorProviderKey(browser()).user_color_source);
 }
 
-// Verifies BrowserWidget tracks the profile kUserColor pref correctly.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+// Verifies BrowserFrame tracks the profile kUserColor pref correctly.
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        UserColorProfilePrefTrackedCorrectly) {
   // The Browser should initially have its user_color unset.
   SetFollowDevice(profile(), false);
@@ -357,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 
 // Verifies incognito browsers will ignore any user color provided by the OS and
 // source colors from the grayscale palette.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        IncognitoAlwaysIgnoresUserColor) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  views::Widget* incognito_browser_frame = GetBrowserWidget(incognito_browser);
+  views::Widget* incognito_browser_frame = GetBrowserFrame(incognito_browser);
   incognito_browser_frame->SetNativeThemeForTest(&test_native_theme_);
 
   // Set the user color override on both the NativeTheme and the profile pref.
@@ -374,9 +373,9 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
             GetColorProviderKey(incognito_browser).user_color_source);
 }
 
-// Verifies the BrowserWidget's user_color tracks the is_grayscale theme pref.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
-                       BrowserWidgetTracksIsGrayscale) {
+// Verifies the BrowserFrame's user_color tracks the is_grayscale theme pref.
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
+                       BrowserFrameTracksIsGrayscale) {
   SetFollowDevice(profile(), false);
   const auto initial_source = GetColorProviderKey(browser()).user_color_source;
   EXPECT_NE(ui::ColorProviderKey::UserColorSource::kGrayscale, initial_source);
@@ -392,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
   EXPECT_EQ(initial_source, GetColorProviderKey(browser()).user_color_source);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        GrayscaleIgnoresUserColor) {
   SetFollowDevice(profile(), false);
 
@@ -401,8 +400,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
   test_native_theme_.set_scheme_variant(
       ui::ColorProviderKey::SchemeVariant::kVibrant);
 
-  views::Widget* browser_widget = GetBrowserWidget(browser());
-  browser_widget->SetNativeThemeForTest(&test_native_theme_);
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  browser_frame->SetNativeThemeForTest(&test_native_theme_);
   SetIsGrayscale(profile(), true);
 
   EXPECT_EQ(ui::ColorProviderKey::UserColorSource::kGrayscale,
@@ -410,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 }
 
 // Verifies incognito browsers always force the grayscale palette.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        IncognitoIsAlwaysGrayscale) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
@@ -428,10 +427,10 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
             GetColorProviderKey(incognito_browser).user_color_source);
 }
 
-// Verifies the BrowserWidget's ColorProviderKey tracks the kBrowserColorVariant
+// Verifies the BrowserFrame's ColorProviderKey tracks the kBrowserColorVariant
 // pref.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
-                       BrowserWidgetTracksBrowserColorVariant) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
+                       BrowserFrameTracksBrowserColorVariant) {
   SetFollowDevice(profile(), false);
   using enum ui::mojom::BrowserColorVariant;
 
@@ -444,16 +443,16 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
   }
 }
 
-// Verifies the BrowserWidget's ColorProviderKey tracks the user color on
+// Verifies the BrowserFrame's ColorProviderKey tracks the user color on
 // ChromeOS and the color from `ThemeService` on platforms where the toggle is
 // not available.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest, UseDeviceIgnoresTheme) {
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest, UseDeviceIgnoresTheme) {
   static constexpr SkColor kNativeThemeColor = SK_ColorMAGENTA;
   static constexpr SkColor kThemeServiceColor = SK_ColorGREEN;
 
-  views::Widget* browser_widget = GetBrowserWidget(browser());
+  views::Widget* browser_frame = GetBrowserFrame(browser());
   // Set native theme to an obviously different color.
-  ui::NativeTheme* native_theme = browser_widget->GetNativeTheme();
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
   native_theme->set_user_color(kNativeThemeColor);
   native_theme->set_scheme_variant(
       ui::ColorProviderKey::SchemeVariant::kVibrant);
@@ -473,14 +472,14 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest, UseDeviceIgnoresTheme) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-// Verifies the BrowserWidget's ColorProviderKey tracks device even if
+// Verifies the BrowserFrame's ColorProviderKey tracks device even if
 // AutogeneratedTheme is used.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        UseDeviceIgnoresAutogeneratedTheme) {
   static constexpr SkColor kNativeThemeColor = SK_ColorMAGENTA;
 
-  views::Widget* browser_widget = GetBrowserWidget(browser());
-  ui::NativeTheme* native_theme = browser_widget->GetNativeTheme();
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
   native_theme->set_user_color(kNativeThemeColor);
   native_theme->set_scheme_variant(
       ui::ColorProviderKey::SchemeVariant::kVibrant);
@@ -503,13 +502,13 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 }
 
 // Verify that that grayscale is ignored if UseDeviceTheme is true.
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        UseDeviceThemeIgnoresGrayscale) {
   static constexpr SkColor kNativeThemeColor = SK_ColorMAGENTA;
 
-  views::Widget* browser_widget = GetBrowserWidget(browser());
+  views::Widget* browser_frame = GetBrowserFrame(browser());
   // Set native theme to an obviously different color.
-  ui::NativeTheme* native_theme = browser_widget->GetNativeTheme();
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
   native_theme->set_user_color(kNativeThemeColor);
   native_theme->set_scheme_variant(
       ui::ColorProviderKey::SchemeVariant::kVibrant);
@@ -524,11 +523,11 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
                        BaselineThemeIgnoresNativeThemeColor) {
-  views::Widget* browser_widget = GetBrowserWidget(browser());
+  views::Widget* browser_frame = GetBrowserFrame(browser());
   // Set native theme to an obviously different color.
-  ui::NativeTheme* native_theme = browser_widget->GetNativeTheme();
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
   native_theme->set_user_color(SK_ColorMAGENTA);
   native_theme->set_scheme_variant(
       ui::ColorProviderKey::SchemeVariant::kVibrant);

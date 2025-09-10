@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
-  BrowserWidget* frame = view->frame();
+  BrowserFrame* frame = view->frame();
   BrowserNonClientFrameView* frame_view = frame->GetFrameView();
 
   color_utils::HSL frame_color_hsl;

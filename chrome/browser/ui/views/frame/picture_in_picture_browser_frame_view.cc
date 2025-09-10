@@ -493,7 +493,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 }
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view),
       top_bar_color_animation_(this),

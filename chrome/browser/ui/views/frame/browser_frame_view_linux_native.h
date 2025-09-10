@@ -19,7 +19,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   METADATA_HEADER(BrowserFrameViewLinuxNative, BrowserFrameViewLinux)
  public:
   BrowserFrameViewLinuxNative(
-      BrowserWidget* frame,
+      BrowserFrame* frame,
       BrowserView* browser_view,
       BrowserFrameViewLayoutLinuxNative* layout,
       std::unique_ptr<ui::NavButtonProvider> nav_button_provider);

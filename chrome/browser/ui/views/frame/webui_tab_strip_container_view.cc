@@ -796,7 +796,7 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
 void WebUITabStripContainerView::HideEditDialogForGroup() {
   if (editor_bubble_widget_) {
     editor_bubble_widget_->CloseWithReason(
-        BrowserWidget::ClosedReason::kUnspecified);
+        BrowserFrame::ClosedReason::kUnspecified);
   }
 }
 

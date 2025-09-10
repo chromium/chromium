@@ -15,7 +15,7 @@ class BrowserDesktopWindowTreeHostLinux;
 // Provides the window frame for the Chrome browser window on Desktop Linux/X11.
 class BrowserNativeWidgetAuraLinux : public BrowserNativeWidgetAura {
  public:
-  BrowserNativeWidgetAuraLinux(BrowserWidget* browser_widget,
+  BrowserNativeWidgetAuraLinux(BrowserFrame* browser_frame,
                                BrowserView* browser_view);
 
   BrowserNativeWidgetAuraLinux(const BrowserNativeWidgetAuraLinux&) = delete;

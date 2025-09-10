@@ -23,7 +23,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
-class BrowserWidget;
+class BrowserFrame;
 class BrowserView;
 class BrowserWindowPropertyManager;
 class VirtualDesktopHelper;
@@ -42,7 +42,7 @@ class BrowserDesktopWindowTreeHostWin
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
       BrowserView* browser_view,
-      BrowserWidget* browser_widget);
+      BrowserFrame* browser_frame);
   BrowserDesktopWindowTreeHostWin(const BrowserDesktopWindowTreeHostWin&) =
       delete;
   BrowserDesktopWindowTreeHostWin& operator=(
@@ -93,7 +93,7 @@ class BrowserDesktopWindowTreeHostWin
   void SetWindowIcon(bool badged);
 
   raw_ptr<BrowserView> browser_view_;
-  raw_ptr<BrowserWidget> browser_widget_;
+  raw_ptr<BrowserFrame> browser_frame_;
 
   MinimizeButtonMetrics minimize_button_metrics_;
 

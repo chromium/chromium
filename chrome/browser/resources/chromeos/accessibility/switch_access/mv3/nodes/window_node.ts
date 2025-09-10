@@ -16,7 +16,7 @@ export class WindowRootNode extends BasicRootNode {
 
     let focusNode = this.automationNode;
     // TODO(b/314203187): Not null asserted, check that this is correct.
-    while (focusNode.className !== 'BrowserWidget' &&
+    while (focusNode.className !== 'BrowserFrame' &&
            focusNode.parent!.role === RoleType.WINDOW) {
       focusNode = focusNode.parent!;
     }

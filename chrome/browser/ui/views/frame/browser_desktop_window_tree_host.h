@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_H_
 
-class BrowserWidget;
+class BrowserFrame;
 class BrowserView;
 
 namespace views {
@@ -25,14 +25,14 @@ class BrowserDesktopWindowTreeHost {
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
       BrowserView* browser_view,
-      BrowserWidget* browser_widget);
+      BrowserFrame* browser_frame);
 
   virtual views::DesktopWindowTreeHost* AsDesktopWindowTreeHost() = 0;
 
   virtual int GetMinimizeButtonOffset() const = 0;
 
   // Returns true if the OS takes care of showing the system menu. Returning
-  // false means BrowserWidget handles showing the system menu.
+  // false means BrowserFrame handles showing the system menu.
   virtual bool UsesNativeSystemMenu() const = 0;
 };
 
