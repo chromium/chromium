@@ -60,9 +60,12 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   LayoutUnit GridItemOffset(GridTrackSizingDirection track_direction) const;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection track_direction) const;
+  static Vector<LayoutUnit, 1> CollectTrackSizesForComputedStyle(
+      const GridLayoutData* grid_layout_data,
+      GridTrackSizingDirection track_direction);
 
-  Vector<LayoutUnit> RowPositions() const;
-  Vector<LayoutUnit> ColumnPositions() const;
+  Vector<LayoutUnit> GridTrackPositions(
+      GridTrackSizingDirection track_direction) const;
 
   const GridLayoutData* LayoutData() const;
 

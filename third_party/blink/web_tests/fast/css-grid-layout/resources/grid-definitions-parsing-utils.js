@@ -16,6 +16,31 @@ function testNonGridDefinitionsSetJSValues(columnValue, rowValue, computedColumn
     checkGridDefinitionsSetJSValues(false, columnValue, rowValue, computedColumnValue, computedRowValue, jsColumnValue, jsRowValue);
 }
 
+function testMasonryDefinitionsSetJSValues(isRowDirection, trackValue, computedTrackValue, jsTrackValue)
+{
+    window.element = document.createElement("div");
+    document.body.appendChild(element);
+    element.style.display = "masonry";
+    if (isRowDirection) {
+        element.style.masonryDirection = "row";
+    }
+    element.style.width = "800px";
+    element.style.height = "600px";
+    element.style.justifyContent = "start";
+    element.style.alignContent = "start";
+    element.style.font = "10px Ahem"; // Used to resolve em font consistently.
+    if (isRowDirection) {
+       element.style.gridTemplateRows = trackValue;
+       shouldBeEqualToString("getComputedStyle(element, '').getPropertyValue('grid-template-rows')", computedTrackValue || trackValue);
+       shouldBeEqualToString("element.style.gridTemplateRows", jsTrackValue || trackValue);
+    } else {
+         element.style.gridTemplateColumns = trackValue;
+         shouldBeEqualToString("getComputedStyle(element, '').getPropertyValue('grid-template-columns')", computedTrackValue || trackValue);
+         shouldBeEqualToString("element.style.gridTemplateColumns", jsTrackValue || trackValue);
+    }
+    document.body.removeChild(element);
+}
+
 function checkGridDefinitionsSetJSValues(useGrid, columnValue, rowValue, computedColumnValue, computedRowValue, jsColumnValue, jsRowValue)
 {
     window.element = document.createElement("div");

@@ -24,12 +24,11 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
     return "LayoutMasonry";
   }
 
-  Vector<LayoutUnit> GridTrackPositions(
-      GridTrackSizingDirection track_direction) const;
-  LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
-  LayoutUnit MasonryItemOffset(GridTrackSizingDirection track_direction) const;
+  bool HasCachedPlacementData() const;
   const GridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(GridPlacementData&& placement_data);
+
+  // TODO(almaher): We are missing subgrid methods, similar to LayoutGrid.
 
   // Helper methods for DevTools inspector highlighting.
   wtf_size_t AutoRepeatCountForDirection(
@@ -38,6 +37,13 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
       GridTrackSizingDirection direction) const;
   wtf_size_t ExplicitGridEndForDirection(
       GridTrackSizingDirection direction) const;
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
+  LayoutUnit MasonryItemOffset(GridTrackSizingDirection track_direction) const;
+  Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
+      GridTrackSizingDirection track_direction) const;
+
+  Vector<LayoutUnit> GridTrackPositions(
+      GridTrackSizingDirection track_direction) const;
 
   const GridLayoutData* LayoutData() const;
 
@@ -47,13 +53,13 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
     return true;
   }
 
+  // TODO(almaher): Do we need special overrides of AddChild(),
+  // RemoveChild(), StyleDidChange(), MarkGridDirty() etc?
+
   // Caches masonry placement data for DevTools inspector highlighting.
   // This avoids recomputing during inspector queries.
   std::optional<GridPlacementData> cached_placement_data_;
-
-  // TODO(almaher): There are a bunch of helpers we are missing that are in
-  // LayoutGrid. Do we need those, too, or should we be based on LayoutGrid
-  // instead of LayoutBlock?
+  GridTrackSizingDirection masonry_track_sizing_direction_;
 };
 
 // wtf/casting.h helper.

@@ -5244,7 +5244,8 @@ const CSSValue* GridTemplateColumns::ParseSingleValue(
 
 bool GridTemplateColumns::IsLayoutDependent(const ComputedStyle* style,
                                             LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGrid();
+  return layout_object &&
+         (layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry());
 }
 
 const CSSValue* GridTemplateColumns::CSSValueFromComputedStyleInternal(
@@ -5270,7 +5271,8 @@ const CSSValue* GridTemplateRows::ParseSingleValue(
 
 bool GridTemplateRows::IsLayoutDependent(const ComputedStyle* style,
                                          LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGrid();
+  return layout_object &&
+         (layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry());
 }
 
 const CSSValue* GridTemplateRows::CSSValueFromComputedStyleInternal(

@@ -213,8 +213,15 @@ LayoutUnit LayoutGrid::GridItemOffset(
 Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
+  return CollectTrackSizesForComputedStyle(LayoutData(), track_direction);
+}
+
+// static
+Vector<LayoutUnit, 1> LayoutGrid::CollectTrackSizesForComputedStyle(
+    const GridLayoutData* grid_layout_data,
+    GridTrackSizingDirection track_direction) {
+  CHECK(grid_layout_data);
   Vector<LayoutUnit, 1> track_sizes;
-  const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
     return track_sizes;
 
@@ -245,14 +252,10 @@ Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
   return track_sizes;
 }
 
-Vector<LayoutUnit> LayoutGrid::RowPositions() const {
+Vector<LayoutUnit> LayoutGrid::GridTrackPositions(
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  return ComputeExpandedPositions(LayoutData(), kForRows);
-}
-
-Vector<LayoutUnit> LayoutGrid::ColumnPositions() const {
-  NOT_DESTROYED();
-  return ComputeExpandedPositions(LayoutData(), kForColumns);
+  return ComputeExpandedPositions(LayoutData(), track_direction);
 }
 
 // static

@@ -1128,28 +1128,13 @@ crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-003.html [ Failur
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-006.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-012.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-006.html [ Failure ]
+# Track Sizing failures due to % resolution
+crbug.com/1076027 external/wpt/css/css-grid/parsing/grid-template-rows-intrinsic-auto-repeat-computed-implicit-track.tentative.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Failure ]
 # Failing because of the divergence in default track definition
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-003.html [ Failure ]
-# Failing because computed style for template tracks aren't being expanded in masonry
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-019.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-020.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-024.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-025.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-015.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-016.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-021.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-020.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-017.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-018.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-022.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-023.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-015.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-016.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-021.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-020.html [ Failure ]
 # Tests failing in wpt runner that match expectations in the browser rendering
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-fit-content-001.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-fit-content-004.html [ Failure ]
@@ -1157,6 +1142,8 @@ crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-min-content-00
 # Masonry dense-packing tests failing as we are not supporting dense-packing for multi-spanning items yet
 crbug.com/1076027 wpt_internal/css/css-masonry/column-dense-packing-003.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-dense-packing-003.html [ Failure ]
+# Test crashing in intrinsic auto repeat calculation
+crbug.com/1076027 fast/css-masonry-layout/masonry-element-auto-repeat-get-set.html [ Failure Crash ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]

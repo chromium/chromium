@@ -1721,8 +1721,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
   auto* grid = To<LayoutGrid>(element->GetLayoutObject());
-  const Vector<LayoutUnit> rows = grid->RowPositions();
-  const Vector<LayoutUnit> columns = grid->ColumnPositions();
+  const Vector<LayoutUnit> rows = grid->GridTrackPositions(kForRows);
+  const Vector<LayoutUnit> columns = grid->GridTrackPositions(kForColumns);
 
   grid_info->setInteger("rotationAngle", GetRotationAngle(grid));
 

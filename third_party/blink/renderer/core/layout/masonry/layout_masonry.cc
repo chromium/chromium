@@ -8,7 +8,12 @@
 
 namespace blink {
 
-LayoutMasonry::LayoutMasonry(Element* element) : LayoutBlock(element) {}
+LayoutMasonry::LayoutMasonry(Element* element) : LayoutBlock(element) {
+  CHECK(element);
+  CHECK(element->GetComputedStyle());
+  masonry_track_sizing_direction_ =
+      element->GetComputedStyle()->MasonryTrackSizingDirection();
+}
 
 const GridLayoutData* LayoutMasonry::LayoutData() const {
   return LayoutGrid::GetGridLayoutDataFromFragments(this);
@@ -17,6 +22,9 @@ const GridLayoutData* LayoutMasonry::LayoutData() const {
 Vector<LayoutUnit> LayoutMasonry::GridTrackPositions(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
+  if (track_direction != masonry_track_sizing_direction_) {
+    return {};
+  }
   return LayoutGrid::ComputeExpandedPositions(LayoutData(), track_direction);
 }
 
@@ -31,6 +39,12 @@ LayoutUnit LayoutMasonry::MasonryItemOffset(
   NOT_DESTROYED();
   // Distribution offset is baked into the `gutter_size` in Masonry.
   return LayoutUnit();
+}
+
+bool LayoutMasonry::HasCachedPlacementData() const {
+  // TODO(almaher): Check for !IsGridPlacementDirty() similar to
+  // LayoutGrid.
+  return !!cached_placement_data_;
 }
 
 const GridPlacementData& LayoutMasonry::CachedPlacementData() const {
@@ -70,6 +84,16 @@ wtf_size_t LayoutMasonry::ExplicitGridEndForDirection(
   return base::checked_cast<wtf_size_t>(
       ExplicitGridStartForDirection(track_direction) +
       cached_placement_data_->ExplicitGridTrackCount(track_direction));
+}
+
+Vector<LayoutUnit, 1> LayoutMasonry::TrackSizesForComputedStyle(
+    GridTrackSizingDirection track_direction) const {
+  NOT_DESTROYED();
+  if (track_direction != masonry_track_sizing_direction_) {
+    return {};
+  }
+  return LayoutGrid::CollectTrackSizesForComputedStyle(LayoutData(),
+                                                       track_direction);
 }
 
 }  // namespace blink
