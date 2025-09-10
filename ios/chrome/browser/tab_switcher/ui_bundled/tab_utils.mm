@@ -16,6 +16,56 @@
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/web/public/web_state.h"
 
+namespace {
+
+// Magic padding to fit UX mocks for items sizes. See where it is used for more
+// details.
+constexpr CGFloat kMagicPadding = 50;
+// Items aspect ratios.
+constexpr CGFloat kPortraitAspectRatio = 4. / 3.;
+// Different width thresholds for determining the columns count.
+constexpr CGFloat kSmallWidthThreshold = 500;
+constexpr CGFloat kLargeWidthThreshold = 1000;
+
+}  // namespace
+
+CGFloat TabGridItemAspectRatio(CGSize size) {
+  const CGFloat width = size.width;
+  const CGFloat height = size.height;
+
+  const CGRect screen_bounds = UIScreen.mainScreen.bounds;
+  const CGFloat screen_aspect_ratio =
+      CGRectGetHeight(screen_bounds) / CGRectGetWidth(screen_bounds);
+
+  // On iPad Landscape with 3/4 - 1/4 Split View, the 3/4 width is just a bit
+  // smaller than the height, but design-wise, a landscape aspect ratio should
+  // be preferred. Pad a bit the width with a magic constant before comparing to
+  // the height.
+  return width + kMagicPadding > height ? screen_aspect_ratio
+                                        : kPortraitAspectRatio;
+}
+
+NSInteger TabGridColumnsCount(CGSize size,
+                              UIContentSizeCategory content_size_category) {
+  const CGFloat width = size.width;
+
+  NSInteger count;
+  if (width < kSmallWidthThreshold) {
+    count = 2;
+  } else if (width < kLargeWidthThreshold) {
+    count = 3;
+  } else {
+    count = 4;
+  }
+
+  // If Dynamic Type uses an Accessibility setting, just remove a column.
+  if (UIContentSizeCategoryIsAccessibilityCategory(content_size_category)) {
+    count -= 1;
+  }
+
+  return count;
+}
+
 TabItem* GetTabItem(WebStateList* web_state_list,
                     WebStateSearchCriteria criteria) {
   web::WebState* web_state = GetWebState(web_state_list, criteria);
