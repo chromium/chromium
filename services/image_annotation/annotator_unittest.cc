@@ -328,17 +328,16 @@ class TestServerURLLoaderFactory {
     }
 
     // Extract request body.
-    std::string actual_body;
+    std::string_view actual_body;
     if (request.request_body) {
-      const std::vector<network::DataElement>* const elements =
-          request.request_body->elements();
-
       // We only support the simplest body structure.
-      if (elements && elements->size() == 1 &&
-          (*elements)[0].type() ==
+      const std::vector<network::DataElement>& elements =
+          *request.request_body->elements();
+      if (elements.size() == 1 &&
+          elements[0].type() ==
               network::mojom::DataElementDataView::Tag::kBytes) {
-        actual_body = std::string(
-            (*elements)[0].As<network::DataElementBytes>().AsStringPiece());
+        actual_body =
+            elements[0].As<network::DataElementBytes>().AsStringView();
       }
     }
 
