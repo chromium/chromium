@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
@@ -50,8 +51,10 @@ void ToolController::SetState(State state) {
   journal().Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
                 task_->id(), mojom::JournalTrack::kActor,
                 "ToolControllerStateChange",
-                absl::StrFormat("State: %s -> %s", StateToString(state_),
-                                StateToString(state)));
+                JournalDetailsBuilder()
+                    .Add("current_state", StateToString(state_))
+                    .Add("new_state", StateToString(state))
+                    .Build());
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
@@ -111,7 +114,9 @@ void ToolController::CreateToolAndValidate(
     journal().Log(request.GetURLForJournal(), task_->id(),
                   mojom::JournalTrack::kActor,
                   "ToolController CreateToolAndValidate Failed",
-                  create_result.result->message);
+                  JournalDetailsBuilder()
+                      .AddError(create_result.result->message)
+                      .Build());
     PostResponseTask(std::move(result_callback),
                      std::move(create_result.result));
     return;
@@ -122,7 +127,8 @@ void ToolController::CreateToolAndValidate(
 
   auto journal_event = journal().CreatePendingAsyncEntry(
       tool->JournalURL(), task_->id(), mojom::JournalTrack::kActor,
-      tool->JournalEvent(), tool->DebugString());
+      tool->JournalEvent(),
+      JournalDetailsBuilder().Add("tool", tool->DebugString()).Build());
   active_state_.emplace(std::move(tool), std::move(result_callback),
                         std::move(journal_event));
 
@@ -174,7 +180,9 @@ void ToolController::Invoke(ResultCallback result_callback) {
   if (!IsOk(*toctou_result)) {
     journal().Log(active_state_->tool->JournalURL(), task_->id(),
                   mojom::JournalTrack::kActor, "TOCTOU Check Failed",
-                  ToDebugString(*toctou_result));
+                  JournalDetailsBuilder()
+                      .AddError(ToDebugString(*toctou_result))
+                      .Build());
     CompleteToolRequest(std::move(toctou_result));
     return;
   }
@@ -217,10 +225,12 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
         base::BindOnce(&ToolController::PostInvokeTool,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
-    journal().Log(active_state_->tool->JournalURL(), task_->id(),
-                  mojom::JournalTrack::kActor,
-                  "ToolController DidFinishToolInvoke",
-                  "WebContents is gone when tool finishes successfully");
+    journal().Log(
+        active_state_->tool->JournalURL(), task_->id(),
+        mojom::JournalTrack::kActor, "ToolController DidFinishToolInvoke",
+        JournalDetailsBuilder()
+            .AddError("WebContents is gone when tool finishes successfully")
+            .Build());
     PostInvokeTool(std::move(result));
     return;
   }
@@ -244,7 +254,13 @@ void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
 
   SetState(State::kReady);
   observation_delayer_.reset();
-  active_state_->journal_entry->EndEntry(ToDebugString(*result));
+  if (IsOk(*result)) {
+    active_state_->journal_entry->EndEntry(
+        JournalDetailsBuilder().Add("result", "success").Build());
+  } else {
+    active_state_->journal_entry->EndEntry(
+        JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
+  }
   PostResponseTask(std::move(active_state_->completion_callback),
                    std::move(result));
   active_state_.reset();

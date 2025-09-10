@@ -25,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -64,10 +65,10 @@ class DecisionWrapper {
                                             task_id,
                                             mojom::JournalTrack::kActor,
                                             event_name,
-                                            "")) {}
+                                            {})) {}
 
   void Reject(std::string_view reason) {
-    journal_entry_->EndEntry(reason);
+    journal_entry_->EndEntry(JournalDetailsBuilder().AddError(reason).Build());
 
     // Some decisions are made asynchronously, so always invoke the callback
     // asynchronously for consistency.
@@ -76,7 +77,8 @@ class DecisionWrapper {
   }
 
   void Accept() {
-    journal_entry_->EndEntry("Allow");
+    journal_entry_->EndEntry(
+        JournalDetailsBuilder().Add("result", "Allow").Build());
 
     // Some decisions are made asynchronously, so always invoke the callback
     // asynchronously for consistency.

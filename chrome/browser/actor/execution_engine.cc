@@ -219,7 +219,10 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     journal_->Log(
         actions[0]->GetURLForJournal(), task_->id(),
         mojom::JournalTrack::kActor, "Act Failed",
-        "Unable to perform action: task already has action in progress");
+        JournalDetailsBuilder()
+            .AddError(
+                "Unable to perform action: task already has action in progress")
+            .Build());
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
                                       "Task already has action in progress"),
@@ -285,7 +288,10 @@ void ExecutionEngine::SafetyChecksForNextAction() {
 
   if (!tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), mojom::JournalTrack::kActor,
-                  "Act Failed", "The tab is no longer present");
+                  "Act Failed",
+                  JournalDetailsBuilder()
+                      .AddError("The tab is no longer present")
+                      .Build());
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "The tab is no longer present."),
                     next_action_index_);
@@ -310,7 +316,11 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
   if (!tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), mojom::JournalTrack::kActor,
-                  "Act Failed", "The tab is no longer present");
+                  "Act Failed",
+                  JournalDetailsBuilder()
+                      .AddError("The tab is no longer present")
+                      .Build());
+
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "The tab is no longer present."),
                     next_action_index_);
@@ -326,7 +336,9 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     // TODO(mcnee): Handle this gracefully.
     journal_->Log(GetNextAction().GetURLForJournal(), task_id,
                   mojom::JournalTrack::kActor, "Act Failed",
-                  "Acting after cross-origin navigation occurred");
+                  JournalDetailsBuilder()
+                      .AddError("Acting after cross-origin navigation occurred")
+                      .Build());
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                                "Acting after cross-origin navigation occurred"),
                     next_action_index_);
@@ -334,9 +346,10 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   if (!may_act) {
-    journal_->Log(GetNextAction().GetURLForJournal(), task_id,
-                  mojom::JournalTrack::kActor, "Act Failed",
-                  "URL blocked for actions");
+    journal_->Log(
+        GetNextAction().GetURLForJournal(), task_id,
+        mojom::JournalTrack::kActor, "Act Failed",
+        JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
                                "URL blocked for actions"),
                     next_action_index_);
@@ -444,8 +457,9 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
     if (action_index) {
       url = action_sequence_[*action_index]->GetURLForJournal();
     }
-    journal_->Log(url, task_->id(), mojom::JournalTrack::kActor, "Act Failed",
-                  ToDebugString(*result));
+    journal_->Log(
+        url, task_->id(), mojom::JournalTrack::kActor, "Act Failed",
+        JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
   }
 
   // TODO(crbug.com/411462297): Populate observation.

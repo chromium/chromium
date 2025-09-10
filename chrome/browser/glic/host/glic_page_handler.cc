@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -364,7 +365,10 @@ class JournalHandler {
     active_journal_events_[event_async_id] =
         actor_keyed_service_->GetJournal().CreatePendingAsyncEntry(
             /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
-            actor::mojom::JournalTrack::kFrontEnd, event, details);
+            actor::mojom::JournalTrack::kFrontEnd, event,
+            actor::JournalDetailsBuilder()
+                .Add("begin_details", details)
+                .Build());
   }
 
   void LogEndAsyncEvent(mojom::WebClientModel model,
@@ -372,7 +376,8 @@ class JournalHandler {
                         const std::string& details) {
     auto it = active_journal_events_.find(event_async_id);
     if (it != active_journal_events_.end()) {
-      it->second->EndEntry(details);
+      it->second->EndEntry(
+          actor::JournalDetailsBuilder().Add("end_details", details).Build());
 
       if (model == mojom::WebClientModel::kActor) {
         // Log a histogram for each async event.
@@ -395,7 +400,8 @@ class JournalHandler {
                        const std::string& details) {
     actor_keyed_service_->GetJournal().Log(
         /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kFrontEnd, event, details);
+        actor::mojom::JournalTrack::kFrontEnd, event,
+        actor::JournalDetailsBuilder().Add("details", details).Build());
   }
 
   void Clear() {

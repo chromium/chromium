@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -98,10 +99,11 @@ void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
-    journal().Log(
-        url_, task_id(), mojom::JournalTrack::kActor,
-        "NavigateTool::DidFinishNavigation",
-        absl::StrFormat("id[%d]", navigation_handle->GetNavigationId()));
+    journal().Log(url_, task_id(), mojom::JournalTrack::kActor,
+                  "NavigateTool::DidFinishNavigation",
+                  JournalDetailsBuilder()
+                      .Add("id", navigation_handle->GetNavigationId())
+                      .Build());
     auto result =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()
             ? MakeOkResult()
@@ -115,9 +117,10 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
 }
 
 void NavigateTool::NavigationHandleCallback(NavigationHandle& handle) {
-  journal().Log(url_, task_id(), mojom::JournalTrack::kActor,
-                "NavigateTool::NavigationHandleCallback",
-                absl::StrFormat("id[%d]", handle.GetNavigationId()));
+  journal().Log(
+      url_, task_id(), mojom::JournalTrack::kActor,
+      "NavigateTool::NavigationHandleCallback",
+      JournalDetailsBuilder().Add("id", handle.GetNavigationId()).Build());
   pending_navigation_handle_id_ = handle.GetNavigationId();
 }
 

@@ -162,7 +162,7 @@ void FetchPageContext(
     const GURL& url = web_contents->GetLastCommittedURL();
     journal_entry = actor_keyed_service->GetJournal().CreatePendingAsyncEntry(
         url, actor::TaskId(), actor::mojom::JournalTrack::kActor,
-        "GlicFetchPageContext", "");
+        "GlicFetchPageContext", {});
     progress_listener = actor::CreateActorJournalFetchPageProgressListener(
         actor_keyed_service->GetJournal().GetSafeRef(), url, actor::TaskId());
   }

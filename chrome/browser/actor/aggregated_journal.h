@@ -56,7 +56,7 @@ class AggregatedJournal {
     // End an pending entry with additional details. This can only be called
     // once and will be automatically called from the destructor if it hasn't
     // been called.
-    void EndEntry(std::string_view details);
+    void EndEntry(std::vector<mojom::JournalDetailsPtr> details);
 
     AggregatedJournal& GetJournal();
     TaskId GetTaskId();
@@ -85,14 +85,6 @@ class AggregatedJournal {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Deprecated: Use variant that takes a details vector.
-  std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
-      const GURL& url,
-      TaskId task_id,
-      mojom::JournalTrack track,
-      std::string_view event_name,
-      std::vector<mojom::JournalDetailsPtr> details);
-
   // Create an async entry. This will log a Begin Entry event and when the
   // PendingAsyncEntry object is destroyed the End Entry will be logged.
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
@@ -100,14 +92,7 @@ class AggregatedJournal {
       TaskId task_id,
       mojom::JournalTrack track,
       std::string_view event_name,
-      std::string_view details);
-
-  // Deprecated: Use variant that takes a details vector.
-  void Log(const GURL& url,
-           TaskId task_id,
-           mojom::JournalTrack track,
-           std::string_view event_name,
-           std::string_view details);
+      std::vector<mojom::JournalDetailsPtr> details);
 
   // Log an instant event.
   void Log(const GURL& url,

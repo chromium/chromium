@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,7 +40,10 @@ void ObservationDelayController::Wait(
     ReadyCallback callback) {
   journal_entry_ = parent_journal_entry.GetJournal().CreatePendingAsyncEntry(
       GURL::EmptyGURL(), parent_journal_entry.GetTaskId(),
-      mojom::JournalTrack::kActor, "ObservationDelay", StateToString(state_));
+      mojom::JournalTrack::kActor, "ObservationDelay",
+      JournalDetailsBuilder()
+          .Add("begin_state", StateToString(state_))
+          .Build());
 
   switch (state_) {
     case State::kWaitingForLoadStart:
@@ -59,7 +63,8 @@ void ObservationDelayController::Wait(
     }
     case State::kDone: {
       PostFinishedTask(std::move(callback));
-      journal_entry_->EndEntry("Done");
+      journal_entry_->EndEntry(
+          JournalDetailsBuilder().Add("end_state", "Done").Build());
       break;
     }
   }
@@ -85,7 +90,8 @@ void ObservationDelayController::DidStopLoading() {
   if (journal_entry_) {
     journal_entry_->GetJournal().Log(
         GURL::EmptyGURL(), journal_entry_->GetTaskId(),
-        mojom::JournalTrack::kActor, "ObservationDelay", "Done Loading");
+        mojom::JournalTrack::kActor, "ObservationDelay",
+        JournalDetailsBuilder().Add("state", "Done loading").Build());
   }
   WaitForVisualStateUpdate();
 }
@@ -111,7 +117,8 @@ void ObservationDelayController::VisualStateUpdated(bool /*success*/) {
   // called. In that case, the callback will be posted when Wait is called.
   if (ready_callback_) {
     PostFinishedTask(std::move(ready_callback_));
-    journal_entry_->EndEntry("Visual Update");
+    journal_entry_->EndEntry(
+        JournalDetailsBuilder().Add("end_state", "Visual Update").Build());
   }
 }
 
@@ -119,7 +126,8 @@ void ObservationDelayController::Timeout() {
   state_ = State::kDone;
   if (ready_callback_) {
     PostFinishedTask(std::move(ready_callback_));
-    journal_entry_->EndEntry("Timeout");
+    journal_entry_->EndEntry(
+        JournalDetailsBuilder().Add("end_state", "Timeout").Build());
   }
 }
 

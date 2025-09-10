@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -269,9 +270,10 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
-                "TimeOfUseValidation",
-                "TabHandle:" + base::ToString(tab->GetHandle()));
+  journal().Log(
+      JournalURL(), task_id(), mojom::JournalTrack::kActor,
+      "TimeOfUseValidation",
+      JournalDetailsBuilder().Add("tab_handle", tab->GetHandle()).Build());
 
   RenderFrameHost* frame =
       FindTargetLocalRootFrame(request_->GetTabHandle(), request_->GetTarget());
@@ -287,7 +289,10 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
 
   if (!observed_target_node_info) {
     journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
-                  "TimeOfUseValidation", "No observed target found in APC.");
+                  "TimeOfUseValidation",
+                  JournalDetailsBuilder()
+                      .Add("details", "No observed target found in APC.")
+                      .Build());
   }
 
   // Perform validation for coordinate based target only.

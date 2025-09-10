@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -430,7 +431,9 @@ void GlicKeyedService::PerformActions(
   actor_keyed_service_->GetJournal().Log(
       GURL(), actor::TaskId(actions.task_id()),
       actor::mojom::JournalTrack::kActor, "GlicPerformActions",
-      absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
+      actor::JournalDetailsBuilder()
+          .Add("proto", actor::ToBase64(actions))
+          .Build());
 
   if (!actions.has_task_id()) {
     std::move(callback).Run(
@@ -440,9 +443,14 @@ void GlicKeyedService::PerformActions(
 
   actor::TaskId task_id(actions.task_id());
   if (!actor_keyed_service_->GetTask(task_id)) {
-    actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-        "Act Failed", absl::StrFormat("No task with id[%d]", task_id.value()));
+    actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
+                                           actor::mojom::JournalTrack::kActor,
+                                           "Act Failed",
+                                           actor::JournalDetailsBuilder()
+                                               .AddError("No such task")
+                                               .Add("id", task_id.value())
+                                               .Build());
+
     optimization_guide::proto::ActionsResult response =
         actor::BuildErrorActionsResult(
             actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
@@ -455,8 +463,10 @@ void GlicKeyedService::PerformActions(
     actor_keyed_service_->GetJournal().Log(
         GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
         "Act Failed",
-        absl::StrFormat("Failed to convert proto::Actions[%d] to ToolRequest",
-                        requests.error()));
+        actor::JournalDetailsBuilder()
+            .AddError("Failed to convert proto::Actions to ToolRequest")
+            .Add("error_code", requests.error())
+            .Build());
     optimization_guide::proto::ActionsResult response =
         actor::BuildErrorActionsResult(
             actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -475,14 +485,13 @@ void GlicKeyedService::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped()) {
-    std::string error_message =
-        task ? absl::StrFormat("Task with id[%d] is already stopped",
-                               task_id.value())
-             : absl::StrFormat("No task with id[%d]", task_id.value());
     actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kActor, "Failed to stop task",
-        error_message);
+        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+        "Failed to stop task",
+        actor::JournalDetailsBuilder()
+            .AddError(task ? "Task already stopped" : "No such task")
+            .Add("id", task_id.value())
+            .Build());
     return;
   }
 
@@ -504,14 +513,13 @@ void GlicKeyedService::PauseActorTask(
     mojom::ActorTaskPauseReason pause_reason) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped() || task->IsPaused()) {
-    std::string error_message =
-        task ? absl::StrFormat("Task with id[%d] is not in running state",
-                               task_id.value())
-             : absl::StrFormat("No task with id[%d]", task_id.value());
     actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kActor, "Failed to pause task",
-        error_message);
+        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+        "Failed to pause task",
+        actor::JournalDetailsBuilder()
+            .AddError(task ? "Task is not running" : "No such task")
+            .Add("id", task_id.value())
+            .Build());
     return;
   }
 
@@ -534,14 +542,14 @@ void GlicKeyedService::ResumeActorTask(
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || !task->IsPaused()) {
-    std::string error_message =
-        task
-            ? absl::StrFormat("Task with id[%d] is not paused", task_id.value())
-            : absl::StrFormat("No task with id[%d]", task_id.value());
-    actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kActor, "Failed to resume task",
-        error_message);
+    std::string error_message = task ? "Task is not paused" : "No such task";
+    actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
+                                           actor::mojom::JournalTrack::kActor,
+                                           "Failed to resume task",
+                                           actor::JournalDetailsBuilder()
+                                               .AddError(error_message)
+                                               .Add("id", task_id.value())
+                                               .Build());
     std::move(callback).Run(
         mojom::GetContextResult::NewErrorReason(error_message));
     return;
@@ -551,10 +559,13 @@ void GlicKeyedService::ResumeActorTask(
   tabs::TabInterface* tab_of_resumed_task = task->GetTabForObservation();
   if (!tab_of_resumed_task) {
     std::string error_message = "No tab for observation";
-    actor_keyed_service_->GetJournal().Log(
-        GURL::EmptyGURL(), actor::TaskId(task_id),
-        actor::mojom::JournalTrack::kActor, "Failed to resume task",
-        error_message);
+    actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
+                                           actor::mojom::JournalTrack::kActor,
+                                           "Failed to resume task",
+                                           actor::JournalDetailsBuilder()
+                                               .AddError(error_message)
+                                               .Add("id", task_id.value())
+                                               .Build());
     std::move(callback).Run(
         glic::mojom::GetContextResult::NewErrorReason(error_message));
     return;
@@ -571,9 +582,10 @@ void GlicKeyedService::ResumeActorTask(
           if (actor_keyed_service) {
             actor_keyed_service->GetJournal().Log(
                 GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-                "Failed to resume task",
-                absl::StrFormat("Failed to fetch context: %s",
-                                result.error().message));
+                "Failed to resume task - fetch context",
+                actor::JournalDetailsBuilder()
+                    .AddError(result.error().message)
+                    .Build());
           }
           std::move(final_callback)
               .Run(glic::mojom::GetContextResult::NewErrorReason(

@@ -41,6 +41,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -496,20 +497,29 @@ class ActorJournalFetchPageProgressListener
 
   void BeginScreenshot() override {
     screenshot_entry_ = journal_->CreatePendingAsyncEntry(
-        url_, task_id_, mojom::JournalTrack::kActor, "GrabScreenshot", "");
+        url_, task_id_, mojom::JournalTrack::kActor, "GrabScreenshot", {});
   }
 
   void EndScreenshot(std::optional<std::string> error) override {
-    screenshot_entry_->EndEntry(error.value_or(""));
+    if (error.has_value()) {
+      screenshot_entry_->EndEntry(
+          JournalDetailsBuilder().AddError(*error).Build());
+    } else {
+      screenshot_entry_->EndEntry({});
+    }
   }
 
   void BeginAPC() override {
     apc_entry_ = journal_->CreatePendingAsyncEntry(
-        url_, task_id_, mojom::JournalTrack::kActor, "GrabAPC", "");
+        url_, task_id_, mojom::JournalTrack::kActor, "GrabAPC", {});
   }
 
   void EndAPC(std::optional<std::string> error) override {
-    apc_entry_->EndEntry(error.value_or(""));
+    if (error.has_value()) {
+      apc_entry_->EndEntry(JournalDetailsBuilder().AddError(*error).Build());
+    } else {
+      apc_entry_->EndEntry({});
+    }
   }
 
  private:
@@ -674,7 +684,7 @@ void FetchCallback(
     auto* actor_service = actor::ActorKeyedService::Get(profile.get());
     actor_service->GetJournal().Log(
         GURL(), task_id, actor::mojom::JournalTrack::kActor, result.error(),
-        absl::StrFormat("tabId[%d]", tab_observation->id()));
+        JournalDetailsBuilder().Add("tabId", tab_observation->id()).Build());
     // For now record everything as a timeout.
     tab_observation->set_result(
         apc::TabObservation::TAB_OBSERVATION_SCREENSHOT_TIMEOUT);
@@ -742,7 +752,7 @@ void BuildActionsResultWithObservations(
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry =
       actor_service->GetJournal().CreatePendingAsyncEntry(
           GURL(), task.id(), actor::mojom::JournalTrack::kActor,
-          "BuildActionsResultWithObservations", "");
+          "BuildActionsResultWithObservations", {});
 
   auto response = std::make_unique<apc::ActionsResult>();
 
@@ -811,10 +821,13 @@ void BuildActionsResultWithObservations(
       tab_observation->set_id(handle.raw_value());
       tab_observation->set_result(
           apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY);
-      actor_service->GetJournal().Log(
-          GURL(), task.id(), actor::mojom::JournalTrack::kActor,
-          "TabObservationFailed",
-          absl::StrFormat("TabWentAway tabId[%d]", handle.raw_value()));
+      actor_service->GetJournal().Log(GURL(), task.id(),
+                                      actor::mojom::JournalTrack::kActor,
+                                      "TabObservationFailed",
+                                      JournalDetailsBuilder()
+                                          .Add("tabId", handle.raw_value())
+                                          .AddError("TabWentAway")
+                                          .Build());
     } else {
       tabs_to_fetch.insert(tab);
     }

@@ -67,16 +67,6 @@ class JournalObserver : public mojom::JournalClient,
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JournalObserver);
 
-std::vector<mojom::JournalDetailsPtr> MakeDetails(std::string_view details,
-                                                  bool is_begin) {
-  std::vector<mojom::JournalDetailsPtr> details_mojo;
-  if (!details.empty()) {
-    details_mojo.push_back(mojom::JournalDetails::New(
-        is_begin ? "begin_details" : "details", std::string(details)));
-  }
-  return details_mojo;
-}
-
 }  // namespace
 
 AggregatedJournal::Entry::Entry(const std::string& location,
@@ -102,16 +92,17 @@ AggregatedJournal::PendingAsyncEntry::PendingAsyncEntry(
 
 AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
   if (!terminated_) {
-    EndEntry("");
+    EndEntry({});
   }
 }
 
-void AggregatedJournal::PendingAsyncEntry::EndEntry(std::string_view details) {
+void AggregatedJournal::PendingAsyncEntry::EndEntry(
+    std::vector<mojom::JournalDetailsPtr> details) {
   CHECK(!terminated_);
   terminated_ = true;
   ACTOR_LOG() << "End " << event_name_ << ": " << details;
   journal_->AddEndEvent(pass_key_, task_id_, track_, event_name_,
-                        MakeDetails(details, /*is_begin=*/false));
+                        std::move(details));
 }
 
 AggregatedJournal& AggregatedJournal::PendingAsyncEntry::GetJournal() {
@@ -124,16 +115,6 @@ TaskId AggregatedJournal::PendingAsyncEntry::GetTaskId() {
 
 base::SafeRef<AggregatedJournal> AggregatedJournal::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
-}
-
-std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
-AggregatedJournal::CreatePendingAsyncEntry(const GURL& url,
-                                           TaskId task_id,
-                                           mojom::JournalTrack track,
-                                           std::string_view event_name,
-                                           std::string_view details) {
-  return CreatePendingAsyncEntry(url, task_id, track, event_name,
-                                 MakeDetails(details, /*is_begin=*/true));
 }
 
 std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
@@ -153,15 +134,6 @@ AggregatedJournal::CreatePendingAsyncEntry(
   return base::WrapUnique(new PendingAsyncEntry(
       base::PassKey<AggregatedJournal>(), weak_ptr_factory_.GetSafeRef(),
       task_id, track, event_name));
-}
-
-void AggregatedJournal::Log(const GURL& url,
-                            TaskId task_id,
-                            mojom::JournalTrack track,
-                            std::string_view event_name,
-                            std::string_view details) {
-  Log(url, task_id, track, event_name,
-      MakeDetails(details, /*is_begin=*/false));
 }
 
 void AggregatedJournal::Log(const GURL& url,

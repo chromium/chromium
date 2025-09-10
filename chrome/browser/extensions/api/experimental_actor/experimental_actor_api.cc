@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -237,10 +238,12 @@ ExperimentalActorPerformActionsFunction::Run() {
   }
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-  actor_service->GetJournal().Log(
-      GURL(), actor::TaskId(actions.task_id()),
-      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecuteAction",
-      absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
+  actor_service->GetJournal().Log(GURL(), actor::TaskId(actions.task_id()),
+                                  actor::mojom::JournalTrack::kActor,
+                                  "ExperimentalActorExecuteAction",
+                                  actor::JournalDetailsBuilder()
+                                      .Add("proto", actor::ToBase64(actions))
+                                      .Build());
 
   actor::TaskId task_id(actions.task_id());
 
