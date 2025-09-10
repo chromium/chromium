@@ -52,14 +52,14 @@ TEST(EventFiltersTest, FilterEvents) {
   events.push_back(tabs_api::mojom::TabsEvent::NewDataChangedEvent(
       std::move(group_data_changed)));
 
-  auto group_created_event = tabs_api::mojom::OnTabGroupCreatedEvent::New();
-  events.push_back(tabs_api::mojom::TabsEvent::NewTabGroupCreatedEvent(
-      std::move(group_created_event)));
+  auto created_event = tabs_api::mojom::OnCollectionCreatedEvent::New();
+  events.push_back(tabs_api::mojom::TabsEvent::NewCollectionCreatedEvent(
+      std::move(created_event)));
 
   auto created_tabs = FilterForTabsCreatedEvents(events);
   auto closed_tabs = FilterForTabsClosedEvents(events);
   auto moved_tabs = FilterForTabMovedEvents(events);
-  auto created_groups = FilterForTabGroupCreatedEvents(events);
+  auto created_groups = FilterForCollectionCreatedEvents(events);
   auto data_changed_events = FilterForDataChangedEvents(events);
 
   EXPECT_EQ(created_tabs.size(), 1u);

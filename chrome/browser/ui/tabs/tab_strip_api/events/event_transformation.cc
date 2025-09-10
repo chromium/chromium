@@ -141,17 +141,17 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
   return events;
 }
 
-mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
+mojom::OnCollectionCreatedEventPtr FromTabGroupToDataCreatedEvent(
     const TabGroupChange& tab_group_change) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kCreated);
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
-  auto event = mojom::OnTabGroupCreatedEvent::New();
+  auto event = mojom::OnCollectionCreatedEvent::New();
   event->data = tabs_api::converters::BuildMojoTabCollectionData(
       tab_group->GetCollectionHandle());
   // TODO(crbug.com/412935315): Determine whether a position is necessary in a
-  // TabGroupCreated event. This will have no tabs unless it has been inserted
-  // from another tabstrip.
+  // OnCollectionCreated event. This will have no tabs unless it has been
+  // inserted from another tabstrip.
   event->position = tabs_api::Position(0);
   // When TabGroupChange::kCreated is fired, the TabGroupTabCollection is
   // empty. Then, TabGroupedStateChanged() is fired, which adds tabs to the
@@ -216,6 +216,21 @@ mojom::OnTabMovedEventPtr ToTabGroupMovedEvent(
   // There is no start position for a TabGroup.
   event->from = tabs_api::Position(0);
   event->to = tabs_api::Position(tab_indices.start());
+  return event;
+}
+
+mojom::OnCollectionCreatedEventPtr FromSplitTabToDataCreatedEvent(
+    const SplitTabChange& split_tab_change) {
+  auto event = mojom::OnCollectionCreatedEvent::New();
+  const SplitTabChange::AddedChange* added_change =
+      split_tab_change.GetAddedChange();
+  CHECK(added_change);
+  tabs::TabInterface* first_tab = added_change->tabs()[0].first;
+  const tabs::TabCollection* split_collection =
+      first_tab->GetParentCollection();
+  event->data = tabs_api::converters::BuildMojoTabCollectionData(
+      split_collection->GetHandle());
+  event->position = tabs_api::Position(added_change->tabs()[0].second);
   return event;
 }
 

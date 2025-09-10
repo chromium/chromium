@@ -43,7 +43,7 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
 //    group is changed.
 // 3. TabGroupedStateChanged() => OnTabMovedEvent
 //    this event updates the affiliation of a tab with a group.
-mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
+mojom::OnCollectionCreatedEventPtr FromTabGroupToDataCreatedEvent(
     const TabGroupChange& tab_group_change);
 
 mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
@@ -56,6 +56,9 @@ mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change);
 
 mojom::OnTabMovedEventPtr ToTabGroupMovedEvent(
     const TabGroupChange& tab_group_change);
+
+mojom::OnCollectionCreatedEventPtr FromSplitTabToDataCreatedEvent(
+    const SplitTabChange& split_tab_change);
 
 }  // namespace tabs_api::events
 

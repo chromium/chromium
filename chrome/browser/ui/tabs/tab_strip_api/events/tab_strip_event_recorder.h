@@ -61,6 +61,7 @@ class TabStripEventRecorder : public TabStripModelObserver {
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
  protected:
   // Consumes the event.

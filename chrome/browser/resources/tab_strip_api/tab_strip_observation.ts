@@ -6,7 +6,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 
 import type {TabsEvent, TabsObserverInterface} from './tab_strip_api.mojom-webui.js';
 import {TabsEventFieldTags, TabsObserverReceiver, whichTabsEvent} from './tab_strip_api.mojom-webui.js';
-import type {OnDataChangedEvent, OnTabGroupCreatedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
+import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
 
 type CallbackType<EventType> = (event: EventType) => void;
 
@@ -53,7 +53,7 @@ class Channel<EventType> {
  */
 export class TabStripObservation implements TabsObserverInterface {
   readonly onDataChanged = new Channel<OnDataChangedEvent>();
-  readonly onTabGroupCreated = new Channel<OnTabGroupCreatedEvent>();
+  readonly onCollectionCreated = new Channel<OnCollectionCreatedEvent>();
   readonly onTabMoved = new Channel<OnTabMovedEvent>();
   readonly onTabsClosed = new Channel<OnTabsClosedEvent>();
   readonly onTabsCreated = new Channel<OnTabsCreatedEvent>();
@@ -82,8 +82,8 @@ export class TabStripObservation implements TabsObserverInterface {
       case TabsEventFieldTags.DATA_CHANGED_EVENT:
         this.onDataChanged.notify(event.dataChangedEvent!);
         break;
-      case TabsEventFieldTags.TAB_GROUP_CREATED_EVENT:
-        this.onTabGroupCreated.notify(event.tabGroupCreatedEvent!);
+      case TabsEventFieldTags.COLLECTION_CREATED_EVENT:
+        this.onCollectionCreated.notify(event.collectionCreatedEvent!);
         break;
       case TabsEventFieldTags.TAB_MOVED_EVENT:
         this.onTabMoved.notify(event.tabMovedEvent!);

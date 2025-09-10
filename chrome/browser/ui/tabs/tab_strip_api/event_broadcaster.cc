@@ -31,8 +31,8 @@ class EventVisitor {
   }
 
   mojom::TabsEventPtr operator()(
-      const mojom::OnTabGroupCreatedEventPtr& event) {
-    return mojom::TabsEvent::NewTabGroupCreatedEvent(event.Clone());
+      const mojom::OnCollectionCreatedEventPtr& event) {
+    return mojom::TabsEvent::NewCollectionCreatedEvent(event.Clone());
   }
 };
 

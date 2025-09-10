@@ -88,8 +88,8 @@ union TabsEvent {
   // When data has been updated.
   OnDataChangedEvent data_changed_event;
 
-  // When a new tab group has been created.
-  OnTabGroupCreatedEvent tab_group_created_event;
+  // When a new tab collection has been created.
+  OnCollectionCreatedEvent collection_created_event;
 };
 
 // TabsObserver is an interface a client can implement to receive events

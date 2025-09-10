@@ -9,7 +9,7 @@ import '../tab_group.js';
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabsSnapshot, TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {OnDataChangedEvent, OnTabGroupCreatedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -69,8 +69,8 @@ export class TabListPlaygroundElement extends CustomElement {
         this.onDataChanged_.bind(this));
     this.tabStripObservation_.onTabMoved.addListener(
         this.onTabMoved_.bind(this));
-    this.tabStripObservation_.onTabGroupCreated.addListener(
-        this.onTabGroupCreated_.bind(this));
+    this.tabStripObservation_.onCollectionCreated.addListener(
+        this.onCollectionCreated_.bind(this));
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -182,7 +182,7 @@ export class TabListPlaygroundElement extends CustomElement {
     this.placeElement_(element, event.to.index, false, parentId);
   }
 
-  private onTabGroupCreated_(event: OnTabGroupCreatedEvent) {
+  private onCollectionCreated_(event: OnCollectionCreatedEvent) {
     console.info('onTabGroupCreated_', event);
     // Intentionally not creating a TabGroupElement here. The TabGroupElement
     // will be created when a tab is added to the group in onTabMoved_, which

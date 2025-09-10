@@ -96,9 +96,10 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
-  void OnTabGroupCreated(tabs_api::mojom::OnTabGroupCreatedEventPtr& event) {
+  void OnCollectionCreated(
+      tabs_api::mojom::OnCollectionCreatedEventPtr& event) {
     // TODO(crbug.com/412955607): implement this.
-    group_events.push_back(std::move(event));
+    created_events.push_back(std::move(event));
   }
 
   void OnTabEvents(std::vector<tabs_api::mojom::TabsEventPtr> events) override {
@@ -116,15 +117,15 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
         case tabs_api::mojom::TabsEvent::Tag::kDataChangedEvent:
           OnDataChanged(event->get_data_changed_event());
           break;
-        case tabs_api::mojom::TabsEvent::Tag::kTabGroupCreatedEvent:
-          OnTabGroupCreated(event->get_tab_group_created_event());
+        case tabs_api::mojom::TabsEvent::Tag::kCollectionCreatedEvent:
+          OnCollectionCreated(event->get_collection_created_event());
           break;
       }
     }
   }
 
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
-  std::vector<tabs_api::mojom::OnTabGroupCreatedEventPtr> group_events;
+  std::vector<tabs_api::mojom::OnCollectionCreatedEventPtr> created_events;
 
   std::map<std::string, tabs_api::mojom::TabPtr> tabs;
 };

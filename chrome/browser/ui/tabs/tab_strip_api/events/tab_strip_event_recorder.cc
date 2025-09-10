@@ -95,7 +95,7 @@ void TabStripEventRecorder::TabBlockedStateChanged(
 void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::Type::kCreated:
-      Handle(ToTabGroupCreatedEvent(change));
+      Handle(FromTabGroupToDataCreatedEvent(change));
       break;
     case TabGroupChange::Type::kEditorOpened:
       NOTIMPLEMENTED();
@@ -122,6 +122,12 @@ void TabStripEventRecorder::TabGroupedStateChanged(
     int index) {
   Handle(FromTabGroupedStateChangedToTabMovedEvent(tab_strip_model, old_group,
                                                    new_group, tab, index));
+}
+
+void TabStripEventRecorder::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kAdded) {
+    Handle(FromSplitTabToDataCreatedEvent(change));
+  }
 }
 
 }  // namespace tabs_api::events

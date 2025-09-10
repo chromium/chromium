@@ -23,9 +23,9 @@ struct OnDataChangedEvent {
   Data data;
 };
 
-struct OnTabGroupCreatedEvent {
+struct OnCollectionCreatedEvent {
   Data data;
-  // Position of the group in the tab strip.
+  // Position of the node in the tab strip.
   Position position;
 };
 
