@@ -100,15 +100,13 @@ public class ChromeDragDropUtils {
             @Nullable Context context, boolean isSourceIncognito, TabModelSelector selector) {
         assert selector != null;
 
-        // get Current selected tab in destination window.
-        Tab destTab = selector.getCurrentTab();
-        assumeNonNull(destTab);
-
         // Determine the destination index for drop. If the source and destination window belong to
         // different models, show toast place the dragged view at the end of destination model.
         // Otherwise place it immediately after the selected tab.
         final int destIndex;
-        if (isSourceIncognito == destTab.isIncognitoBranded()) {
+        if (doesBelongToCurrentModel(isSourceIncognito, selector)) {
+            Tab destTab = selector.getCurrentTab();
+            assumeNonNull(destTab);
             destIndex =
                     TabModelUtils.getTabIndexById(
                                     selector.getModel(destTab.isIncognitoBranded()),
@@ -122,6 +120,18 @@ public class ChromeDragDropUtils {
             }
         }
         return destIndex;
+    }
+
+    /**
+     * @param isDraggedIncognito Whether the dragged item is in incognito mode.
+     * @param curSelector The current {@link TabModelSelector} to act on.
+     * @return Whether the dragged item belongs to same model as the destination window.
+     */
+    public static boolean doesBelongToCurrentModel(
+            boolean isDraggedIncognito, TabModelSelector curSelector) {
+        Tab curTab = curSelector.getCurrentTab();
+        assumeNonNull(curTab);
+        return isDraggedIncognito == curTab.isIncognitoBranded();
     }
 
     /**

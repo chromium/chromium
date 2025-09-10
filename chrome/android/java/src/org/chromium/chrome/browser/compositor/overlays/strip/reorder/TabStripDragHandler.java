@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -433,6 +434,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
         // Move tab to another window.
         if (!tabDraggedBelongToCurrentModel) {
+            // Reject cross-model drops if incognito is opened as a new window.
+            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
+
             mMultiInstanceManager.moveTabsToWindow(
                     getActivity(),
                     Collections.singletonList(tabBeingDragged),
@@ -470,6 +475,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                 doesBelongToCurrentModel(tabsBeingDragged.get(0).isIncognitoBranded());
         // Move tabs to another window.
         if (!tabsDraggedBelongToCurrentModel) {
+            // Reject cross-model drops if incognito is opened as a new window.
+            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
+
             mMultiInstanceManager.moveTabsToWindow(
                     getActivity(),
                     tabsBeingDragged,
@@ -515,6 +524,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
         // Move tab group to another window.
         if (!tabGroupDraggedBelongToCurrentModel) {
+            // Reject cross-model drops if incognito is opened as a new window.
+            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
+
             mMultiInstanceManager.moveTabGroupToWindow(
                     getActivity(),
                     tabGroupMetadata,

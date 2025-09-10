@@ -25,15 +25,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -53,6 +57,7 @@ import java.util.List;
 public class ChromeTabbedOnDragListenerUnitTest {
     private static final int SOURCE_INSTANCE_ID = 1;
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
+    @Mock private Profile mProfile;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -92,7 +97,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         mCompositorViewHolder = new View(mContext);
         mUserActionTest = new UserActionTester();
         when(mTabModelSelector.getCurrentTab()).thenReturn(mCurrentTab);
-        when(mCurrentTab.isIncognito()).thenReturn(false);
+        when(mCurrentTab.isIncognitoBranded()).thenReturn(false);
         when(mCurrentTab.getId()).thenReturn(1);
         when(mTab.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.iterator()).thenAnswer(invocation -> List.of(mTab, mCurrentTab).iterator());
@@ -100,7 +105,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(SOURCE_INSTANCE_ID);
         when(mDragDropGlobalState.isDragSourceInstance(SOURCE_INSTANCE_ID)).thenReturn(true);
         DragDropGlobalState.setInstanceForTesting(mDragDropGlobalState);
-        Activity activity = Mockito.mock(Activity.class);
+        Activity activity = Robolectric.setupActivity(Activity.class);
         WeakReference weakActivity = new WeakReference(activity);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
         AppHeaderUtils.setAppInDesktopWindowForTesting(false);
@@ -482,6 +487,90 @@ public class ChromeTabbedOnDragListenerUnitTest {
         // Verify NTP search boxes are re-enabled.
         verify(mOriginalNtp).enableSearchBoxEditText(true);
         verify(mCurrentNtp).enableSearchBoxEditText(true);
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_DifferentModel_Success() {
+        verifyDropToDifferentModelSuccess(/* isGroupDrag= */ false, /* isMultiTabDrag= */ false);
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_DifferentModel_Success_TabGroup() {
+        verifyDropToDifferentModelSuccess(/* isGroupDrag= */ true, /* isMultiTabDrag= */ false);
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_DifferentModel_Success_MultiTab() {
+        verifyDropToDifferentModelSuccess(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOnDrag_ActionDrop_DifferentModel_Fail_IncognitoAsNewWindow() {
+        verifyDropToDifferentModelFailed(/* isGroupDrag= */ false, /* isMultiTabDrag= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOnDrag_ActionDrop_DifferentModel_Fail_TabGroup_IncognitoAsNewWindow() {
+        verifyDropToDifferentModelFailed(/* isGroupDrag= */ true, /* isMultiTabDrag= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOnDrag_ActionDrop_DifferentModel_Fail_MultiTab_IncognitoAsNewWindow() {
+        verifyDropToDifferentModelFailed(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
+    }
+
+    private void verifyDropToDifferentModelSuccess(boolean isGroupDrag, boolean isMultiTabDrag) {
+        // Destination tab model is incognito.
+        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mCurrentTab.isIncognitoBranded()).thenReturn(true);
+
+        // Setup drag drop global state.
+        setGlobalStateData(isGroupDrag, isMultiTabDrag);
+
+        // Verify action drop is success.
+        verifyActionDropSuccess(/* isInDesktopWindow= */ false, isGroupDrag, isMultiTabDrag);
+    }
+
+    private void verifyDropToDifferentModelFailed(boolean isGroupDrag, boolean isMultiTabDrag) {
+        // Setup drag drop global state.
+        setGlobalStateData(isGroupDrag, isMultiTabDrag);
+
+        // Destination tab model is incognito.
+        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mCurrentTab.isIncognitoBranded()).thenReturn(true);
+
+        // Call drag start to set states.
+        assertTrue(
+                "Drag started should return true.",
+                mChromeTabbedOnDragListener.onDrag(
+                        mCompositorViewHolder,
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                /* result= */ false,
+                                isGroupDrag,
+                                isMultiTabDrag)));
+
+        // Drop should return false.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(2);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
+
+        // Verify action drop is failed.
+        assertFalse(
+                "Action drop should return false",
+                mChromeTabbedOnDragListener.onDrag(
+                        mCompositorViewHolder,
+                        mockDragEvent(
+                                DragEvent.ACTION_DROP,
+                                /* result= */ false,
+                                isGroupDrag,
+                                isMultiTabDrag)));
     }
 
     private DragEvent mockDragEvent(
