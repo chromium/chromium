@@ -300,8 +300,8 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
         runAwContentsGcTest(
                 () -> {
                     // Javascript object with a reference to WebView.
-                    class Test {
-                        Test(int value, AwContents awContents) {
+                    class Foo {
+                        Foo(int value, AwContents awContents) {
                             mValue = value;
                             mAwContents = awContents;
                         }
@@ -324,7 +324,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                             mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
                     AwActivityTestRule.enableJavaScriptOnUiThread(containerView.getAwContents());
                     final AwContents awContents = containerView.getAwContents();
-                    final Test jsObject = new Test(42, awContents);
+                    final Foo jsObject = new Foo(42, awContents);
                     AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                             awContents, jsObject, "test");
                     mActivityTestRule.loadDataSync(

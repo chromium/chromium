@@ -49,7 +49,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StatementSwitchToExpressionSwitch',
     'UndefinedEquals',
     'UseCorrectAssertInTests',
-    'SameNameButDifferent',
     'StaticAssignmentOfThrowable',  # Want in non-test
     'StaticMockMember',
     'StringCaseLocaleUsage',

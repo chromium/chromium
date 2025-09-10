@@ -148,7 +148,7 @@ class AccountSelectionProperties {
             public @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<DataSharingConsentProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -169,7 +169,7 @@ class AccountSelectionProperties {
             public Callback<View> mSetFocusViewCallback;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<ContinueButtonProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -188,7 +188,7 @@ class AccountSelectionProperties {
             public boolean mShowIdp;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<LoginButtonProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -235,7 +235,7 @@ class AccountSelectionProperties {
             public Runnable mMoreDetailsClickRunnable;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<ErrorProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};

@@ -313,7 +313,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testCallingAsConstructorRaisesException() throws Throwable {
-        assertRaisesException("new testController.setStringValue('foo')");
+        assertRaisesException("new TestController.setStringValue('foo')");
     }
 
     @Test
@@ -990,7 +990,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testAnnotationRequirementRetainsPropertyAcrossObjects() throws Throwable {
-        class Test {
+        class Foo {
             @JavascriptInterface
             public String safe() {
                 return "foo";
@@ -1003,8 +1003,8 @@ public class JavaBridgeBasicsTest {
 
         class TestReturner {
             @JavascriptInterface
-            public Test getTest() {
-                return new Test();
+            public Foo getFoo() {
+                return new Foo();
             }
         }
 
@@ -1013,10 +1013,10 @@ public class JavaBridgeBasicsTest {
 
         // safe() should be able to be called regardless of whether or not we are in safe mode.
         Assert.assertEquals(
-                "foo", executeJavaScriptAndGetStringResult("unsafeTestObject.getTest().safe()"));
+                "foo", executeJavaScriptAndGetStringResult("unsafeTestObject.getFoo().safe()"));
         // unsafe() should be able to be called because we are not in safe mode.
         Assert.assertEquals(
-                "bar", executeJavaScriptAndGetStringResult("unsafeTestObject.getTest().unsafe()"));
+                "bar", executeJavaScriptAndGetStringResult("unsafeTestObject.getFoo().unsafe()"));
 
         // Now test with safe mode on.
         mActivityTestRule.injectObjectAndReload(
@@ -1024,18 +1024,18 @@ public class JavaBridgeBasicsTest {
 
         // safe() should be able to be called regardless of whether or not we are in safe mode.
         Assert.assertEquals(
-                "foo", executeJavaScriptAndGetStringResult("safeTestObject.getTest().safe()"));
+                "foo", executeJavaScriptAndGetStringResult("safeTestObject.getFoo().safe()"));
         // unsafe() should not be able to be called because we are in safe mode.
-        assertRaisesException("safeTestObject.getTest().unsafe()");
+        assertRaisesException("safeTestObject.getFoo().unsafe()");
         Assert.assertEquals(
                 "undefined",
-                executeJavaScriptAndGetStringResult("typeof safeTestObject.getTest().unsafe"));
+                executeJavaScriptAndGetStringResult("typeof safeTestObject.getFoo().unsafe"));
         // getClass() is an Object method and does not have the @JavascriptInterface annotation and
         // should not be able to be called.
-        assertRaisesException("safeTestObject.getTest().getClass()");
+        assertRaisesException("safeTestObject.getFoo().getClass()");
         Assert.assertEquals(
                 "undefined",
-                executeJavaScriptAndGetStringResult("typeof safeTestObject.getTest().getClass"));
+                executeJavaScriptAndGetStringResult("typeof safeTestObject.getFoo().getClass"));
     }
 
     @Test
@@ -1071,7 +1071,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testCustomAnnotationRestriction() throws Throwable {
-        class Test {
+        class Foo {
             @TestAnnotation
             public String checkTestAnnotationFoo() {
                 return "bar";
@@ -1085,7 +1085,7 @@ public class JavaBridgeBasicsTest {
 
         // Inject javascriptInterfaceObj and require the JavascriptInterface annotation.
         mActivityTestRule.injectObjectAndReload(
-                new Test(), "javascriptInterfaceObj", JavascriptInterface.class);
+                new Foo(), "javascriptInterfaceObj", JavascriptInterface.class);
 
         // Test#testAnnotationFoo() should fail, as it isn't annotated with JavascriptInterface.
         assertRaisesException("javascriptInterfaceObj.checkTestAnnotationFoo()");
@@ -1102,7 +1102,7 @@ public class JavaBridgeBasicsTest {
 
         // Inject testAnnotationObj and require the TestAnnotation annotation.
         mActivityTestRule.injectObjectAndReload(
-                new Test(), "testAnnotationObj", TestAnnotation.class);
+                new Foo(), "testAnnotationObj", TestAnnotation.class);
 
         // Test#testAnnotationFoo() should pass, as it is annotated with TestAnnotation.
         Assert.assertEquals(
@@ -1121,7 +1121,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testObjectsInspection() throws Throwable {
-        class Test {
+        class Foo{
             @JavascriptInterface
             public String m1() {
                 return "foo";
@@ -1148,7 +1148,7 @@ public class JavaBridgeBasicsTest {
 
         // Inspection is enabled by default.
         mActivityTestRule.injectObjectAndReload(
-                new Test(), inspectableObjectName, JavascriptInterface.class);
+                new Foo(), inspectableObjectName, JavascriptInterface.class);
 
         Assert.assertEquals(
                 "m1,m2",
@@ -1169,7 +1169,7 @@ public class JavaBridgeBasicsTest {
                         });
 
         mActivityTestRule.injectObjectAndReload(
-                new Test(), nonInspectableObjectName, JavascriptInterface.class);
+                new Foo(), nonInspectableObjectName, JavascriptInterface.class);
 
         Assert.assertEquals(
                 "",
@@ -1195,8 +1195,8 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testReplaceJavascriptInterface() throws Throwable {
-        class Test {
-            public Test(int value) {
+        class Foo{
+            public Foo(int value) {
                 mValue = value;
             }
 
@@ -1207,12 +1207,12 @@ public class JavaBridgeBasicsTest {
 
             private final int mValue;
         }
-        mActivityTestRule.injectObjectAndReload(new Test(13), "testObject");
+        mActivityTestRule.injectObjectAndReload(new Foo(13), "testObject");
         Assert.assertEquals("13", executeJavaScriptAndGetStringResult("testObject.getValue()"));
         // The documentation doesn't specify, what happens if the embedder is trying
         // to inject a different object under the same name. The current implementation
         // simply replaces the old object with the new one.
-        mActivityTestRule.injectObjectAndReload(new Test(42), "testObject");
+        mActivityTestRule.injectObjectAndReload(new Foo(42), "testObject");
         Assert.assertEquals("42", executeJavaScriptAndGetStringResult("testObject.getValue()"));
     }
 

@@ -19,7 +19,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -61,6 +60,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -89,7 +89,7 @@ public class BookmarkManagerCoordinator
         }
 
         @Override
-        public boolean onFailedToRecycleView(ViewHolder holder) {
+        public boolean onFailedToRecycleView(SimpleRecyclerViewAdapter.ViewHolder holder) {
             // The view has transient state, which is probably because there's an outstanding
             // fade animation. Theoretically we could clear it and let the RecyclerView continue
             // normally, but it seems sometimes this is called after bind, and the transient
@@ -101,7 +101,7 @@ public class BookmarkManagerCoordinator
         }
 
         @Override
-        public void onViewRecycled(ViewHolder holder) {
+        public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder holder) {
             if (holder.itemView instanceof CancelableAnimator cancelable) {
                 // Try to eagerly clean up any in progress animations if there are anything. This
                 // should reduce the amount of transient state the view has, which could get in the
@@ -522,17 +522,17 @@ public class BookmarkManagerCoordinator
 
             @Override
             public @Nullable ImprovedBookmarkRow getBookmarkRowByPosition(int position) {
-                ViewHolder viewHolder = getBookmarkViewHolderByPosition(position);
+                RecyclerView.ViewHolder viewHolder = getBookmarkViewHolderByPosition(position);
                 return viewHolder == null ? null : (ImprovedBookmarkRow) viewHolder.itemView;
             }
 
             @Override
-            public @Nullable ViewHolder getBookmarkViewHolderByPosition(int position) {
+            public RecyclerView.@Nullable ViewHolder getBookmarkViewHolderByPosition(int position) {
                 return getViewHolderByPosition(getBookmarkStartIndex() + position);
             }
 
             @Override
-            public @Nullable ViewHolder getViewHolderByPosition(int position) {
+            public RecyclerView.@Nullable ViewHolder getViewHolderByPosition(int position) {
                 return mRecyclerView.findViewHolderForAdapterPosition(position);
             }
 

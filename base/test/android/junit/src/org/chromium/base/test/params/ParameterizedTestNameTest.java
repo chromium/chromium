@@ -69,7 +69,7 @@ public class ParameterizedTestNameTest {
             }
         }
 
-        @UseMethodParameter(AppendNameParams.class)
+        @UseMethodParameter(TestClassWithMethodParameter.AppendNameParams.class)
         @Test
         public void test(String a) {}
 
@@ -97,7 +97,7 @@ public class ParameterizedTestNameTest {
 
         public TestClassWithMixedParameter(String a) {}
 
-        @UseMethodParameter(AppendNameParams.class)
+        @UseMethodParameter(TestClassWithMixedParameter.AppendNameParams.class)
         @Test
         public void testA(String a) {}
 

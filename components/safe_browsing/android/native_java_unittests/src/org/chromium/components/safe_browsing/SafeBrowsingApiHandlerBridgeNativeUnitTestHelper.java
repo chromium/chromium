@@ -23,7 +23,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
      * returns lookup result based on preset values.
      */
     public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
-        private Observer mObserver;
+        private SafetyNetApiHandler.Observer mObserver;
         // See safe_browsing_api_handler_util.h --> SafetyNetJavaThreatType
         private static final int THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST = 9;
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
@@ -45,7 +45,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static String sSafetyNetIdResultOverride;
 
         @Override
-        public @SafetyNetApiHandler.SafetyNetApiState int initialize(Observer observer) {
+        public @SafetyNetApiHandler.SafetyNetApiState int initialize(
+                SafetyNetApiHandler.Observer observer) {
             mObserver = observer;
             if (sSafetyNetApiInitializationState == -1) {
                 setSafetyNetApiInitializationState(
@@ -123,7 +124,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
      * returns lookup result based on preset values.
      */
     public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
-        private Observer mObserver;
+        private SafeBrowsingApiHandler.Observer mObserver;
 
         // Mock time it takes for a lookup request to complete. This value is verified on the native
         // side.
@@ -133,7 +134,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static final Map<String, UrlCheckDoneValues> sPresetValuesMap = new HashMap<>();
 
         @Override
-        public void setObserver(Observer observer) {
+        public void setObserver(SafeBrowsingApiHandler.Observer observer) {
             mObserver = observer;
         }
 

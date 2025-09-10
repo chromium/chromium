@@ -154,7 +154,7 @@ public class JavaBridgeChildFrameTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @DisabledTest(message = "https://crbug.com/677053")
     public void testRemovingTransientObjectHolders() throws Throwable {
-        class Test {
+        class Foo {
             private final Object mInner = new Object();
             // Expecting the inner object to be retrieved twice.
             private final CountDownLatch mLatch = new CountDownLatch(2);
@@ -171,7 +171,7 @@ public class JavaBridgeChildFrameTest {
                 }
             }
         }
-        final Test testObject = new Test();
+        final Foo testObject = new Foo();
 
         // Due to crbug.com/486262, Java objects are sometimes not injected
         // into newly added frames. To work around this, we load the page first, so
@@ -225,7 +225,7 @@ public class JavaBridgeChildFrameTest {
     @CommandLineFlags.Add("js-flags=--expose-gc")
     @DisabledTest(message = "https://crbug.com/646843")
     public void testHolderFrame() throws Throwable {
-        class Test {
+        class Foo {
             WeakReference<Object> mWeakRefForInner;
             private final CountDownLatch mLatch = new CountDownLatch(1);
 
@@ -243,7 +243,7 @@ public class JavaBridgeChildFrameTest {
                 }
             }
         }
-        final Test testObject = new Test();
+        final Foo testObject = new Foo();
 
         Assert.assertEquals(
                 "\"function\"",
