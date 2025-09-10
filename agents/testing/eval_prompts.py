@@ -250,6 +250,29 @@ class WorkDir(contextlib.AbstractContextManager):
         logging.debug('Took %s seconds', time.time() - start_time)
 
 
+def _check_uncommitted_changes(cwd):
+    out_dir = pathlib.Path(cwd) / 'out'
+    if out_dir.is_dir():
+        subdirs = [d.name for d in out_dir.iterdir() if d.is_dir()]
+        other_dirs = [d for d in subdirs if d != 'Default']
+        if other_dirs:
+            logging.warning(
+                'Warning: The out directory contains unexpected directories: '
+                '%s. These will get copied into the workdirs and can affect '
+                'tests.', ', '.join(other_dirs))
+
+    result = subprocess.run(['git', 'status', '--porcelain'],
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                            cwd=cwd)
+    if result.stdout:
+        logging.warning(
+            'Warning: There are uncommitted changes in the repository. This '
+            'can cause some tests to unexpectedly fail or pass. Please '
+            'commit or stash them before running the evaluation.')
+
+
 def _check_btrfs(root_path) -> bool:
     result = subprocess.run(
         ['stat', '-c', '%i', root_path],
@@ -338,6 +361,8 @@ def main() -> int:
     is_btrfs = _check_btrfs(root_path)
     if is_btrfs and not args.force:
         subprocess.run(['sudo', '-v'])
+
+    _check_uncommitted_changes(src_path)
 
     promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
     promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
