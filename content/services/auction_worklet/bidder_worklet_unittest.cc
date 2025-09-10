@@ -5319,8 +5319,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   ASSERT_EQ(url_loader_factory_.NumPending(), 1);
   GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;
@@ -5437,8 +5436,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   // Find the trusted signals fetch, and provide data to it.
   ASSERT_EQ(url_loader_factory_.NumPending(), 2);
@@ -5575,8 +5573,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
-  std::string signals_json;
-  base::JSONWriter::Write(signals_dict, &signals_json);
+  std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
   ASSERT_EQ(url_loader_factory_.NumPending(), 1);
   GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;

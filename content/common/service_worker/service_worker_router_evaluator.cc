@@ -841,9 +841,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
 }
 
 std::string ServiceWorkerRouterEvaluator::ToString() const {
-  std::string json;
-  base::JSONWriter::Write(ToValue(), &json);
-  return json;
+  return base::WriteJson(ToValue()).value_or("");
 }
 
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {

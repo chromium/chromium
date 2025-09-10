@@ -144,9 +144,7 @@ bool RecordCorruptionInfo(const base::FilePath& path_base,
 
   base::Value::Dict root_dict;
   root_dict.Set("message", message);
-  std::string output_js;
-
-  base::JSONWriter::Write(root_dict, &output_js);
+  std::string output_js = base::WriteJson(root_dict).value_or("");
   return base::ImportantFileWriter::WriteFileAtomically(info_path,
                                                         std::move(output_js));
 }

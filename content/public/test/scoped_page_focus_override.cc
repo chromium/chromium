@@ -57,8 +57,7 @@ void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
           .Set("method", "Emulation.setFocusEmulationEnabled")
           .Set("params", base::Value::Dict().Set("enabled", enabled));
 
-  std::string json_command;
-  base::JSONWriter::Write(command, &json_command);
+  std::string json_command = base::WriteJson(command).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));
 
   base::RunLoop run_loop;

@@ -65,8 +65,7 @@ void HandleWebUIRequestCallback(BrowserContext* current_context,
 
   base::Value::Dict data;
   data.Set(kErrorCodesDataName, GetNetworkErrorData());
-  std::string json_string;
-  base::JSONWriter::Write(data, &json_string);
+  std::string json_string = base::WriteJson(data).value_or("");
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
 }

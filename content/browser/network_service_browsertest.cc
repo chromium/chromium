@@ -636,8 +636,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
     base::FilePath data_file =
         shell()->web_contents()->GetBrowserContext()->GetPath().Append(
             FILE_PATH_LITERAL("TestData"));
-    std::string data;
-    base::JSONWriter::Write(base::Value(url.spec()), &data);
+    std::string data = base::WriteJson(base::Value(url.spec())).value_or("");
     EXPECT_TRUE(base::WriteFile(data_file, data));
   }
 

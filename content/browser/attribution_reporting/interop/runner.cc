@@ -143,8 +143,8 @@ class Adjuster : public ReportBodyAdjuster {
     AdjustTime(*shared_info_dict, "source_registration_time",
                /*skip_adjust_value=*/"0");
 
-    std::string adjusted_shared_info;
-    base::JSONWriter::Write(*shared_info_dict, &adjusted_shared_info);
+    std::string adjusted_shared_info =
+        base::WriteJson(*shared_info_dict).value_or("");
 
     // The payloads were encrypted with the original shared info, therefore
     // need to be re-encrypted with the adjusted shared info.

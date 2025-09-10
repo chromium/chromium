@@ -59,7 +59,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
   }
 
   auto res = base::MakeRefCounted<base::RefCountedString>();
-  base::JSONWriter::Write(category_list, &res->as_string());
+  res->as_string() = base::WriteJson(category_list).value_or("");
   std::move(callback).Run(res);
 }
 

@@ -50,8 +50,7 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
   std::vector<blink::InspectorPlayerError::Data> data_vec;
   if (auto* data = param.FindDict(media::StatusConstants::kDataKey)) {
     for (const auto pair : *data) {
-      std::string json;
-      base::JSONWriter::Write(pair.second, &json);
+      std::string json = base::WriteJson(pair.second).value_or("");
       blink::InspectorPlayerError::Data entry = {
           blink::WebString::FromUTF8(pair.first),
           blink::WebString::FromUTF8(json)};
@@ -74,14 +73,12 @@ blink::WebString ToString(const base::Value& value) {
   if (value.is_string()) {
     return blink::WebString::FromUTF8(value.GetString());
   }
-  std::string output_str;
-  base::JSONWriter::Write(value, &output_str);
+  std::string output_str = base::WriteJson(value).value_or("");
   return blink::WebString::FromUTF8(output_str);
 }
 
 blink::WebString ToString(const base::Value::Dict& value) {
-  std::string output_str;
-  base::JSONWriter::Write(value, &output_str);
+  std::string output_str = base::WriteJson(value).value_or("");
   return blink::WebString::FromUTF8(output_str);
 }
 

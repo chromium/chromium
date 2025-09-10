@@ -1782,9 +1782,7 @@ auto JsonDomain() {
       // The mapping function maps a base::Value to its JSON string
       // representation.
       [](base::Value value) {
-        std::string res;
-        base::JSONWriter::Write(std::move(value), &res);
-        return res;
+        return base::WriteJson(std::move(value)).value_or("");
       },
       // The inverse mapping function maps the JSON string representation to
       // a tuple of base::Value. The return value is additionally wrapped in

@@ -206,9 +206,8 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
   base::Value::List category_list;
   for (const std::string& category : categories_received)
     category_list.Append(category);
-  std::string received_category_list;
-  base::JSONWriter::Write(base::Value(std::move(category_list)),
-                          &received_category_list);
+  std::string received_category_list =
+      base::WriteJson(base::Value(std::move(category_list))).value_or("");
 
   // This log is required by adb_profile_chrome.py.
   // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing
