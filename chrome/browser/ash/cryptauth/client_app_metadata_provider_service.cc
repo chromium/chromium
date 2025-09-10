@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
-#include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -324,7 +324,7 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_long_device_id(
       cryptauth_device_id::GetDeviceID(local_state_.get()));
 
-  metadata.set_locale(ChromeContentBrowserClient().GetApplicationLocale());
+  metadata.set_locale(g_browser_process->GetApplicationLocale());
   metadata.set_device_os_version(base::GetLinuxDistro());
   metadata.set_device_os_version_code(SoftwareVersionCodeAsInt64());
   metadata.set_device_os_release(std::string(version_info::GetVersionNumber()));
