@@ -24909,40 +24909,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_255",
-                    "params": {
-                        "TcpConnectionPoolSizeTrialNormal": "255",
-                        "TcpConnectionPoolSizeTrialWebSocket": "255"
-                    },
-                    "enable_features": [
-                        "TcpConnectionPoolSizeTrial"
-                    ]
-                },
-                {
-                    "name": "Enabled_257",
-                    "params": {
-                        "TcpConnectionPoolSizeTrialNormal": "257",
-                        "TcpConnectionPoolSizeTrialWebSocket": "257"
-                    },
-                    "enable_features": [
-                        "TcpConnectionPoolSizeTrial"
-                    ]
-                },
-                {
                     "name": "Enabled_512",
                     "params": {
                         "TcpConnectionPoolSizeTrialNormal": "512",
                         "TcpConnectionPoolSizeTrialWebSocket": "512"
-                    },
-                    "enable_features": [
-                        "TcpConnectionPoolSizeTrial"
-                    ]
-                },
-                {
-                    "name": "Enabled_1024",
-                    "params": {
-                        "TcpConnectionPoolSizeTrialNormal": "1024",
-                        "TcpConnectionPoolSizeTrialWebSocket": "1024"
                     },
                     "enable_features": [
                         "TcpConnectionPoolSizeTrial"
