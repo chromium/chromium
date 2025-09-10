@@ -5,16 +5,23 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_cylinder_layer_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_equirect_layer_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_projection_layer_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_quad_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
+#include "third_party/blink/renderer/modules/xr/xr_cylinder_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_equirect_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_quad_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
@@ -203,6 +210,39 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
                                                       depth_stencil_swap_chain);
 }
 
+XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
+                                             ExceptionState& exception_state) {
+  // TODO(crbug.com/443787995): Implement quad layer initialization sequence
+  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createquadlayer
+
+  exception_state.ThrowTypeError(
+      "XRQuadLayer was not implemented for the platform.");
+  return nullptr;
+}
+
+XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
+    const XRCylinderLayerInit* init,
+    ExceptionState& exception_state) {
+  // TODO(crbug.com/443787995): Implement cylinder layer initialization
+  // sequence
+  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createcylinderlayer
+
+  exception_state.ThrowTypeError(
+      "XRCylinderLayer was not implemented for the platform.");
+  return nullptr;
+}
+
+XREquirectLayer* XRWebGLBinding::createEquirectLayer(
+    const XREquirectLayerInit* init,
+    ExceptionState& exception_state) {
+  // TODO(crbug.com/443787995): Implement equirect layer initialization sequence
+  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createequirectlayer
+
+  exception_state.ThrowTypeError(
+      "XREquirectLayer was not implemented for the platform.");
+  return nullptr;
+}
+
 XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     XRProjectionLayer* layer,
     XRView* view,
@@ -239,6 +279,36 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
   return MakeGarbageCollected<XRWebGLSubImage>(
       viewport, viewData->index(), gl_layer->color_swap_chain(),
       gl_layer->depth_stencil_swap_chain(), nullptr);
+}
+
+XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
+                                             XRFrame* frame,
+                                             V8XREye eye,
+                                             ExceptionState& exception_state) {
+  CHECK(layer);
+  CHECK(frame);
+
+  if (layer->session() != session()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Layer does not belong to current session.");
+    return nullptr;
+  }
+
+  // Check the frame state
+  if (frame->session() != layer->session() || !frame->IsActive() ||
+      !frame->IsAnimationFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid frame state.");
+    return nullptr;
+  }
+
+  // TODO(crbug.com/443787995): Implement all 21 steps according to the spec
+  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-getsubimage
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "Invalid frame state.");
+  return nullptr;
 }
 
 WebGLTexture* XRWebGLBinding::getReflectionCubeMap(

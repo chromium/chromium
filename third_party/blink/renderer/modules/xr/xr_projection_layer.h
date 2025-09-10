@@ -20,10 +20,6 @@ class XRProjectionLayer : public XRCompositionLayer {
   explicit XRProjectionLayer(XRGraphicsBinding* binding);
   ~XRProjectionLayer() override = default;
 
-  virtual uint16_t textureWidth() const = 0;
-  virtual uint16_t textureHeight() const = 0;
-  virtual uint16_t textureArrayLength() const = 0;
-
   bool ignoreDepthValues() const;
   std::optional<float> fixedFoveation() const;
   void setFixedFoveation(std::optional<float> value);

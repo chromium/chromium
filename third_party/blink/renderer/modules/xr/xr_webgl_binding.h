@@ -13,16 +13,26 @@
 namespace blink {
 
 class ExceptionState;
+class V8XREye;
 class WebGLRenderingContextBase;
 class WebGLTexture;
 class XRCamera;
+class XRCompositionLayer;
+class XRCylinderLayer;
+class XRCylinderLayerInit;
+class XREquirectLayer;
+class XREquirectLayerInit;
+class XRFrame;
 class XRLightProbe;
 class XRSession;
 class XRView;
 class XRWebGLDepthInformation;
 class XRProjectionLayer;
 class XRProjectionLayerInit;
+class XRQuadLayer;
+class XRQuadLayerInit;
 class XRWebGLSubImage;
+class XRWebGLSwapChain;
 
 class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,9 +50,23 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   XRProjectionLayer* createProjectionLayer(const XRProjectionLayerInit* init,
                                            ExceptionState& exception_state);
 
+  XRQuadLayer* createQuadLayer(const XRQuadLayerInit* init,
+                               ExceptionState& exception_state);
+
+  XREquirectLayer* createEquirectLayer(const XREquirectLayerInit* init,
+                                       ExceptionState& exception_state);
+
+  XRCylinderLayer* createCylinderLayer(const XRCylinderLayerInit* init,
+                                       ExceptionState& exception_state);
+
   XRWebGLSubImage* getViewSubImage(XRProjectionLayer* layer,
                                    XRView* view,
                                    ExceptionState& exception_state);
+
+  XRWebGLSubImage* getSubImage(XRCompositionLayer* layer,
+                               XRFrame* frame,
+                               V8XREye eye,
+                               ExceptionState& exception_state);
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
 
@@ -69,7 +93,10 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   GLenum InternalFormatForLayerFormat(GLenum format);
   GLenum TypeForLayerFormat(GLenum format);
 
+  XRWebGLSwapChain* GetSwapchainForLayer(XRCompositionLayer* layer);
+
   Member<WebGLRenderingContextBase> webgl_context_;
+
   bool webgl2_;
 };
 

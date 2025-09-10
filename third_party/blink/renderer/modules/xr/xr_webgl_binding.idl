@@ -8,14 +8,6 @@ enum XRTextureType {
   "texture-array"
 };
 
-// https://www.w3.org/TR/webxrlayers-1/#xrprojectionlayerinittype
-dictionary XRProjectionLayerInit {
-  XRTextureType textureType = "texture";
-  GLenum colorFormat = 0x1908; // RGBA
-  GLenum depthFormat = 0x1902; // DEPTH_COMPONENT
-  double scaleFactor = 1.0;
-};
-
 // https://immersive-web.github.io/layers/#XRWebGLBindingtype
 [
     SecureContext,
@@ -32,7 +24,19 @@ dictionary XRProjectionLayerInit {
   XRProjectionLayer createProjectionLayer(optional XRProjectionLayerInit init = {});
 
   [RuntimeEnabled=WebXRLayers, RaisesException]
+  XRQuadLayer createQuadLayer(XRQuadLayerInit init);
+
+  [RuntimeEnabled=WebXRLayers, RaisesException]
+  XRCylinderLayer createCylinderLayer(XRCylinderLayerInit init);
+
+  [RuntimeEnabled=WebXRLayers, RaisesException]
+  XREquirectLayer createEquirectLayer(XREquirectLayerInit init);
+
+  [RuntimeEnabled=WebXRLayers, RaisesException]
   XRWebGLSubImage getViewSubImage(XRProjectionLayer layer, XRView view);
+
+  [RuntimeEnabled=WebXRLayers, RaisesException]
+  XRWebGLSubImage getSubImage(XRCompositionLayer layer, XRFrame frame, optional XREye eye = "none");
 
   [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);

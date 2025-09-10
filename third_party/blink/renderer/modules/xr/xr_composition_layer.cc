@@ -63,6 +63,18 @@ void XRCompositionLayer::destroy() const {
   NOTIMPLEMENTED();
 }
 
+void XRCompositionLayer::SetNeedsRedraw(bool needsRedraw) {
+  needs_redraw_ = needsRedraw;
+}
+
+void XRCompositionLayer::SetLayout(V8XRLayerLayout layout) {
+  layout_ = layout.AsEnum();
+}
+
+void XRCompositionLayer::SetMipLevels(uint16_t mipLevels) {
+  mip_levels_ = mipLevels;
+}
+
 void XRCompositionLayer::Trace(Visitor* visitor) const {
   visitor->Trace(binding_);
   XRLayer::Trace(visitor);

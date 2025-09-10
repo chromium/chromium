@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -38,7 +40,18 @@ class XRCompositionLayer : public XRLayer {
 
   void Trace(Visitor*) const override;
 
+  virtual uint16_t textureWidth() const = 0;
+  virtual uint16_t textureHeight() const = 0;
+  virtual uint16_t textureArrayLength() const = 0;
+
+ protected:
+  void SetNeedsRedraw(bool needsRedraw);
+  void SetLayout(V8XRLayerLayout layout);
+  void SetMipLevels(uint16_t mipLevels);
+
  private:
+  V8XRLayerLayout::Enum layout_ = V8XRLayerLayout::Enum::kDefault;
+
   const Member<XRGraphicsBinding> binding_;
   bool blend_texture_source_alpha_{false};
   std::optional<bool> chromatic_aberration_correction_{std::nullopt};

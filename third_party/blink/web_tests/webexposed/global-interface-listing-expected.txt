@@ -12553,6 +12553,21 @@ interface XRCompositionLayer : XRLayer
     setter chromaticAberrationCorrection
     setter forceMonoPresentation
     setter opacity
+interface XRCylinderLayer : XRCompositionLayer
+    attribute @@toStringTag
+    getter aspectRatio
+    getter centralAngle
+    getter onredraw
+    getter radius
+    getter space
+    getter transform
+    method constructor
+    setter aspectRatio
+    setter centralAngle
+    setter onredraw
+    setter radius
+    setter space
+    setter transform
 interface XRDOMOverlayState
     attribute @@toStringTag
     getter type
@@ -12566,6 +12581,23 @@ interface XRDepthInformation
     getter transform
     getter width
     method constructor
+interface XREquirectLayer : XRCompositionLayer
+    attribute @@toStringTag
+    getter centralHorizontalAngle
+    getter lowerVerticalAngle
+    getter onredraw
+    getter radius
+    getter space
+    getter transform
+    getter upperVerticalAngle
+    method constructor
+    setter centralHorizontalAngle
+    setter lowerVerticalAngle
+    setter onredraw
+    setter radius
+    setter space
+    setter transform
+    setter upperVerticalAngle
 interface XRFrame
     attribute @@toStringTag
     getter detectedPlanes
@@ -12664,6 +12696,10 @@ interface XRJointSpace : XRSpace
 interface XRLayer : EventTarget
     attribute @@toStringTag
     method constructor
+interface XRLayerEvent : Event
+    attribute @@toStringTag
+    getter layer
+    method constructor
 interface XRLightEstimate
     attribute @@toStringTag
     getter primaryLightDirection
@@ -12711,6 +12747,19 @@ interface XRProjectionLayer : XRCompositionLayer
     method constructor
     setter deltaPose
     setter fixedFoveation
+interface XRQuadLayer : XRCompositionLayer
+    attribute @@toStringTag
+    getter height
+    getter onredraw
+    getter space
+    getter transform
+    getter width
+    method constructor
+    setter height
+    setter onredraw
+    setter space
+    setter transform
+    setter width
 interface XRRay
     attribute @@toStringTag
     getter direction
@@ -12846,10 +12895,14 @@ interface XRWebGLBinding
     getter nativeProjectionScaleFactor
     getter usesDepthValues
     method constructor
+    method createCylinderLayer
+    method createEquirectLayer
     method createProjectionLayer
+    method createQuadLayer
     method getCameraImage
     method getDepthInformation
     method getReflectionCubeMap
+    method getSubImage
     method getViewSubImage
 interface XRWebGLDepthInformation : XRDepthInformation
     attribute @@toStringTag
