@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -61,9 +60,7 @@ public class HistoryPaneTest {
                 () -> {
                     clearHistory(cta.getProfileProviderSupplier().get().getOriginalProfile());
                     supportsKeyboard.set(DeviceInput.supportsKeyboard());
-                    isTablet.set(
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                    ApplicationProvider.getApplicationContext()));
+                    isTablet.set(DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta));
                 });
         mIsLLFDevice = supportsKeyboard.get() && isTablet.get();
     }

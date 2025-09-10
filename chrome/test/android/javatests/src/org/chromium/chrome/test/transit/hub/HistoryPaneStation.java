@@ -70,9 +70,9 @@ public class HistoryPaneStation extends HubBaseStation {
         public final ViewElement<View> recyclerViewElement;
         public final ViewElement<View> searchButtonElement;
 
-        public HistoryWithEntriesFacility(boolean mIsLLFDevice) {
+        public HistoryWithEntriesFacility(boolean isLLFDevice) {
             recyclerViewElement = declareView(withId(R.id.history_page_recycler_view));
-            if (mIsLLFDevice) {
+            if (isLLFDevice) {
                 searchButtonElement = null;
                 declareNoView(withId(R.id.search_menu_id));
                 return;
