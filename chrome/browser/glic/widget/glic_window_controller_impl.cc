@@ -296,18 +296,12 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* glic_service,
-    GlicEnabling* enabling,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    GlicEnabling* enabling)
     : profile_(profile),
       host_(profile),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
-      enabling_(enabling),
-      glic_instance_components_(profile,
-                                *this,
-                                host(),
-                                *glic_service->metrics(),
-                                contextual_cueing_service) {
+      enabling_(enabling) {
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
   if (window_config_.ShouldResetOnStart()) {
     previous_position_.reset();
@@ -677,10 +671,6 @@ bool GlicWindowControllerImpl::BeforeViewCreated(
 
   glic_panel_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
   return true;
-}
-
-GlicInstanceComponents& GlicWindowControllerImpl::glic_instance_components() {
-  return glic_instance_components_;
 }
 
 void GlicWindowControllerImpl::AfterViewShown() {
