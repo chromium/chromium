@@ -767,6 +767,13 @@ void CompleteSigninFlow() {
 // Tests that the sign-in prompt is shown on the other window when the window
 // presenting the forced sign-in screen is closed.
 - (void)testSigninScreenTransferToOtherWindow {
+  // TODO(crbug.com/440027809): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
