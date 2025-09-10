@@ -960,30 +960,11 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
   }
   delete_statement.Assign(db()->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM cookies WHERE host_key = ?"));
-
-  sql::Statement delete_insecure_prefixed_statement;
-  delete_insecure_prefixed_statement.Assign(db()->GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM cookies WHERE "
-      "(LOWER(name) LIKE '__host-http-%' OR LOWER(name) LIKE '__http-%') "
-      "AND (is_httponly = 0 OR is_secure = 0)"));
-
-  if (!smt.is_valid() || !delete_statement.is_valid() ||
-      !delete_insecure_prefixed_statement.is_valid()) {
+  if (!smt.is_valid() || !delete_statement.is_valid()) {
     delete_statement.Clear();
-    delete_insecure_prefixed_statement.Clear();
     smt.Clear();  // Disconnect smt_ref from db_.
     Reset();
     return false;
-  }
-
-  // Delete cookies with __host-http- or __http- prefixes that are not httponly
-  // These cookies are potentially insecure and should be removed.
-  // Do this BEFORE loading cookies to ensure deleted cookies don't get loaded.
-  if (!delete_insecure_prefixed_statement.Run()) {
-    // Log the failure but don't treat it as fatal since this is a cleanup
-    // operation
-    RecordCookieLoadProblem(CookieLoadProblem::KRecoveryFailed);
   }
 
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
