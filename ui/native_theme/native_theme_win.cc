@@ -323,8 +323,7 @@ NativeThemeWin::NativeThemeWin() {
             : HighContrastColorScheme::kLight;
   }
   base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
-                                color_scheme,
-                                HighContrastColorScheme::kMaxValue);
+                                color_scheme);
 }
 
 void NativeThemeWin::ConfigureWebInstance() {
