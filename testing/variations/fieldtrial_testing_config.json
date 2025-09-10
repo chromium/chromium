@@ -13675,7 +13675,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "kShareExtensionForMultiprofile"
+                        "ShareExtensionForMultiprofile"
                     ]
                 }
             ]
