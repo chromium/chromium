@@ -10,10 +10,12 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
+class GURL;
+class Profile;
+
 namespace content {
 class WebContents;
 }
-class Profile;
 
 // This namespace contains test utilities that function for both Android and
 // desktop browser tests.
@@ -62,6 +64,19 @@ base::FilePath GetChromeTestDataDir();
 // Overrides the path chrome::DIR_TEST_DATA. Used early in test startup so the
 // value is available in constructors and SetUp methods.
 void OverrideChromeTestDataDir();
+
+// Generate the file path for testing a particular test.
+// The file for the tests is all located in
+// test_root_directory/dir/<file>
+// The returned path is base::FilePath format.
+base::FilePath GetTestFilePath(const base::FilePath& dir,
+                               const base::FilePath& file);
+
+// Generate the URL for testing a particular test.
+// HTML for the tests is all located in
+// test_root_directory/dir/<file>
+// The returned path is GURL format.
+GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file);
 
 }  // namespace chrome_test_utils
 

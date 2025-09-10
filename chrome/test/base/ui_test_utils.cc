@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/autocomplete_change_observer.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/download/public/common/download_item.h"
@@ -73,7 +74,6 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "net/base/filename_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
@@ -326,14 +326,11 @@ content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
 
 base::FilePath GetTestFilePath(const base::FilePath& dir,
                                const base::FilePath& file) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-  return path.Append(dir).Append(file);
+  return chrome_test_utils::GetTestFilePath(dir, file);
 }
 
 GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file) {
-  return net::FilePathToFileURL(GetTestFilePath(dir, file));
+  return chrome_test_utils::GetTestUrl(dir, file);
 }
 
 bool GetRelativeBuildDirectory(base::FilePath* build_dir) {

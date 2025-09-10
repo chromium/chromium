@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -74,8 +75,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -120,7 +119,6 @@ constexpr char kBlockingScript[] = "alert('ALERT');";
 // A (non-blocking) content script that sends a message.
 constexpr char kNonBlockingScript[] = "chrome.test.sendMessage('done');";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kNewTabOverrideManifest[] =
     R"({
          "name": "New tab override",
@@ -131,7 +129,6 @@ constexpr char kNewTabOverrideManifest[] =
        })";
 
 constexpr char kNewTabHtml[] = "<html>NewTabOverride!</html>";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -990,10 +987,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Bug fix for crbug.com/507461.
-// TODO(crbug.com/371432155): Port to desktop Android when we have cross
-// platform utilities for AddTabAtIndex() and ActivateTabAt().
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        DocumentStartInjectionFromExtensionTabNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1013,9 +1007,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(injector);
 
   ExtensionTestMessageListener listener("done");
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  NavigateToURLInNewTab(GURL("chrome://newtab"));
   content::WebContents* tab_contents = GetActiveWebContents();
 
   EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
@@ -1028,7 +1020,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(listener.was_satisfied());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/441557607) Causes flaky GPU crashes on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -1188,9 +1179,6 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/441557607: Continue porting these tests to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests that extension content scripts can execute (including asynchronously
 // through timeouts) in pages with Content-Security-Policy: sandbox.
 // See https://crbug.com/811528.
@@ -1223,7 +1211,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptBypassingSandbox) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Regression test for https://crbug.com/1407986.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptForSandboxFrame) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -1268,6 +1259,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Regression test for https://crbug.com/883526.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
@@ -1337,10 +1329,13 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, Messaging) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/messaging")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that the URLs of content scripts are set to the extension URL
 // (chrome-extension://<id>/<path_to_script>) rather than the local file
 // path.
 // Regression test for https://crbug.com/714617.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   TestExtensionDir test_dir;
@@ -1401,6 +1396,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   load_page_and_check_error("content-script.example");
   load_page_and_check_error("inject-script.example");
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Verifies how the storage API works with content scripts with default access
 // level.
@@ -1506,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
       "Got message from %s", kExpectedFrame1Url.spec().c_str()));
   ExtensionTestMessageListener listener2(base::StringPrintf(
       "Got message from %s", kExpectedFrame2Url.spec().c_str()));
-  GURL page_url = ui_test_utils::GetTestUrl(
+  GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("extensions")),
       base::FilePath(FILE_PATH_LITERAL("mhtml-with-subframes.mht")));
   content::WebContents* web_contents = GetActiveWebContents();
@@ -1740,13 +1736,13 @@ content::WebContents* ContentScriptRelatedFrameTest::NavigateTab(
 content::WebContents* ContentScriptRelatedFrameTest::OpenPopup(
     content::WebContents* opener_web_contents,
     const GURL& url) {
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = GetTabCount();
   content::TestNavigationObserver popup_observer(nullptr /* web_contents */);
   popup_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       opener_web_contents, content::JsReplace("window.open($1);", url.spec())));
   popup_observer.Wait();
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count + 1, GetTabCount());
   content::WebContents* popup = GetActiveWebContents();
   EXPECT_EQ(url, popup->GetLastCommittedURL());
   EXPECT_NE(popup, opener_web_contents);
@@ -1875,10 +1871,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests injecting a content script when the iframe rewrites the parent to be
 // null. This re-write causes the parent to itself become an about:blank frame
 // without a parent. Regression test for https://crbug.com/963347 and
 // https://crbug.com/963420.
+// TODO(crbug.com/371432155): Port to desktop Android when we have cross
+// platform utilities for Navigate/NavigateParams. Attempting to use
+// NavigateToURLInNewTab() causes crashes in the navigation stack.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_NullParent) {
   NavigateParams navigate_params(browser(), null_document_url(),
@@ -1913,6 +1913,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // no-parent about:blank case well when there was a non-about:blank
   // precursor origin, which caused a crash during the document writing.
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that match_about_blank does not allow extensions to inject into blob:
 // URLs.
@@ -2081,9 +2082,16 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
 }
 
-// Inject into nested iframes with data: URLs.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DataURLInjection_NestedDataIframe_SameOrigin \
+  DISABLED_DataURLInjection_NestedDataIframe_SameOrigin
+#else
+#define MAYBE_DataURLInjection_NestedDataIframe_SameOrigin \
+  DataURLInjection_NestedDataIframe_SameOrigin
+#endif
+// Inject into nested iframes with data: URLs. Flaky on Android.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       DataURLInjection_NestedDataIframe_SameOrigin) {
+                       MAYBE_DataURLInjection_NestedDataIframe_SameOrigin) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
 
   // Create a data: URL that will have an iframe to another data: URL.
@@ -2200,7 +2208,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   }
 }
 
-// Test fixture which sets a custom NTP Page.
+#if !BUILDFLAG(IS_ANDROID)
+// Test fixture which sets a custom NTP Page for content script injection tests.
+// These tests are skipped on Android because Android uses native UI instead of
+// webui for the NTP and hence the NTP isn't scriptable.
 // TODO(karandeepb): Similar logic to set up a custom NTP is used elsewhere as
 // well. Abstract this away into a reusable test fixture class.
 class NTPInterceptionTest : public ExtensionApiTest,
@@ -2258,6 +2269,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionTest, ContentScript) {
 
   EXPECT_EQ(false, EvalJs(web_contents, "document.title !== 'Fake NTP';"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   using HttpRequest = net::test_server::HttpRequest;
@@ -2293,6 +2305,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   ASSERT_EQ(kPassed, watcher.WaitAndGetTitle());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 class ContentScriptApiPrerenderingTest
     : public ContentScriptApiTestWithContextType {
  private:
@@ -2308,6 +2323,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiPrerenderingTest,
                          ::testing::Values(ContextType::kServiceWorkerMV2));
 
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingTest, Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
@@ -2322,11 +2339,14 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 // Checks if injecting inline speculation rules are permitted in the manifest v3
 // content_scripts.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingMV3Test, SpeculationRules) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/speculation_rules"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
  protected:
@@ -2449,15 +2469,13 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
   ASSERT_TRUE(extension);
 
   // Navigate to a page where content scripts would be executed.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
       embedded_test_server()->GetURL("a.com", "/extensions/test_file.html")));
 
   // Execute the test which passes when it sees exactly 1 content_script entry
   // in the activity log.
   ASSERT_TRUE(RunExtensionTest("content_scripts/activity_log/"));
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
