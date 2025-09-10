@@ -113,10 +113,9 @@ struct StatusTraitsHelper {
     }
   }
 
-  static constexpr std::string GetMessage(std::string_view message,
-                                          T::Codes code) {
+  static constexpr std::string GetMessage(std::string message, T::Codes code) {
     if (!message.empty()) {
-      return std::string(message);
+      return message;
     } else if constexpr (requires { &T::ReadableCodeName; }) {
       return T::ReadableCodeName(code);
     } else {
@@ -164,7 +163,7 @@ class MEDIA_EXPORT TypedStatus {
   // can be constructed, since there are a few.
 
   // Default constructor to please the Mojo Gods.
-  TypedStatus() : data_(nullptr) {}
+  TypedStatus() = default;
 
   // Copy constructor (also as a sacrifice to Lord Mojo)
   TypedStatus(const TypedStatus<T>& copy) { *this = copy; }
@@ -177,10 +176,6 @@ class MEDIA_EXPORT TypedStatus {
   // Used to implicitly create a TypedStatus from a TypedStatus::Codes value.
   TypedStatus(Codes code, const base::Location& location = FROM_HERE)
       : TypedStatus(code, "", location) {}
-
-  TypedStatus(std::tuple<Codes, std::string_view> pack,
-              const base::Location& location = FROM_HERE)
-      : TypedStatus(std::get<0>(pack), std::get<1>(pack), location) {}
 
   // Used to allow returning {TypedStatus::Codes::kValue, CastFrom} implicitly
   // iff TypedStatus::T::OnCreateFrom is implemented.
@@ -199,10 +194,10 @@ class MEDIA_EXPORT TypedStatus {
   template <typename D>
     requires(TypedStatusConstructableFrom<TypedStatus<T>, D>)
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               const D& data,
               const base::Location& location = FROM_HERE)
-      : TypedStatus(code, message, location) {
+      : TypedStatus(code, std::move(message), location) {
     DCHECK(data_);
     T::OnCreateFrom(this, data);
   }
@@ -221,10 +216,10 @@ class MEDIA_EXPORT TypedStatus {
   // Used to allow returning {TypedStatus::Codes::kValue, "message", cause}
   template <TypedStatusImplTraits O>
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               TypedStatus<O>&& cause,
               const base::Location& location = FROM_HERE)
-      : TypedStatus(code, message, location) {
+      : TypedStatus(code, std::move(message), location) {
     DCHECK(data_);
     AddCause(std::move(cause));
   }
@@ -237,7 +232,7 @@ class MEDIA_EXPORT TypedStatus {
   // Also used to allow returning {TypedStatus::Codes::kValue, "message"}
   // implicitly as a typed status.
   TypedStatus(Codes code,
-              std::string_view message,
+              std::string message,
               const base::Location& location = FROM_HERE) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
@@ -247,7 +242,8 @@ class MEDIA_EXPORT TypedStatus {
     }
     data_ = std::make_unique<internal::StatusData>(
         T::Group(), static_cast<StatusCodeType>(code),
-        internal::StatusTraitsHelper<Traits>::GetMessage(message, code));
+        internal::StatusTraitsHelper<Traits>::GetMessage(std::move(message),
+                                                         code));
     data_->AddLocation(location);
   }
 
@@ -268,11 +264,9 @@ class MEDIA_EXPORT TypedStatus {
     return static_cast<Codes>(data_->code);
   }
 
-  const std::string group() const {
-    return data_ ? data_->group : std::string(T::Group());
-  }
+  std::string_view group() const { return data_ ? data_->group : T::Group(); }
 
-  const std::string& message() const {
+  std::string_view message() const {
     DCHECK(data_);
     return data_->message;
   }

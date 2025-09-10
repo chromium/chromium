@@ -194,7 +194,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
     request->status = std::move(status_or_buffer).error();
     if (request->status == media::DecoderStatus::Codes::kKeyFrameRequired) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        request->status.message().c_str());
+                                        String(request->status.message()));
       return;
     }
   }

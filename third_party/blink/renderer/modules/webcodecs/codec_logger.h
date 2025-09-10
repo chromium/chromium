@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace base {
@@ -184,19 +185,18 @@ class MODULES_EXPORT CodecLogger final {
       status_code_ = status.code();
     }
 
-    String sanitized_message;
+    String sanitized_message(std::move(error_msg));
     String unsanitized_message;
-    if (status.message().empty()) {
-      sanitized_message = error_msg.c_str();
-    } else {
+    if (!status.message().empty()) {
       // If the message comes from a bundled codec we can log it to JS.
-      sanitized_message = String::Format("%s (%s)", error_msg.c_str(),
-                                         status.message().c_str());
-      if (!can_log_status_message) {
+      auto msg =
+          StrCat({sanitized_message, " (", String(status.message()), ")"});
+      if (can_log_status_message) {
+        sanitized_message = msg;
+      } else {
         // If not we can only set it as the unsanitized message which the
         // console will show in some circumstances.
-        unsanitized_message = sanitized_message;
-        sanitized_message = error_msg.c_str();
+        unsanitized_message = msg;
       }
     }
 

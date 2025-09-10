@@ -1148,7 +1148,8 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
       !status.is_ok()) {
     NotifyErrorStatus(
         {media::EncoderStatus::Codes::kEncoderInitializationError,
-         "Failed to initialize VideoEncodeAccelerator: " + status.message()});
+         base::StrCat({"Failed to initialize VideoEncodeAccelerator: ",
+                       status.message()})});
     return;
   }
 
