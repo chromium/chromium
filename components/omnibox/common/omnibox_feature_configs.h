@@ -168,6 +168,9 @@ struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
   AiModeOmniboxEntryPoint();
   bool enabled;
 
+  // Never display AIM hint text.
+  bool hide_aim_hint_text;
+
   // Whether to hide the AIM hint text on NTP open.
   bool hide_aim_hint_text_on_ntp_open;
 

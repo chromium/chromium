@@ -2360,8 +2360,10 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
 }
 
 bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
-  // If the AIM button is not visible, the placeholder text is not shown.
-  if (!AimButtonVisible()) {
+  // If the hint text is hidden or the AIM button is not visible, the
+  // placeholder text is not shown.
+  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
+          .hide_aim_hint_text || !AimButtonVisible()) {
     return false;
   }
   // The placeholder text should only be shown when the omnibox is visibly
