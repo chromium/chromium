@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_
 
 #include <list>
 #include <optional>
@@ -14,8 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "url/gurl.h"
 
@@ -154,4 +154,4 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_H_

@@ -11,8 +11,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/plus_addresses/core/browser/plus_address_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_allocator.h"
 #include "url/origin.h"
 
 namespace plus_addresses {

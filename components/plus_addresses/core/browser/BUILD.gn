@@ -49,16 +49,45 @@ source_set("blocklist_data") {
   ]
 }
 
+source_set("parsing") {
+  sources = [
+    "plus_address_parsing_utils.cc",
+    "plus_address_parsing_utils.h",
+  ]
+
+  deps = [ "//components/plus_addresses/core/common:features" ]
+  public_deps = [
+    ":types",
+    "//base",
+    "//services/data_decoder/public/cpp",
+  ]
+}
+
 source_set("browser") {
   sources = [
+    "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
+    "plus_address_http_client.h",
+    "plus_address_http_client_impl.cc",
+    "plus_address_http_client_impl.h",
+    "plus_address_preallocator.cc",
+    "plus_address_preallocator.h",
     "plus_address_ui_utils.cc",
     "plus_address_ui_utils.h",
   ]
   deps = [
+    ":parsing",
     "//components/affiliations/core/browser:affiliations",
+    "//components/feature_engagement/public",
+    "//components/plus_addresses/core/browser/metrics",
+    "//components/plus_addresses/core/browser/settings",
+    "//components/plus_addresses/core/common:features",
+    "//components/plus_addresses/core/common:prefs",
+    "//components/signin/public/identity_manager",
     "//components/url_formatter",
+    "//net",
+    "//services/data_decoder/public/cpp",
   ]
   public_deps = [
     "//base",
@@ -74,11 +103,24 @@ buildflag_header("plus_addresses_buildflags") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "plus_address_blocklist_data_unittest.cc" ]
+  sources = [
+    "plus_address_blocklist_data_unittest.cc",
+    "plus_address_http_client_impl_unittest.cc",
+    "plus_address_parsing_utils_unittest.cc",
+    "plus_address_preallocator_unittest.cc",
+  ]
 
   deps = [
     ":blocklist_data",
+    ":parsing",
+    ":test_support",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/plus_addresses/core/browser/metrics",
+    "//components/plus_addresses/core/common:features",
+    "//components/plus_addresses/core/common:prefs",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
   ]
 }
@@ -86,14 +128,30 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_plus_address_allocator.cc",
+    "fake_plus_address_allocator.h",
+    "mock_plus_address_http_client.cc",
+    "mock_plus_address_http_client.h",
+    "plus_address_http_client_impl_test_api.h",
     "plus_address_test_environment.cc",
     "plus_address_test_environment.h",
+    "plus_address_test_utils.cc",
+    "plus_address_test_utils.h",
   ]
   deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/feature_engagement/public",
+    "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:prefs",
+    "//components/strings:components_strings_grit",
+    "//net:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
   ]
   public_deps = [
+    ":browser",
     "//components/affiliations/core/browser:test_support",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/prefs:test_support",

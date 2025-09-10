@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_
 
 #include <optional>
 #include <utility>
 
 #include "base/memory/raw_ref.h"
-#include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "url/gurl.h"
 
 namespace plus_addresses {
@@ -40,4 +40,4 @@ inline PlusAddressHttpClientImplTestApi test_api(
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HTTP_CLIENT_IMPL_TEST_API_H_

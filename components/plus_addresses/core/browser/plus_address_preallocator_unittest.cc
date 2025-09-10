@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_preallocator.h"
+#include "components/plus_addresses/core/browser/plus_address_preallocator.h"
 
 #include <string>
 #include <utility>
@@ -17,14 +17,14 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/core/browser/mock_plus_address_http_client.h"
+#include "components/plus_addresses/core/browser/plus_address_allocator.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/settings/fake_plus_address_setting_service.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
-#include "components/plus_addresses/mock_plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_allocator.h"
-#include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"

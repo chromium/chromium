@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 
 #include <optional>
 #include <string>
@@ -19,11 +19,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client_impl_test_api.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_http_client_impl_test_api.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -834,7 +834,8 @@ TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
   EXPECT_FALSE(third.Get().has_value());
 }
 
-class PlusAddressHttpClientNullServerUrl : public PlusAddressHttpClientRequests {
+class PlusAddressHttpClientNullServerUrl
+    : public PlusAddressHttpClientRequests {
  public:
   PlusAddressHttpClientNullServerUrl() {
     // Disable feature plus_addresses, which should also set `server_url_` to

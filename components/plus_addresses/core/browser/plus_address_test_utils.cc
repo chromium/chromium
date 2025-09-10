@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 
 #include <string>
 
@@ -17,8 +17,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_preallocator.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_preallocator.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses::test {

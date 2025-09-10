@@ -2,34 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("parsing") {
-  sources = [
-    "plus_address_parsing_utils.cc",
-    "plus_address_parsing_utils.h",
-  ]
-
-  deps = [ "//components/plus_addresses/core/common:features" ]
-  public_deps = [
-    "//base",
-    "//components/plus_addresses/core/browser:types",
-    "//services/data_decoder/public/cpp",
-  ]
-}
-
 source_set("plus_addresses") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper.cc",
     "affiliations/plus_address_affiliation_match_helper.h",
     "affiliations/plus_address_affiliation_source_adapter.cc",
     "affiliations/plus_address_affiliation_source_adapter.h",
-    "plus_address_allocator.h",
-    "plus_address_http_client.h",
-    "plus_address_http_client_impl.cc",
-    "plus_address_http_client_impl.h",
     "plus_address_jit_allocator.cc",
     "plus_address_jit_allocator.h",
-    "plus_address_preallocator.cc",
-    "plus_address_preallocator.h",
     "plus_address_service.h",
     "plus_address_service_impl.cc",
     "plus_address_service_impl.h",
@@ -37,12 +17,12 @@ source_set("plus_addresses") {
     "plus_address_suggestion_generator.h",
   ]
   deps = [
-    ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
     "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser:blocklist_data",
     "//components/plus_addresses/core/browser:hats_utils",
+    "//components/plus_addresses/core/browser:parsing",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/metrics:submission_logger",
     "//components/plus_addresses/core/browser/resources/strings",
@@ -61,6 +41,9 @@ source_set("plus_addresses") {
     "//base",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
+
+    # TODO(crbug.com/365494310): Remove core/browser public_deps after refactoring.
+    "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser:types",
 
     # While not strictly public by h file inclusion, this is a temporary move
@@ -77,16 +60,12 @@ source_set("unit_tests") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
-    "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
-    "plus_address_parsing_utils_unittest.cc",
-    "plus_address_preallocator_unittest.cc",
     "plus_address_service_impl_unittest.cc",
     "plus_address_suggestion_generator_unittest.cc",
   ]
 
   deps = [
-    ":parsing",
     ":plus_addresses",
     ":test_support",
     "//base/test:test_support",
@@ -97,6 +76,7 @@ source_set("unit_tests") {
     "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/core/browser:blocklist_data",
     "//components/plus_addresses/core/browser:hats_utils",
+    "//components/plus_addresses/core/browser:parsing",
     "//components/plus_addresses/core/browser:test_support",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/resources/strings",
@@ -115,15 +95,8 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "fake_plus_address_allocator.cc",
-    "fake_plus_address_allocator.h",
     "fake_plus_address_service.cc",
     "fake_plus_address_service.h",
-    "mock_plus_address_http_client.cc",
-    "mock_plus_address_http_client.h",
-    "plus_address_http_client_impl_test_api.h",
-    "plus_address_test_utils.cc",
-    "plus_address_test_utils.h",
   ]
   deps = [
     "//base",
@@ -142,6 +115,9 @@ static_library("test_support") {
   public_deps = [
     ":plus_addresses",
     "//components/affiliations/core/browser:test_support",
+
+    # TODO(crbug.com/365494310): Remove core/browser public_deps after refactoring.
+    "//components/plus_addresses/core/browser:test_support",
     "//components/plus_addresses/core/browser:types",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/prefs:test_support",

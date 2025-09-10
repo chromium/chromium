@@ -4,8 +4,8 @@
 
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/sync/protocol/entity_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

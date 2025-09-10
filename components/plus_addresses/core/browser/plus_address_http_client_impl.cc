@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 
 #include <concepts>
 #include <memory>
@@ -20,9 +20,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/core/browser/plus_address_parsing_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "components/plus_addresses/plus_address_parsing_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

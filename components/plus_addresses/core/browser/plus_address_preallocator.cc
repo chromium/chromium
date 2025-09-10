@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_preallocator.h"
+#include "components/plus_addresses/core/browser/plus_address_preallocator.h"
 
 #include <algorithm>
 #include <optional>
@@ -16,13 +16,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_allocator.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client.h"
+#include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
-#include "components/plus_addresses/plus_address_allocator.h"
-#include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/backoff_entry.h"
