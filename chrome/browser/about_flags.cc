@@ -9158,6 +9158,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"text-in-shelf", flag_descriptions::kTextInShelfName,
      flag_descriptions::kTextInShelfDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHomeButtonWithText)},
+    {"hybrid-charger-notifications",
+     flag_descriptions::kHybridChargerNotificationsName,
+     flag_descriptions::kHybridChargerNotificationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHybridChargerNotifications)},
     {"launcher-local-image-search",
      flag_descriptions::kLauncherLocalImageSearchName,
      flag_descriptions::kLauncherLocalImageSearchDescription, kOsCrOS,
@@ -11549,8 +11553,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsIndividualRequestThrottlingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsIndividualRequestThrottling)},
 
-    {"devtools-live-edit",
-     flag_descriptions::kDevToolsLiveEditName,
+    {"devtools-live-edit", flag_descriptions::kDevToolsLiveEditName,
      flag_descriptions::kDevToolsLiveEditDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsLiveEdit)},
 

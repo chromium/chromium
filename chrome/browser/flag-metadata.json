@@ -5876,6 +5876,14 @@
     "expiry_milestone": 146
   },
   {
+    "name": "hybrid-charger-notifications",
+    "owners": [
+      "mwoj@google.com",
+      "cros-sw-perf@google.com"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "hybrid-passkeys-in-context-menu",
     "owners": [
       "derinel@google.com",

@@ -15056,6 +15056,7 @@ from previous Chrome versions.
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
   <int value="296066418" label="CCTResizableForThirdParties:disabled"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
+  <int value="296239394" label="HybridChargerNotifications:disabled"/>
   <int value="296296761" label="MediaFoundationVideoCapture:disabled"/>
   <int value="296729972" label="MvcUpdateViewWhenModelChanged:enabled"/>
   <int value="297095559" label="ShowBluetoothDebugLogToggle:disabled"/>
@@ -16070,6 +16071,7 @@ from previous Chrome versions.
   <int value="663252940" label="CellularUseSecondEuicc:enabled"/>
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="663377046" label="NtpDriveModuleHistorySyncRequirement:disabled"/>
+  <int value="663423662" label="HybridChargerNotifications:enabled"/>
   <int value="664363259" label="SiteCharacteristicsDatabase:enabled"/>
   <int value="664591021" label="EnableContinueReading:enabled"/>
   <int value="664905954" label="CrosBatterySaver:disabled"/>

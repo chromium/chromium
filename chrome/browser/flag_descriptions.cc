@@ -7343,6 +7343,10 @@ const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
     "Enables opening the Help App's What's New page immediately instead of "
     "showing a notification to open the help app.";
 
+const char kHybridChargerNotificationsName[] = "Hybrid Charger Notifications";
+const char kHybridChargerNotificationsDescription[] =
+    "Displays helpful notifications for devices with Hybrid Chargers.";
+
 const char kImeAssistMultiWordName[] =
     "Enable assistive multi word suggestions";
 const char kImeAssistMultiWordDescription[] =

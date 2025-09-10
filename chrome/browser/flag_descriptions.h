@@ -4218,6 +4218,9 @@ extern const char kHelpAppOnboardingRevampDescription[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
 
+extern const char kHybridChargerNotificationsName[];
+extern const char kHybridChargerNotificationsDescription[];
+
 extern const char kImeAssistMultiWordName[];
 extern const char kImeAssistMultiWordDescription[];
 
