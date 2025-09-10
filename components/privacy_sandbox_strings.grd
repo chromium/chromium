@@ -304,6 +304,25 @@
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         Change protections
       </message>
+      <!-- Mode B Rollback -->
+      <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="" translateable="false">
+        Got it
+      </message>
+      <message name="IDS_MODE_B_ROLLBACK_SETTINGS" desc="" translateable="false">
+        Settings
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="" translateable="false">
+            Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="" translateable="false">
+            Your current Chromium settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
+          </message>
+        </else>
+      </if>
       <!-- User Bypass -->
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed.">
         Allowed

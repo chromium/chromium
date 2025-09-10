@@ -2043,6 +2043,8 @@ static_library("browser") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
+    "//chrome/browser/ui/cookie_controls",
+    "//chrome/browser/ui/cookie_controls:impl",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/hats",

@@ -4,6 +4,40 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
+source_set("cookie_controls") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [ "roll_back_mode_b_infobar_delegate.h" ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/infobars",
+      "//content/public/browser",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [ "roll_back_mode_b_infobar_delegate.cc" ]
+    deps += [
+      ":cookie_controls",
+      "//base",
+      "//chrome/common",
+      "//components/infobars/content",
+      "//components/strings:components_strings",
+      "//components/vector_icons",
+      "//content/public/common",
+      "//ui/base",
+    ]
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "cookie_controls_controller_unittest.cc" ]
@@ -22,4 +56,12 @@ source_set("unit_tests") {
     "//net",
     "//third_party/blink/public:blink_headers",
   ]
+
+  if (!is_android) {
+    sources += [ "roll_back_mode_b_infobar_delegate_unittest.cc" ]
+    deps += [
+      ":cookie_controls",
+      "//components/infobars/core",
+    ]
+  }
 }
