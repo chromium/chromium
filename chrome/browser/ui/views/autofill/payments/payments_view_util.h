@@ -66,8 +66,7 @@ struct LabeledTextfieldWithErrorMessage {
 
   views::Textfield& GetInputTextField() const;
 
-  void SetErrorState(bool is_valid,
-                     std::optional<std::u16string> error_message);
+  void SetErrorState(bool is_valid);
 };
 
 // Gets the user avatar icon if available, or else a placeholder.

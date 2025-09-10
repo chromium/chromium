@@ -151,16 +151,13 @@ views::Textfield& LabeledTextfieldWithErrorMessage::GetInputTextField() const {
   return *input;
 }
 
-void LabeledTextfieldWithErrorMessage::SetErrorState(
-    bool is_valid,
-    std::optional<std::u16string> error_message) {
+void LabeledTextfieldWithErrorMessage::SetErrorState(bool is_valid) {
   CHECK(input);
   is_valid_input = is_valid;
   input->SetInvalid(!is_valid);
   if (error_label) {
-    if (error_message.has_value()) {
-      error_label->SetText(error_message.value());
-      error_label->GetViewAccessibility().AnnounceAlert(error_message.value());
+    if (!is_valid) {
+      error_label->GetViewAccessibility().AnnounceAlert(error_label->GetText());
     }
     error_label->SetVisible(!is_valid);
   }
