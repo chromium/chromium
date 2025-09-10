@@ -138,9 +138,31 @@ template("write_build_config") {
       (defined(invoker.dex_needs_classpath) && invoker.dex_needs_classpath)
 
   if (_needs_full_javac_classpath ||
-      (_type != "java_library" && _type != "android_assets" &&
-       _type != "android_resources" && _type != "group")) {
+      (_type != "java_library" && _type != "system_java_library" &&
+       _type != "android_assets" && _type != "android_resources" &&
+       _type != "group" && _type != "java_annotation_processor")) {
     _outputs = [ invoker.build_config ]
+  }
+
+  # ParamsJson.is_compile_type()
+  if (_type == "android_apk" || _type == "android_app_bundle_module" ||
+      _type == "java_annotation_processor" || _type == "java_binary" ||
+      _type == "robolectric_binary" ||
+      (_type == "java_library" && !invoker.is_prebuilt)) {
+    _outputs += [
+      string_replace(invoker.build_config,
+                     ".build_config.json",
+                     ".javac.build_config.json"),
+      string_replace(invoker.build_config,
+                     ".build_config.json",
+                     ".turbine.build_config.json"),
+    ]
+  }
+
+  if (defined(invoker.enable_lint) && invoker.enable_lint) {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".lint.build_config.json") ]
   }
 
   # ParamsJson.merges_manifests()
@@ -168,24 +190,8 @@ template("write_build_config") {
                                  ".rtxt.build_config.json") ]
   }
 
-  # ParamsJson.is_compile_type()
-  if (_type == "android_apk" || _type == "android_app_bundle_module" ||
-      _type == "java_annotation_processor" || _type == "java_binary" ||
-      _type == "robolectric_binary" ||
-      (_type == "java_library" && !invoker.is_prebuilt)) {
-    _outputs += [
-      string_replace(invoker.build_config,
-                     ".build_config.json",
-                     ".turbine.build_config.json"),
-      string_replace(invoker.build_config,
-                     ".build_config.json",
-                     ".javac.build_config.json"),
-    ]
-  }
-
-  _enable_bytecode_checks =
-      defined(invoker.enable_bytecode_checks) && invoker.enable_bytecode_checks
-  if (_enable_bytecode_checks) {
+  if (defined(invoker.enable_bytecode_checks) &&
+      invoker.enable_bytecode_checks) {
     _outputs += [ string_replace(invoker.build_config,
                                  ".build_config.json",
                                  ".targets.build_config.json") ]
@@ -374,11 +380,6 @@ template("write_build_config") {
       _rebased_asset_sources = rebase_path(_assets.sources, root_build_dir)
     }
 
-    if (defined(invoker.enable_lint) && invoker.enable_lint) {
-      _lint_json = string_replace(invoker.build_config, ".json", ".lint.json")
-      _outputs += [ _lint_json ]
-    }
-
     _params = {
       type = _type
       gn_target = _target_label
@@ -422,6 +423,7 @@ template("write_build_config") {
                                "direct_deps_only",
                                "disable_asset_compression",
                                "enable_bytecode_checks",
+                               "enable_lint",
                                "gradle_treat_as_prebuilt",
                                "is_prebuilt",
                                "library_always_compress",
@@ -589,9 +591,6 @@ template("write_build_config") {
         trace_events_jar_dir =
             rebase_path("$target_out_dir/$_trace_events_target_name",
                         root_build_dir)
-      }
-      if (defined(_lint_json)) {
-        lint_json = rebase_path(_lint_json, root_build_dir)
       }
       if (defined(_needs_full_javac_classpath) && _type == "java_library") {
         needs_full_javac_classpath = _needs_full_javac_classpath
@@ -1172,7 +1171,9 @@ if (enable_java_templates) {
           deps += [ "//build/android:prepare_android_lint_cache" ]
           inputs += [ _create_cache_stamp_path ]
         }
-        _lint_json = string_replace(invoker.build_config, ".json", ".lint.json")
+        _lint_json = string_replace(invoker.build_config,
+                                    ".build_config.json",
+                                    ".lint.build_config.json")
         inputs += [ _lint_json ]
         _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
 

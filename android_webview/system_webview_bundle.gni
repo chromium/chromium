@@ -38,10 +38,6 @@ template("system_webview_bundle") {
       }
     }
 
-    if (!defined(proguard_android_sdk_dep)) {
-      proguard_android_sdk_dep = webview_framework_dep
-    }
-
     if (enable_silent_java_assert_reporting) {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
