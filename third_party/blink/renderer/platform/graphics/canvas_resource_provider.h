@@ -159,7 +159,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
                             gpu::SharedImageUsageSet shared_image_usage_flags,
                             Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
+  static std::unique_ptr<CanvasResourceProviderSharedImage>
+  CreateWebGPUImageProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,

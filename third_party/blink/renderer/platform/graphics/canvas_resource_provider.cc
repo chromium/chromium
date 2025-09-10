@@ -1457,7 +1457,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   return nullptr;
 }
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderSharedImage>
 CanvasResourceProvider::CreateWebGPUImageProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
