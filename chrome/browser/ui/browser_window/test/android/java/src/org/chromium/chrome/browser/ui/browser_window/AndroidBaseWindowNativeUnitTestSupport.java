@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -59,7 +60,11 @@ final class AndroidBaseWindowNativeUnitTestSupport {
                     .thenReturn(mockDispatcher);
             when(mockActivity.getTaskId()).thenReturn(1);
 
-            // 3. Create a real tracker and WindowAndroid.
+            // 3. Create a mock TabModel and mock its functionality
+            TabModel tabModel = mock(TabModel.class);
+            when(tabModel.getProfile()).thenReturn(mock(Profile.class));
+
+            // 4. Create a real tracker and WindowAndroid.
             IntentRequestTracker tracker = IntentRequestTracker.createFromActivity(mockActivity);
             mWindowAndroid =
                     new ActivityWindowAndroid(
@@ -68,11 +73,12 @@ final class AndroidBaseWindowNativeUnitTestSupport {
                             tracker,
                             /* insetObserver= */ null,
                             /* trackOcclusion= */ false);
+
             mChromeAndroidTask =
                     new ChromeAndroidTaskImpl(
                             BrowserWindowType.NORMAL,
                             (ActivityWindowAndroid) mWindowAndroid,
-                            () -> mock(Profile.class));
+                            tabModel);
         } else {
             mWindowAndroid = mock(WindowAndroid.class);
             mChromeAndroidTask = mock(ChromeAndroidTask.class);

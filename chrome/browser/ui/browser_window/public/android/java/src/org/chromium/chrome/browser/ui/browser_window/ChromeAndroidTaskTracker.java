@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
-
-import java.util.function.Supplier;
 
 /**
  * Tracks {@link ChromeAndroidTask}s.
@@ -40,13 +38,12 @@ public interface ChromeAndroidTaskTracker {
      *     The types are defined in the native {@code BrowserWindowInterface::Type} enum.
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with the
      *     returned {@link ChromeAndroidTask}.
-     * @param profileSupplier Supplies the profile associated with the returned {@link
-     *     ChromeAndroidTask}.
+     * @param tabModel The tab model associated with the returned {@link ChromeAndroidTask}.
      */
     ChromeAndroidTask obtainTask(
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
-            Supplier<Profile> profileSupplier);
+            TabModel tabModel);
 
     /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.

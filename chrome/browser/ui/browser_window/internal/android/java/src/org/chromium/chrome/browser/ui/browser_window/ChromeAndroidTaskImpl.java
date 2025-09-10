@@ -33,6 +33,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -40,14 +45,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTask}. */
 @NullMarked
 final class ChromeAndroidTaskImpl
         implements ChromeAndroidTask,
                 ConfigurationChangedObserver,
-                TopResumedActivityChangedWithNativeObserver {
+                TopResumedActivityChangedWithNativeObserver,
+                TabModelObserver {
 
     private static final String TAG = "ChromeAndroidTask";
 
@@ -70,7 +75,8 @@ final class ChromeAndroidTaskImpl
     private final int mId;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Profile mInitialProfile;
+    private @Nullable TabModel mObservedTabModel;
 
     /**
      * Contains all {@link ChromeAndroidTaskFeature}s associated with this {@link
@@ -122,12 +128,14 @@ final class ChromeAndroidTaskImpl
     ChromeAndroidTaskImpl(
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
-            Supplier<Profile> profileSupplier) {
+            TabModel tabModel) {
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityWindowAndroid).getTaskId();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
-        mProfileSupplier = profileSupplier;
-        setActivityWindowAndroidInternal(activityWindowAndroid);
+        assert tabModel.getProfile() != null
+                : "ChromeAndroidTask must be initialized with a non-null profile";
+        mInitialProfile = tabModel.getProfile();
+        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
     }
 
     @Override
@@ -141,8 +149,9 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public void setActivityWindowAndroid(ActivityWindowAndroid activityWindowAndroid) {
-        setActivityWindowAndroidInternal(activityWindowAndroid);
+    public void setActivityWindowAndroid(
+            ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
+        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
     }
 
     @Override
@@ -275,12 +284,7 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public Profile getProfile() {
-        Profile profile = mProfileSupplier.get();
-        assert profile != null
-                : "ChromeAndroidTask supports BrowserWindowInterface, which assumes that the"
-                      + " associated profile will never be null for the lifetime of the window. See"
-                      + " documentation of BrowserWindowInterface::GetProfile() for details.";
-        return profile;
+        return mInitialProfile;
     }
 
     @Override
@@ -437,6 +441,22 @@ final class ChromeAndroidTaskImpl
         }
     }
 
+    @Override
+    public void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
+            boolean markedForSelection) {
+        if (isDestroyed()) return;
+
+        Profile newTabProfile = tab.getProfile();
+        assert mInitialProfile.equals(newTabProfile)
+                : "A tab with a different profile was added to this task. Initial: "
+                        + mInitialProfile
+                        + ", New: "
+                        + newTabProfile;
+    }
+
     /**
      * Same as {@link #getActivityWindowAndroid()}, but skips asserting that the {@link
      * ChromeAndroidTask} is alive.
@@ -456,7 +476,12 @@ final class ChromeAndroidTaskImpl
         }
     }
 
-    private void setActivityWindowAndroidInternal(ActivityWindowAndroid activityWindowAndroid) {
+    @Nullable TabModel getObservedTabModelForTesting() {
+        return mObservedTabModel;
+    }
+
+    private void setActivityWindowAndroidInternal(
+            ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
         synchronized (mActivityWindowAndroidLock) {
             assertAlive();
             assert mActivityWindowAndroid.get() == null
@@ -468,6 +493,9 @@ final class ChromeAndroidTaskImpl
 
             // Register Activity LifecycleObservers
             getActivityLifecycleDispatcher(activityWindowAndroid).register(this);
+            // Update and register TabModel
+            tabModel.addObserver(this);
+            mObservedTabModel = tabModel;
         }
     }
 
@@ -487,6 +515,10 @@ final class ChromeAndroidTaskImpl
             if (activityWindowAndroid != null) {
                 // Unregister Activity LifecycleObservers.
                 getActivityLifecycleDispatcher(activityWindowAndroid).unregister(this);
+            }
+            if (mObservedTabModel != null) {
+                mObservedTabModel.removeObserver(this);
+                mObservedTabModel = null;
             }
 
             mActivityWindowAndroid.clear();

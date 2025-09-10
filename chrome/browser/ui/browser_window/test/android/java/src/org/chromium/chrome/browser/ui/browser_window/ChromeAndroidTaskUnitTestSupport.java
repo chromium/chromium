@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -52,6 +53,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ChromeAndroidTask mChromeAndroidTask;
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
         public final Profile mMockProfile;
+        public final TabModel mMockTabModel;
 
         /**
          * Mock {@link AndroidBrowserWindow.Natives}.
@@ -66,10 +68,12 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 ChromeAndroidTask chromeAndroidTask,
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
                 Profile mockProfile,
+                TabModel mockTabModel,
                 AndroidBrowserWindow.@Nullable Natives mockAndroidBrowserWindowNatives) {
             mChromeAndroidTask = chromeAndroidTask;
             mActivityWindowAndroidMocks = activityWindowAndroidMocks;
             mMockProfile = mockProfile;
+            mMockTabModel = mockTabModel;
             mMockAndroidBrowserWindowNatives = mockAndroidBrowserWindowNatives;
         }
     }
@@ -118,6 +122,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
             int taskId, boolean mockNatives) {
         Profile profile =
                 mockNatives ? mock(Profile.class) : ProfileManager.getLastUsedRegularProfile();
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(profile);
 
         var activityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
         var mockAndroidBrowserWindowNatives =
@@ -126,12 +132,13 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 new ChromeAndroidTaskImpl(
                         BrowserWindowType.NORMAL,
                         activityWindowAndroidMocks.mMockActivityWindowAndroid,
-                        () -> profile);
+                        tabModel);
 
         return new ChromeAndroidTaskWithMockDeps(
                 chromeAndroidTask,
                 activityWindowAndroidMocks,
                 profile,
+                tabModel,
                 mockAndroidBrowserWindowNatives);
     }
 

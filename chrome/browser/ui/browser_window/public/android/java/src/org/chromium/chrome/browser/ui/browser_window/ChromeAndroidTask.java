@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public interface ChromeAndroidTask {
      *
      * @see #clearActivityWindowAndroid()
      */
-    void setActivityWindowAndroid(ActivityWindowAndroid activityWindowAndroid);
+    void setActivityWindowAndroid(ActivityWindowAndroid activityWindowAndroid, TabModel tabModel);
 
     /**
      * Returns the current {@link ActivityWindowAndroid} in this Task, or {@code null} if there is
@@ -88,7 +89,7 @@ public interface ChromeAndroidTask {
      * <p>This method should be called when the current {@link ActivityWindowAndroid} is about to be
      * destroyed.
      *
-     * @see #setActivityWindowAndroid(ActivityWindowAndroid)
+     * @see #setActivityWindowAndroid()
      */
     void clearActivityWindowAndroid();
 

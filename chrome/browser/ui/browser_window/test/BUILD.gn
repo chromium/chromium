@@ -14,10 +14,10 @@ if (is_android) {
     testonly = true
     sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskUnitTestSupport.java" ]
     deps = [
-      "//base:supplier_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/mockito:mockito_java",
@@ -36,11 +36,12 @@ if (is_android) {
     ]
     deps = [
       ":junit_test_support",
-      "//base:supplier_java",
       "//base:tasks_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/jni_zero:jni_zero_java",

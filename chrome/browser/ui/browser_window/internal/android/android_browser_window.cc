@@ -21,15 +21,6 @@ namespace {
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 
-// Helper to get the Profile from the Java side.
-Profile* GetProfileFromJava(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_android_browser_window) {
-  base::android::ScopedJavaLocalRef<jobject> j_profile =
-      Java_AndroidBrowserWindow_getProfile(env, java_android_browser_window);
-  return Profile::FromJavaObject(j_profile);
-}
-
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
@@ -91,15 +82,7 @@ Profile* AndroidBrowserWindow::GetProfile() {
 }
 
 const Profile* AndroidBrowserWindow::GetProfile() const {
-  JNIEnv* env = AttachCurrentThread();
-  Profile* current_profile_ptr =
-      GetProfileFromJava(env, java_android_browser_window_);
-  Profile* cached_profile_ptr = &profile_.get();
-  CHECK(cached_profile_ptr == current_profile_ptr)
-      << "AndroidBrowserWindow is for desktop Android, which assumes a single "
-         "Profile for a given window. See documentation of "
-         "BrowserWindowInterface::GetProfile() for details.";
-  return cached_profile_ptr;
+  return &profile_.get();
 }
 
 const SessionID& AndroidBrowserWindow::GetSessionID() const {

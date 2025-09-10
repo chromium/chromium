@@ -86,11 +86,6 @@ final class AndroidBrowserWindow {
         return activityWindowAndroid.getActivity().get();
     }
 
-    @CalledByNative
-    private Profile getProfile() {
-        return mChromeAndroidTask.getProfile();
-    }
-
     @NativeMethods
     interface Natives {
         /**

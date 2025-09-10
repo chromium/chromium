@@ -1294,9 +1294,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             var chromeAndroidTask =
                     chromeAndroidTaskTracker.obtainTask(
-                            BrowserWindowType.NORMAL,
-                            activityWindowAndroid,
-                            () -> getCurrentTabModel().getProfile());
+                            BrowserWindowType.NORMAL, activityWindowAndroid, getCurrentTabModel());
 
             mTabModelSelector
                     .getCurrentModel()

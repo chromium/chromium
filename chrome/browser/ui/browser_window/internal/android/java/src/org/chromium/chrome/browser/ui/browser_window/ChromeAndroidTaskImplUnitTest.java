@@ -45,6 +45,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.Arrays;
 
@@ -71,11 +75,14 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange.
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var profile = mock(Profile.class);
+        var tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(profile);
 
         // Act.
         var chromeAndroidTask =
                 new ChromeAndroidTaskImpl(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, () -> mock(Profile.class));
+                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
 
         // Assert.
         assertEquals(activityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
@@ -100,18 +107,64 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void getProfile_returnsProfileFromSupplier() {
-        // Arrange.
+    public void constructor_setsTabModelRefAndRegistersTabModelObserver() {
+        // Arrange & Act.
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockTabModel = chromeAndroidTaskWithMockDeps.mMockTabModel;
+
+        // Assert.
+        assertEquals(mockTabModel, chromeAndroidTask.getObservedTabModelForTesting());
+        verify(mockTabModel, times(1)).addObserver(chromeAndroidTask);
+    }
+
+    @Test
+    public void getProfile_returnsInitialProfile() {
+        // Arrange.
+        var profile = mock(Profile.class);
+        var tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(profile);
+        var chromeAndroidTask =
+                new ChromeAndroidTaskImpl(
+                        BrowserWindowType.NORMAL,
+                        ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(1),
+                        tabModel);
 
         // Act & Assert.
         assertEquals(
-                "The returned Profile should be the same as the one from the Supplier.",
-                chromeAndroidTaskWithMockDeps.mMockProfile,
+                "The returned Profile should be the same as the one from the constructor.",
+                profile,
                 chromeAndroidTask.getProfile());
+    }
+
+    @Test
+    public void didAddTab_withDifferentProfile_throwsAssertionError() {
+        // Arrange.
+        var initialProfile = mock(Profile.class, "InitialProfile");
+        var differentProfile = mock(Profile.class, "DifferentProfile");
+        var tabWithDifferentProfile = mock(Tab.class);
+        when(tabWithDifferentProfile.getProfile()).thenReturn(differentProfile);
+        var tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(initialProfile);
+
+        var chromeAndroidTask =
+                new ChromeAndroidTaskImpl(
+                        BrowserWindowType.NORMAL,
+                        ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(1),
+                        tabModel);
+
+        // Act & Assert.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        chromeAndroidTask.didAddTab(
+                                tabWithDifferentProfile,
+                                TabLaunchType.FROM_CHROME_UI,
+                                TabCreationState.LIVE_IN_FOREGROUND,
+                                /* markedForSelection= */ true));
     }
 
     @Test
@@ -134,7 +187,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act & Assert.
         assertThrows(
                 AssertionError.class,
-                () -> chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid));
+                () ->
+                        chromeAndroidTask.setActivityWindowAndroid(
+                                newActivityWindowAndroid, mock(TabModel.class)));
     }
 
     @Test
@@ -147,7 +202,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.clearActivityWindowAndroid();
 
         // Act.
-        chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid);
+        chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid, mock(TabModel.class));
 
         // Assert.
         assertEquals(newActivityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
@@ -165,13 +220,42 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                newActivityWindowAndroidMocks.mMockActivityWindowAndroid);
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid, mock(TabModel.class));
 
         // Assert.
         verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
                 .register(isA(TopResumedActivityChangedWithNativeObserver.class));
         verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
                 .register(isA(ConfigurationChangedObserver.class));
+    }
+
+    @Test
+    public void
+            setActivityWindowAndroid_previousRefCleared_setsNewTabModelRefAndRegistersTabModelObserver() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(taskId);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var oldMockTabModel = chromeAndroidTaskWithMockDeps.mMockTabModel;
+
+        var newActivityWindowAndroidMocks =
+                ChromeAndroidTaskUnitTestSupport.createActivityWindowAndroidMocks(taskId);
+        var newMockTabModel = mock(TabModel.class);
+
+        // Act.
+        chromeAndroidTask.clearActivityWindowAndroid();
+        chromeAndroidTask.setActivityWindowAndroid(
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid, newMockTabModel);
+
+        // Assert.
+        // Verify observer was removed from the old TabModel.
+        verify(oldMockTabModel, times(1)).removeObserver(chromeAndroidTask);
+
+        // Verify the new TabModel is being observed.
+        assertEquals(newMockTabModel, chromeAndroidTask.getObservedTabModelForTesting());
+        verify(newMockTabModel, times(1)).addObserver(chromeAndroidTask);
     }
 
     @Test
@@ -186,7 +270,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act & Assert.
         assertThrows(
                 AssertionError.class,
-                () -> chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid));
+                () ->
+                        chromeAndroidTask.setActivityWindowAndroid(
+                                newActivityWindowAndroid, mock(TabModel.class)));
     }
 
     @Test
@@ -201,7 +287,9 @@ public class ChromeAndroidTaskImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         assertThrows(
                 AssertionError.class,
-                () -> chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid));
+                () ->
+                        chromeAndroidTask.setActivityWindowAndroid(
+                                newActivityWindowAndroid, mock(TabModel.class)));
     }
 
     @Test
@@ -235,6 +323,24 @@ public class ChromeAndroidTaskImplUnitTest {
                 .unregister(isA(TopResumedActivityChangedWithNativeObserver.class));
         verify(mockActivityLifecycleDispatcher, times(1))
                 .unregister(isA(ConfigurationChangedObserver.class));
+    }
+
+    @Test
+    public void clearActivityWindowAndroid_unregistersTabModelObserverAndClearTabModelRef() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockTabModel = chromeAndroidTaskWithMockDeps.mMockTabModel;
+
+        // Act.
+        chromeAndroidTask.clearActivityWindowAndroid();
+
+        // Assert.
+        verify(mockTabModel, times(1)).removeObserver(chromeAndroidTask);
+        assertNull(chromeAndroidTask.getObservedTabModelForTesting());
     }
 
     @Test

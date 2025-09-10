@@ -224,25 +224,3 @@ TEST_F(AndroidBrowserWindowUnitTest, GetProfileReturnsCorrectProfile) {
   // Assert.
   EXPECT_EQ(expected_profile, actual_profile);
 }
-
-TEST_F(AndroidBrowserWindowUnitTest, GetProfileCrashesIfActiveProfileChanges) {
-  // Arrange: Create the AndroidBrowserWindow, which will cache the initial
-  // active profile.
-  AndroidBrowserWindow* android_browser_window =
-      InvokeJavaGetOrCreateNativePtr();
-  Profile* initial_profile = GetLastUsedProfile();
-
-  // Verify that GetProfile() returns the initial profile without crashing.
-  ASSERT_EQ(initial_profile, android_browser_window->GetProfile());
-
-  // Swap the ProfileManager with a new one.
-  SetProfileManager();
-
-  Profile* new_active_profile = GetLastUsedProfile();
-  ASSERT_NE(initial_profile, new_active_profile);
-  InvokeJavaSetProfileForTesting(new_active_profile);
-
-  // Act & Assert: Now, GetProfile() should fetch the new active profile, which
-  // will not match the cached one, causing a crash.
-  ASSERT_DEATH(android_browser_window->GetProfile(), "");
-}

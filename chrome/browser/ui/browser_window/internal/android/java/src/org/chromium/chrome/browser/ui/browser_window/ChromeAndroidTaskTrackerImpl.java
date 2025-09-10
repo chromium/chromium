@@ -11,7 +11,7 @@ import androidx.annotation.GuardedBy;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTaskTracker} as a singleton. */
 @NullMarked
@@ -50,7 +49,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     public ChromeAndroidTask obtainTask(
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
-            Supplier<Profile> profileSupplier) {
+            TabModel tabModel) {
         int taskId = getTaskId(activityWindowAndroid);
 
         synchronized (mTasksLock) {
@@ -58,13 +57,12 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             if (existingTask != null) {
                 assert existingTask.getBrowserWindowType() == browserWindowType
                         : "The browser window type of an existing task can't be changed.";
-                existingTask.setActivityWindowAndroid(activityWindowAndroid);
+                existingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
                 return existingTask;
             }
 
             var newTask =
-                    new ChromeAndroidTaskImpl(
-                            browserWindowType, activityWindowAndroid, profileSupplier);
+                    new ChromeAndroidTaskImpl(browserWindowType, activityWindowAndroid, tabModel);
             mTasks.put(taskId, newTask);
             mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
             return newTask;
