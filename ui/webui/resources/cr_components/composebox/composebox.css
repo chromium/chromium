@@ -187,7 +187,7 @@
 }
 
 :host([expanded_][show-dropdown_]) #composebox {
-  max-height: 350px;
+  max-height: 422px;
 }
 
 #inputContainer {
