@@ -18,6 +18,8 @@ blink_core_sources_timing = [
   "largest_contentful_paint.h",
   "interaction_contentful_paint.cc",
   "interaction_contentful_paint.h",
+  "interaction_effects_monitor.cc",
+  "interaction_effects_monitor.h",
   "layout_shift.cc",
   "layout_shift.h",
   "layout_shift_attribution.cc",
@@ -114,6 +116,7 @@ blink_core_sources_timing = [
 
 blink_core_tests_timing = [
   "background_tracing_helper_test.cc",
+  "interaction_effects_monitor_test.cc",
   "memory_info_test.cc",
   "navigation_id_generator_test.cc",
   "performance_mark_test.cc",
@@ -125,6 +128,8 @@ blink_core_tests_timing = [
   "time_clamper_test.cc",
   "window_performance_test.cc",
   "soft_navigation_heuristics_test.cc",
+  "soft_navigation_heuristics_test_util.cc",
+  "soft_navigation_heuristics_test_util.h",
   "soft_navigation_paint_attribution_tracker_test.cc",
   "worker_performance_test.cc",
 ]

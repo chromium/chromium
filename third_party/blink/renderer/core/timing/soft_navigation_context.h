@@ -25,12 +25,20 @@ namespace blink {
 class Node;
 class LargestContentfulPaintCalculator;
 struct LargestContentfulPaintDetails;
+class SoftNavigationHeuristics;
 
 class CORE_EXPORT SoftNavigationContext
     : public GarbageCollected<SoftNavigationContext> {
   static uint64_t last_context_id_;
 
  public:
+  // Each `SoftNavigationContext` has a strictly increasing numeric ID
+  // (`ContextId()`), which that can be used to determine the order of
+  // interactions. `NextContextId()` is the next ID that will be used, and it
+  // can be used to determine order with respect to a certain point, e.g. to
+  // differentiate new interactions from previous ones.
+  static uint64_t NextContextId() { return last_context_id_ + 1; }
+
   SoftNavigationContext(LocalDOMWindow& window,
                         features::SoftNavigationHeuristicsMode);
 
@@ -148,6 +156,7 @@ class CORE_EXPORT SoftNavigationContext
   uint64_t repainted_area_last_animation_frame_ = 0;
 
   WeakMember<Node> known_not_related_parent_;
+  Member<SoftNavigationHeuristics> heuristics_;
 };
 
 }  // namespace blink

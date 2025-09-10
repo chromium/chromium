@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/features.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
+class InteractionEffectsMonitor;
 class HTMLVideoElement;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
@@ -133,6 +135,11 @@ class CORE_EXPORT SoftNavigationHeuristics
     return !potential_soft_navigations_.empty();
   }
 
+  void RegisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
+  void UnregisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
+  void ForEachInteractionEffectsMonitor(
+      base::FunctionRef<void(InteractionEffectsMonitor&)>);
+
  private:
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
@@ -214,6 +221,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   // Used to map DOM modifications to `SoftNavigationContext`s for paint
   // attribution. Only set when `IsPrePaintBasedAttributionEnabled()` is true.
   Member<SoftNavigationPaintAttributionTracker> paint_attribution_tracker_;
+
+  HeapHashSet<Member<InteractionEffectsMonitor>> interaction_effects_monitors_;
 
   uint32_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -157,7 +158,8 @@ constexpr bool IsInteractionEnd(
 }
 
 std::optional<SoftNavigationHeuristics::EventScope::Type>
-EventScopeTypeFromEvent(const Event& event) {
+EventScopeTypeFromEvent(const Event& event,
+                        bool has_interaction_effects_monitor) {
   if (!event.isTrusted()) {
     return std::nullopt;
   }
@@ -170,8 +172,9 @@ EventScopeTypeFromEvent(const Event& event) {
   if (event.IsKeyboardEvent()) {
     Node* target_node =
         event.RawTarget() ? event.RawTarget()->ToNode() : nullptr;
-    if (target_node && target_node->IsHTMLElement() &&
-        DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement()) {
+    if ((target_node && target_node->IsHTMLElement() &&
+         DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement()) ||
+        has_interaction_effects_monitor) {
       if (event.type() == event_type_names::kKeydown) {
         return SoftNavigationHeuristics::EventScope::Type::kKeydown;
       } else if (event.type() == event_type_names::kKeypress) {
@@ -270,6 +273,12 @@ void SoftNavigationHeuristics::Shutdown() {
     OnSoftNavigationContextWasExhausted(*context.Get(), viewport_area,
                                         required_paint_area);
   }
+
+  for (const auto& monitor : interaction_effects_monitors_) {
+    monitor->Shutdown();
+  }
+  interaction_effects_monitors_.clear();
+
   potential_soft_navigations_.clear();
 }
 
@@ -588,6 +597,7 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(paint_attribution_tracker_);
   visitor->Trace(contexts_waiting_for_paint_timestamp_);
+  visitor->Trace(interaction_effects_monitors_);
   // Register a custom weak callback, which runs after processing weakness for
   // the container. This allows us to observe the collection becoming empty
   // without needing to observe individual element disposal.
@@ -676,7 +686,8 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
 
 std::optional<SoftNavigationHeuristics::EventScope>
 SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
-  std::optional<EventScope::Type> type = EventScopeTypeFromEvent(event);
+  std::optional<EventScope::Type> type =
+      EventScopeTypeFromEvent(event, !interaction_effects_monitors_.empty());
   if (!type) {
     return std::nullopt;
   }
@@ -734,6 +745,33 @@ uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
     return required_paint_area;
   }
   return kMinRequiredArea;
+}
+
+void SoftNavigationHeuristics::ForEachInteractionEffectsMonitor(
+    base::FunctionRef<void(InteractionEffectsMonitor&)> callback) {
+  for (const auto& monitor : interaction_effects_monitors_) {
+    callback(*monitor.Get());
+  }
+}
+
+void SoftNavigationHeuristics::RegisterInteractionEffectsMonitor(
+    InteractionEffectsMonitor* monitor) {
+  // This should not be called after detach.
+  CHECK(window_->GetFrame());
+  auto result = interaction_effects_monitors_.insert(monitor);
+  CHECK(result.is_new_entry);
+}
+
+void SoftNavigationHeuristics::UnregisterInteractionEffectsMonitor(
+    InteractionEffectsMonitor* monitor) {
+  // `interaction_effects_monitors_` is cleared on detach, and the observer
+  // might be unregistered after that.
+  if (!window_->GetFrame()) {
+    return;
+  }
+  auto iter = interaction_effects_monitors_.find(monitor);
+  CHECK_NE(iter, interaction_effects_monitors_.end());
+  interaction_effects_monitors_.erase(monitor);
 }
 
 // static

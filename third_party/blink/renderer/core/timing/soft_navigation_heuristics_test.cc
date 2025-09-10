@@ -11,22 +11,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
-#include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+
 namespace blink {
 
 using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
@@ -57,42 +54,11 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     return ToScriptStateForMainWorld(GetDocument().GetFrame());
   }
 
-  static AtomicString KeyboardEventScopeTypeToEventName(
-      SoftNavigationHeuristics::EventScope::Type type) {
-    switch (type) {
-      case SoftNavigationHeuristics::EventScope::Type::kKeydown:
-        return event_type_names::kKeydown;
-      case SoftNavigationHeuristics::EventScope::Type::kKeypress:
-        return event_type_names::kKeypress;
-      case SoftNavigationHeuristics::EventScope::Type::kKeyup:
-        return event_type_names::kKeyup;
-      default:
-        NOTREACHED();
-    }
-  }
-
   Event* CreateEvent(SoftNavigationHeuristics::EventScope::Type type) {
-    Event* event = nullptr;
-    switch (type) {
-      case SoftNavigationHeuristics::EventScope::Type::kKeydown:
-      case SoftNavigationHeuristics::EventScope::Type::kKeypress:
-      case SoftNavigationHeuristics::EventScope::Type::kKeyup:
-        event = KeyboardEvent::Create(GetScriptStateForTest(),
-                                      KeyboardEventScopeTypeToEventName(type),
-                                      KeyboardEventInit::Create());
-        event->SetTarget(MakeGarbageCollected<HTMLBodyElement>(GetDocument()));
-        break;
-      case SoftNavigationHeuristics::EventScope::Type::kClick:
-        event = MouseEvent::Create(GetScriptStateForTest(),
-                                   event_type_names::kClick,
-                                   MouseEventInit::Create());
-        break;
-      case SoftNavigationHeuristics::EventScope::Type::kNavigate:
-        event = Event::Create(event_type_names::kNavigate);
-        break;
-    }
-    event->SetTrusted(true);
-    return event;
+    // Event scopes are only created for keyboard events that target <body>. Use
+    // this for all types since this has no effect for other types.
+    return CreateEventForEventScopeType(type, GetScriptStateForTest(),
+                                        GetDocument().body());
   }
 
  private:
@@ -271,11 +237,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // Simulate a paint in a separate task.
   {
-    TextRecord* record = MakeGarbageCollected<TextRecord>(
-        node1, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
-        gfx::RectF(1000, 1000),
-        /* frame_index= */ 0,
-        /* is_needed_for_timing= */ false, context);
+    TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000, context);
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
@@ -294,11 +256,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // And another paint
   {
-    TextRecord* record = MakeGarbageCollected<TextRecord>(
-        node2, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
-        gfx::RectF(1000, 1000),
-        /* frame_index= */ 0,
-        /* is_needed_for_timing= */ false, context);
+    TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000, context);
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));

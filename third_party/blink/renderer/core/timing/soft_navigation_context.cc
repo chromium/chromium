@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
 namespace blink {
 
@@ -21,7 +23,8 @@ SoftNavigationContext::SoftNavigationContext(
     features::SoftNavigationHeuristicsMode mode)
     : paint_attribution_mode_(mode),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          DOMWindowPerformance::performance(window))) {}
+          DOMWindowPerformance::performance(window))),
+      heuristics_(window.GetSoftNavigationHeuristics()) {}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
   if (paint_attribution_mode_ !=
@@ -164,6 +167,13 @@ bool SoftNavigationContext::OnPaintFinished() {
                         new_repainted_area);
   }
 
+  if (new_painted_area > 0) {
+    heuristics_->ForEachInteractionEffectsMonitor(
+        [&](InteractionEffectsMonitor& monitor) {
+          monitor.OnContentfulPaint(this, new_painted_area);
+        });
+  }
+
   num_modified_dom_nodes_last_animation_frame_ = num_modified_dom_nodes_;
   num_live_nodes_last_animation_frame_ = modified_nodes_.size();
   painted_area_last_animation_frame_ = painted_area_;
@@ -279,6 +289,7 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(largest_text_);
   visitor->Trace(largest_image_);
   visitor->Trace(first_image_or_text_);
+  visitor->Trace(heuristics_);
 }
 
 void SoftNavigationContext::Shutdown() {
@@ -288,6 +299,7 @@ void SoftNavigationContext::Shutdown() {
   largest_text_ = nullptr;
   largest_image_ = nullptr;
   first_image_or_text_ = nullptr;
+  heuristics_ = nullptr;
 }
 
 }  // namespace blink
