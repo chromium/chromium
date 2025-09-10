@@ -2964,6 +2964,9 @@ extern const char kGridTabSwitcherUpdateDescription[];
 extern const char kEnableClipboardDataControlsAndroidName[];
 extern const char kEnableClipboardDataControlsAndroidDescription[];
 
+extern const char kEnableClientCertificateProvisioningOnAndroidName[];
+extern const char kEnableClientCertificateProvisioningOnAndroidDescription[];
+
 extern const char kEwalletPaymentsName[];
 extern const char kEwalletPaymentsDescription[];
 

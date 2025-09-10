@@ -1467,6 +1467,13 @@ const char kEnterpriseBadgingForNtpFooterDescription[] =
     "includes showing the enterprise logo and the management disclaimer";
 
 #if BUILDFLAG(IS_ANDROID)
+
+const char kEnableClientCertificateProvisioningOnAndroidName[] =
+    "Enable client certificate provisioning on Android";
+const char kEnableClientCertificateProvisioningOnAndroidDescription[] =
+    "When enabled, client certificate provisioning from the cloud is allowed "
+    "for enterprise users on Android.";
+
 const char kEnterpriseSecurityEventReportingOnAndroidName[] =
     "Allow enterprise security event reporting";
 const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
@@ -1545,7 +1552,8 @@ const char kDevToolsIndividualRequestThrottlingDescription[] =
     "conditions to individual requests, extending the per-request blocking "
     "behavior.";
 
-const char kDevToolsLiveEditName[] = "Enable JavaScript live editing in DevTools";
+const char kDevToolsLiveEditName[] =
+    "Enable JavaScript live editing in DevTools";
 const char kDevToolsLiveEditDescription[] =
     "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
     "edits to the target page live.";

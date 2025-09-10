@@ -104,6 +104,7 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/obfuscation/core/utils.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -11919,6 +11920,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)},
+
+    {"enable-client-certificate-provisioning-on-android",
+     flag_descriptions::kEnableClientCertificateProvisioningOnAndroidName,
+     flag_descriptions::
+         kEnableClientCertificateProvisioningOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(client_certificates::features::
+                            kEnableClientCertificateProvisioningOnAndroid)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
