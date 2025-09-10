@@ -8,7 +8,7 @@
 
 #include "base/win/windows_version.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_bindings.h"

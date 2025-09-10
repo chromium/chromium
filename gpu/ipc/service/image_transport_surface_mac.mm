@@ -5,7 +5,7 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_surface_stub.h"
 

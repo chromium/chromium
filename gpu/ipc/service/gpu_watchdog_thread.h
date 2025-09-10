@@ -19,7 +19,7 @@
 #include "build/chromecast_buildflags.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {
