@@ -8421,24 +8421,6 @@
             ]
         }
     ],
-    "DesktopMediaPickerMultiLineTitle": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DesktopMediaPickerMultiLineTitle"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
@@ -9240,7 +9222,7 @@
             ]
         }
     ],
-    "DisplayMediaRejectLongDomains": [
+    "DisplayMediaPickerLongDomains": [
         {
             "platforms": [
                 "chromeos",
@@ -9252,6 +9234,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DesktopMediaPickerMultiLineTitle",
                         "DisplayMediaRejectLongDomains"
                     ]
                 }
