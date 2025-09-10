@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/mock_input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/scroll_predictor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -1311,6 +1312,69 @@ TEST_F(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
 
     InjectInputEvent(std::move(touch_start));
   }
+}
+
+// Verifies that when the `filter_out_empty_updates` parameter for the
+// SendEmptyGestureScrollUpdate feature is set to true, empty
+// GestureScrollUpdates are not passed to the resampling code.
+TEST_F(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSendEmptyGestureScrollUpdate,
+      {{"filter_out_empty_updates", "true"}});
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+
+  input_handler_proxy_.SetScrollEventDispatchMode(
+      cc::InputHandlerClient::ScrollEventDispatchMode::
+          kDispatchScrollEventsUntilDeadline,
+      0.333);
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
+      .Times(1);
+
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(3);
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame();
+
+  // The first (empty) scroll update will be dispatched immediately and not sent
+  // to predictor.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
+  DeliverInputForBeginFrame();
+  auto result = GestureScrollEventPredictionAvailable();
+  EXPECT_FALSE(result);
+
+  // Predictor needs at least 2 ms of delta between events to make a prediction.
+  tick_clock.Advance(base::Milliseconds(2));
+
+  // The second (non-empty) scroll update will be sent to the predictor,
+  // enqueued and then dispatched. predictor.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
+  DeliverInputForBeginFrame();
+
+  // Since the first update was not sent to the predictor, prediction is not
+  // available.
+  result = GestureScrollEventPredictionAvailable();
+  EXPECT_FALSE(result);
+
+  // Predictor needs at least 2 ms of delta between events to make a prediction.
+  tick_clock.Advance(base::Milliseconds(2));
+
+  // The third  (non-empty) scroll update will be sent to the predictor,
+  // enqueued and then dispatched.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -5);
+
+  // There are two events with > 2ms between them, so prediction should be
+  // available.
+  result = GestureScrollEventPredictionAvailable();
+  EXPECT_TRUE(result);
 }
 
 TEST_P(InputHandlerProxyTest, HitTestTouchEventNullTouchAction) {

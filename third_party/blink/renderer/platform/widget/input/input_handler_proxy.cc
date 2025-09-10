@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
 #include "third_party/blink/renderer/platform/widget/input/scroll_predictor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/latency/latency_info.h"
@@ -398,7 +399,16 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
       // dispatching if `event_with_callback` is too old, and if we expect a
       // newer input event to still arrive in time.
       enqueue_scroll_events_ = true;
-      if (scroll_predictor_) {
+
+      // To estimate the impact of empty GestureScrollUpdates on predictor
+      // output quality, some experiment arms will skip them.
+      const bool should_filter_out_event =
+          (::features::kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates
+               .Get() &&
+           gesture_event.data.scroll_update.delta_x == 0 &&
+           gesture_event.data.scroll_update.delta_y == 0);
+
+      if (scroll_predictor_ && !should_filter_out_event) {
         std::unique_ptr<EventWithCallback> event_to_dispatch =
             scroll_predictor_->ResampleScrollEvents(
                 std::move(event_with_callback),
