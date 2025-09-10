@@ -9896,6 +9896,7 @@ from previous Chrome versions.
   <int value="-1568559155" label="WebSocketHandshakeReuseConnection:enabled"/>
   <int value="-1567941546" label="EnableUniveralLinks:enabled"/>
   <int value="-1567727398" label="DesktopPWAsWithoutExtensions:disabled"/>
+  <int value="-1566859164" label="CustomPolicyRegistrationDelay:enabled"/>
   <int value="-1566412850" label="JourneysImages:disabled"/>
   <int value="-1565683260" label="EnableSwitchAccessPointScanning:disabled"/>
   <int value="-1564423193" label="SystemShortcutBehavior:enabled"/>
@@ -11123,6 +11124,7 @@ from previous Chrome versions.
   <int value="-1136043915" label="ShowTabGroupsMacSystemMenu:disabled"/>
   <int value="-1135637622" label="DisplayEdgeToEdgeFullscreen:disabled"/>
   <int value="-1135200357" label="ViewTransitionOnNavigation:disabled"/>
+  <int value="-1134861029" label="CustomPolicyRegistrationDelay:disabled"/>
   <int value="-1134420065" label="CriticalPersistedTabData:disabled"/>
   <int value="-1134412904" label="PrivacySandboxSettings:disabled"/>
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>

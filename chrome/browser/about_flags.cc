@@ -149,6 +149,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/plus_addresses/core/common/features.h"
+#include "components/policy/core/common/features.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -4883,6 +4884,30 @@ const FeatureEntry::FeatureVariation kNtpEnterpriseShortcutsVariations[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
 
+const FeatureEntry::FeatureParam kPolicyRegistrationDelay2m[] = {
+    {"PolicyRegistrationDelay", "2m"}};
+const FeatureEntry::FeatureParam kPolicyRegistrationDelay1h[] = {
+    {"PolicyRegistrationDelay", "1h"}};
+const FeatureEntry::FeatureParam kPolicyRegistrationDelay6h[] = {
+    {"PolicyRegistrationDelay", "6h"}};
+const FeatureEntry::FeatureParam kPolicyRegistrationDelay12h[] = {
+    {"PolicyRegistrationDelay", "12h"}};
+const FeatureEntry::FeatureParam kPolicyRegistrationDelay24h[] = {
+    {"PolicyRegistrationDelay", "24h"}};
+
+const FeatureEntry::FeatureVariation kPolicyRegistrationDelayVariations[] = {
+    {"2 minutes", kPolicyRegistrationDelay2m,
+     std::size(kPolicyRegistrationDelay2m), nullptr},
+    {"1 hour", kPolicyRegistrationDelay1h,
+     std::size(kPolicyRegistrationDelay1h), nullptr},
+    {"6 hours", kPolicyRegistrationDelay6h,
+     std::size(kPolicyRegistrationDelay6h), nullptr},
+    {"12 hours", kPolicyRegistrationDelay12h,
+     std::size(kPolicyRegistrationDelay12h), nullptr},
+    {"24 hours", kPolicyRegistrationDelay24h,
+     std::size(kPolicyRegistrationDelay24h), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9490,6 +9515,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUnsafeSwiftShaderDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeSwiftShader)},
 #endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
+
+    // The entry in kFeatureEntries
+    {"policy-registration-delay",
+     flag_descriptions::kPolicyRegistrationDelayName,
+     flag_descriptions::kPolicyRegistrationDelayDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         policy::features::kCustomPolicyRegistrationDelay,
+         kPolicyRegistrationDelayVariations,
+         "CustomPolicyRegistrationDelay")},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,

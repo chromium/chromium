@@ -2214,6 +2214,10 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
+const char kPolicyRegistrationDelayName[] = "Policy Registration Delay";
+const char kPolicyRegistrationDelayDescription[] =
+    "Enables a configurable delay for policy registration.";
+
 const char kMediaRemotingWithoutFullscreenName[] =
     "Media Remoting without videos in fullscreen mode";
 const char kMediaRemotingWithoutFullscreenDescription[] =

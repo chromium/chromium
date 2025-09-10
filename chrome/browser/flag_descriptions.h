@@ -1294,6 +1294,9 @@ extern const char kForceDirectionRtl[];
 extern const char kForceUiDirectionName[];
 extern const char kForceUiDirectionDescription[];
 
+extern const char kPolicyRegistrationDelayName[];
+extern const char kPolicyRegistrationDelayDescription[];
+
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 

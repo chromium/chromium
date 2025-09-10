@@ -30,6 +30,7 @@
 #include "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -172,6 +173,15 @@ std::string UserPolicySigninService::GetProfileId() {
 }
 
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
+  int64_t last_check_time_internal =
+      profile_prefs_->GetInt64(policy_prefs::kLastPolicyCheckTime);
+  if (last_check_time_internal == 0) {
+    return base::TimeDelta();
+  }
+  if (base::FeatureList::IsEnabled(
+          policy::features::kCustomPolicyRegistrationDelay)) {
+    return policy::features::kPolicyRegistrationDelay.Get();
+  }
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
   base::TimeDelta retry_delay = base::Days(3);
@@ -180,8 +190,8 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
     retry_delay = base::Days(1);
   }
 
-  base::Time last_check_time = base::Time::FromInternalValue(
-      profile_prefs_->GetInt64(policy_prefs::kLastPolicyCheckTime));
+  base::Time last_check_time =
+      base::Time::FromInternalValue(last_check_time_internal);
   base::Time next_check_time = last_check_time + retry_delay;
 
   // Check immediately if no check was ever done before (last_check_time == 0),

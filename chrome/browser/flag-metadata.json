@@ -8076,6 +8076,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "policy-registration-delay",
+    "owners": ["ydago@chromium.org", "zmin@google.com"],
+    "expiry_milestone": 148
+  },
+  {
     "name": "pompano",
     "owners": [
       "alanlxl@chromium.org",

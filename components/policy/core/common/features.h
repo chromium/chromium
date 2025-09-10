@@ -6,6 +6,8 @@
 #define COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "components/policy/policy_export.h"
 
 namespace policy::features {
@@ -25,6 +27,11 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kEnhancedSecurityEventFields);
 
 // Controls if we can use the cec flag in PolicyData.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kUseCECFlagInPolicyData);
+
+// Enables a configurable delay for policy registration.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kCustomPolicyRegistrationDelay);
+POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kPolicyRegistrationDelay;
 
 }  // namespace policy::features
 
