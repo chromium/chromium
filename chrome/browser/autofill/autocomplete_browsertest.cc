@@ -239,7 +239,8 @@ class AutocompleteTest : public InProcessBrowserTest {
 };
 
 // Tests that a user can save a simple Autocomplete value.
-IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
+// TODO(crbug.com/434794640): flaky.
+IN_PROC_BROWSER_TEST_F(AutocompleteTest, DISABLED_SubmitSimpleValue_Saves) {
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
@@ -251,8 +252,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       SubmitSimpleValue_OTR_DoesNotSave) {
+                       DISABLED_SubmitSimpleValue_OTR_DoesNotSave) {
   set_active_browser(CreateIncognitoBrowser());
 
   std::string prefix = "Some";
@@ -299,8 +301,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 }
 
 // Tests that the retention policy cleanup removes an expired entry.
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       RetentionPolicy_RemovesExpiredEntry) {
+                       DISABLED_RetentionPolicy_RemovesExpiredEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.
@@ -324,8 +327,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
 // 20 days old).
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       RetentionPolicy_DoesNot_RemoveValidEntry) {
+                       DISABLED_RetentionPolicy_DoesNot_RemoveValidEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.
