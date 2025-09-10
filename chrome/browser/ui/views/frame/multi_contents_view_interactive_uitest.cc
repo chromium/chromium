@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitView) {
       ObserveState(kMultiContentsViewBoundsChangedObserver, browser()),
       SelectTab(kTabStripElementId, 2, InputType::kMouse),
       WaitForActiveTabChange(2),
-      CheckState(kMultiContentsViewBoundsChangedObserver, 1),
+      CheckState(kMultiContentsViewBoundsChangedObserver, 0),
       StopObservingState(kMultiContentsViewBoundsChangedObserver));
 }
 
@@ -636,17 +636,19 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // Verify expected contents separators are visible. Note, only one side
       // panel separator should be visible and the side panel is right aligned
       // by default.
-      WaitForShow(kContentsSeparatorViewElementId),
-      WaitForShow(kRightAlignedSidePanelSeparatorViewElementId),
-      WaitForHide(kLeftAlignedSidePanelSeparatorViewElementId),
-      WaitForShow(kSidePanelRoundedCornerViewElementId),
+      WaitForShow(kContentsSeparatorTopEdgeElementId),
+      WaitForShow(kContentsSeparatorTrailingEdgeElementId),
+      WaitForHide(kContentsSeparatorLeadingEdgeElementId),
+      WaitForShow(kContentsSeparatorTrailingTopCornerElementId),
+      WaitForHide(kContentsSeparatorLeadingTopCornerElementId),
       // Open split view.
       CreateTabsAndEnterSplitView(),
       // Verify no contents separators are visible.
-      WaitForHide(kContentsSeparatorViewElementId),
-      WaitForHide(kRightAlignedSidePanelSeparatorViewElementId),
-      WaitForHide(kLeftAlignedSidePanelSeparatorViewElementId),
-      WaitForHide(kSidePanelRoundedCornerViewElementId));
+      WaitForHide(kContentsSeparatorTopEdgeElementId),
+      WaitForHide(kContentsSeparatorTrailingEdgeElementId),
+      WaitForHide(kContentsSeparatorLeadingEdgeElementId),
+      WaitForHide(kContentsSeparatorTrailingTopCornerElementId),
+      WaitForHide(kContentsSeparatorLeadingTopCornerElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,

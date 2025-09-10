@@ -182,6 +182,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     infobar_container_ = browser_view_->AddChildView(
         std::make_unique<InfoBarContainerView>(nullptr));
 
+    left_aligned_side_panel_separator_ =
+        browser_view_->AddChildView(std::make_unique<views::Separator>());
+    right_aligned_side_panel_separator_ =
+        browser_view_->AddChildView(std::make_unique<views::Separator>());
     side_panel_rounded_corner_ =
         browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(16, 16)));
 
@@ -213,10 +217,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*web_app_window_title=*/nullptr, tab_strip_region_view_,
         /*vertical_tab_strip_container=*/nullptr, toolbar_, infobar_container_,
         contents_container_,
-        /*multi_contents_view=*/nullptr,
-        /*left_aligned_side_panel_separator=*/nullptr,
-        /*unified_side_panel=*/nullptr,
-        /*right_aligned_side_panel_separator=*/nullptr,
+        /*multi_contents_view=*/nullptr, left_aligned_side_panel_separator_,
+        /*unified_side_panel=*/nullptr, right_aligned_side_panel_separator_,
         side_panel_rounded_corner_, separator_);
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
@@ -238,6 +240,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     toolbar_ = nullptr;
     separator_ = nullptr;
     infobar_container_ = nullptr;
+    left_aligned_side_panel_separator_ = nullptr;
+    right_aligned_side_panel_separator_ = nullptr;
     side_panel_rounded_corner_ = nullptr;
     contents_container_ = nullptr;
     contents_web_view_ = nullptr;
@@ -269,6 +273,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   raw_ptr<views::View> toolbar_;
   raw_ptr<views::Separator> separator_;
   raw_ptr<InfoBarContainerView> infobar_container_;
+  raw_ptr<views::View> left_aligned_side_panel_separator_;
+  raw_ptr<views::View> right_aligned_side_panel_separator_;
   raw_ptr<views::View> side_panel_rounded_corner_;
   raw_ptr<views::View> contents_container_;
   raw_ptr<views::View> contents_web_view_;

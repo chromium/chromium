@@ -999,10 +999,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
 
-  contents_separator_ =
+  top_container_separator_ =
       top_container_->AddChildView(std::make_unique<ContentsSeparator>());
-  contents_separator_->SetProperty(views::kElementIdentifierKey,
-                                   kContentsSeparatorViewElementId);
+  top_container_separator_->SetProperty(views::kElementIdentifierKey,
+                                        kContentsSeparatorTopEdgeElementId);
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
@@ -1015,29 +1015,33 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         AddChildView(std::move(vertical_tab_strip_container));
   }
 
-  right_aligned_side_panel_separator_ =
-      AddChildView(std::make_unique<ContentsSeparator>());
-  right_aligned_side_panel_separator_->SetProperty(
-      views::kElementIdentifierKey,
-      kRightAlignedSidePanelSeparatorViewElementId);
-
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
       this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                              : SidePanel::HorizontalAlignment::kLeft));
-  left_aligned_side_panel_separator_ =
-      AddChildView(std::make_unique<ContentsSeparator>());
-  left_aligned_side_panel_separator_->SetProperty(
-      views::kElementIdentifierKey,
-      kLeftAlignedSidePanelSeparatorViewElementId);
-  side_panel_rounded_corner_ =
-      AddChildView(std::make_unique<ContentsRoundedCorner>(
-          this, views::ShapeContextTokens::kContentSeparatorRadius,
-          base::BindRepeating(&SidePanel::IsRightAligned,
-                              base::Unretained(unified_side_panel_))));
-  side_panel_rounded_corner_->SetProperty(views::kElementIdentifierKey,
-                                          kSidePanelRoundedCornerViewElementId);
+
+  // `MultiContentsView` owns separators when `SideBySide` is enabled.
+  if (!multi_contents_view_) {
+    right_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+    right_aligned_side_panel_separator_->SetProperty(
+        views::kElementIdentifierKey,
+        kRightAlignedSidePanelSeparatorViewElementId);
+
+    left_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+    left_aligned_side_panel_separator_->SetProperty(
+        views::kElementIdentifierKey,
+        kLeftAlignedSidePanelSeparatorViewElementId);
+    side_panel_rounded_corner_ =
+        AddChildView(std::make_unique<ContentsRoundedCorner>(
+            this, views::ShapeContextTokens::kContentSeparatorRadius,
+            base::BindRepeating(&SidePanel::IsRightAligned,
+                                base::Unretained(unified_side_panel_))));
+    side_panel_rounded_corner_->SetProperty(
+        views::kElementIdentifierKey, kSidePanelRoundedCornerViewElementId);
+  }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1127,7 +1131,7 @@ BrowserView::~BrowserView() {
 
   webui_tab_strip_ = nullptr;
   toolbar_ = nullptr;
-  contents_separator_ = nullptr;
+  top_container_separator_ = nullptr;
   loading_bar_ = nullptr;
   find_bar_host_view_ = nullptr;
   infobar_container_ = nullptr;
@@ -2787,8 +2791,6 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
       is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                        : SidePanel::HorizontalAlignment::kLeft);
   GetBrowserViewLayout()->Layout(this);
-  side_panel_rounded_corner_->DeprecatedLayoutImmediately();
-  side_panel_rounded_corner_->SchedulePaint();
 }
 
 void BrowserView::FocusBookmarksToolbar() {
@@ -5208,7 +5210,7 @@ void BrowserView::AddedToWidget() {
           contents_container_, multi_contents_view_,
           left_aligned_side_panel_separator_, unified_side_panel_,
           right_aligned_side_panel_separator_, side_panel_rounded_corner_,
-          contents_separator_));
+          top_container_separator_));
   browser_view_layout->SetUseBrowserContentMinimumSize(
       ShouldUseBrowserContentMinimumSize());
 

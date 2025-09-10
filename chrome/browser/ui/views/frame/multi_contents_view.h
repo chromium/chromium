@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -151,6 +152,10 @@ class MultiContentsView : public views::View,
   bool IsDragAndDropEnabled() const;
   void OnDragAndDropPrefStateChange();
 
+  void SetShouldShowTopSeparator(bool should_show);
+  void SetShouldShowLeadingSeparator(bool should_show);
+  void SetShouldShowTrailingSeparator(bool should_show);
+
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
@@ -172,12 +177,35 @@ class MultiContentsView : public views::View,
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, SeparatorLayout);
+
+  // Encapsulates the views required to draw a separator around contents.
+  struct ContentsSeparators {
+    void Reset();
+
+    raw_ptr<views::View> top_separator = nullptr;
+    raw_ptr<views::View> leading_separator = nullptr;
+    raw_ptr<views::View> trailing_separator = nullptr;
+    raw_ptr<views::View> top_leading_rounded_corner = nullptr;
+    raw_ptr<views::View> top_trailing_rounded_corner = nullptr;
+
+    bool should_show_top = false;
+    bool should_show_leading = false;
+    bool should_show_trailing = false;
+  };
+
   static constexpr int kMinWebContentsWidth = 200;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  // Adds separator layouts to the given list and returns the remaining
+  // space after the layout.
+  gfx::Rect CalculateSeparatorLayouts(
+      const gfx::Rect& available_space,
+      std::vector<views::ChildLayout>& child_layouts) const;
 
   int GetInactiveIndex() const;
 
@@ -198,6 +226,8 @@ class MultiContentsView : public views::View,
 
   raw_ptr<BrowserView> browser_view_;
   std::unique_ptr<MultiContentsViewDelegate> delegate_;
+
+  ContentsSeparators contents_separators_;
 
   // Holds ContentsContainerViews, when not in a split view the second
   // ContentsContainerView is not visible.

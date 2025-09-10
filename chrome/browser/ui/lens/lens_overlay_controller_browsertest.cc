@@ -148,6 +148,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -8852,6 +8853,23 @@ class LensOverlayControllerSideBySideBrowserTest
          {features::kSideBySide, {}}},
         {});
   }
+
+  bool AreAnyRoundedCornersShowing() {
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForView(
+            BrowserView::GetBrowserViewForBrowser(browser()));
+    views::View* start_corner =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kContentsSeparatorLeadingTopCornerElementId, context);
+    views::View* end_corner =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kContentsSeparatorTrailingTopCornerElementId, context);
+    return (start_corner && start_corner->GetVisible()) ||
+           (end_corner && end_corner->GetVisible());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
@@ -8985,9 +9003,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                        ->layer()
                        ->GetTargetRoundedCornerRadius()
                        .upper_right() > 0);
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->GetSidePanelRoundedCornerForTesting()
-                  ->GetVisible());
+  EXPECT_TRUE(AreAnyRoundedCornersShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
@@ -9022,9 +9038,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                       ->layer()
                       ->GetTargetRoundedCornerRadius()
                       .upper_right() > 0);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->GetSidePanelRoundedCornerForTesting()
-                   ->GetVisible());
+  EXPECT_FALSE(AreAnyRoundedCornersShowing());
 
   // Switch to the first tab.
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -9048,9 +9062,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                        ->layer()
                        ->GetTargetRoundedCornerRadius()
                        .upper_right() > 0);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->GetSidePanelRoundedCornerForTesting()
-                   ->GetVisible());
+  EXPECT_FALSE(AreAnyRoundedCornersShowing());
 
   // Switch back to the second tab.
   browser()->tab_strip_model()->ActivateTabAt(1);
@@ -9065,9 +9077,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                       ->layer()
                       ->GetTargetRoundedCornerRadius()
                       .upper_right() > 0);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->GetSidePanelRoundedCornerForTesting()
-                   ->GetVisible());
+  EXPECT_FALSE(AreAnyRoundedCornersShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
