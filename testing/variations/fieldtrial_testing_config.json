@@ -6364,30 +6364,6 @@
             ]
         }
     ],
-    "ClientSideDetectionShowLlamaScamVerdictWarning": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithWarning",
-                    "enable_features": [
-                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection",
-                        "ClientSideDetectionShowLlamaScamVerdictWarning"
-                    ]
-                },
-                {
-                    "name": "EnabledMetricsCollection",
-                    "enable_features": [
-                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClipboardDeemphasisAndroid": [
         {
             "platforms": [
