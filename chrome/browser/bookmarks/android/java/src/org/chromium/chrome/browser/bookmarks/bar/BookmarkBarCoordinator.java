@@ -27,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -84,7 +83,6 @@ public class BookmarkBarCoordinator
     private final CompositorModelChangeProcessor mChangeProcessor;
     private final FullscreenManager mFullscreenManager;
     private boolean mIsResourceRegistered;
-    private @Nullable OffsetTag mOffsetTag;
     private final CurrentTabObserver mCurrentTabObserver;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -133,7 +131,13 @@ public class BookmarkBarCoordinator
         mResourceManager = resourceManager;
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
-        mIsInFullscreenMode = false;
+
+        // The Bookmark Bar may first be turned on in fullscreen mode, in which case we want its
+        // initial state to be hidden, which is tracked by this member variable.
+        if (currentTabSupplier.get() != null && currentTabSupplier.get().getWebContents() != null) {
+            mIsInFullscreenMode =
+                    currentTabSupplier.get().getWebContents().isFullscreenForCurrentTab();
+        }
 
         mView = (BookmarkBar) viewStub.inflate();
         mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
@@ -229,7 +233,6 @@ public class BookmarkBarCoordinator
                                 mViewResourceFrameLayout.getId())
                         .with(BookmarkBarSceneLayerProperties.VISIBILITY, true)
                         .build();
-        updateOffsetTag();
 
         // Create a CurrentTabObserver to update the background color as it changes.
         Callback<@Nullable Tab> visibleTabObserver =
@@ -264,6 +267,10 @@ public class BookmarkBarCoordinator
 
         mTopControlsStacker = topControlsStacker;
         mTopControlsStacker.addControl(this);
+
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+            updateOffsetTag();
+        }
     }
 
     /** Destroys the bookmark bar coordinator. */
@@ -499,7 +506,6 @@ public class BookmarkBarCoordinator
             int constraints,
             boolean shouldUpdateOffsets) {
         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            mOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
             updateOffsetTag();
         }
     }
@@ -549,7 +555,9 @@ public class BookmarkBarCoordinator
     private void updateOffsetTag() {
         // The Bookmarks Bar will only be present when the control container is at the top.
         if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP) {
-            mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, mOffsetTag);
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.OFFSET_TAG,
+                    mTopControlsStacker.getTopControlsOffsetTag());
         } else {
             mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, null);
         }

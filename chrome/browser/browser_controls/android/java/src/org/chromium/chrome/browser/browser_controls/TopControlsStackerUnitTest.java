@@ -220,7 +220,10 @@ public class TopControlsStackerUnitTest {
                         100);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.onControlsConstraintsChanged(
-                null, null, BrowserControlsState.SHOWN, false);
+                new BrowserControlsOffsetTagsInfo(),
+                new BrowserControlsOffsetTagsInfo(),
+                BrowserControlsState.SHOWN,
+                false);
 
         mTopControlsStacker.setScrollingDisabled(true);
 

@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.ElementType;
@@ -89,6 +91,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private int mTotalHeight;
     private int mMinHeight;
 
+    private @Nullable OffsetTag mTopControlsOffsetTag;
+
     /**
      * Constructs the top controls stacker, which is used to calculate heights and offsets for any
      * top controls.
@@ -158,6 +162,16 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         return mMinHeight;
     }
 
+    /**
+     * Returns the current OffsetTag for the top controls provided by the {@link
+     * BrowserControlsStateProvider.Observer}.
+     *
+     * @return The OffsetTag for the top controls.
+     */
+    public @Nullable OffsetTag getTopControlsOffsetTag() {
+        return mTopControlsOffsetTag;
+    }
+
     private void recalculateHeights() {
         int totalHeight = 0;
         int minHeight = 0;
@@ -212,6 +226,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints,
             boolean shouldUpdateOffsets) {
+        // TODO(crbug.com/417238089): Consider pushing updated OffsetTags to TopControlLayers.
+        if (mTopControlsOffsetTag != offsetTagsInfo.getTopControlsOffsetTag()) {
+            mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
+        }
         if (mBrowserControlsState == constraints) return;
         mBrowserControlsState = constraints;
         if (mScrollingDisabled) {
