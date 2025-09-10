@@ -44,7 +44,7 @@ class FocusRules : public wm::BaseFocusRules {
 
 class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
  public:
-  NativeCursorManager() = default;
+  NativeCursorManager() { aura::client::SetCursorShapeClient(&cursor_loader_); }
   ~NativeCursorManager() override = default;
 
   void AddHost(aura::WindowTreeHost* host) { hosts_.insert(host); }
