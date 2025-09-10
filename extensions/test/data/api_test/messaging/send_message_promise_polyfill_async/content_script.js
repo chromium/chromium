@@ -25,10 +25,10 @@ chrome.test.runTests([
   },
 
   // TODO(crbug.com/40753031): If the
-  // extensions_features::kOneTimeMessageUnserializableResponseClosesChannel
-  // feature is the default then the tests for
-  // PolyfillSupportUnserializableResponseMessagingApiTest can overwrite the two
-  // below.
+  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport feature
+  // is enabled by default then the tests for
+  // UnserializableOneTimeMessageResponseMessagingApiTest can take the place of
+  // the two below.
 
   // Tests that when the listener responds synchronously with a value that
   // cannot be serialized into JSON the sender is eventually notified of the

@@ -98,6 +98,10 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   const gin::WrapperInfo* wrapper_info() const override;
 
   // Dispatches an event synchronously to listeners, returning the result.
+  // The result is an object containing a 'results' property with any values
+  // returned by listeners. If no listeners return a value or throw, returns
+  // undefined. If the `kRuntimeOnMessageWebExtensionPolyfillSupport` feature is
+  // enabled, it will also include any errors thrown under an 'errors' key.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
                                     v8::LocalVector<v8::Value>* args,
                                     mojom::EventFilteringInfoPtr filter);

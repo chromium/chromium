@@ -23,6 +23,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -39,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
@@ -631,8 +633,8 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/on_message_promise_resolve")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -651,8 +653,8 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/on_message_promise_reject")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -679,8 +681,8 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/send_message_promise_polyfill_sync")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -725,8 +727,8 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
   worker_shutdown_listener.SetOnRepeatedlySatisfied(
       base::BindLambdaForTesting(OnShutdownMessage));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -740,13 +742,117 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
   }
 }
 
+// Test class that supports running tests with the
+// extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport feature
+// enabled and disabled. It also sets `chrome.test.getConfig()`'s 'customArg'
+// key to the feature state so the extension test can adjust it's expectations
+// at test runtime.
+class PolyfillSupportMessagingErrorsApiTest
+    : public base::test::WithFeatureOverride,
+      public PolyfillSupportMessagingApiTest {
+ public:
+  PolyfillSupportMessagingErrorsApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+  }
+
+  void SetUpOnMainThread() override {
+    PolyfillSupportMessagingApiTest::SetUpOnMainThread();
+    // Set "customArg" to be whether the feature is enabled in
+    // chrome.test.getConfig().
+    js_test_config_.Set(
+        "customArg", base::Value(IsParamFeatureEnabled() ? "true" : "false"));
+    extensions::TestGetConfigFunction::set_test_config_state(&js_test_config_);
+  }
+
+  void TearDownOnMainThread() override {
+    PolyfillSupportMessagingApiTest::TearDownOnMainThread();
+    extensions::TestGetConfigFunction::set_test_config_state(nullptr);
+  }
+
+ private:
+  base::Value::Dict js_test_config_;
+};
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered throws a synchronous error
+// 2) the second registered responds to the message
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenErrorIsFirst) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/one_time_message_handler_error_first")));
+
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered responds to the message
+// 2) the second registered throws a synchronous error
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenResponseIsFirst) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/one_time_message_handler_send_response_first")));
+
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered throws an error synchronously
+// 2) the second registered also throws an error synchronously
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenMultipleSyncErrorsThrown) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/one_time_message_handler_sync_errors")));
+
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingErrorsApiTest);
+
+// TODO(crbug.com/439644930): convert this to use
+// base::test::WithFeatureOverride and confirm feature disabled behavior.
 class UnserializableOneTimeMessageResponseMessagingApiTest
     : public MessagingApiTest {
  public:
   UnserializableOneTimeMessageResponseMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::
-            kOneTimeMessageUnserializableResponseClosesChannel);
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
   }
 
  private:
@@ -764,8 +870,8 @@ IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/send_message_promise_polyfill_unserializable")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -813,8 +919,8 @@ IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/on_message_multi_listener/sync_listener_called_first")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
@@ -838,8 +944,8 @@ IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
       "messaging/on_message_multi_listener/async_listener_called_first")));
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
+  // Navigate to a webpage where content script is injected and
+  // runtime.sendMessage() is called.
   ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));

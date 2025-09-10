@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"
@@ -227,7 +229,10 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
   v8::Local<v8::Array> results = v8::Array::New(isolate);
   uint32_t results_index = 0;
 
+  bool polyfill_support_enabled = base::FeatureList::IsEnabled(
+      extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
   v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Array> errors = v8::Array::New(isolate);
   for (const auto& listener : listeners) {
     // NOTE(devlin): Technically, any listener here could suspend JS execution
     // (through e.g. calling alert() or print()). That should suspend this
@@ -252,24 +257,42 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
       }
     } else {
       DCHECK(try_catch.HasCaught());
+
+      // Must record exception before handling exception or resetting
+      // `try_catch` otherwise the exception will be cleared (empty).
+      if (polyfill_support_enabled) {
+        CHECK(errors
+                  ->CreateDataProperty(context, errors->Length(),
+                                       try_catch.Exception())
+                  .ToChecked());
+      }
+
       exception_handler_->HandleException(context, "Error in event handler",
                                           &try_catch);
       try_catch.Reset();
     }
   }
 
-  // Only return a value if there's at least one response. This is the behavior
-  // of the current JS implementation.
-  v8::Local<v8::Value> return_value;
-  if (results_index > 0) {
-    return_value = gin::DataObjectBuilder(isolate)
-                       .Set("results", results.As<v8::Value>())
-                       .Build();
-  } else {
-    return_value = v8::Undefined(isolate);
+  // Return the outcome of running all the listeners.
+  bool has_results = results_index > 0;
+  bool has_errors = errors->Length() > 0;
+
+  if (!has_results && !has_errors) {
+    return v8::Undefined(isolate);
   }
 
-  return return_value;
+  gin::DataObjectBuilder result_builder(isolate);
+  if (has_results) {
+    result_builder.Set("results", results.As<v8::Value>());
+  }
+  if (has_errors) {
+    // We only populate `errors` if polyfill support was enabled, so if we
+    // have any, we know it was.
+    CHECK(polyfill_support_enabled);
+    result_builder.Set("errors", errors.As<v8::Value>());
+  }
+
+  return result_builder.Build();
 }
 
 void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,

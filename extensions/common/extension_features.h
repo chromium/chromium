@@ -267,14 +267,6 @@ BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
 // TODO(crbug.com/424432184): Clean up when experiment is complete.
 BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 
-// When enabled, one time message senders that are responded to with
-// `sendResponse(<non-JSON-serializable-value>)` from the message listener will
-// report an error to the message sender and close the message channel. If
-// `sendResponse(<non-JSON-serializable-value>)` is sent after
-// `sendResponse(<JSON-serializable-value>)` then this has no effect because the
-// channel would've already been closed by the first valid response.
-BASE_DECLARE_FEATURE(kOneTimeMessageUnserializableResponseClosesChannel);
-
 // Addresses content verification race conditions during extension updates. When
 // an extension updates, a content verification job for a previous version can
 // sometimes run *after* the new version has been loaded. This can lead to two
@@ -286,6 +278,12 @@ BASE_DECLARE_FEATURE(kOneTimeMessageUnserializableResponseClosesChannel);
 // original extension version for all hash lookups and creations, preventing
 // these inconsistencies.
 BASE_DECLARE_FEATURE(kContentVerifyJobUseJobVersionForHashing);
+
+// When enabled, runtime.onMessage listeners that throw an error or return an
+// unserializable response will cause the message channel to close and an error
+// to be sent back to the message sender (and the sender's message promise to
+// reject).
+BASE_DECLARE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport);
 
 }  // namespace extensions_features
 
