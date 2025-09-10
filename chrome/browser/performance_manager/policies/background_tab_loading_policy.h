@@ -81,6 +81,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
       std::vector<PageNodeData> page_node_and_permission_vector);
 
   void SetMockLoaderForTesting(std::unique_ptr<mechanism::PageLoader> loader);
+  void SetMaxLoadedTabCountForTesting(size_t max_tabs_to_load);
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);
   void SetFreeMemoryForTesting(size_t free_memory_mb);
   void ResetPolicyForTesting();
@@ -252,11 +253,15 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // Used to overwrite the amount of free memory available on the system.
   size_t free_memory_mb_for_testing_ = 0;
 
-  // The minimum total number of restored tabs to load.
+  // The minimum total number of restored tabs to load, unless overridden in a
+  // test.
   static constexpr uint32_t kMinTabsToLoad = 4;
+  uint32_t min_tabs_to_load_ = kMinTabsToLoad;
 
-  // The maximum total number of restored tabs to load.
+  // The maximum total number of restored tabs to load, unless overridden in a
+  // test.
   static constexpr uint32_t kMaxTabsToLoad = 20;
+  uint32_t max_tabs_to_load_ = kMaxTabsToLoad;
 
   // The minimum amount of memory to keep free.
   static constexpr uint32_t kDesiredAmountOfFreeMemoryMb = 150;

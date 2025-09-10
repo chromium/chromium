@@ -109,8 +109,8 @@ class TabLoader::ReentrancyHelper {
 TabLoader* TabLoader::shared_tab_loader_ = nullptr;
 
 // static
-void TabLoader::RestoreTabs(const std::vector<RestoredTab>& tabs,
-                            const base::TimeTicks& restore_started) {
+void TabLoader::DeprecatedRestoreTabs(const std::vector<RestoredTab>& tabs,
+                                      const base::TimeTicks& restore_started) {
   if (tabs.empty())
     return;
 

@@ -116,7 +116,7 @@ void SessionRestoreDelegate::RestoreTabs(
   if (!base::FeatureList::IsEnabled(
           performance_manager::features::
               kBackgroundTabLoadingFromPerformanceManager)) {
-    TabLoader::RestoreTabs(tabs, restore_started);
+    TabLoader::DeprecatedRestoreTabs(tabs, restore_started);
   } else {
     std::vector<content::WebContents*> web_contents_vector;
     web_contents_vector.reserve(tabs.size());

@@ -4,11 +4,15 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +29,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/state_observer.h"
@@ -224,6 +229,11 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
 // thumbnail for one of these tabs should trigger load and capture.
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
                        CapturesRestoredTabWhenRequested) {
+  // Passed by address, so must live until the end of the test.
+  base::RepeatingCallback<void(TabLoader*)> construction_callback =
+      base::BindRepeating(
+          &ThumbnailTabHelperUpdatedInteractiveTest::ConfigureTabLoader,
+          base::Unretained(this));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_WINDOW,
@@ -247,13 +257,22 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
             ->SetFocusedTabStripModelForTesting(nullptr);
         GetBrowser(1)->window()->Close();
       }),
-      WaitForState(kBrowserRemovedState, true), Do([this]() {
+      WaitForState(kBrowserRemovedState, true),
+      Do([this, &construction_callback]() {
         // Set up the tab loader to ensure tabs are left unloaded.
-        base::RepeatingCallback<void(TabLoader*)> callback =
-            base::BindRepeating(
-                &ThumbnailTabHelperUpdatedInteractiveTest::ConfigureTabLoader,
-                base::Unretained(this));
-        TabLoaderTester::SetConstructionCallbackForTesting(&callback);
+        if (base::FeatureList::IsEnabled(
+                performance_manager::features::
+                    kBackgroundTabLoadingFromPerformanceManager)) {
+          ASSERT_TRUE(
+              performance_manager::policies::CanScheduleLoadForRestoredTabs());
+          performance_manager::policies::
+              SetMaxSimultaneousBackgroundTabLoadsForTesting(1);
+          performance_manager::policies::
+              SetMaxLoadedBackgroundTabCountForTesting(1);
+        } else {
+          TabLoaderTester::SetConstructionCallbackForTesting(
+              &construction_callback);
+        }
 
         // Restore recently closed window.
         chrome::OpenWindowWithRestoredTabs(browser()->profile());
@@ -263,8 +282,12 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       VerifyTabIsNotLoadedAndNeedsReloading(2, 1),
       WaitForAndVerifyThumbnail(1, 1));
 
-  // Clean up the callback.
-  TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kBackgroundTabLoadingFromPerformanceManager)) {
+    // Clean up the callback.
+    TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -41,8 +42,14 @@ std::vector<const PageNode*> PageLoader::GetPageNodesToLoad(
     const PageNode* page_node) {
   std::vector<const PageNode*> split_nodes;
   tabs::TabInterface* const source_tab =
-      tabs::TabInterface::GetFromContents(page_node->GetWebContents().get());
-  std::optional<split_tabs::SplitTabId> split_id = source_tab->GetSplit();
+      tabs::TabInterface::MaybeGetFromContents(
+          page_node->GetWebContents().get());
+  if (!source_tab) {
+    // The PageNode may not be in a TabInterface in unit tests.
+    CHECK_IS_TEST();
+  }
+  std::optional<split_tabs::SplitTabId> split_id =
+      source_tab ? source_tab->GetSplit() : std::nullopt;
   if (split_id.has_value()) {
     TabStripModel* tab_strip_model =
         source_tab->GetBrowserWindowInterface()->GetTabStripModel();

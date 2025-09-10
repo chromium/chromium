@@ -177,7 +177,7 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
         SimulatePrimaryPageChanged(tab.contents());
     }
 
-    TabLoader::RestoreTabs(restored_tabs_, clock_.NowTicks());
+    TabLoader::DeprecatedRestoreTabs(restored_tabs_, clock_.NowTicks());
     EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
     EXPECT_FALSE(tab_loader_.IsLoadingEnabled());
     tab_loader_.WaitForTabLoadingEnabled();

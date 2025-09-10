@@ -4,10 +4,13 @@
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -22,6 +25,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
@@ -96,6 +100,10 @@ BackgroundTabLoadingPolicy::PageNodeData::operator=(const PageNodeData& other) =
     default;
 BackgroundTabLoadingPolicy::PageNodeData::~PageNodeData() = default;
 
+bool CanScheduleLoadForRestoredTabs() {
+  return BackgroundTabLoadingPolicy::GetInstance();
+}
+
 void ScheduleLoadForRestoredTabs(
     std::vector<content::WebContents*> web_contents_vector) {
   // Trigger a slow-reports and collect a session restore trace if needed.
@@ -142,8 +150,29 @@ void ScheduleLoadForRestoredTabs(
     }
   }
 
-  BackgroundTabLoadingPolicy::GetInstance()->ScheduleLoadForRestoredTabs(
-      std::move(page_node_data_vector));
+  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  CHECK(policy);
+  policy->ScheduleLoadForRestoredTabs(std::move(page_node_data_vector));
+}
+
+void InstallBackgroundTabLoadingPolicyForTesting(
+    base::RepeatingClosure all_restored_tabs_loaded_callback) {
+  CHECK(!BackgroundTabLoadingPolicy::GetInstance());
+  PerformanceManager::GetGraph()->PassToGraph(
+      std::make_unique<BackgroundTabLoadingPolicy>(
+          std::move(all_restored_tabs_loaded_callback)));
+}
+
+void SetMaxLoadedBackgroundTabCountForTesting(size_t max_tabs_to_load) {
+  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  CHECK(policy);
+  policy->SetMaxLoadedTabCountForTesting(max_tabs_to_load);  // IN-TEST
+}
+
+void SetMaxSimultaneousBackgroundTabLoadsForTesting(size_t loading_slots) {
+  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  CHECK(policy);
+  policy->SetMaxSimultaneousLoadsForTesting(loading_slots);  // IN-TEST
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
@@ -317,6 +346,14 @@ void BackgroundTabLoadingPolicy::SetMockLoaderForTesting(
   page_loader_ = std::move(loader);
 }
 
+void BackgroundTabLoadingPolicy::SetMaxLoadedTabCountForTesting(
+    size_t max_tabs_to_load) {
+  max_tabs_to_load_ = max_tabs_to_load;
+  if (min_tabs_to_load_ > max_tabs_to_load_) {
+    min_tabs_to_load_ = max_tabs_to_load_;
+  }
+}
+
 void BackgroundTabLoadingPolicy::SetMaxSimultaneousLoadsForTesting(
     size_t loading_slots) {
   max_simultaneous_tab_loads_ = loading_slots;
@@ -331,6 +368,7 @@ void BackgroundTabLoadingPolicy::ResetPolicyForTesting() {
   tab_loads_started_ = 0;
 }
 
+// TODO(crbug.com/427952137): This could use GraphRegistered.
 BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
   return g_background_tab_loading_policy;
 }
@@ -385,11 +423,13 @@ base::Value::Dict BackgroundTabLoadingPolicy::DescribeSystemNodeData(
 
 bool BackgroundTabLoadingPolicy::ShouldLoad(
     const PageNodeToLoadData& page_node_data) {
-  if (tab_loads_started_ < kMinTabsToLoad)
+  if (tab_loads_started_ < min_tabs_to_load_) {
     return true;
+  }
 
-  if (tab_loads_started_ >= kMaxTabsToLoad)
+  if (tab_loads_started_ >= max_tabs_to_load_) {
     return false;
+  }
 
   // If there is a free memory constraint then enforce it.
   size_t free_memory_mb = GetFreePhysicalMemoryMib();

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -49,6 +51,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -1474,15 +1477,27 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   const int active_tab_index = browser2->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser2);
 
-  // Limit the number of restored tabs that are loaded.
-  TabLoaderTester::SetMaxLoadedTabCountForTesting(2);
-
-  // When the tab loader is created configure it for this test. This ensures
-  // that no more than 1 loading slot is used for the test.
-  base::RepeatingCallback<void(TabLoader*)> callback =
+  // Passed by address, so must live until the end of the test.
+  base::RepeatingCallback<void(TabLoader*)> construction_callback =
       base::BindRepeating(&TabRestoreTest::SetMaxSimultaneousLoadsForTesting,
                           base::Unretained(this));
-  TabLoaderTester::SetConstructionCallbackForTesting(&callback);
+
+  // Limit the number of restored tabs that are loaded.
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kBackgroundTabLoadingFromPerformanceManager)) {
+    ASSERT_TRUE(
+        performance_manager::policies::CanScheduleLoadForRestoredTabs());
+    performance_manager::policies::SetMaxLoadedBackgroundTabCountForTesting(2);
+    performance_manager::policies::
+        SetMaxSimultaneousBackgroundTabLoadsForTesting(1);
+  } else {
+    TabLoaderTester::SetMaxLoadedTabCountForTesting(2);
+
+    // When the tab loader is created configure it for this test. This ensures
+    // that no more than 1 loading slot is used for the test.
+    TabLoaderTester::SetConstructionCallbackForTesting(&construction_callback);
+  }
 
   // Restore recently closed window.
   chrome::OpenWindowWithRestoredTabs(browser()->profile());
@@ -1511,8 +1526,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
     EXPECT_TRUE(contents->GetController().NeedsReload());
   }
 
-  // Clean up the callback.
-  TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kBackgroundTabLoadingFromPerformanceManager)) {
+    // Clean up the callback.
+    TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 

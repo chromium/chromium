@@ -4,11 +4,16 @@
 
 #include "chrome/browser/sessions/session_restore_observer.h"
 
+#include <optional>
 #include <set>
+#include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -16,12 +21,18 @@
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 #include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/test_support/page_node_utils.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 
 using content::WebContentsTester;
+using performance_manager::PageNode;
+using performance_manager::PerformanceManagerTestHarnessHelper;
 using resource_coordinator::TabLoadTracker;
 using LoadingState = TabLoadTracker::LoadingState;
 
@@ -77,14 +88,20 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
   // testing::Test:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    if (pm_helper_) {
+      pm_helper_->SetUp();
+      performance_manager::policies::
+          InstallBackgroundTabLoadingPolicyForTesting(base::BindRepeating(
+              &SessionRestore::OnTabLoaderFinishedLoadingTabs));
+    }
     SetContents(CreateRestoredWebContents());
-    restored_tabs_.emplace_back(web_contents(), false, false, false,
-                                std::nullopt, std::nullopt);
   }
 
   void TearDown() override {
+    if (pm_helper_) {
+      pm_helper_->TearDown();
+    }
     ChromeRenderViewHostTestHarness::TearDown();
-    restored_tabs_.clear();
   }
 
  protected:
@@ -99,25 +116,54 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     // initialized, which is needed by TabLoader.
     resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
         test_contents.get());
+    if (pm_helper_) {
+      // In production the PageType is set when the WebContents is added to a
+      // tab strip.
+      performance_manager::testing::SetPageNodeType(
+          performance_manager::testing::GetPageNodeForWebContents(
+              test_contents.get()),
+          performance_manager::PageType::kTab);
+    }
     return test_contents;
   }
 
-  void RestoreTabs() {
-    TabLoader::RestoreTabs(restored_tabs_, base::TimeTicks());
+  void RestoreTabs(std::vector<content::WebContents*> tabs) {
+    if (pm_helper_) {
+      performance_manager::policies::ScheduleLoadForRestoredTabs(
+          std::move(tabs));
+    } else {
+      std::vector<RestoredTab> restored_tabs;
+      for (content::WebContents* web_contents : tabs) {
+        restored_tabs.emplace_back(web_contents, false, false, false,
+                                   std::nullopt, std::nullopt);
+      }
+      TabLoader::DeprecatedRestoreTabs(std::move(restored_tabs),
+                                       base::TimeTicks());
+    }
   }
 
   void LoadWebContents(content::WebContents* contents) {
     WebContentsTester::For(contents)->NavigateAndCommit(GURL(kDefaultUrl));
     WebContentsTester::For(contents)->TestSetIsLoading(false);
-    // Transition through LOADING to LOADED in order to keep the
-    // SessionRestoreStatsCollector state machine happy.
-    if (TabLoadTracker::Get()->GetLoadingState(contents) !=
-        LoadingState::LOADING) {
+    // Transition through LOADING to LOADED to advance the loading scheduler.
+    if (pm_helper_) {
+      auto* page_node =
+          performance_manager::testing::GetPageNodeForWebContents(contents);
+      if (page_node->GetLoadingState() != PageNode::LoadingState::kLoading) {
+        performance_manager::testing::SetPageNodeLoadingState(
+            page_node, PageNode::LoadingState::kLoading);
+      }
+      performance_manager::testing::SetPageNodeLoadingState(
+          page_node, PageNode::LoadingState::kLoadedIdle);
+    } else {
+      if (TabLoadTracker::Get()->GetLoadingState(contents) !=
+          LoadingState::LOADING) {
+        TabLoadTracker::Get()->TransitionStateForTesting(contents,
+                                                         LoadingState::LOADING);
+      }
       TabLoadTracker::Get()->TransitionStateForTesting(contents,
-                                                       LoadingState::LOADING);
+                                                       LoadingState::LOADED);
     }
-    TabLoadTracker::Get()->TransitionStateForTesting(contents,
-                                                     LoadingState::LOADED);
   }
 
   const std::vector<MockSessionRestoreObserver::SessionRestoreEvent>&
@@ -130,13 +176,20 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  // Only initialized if BackgroundTabLoadingFromPerformanceManager is enabled.
+  std::optional<PerformanceManagerTestHarnessHelper> pm_helper_ =
+      base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kBackgroundTabLoadingFromPerformanceManager)
+          ? std::make_optional<PerformanceManagerTestHarnessHelper>()
+          : std::nullopt;
+
   MockSessionRestoreObserver mock_observer_;
-  std::vector<RestoredTab> restored_tabs_;
 };
 
 TEST_F(SessionRestoreObserverTest, SingleSessionRestore) {
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-  RestoreTabs();
+  RestoreTabs({web_contents()});
 
   ASSERT_EQ(1u, number_of_session_restore_events());
   EXPECT_EQ(
@@ -159,11 +212,9 @@ TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
   for (size_t i = 0; i < number_of_session_restores; ++i) {
     different_test_contents.emplace_back(CreateRestoredWebContents());
     content::WebContents* test_contents = different_test_contents.back().get();
-    std::vector<RestoredTab> restored_tabs{RestoredTab(
-        test_contents, false, false, false, std::nullopt, std::nullopt)};
 
     SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-    TabLoader::RestoreTabs(restored_tabs, base::TimeTicks());
+    RestoreTabs({test_contents});
 
     ASSERT_EQ(event_index + 1, number_of_session_restore_events());
     EXPECT_EQ(
@@ -179,14 +230,11 @@ TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
 }
 
 TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
-  std::vector<RestoredTab> another_restored_tabs;
   auto test_contents = CreateRestoredWebContents();
-  another_restored_tabs.emplace_back(test_contents.get(), false, false, false,
-                                     std::nullopt, std::nullopt);
 
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-  RestoreTabs();
-  TabLoader::RestoreTabs(another_restored_tabs, base::TimeTicks());
+  RestoreTabs({web_contents()});
+  RestoreTabs({test_contents.get()});
 
   ASSERT_EQ(1u, number_of_session_restore_events());
   EXPECT_EQ(

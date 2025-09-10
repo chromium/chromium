@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
+#include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -312,6 +314,19 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
   CHECK(web_contents);
 
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kBackgroundTabLoadingFromPerformanceManager)) {
+    if (performance_manager::policies::CanScheduleLoadForRestoredTabs()) {
+      performance_manager::policies::ScheduleLoadForRestoredTabs(
+          {web_contents});
+    } else {
+      // Load the tab manually if there's no BackgroundTabLoadingPolicy.
+      web_contents->GetController().LoadIfNecessary();
+    }
+    return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  }
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   // The tab may have been made active even if `select` is false if it is the
   // only tab in `tab_strip_model_`.
@@ -329,7 +344,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   restored_tabs.emplace_back(web_contents, is_active,
                              !tab.extension_app_id.empty(), tab.pinned,
                              group_id, std::nullopt);
-  TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
+  TabLoader::DeprecatedRestoreTabs(restored_tabs, base::TimeTicks::Now());
 
 #else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
   // Load the tab manually if there is no TabLoader.

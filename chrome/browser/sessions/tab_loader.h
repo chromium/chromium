@@ -68,9 +68,10 @@ class TabLoader : public base::RefCounted<TabLoader>,
   TabLoader(const TabLoader&) = delete;
   TabLoader& operator=(const TabLoader&) = delete;
 
-  // Called to start restoring tabs.
-  static void RestoreTabs(const std::vector<RestoredTab>& tabs,
-                          const base::TimeTicks& restore_started);
+  // Called to start restoring tabs. Deprecated: use
+  // performance_manager::policies::ScheduleLoadForRestoredTabs().
+  static void DeprecatedRestoreTabs(const std::vector<RestoredTab>& tabs,
+                                    const base::TimeTicks& restore_started);
 
  private:
   friend class base::RefCounted<TabLoader>;
