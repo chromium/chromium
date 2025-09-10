@@ -163,8 +163,8 @@ void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
   theme_waiter_.reset();
   switch (outcome) {
     case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncSuccess: {
-      bool using_custom_theme =
-          theme_service_->GetThemeID() != ThemeHelper::kDefaultThemeID;
+      bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
+                                !theme_service_->UsingSystemTheme();
       if (using_custom_theme) {
         InvokeCallbackAndDeleteItself(Outcome::kSkipBubble);
       } else {
