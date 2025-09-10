@@ -22,6 +22,7 @@ import android.view.View;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -51,6 +52,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.List;
 import java.util.function.Supplier;
 
+@NullMarked
 public class CustomTabToolbarButtonsCoordinator
         implements MenuButtonCoordinator.VisibilityDelegate,
                 OptionalBrowsingModeButtonController.Delegate {
@@ -235,7 +237,7 @@ public class CustomTabToolbarButtonsCoordinator
 
     private static CloseButtonData getCloseButtonData(
             boolean visible,
-            Drawable icon,
+            @Nullable Drawable icon,
             @CustomTabsIntent.CloseButtonPosition int closeButtonPosition,
             View.OnClickListener clickListener) {
         return new CloseButtonData(visible, icon, closeButtonPosition, clickListener);

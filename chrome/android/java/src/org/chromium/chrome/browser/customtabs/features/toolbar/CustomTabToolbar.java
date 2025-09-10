@@ -50,8 +50,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -71,6 +69,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -166,7 +166,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageButton mMinimizeButton;
     private MenuButton mMenuButton;
     // This View will be non-null only for bottom sheet custom tabs.
-    private Drawable mHandleDrawable;
+    private @Nullable Drawable mHandleDrawable;
 
     // Color scheme and tint that will be applied to icons and text.
     private @BrandedColorScheme int mBrandedColorScheme;
@@ -175,7 +175,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
 
-    private GURL mFirstUrl;
+    private @Nullable GURL mFirstUrl;
 
     private final CustomTabLocationBar mLocationBar = new CustomTabLocationBar();
     private LocationBarModel mLocationBarModel;
@@ -192,12 +192,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private boolean mMaximizeButtonEnabled;
     private boolean mMinimizeButtonEnabled;
 
-    private CookieControlsBridge mCookieControlsBridge;
+    private @Nullable CookieControlsBridge mCookieControlsBridge;
     private boolean mShouldHighlightCookieControlsIcon;
     private int mBlockingStatus3pcd;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
+
+    @SuppressWarnings("NullAway")
     private Supplier<AppMenuHandler> mAppMenuHandler = () -> null;
-    private AppMenuObserver mAppMenuObserver;
+
+    private @Nullable AppMenuObserver mAppMenuObserver;
     private Activity mActivity;
 
     private final Handler mTaskHandler = new Handler();
@@ -214,8 +217,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private int mToolbarWidth;
     private FrameLayout mCustomButtonsParent;
-    private ImageButton mSideSheetMaximizeButton;
-    private View mOptionalButton;
+    private @Nullable ImageButton mSideSheetMaximizeButton;
+    private @Nullable View mOptionalButton;
 
     /** Listener interface to be notified when the toolbar is measured with a new width. */
     public interface OnNewWidthMeasuredListener {
@@ -245,14 +248,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public String clientPackageName;
 
         /** A handler for taps on the omnibox, or null if the default handler should be used. */
-        @Nullable public Consumer<Tab> tapHandler;
+        public @Nullable Consumer<Tab> tapHandler;
 
         /**
-         * A handler for taps on the omnibox.
-         * The function returns true if the tap was handled, false otherwise.
+         * A handler for taps on the omnibox. The function returns true if the tap was handled,
+         * false otherwise.
          */
         public Function<Tab, Boolean> tapHandlerWithVerification;
-
 
         public OmniboxParams(
                 SearchActivityClient searchClient,
@@ -295,7 +297,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         void setCloseClickHandler(Runnable handler);
     }
 
-    private HandleStrategy mHandleStrategy;
+    private @Nullable HandleStrategy mHandleStrategy;
     private @CloseButtonPosition int mCloseButtonPosition;
     private @AdaptiveToolbarButtonVariant int mVariantForFallbackMenu;
 
@@ -341,8 +343,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Returns the incognito image view. */
-    @Nullable
-    ImageView getIncognitoImageView() {
+    @Nullable ImageView getIncognitoImageView() {
         return mIncognitoImageView;
     }
 
@@ -358,8 +359,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Returns the close button. */
-    @Nullable
-    ImageButton getCloseButton() {
+    @Nullable ImageButton getCloseButton() {
         return mCloseButton;
     }
 
@@ -376,8 +376,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Returns the menu button. */
-    @Nullable
-    MenuButton getMenuButton() {
+    @Nullable MenuButton getMenuButton() {
         return mMenuButton;
     }
 
@@ -394,8 +393,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Returns the minimize button. */
-    @Nullable
-    ImageButton getMinimizeButton() {
+    @Nullable ImageButton getMinimizeButton() {
         return mMinimizeButton;
     }
 
@@ -412,8 +410,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Returns the side-sheet maximize button. */
-    @Nullable
-    ImageButton getSideSheetMaximizeButton() {
+    @Nullable ImageButton getSideSheetMaximizeButton() {
         return mSideSheetMaximizeButton;
     }
 
@@ -451,8 +448,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mOptionalButton;
     }
 
-    @Nullable
-    View getOptionalButton() {
+    @Nullable View getOptionalButton() {
         return mOptionalButton;
     }
 
@@ -525,7 +521,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mAppMenuHandler.get().addObserver(mAppMenuObserver);
     }
 
-    private Pair<Integer, Integer> getHighlightMenuInfo(
+    private @Nullable Pair<Integer, Integer> getHighlightMenuInfo(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
         return switch (buttonVariant) {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING -> {
@@ -653,7 +649,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    protected void setCloseButtonImageResource(Drawable drawable) {
+    protected void setCloseButtonImageResource(@Nullable Drawable drawable) {
         mCloseButton.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
         mCloseButton.setImageDrawable(drawable);
         if (drawable != null) {
@@ -797,7 +793,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      *
      * @param delegate The {@link CustomTabMinimizeDelegate}.
      */
-    public void setMinimizeDelegate(@NonNull CustomTabMinimizeDelegate delegate) {
+    public void setMinimizeDelegate(CustomTabMinimizeDelegate delegate) {
         mMinimizeButton.setOnClickListener(view -> delegate.minimize());
     }
 
@@ -806,7 +802,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      *
      * @param omniboxParams The {@link OmniboxParams} to be used.
      */
-    public void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+    public void setOmniboxParams(OmniboxParams omniboxParams) {
         mLocationBar.setOmniboxParams(omniboxParams);
     }
 
@@ -1009,7 +1005,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @return The custom action button with the given {@code index}. For test purpose only.
      * @param index The index of the custom action button to return.
      */
-    public ImageButton getCustomActionButtonForTest(int index) {
+    public @Nullable ImageButton getCustomActionButtonForTest(int index) {
         var parent =
                 ChromeFeatureList.sCctToolbarRefactor.isEnabled()
                         ? mCustomButtonsParent
@@ -1435,7 +1431,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private Activity getActivityFromCurrentTab() {
+    private @Nullable Activity getActivityFromCurrentTab() {
         Tab currentTab = getCurrentTab();
         return currentTab != null ? currentTab.getWindowAndroid().getActivity().get() : null;
     }
@@ -1526,7 +1522,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+    public void setToolbarColorObserver(ToolbarColorObserver toolbarColorObserver) {
         super.setToolbarColorObserver(toolbarColorObserver);
         notifyToolbarColorChanged(getBackground().getColor());
     }
@@ -1602,10 +1598,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private static final int TOTAL_POST_BRANDING_KEYS = 2;
 
         private LocationBarDataProvider mLocationBarDataProvider;
-        private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+        private @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
         private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
-        private TabCreator mTabCreator;
+        private @Nullable TabCreator mTabCreator;
 
         private TextView mUrlBar;
         private TextView mTitleBar;
@@ -1622,19 +1618,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     }
                 };
 
-        private final Runnable[] mAfterBrandingRunnables = new Runnable[TOTAL_POST_BRANDING_KEYS];
+        private final @Nullable Runnable[] mAfterBrandingRunnables =
+                new Runnable[TOTAL_POST_BRANDING_KEYS];
         private final View.OnLayoutChangeListener mButtonsVisibilityUpdater =
                 (v, l, t, r, b, ol, ot, or, ob) -> setButtonsVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
         private boolean mOmniboxEnabled;
-        private Drawable mOmniboxBackground;
-        private CallbackController mCallbackController = new CallbackController();
+        private @Nullable Drawable mOmniboxBackground;
+        private @Nullable CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
-        private PageInfoIphController mPageInfoIphController;
+        private @Nullable PageInfoIphController mPageInfoIphController;
         private int mTouchTargetSize;
-        private ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
+        private @Nullable ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
 
         private OptionalButtonCoordinator mOptionalButtonCoordinator;
         private final ObservableSupplierImpl<Tracker> mTrackerSupplier =
@@ -1994,6 +1991,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             setShowTitleIgnoreBranding(showTitle);
         }
 
+        @Initializer
         public void onFinishInflate(View container) {
             mUrlBar = container.findViewById(R.id.url_bar);
             mUrlBar.setHint("");
@@ -2184,7 +2182,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public View getViewForUrlBackFocus() {
+        public @Nullable View getViewForUrlBackFocus() {
             Tab tab = getCurrentTab();
             if (tab == null) return null;
             return tab.getView();
@@ -2653,9 +2651,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void revertChanges() {}
 
-        @Nullable
         @Override
-        public OmniboxStub getOmniboxStub() {
+        public @Nullable OmniboxStub getOmniboxStub() {
             return null;
         }
 
@@ -2692,7 +2689,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIphController = pageInfoIphController;
         }
 
-        void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+        void setOmniboxParams(OmniboxParams omniboxParams) {
             assert omniboxParams != null;
             mOmniboxEnabled = true;
             mOmniboxBackground =

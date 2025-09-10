@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -13,7 +14,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -22,6 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -75,14 +76,14 @@ public class CustomTabToolbarCoordinator {
     private final CustomTabToolbarColorController mToolbarColorController;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
-    @Nullable private ToolbarManager mToolbarManager;
-    @Nullable private DesktopWindowStateManager.AppHeaderObserver mAppHeaderObserver;
+    private @Nullable ToolbarManager mToolbarManager;
+    private DesktopWindowStateManager.@Nullable AppHeaderObserver mAppHeaderObserver;
     private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private int mMenuButtonHideToken = TokenHolder.INVALID_TOKEN;
     private boolean mInitializedToolbarWithNative;
-    private PendingIntent.OnFinished mButtonClickOnFinishedForTesting;
+    private PendingIntent.@Nullable OnFinished mButtonClickOnFinishedForTesting;
 
     private static final String TAG = "CustomTabToolbarCoor";
 
@@ -262,7 +263,8 @@ public class CustomTabToolbarCoordinator {
 
     /**
      * Sends the pending intent for the custom button on the toolbar with the given {@code params},
-     *         with the given {@code url} as data.
+     * with the given {@code url} as data.
+     *
      * @param params The parameters for the custom button.
      * @param url The URL to attach as additional data to the {@link PendingIntent}.
      * @param title The title to attach as additional data to the {@link PendingIntent}.
@@ -378,7 +380,7 @@ public class CustomTabToolbarCoordinator {
     }
 
     @VisibleForTesting
-    DesktopWindowStateManager.AppHeaderObserver getAppHeaderObserver() {
+    DesktopWindowStateManager.@Nullable AppHeaderObserver getAppHeaderObserver() {
         return mAppHeaderObserver;
     }
 }

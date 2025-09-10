@@ -13,6 +13,8 @@ import android.view.View.OnClickListener;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 public class CustomTabToolbarButtonsProperties {
     /** Whether the individual button is visible. */
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
@@ -108,7 +111,7 @@ public class CustomTabToolbarButtonsProperties {
         public final boolean visible;
 
         /** The close button icon. */
-        public final Drawable icon;
+        public final @Nullable Drawable icon;
 
         /** The close button position. See {@link CloseButtonPosition}. */
         public final @CloseButtonPosition int position;
@@ -119,7 +122,7 @@ public class CustomTabToolbarButtonsProperties {
         // TODO: Maybe add default constr for not visible
         CloseButtonData(
                 boolean visible,
-                Drawable icon,
+                @Nullable Drawable icon,
                 @CloseButtonPosition int position,
                 OnClickListener onClickListener) {
             this.visible = visible;

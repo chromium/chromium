@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 
@@ -35,8 +36,8 @@ public class CustomTabToolbarColorController
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
-    private DesktopWindowStateManager.AppHeaderObserver mHeaderObserver;
-    private ToolbarManager mToolbarManager;
+    private DesktopWindowStateManager.@Nullable AppHeaderObserver mHeaderObserver;
+    private @Nullable ToolbarManager mToolbarManager;
 
     /** Whether the current activity is in a focused window, the top resumed activity. */
     private boolean mIsTopResumedActivity;
@@ -155,7 +156,7 @@ public class CustomTabToolbarColorController
         return mBrowserServicesThemeColorProvider.getBrandedColorScheme();
     }
 
-    private ColorStateList resolveTint(@BrandedColorScheme int brandedColorScheme) {
+    private @Nullable ColorStateList resolveTint(@BrandedColorScheme int brandedColorScheme) {
         if (shouldUseDefaultThemeForWebApp()) {
             return ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
         }
@@ -183,7 +184,7 @@ public class CustomTabToolbarColorController
     }
 
     @VisibleForTesting
-    DesktopWindowStateManager.AppHeaderObserver getAppHeaderObserver() {
+    DesktopWindowStateManager.@Nullable AppHeaderObserver getAppHeaderObserver() {
         return mHeaderObserver;
     }
 }
