@@ -162,12 +162,8 @@ void RecordInfo::walkBases() {
       if (!type)
         base = GetDependentTemplatedDecl(*it.getType());
       else {
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
         base = cast_or_null<CXXRecordDecl>(
             type->getOriginalDecl()->getDefinition());
-#else
-        base = cast_or_null<CXXRecordDecl>(type->getDecl()->getDefinition());
-#endif
         if (base)
           queue.push_back(base);
       }
@@ -586,7 +582,6 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
     return nullptr;
 
   // look for "typedef ... iterator;"
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   const TypedefType* typedefType = dyn_cast<TypedefType>(type);
   if (!typedefType) {
     return nullptr;
@@ -606,25 +601,6 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
   if (!info) {
     return nullptr;
   }
-#else
-  if (!isa<ElaboratedType>(type))
-    return nullptr;
-  const ElaboratedType* elaboratedType = cast<ElaboratedType>(type);
-  if (!isa<TypedefType>(elaboratedType->getNamedType()))
-    return nullptr;
-  const TypedefType* typedefType =
-      cast<TypedefType>(elaboratedType->getNamedType());
-  std::string typeName = typedefType->getDecl()->getNameAsString();
-  if (!Config::IsIterator(typeName))
-    return nullptr;
-  const NestedNameSpecifier* qualifier = elaboratedType->getQualifier();
-  if (!qualifier)
-    return nullptr;
-  RecordInfo* info = cache_->Lookup(qualifier->getAsType());
-  if (!info) {
-    return nullptr;
-  }
-#endif
 
   return new Iterator(info);
 }

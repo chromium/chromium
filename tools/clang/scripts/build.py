@@ -1216,12 +1216,6 @@ def main():
     cflags += ['-DLLVM_FORCE_HEAD_REVISION']
     cxxflags += ['-DLLVM_FORCE_HEAD_REVISION']
 
-  # TODO(https://crbug.com/437910658): remove once we roll past clang change
-  if IsGitAncestorToHead(LLVM_DIR,
-                         '91cdd35008e9ab32dffb7e401cdd7313b3461892'):
-    cflags += ['-DCLANG_ELABORATED_TYPE_CHANGES']
-    cxxflags += ['-DCLANG_ELABORATED_TYPE_CHANGES']
-
   # Build PDBs for archival on Windows.  Don't use RelWithDebInfo since it
   # has different optimization defaults than Release.
   # Also disable stack cookies (/GS-) for performance.

@@ -97,19 +97,11 @@ bool CheckTraceVisitor::IsTraceCallName(const std::string& name) {
 
 CXXRecordDecl* CheckTraceVisitor::GetDependentTemplatedDecl(
     DependentScopeDeclRefExpr* expr) {
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   NestedNameSpecifier qual = expr->getQualifier();
-#else
-  NestedNameSpecifier* qual = expr->getQualifier();
-#endif
   if (!qual)
     return 0;
 
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   const Type* type = qual.getAsType();
-#else
-  const Type* type = qual->getAsType();
-#endif
   if (!type)
     return 0;
 
@@ -150,13 +142,8 @@ void CheckTraceVisitor::CheckDependentScopeDeclRefExpr(
   std::string fn_name = expr->getDeclName().getAsString();
 
   // Check for T::Trace(visitor).
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   if (NestedNameSpecifier qual = expr->getQualifier()) {
     if (const Type* type = qual.getAsType()) {
-#else
-  if (NestedNameSpecifier* qual = expr->getQualifier()) {
-    if (const Type* type = qual->getAsType()) {
-#endif
       if (const TemplateTypeParmType* tmpl_parm_type =
               type->getAs<TemplateTypeParmType>()) {
         const unsigned param_index = tmpl_parm_type->getIndex();
@@ -211,11 +198,7 @@ bool CheckTraceVisitor::CheckTraceBaseCall(CallExpr* call) {
     if (!trace_decl || !Config::IsTraceMethod(trace_decl))
       return false;
 
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
     const Type* type = callee->getQualifier().getAsType();
-#else
-    const Type* type = callee->getQualifier()->getAsType();
-#endif
     if (!type)
       return false;
 
@@ -435,18 +418,10 @@ bool CheckTraceVisitor::CheckImplicitCastExpr(CallExpr* call,
   DeclRefExpr* sub_expr = dyn_cast<DeclRefExpr>(expr->getSubExpr());
   if (!sub_expr)
     return false;
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   NestedNameSpecifier qualifier = sub_expr->getQualifier();
-#else
-  NestedNameSpecifier* qualifier = sub_expr->getQualifier();
-#endif
   if (!qualifier)
     return false;
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   CXXRecordDecl* class_decl = qualifier.getAsRecordDecl();
-#else
-  CXXRecordDecl* class_decl = qualifier->getAsRecordDecl();
-#endif
   if (!class_decl)
     return false;
   NamedDecl* found_decl = sub_expr->getFoundDecl();

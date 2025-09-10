@@ -40,11 +40,6 @@ bool hasName(const TagDecl* decl,
 // any namespace qualifiers. This is similar to desugaring, except that for
 // ElaboratedTypes, desugar will unwrap too much.
 const Type* UnwrapType(const Type* type) {
-#ifndef CLANG_ELABORATED_TYPE_CHANGES
-  if (const ElaboratedType* elaborated = dyn_cast<ElaboratedType>(type)) {
-    return UnwrapType(elaborated->getNamedType().getTypePtr());
-  }
-#endif
   if (const TypedefType* typedefed = dyn_cast<TypedefType>(type)) {
     return UnwrapType(typedefed->desugar().getTypePtr());
   }
@@ -904,19 +899,6 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       return ClassifyType(subst_type);
     }
 
-#ifndef CLANG_ELABORATED_TYPE_CHANGES
-    case Type::Elaborated: {
-      // Quote from the LLVM documentation:
-      // "Represents a type that was referred to using an elaborated type
-      // keyword, e.g., struct S, or via a qualified name, e.g., N::M::type, or
-      // both. This type is used to keep track of a type name as written in the
-      // source code, including tag keywords and any nested-name-specifiers. The
-      // type itself is always "sugar", used to express what was written in the
-      // source code but containing no additional semantic information."
-      return ClassifyType(
-          dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr());
-    }
-#endif
     case Type::Typedef: {
       // A "typedef type" is the representation of a type named through a
       // typedef (or a C++11 type alias). In this case, we don't care about the
@@ -1001,13 +983,8 @@ bool FindBadConstructsConsumer::HasPublicDtorCallback(
     return false;
   }
 
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
   CXXRecordDecl* record = dyn_cast<CXXRecordDecl>(
       base->getType()->getAs<RecordType>()->getOriginalDecl());
-#else
-  CXXRecordDecl* record =
-      dyn_cast<CXXRecordDecl>(base->getType()->getAs<RecordType>()->getDecl());
-#endif
   SourceLocation unused;
   return None != CheckRecordForRefcountIssue(record, unused);
 }
@@ -1123,11 +1100,7 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
     // The record with the problem will always be the last record
     // in the path, since it is the record that stopped the search.
     const CXXRecordDecl* problem_record = dyn_cast<CXXRecordDecl>(
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
         it->back().Base->getType()->getAs<RecordType>()->getOriginalDecl());
-#else
-        it->back().Base->getType()->getAs<RecordType>()->getDecl());
-#endif
 
     issue = CheckRecordForRefcountIssue(problem_record, loc);
 
@@ -1183,14 +1156,10 @@ void FindBadConstructsConsumer::CheckWeakPtrFactoryMembers(
           const TemplateArgument& arg =
               template_spec_type->template_arguments()[0];
           if (arg.getAsType().getTypePtr()->getAsCXXRecordDecl() ==
-#ifdef CLANG_ELABORATED_TYPE_CHANGES
               instance()
                   .getASTContext()
                   .getCanonicalTagType(record)
                   ->getAsCXXRecordDecl()) {
-#else
-              record->getTypeForDecl()->getAsCXXRecordDecl()) {
-#endif
             if (!weak_ptr_factory_location.isValid()) {
               // Save the first matching WeakPtrFactory member for the
               // diagnostic.
@@ -1292,20 +1261,7 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointer(
   if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
     return;
   }
-#ifndef CLANG_ELABORATED_TYPE_CHANGES
-  // Elaborated types wrap the type that we're interested in, so we need to
-  // step through them. Inside, there may be a template param type, a pointer
-  // type, etc. For example, this function returns an ElaboratedType, which
-  // has a pointer inside. But has additional sugar around the pointer that
-  // we want to examine first.
-  // ```
-  // template <class T>
-  // AliasOfT<T> auto_function_return_elaborated_alias_with_ptr() { ... }
-  // ```
-  if (auto* elaborated = deduced_type->getAs<clang::ElaboratedType>()) {
-    deduced_type = elaborated->getNamedType();
-  }
-#endif
+
   // If the `auto` resolves to a type that comes from a template parameter, the
   // input type may have been a type alias and we can't tell how the type was
   // actually spelt, so just allow it. This handles the return type of
