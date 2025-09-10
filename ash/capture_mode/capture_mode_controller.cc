@@ -1042,6 +1042,12 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
 }
 
 bool CaptureModeController::CanShowSunfishRegionNudge() const {
+  // The nudge applies to both Sunfish and Scanner, if neither can be shown then
+  // we don't want to show the nudge either.
+  if (!CanShowSunfishOrScannerUi()) {
+    return false;
+  }
+
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller->IsActiveUserSessionStarted());
 

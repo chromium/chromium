@@ -2591,6 +2591,100 @@ TEST_F(SunfishTest, PinnedWindowExitSession) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(SunfishTest, NudgeChangesRootWithBar) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
+
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
+  auto* capture_toast_controller = session->capture_toast_controller();
+
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+  ASSERT_TRUE(capture_toast_controller->capture_toast_widget());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  ASSERT_TRUE(capture_toast_controller->capture_toast_widget());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+}
+
+TEST_F(SunfishTest, NudgeBehaviorWhenSelectingRegion) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Nudge hides while selecting a region, but doesn't change roots until the
+  // region change is committed.
+  auto* nudge_controller = GetUserNudgeController();
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(nudge_controller->is_visible());
+
+  // If we release without selecting a valid region (i.e., an empty region), the
+  // nudge should be visible again.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+
+  // The nudge shows again, and is on the second display.
+  EXPECT_TRUE(nudge_controller->is_visible());
+  ASSERT_TRUE(session->capture_toast_controller()->capture_toast_widget());
+  EXPECT_EQ(session->capture_toast_controller()
+                ->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+}
+
+TEST_F(SunfishTest, NudgeDoesNotShowForAllUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool can_see_nudge;
+  } kUserTypeTestCases[] = {
+      {"regular user", user_manager::UserType::kRegular, true},
+      {"child", user_manager::UserType::kChild, true},
+      {"guest", user_manager::UserType::kGuest, false},
+      {"public account", user_manager::UserType::kPublicAccount, false},
+      {"kiosk app", user_manager::UserType::kKioskChromeApp, false},
+      {"web kiosk app", user_manager::UserType::kKioskWebApp, false},
+  };
+
+  for (const auto& test_case : kUserTypeTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin({"example@gmail.com", test_case.user_type});
+
+    auto* controller = StartCaptureSession(CaptureModeSource::kRegion,
+                                           CaptureModeType::kImage);
+    ASSERT_EQ(test_case.can_see_nudge, controller->CanShowSunfishRegionNudge());
+
+    auto* nudge_controller = GetUserNudgeController();
+    ASSERT_EQ(test_case.can_see_nudge, !!nudge_controller);
+
+    controller->Stop();
+  }
+}
+
 using SunfishMultiDisplayTest = SunfishTest;
 
 TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
