@@ -386,6 +386,14 @@ void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
     return;
   }
 
+  // Clear any pending start retry attempts now that the worker has started.
+  // If there were retries attempted, emit metrics about the success.
+  if (worker_start_retry_attempts_.erase(context_id.token) > 0) {
+    base::UmaHistogramBoolean(
+        "Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult",
+        true);
+  }
+
   if (g_test_observer) {
     g_test_observer->DidStartWorker(context_id.extension_id);
   }
@@ -411,7 +419,31 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
     // In that case, we expect `DeactivateExtension` to have been called
     // already, and for the registration records to have already been cleared.
     DCHECK(!pending_storage_registrations_.contains(context_id.extension_id));
+    // We expect `DeactivateExtension` to have cleaned up the start attempts.
+    DCHECK(!worker_start_retry_attempts_.contains(context_id.token));
     return;
+  }
+
+  // If the start failed due to transient reasons, retry starting the worker.
+  // TODO(crbug.com/371011217): Consider doing this with a post task with
+  // net::BackoffEntry.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsServiceWorkerStartRetry) &&
+      ShouldRetryStartRequest(context_id.token, status.status_code)) {
+    ++worker_start_retry_attempts_[context_id.token];
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceWorkerTaskQueue::RetryStartWorker,
+                                  weak_factory_.GetWeakPtr(), context_id));
+    return;
+  }
+
+  // Retries exhausted or non-transient error. Proceed with failure handling.
+  // Clean up the retries entry for this context. If there were retries
+  // attempted, emit metrics about the ultimate failure.
+  if (worker_start_retry_attempts_.erase(context_id.token) > 0) {
+    base::UmaHistogramBoolean(
+        "Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult",
+        false);
   }
 
   if (IsStartWorkerFailureUnexpected(status.status_code)) {
@@ -508,6 +540,8 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   // If an extension/worker is unloaded/disabled before the registration
   // callback then we might still have this record to delete.
   worker_reregistration_attempts_.erase(context_id.token);
+  // Same for worker start attempts.
+  worker_start_retry_attempts_.erase(context_id.token);
 
   // Erase any registrations that might still have been pending being fully
   // stored.
@@ -576,11 +610,105 @@ void ServiceWorkerTaskQueue::MaybeStartWorker(
   }
 }
 
+void ServiceWorkerTaskQueue::RetryStartWorker(
+    const SequencedContextId& context_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Ensure the activation is still current.
+  if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
+    // NOTE: retry count has been cleared when `DeactivateExtension` was called.
+    DCHECK(!base::Contains(worker_start_retry_attempts_, context_id.token));
+    return;
+  }
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  CHECK(worker_state);
+
+  // The worker might have successfully started or is starting due to another
+  // task being added between the failure and this retry attempt.
+  if (worker_state->IsReady() || worker_state->IsStarting()) {
+    // NOTE: The retry count will be cleared when `OnWorkerStart` is called.
+    return;
+  }
+
+  // If there are no pending tasks, there is no reason to start the worker.
+  // This is unlikely as we got here from a failure while trying to run tasks,
+  // but it can conceivably happen in at least two scenarios:
+  // - Another task wakes up the worker successfully in the span between
+  //   posting the retry task and it running.
+  // - Another start attempt has failed with a non-transient error,
+  //   causing `OnWorkerStartFail` to call `DeleteAllPendingTasks`.
+  if (!HasPendingTasks(context_id)) {
+    worker_start_retry_attempts_.erase(context_id.token);
+    return;
+  }
+
+  MaybeStartWorker(worker_state, context_id);
+}
+
 bool ServiceWorkerTaskQueue::ShouldRetryRegistrationRequest(
     const base::UnguessableToken& activation_token) const {
   auto iter = worker_reregistration_attempts_.find(activation_token);
   int retries_performed =
       (iter == worker_reregistration_attempts_.end()) ? 0 : iter->second;
+  return retries_performed < 3;
+}
+
+bool ServiceWorkerTaskQueue::ShouldRetryStartRequest(
+    const base::UnguessableToken& activation_token,
+    blink::ServiceWorkerStatusCode status_code) const {
+  switch (status_code) {
+    // --- TRANSIENT FAILURES ---
+
+    // This could be transient if caused by I/O contention or temporary
+    // unavailability.
+    case blink::ServiceWorkerStatusCode::kErrorDiskCache:
+      break;
+
+    // Generic failure. This can be transient if caused by the worker process
+    // being unexpectedly terminated during startup.
+    case blink::ServiceWorkerStatusCode::kErrorFailed:
+      break;
+
+    // Registration or version was not found.
+    // TODO(https://crbug.com/444255717): investigate and clean up
+    // if it's not actually transient.
+    case blink::ServiceWorkerStatusCode::kErrorNotFound:
+      break;
+
+    // Failed to spin up the worker. This includes failing to allocate a
+    // process, which can happen due to high system load. Retrying can help.
+    case blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed:
+      break;
+
+    // The worker took too long to initialize or handle startup events.
+    // Often caused by high system load. Retrying can help.
+    case blink::ServiceWorkerStatusCode::kErrorTimeout:
+      break;
+
+    // --- NON-TRANSIENT FAILURES ---
+    case blink::ServiceWorkerStatusCode::kOk:
+    case blink::ServiceWorkerStatusCode::kErrorAbort:
+    case blink::ServiceWorkerStatusCode::kErrorProcessNotFound:
+    case blink::ServiceWorkerStatusCode::kErrorExists:
+    case blink::ServiceWorkerStatusCode::kErrorInstallWorkerFailed:
+    case blink::ServiceWorkerStatusCode::kErrorActivateWorkerFailed:
+    case blink::ServiceWorkerStatusCode::kErrorIpcFailed:
+    case blink::ServiceWorkerStatusCode::kErrorNetwork:
+    case blink::ServiceWorkerStatusCode::kErrorSecurity:
+    case blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected:
+    case blink::ServiceWorkerStatusCode::kErrorState:
+    case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
+    case blink::ServiceWorkerStatusCode::kErrorRedundant:
+    case blink::ServiceWorkerStatusCode::kErrorDisallowed:
+    case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
+      return false;  // Do not retry.
+  }
+
+  auto iter = worker_start_retry_attempts_.find(activation_token);
+  int retries_performed =
+      (iter == worker_start_retry_attempts_.end()) ? 0 : iter->second;
   return retries_performed < 3;
 }
 

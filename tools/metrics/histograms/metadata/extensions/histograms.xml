@@ -4121,6 +4121,21 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult"
+    enum="Boolean" expires_after="2026-03-01">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When starting a service worker fails due to a transient error, we retry
+    multiple times to try to make the start succeed.
+
+    Emits true if the retry results in a successful start. Emits false if either
+    all retry attempts have been exhausted without success or a retry resulted
+    in a non-transient error.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
     enum="Boolean" expires_after="2026-01-18">
   <owner>jlulejian@chromium.org</owner>

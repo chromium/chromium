@@ -154,6 +154,9 @@ BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
 // extensions submenu with an alternative submenu to recommend extensions.
 BASE_DECLARE_FEATURE(kExtensionsToolbarZeroState);
 
+// Retries starting a service worker if it fails with a transient error.
+BASE_DECLARE_FEATURE(kExtensionsServiceWorkerStartRetry);
+
 // Forces requests to go through WebRequestProxyingURLLoaderFactory.
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 

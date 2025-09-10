@@ -356,6 +356,13 @@ class ServiceWorkerTaskQueue
   bool ShouldRetryRegistrationRequest(
       const base::UnguessableToken& activation_token) const;
 
+  // Checks if the `activation_token` has any more worker start retries
+  // left. Retries are only performed for retryable error codes and up to 3
+  // times before silently failing.
+  bool ShouldRetryStartRequest(
+      const base::UnguessableToken& activation_token,
+      blink::ServiceWorkerStatusCode status_code) const;
+
   // Callbacks called when the worker is registered or unregistered,
   // respectively. `worker_previously_successfully_registered` true indicates
   // that when the unregistration request was made the task queue had a record
@@ -452,6 +459,9 @@ class ServiceWorkerTaskQueue
   void MaybeStartWorker(ServiceWorkerState* worker_state,
                         const SequencedContextId& context_id);
 
+  // Attempts to start the worker again after a previous failure.
+  void RetryStartWorker(const SequencedContextId& context_id);
+
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.
   bool browser_context_shutting_down_ = false;
@@ -485,6 +495,10 @@ class ServiceWorkerTaskQueue
 
   // Current activation tokens for each activated extensions.
   std::map<ExtensionId, base::UnguessableToken> activation_tokens_;
+
+  // The number of times that a worker start request has been retried
+  // for an activation token.
+  std::map<base::UnguessableToken, int> worker_start_retry_attempts_;
 
   // The number of times that a worker registration request has been retried
   // for an activation token.
