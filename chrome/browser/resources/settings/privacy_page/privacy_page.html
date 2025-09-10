@@ -123,31 +123,6 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/content/camera" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryCamera}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-camera-page search-term="[[searchFilter_]]">
-          </settings-camera-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/images" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-images-page search-term="[[searchFilter_]]">
-          </settings-images-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/insecureContent" no-search>
-        <settings-subpage
-            page-title="$i18n{siteSettingsCategoryInsecureContent}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-insecure-content-page search-term="[[searchFilter_]]">
-          </settings-insecure-content-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" if="[[enableFederatedIdentityApiContentSetting_]]">
         <template is="dom-if" route-path="/content/federatedIdentityApi"
             no-search>
@@ -177,27 +152,6 @@
             </category-setting-exceptions>
           </settings-subpage>
         </template>
-      </template>
-      <template is="dom-if" route-path="/content/sound" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsSound}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-sound-page search-term="[[searchFilter_]]">
-          </settings-sound-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/autoVerify" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsAntiAbuse}">
-          <settings-anti-abuse-page></settings-anti-abuse-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/microphone" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryMicrophone}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-microphone-page search-term="[[searchFilter_]]">
-          </settings-microphone-page>
-        </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]"
           no-search>

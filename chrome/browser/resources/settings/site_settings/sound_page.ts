@@ -6,6 +6,7 @@ import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
@@ -15,6 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './sound_page.html.js';
@@ -24,7 +26,8 @@ interface BlockAutoplayStatus {
   pref: chrome.settingsPrivate.PrefObject<boolean>;
 }
 
-const SoundPageElementBase = WebUiListenerMixin(PolymerElement);
+const SoundPageElementBase =
+    SettingsViewMixin(WebUiListenerMixin(PolymerElement));
 
 export class SoundPageElement extends SoundPageElementBase {
   static get is() {
@@ -87,19 +90,20 @@ export class SoundPageElement extends SoundPageElementBase {
   }
 
 
-  /**
-   * Called when the block autoplay status changes.
-   */
+  // Called when the block autoplay status changes.
   private onBlockAutoplayStatusChanged_(autoplayStatus: BlockAutoplayStatus) {
     this.blockAutoplayStatus_ = autoplayStatus;
   }
 
-  /**
-   * Updates the block autoplay pref when the toggle is changed.
-   */
+  // Updates the block autoplay pref when the toggle is changed.
   private onBlockAutoplayToggleChange_(event: Event) {
     const target = event.target as SettingsToggleButtonElement;
     this.browserProxy_.setBlockAutoplayEnabled(target.checked);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

@@ -398,25 +398,31 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsAutomaticDownloads':
       case 'siteSettingsAutomaticFullscreen':
       case 'siteSettingsAutoPictureInPicture':
+      case 'siteSettingsAutoVerify':
       case 'siteSettingsBackgroundSync':
       case 'siteSettingsBluetoothScanning':
+      case 'siteSettingsCamera':
       case 'siteSettingsCapturedSurfaceControl':
       case 'siteSettingsClipboard':
       case 'siteSettingsHandlers':
       case 'siteSettingsHandTracking':
       case 'siteSettingsIdleDetection':
+      case 'siteSettingsImages':
       case 'siteSettingsJavascript':
       case 'siteSettingsKeyboardLock':
       case 'siteSettingsLocalFonts':
       case 'siteSettingsLocalNetworkAccess':
       case 'siteSettingsLocation':
+      case 'siteSettingsMicrophone':
       case 'siteSettingsMidiDevices':
+      case 'siteSettingsMixedscript':
       case 'siteSettingsNotifications':
       case 'siteSettingsPaymentHandler':
       case 'siteSettingsPdfDocuments':
       case 'siteSettingsPopups':
       case 'siteSettingsSensors':
       case 'siteSettingsSiteData':
+      case 'siteSettingsSound':
       case 'siteSettingsStorageAccess':
       case 'siteSettingsVr':
       case 'siteSettingsWebAppInstallation':

@@ -264,6 +264,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_AUTO_VERIFY,
+          viewId: 'siteSettingsAutoVerify',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
           viewId: 'siteSettingsAutomaticDownloads',
           parentViewId: 'old',
@@ -279,6 +284,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_CAMERA,
+          viewId: 'siteSettingsCamera',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_CLIPBOARD,
           viewId: 'siteSettingsClipboard',
           parentViewId: 'old',
@@ -286,6 +296,11 @@ suite('PrivacyPageIndex', function() {
         {
           route: routes.SITE_SETTINGS_IDLE_DETECTION,
           viewId: 'siteSettingsIdleDetection',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_IMAGES,
+          viewId: 'siteSettingsImages',
           parentViewId: 'old',
         },
         {
@@ -309,8 +324,18 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_MICROPHONE,
+          viewId: 'siteSettingsMicrophone',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_MIDI_DEVICES,
           viewId: 'siteSettingsMidiDevices',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_MIXEDSCRIPT,
+          viewId: 'siteSettingsMixedscript',
           parentViewId: 'old',
         },
         {
@@ -336,6 +361,11 @@ suite('PrivacyPageIndex', function() {
         {
           route: routes.SITE_SETTINGS_SITE_DATA,
           viewId: 'siteSettingsSiteData',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_SOUND,
+          viewId: 'siteSettingsSound',
           parentViewId: 'old',
         },
         {

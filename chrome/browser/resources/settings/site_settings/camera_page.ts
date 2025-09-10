@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../settings_shared.css.js';
 import './category_setting_exceptions.js';
 import './media_picker.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './camera_page.html.js';
 
-export class CameraPageElement extends PolymerElement {
+const CameraPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class CameraPageElement extends CameraPageElementBase {
   static get is() {
     return 'settings-camera-page';
   }
@@ -36,6 +40,11 @@ export class CameraPageElement extends PolymerElement {
   }
 
   declare searchTerm: string;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

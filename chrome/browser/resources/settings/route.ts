@@ -103,10 +103,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   }
   // </if>
   r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
+  r.SITE_SETTINGS_AUTO_VERIFY.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_BACKGROUND_SYNC =
       r.SITE_SETTINGS.createChild('backgroundSync');
   r.SITE_SETTINGS_BACKGROUND_SYNC.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_CAMERA = r.SITE_SETTINGS.createChild('camera');
+  r.SITE_SETTINGS_CAMERA.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_CLIPBOARD = r.SITE_SETTINGS.createChild('clipboard');
   r.SITE_SETTINGS_CLIPBOARD.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableHandTrackingContentSetting')) {
@@ -116,7 +118,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_IDLE_DETECTION = r.SITE_SETTINGS.createChild('idleDetection');
   r.SITE_SETTINGS_IDLE_DETECTION.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
+  r.SITE_SETTINGS_IMAGES.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
+  r.SITE_SETTINGS_MIXEDSCRIPT.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
   r.SITE_SETTINGS_JAVASCRIPT.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
@@ -125,11 +129,13 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_KEYBOARD_LOCK.hasMigratedToPlugin = true;
   }
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
+  r.SITE_SETTINGS_SOUND.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
   r.SITE_SETTINGS_SENSORS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_LOCATION = r.SITE_SETTINGS.createChild('location');
   r.SITE_SETTINGS_LOCATION.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_MICROPHONE = r.SITE_SETTINGS.createChild('microphone');
+  r.SITE_SETTINGS_MICROPHONE.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_NOTIFICATIONS = r.SITE_SETTINGS.createChild('notifications');
   r.SITE_SETTINGS_NOTIFICATIONS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_POPUPS = r.SITE_SETTINGS.createChild('popups');

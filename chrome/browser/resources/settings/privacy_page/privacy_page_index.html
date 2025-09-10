@@ -146,6 +146,14 @@
     </settings-ar-page>
   </template>
 
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTO_VERIFY currentRoute, inSearchMode)]]">
+    <settings-anti-abuse-page slot="view" id="siteSettingsAutoVerify"
+        data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_AUTO_VERIFY.path]]">
+    </settings-anti-abuse-page>
+  </template>
+
   <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute, inSearchMode)]]">
@@ -189,6 +197,15 @@
           route-path$="[[routes_.SITE_SETTINGS_BLUETOOTH_SCANNING.path]]">
       </settings-bluetooth-scanning-page>
     </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_CAMERA, currentRoute, inSearchMode)]]">
+      <settings-camera-page slot="view" id="siteSettingsCamera"
+          data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_CAMERA.path]]">
+      </settings-camera-page>
+    </settings-subpage>
   </template>
 
   <template is="dom-if" if="[[capturedSurfaceControlEnabled_]]">
@@ -238,6 +255,23 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_IMAGES, currentRoute, inSearchMode)]]">
+    <settings-images-page slot="view" id="siteSettingsImages"
+        route-path$="[[routes_.SITE_SETTINGS_IMAGES.path]]"
+        data-parent-view-id="old">
+    </settings-images-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MIXEDSCRIPT, currentRoute, inSearchMode)]]">
+    <settings-insecure-content-page slot="view"
+        id="siteSettingsMixedscript"
+        route-path$="[[routes_.SITE_SETTINGS_MIXEDSCRIPT.path]]"
+        data-parent-view-id="old">
+    </settings-insecure-content-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_JAVASCRIPT, currentRoute, inSearchMode)]]">
     <settings-javascript-page slot="view"
         id="siteSettingsJavascript" data-parent-view-id="old"
@@ -280,6 +314,14 @@
         data-parent-view-id="old" prefs="{{prefs}}"
         route-path$="[[routes_.SITE_SETTINGS_LOCATION.path]]">
     </settings-location-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MICROPHONE, currentRoute, inSearchMode)]]">
+    <settings-microphone-page slot="view"
+        id="siteSettingsMicrophone" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_MICROPHONE.path]]">
+    </settings-microphone-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -330,6 +372,14 @@
         id="siteSettingsSensors" data-parent-view-id="old"
         route-path$="[[routes_.SITE_SETTINGS_SENSORS.path]]">
     </settings-sensors-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SOUND, currentRoute, inSearchMode)]]">
+    <settings-sound-page slot="view"
+        id="siteSettingsSound" data-parent-view-id="old"
+        prefs="{{prefs}}" route-path$="[[routes_.SITE_SETTINGS_SOUND.path]]">
+    </settings-sound-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
