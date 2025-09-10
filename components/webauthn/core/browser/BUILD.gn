@@ -9,7 +9,10 @@ source_set("browser") {
     "passkey_data_type_controller.cc",
     "passkey_data_type_controller.h",
   ]
-  deps = [ "//components/sync" ]
+  deps = [
+    "//components/sync",
+    "//components/webauthn:features",
+  ]
 
   if (!is_android && !is_ios) {
     sources += [

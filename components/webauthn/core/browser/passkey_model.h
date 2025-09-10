@@ -79,6 +79,9 @@ class PasskeyModel : public KeyedService {
     std::string user_display_name;
   };
 
+  // Hidden passkeys are permanently removed after `kHiddenPasskeyLifetime`.
+  static constexpr base::TimeDelta kHiddenPasskeyLifetime = base::Days(30);
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 

@@ -18,4 +18,11 @@ BASE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+
+// Not yet enabled by default.
+BASE_FEATURE(kDeleteOldHiddenPasskeys, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace webauthn::features

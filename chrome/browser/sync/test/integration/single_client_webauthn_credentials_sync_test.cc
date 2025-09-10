@@ -10,6 +10,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -36,6 +39,7 @@
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
+#include "components/webauthn/features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -184,6 +188,10 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   void WaitTillModelReady() {
     CHECK(PasskeyModelReadyChecker(&GetModel()).Wait());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webauthn::features::kDeleteOldHiddenPasskeys};
 };
 
 // Adding a local passkey should sync to the server.
@@ -1138,6 +1146,50 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
+}
+
+// This test sets up two passkeys and hides them. One of the passkeys is hidden
+// with a date that is long ago enough for it to be deleted automatically, while
+// the other should be kept a little longer.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       PRE_DeleteOldHiddenPasskeysOnLoad) {
+  ASSERT_TRUE(SetupSync());
+  base::SimpleTestClock test_clock;
+  GetModel().set_clock_for_testing(&test_clock);
+
+  // Create and hide a passkey a little before `kHiddenPasskeyLifetime`.
+  sync_pb::WebauthnCredentialSpecifics old_passkey = NewPasskey();
+  old_passkey.set_user_display_name("Old");
+  GetModel().AddNewPasskeyForTesting(old_passkey);
+  test_clock.SetNow(base::Time::Now() -
+                    webauthn::PasskeyModel::kHiddenPasskeyLifetime -
+                    base::Seconds(1));
+  GetModel().SetPasskeyHidden(old_passkey.credential_id(), true);
+
+  // Create and hide a passkey a little after `kHiddenPasskeyLifetime`.
+  sync_pb::WebauthnCredentialSpecifics new_passkey = NewPasskey();
+  new_passkey.set_user_display_name("New");
+  GetModel().AddNewPasskeyForTesting(new_passkey);
+  test_clock.SetNow(base::Time::Now() -
+                    webauthn::PasskeyModel::kHiddenPasskeyLifetime +
+                    base::Days(1));
+  GetModel().SetPasskeyHidden(new_passkey.credential_id(), true);
+
+  // The passkey should not have been deleted yet, since
+  // `kHiddenPasskeyLifetime` hasn't passed yet.
+  EXPECT_THAT(GetModel().GetAllPasskeys(),
+              UnorderedElementsAre(PasskeyHasSyncId(new_passkey.sync_id()),
+                                   PasskeyHasSyncId(old_passkey.sync_id())));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeleteOldHiddenPasskeysOnLoad) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+
+  // After loading the browser, the old passkey should have been deleted.
+  EXPECT_THAT(GetModel().GetAllPasskeys(),
+              UnorderedElementsAre(PasskeyHasDisplayName("New")));
 }
 
 INSTANTIATE_TEST_SUITE_P(

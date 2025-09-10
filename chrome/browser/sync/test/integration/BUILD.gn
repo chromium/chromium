@@ -45,6 +45,7 @@ source_set("sync_integration_tests_impl") {
     "//components/sync_preferences:common_syncable_prefs_database",
     "//components/undo",
     "//components/version_info",
+    "//components/webauthn:features",
     "//google_apis:test_support",
   ]
 

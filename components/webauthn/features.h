@@ -22,6 +22,13 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+
+// Controls deletion of passkeys that have been hidden for a while.
+BASE_DECLARE_FEATURE(kDeleteOldHiddenPasskeys);
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace webauthn::features
 
 #endif  // COMPONENTS_WEBAUTHN_FEATURES_H_
