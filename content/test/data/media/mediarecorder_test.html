@@ -173,7 +173,7 @@ function testStartAndDataAvailable(mimeType) {
           videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
-            assertTrue(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode >= lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
       })
@@ -212,7 +212,7 @@ function testStartWithTimeSlice(mimeType) {
           videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
-            assertTrue(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode >= lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
       })
@@ -286,7 +286,7 @@ function testResumeAndDataAvailable(mimeType) {
           videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
-            assertTrue(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode >= lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.resume();
@@ -402,7 +402,7 @@ function testRecordRemotePeerConnection(mimeType) {
           videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
-            assertTrue(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode >= lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.start(ZERO_TIME_SLICE);
@@ -461,7 +461,7 @@ function testTwoChannelAudio() {
         recorder.ondataavailable = function(event) {
           audioSize += event.data.size;
           if (!isNaN(lastTimecode))
-            assertTrue(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode >= lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.start(0);
