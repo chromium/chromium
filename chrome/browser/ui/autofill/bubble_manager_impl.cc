@@ -108,7 +108,10 @@ void BubbleManagerImpl::RequestShowController(
 
   if (force_show ||
       ShouldReplaceExistingBubble(controller_weak_ptr->GetBubbleType())) {
-    HideActiveBubbleForPreemption(controller_weak_ptr);
+    HideActiveBubbleForPreemption();
+
+    // Immediately show the new, preempting bubble.
+    ShowAndSetCurrentActive(controller_weak_ptr);
   } else {
     // New bubble has lower or equal priority, or the active bubble is hovered;
     // queue it.
@@ -133,11 +136,9 @@ void BubbleManagerImpl::ShowAndSetCurrentActive(
   active_bubble_controller_->ShowBubble();
 }
 
-void BubbleManagerImpl::HideActiveBubbleForPreemption(
-    base::WeakPtr<BubbleControllerBase> preempting_controller) {
+void BubbleManagerImpl::HideActiveBubbleForPreemption() {
   CHECK(active_bubble_controller_ &&
         active_bubble_controller_->IsShowingBubble());
-  CHECK(preempting_controller);
   CHECK(handling_show_request_);
 
   // Queue the old bubble. It will be hidden, and its OnBubbleHiddenByController
@@ -145,9 +146,6 @@ void BubbleManagerImpl::HideActiveBubbleForPreemption(
   // show request (`handling_show_request_` is true).
   AddToPendingQueue(active_bubble_controller_);
   active_bubble_controller_->HideBubble();
-
-  // Immediately show the new, preempting bubble.
-  ShowAndSetCurrentActive(preempting_controller);
 }
 
 void BubbleManagerImpl::AddToPendingQueue(

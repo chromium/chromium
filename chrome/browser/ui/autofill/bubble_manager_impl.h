@@ -61,8 +61,7 @@ class BubbleManagerImpl : public BubbleManager {
   void AddToPendingQueue(base::WeakPtr<BubbleControllerBase> controller);
 
   // Hides the currently active bubble to show a higher-priority one.
-  void HideActiveBubbleForPreemption(
-      base::WeakPtr<BubbleControllerBase> preempting_controller);
+  void HideActiveBubbleForPreemption();
 
   // Returns true if the `new_controller` should replace the
   // `active_bubble_controller_`.
