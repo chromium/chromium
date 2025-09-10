@@ -400,7 +400,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
-          IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
+          IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs()) &&
+          // Cancelation happens when the WebContents is destroyed, but we
+          // cannot access ClientSideDetectionFeatureCache at that time.
+          !web_contents_->IsBeingDestroyed()) {
         ClientSideDetectionFeatureCache::CreateForWebContents(web_contents_);
         ClientSideDetectionFeatureCache* feature_cache_map =
             ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
