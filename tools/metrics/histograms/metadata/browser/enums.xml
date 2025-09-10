@@ -360,6 +360,7 @@ chromium-metrics-reviews@google.com.
   <int value="126" label="COLLABORATION_OUT_OF_DATE_INFOBAR_DELEGATE"/>
   <int value="127" label="PIN_TO_TASKBAR_INFOBAR_DELEGATE"/>
   <int value="128" label="SESSION_RESTORE_INFOBAR_DELEGATE"/>
+  <int value="129" label="ROLL_BACK_MODE_B_INFOBAR_DELEGATE"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->
