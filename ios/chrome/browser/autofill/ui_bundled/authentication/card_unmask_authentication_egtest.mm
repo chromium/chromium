@@ -198,7 +198,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionCancel {
+// TODO(crbug.com/444060942): Test is flaky.
+- (void)DISABLED_testCardUnmaskAuthenticationSelectionCancel {
   [self showAuthenticationSelection];
 
   // Tap the cancel button.
@@ -249,7 +250,9 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
+// TODO(crbug.com/444090218): Test is flaky.
+- (void)
+    DISABLED_testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
   [self showAuthenticationSelection];
 
   // Select the text message otp challenge option.
@@ -265,7 +268,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testDismissInputViaSwipe {
+// TODO(crbug.com/444091898): Test is flaky.
+- (void)DISABLED_testDismissInputViaSwipe {
   [self showAuthenticationSelection];
 
   // The initial access token has been used up, set another fake access token.
