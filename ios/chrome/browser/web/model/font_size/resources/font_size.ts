@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Add functionality related to font size adjustment.
@@ -34,4 +34,8 @@ function adjustFontSize(size: number): void {
   } catch (error) {}
 }
 
-gCrWebLegacy.font_size = {adjustFontSize};
+const fontSizeApi = new CrWebApi();
+
+fontSizeApi.addFunction('adjustFontSize', adjustFontSize);
+
+gCrWeb.registerApi('font_size', fontSizeApi);
