@@ -40,7 +40,6 @@ using ::content::JsReplace;
 using ::content::RenderFrameHost;
 using ::content::TestNavigationManager;
 using ::content::WebContents;
-using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 
 // Note: this file doesn't actually exist, the response is manually provided by

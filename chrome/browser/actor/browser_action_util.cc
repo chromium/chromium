@@ -856,43 +856,6 @@ apc::ActionsResult BuildErrorActionsResult(
   return response;
 }
 
-base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
-BuildToolRequest(const optimization_guide::proto::BrowserAction& actions,
-                 tabs::TabInterface* deprecated_fallback_tab) {
-  TRACE_EVENT0("actor", "BuildToolRequest");
-  std::vector<std::unique_ptr<actor::ToolRequest>> requests;
-  requests.reserve(actions.actions_size());
-  for (int i = 0; i < actions.actions_size(); ++i) {
-    std::unique_ptr<actor::ToolRequest> request = actor::CreateToolRequest(
-        actions.actions().at(i), deprecated_fallback_tab);
-    if (request) {
-      requests.push_back(std::move(request));
-    } else {
-      return base::unexpected(base::checked_cast<size_t>(i));
-    }
-  }
-
-  return requests;
-}
-
-optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
-    mojom::ActionResultCode result_code,
-    int32_t tab_id) {
-  TRACE_EVENT0("actor", "BuildBrowserActionResult");
-  optimization_guide::proto::BrowserActionResult response;
-  response.set_action_result(static_cast<int32_t>(result_code));
-  response.set_tab_id(tab_id);
-  return response;
-}
-
-std::string ToBase64(const optimization_guide::proto::BrowserAction& actions) {
-  TRACE_EVENT0("actor", "BrowserActionToBase64");
-  size_t size = actions.ByteSizeLong();
-  std::vector<uint8_t> buffer(size);
-  actions.SerializeToArray(buffer.data(), size);
-  return base::Base64Encode(buffer);
-}
-
 std::string ToBase64(const optimization_guide::proto::Actions& actions) {
   TRACE_EVENT0("actor", "ActionsToBase64");
   size_t size = actions.ByteSizeLong();

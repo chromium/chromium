@@ -42,7 +42,6 @@
 #include "net/dns/mock_host_resolver.h"
 
 using ::base::test::TestFuture;
-using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
 
 namespace actor {

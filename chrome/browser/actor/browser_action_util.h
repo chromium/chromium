@@ -26,7 +26,6 @@
 namespace optimization_guide::proto {
 class Action;
 class Actions;
-class BrowserAction;
 }  // namespace optimization_guide::proto
 
 namespace page_content_annotations {
@@ -88,28 +87,12 @@ optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action);
 
-// Builds a vector of ToolRequests usable for ActorKeyedService::ActInFocusedTab
-// out of the given proto::BrowserAction proto.
-// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
-// removed.
-BuildToolRequestResult BuildToolRequest(
-    const optimization_guide::proto::BrowserAction& actions,
-    tabs::TabInterface* deprecated_fallback_tab);
-
 // Converts a FetchPageContext result to a TabObservation proto. Note that this
 // does not fill in the (tab) `id` field on the proto, the caller is responsible
 // for that.
 void FillInTabObservation(
     const page_content_annotations::FetchPageContextResult& page_context_result,
     optimization_guide::proto::TabObservation& tab_observation);
-
-// Builds the BrowserActionResult proto from the output of a call to the
-// ActorKeyedService::ActInFocusedTab API.
-// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
-// removed.
-optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
-    mojom::ActionResultCode result_code,
-    int32_t tab_id);
 
 // Copies script tool results in `action_results` to the input proto.
 template <typename T>
@@ -133,7 +116,6 @@ CreateActorJournalFetchPageProgressListener(
     const GURL& url,
     TaskId task_id);
 
-std::string ToBase64(const optimization_guide::proto::BrowserAction& actions);
 std::string ToBase64(const optimization_guide::proto::Actions& actions);
 
 }  // namespace actor
