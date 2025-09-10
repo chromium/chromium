@@ -205,6 +205,9 @@
       <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR_LIMIT=20]">
         Remove
       </message>
+      <message name="IDS_EDIT" desc="Label for a button to edit an item (e.g. a permission) on a list.">
+        Edit
+      </message>
       <message name="IDS_RESET" desc="Label for a button to reset information you are editing to a default.">
         Reset
       </message>

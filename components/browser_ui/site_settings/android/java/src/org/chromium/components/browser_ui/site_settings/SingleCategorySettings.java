@@ -71,6 +71,8 @@ import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.S
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSetting;
@@ -81,12 +83,16 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -655,11 +661,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                                                     .REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS);
                                 });
             } else {
-                buildPreferenceDialog(websitePreference.site()).show();
-                if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
-                    RecordUserAction.record(
-                            "DesktopSiteContentSetting.SettingsPage.SiteException.Opened");
-                }
+                buildContextMenuForWebsitePreference(websitePreference);
             }
         }
 
@@ -1721,8 +1723,70 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     /**
-     * Builds an alert dialog which can be used to change the preference value or remove for the
-     * exception for the current categories ContentSettingType on a Website.
+     * Builds a context menu for a Website permission row which can be used to edit or remove the
+     * preference.
+     */
+    private void buildContextMenuForWebsitePreference(WebsitePreference websitePreference) {
+        ListMenuHost menuHost =
+                new ListMenuHost(assumeNonNull(websitePreference.getButton()), null);
+        ModelList menuItems = new ModelList();
+        menuItems.add(ListItemBuilder.buildSimpleMenuItem(R.string.edit));
+        menuItems.add(ListItemBuilder.buildSimpleMenuItem(R.string.remove));
+
+        ListMenu.Delegate delegate =
+                (model) -> {
+                    int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.edit) {
+                        buildPreferenceDialog(websitePreference.site()).show();
+                        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+                            RecordUserAction.record(
+                                    "DesktopSiteContentSetting.SettingsPage.SiteException.Opened");
+                        }
+                    } else if (textId == R.string.remove) {
+                        BrowserContextHandle browserContextHandle = getBrowserContextHandle();
+                        @ContentSettingsType.EnumType
+                        int contentSettingsType = mCategory.getContentSettingsType();
+
+                        boolean isApproxGeoPermission =
+                                contentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
+                        if (isApproxGeoPermission) {
+
+                            assumeNonNull(
+                                            websitePreference
+                                                    .site()
+                                                    .getPermissionInfo(contentSettingsType))
+                                    .setGeolocationSetting(browserContextHandle, null);
+                        } else {
+                            websitePreference
+                                    .site()
+                                    .setContentSetting(
+                                            browserContextHandle,
+                                            contentSettingsType,
+                                            ContentSetting.DEFAULT);
+                        }
+                        if (mCategory.getType()
+                                == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
+                            AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
+                                    AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST,
+                                    false);
+                        }
+
+                        getInfoForOrigins();
+                    }
+                };
+
+        menuHost.setDelegate(
+                () -> {
+                    return BrowserUiListMenuUtils.getBasicListMenu(
+                            getContext(), menuItems, delegate);
+                },
+                false);
+        menuHost.showMenu();
+    }
+
+    /**
+     * Builds an alert dialog which can be used to change the preference value for the exception for
+     * the current categories ContentSettingType on a Website.
      */
     private AlertDialog buildPreferenceDialog(Website site) {
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
@@ -1742,38 +1806,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             value = site.getContentSetting(browserContextHandle, contentSettingsType);
         }
-
-        AlertDialog alertDialog =
-                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                        .setTitle(
-                                getContext()
-                                        .getString(
-                                                R.string.website_settings_edit_site_dialog_title))
-                        .setPositiveButton(R.string.cancel, null)
-                        .setNegativeButton(
-                                R.string.remove,
-                                (dialog, which) -> {
-                                    if (isApproxGeoPermission) {
-                                        assumeNonNull(site.getPermissionInfo(contentSettingsType))
-                                                .setGeolocationSetting(browserContextHandle, null);
-                                    } else {
-                                        site.setContentSetting(
-                                                browserContextHandle,
-                                                contentSettingsType,
-                                                ContentSetting.DEFAULT);
-                                    }
-                                    if (mCategory.getType()
-                                            == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
-                                        AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
-                                                AutoDarkSettingsChangeSource
-                                                        .SITE_SETTINGS_EXCEPTION_LIST,
-                                                false);
-                                    }
-
-                                    getInfoForOrigins();
-                                    dialog.dismiss();
-                                })
-                        .create();
 
         // Set a custom view with description text and a radio button group that uses
         // RadioButtonWithDescriptionLayout.
@@ -1817,29 +1849,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             blockButton.setChecked(true);
         }
 
-        radioGroup.setOnCheckedChangeListener(
-                (radioButtonGroup, i) -> {
-                    @ContentSetting
-                    int permission =
-                            allowButton.isChecked() ? ContentSetting.ALLOW : ContentSetting.BLOCK;
-
-                    if (isApproxGeoPermission) {
-                        updateGeolocationSetting(site, contentView);
-                    } else {
-                        site.setContentSetting(
-                                browserContextHandle, contentSettingsType, permission);
-                    }
-                    DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                            mCategory.getType(), permission, site);
-                    getInfoForOrigins();
-                    // TODO(crbug.com/410752725): Change UI to have a confirm button instead of
-                    // applying changes immediately.
-                    alertDialog.dismiss();
-                });
-
         if (geo_setting != null) {
-            RadioButtonWithDescriptionLayout location_access =
-                    contentView.findViewById(R.id.location_access_group);
             int selectedPrecision = R.id.precise;
             if (geo_setting.mApproximate == ContentSetting.ALLOW
                     && geo_setting.mPrecise != ContentSetting.ALLOW) {
@@ -1847,10 +1857,39 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             }
             RadioButtonWithDescription selectedButton = contentView.findViewById(selectedPrecision);
             selectedButton.setChecked(true);
-
-            location_access.setOnCheckedChangeListener(
-                    (group, newValue) -> updateGeolocationSetting(site, contentView));
         }
+
+        AlertDialog alertDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(
+                                getContext()
+                                        .getString(
+                                                R.string.website_settings_edit_site_dialog_title))
+                        .setPositiveButton(
+                                R.string.confirm,
+                                (dialog, which) -> {
+                                    @ContentSetting
+                                    int permission =
+                                            allowButton.isChecked()
+                                                    ? ContentSetting.ALLOW
+                                                    : ContentSetting.BLOCK;
+
+                                    if (isApproxGeoPermission) {
+                                        updateGeolocationSetting(site, contentView);
+                                    } else {
+                                        site.setContentSetting(
+                                                browserContextHandle,
+                                                contentSettingsType,
+                                                permission);
+                                    }
+                                    DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
+                                            mCategory.getType(), permission, site);
+                                    getInfoForOrigins();
+                                    dialog.dismiss();
+                                })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+
         alertDialog.setView(contentView);
         return alertDialog;
     }
