@@ -426,8 +426,8 @@
 
 # TODO(crbug.com/384770166): These tests have been failing since
 # https://crrev.com/c/6101118.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_NewTab
--PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_PopUp
+-PrerenderTargetHintBrowserTest.ActivateOnWindowOpen_NewTab
+-PrerenderTargetHintBrowserTest.ActivateOnWindowOpen_PopUp
 
 # TODO(crbug.com/393431139): These tests have been failing since
 # https://crrev.com/c/5201204.
@@ -439,10 +439,10 @@
 # TODO(crbug.com/402810071): These tests have been failing since
 # https://crrev.com/c/6261869. The blink::features::kPrerender2InNewTab feature
 # doesn't work on iOS correctly.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+-PrerenderTargetHintBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintOriginTrialBrowserTest.Prerender2InNewTabOriginTrial
 
 # These tests have been failing since https://crrev.com/c/6459930.
@@ -457,9 +457,9 @@
 
 # TODO(crbug.com/427329344): These tests have been failing since
 # https://crrev.com/c/6636534.
--PrerenderTargetHintEnabledBrowserTest.ActivateOnBothTargetHint
--PrerenderTargetHintEnabledBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
--PrerenderTargetHintEnabledBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
+-PrerenderTargetHintBrowserTest.ActivateOnBothTargetHint
+-PrerenderTargetHintBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
+-PrerenderTargetHintBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
 
 # TODO(crbug.com/428021765): These tests have been failing between build #100[1]
 # and #667[2].
