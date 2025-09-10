@@ -8084,7 +8084,8 @@
                     },
                     "enable_features": [
                         "Prerender2ReuseHost",
-                        "Prewarm"
+                        "Prewarm",
+                        "ReusePrerenderingProcessForMainFrames"
                     ]
                 }
             ]
