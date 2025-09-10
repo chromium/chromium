@@ -1123,7 +1123,7 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
   void Release() ABSL_UNLOCK_FUNCTION();
 
  private:
-  Mutex* absl_nonnull mu_;
+  Mutex* absl_nullable mu_;
   ReleasableMutexLock(const ReleasableMutexLock&) = delete;
   ReleasableMutexLock(ReleasableMutexLock&&) = delete;
   ReleasableMutexLock& operator=(const ReleasableMutexLock&) = delete;

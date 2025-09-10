@@ -292,8 +292,7 @@ TEST(CHECKDeathTest, TestBinaryChecksWithUnprintable) {
   ExampleTypeThatHasNoStreamOperator a{true};
   ExampleTypeThatHasNoStreamOperator b{false};
   ABSL_TEST_CHECK_EQ(a, a);
-  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(a, b),
-               "Check failed: a == b \\(UNPRINTABLE vs. UNPRINTABLE\\)");
+  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(a, b), "Check failed: a == b");
   ABSL_TEST_CHECK_EQ(a, true);
   EXPECT_DEATH(ABSL_TEST_CHECK_EQ(a, false),
                "Check failed: a == false \\(UNPRINTABLE vs. 0\\)");

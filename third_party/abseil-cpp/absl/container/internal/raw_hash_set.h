@@ -2390,13 +2390,13 @@ class raw_hash_set {
   //   s.insert({"abc", 42});
   std::pair<iterator, bool> insert(init_type&& value)
       ABSL_ATTRIBUTE_LIFETIME_BOUND
-#if __cplusplus >= 202002L
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
     requires(!IsLifetimeBoundAssignmentFrom<init_type>::value)
 #endif
   {
     return emplace(std::move(value));
   }
-#if __cplusplus >= 202002L
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
   std::pair<iterator, bool> insert(
       init_type&& value ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
       ABSL_ATTRIBUTE_LIFETIME_BOUND
@@ -3184,31 +3184,41 @@ class raw_hash_set {
     auto seq = probe(common(), hash);
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control();
-    while (true) {
+    size_t index;
+    bool inserted;
+    // We use a lambda function to be able to exit from the nested loop without
+    // duplicating generated code for the return statement (e.g. iterator_at).
+    [&] {
+      while (true) {
 #ifndef ABSL_HAVE_MEMORY_SANITIZER
-      absl::PrefetchToLocalCache(slot_array() + seq.offset());
+        absl::PrefetchToLocalCache(slot_array() + seq.offset());
 #endif
-      Group g{ctrl + seq.offset()};
-      for (uint32_t i : g.Match(h2)) {
-        if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i))))
-          return {iterator_at(seq.offset(i)), false};
+        Group g{ctrl + seq.offset()};
+        for (uint32_t i : g.Match(h2)) {
+          if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i)))) {
+            index = seq.offset(i);
+            inserted = false;
+            return;
+          }
+        }
+        auto mask_empty = g.MaskEmpty();
+        if (ABSL_PREDICT_TRUE(mask_empty)) {
+          size_t target = seq.offset(mask_empty.LowestBitSet());
+          index = SwisstableGenerationsEnabled()
+                      ? PrepareInsertLargeGenerationsEnabled(
+                            common(), GetPolicyFunctions(), hash,
+                            FindInfo{target, seq.index()},
+                            HashKey<hasher, K, kIsDefaultHash>{hash_ref(), key})
+                      : PrepareInsertLarge(common(), GetPolicyFunctions(), hash,
+                                           FindInfo{target, seq.index()});
+          inserted = true;
+          return;
+        }
+        seq.next();
+        ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
       }
-      auto mask_empty = g.MaskEmpty();
-      if (ABSL_PREDICT_TRUE(mask_empty)) {
-        size_t target = seq.offset(mask_empty.LowestBitSet());
-        size_t index =
-            SwisstableGenerationsEnabled()
-                ? PrepareInsertLargeGenerationsEnabled(
-                      common(), GetPolicyFunctions(), hash,
-                      FindInfo{target, seq.index()},
-                      HashKey<hasher, K, kIsDefaultHash>{hash_ref(), key})
-                : PrepareInsertLarge(common(), GetPolicyFunctions(), hash,
-                                     FindInfo{target, seq.index()});
-        return {iterator_at(index), true};
-      }
-      seq.next();
-      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
-    }
+    }();
+    return {iterator_at(index), inserted};
   }
 
  protected:
