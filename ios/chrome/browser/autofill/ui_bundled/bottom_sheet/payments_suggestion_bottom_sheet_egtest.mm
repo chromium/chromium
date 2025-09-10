@@ -131,7 +131,7 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   } else if ([self isRunningTest:@selector
-                   (testUpdateBottomSheetOnAddServerCreditCard)]) {
+                   (DISABLED_testUpdateBottomSheetOnAddServerCreditCard)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   }
@@ -502,7 +502,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the Payments Bottom Sheet updates its contents when a new credit
 // card becomes available in the personal data manager.
-- (void)testUpdateBottomSheetOnAddServerCreditCard {
+// TODO(crbug.com/444042991): Test is flaky.
+- (void)DISABLED_testUpdateBottomSheetOnAddServerCreditCard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
