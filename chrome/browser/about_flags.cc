@@ -12868,14 +12868,6 @@ const FeatureEntry kFeatureEntries[] = {
          "EnableNtpBrowserPromos")},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"enable-multi-capture-notification-update",
-     flag_descriptions::kMultiCaptureUsageIndicatorUpdateName,
-     flag_descriptions::kMultiCaptureUsageIndicatorUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kMultiCaptureReworkedUsageIndicators)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-devtools-deep-link-via-extensibility-api",
      flag_descriptions::kEnableDevtoolsDeepLinkViaExtensibilityApiName,

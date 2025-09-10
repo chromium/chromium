@@ -37,7 +37,6 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
-#include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -103,8 +102,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   time_tray_item_view_ = AddTrayItemToContainer(
       std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kTime));
-
-  AddTrayItemToContainer(std::make_unique<ScreenCaptureTrayItemView>(shelf));
 
   if (features::IsSnoopingProtectionEnabled()) {
     AddTrayItemToContainer(std::make_unique<SnoopingProtectionView>(shelf));

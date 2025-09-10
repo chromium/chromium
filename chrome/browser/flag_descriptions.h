@@ -4299,9 +4299,6 @@ extern const char kMicrophoneMuteSwitchDeviceDescription[];
 extern const char kMultiCalendarSupportName[];
 extern const char kMultiCalendarSupportDescription[];
 
-extern const char kMultiCaptureUsageIndicatorUpdateName[];
-extern const char kMultiCaptureUsageIndicatorUpdateDescription[];
-
 extern const char kNotificationWidthIncreaseName[];
 extern const char kNotificationWidthIncreaseDescription[];
 

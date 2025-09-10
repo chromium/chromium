@@ -530,7 +530,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/shell.h"
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
@@ -1251,36 +1250,18 @@ void NotifyMultiCaptureStarted(const std::string& label,
                                content::BrowserContext* browser_context) {
   const url::Origin origin =
       url::Origin::Create(web_contents->GetLastCommittedURL());
-  if (app_id) {
-    CHECK_DEREF(ash::Shell::Get())
-        .multi_capture_service()
-        ->NotifyMultiCaptureStartedFromApp(
-            label, *app_id,
-            web_app::WebAppProvider::GetForWebContents(web_contents)
-                ->registrar_unsafe()
-                .GetAppShortName(*app_id),
-            origin);
+  CHECK(app_id);
 
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
-      CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
-                      GetForBrowserContext(web_contents->GetBrowserContext()))
-          .MultiCaptureStarted(label, *app_id);
-    }
-  }
+  CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
+                  GetForBrowserContext(web_contents->GetBrowserContext()))
+      .MultiCaptureStarted(label, *app_id);
 }
 
 void NotifyMultiCaptureStopped(const std::string& label,
                                content::BrowserContext* browser_context) {
-  CHECK_DEREF(ash::Shell::Get())
-      .multi_capture_service()
-      ->NotifyMultiCaptureStopped(label);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
-    CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
-                    GetForBrowserContext(browser_context))
-        .MultiCaptureStopped(label);
-  }
+  CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
+                  GetForBrowserContext(browser_context))
+      .MultiCaptureStopped(label);
 }
 
 bool IsSubAppsPermissionGrantedByAdmins(content::WebContents* contents) {

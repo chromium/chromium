@@ -113,7 +113,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",
-    "//chrome/browser/ash/policy/multi_screen_capture",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/ui",

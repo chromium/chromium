@@ -218,8 +218,6 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
   std::map<std::string, message_center::Notification> visible_notifications_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  base::test::ScopedFeatureList scoped_feature_list{
-      chromeos::features::kMultiCaptureReworkedUsageIndicators};
 
  private:
   const std::vector<InstalledApp> installed_apps_;

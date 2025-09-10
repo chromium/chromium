@@ -198,7 +198,6 @@ class MessageCenterController;
 class MouseCursorEventFilter;
 class MouseKeysController;
 class MruWindowTracker;
-class MultiCaptureService;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
 class MultiUserWindowManager;
@@ -713,9 +712,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   quick_pair::Mediator* quick_pair_mediator() {
     return quick_pair_mediator_.get();
-  }
-  MultiCaptureService* multi_capture_service() {
-    return multi_capture_service_.get();
   }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
@@ -1295,8 +1291,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<UnlockThroughputRecorder> unlock_throughput_recorder_;
 
   std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
-
-  std::unique_ptr<MultiCaptureService> multi_capture_service_;
 
   std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;
 

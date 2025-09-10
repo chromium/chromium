@@ -401,7 +401,6 @@
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
@@ -817,12 +816,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   ClientHintsFactory::GetInstance();
   ClipboardRestrictionServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
-  policy::MultiScreenCapturePolicyServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
-    multi_capture::MultiCaptureDataServiceFactory::GetInstance();
-    multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetInstance();
-  }
+  multi_capture::MultiCaptureDataServiceFactory::GetInstance();
+  multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetInstance();
+
   if (chromeos::features::
           IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {
     chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();

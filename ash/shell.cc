@@ -108,7 +108,6 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/metrics/unlock_throughput_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/policy/policy_recommendation_restorer.h"
@@ -1214,8 +1213,6 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
-  multi_capture_service_.reset();
-
   // Observes `SessionController` and must be destroyed before it.
   brightness_control_delegate_.reset();
   keyboard_brightness_control_delegate_.reset();
@@ -1622,8 +1619,6 @@ void Shell::Init(
       ambient_fingerprint.InitWithNewPipeAndPassReceiver());
   ambient_controller_ =
       std::make_unique<AmbientController>(std::move(ambient_fingerprint));
-
-  multi_capture_service_ = std::make_unique<MultiCaptureService>();
 
   // Depends on `session_controller_` (instantiated in the constructor).
   // Must be instantiated before `capture_mode_controller_`,

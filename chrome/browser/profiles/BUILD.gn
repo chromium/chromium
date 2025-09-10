@@ -370,7 +370,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ash/language_packs",
       "//chrome/browser/ash/lobster",
       "//chrome/browser/ash/policy/dlp",
-      "//chrome/browser/ash/policy/multi_screen_capture",
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/ash/scanner",
       "//chrome/browser/chromeos/cros_apps",
