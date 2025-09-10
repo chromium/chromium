@@ -1063,6 +1063,64 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
             engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, SelectTextOneChar) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  static constexpr gfx::PointF kStartPosition(159, 120);
+  static constexpr gfx::PointF kEndPosition(159.5f, 120);
+
+  // Forward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+  EXPECT_EQ("r", engine->GetSelectedText());
+
+  // Backward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kStartPosition)));
+  EXPECT_EQ("r", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, SelectTextTwoChar) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  static constexpr gfx::PointF kStartPosition(159, 120);
+  static constexpr gfx::PointF kEndPosition(163, 120);
+
+  // Forward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+  EXPECT_EQ("rl", engine->GetSelectedText());
+
+  // Backward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kStartPosition)));
+  EXPECT_EQ("rl", engine->GetSelectedText());
+}
+
 TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
