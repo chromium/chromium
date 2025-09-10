@@ -90,7 +90,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   AutofillScanner scanner(unowned_fields);
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
                          client_country, page_language, pattern_file,
-                         GetActiveRegexFeatures());
+                         GetActiveRegexFeatures(), /*log_manager=*/{});
   std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
@@ -110,8 +110,8 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const LanguageCode& page_language) {
   UpdateRanks(fields_);
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
-                         client_country, page_language,
-                         *GetActivePatternFile());
+                         client_country, page_language, *GetActivePatternFile(),
+                         /*active_features=*/{}, /*log_manager=*/{});
 
   // Must outlive `scanner`.
   auto unowned_fields =

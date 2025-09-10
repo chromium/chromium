@@ -1091,7 +1091,7 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
 #else
                          PatternFile::kLegacy,
 #endif
-                         GetActiveRegexFeatures());
+                         GetActiveRegexFeatures(), /*log_manager=*/nullptr);
 
   rationalization::ApplyRationalizationEngineRules(context, fields_,
                                                    log_manager);

@@ -414,11 +414,11 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       return std::nullopt;
     };
     if (prefer_label) {
-      auto r = MatchAttribute(/*match_label*/ true);
-      return r ? r : MatchAttribute(/*match_label*/ false);
+      auto r = MatchAttribute(/*match_label=*/true);
+      return r ? r : MatchAttribute(/*match_label=*/false);
     } else {
-      auto r = MatchAttribute(/*match_label*/ false);
-      return r ? r : MatchAttribute(/*match_label*/ true);
+      auto r = MatchAttribute(/*match_label=*/false);
+      return r ? r : MatchAttribute(/*match_label=*/true);
     }
   };
 

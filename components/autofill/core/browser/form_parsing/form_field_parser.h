@@ -92,8 +92,8 @@ struct ParsingContext {
                  GeoIpCountryCode client_country,
                  LanguageCode page_language,
                  PatternFile pattern_file,
-                 DenseSet<RegexFeature> active_features = {},
-                 LogManager* log_manager = nullptr);
+                 DenseSet<RegexFeature> active_features,
+                 LogManager* log_manager);
   ParsingContext(const ParsingContext&) = delete;
   ParsingContext& operator=(const ParsingContext&) = delete;
   ~ParsingContext();

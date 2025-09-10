@@ -51,7 +51,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, client_country, language,
                            GetActivePatternFile().value(),
-                           GetActiveRegexFeatures());
+                           GetActiveRegexFeatures(), /*log_manager=*/nullptr);
     FormFieldParser::ParseFormFields(context, fields, field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -61,7 +61,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value(),
-                           GetActiveRegexFeatures());
+                           GetActiveRegexFeatures(), /*log_manager=*/nullptr);
     FormFieldParser::ParseSingleFields(context, fields, field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -69,7 +69,8 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   int ParseStandaloneCVCFields() {
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           /*active_features=*/{}, /*log_manager=*/{});
     FormFieldParser::ParseStandaloneCVCFields(context, fields,
                                               field_candidates_map_);
     return field_candidates_map_.size();
@@ -78,7 +79,8 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   int ParseStandaloneEmailFields() {
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           /*active_features=*/{}, /*log_manager=*/{});
     FormFieldParser::ParseStandaloneEmailFields(context, fields,
                                                 field_candidates_map_);
     return field_candidates_map_.size();
@@ -88,7 +90,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value(),
-                           GetActiveRegexFeatures());
+                           GetActiveRegexFeatures(), /*log_manager=*/nullptr);
     FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields,
                                                       field_candidates_map_);
     return field_candidates_map_.size();
@@ -149,7 +151,8 @@ TEST_P(MatchTest, Match) {
   for (const auto& pattern : positive_patterns) {
     ParsingContext context(base::span_from_ref(to_form_field_data(field)),
                            GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           /*active_features=*/{}, /*log_manager=*/{});
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_TRUE(FormFieldParserTestApi::Match(context, *field, pattern,
                                               {MatchAttribute::kLabel}));
@@ -157,7 +160,8 @@ TEST_P(MatchTest, Match) {
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(base::span_from_ref(to_form_field_data(field)),
                            GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
+                           GetActivePatternFile().value(),
+                           /*active_features=*/{}, /*log_manager=*/{});
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_FALSE(FormFieldParserTestApi::Match(context, *field, pattern,
                                                {MatchAttribute::kLabel}));
@@ -194,7 +198,8 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
 
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
                          GeoIpCountryCode(""), LanguageCode(""),
-                         GetActivePatternFile().value());
+                         GetActivePatternFile().value(), /*active_features=*/{},
+                         /*log_manager=*/{});
   context.label_overrides[autofill_field->global_id()] = u"First Name";
   EXPECT_TRUE(FormFieldParserTestApi::Match(
       context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
