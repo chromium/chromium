@@ -9344,6 +9344,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}=1{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}one{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}other{ট্যাব বন্ধ করে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="7509097596023256288">ম্যানেজমেন্ট সেট আপ করা হচ্ছে</translation>
 <translation id="7509539379068593709">অ্যাপ আনইনস্টল করুন</translation>
+<translation id="7513438205469584978">আপনার <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google অ্যাক্টিভিটি<ph name="END_LINK_GOOGLE_ACTIVITY" />র ভিত্তিতে সাজেশন দেখানো হচ্ছে</translation>
 <translation id="7514239104543605883">আপনার ডিভাইসে কপি করুন</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7514417110442087199">অ্যাকশনের জন্য কোনও সুইচ অ্যাসাইন করুন</translation>

@@ -9328,6 +9328,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Желите да затворите картицу и избришете групу?}=1{Желите да затворите картице и избришете групу?}one{Желите да затворите картице и избришете групе?}few{Желите да затворите картице и избришете групе?}other{Желите да затворите картице и избришете групе?}}</translation>
 <translation id="7509097596023256288">Управљање подешавањем</translation>
 <translation id="7509539379068593709">Деинсталирај апликацију</translation>
+<translation id="7513438205469584978">Предлози засновани на вашим <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google активностима<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Копирајте на свој уређај</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7514417110442087199">Додајте доделу</translation>

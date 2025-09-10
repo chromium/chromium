@@ -30,7 +30,7 @@
 <translation id="1909810060368225529">לתשומת לבך: השינויים שמבוצעים בקבוצת הכרטיסיות המשותפת הזו גלויים לכולם. כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{הצמדת הכרטיסייה}one{הצמדת הכרטיסיות}two{הצמדת הכרטיסיות}other{הצמדת הכרטיסיות}}</translation>
 <translation id="1982637982196732906">העברה לקטע הלא פעיל</translation>
-<translation id="2050597508048557928">{TABS_COUNT,plural, =1{הוספת הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה לסימניות}one{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}two{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}other{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{הוספת כרטיסייה (<ph name="TABS_COUNT_ONE" />) שבחרת לסימניות}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שבחרת לסימניות}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שבחרת לסימניות}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שבחרת לסימניות}}</translation>
 <translation id="2055057176188061528">צריך לבחור קבוצת כרטיסיות או ליצור קבוצה חדשה</translation>
 <translation id="2074527029802029717">ביטול הצמדה של כרטיסייה</translation>
 <translation id="2118649612461486615">פרטי החנות</translation>

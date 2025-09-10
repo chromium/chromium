@@ -9330,6 +9330,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Chcete zavrieť kartu a odstrániť skupinu?}=1{Chcete zavrieť karty a odstrániť skupinu?}few{Chcete zavrieť karty a odstrániť skupiny?}many{Close tabs and delete groups?}other{Chcete zavrieť karty a odstrániť skupiny?}}</translation>
 <translation id="7509097596023256288">Nastavenie správy</translation>
 <translation id="7509539379068593709">Odinštalovať aplikáciu</translation>
+<translation id="7513438205469584978">Návrhy na základe vašej <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktivity na Googli<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopírovať do zariadenia</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7514417110442087199">Pridať pridelenie</translation>

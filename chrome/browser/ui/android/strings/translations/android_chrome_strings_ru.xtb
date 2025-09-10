@@ -259,7 +259,7 @@
 <translation id="2247789808226901522">Срок действия карты истек</translation>
 <translation id="2249635629516220541">Управление данными, которые сайты используют для показа рекламы</translation>
 <translation id="2251809247798634662">Новое окно в режиме инкогнито</translation>
-<translation id="2253927598983295051">Выберите, какие данные вы хотите передать приложению "<ph name="APP_NAME" />"</translation>
+<translation id="2253927598983295051">Выберите, чем поделиться с <ph name="APP_NAME" /></translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2281243904606300427">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />"</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
@@ -1148,7 +1148,7 @@
 <translation id="6337234675334993532">Шифрование</translation>
 <translation id="6340526405444716530">Персонализация</translation>
 <translation id="6341580099087024258">Спрашивать, куда сохранять файлы</translation>
-<translation id="6342069812937806050">только что</translation>
+<translation id="6342069812937806050">Только что</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес доставки}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес доставки}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса доставки}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов доставки}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса доставки}}</translation>
 <translation id="6345878117466430440">Отметить как прочитанное</translation>
 <translation id="6356893102071098867">Убедитесь, что выбрали нужный аккаунт.</translation>

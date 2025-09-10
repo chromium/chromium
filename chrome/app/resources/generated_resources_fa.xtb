@@ -2396,7 +2396,7 @@
 <translation id="2620215283731032047">نمی‌توان <ph name="FILE_NAME" /> را به‌طور ایمن بارگیری کرد.</translation>
 <translation id="2620245777360407679">دستگاه‌هایی که درحال‌حاضر به نقطه اتصال متصل هستند</translation>
 <translation id="2620436844016719705">سیستم</translation>
-<translation id="2620900772667816510">وضوح فوق‌العاده با بلوتوث</translation>
+<translation id="2620900772667816510">اَبَرتفکیک‌پذیری با بلوتوث</translation>
 <translation id="2622280935687585828">برداشتن <ph name="SITE_NAME" /> از سایت‌های غیرفعال</translation>
 <translation id="26224892172169984">به هیچ سایتی برای کنترل پروتکل ها اجازه داده نشود</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -3128,7 +3128,7 @@
 <translation id="3129173833825111527">حاشیه چپ</translation>
 <translation id="3130528281680948470">دستگاه شما بازنشانی می‌شود و همه حساب‌های کاربری و داده‌های محلی حذف می‌شوند. این کار قابل بازگشت نیست.</translation>
 <translation id="3130863904455712965">سابقه و موارد بیشتر</translation>
-<translation id="313205617302240621">گذرواژه را فراموش کردید؟</translation>
+<translation id="313205617302240621">گذرواژه فراموش شده؟</translation>
 <translation id="3132277757485842847">‏نتوانستیم اتصال با تلفنتان را حفظ کنیم. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
 <translation id="3132896062549112541">قانون</translation>
 <translation id="3132996321662585180">بازآوری روزانه</translation>
@@ -9339,6 +9339,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{برگه بسته و گروه حذف شود؟}=1{برگه بسته و گروه حذف شود؟}one{برگه بسته و گروه حذف شود؟}other{برگه‌ها بسته و گروه‌ها حذف شود؟}}</translation>
 <translation id="7509097596023256288">درحال راه‌اندازی مدیریت</translation>
 <translation id="7509539379068593709">حذف نصب برنامه</translation>
+<translation id="7513438205469584978">‏پیشنهادها براساس<ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />فعالیت‌های Google<ph name="END_LINK_GOOGLE_ACTIVITY" /> شما</translation>
 <translation id="7514239104543605883">کپی در دستگاه</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7514417110442087199">افزودن تخصیص</translation>

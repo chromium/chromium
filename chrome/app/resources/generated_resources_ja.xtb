@@ -1526,7 +1526,7 @@
 <translation id="2039464276165755892">他者の検出時に通知内容を非表示</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
 <translation id="2040822390690632244">更新、ヘルプ、デベロッパー オプション</translation>
-<translation id="2040894699575719559">位置情報がブロックされています</translation>
+<translation id="2040894699575719559">位置情報: ブロック</translation>
 <translation id="2041246176170574368">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook を 50 ドル以上お得に手に入れましょう。</translation>
 <translation id="2042279886444479655">有効なプロファイル</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
@@ -3605,7 +3605,7 @@
 <translation id="3491171603443463516">PIN やパスワードを忘れてもローカルデータを復元できます</translation>
 <translation id="3491616972057195633">バウンスキー</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
-<translation id="3491678231052507920">多くのサイトは、VR セッションに参加するためにバーチャル リアリティ デバイスとデータを使用します。</translation>
+<translation id="3491678231052507920">VR セッションに参加するため、サイトでバーチャル リアリティ デバイスとデータを使用する場合があります。</translation>
 <translation id="3493043608231401654">タブグループから「<ph name="TAB_TITLE" />」を削除</translation>
 <translation id="3493486281776271508">インターネット接続が必要です</translation>
 <translation id="3493881266323043047">有効期間</translation>
@@ -3618,7 +3618,7 @@
 <translation id="3496689104192986836">電池残量 <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">収集するデータソース</translation>
 <translation id="3496797737329654668">ゲームを始めましょう</translation>
-<translation id="3496995426334945408">多くのサイトは、インタラクティブなビデオゲームやウェブフォームなどを表示するために JavaScript を使用します</translation>
+<translation id="3496995426334945408">インタラクティブなビデオゲームやウェブフォームなどを表示するために、サイトが JavaScript を使用する場合があります。</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> 製 USB デバイス（製品 <ph name="PRODUCT_ID" />）</translation>
 <translation id="3497560059572256875">Doodle を共有</translation>
 <translation id="3497915391670770295">お使いのデバイスに送信(&amp;D)</translation>
@@ -3726,7 +3726,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> は次のファイルとフォルダを表示できます</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> 個の拡張機能をオフにしました</translation>
-<translation id="3575121482199441727">このサイトの通知を許可</translation>
+<translation id="3575121482199441727">このサイトを許可</translation>
 <translation id="3575224072358507281">Measurement Lab のプライバシー ポリシー（measurementlab.net/privacy）に沿って、Measurement Lab の IP アドレスとネットワークの測定結果を収集する</translation>
 <translation id="3577036603268648505">インターネットを安全に利用</translation>
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
@@ -8368,7 +8368,7 @@
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="6842670680297285750">現在のタブで新しい分割表示</translation>
 <translation id="6842749380892715807">XML サイトリストの前回のダウンロードは <ph name="LAST_DATE_DOWNLOAD" /> に行われました。</translation>
-<translation id="6842868554183332230">多くのサイトはデバイスのアクティブ状態を検出して、チャットアプリのステータスを設定しています</translation>
+<translation id="6842868554183332230">チャットアプリのステータスを設定するため、サイトでデバイスのアクティブ状態を検出する場合があります。</translation>
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
 <translation id="6843423766595476978">OK Google の設定が完了しました</translation>
 <translation id="6843725295806269523">ミュート</translation>
@@ -9309,6 +9309,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{タブを閉じてグループを削除しますか？}=1{タブを閉じてグループを削除しますか？}other{タブを閉じてグループを削除しますか？}}</translation>
 <translation id="7509097596023256288">管理対象の設定</translation>
 <translation id="7509539379068593709">アプリをアンインストール</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google アクティビティ<ph name="END_LINK_GOOGLE_ACTIVITY" />に基づく提案</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514417110442087199">割り当てを追加</translation>
@@ -9459,7 +9460,7 @@
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
 <translation id="762917478230183172">キーごとに操作を選択</translation>
 <translation id="7629206210984165492">控え目</translation>
-<translation id="7629827748548208700">タブ:<ph name="TAB_NAME" /></translation>
+<translation id="7629827748548208700">タブ: <ph name="TAB_NAME" /></translation>
 <translation id="7629858978065675960">不明な結果。</translation>
 <translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7631014249255418691">Linux のアプリとファイルが正常にバックアップされました</translation>
@@ -10723,7 +10724,7 @@
 <translation id="8467326454809944210">別の言語を選択</translation>
 <translation id="8468087214092422866">Bluetooth デバイスの検出が許可されていないサイト</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> 用に保存されているパスワード</translation>
-<translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
+<translation id="8471525937465764768">ドキュメントの印刷やストレージ デバイスへの保存のため、サイトが USB デバイスに接続する場合があります。</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{使い回されているパスワードはありません}=1{使い回されているパスワード: {COUNT} 件}other{使い回されているパスワード: {COUNT} 件}}</translation>
 <translation id="8472623782143987204">ハードウェア式</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
@@ -11534,7 +11535,7 @@
 <translation id="9020300839812600209">URL を入力すると、LBS の動作を確認できます。</translation>
 <translation id="9020362265352758658">4 倍</translation>
 <translation id="9021662811137657072">ウイルスを検出しました</translation>
-<translation id="902236149563113779">多くのサイトは、ゲームや HUD のナビ表示などで AR 機能を使用するためにカメラ位置を追跡します。</translation>
+<translation id="902236149563113779">ゲームや HUD のナビ表示などで AR 機能を使用するため、サイトでカメラ位置を追跡する場合があります。</translation>
 <translation id="9022847679183471841">このアカウントは既にこのパソコンで <ph name="AVATAR_NAME" /> によって使用されています。</translation>
 <translation id="9022871169049522985">ウェブサイトと広告主が広告効果を測定することができます</translation>
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>

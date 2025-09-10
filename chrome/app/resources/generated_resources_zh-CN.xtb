@@ -3100,7 +3100,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3122883569442693641">更多详情</translation>
-<translation id="3124111068741548686">USER处理函数</translation>
+<translation id="3124111068741548686">USER 处理函数</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
 <translation id="3125816458150005808">您可以取消固定并从菜单中打开该功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -7523,7 +7523,7 @@
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="6250887692313997958">选择要添加到拆分视图中的标签页</translation>
-<translation id="6251870443722440887">GDI处理函数</translation>
+<translation id="6251870443722440887">GDI 处理函数</translation>
 <translation id="6251924700383757765">隐私权政策</translation>
 <translation id="625369703868467034">网络状况</translation>
 <translation id="6253801023880399036">系统会将密码保存到 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
@@ -9311,6 +9311,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
 <translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509539379068593709">卸载应用</translation>
+<translation id="7513438205469584978">根据您的 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活动记录<ph name="END_LINK_GOOGLE_ACTIVITY" />为您推荐</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>

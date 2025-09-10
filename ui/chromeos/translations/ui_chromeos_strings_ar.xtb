@@ -46,7 +46,7 @@
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
 <translation id="1363028406613469049">التتبّع</translation>
 <translation id="1378727793141957596">‏مرحبًا بك في Google Drive!</translation>
-<translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال بالإنترنت.</translation>
+<translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1388045380422025115">جميع الأنواع</translation>
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
@@ -63,7 +63,7 @@
 <translation id="148466539719134488">سويسري</translation>
 <translation id="1497522201463361063">تعذرت إعادة تسمية "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
-<translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
+<translation id="1515909359182093592">‫<ph name="INPUT_LABEL" /> - المضيف</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">التطبيق على الكل</translation>
@@ -172,7 +172,7 @@
 <translation id="2326539130272988168">البلغارية</translation>
 <translation id="233822363739146957">لا تتوفّر مساحة تخزين كافية لمزامنة جميع ملفاتك.</translation>
 <translation id="23721837607121582">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
-<translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
+<translation id="2377319039870049694">التبديل للعرض على شكل قائمة</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
 <translation id="2379576081295865700">جارٍ التحقّق من مساحة التخزين… تم العثور على ملف واحد.</translation>
 <translation id="2383454254762599978">نقل إلى "المهملات"</translation>
@@ -955,7 +955,7 @@
 <translation id="8297012244086013755">المجموعة رقم 3 الهانغولية (عدم التبديل)</translation>
 <translation id="8299269255470343364">اليابانية</translation>
 <translation id="8300849813060516376">‏تعذّرت OTASP</translation>
-<translation id="8312871300878166382">لصق في مجلد</translation>
+<translation id="8312871300878166382">اللصق في مجلد</translation>
 <translation id="8329978297633540474">نص عادي</translation>
 <translation id="8332007959299458842">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في Google Drive.</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
@@ -988,7 +988,7 @@
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8492972329130824181">الشبكة المنزلية غير متوفّرة. وللاتصال بالشبكة، يجب تفعيل ميزة تجوال بيانات الجوَّال.</translation>
 <translation id="8499098729323186194">جارٍ استخراج <ph name="NUMBER_OF_ITEMS" /> عنصر...</translation>
-<translation id="8502913769543567768">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز، هذه الشبكة يديرها المشرف</translation>
+<translation id="8502913769543567768">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكن تفعيلها بعد إعداد الجهاز، يتولى المشرف إدارة الشبكة</translation>
 <translation id="8512483403832814140">أي وقت</translation>
 <translation id="8521441079177373948">المملكة المتحدة</translation>
 <translation id="853494022971700746">الفرنسية (فرنسا)</translation>
@@ -1010,7 +1010,7 @@
 <translation id="8630384863424041081">‏يرجى إدخال رقم التعريف الشخصي لشريحة SIM أو رقم التعريف الشخصي التلقائي المقدَّم من مشغّل شبكة الجوّال. ويمكنك التواصل مع مشغّل شبكة الجوّال للحصول على الدعم.</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>
-<translation id="8656407365183407932">كان يلزم إزالة الملفات المتاحة بلا اتصال بالإنترنت</translation>
+<translation id="8656407365183407932">كان إزالة الملفات المتاحة بلا بالإنترنت ضرورية.</translation>
 <translation id="8656768832129462377">عدم التحقق</translation>
 <translation id="8688591111840995413">كلمة مرور سيئة</translation>
 <translation id="8698464937041809063">‏رسم Google</translation>

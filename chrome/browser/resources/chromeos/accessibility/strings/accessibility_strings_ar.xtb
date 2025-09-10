@@ -891,7 +891,7 @@
 <translation id="6826669432862053130">العنصر التالي غير الصالح</translation>
 <translation id="6833103209700200188">تذييل</translation>
 <translation id="6858047746862060282">فاتحة</translation>
-<translation id="6859876496651143278">التمرير السريع بإصبع واحد إلى يمين الشاشة</translation>
+<translation id="6859876496651143278">يمكنك التمرير سريعًا بإصبع واحد إلى يمين الشاشة</translation>
 <translation id="6865519907510167493">خطأ إملائي</translation>
 <translation id="6873188295213080042">معلومة: عليك الضغط مع الاستمرار على مفتاح البحث مع الضغط على مفاتيح الأسهم للتنقُّل بين النصوص.</translation>
 <translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
@@ -932,7 +932,7 @@
 <translation id="7091296112653361280">أبيض مائل إلى الأصفر</translation>
 <translation id="7095834689119144465">تعديل النص الرقمي فقط</translation>
 <translation id="7096001299300236431">الوسائط السابقة</translation>
-<translation id="7096668131290451939">‏اضغط على مفتاح Escape مرة أخرى للخروج من "وضع التعلّم"</translation>
+<translation id="7096668131290451939">‏يمكن الضغط على مفتاح Escape مرة أخرى للخروج من "وضع التعلّم"</translation>
 <translation id="7116595520562830928">عدة أسطر</translation>
 <translation id="7125177678433853645">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">صدى الكلمة</translation>
@@ -954,7 +954,7 @@
 <translation id="7229749224609077523">اختيار جدول نمط برايل مكوّن من 6 نقاط:</translation>
 <translation id="72393384879519786">عنوان</translation>
 <translation id="7240858705033280249">الانتقال السريع إلى التفاصيل</translation>
-<translation id="7241683698754534149">فتح الوصف المطول في علامة تبويب جديدة</translation>
+<translation id="7241683698754534149">فتح الوصف المفصّل في علامة تبويب جديدة</translation>
 <translation id="7244947685630430863">ليس هناك رسم سابق.</translation>
 <translation id="7248671827512403053">تطبيق</translation>
 <translation id="725969808843520477">زر الاختيار التالي</translation>
@@ -1184,7 +1184,7 @@
 <translation id="8898516272131543774">دورة صدى علامات الترقيم</translation>
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
-<translation id="8910180774920883033">‏هناك إجراءات متاحة. اضغط على مفتاح البحث +Ctrl‏+A لعرضها.</translation>
+<translation id="8910180774920883033">‏هناك إجراءات متاحة. يجب الضغط على مفتاح البحث +Ctrl‏+A لعرضها.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">مفاتيح التعديل</translation>
 <translation id="8943282376843390568">ليموني</translation>

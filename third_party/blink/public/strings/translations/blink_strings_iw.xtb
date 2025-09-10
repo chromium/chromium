@@ -27,7 +27,7 @@
 <translation id="2761667185364618470">כדי להמשיך, צריך לסמן את התיבה הזאת.</translation>
 <translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל שמופרדות באמצעות פסיקים.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
+<translation id="3075154866155599887">נראה שהשדה לא הושלם או שהתאריך שהוזן לא תקין. יש להזין ערך תקין.</translation>
 <translation id="310520048233152454">הזנת כתובת אתר.</translation>
 <translation id="3321030238473337787">מהירות הפעלה</translation>
 <translation id="3450233048674729344">הערך חייב להיות קטן מ-<ph name="MAXIMUM" /> או שווה לו.</translation>
@@ -49,7 +49,7 @@
 <translation id="5164977714490026579">הערך חייב להיות גדול מ-<ph name="MINIMUM" /> או שווה לו.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
-<translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
+<translation id="5307600278924710095">צריך להזין חלק ואחריו "<ph name="ATSIGN" />"‏. השדה "<ph name="INVALIDADDRESS" />" לא מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5466621249238537318">צריך לבחור קובץ אחד או יותר.</translation>

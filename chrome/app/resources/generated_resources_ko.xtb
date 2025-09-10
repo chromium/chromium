@@ -9340,6 +9340,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{탭을 닫고 그룹을 삭제하시겠습니까?}=1{탭을 닫고 그룹을 삭제하시겠습니까?}other{탭을 닫고 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="7509097596023256288">관리 설정 중</translation>
 <translation id="7509539379068593709">앱 제거</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 활동<ph name="END_LINK_GOOGLE_ACTIVITY" />을 기반으로 한 추천</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7514417110442087199">할당 추가</translation>

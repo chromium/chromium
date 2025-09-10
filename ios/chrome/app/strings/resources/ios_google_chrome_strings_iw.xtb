@@ -19,7 +19,7 @@
 <translation id="1407843355326180937">‏כדאי להיכנס לחשבון באתר הזה וב-Chrome כדי שהסימניות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="1462727070346936664">‏כדי לקבל את החוויה הכי טובה ש-Chrome מציע, צריך להיכנס לחשבון.</translation>
 <translation id="1493827051843127077">‏הגדרה של Chrome כדפדפן ברירת המחדל כדי לסנכרן את הכרטיסיות, הסיסמאות ופרטי התשלומים שלך בכל המכשירים שלך</translation>
-<translation id="1504372625950710826">‏Chrome לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
+<translation id="1504372625950710826">‏מערכת Chrome לא הצליחה לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="1516692594929310090">‏תיפתח תצוגת הכרטיסיות ב-Chrome.</translation>
 <translation id="1526327845902180576">‏כשהאפשרות פועלת:
 <ph name="BEGIN_INDENT" />  • עוזרים לשפר את Chrome אצל אנשים שמשתמשים בדפדפן בצורה דומה לך.<ph name="END_INDENT" />
@@ -70,7 +70,7 @@
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏רוצה ש-Google Chrome יציע בפעם הבאה לתרגם דפים בשפה <ph name="LANGUAGE_NAME" /> מהאתר הזה?</translation>
 <translation id="2668242166988961773">‏חיפוש קולי ב-Chrome.</translation>
-<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
+<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, צריך<ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב בהמשך.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>
@@ -269,7 +269,7 @@
 <translation id="7662994914830945754">‏כדי לראות את הכרטיסיות מכל מקום שבו פותחים את Chrome צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="7693590760643069321">‏עכשיו אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
-<translation id="7707877166818730835">‏פתיחת הכרטיסייה האחרונה שלי ב-Chrome</translation>
+<translation id="7707877166818730835">‏פתחי את הכרטיסייה האחרונה שלי ב-Chrome</translation>
 <translation id="7747746207470479571">‏אפשר לגשת בקלות לסיסמאות ולמפתחות הגישה באמצעות Chrome למילוי אוטומטי</translation>
 <translation id="776305366874821582">‏אפשר לגשת מהר יותר ל-Chrome דרך ה-Dock במסך הבית של האייפון.</translation>
 <translation id="7780154209050837198">‏כדי להפיק את המרב מ-Chrom, כדאי להיכנס ל-Chrome באמצעות חשבון Google.</translation>
@@ -280,7 +280,7 @@
 <translation id="787226752901403048">‏כדי לשתף קבוצות של כרטיסיות, להצטרף אליהן ולעבוד יחד על רעיונות, צריך להיכנס ל-Chrome</translation>
 <translation id="7897703007638178753">‏הצגת הכרטיסיות האחרונות ב-Chrome</translation>
 <translation id="7948283758957877064">‏מה חדש ב-Chrome</translation>
-<translation id="8000174216052461231">‏טיפ ל-Chrome: כדאי ליהנות מרמת האבטחה הכי יעילה של Chrome</translation>
+<translation id="8000174216052461231">‏טיפ ל-Chrome: כדאי להפעיל את ההגנה החזקה ביותר של Chrome</translation>
 <translation id="8006014511203279255">‏שימוש ב-Chrome בכל לחיצה על קישורים בהודעות ובאפליקציות אחרות.</translation>
 <translation id="8014670471808569312">‏‫Chrome יציע לשמור את הסיסמה.</translation>
 <translation id="8018153653741938705">‏תשמרו על עצמכם! גם בעזרת Google Chrome</translation>
@@ -322,8 +322,8 @@
 <translation id="8788269841521769222">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="8796490717897731471">‏‫<ph name="EMAIL" />. Chrome מנוהל.</translation>
 <translation id="880967149107462122">‏כניסה להגדרות Chrome</translation>
-<translation id="8842132678697187091">‏אפשר לפתוח את Google Lens כאן.</translation>
-<translation id="8850736900032787670">‏כדי לקבל תוכן בהתאמה אישית על סמך תחומי העניין שלך, עליך להיכנס אל Chrome.</translation>
+<translation id="8842132678697187091">‏כאן אפשר לפתוח את Google Lens.</translation>
+<translation id="8850736900032787670">‏כדי לקבל תוכן בהתאמה אישית על סמך תחומי העניין שלך, צריך להיכנס אל Chrome.</translation>
 <translation id="8855781063981781621">‏כדי להשבית את האפשרות "בלי פתיחה עם טביעת אצבע" ב-Chrome, השביתו אותה ב-iPad.</translation>
 <translation id="8857676124663337448">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>

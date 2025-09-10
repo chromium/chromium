@@ -3230,7 +3230,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
-<translation id="3209703592917353472">A site you visit can save info about what you're doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
+<translation id="3209703592917353472">A site you visit can save info about what you're doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping basket. Often sites save this info temporarily on your device.</translation>
 <translation id="32101887417650595">Can’t connect to printer</translation>
 <translation id="3210736980143419785">Couldn’t finish download</translation>
 <translation id="321084946921799184">Yellow and white</translation>
@@ -9162,7 +9162,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396017167185131589">Shared folders will appear here</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
-<translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones you allow</translation>
+<translation id="7399616692258236448">Location requests are automatically blocked for all sites except the ones you allow</translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7400059772197434086">is blocked from using your information on</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -9340,6 +9340,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{Close tab and delete group?}other{Close tabs and delete groups?}}</translation>
 <translation id="7509097596023256288">Setting up management</translation>
 <translation id="7509539379068593709">Uninstall app</translation>
+<translation id="7513438205469584978">Suggestions based on your <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google activity<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
@@ -10755,7 +10756,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8467326454809944210">Choose another language</translation>
 <translation id="8468087214092422866">Not allowed to look for Bluetooth devices</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
-<translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
+<translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} reused password}other{{COUNT} reused passwords}}</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473540203671727883">Speak text under the mouse</translation>

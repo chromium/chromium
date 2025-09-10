@@ -9325,6 +9325,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Varaq yopilib, guruh oʻchirilsinmi?}=1{Varaqlar yopilib, guruh oʻchirilsinmi?}other{Varaqlar yopilib, guruhlar oʻchirilsinmi?}}</translation>
 <translation id="7509097596023256288">Boshqaruv sozlanmoqda</translation>
 <translation id="7509539379068593709">Ilovani oʻchirish</translation>
+<translation id="7513438205469584978">Takliflar <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google faollik tarixingiz<ph name="END_LINK_GOOGLE_ACTIVITY" /> asosida tuzilgan</translation>
 <translation id="7514239104543605883">Qurilmaga nusxalash</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514417110442087199">Tayinlash</translation>

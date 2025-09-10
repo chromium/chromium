@@ -473,6 +473,7 @@ Esse recurso está disponível no <ph name="MAC_OS_NAME" /> 10.15.</translation>
       Se ela estiver ativada, a melhoria ficará ativada.
       Se a política for deixada sem definição, ela ficará ativada em dispositivos gerenciados e dispositivos de consumidores.
       Observe que esta é uma política temporária para permitir que os usuários gerenciados continuem usando atalhos legados descontinuados. Esta política será descontinuada quando os atalhos personalizados ficarem disponíveis.</translation>
+<translation id="1357214899305978790">Definição de atalhos na página "Nova guia" (Beta)</translation>
 <translation id="1361661842732478894">Mostrar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="1363275621236827384">Permitir consultas no Servidor Quirks para perfis de hardware</translation>
 <translation id="1363839375295535439">Se a política for ativada ou não for definida, permite que o sandbox do LPAC seja ativado para serviços de impressão sempre que a configuração do sistema permitir.
@@ -5463,6 +5464,17 @@ O usuário vai continuar conectado à Conta do Google ao excluir cookies.
 Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NAME" /> fosse definida como "true" (verdadeira). No Chrome 115 e versões mais recentes, a definição desta política vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da <ph name="SYNC_DISABLED_POLICY_NAME" />, e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.</translation>
 <translation id="4694138212536142867">Ativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="4697581738794063407">Controlar o recurso de filtro do parâmetro de URL</translation>
+<translation id="4698488381632756664">Em desenvolvimento: apenas para pré-lançamento.
+
+A definição da política pré-configura até 10 atalhos personalizados na página "Nova guia" do <ph name="PRODUCT_NAME" />.
+
+Se essa opção for definida, os usuários verão esses atalhos por padrão e poderão alternar entre "Meus atalhos", "Sites mais visitados" ou "Atalhos da minha organização" no painel "Personalizar o Chrome". Se for deixada vazia ou sem definição, o usuário só poderá alternar entre "Meus atalhos" ou "Sites mais visitados" nesse painel.
+
+Os URLs de atalho precisam ser exclusivos.
+
+Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> for definida como verdadeira, os usuários poderão mudar o nome do atalho. Se for definida como falsa ou não for definida, os usuários não poderão editar o nome.
+
+Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> for definida como verdadeira, os usuários poderão remover o atalho. Se for definida como falsa ou não for definida, os usuários não poderão remover o atalho.</translation>
 <translation id="4698895924806859508">Não informar eventos de rede</translation>
 <translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4699592681017489215">Esta política configura um interruptor local que pode ser usado para desativar verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.

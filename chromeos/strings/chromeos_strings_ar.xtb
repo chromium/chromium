@@ -44,7 +44,7 @@
 <translation id="1155154308031262006">يمكنك إدخال طلب</translation>
 <translation id="115705039208660697">أناناس</translation>
 <translation id="1164939766849482256">شاشة استراحة تعرض منظرًا من الفجر إلى الليل</translation>
-<translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
+<translation id="1167755866710282443">يجب فتح القائمة لتخصيص المفاتيح، وسحبها لنقلها.</translation>
 <translation id="1171349345463658120">بحيرة ساحلية رملية</translation>
 <translation id="1174073918202301297">تمت إضافة الاختصار</translation>
 <translation id="11743817593307477">‏يمكنك استخدام مفاتيح الأسهم لنقل عنصر التحكّم هذا إلى الإجراء المطلوب في اللعبة، واستخدام مفتاح Enter لوضع عنصر التحكّم، ومفتاح Esc للإلغاء.</translation>
@@ -241,7 +241,7 @@
 <translation id="1871569928317311284">إيقاف "المظهر الداكن"</translation>
 <translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
 <translation id="1876997008435570708">فراشات</translation>
-<translation id="188114911237521550">إيقاف تشغيل الوضع المُعتِم</translation>
+<translation id="188114911237521550">إيقاف تشغيل "الوضع الداكن"</translation>
 <translation id="1884794756658039602">مزيد من المعلومات عن تصنيفات المتحدّثِين</translation>
 <translation id="1885577615937958993">تقديم سريع للوسائط</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
@@ -336,7 +336,7 @@
 <translation id="2277631741861284101">تسجيل الصوت ومشاركته بسهولة</translation>
 <translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
 <translation id="2286454467119466181">بسيط</translation>
-<translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
+<translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، يمكنك الانتقال إلى <ph name="LINK" /></translation>
 <translation id="2294577623958216786">تم ضبط الجدول الزمني الحالي على <ph name="SUNRISE" /> إلى <ph name="SUNSET" />. لتعديل الجدول الزمني لغروب الشمس وشروقها تلقائيًا، يجب تفعيل إذن الوصول إلى الموقع الجغرافي للنظام.</translation>
 <translation id="2305172810646967500">أسود</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
@@ -371,7 +371,7 @@
 <translation id="2480572840229215612">حيوانات سلطعون</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. يجب الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
 <translation id="2486301288428798846">الخشب</translation>
-<translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى.</translation>
+<translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى</translation>
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">الأوبال</translation>
@@ -876,7 +876,7 @@
 <translation id="4838825304062068169">نهر جليدي</translation>
 <translation id="48409034532829769">لقد ضبط مشرفك "<ph name="APP_NAME" />" لبدء تشغيله تلقائيًا. ولا يمكنك إغلاقه.</translation>
 <translation id="484462545196658690">تلقائي</translation>
-<translation id="4847902821209177679">‏تم اختيار <ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />، يُرجى الضغط على Enter لاختيار ألبومات <ph name="TOPIC_SOURCE" />.</translation>
+<translation id="4847902821209177679">‏تم اختيار "<ph name="TOPIC_SOURCE" />" ووصفه "<ph name="TOPIC_SOURCE_DESC" />". يُرجى الضغط على Enter لاختيار ألبومات "<ph name="TOPIC_SOURCE" />".</translation>
 <translation id="484790837831576105">‏(نظام التشغيل Android) اختبار التحويل باستخدام نظام أسماء النطاقات (DNS)</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
 <translation id="4854586501323951986">شاشة مُدمَجة تعمل باللمس</translation>
@@ -1198,7 +1198,7 @@
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6314333689576767865">‏تمت إعادة ضبط جهاز Chromebook على الإعدادات التلقائية الآمنة. ويمكنك إجراء تغييرات في أي وقت من خلال "الإعدادات".</translation>
 <translation id="6318437367327684789">للأبد</translation>
-<translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
+<translation id="6319207335391420837">تحديث البرامج الثابتة على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6321407676395378991">تفعيل شاشة الاستراحة</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6325525973963619867">فشل</translation>
@@ -1367,7 +1367,7 @@
 <translation id="7041549558901442110">الجهاز غير متصل.</translation>
 <translation id="704183341263526038">كوكب المشتري</translation>
 <translation id="7046522406494308071">هل المطلوب إعادة ضبط كل الاختصارات على الإعدادات التلقائية؟</translation>
-<translation id="7049916119678019302">تنزيل نموذج تحويل الصوت إلى نص من خلال "الإعدادات"</translation>
+<translation id="7049916119678019302">يجب تنزيل نموذج تحويل الصوت إلى نص من "الإعدادات"</translation>
 <translation id="7058278511608979688">إنهاء وحفظ</translation>
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
 <translation id="7064209589142995848">نقل المحتوى</translation>
@@ -1642,7 +1642,7 @@
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
-<translation id="8238771987802558562">‏اختيار اسم نقطة وصول (APN)</translation>
+<translation id="8238771987802558562">‏اختيار "اسم نقطة وصول" (APN)</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
 <translation id="8250926778281121244">بني محمرّ</translation>
 <translation id="8257572018929862473">فتح إعدادات ميزة "معلومات سريعة"</translation>

@@ -9331,6 +9331,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas sulgeda vaheleht ja kustutada grupp?}=1{Kas sulgeda vaheleht ja kustutada grupp?}other{Kas sulgeda vahelehed ja kustutada grupid?}}</translation>
 <translation id="7509097596023256288">Halduse seadistamine</translation>
 <translation id="7509539379068593709">Desinstalli rakendus</translation>
+<translation id="7513438205469584978">Soovitused põhinevad teie <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google’i tegevustel<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopeeri seadmesse</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7514417110442087199">Lisa määrang</translation>

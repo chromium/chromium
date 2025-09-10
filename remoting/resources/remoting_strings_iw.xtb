@@ -165,7 +165,7 @@
 <translation id="806699900641041263">המערכת מתחברת אל <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">‏כדי להשתמש ב-Chrome Remote Desktop, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="809687642899217504">המחשבים שלי</translation>
-<translation id="8116630183974937060">אירעה שגיאת רשת. יש לבדוק שהמכשיר מחובר לרשת ולנסות שוב.</translation>
+<translation id="8116630183974937060">קרתה שגיאה בחיבור רשת. יש לבדוק שהמכשיר מחובר לרשת ולנסות שוב.</translation>
 <translation id="8295077433896346116">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, צריך להעניק הרשאת "נגישות" כדי שניתן יהיה לשלוט במחשב ה-Mac הזה באמצעות קלט מהמחשב המרוחק.
 
 כדי להעניק את ההרשאה הזו, צריך ללחוץ על "<ph name="BUTTON_NAME" />" למטה. אחרי שלוחצים, נפתחת חלונית לבחירת העדפות. בקטע "נגישות", צריך לסמן את התיבה שלצד "<ph name="SERVICE_SCRIPT_NAME" />".
@@ -183,13 +183,13 @@
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="858006550102277544">הערה</translation>
 <translation id="8743328882720071828">האם ברצונך לאפשר ל-<ph name="CLIENT_USERNAME" /> לראות את המחשב שלך ולשלוט בו?</translation>
-<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
+<translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, צריך לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>
 <translation id="9126115402994542723">‏אל תבקש קוד PIN שוב בחיבור למארח הזה מהמכשיר הנוכחי.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>
-<translation id="9187628920394877737">מתן הרשאת 'הקלטת מסך' ל-<ph name="PRODUCT_NAME" /></translation>
+<translation id="9187628920394877737">מתן הרשאת "הקלטת מסך" ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="9213184081240281106">תצורה לא חוקית של המארח.</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>

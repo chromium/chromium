@@ -623,7 +623,7 @@
 <translation id="2036514476578229158">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
 <translation id="2036983605131262583">代替ロール</translation>
 <translation id="2040463897538655645">リムーバブル ストレージ</translation>
-<translation id="2040894699575719559">位置情報がブロックされています</translation>
+<translation id="2040894699575719559">位置情報: ブロック</translation>
 <translation id="2041788246978549610">利用可能なマイクの使用（<ph name="MICS_COUNT" />）</translation>
 <translation id="2042213636306070719">トレイ 7</translation>
 <translation id="2045871135676061132">6 3/4 封筒</translation>
@@ -1416,7 +1416,7 @@
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3362968246557010467">このポリシーは、サポートが終了した <ph name="OLD_POLICY" /> ポリシーから自動的にコピーされました。今後はこのポリシーを使用してください。</translation>
-<translation id="3364869320075768271"><ph name="URL" /> から、バーチャル リアリティ デバイスとデータの使用許可を求められています</translation>
+<translation id="3364869320075768271"><ph name="URL" /> が、バーチャル リアリティ デバイスとデータの使用許可を求めています</translation>
 <translation id="3369192424181595722">時計のエラー</translation>
 <translation id="3370855919511944393">ウォレットの設定</translation>
 <translation id="3371064404604898522">Chrome を既定のブラウザに設定する</translation>
@@ -1474,7 +1474,7 @@
 <translation id="3452404311384756672">取得間隔:</translation>
 <translation id="3453962258458347894">再試行の回数</translation>
 <translation id="3457781733462096492">ラップ、ヒップホップ</translation>
-<translation id="3461266716147554923"><ph name="URL" /> が、クリップボードにコピーされているテキストや画像にアクセスしようとしています</translation>
+<translation id="3461266716147554923"><ph name="URL" /> が、クリップボードにコピーされているテキストや画像にアクセスする許可を求めています</translation>
 <translation id="3461824795358126837">蛍光ペン</translation>
 <translation id="3462200631372590220">詳細情報を表示しない</translation>
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Enter キーを押すと、このページについて Google に質問できます</translation>
@@ -1518,7 +1518,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{同期デバイスで 1 件以上のアイテム}=1{1 件のアイテム（同期デバイスではそれ以上のアイテム）}other{# 件のアイテム（同期デバイスではそれ以上のアイテム）}}</translation>
 <translation id="3531366304259615706">画面ロックを使用</translation>
 <translation id="3531780078352352885">ジョブシート</translation>
-<translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
+<translation id="3532844647053365774"><ph name="HOST" /> がマイクの使用許可を求めています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
 <translation id="3536227077203206203">一時的に許可しました</translation>
 <translation id="3537165859691846083">レター プラス</translation>
@@ -1546,7 +1546,7 @@
 <translation id="357244642999988503">列を削除</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
 <translation id="3574520980813687946">住所に新しい情報を追加</translation>
-<translation id="3575121482199441727">このサイトの通知を許可</translation>
+<translation id="3575121482199441727">このサイトを許可</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">町名のオプションが選択されました</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> に埋め込まれているページの内容</translation>
@@ -2505,7 +2505,7 @@
 <translation id="5144613843429436866">このサイトに <ph name="PERMISSION" /> の使用を許可しています</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
-<translation id="514704532284964975"><ph name="URL" /> が、スマートフォンでタップした NFC デバイスの情報を参照および変更しようとしています</translation>
+<translation id="514704532284964975"><ph name="URL" /> が、スマートフォンでタップした NFC デバイスの情報を参照および変更する許可を求めています</translation>
 <translation id="5147633291963801297">サイドパネルに値下げ情報が表示されます</translation>
 <translation id="5148809049217731050">上向き</translation>
 <translation id="5148889558173091794"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> はポリシーに違反しているため、組織によってブロックされました。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3448,7 +3448,7 @@
 <translation id="6711464428925977395">プロキシ サーバーに問題がある、またはアドレスが正しくありません。</translation>
 <translation id="6711700233707023861">バリエーションの文字列をクリップボードにコピーしました</translation>
 <translation id="6716039223770814796">「<ph name="COMPARE_SET_NAME" />」の比較 · <ph name="ITEMS" /> 個のアイテム</translation>
-<translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を求めています</translation>
+<translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を行う許可を求めています</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> からタブが送信されました</translation>
 <translation id="6718524733720986924">情報を保存すると、次回から自動入力を使用して追加の項目に入力できます</translation>
 <translation id="6718612893943028815">カメラを使用しますか？</translation>
@@ -3671,7 +3671,7 @@
 <translation id="7107249414147762907">この PDF にアクセスできません。抽出されたテキストはありません</translation>
 <translation id="7107427078069498123">SHA-256 フィンガープリント</translation>
 <translation id="7108338896283013870">非表示</translation>
-<translation id="7108634116785509031"><ph name="HOST" /> から、カメラの使用許可を求められています</translation>
+<translation id="7108634116785509031"><ph name="HOST" /> がカメラの使用許可を求めています</translation>
 <translation id="7108819624672055576">拡張機能によって許可</translation>
 <translation id="7109510814665441393">ドライビング ゲーム、レース ゲーム</translation>
 <translation id="7110116949943042888">短期アルバイト、季節的な求人情報</translation>

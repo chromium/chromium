@@ -58,7 +58,7 @@
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Создано <ph name="NUM_HOURS_ONE" /> час назад}one{Создано <ph name="NUM_HOURS_MANY" /> час назад}few{Создано <ph name="NUM_HOURS_MANY" /> часа назад}many{Создано <ph name="NUM_HOURS_MANY" /> часов назад}other{Создано <ph name="NUM_HOURS_MANY" /> часа назад}}</translation>
 <translation id="2801787514987684416">Посмотреть сведения о магазине?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Закрыта <ph name="ONE_CLOSED" /> вкладка.}one{Закрыта <ph name="MANY_CLOSED" /> вкладка.}few{Закрыты <ph name="MANY_CLOSED" /> вкладки.}many{Закрыто <ph name="MANY_CLOSED" /> вкладок.}other{Закрыто <ph name="MANY_CLOSED" /> вкладки.}}</translation>
-<translation id="2894757982205307093">Добавить новую вкладку в группу</translation>
+<translation id="2894757982205307093">Добавить вкладку в группу</translation>
 <translation id="2918484639460781603">Перейти к настройкам</translation>
 <translation id="2928243913527329289">Google | О магазине</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Выбран <ph name="ITEMS_COUNT_ONE" /> элемент}one{Выбран <ph name="ITEMS_COUNT_MANY" /> элемент}few{Выбрано <ph name="ITEMS_COUNT_MANY" /> элемента}many{Выбрано <ph name="ITEMS_COUNT_MANY" /> элементов}other{Выбрано <ph name="ITEMS_COUNT_MANY" /> элемента}}</translation>
