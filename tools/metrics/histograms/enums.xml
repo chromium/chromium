@@ -8464,6 +8464,7 @@ from previous Chrome versions.
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
   <int value="-2073265579" label="EnablePreferencesAccountStorage:disabled"/>
+  <int value="-2073044611" label="ComposeboxUsesChromeComposeClient:enabled"/>
   <int value="-2072877761" label="WaylandUiScale:disabled"/>
   <int value="-2072754800" label="HelpAppAppsList:disabled"/>
   <int value="-2072546762" label="SecurePaymentConfirmationUxRefresh:disabled"/>
@@ -13821,6 +13822,7 @@ from previous Chrome versions.
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
   <int value="-147955528" label="BottomBrowserControlsRefactor:enabled"/>
+  <int value="-147588399" label="ComposeboxUsesChromeComposeClient:disabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-147104075" label="ImprovedPasswordChangeService:enabled"/>

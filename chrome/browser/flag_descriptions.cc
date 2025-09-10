@@ -5827,6 +5827,12 @@ const char kNtpComposeboxDescription[] =
     "Shows the Composebox on the New Tab Page Searchbox upon clicking the "
     "entrypoint.";
 
+const char kNtpComposeboxUsesChromeComposeClientName[] =
+    "Composebox uses chrome-compose client";
+const char kNtpComposeboxUsesChromeComposeClientDescription[] =
+    "Composebox will use chrome-compose client when querying suggest for "
+    "unimodal typed inputs instead of chrome-omni.";
+
 const char kNtpSearchboxComposeEntrypointName[] = "NTP Compose Entrypoint";
 const char kNtpSearchboxComposeEntrypointDescription[] =
     "Shows the Compose entrypoint on the New Tab Page Searchbox.";

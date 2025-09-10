@@ -249,13 +249,12 @@ class AutocompleteInput {
   // request URLs) and source= or sourceid= (for Search request URLs).
   SearchTermsData::RequestSource request_source() const {
     switch (current_page_classification()) {
-      // Lens Overlay searchboxes don't rely on TemplateURL replacement and set
-      // `client=` in //components/omnibox/browser/remote_suggestions_service.cc
-      // and `source=` in //c/b/u/lens/lens_overlay_url_builder.cc.
       case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
       case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
       case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
         return SearchTermsData::RequestSource::LENS_OVERLAY;
+      case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+        return SearchTermsData::RequestSource::NTP_COMPOSEBOX;
       default:
         return SearchTermsData::RequestSource::SEARCHBOX;
     }
