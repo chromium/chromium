@@ -36,8 +36,12 @@ class STGEverythingMenu : public views::MenuDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroup);
 
+  // Enumrates the different ways the everything menu can be shown.
+  enum class MenuContext { kAppMenu, kSavedTabGroupBar };
+
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
-                    Browser* browser);
+                    Browser* browser,
+                    MenuContext menu_context);
 
   STGEverythingMenu(const STGEverythingMenu&) = delete;
   STGEverythingMenu& operator=(const STGEverythingMenu&) = delete;
@@ -61,7 +65,9 @@ class STGEverythingMenu : public views::MenuDelegate,
 
   bool IsShowing() { return menu_runner_ && menu_runner_->IsRunning(); }
 
-  void SetShowSubmenu(bool show_submenu) { show_submenu_ = show_submenu; }
+  // Whether or not a saved tab group item in the Everything menu should have
+  // submenu. True for 3-dot menu.
+  bool ShouldShowSubmenu();
 
   // override views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -70,6 +76,7 @@ class STGEverythingMenu : public views::MenuDelegate,
                        const gfx::Point& p,
                        ui::mojom::MenuSourceType source_type) override;
   bool GetAccelerator(int id, ui::Accelerator* accelerator) const override;
+  void WillShowMenu(views::MenuItemView* menu) override;
 
  private:
   class AppMenuSubMenuModelDelegate;
@@ -119,10 +126,6 @@ class STGEverythingMenu : public views::MenuDelegate,
   // Owned by the Everything button.
   raw_ptr<views::MenuButtonController> const menu_button_controller_;
 
-  // Whether or not a saved tab group item in the Everything menu should have
-  // submenu. True for 3-dot menu.
-  bool show_submenu_ = false;
-
   // The command id that gets updated and assigned to tab groups and their
   // submenu items.
   int latest_tab_group_command_id_ = -1;
@@ -137,6 +140,8 @@ class STGEverythingMenu : public views::MenuDelegate,
 
   raw_ptr<Browser> const browser_;
   raw_ptr<views::Widget> const widget_;
+
+  MenuContext menu_context_;
 };
 
 }  // namespace tab_groups

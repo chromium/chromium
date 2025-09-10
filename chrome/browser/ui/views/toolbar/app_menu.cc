@@ -1331,9 +1331,9 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
                               LIMIT_MENU_ACTION);
     if (!stg_everything_menu_) {
       // Only recreate the menu if we have to.
-      stg_everything_menu_ =
-          std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
-      stg_everything_menu_->SetShowSubmenu(true);
+      stg_everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
+          nullptr, browser_,
+          tab_groups::STGEverythingMenu::MenuContext::kAppMenu);
       stg_everything_menu_->PopulateMenu(menu);
     }
   } else if (IsTabGroupsCommand(menu->GetCommand())) {
