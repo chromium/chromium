@@ -88,9 +88,12 @@ class SaveOrUpdateAutofillAiDataController {
 
   virtual std::u16string GetDialogTitle() const = 0;
 
+  // Returns the user's primary account email.
+  virtual std::u16string GetPrimaryAccountEmail() const = 0;
+
   // Returns true if the entity to be saved or updated will be stored in the
   // wallet server.
-  virtual bool IsWallatableEntity() const = 0;
+  virtual bool IsWalletableEntity() const = 0;
 
   // Whether the user clicked the link the dialog subtitle which navigates them
   // to wallet.

@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -17,9 +18,11 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
@@ -45,6 +48,7 @@ namespace autofill {
 namespace {
 
 constexpr int kBubbleWidth = 320;
+constexpr int kWalletIconSize = 20;
 constexpr int kSubTitleBottomMargin = 16;
 constexpr std::u16string_view kNewValueDot = u"•";
 
@@ -60,6 +64,13 @@ int GetEntityAttributeAndValueLabelMaxWidth() {
           ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL)) /
          2;
+}
+
+std::unique_ptr<views::BoxLayoutView> GetSubtitleContainer() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
+      .Build();
 }
 
 std::unique_ptr<views::BoxLayoutView> GetEntityAttributeAndValueLayout(
@@ -119,29 +130,34 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
   set_margins(GetBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetDialogTitle());
   SetTitle(controller_->GetDialogTitle());
-
+  SetShowIcon(controller_->IsWalletableEntity());
   auto* main_content_wrapper =
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
   if (controller_->IsSavePrompt()) {
-    auto subtitle_container =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetInsideBorderInsets(
-                gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
-            .Build();
-    subtitle_container->AddChildView(
-        views::Builder<views::Label>()
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
-            .SetTextStyle(views::style::STYLE_BODY_4)
-            .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
-            .SetAccessibleRole(ax::mojom::Role::kDetails)
-            .SetMultiLine(true)
-            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-            .Build());
+    std::unique_ptr<views::BoxLayoutView> subtitle_container =
+        GetSubtitleContainer();
+    if (!controller_->IsWalletableEntity()) {
+      subtitle_container->AddChildView(
+          views::Builder<views::Label>()
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
+              .SetTextStyle(views::style::STYLE_BODY_4)
+              .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
+              .SetAccessibleRole(ax::mojom::Role::kDetails)
+              .SetMultiLine(true)
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+              .Build());
+    } else {
+      subtitle_container->AddChildView(GetWalletableEntitySubtitle());
+    }
+    main_content_wrapper->AddChildView(std::move(subtitle_container));
+  } else if (controller_->IsWalletableEntity()) {
+    std::unique_ptr<views::BoxLayoutView> subtitle_container =
+        GetSubtitleContainer();
+    subtitle_container->AddChildView(GetWalletableEntitySubtitle());
     main_content_wrapper->AddChildView(std::move(subtitle_container));
   }
 
@@ -181,6 +197,18 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
 
 SaveOrUpdateAutofillAiDataBubbleView::~SaveOrUpdateAutofillAiDataBubbleView() =
     default;
+
+ui::ImageModel SaveOrUpdateAutofillAiDataBubbleView::GetWindowIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+
+#else
+  // This is a placeholder icon on non-branded builds.
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+#endif
+}
 
 std::unique_ptr<views::View>
 SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
@@ -314,6 +342,34 @@ SaveOrUpdateAutofillAiDataBubbleView::BuildEntityAttributeRow(
     row->SetFlexForView(child.get(), 1);
   }
   return row;
+}
+
+std::unique_ptr<views::StyledLabel>
+SaveOrUpdateAutofillAiDataBubbleView::GetWalletableEntitySubtitle() const {
+  std::vector<size_t> offsets;
+  const std::u16string google_wallet_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      controller_->IsSavePrompt()
+          ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
+          : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+      {google_wallet_text, controller_->GetPrimaryAccountEmail()}, &offsets);
+
+  gfx::Range go_to_wallet_range(offsets[0],
+                                offsets[0] + google_wallet_text.size());
+  auto go_to_wallet =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &SaveOrUpdateAutofillAiDataController::OnGoToWalletLinkClicked,
+          controller_));
+
+  return views::Builder<views::StyledLabel>()
+      .SetText(std::move(formatted_text))
+      .SetDefaultTextStyle(views::style::STYLE_BODY_4)
+      .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
+      .SetAccessibleRole(ax::mojom::Role::kDetails)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .AddStyleRange(go_to_wallet_range, go_to_wallet)
+      .Build();
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::Hide() {

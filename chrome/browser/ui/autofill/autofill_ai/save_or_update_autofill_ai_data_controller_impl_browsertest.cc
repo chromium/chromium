@@ -69,8 +69,9 @@ class SaveOrUpdateAutofillAiDataControllerImplTest
                               std::move(entities.second), base::NullCallback());
       return;
     } else if (name == "SaveNewEntity") {
-      controller_->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
-                              base::NullCallback());
+      controller_->ShowPrompt(
+          test::GetPassportEntityInstance(save_new_entity_options_),
+          std::nullopt, base::NullCallback());
       return;
     }
     NOTREACHED();
@@ -85,8 +86,16 @@ class SaveOrUpdateAutofillAiDataControllerImplTest
 
   SaveOrUpdateAutofillAiDataControllerImpl* controller() { return controller_; }
 
+  // Used in the save prompt case, this method can be called to set specific
+  // attributes on the entity to be saved.
+  void SetNewEntitiesOptions(
+      test::PassportEntityOptions save_new_entity_options) {
+    save_new_entity_options_ = save_new_entity_options;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_features_;
+  test::PassportEntityOptions save_new_entity_options_ = {};
   raw_ptr<SaveOrUpdateAutofillAiDataControllerImpl> controller_ = nullptr;
 };
 
@@ -127,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
   std::vector<
       SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
       update_details = controller()->GetUpdatedAttributesDetails();
-  // In the save new entity case, all values are  from a new entity and are new.
+  // In the save new entity case, all values are from a new entity and are new.
   for (const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
            detail : update_details) {
     EXPECT_EQ(detail.update_type,
@@ -147,6 +156,21 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
       SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
           kAccepted,
       1);
+}
+
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
+                       WalletableEntity) {
+  SetNewEntitiesOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewEntity");
+  EXPECT_TRUE(controller()->IsWalletableEntity());
+}
+
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
+                       IsNotWalletableEntity) {
+  SetNewEntitiesOptions({.record_type = EntityInstance::RecordType::kLocal});
+  ShowUi("SaveNewEntity");
+  EXPECT_FALSE(controller()->IsWalletableEntity());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

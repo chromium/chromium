@@ -50,7 +50,8 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
-  bool IsWallatableEntity() const override;
+  std::u16string GetPrimaryAccountEmail() const override;
+  bool IsWalletableEntity() const override;
   void OnGoToWalletLinkClicked() const override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;

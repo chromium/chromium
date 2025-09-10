@@ -30,11 +30,12 @@ class MockSaveOrUpdateAutofillAiDataController
               (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(std::u16string, GetDialogTitle, (), (const override));
+  MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (const override));
   MOCK_METHOD(std::vector<EntityAttributeUpdateDetails>,
               GetUpdatedAttributesDetails,
               (),
               (const override));
-  MOCK_METHOD(bool, IsWallatableEntity, (), (const override));
+  MOCK_METHOD(bool, IsWalletableEntity, (), (const override));
   MOCK_METHOD(bool, IsSavePrompt, (), (const override));
   MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (const override));
   MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));

@@ -11,6 +11,10 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class StyledLabel;
+}  // namespace views
+
 namespace autofill {
 
 // This class displays a bubble to prompt the user whether they want save or
@@ -37,6 +41,8 @@ class SaveOrUpdateAutofillAiDataBubbleView : public AutofillLocationBarBubble {
   void AddedToWidget() override;
   void WindowClosing() override;
 
+  ui::ImageModel GetWindowIcon() override;
+
  private:
   // Creates a row displayed in the dialog. This row contains information
   // about the entity to be saved or updated.
@@ -54,7 +60,12 @@ class SaveOrUpdateAutofillAiDataBubbleView : public AutofillLocationBarBubble {
 
   void OnDialogAccepted();
 
+  std::unique_ptr<views::StyledLabel> GetWalletableEntitySubtitle() const;
+
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> controller_;
+
+  base::WeakPtrFactory<SaveOrUpdateAutofillAiDataBubbleView> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

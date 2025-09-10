@@ -159,6 +159,64 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+                       WalletableEntity_Save) {
+  ON_CALL(mock_controller(), GetDialogTitle())
+      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE)));
+  ON_CALL(mock_controller(), IsSavePrompt())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), IsWalletableEntity())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), GetPrimaryAccountEmail())
+      .WillByDefault(testing::Return(u"machadodeassis@gmail.com"));
+  std::vector<EntityAttributeUpdateDetails> details = {
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Owner",
+          /*attribute_value=*/u"Machado de Assis",
+          EntityAttributeUpdateType::kNewEntityAttributeAdded),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Model",
+          /*attribute_value=*/u"Käfer",
+          EntityAttributeUpdateType::kNewEntityAttributeAdded),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Maker",
+          /*attribute_value=*/u"Volkswagen",
+          EntityAttributeUpdateType::kNewEntityAttributeAdded)};
+  ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
+      .WillByDefault(testing::Return(details));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+                       WalletableEntity_Update) {
+  ON_CALL(mock_controller(), GetDialogTitle())
+      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE)));
+  ON_CALL(mock_controller(), IsSavePrompt())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_controller(), IsWalletableEntity())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), GetPrimaryAccountEmail())
+      .WillByDefault(testing::Return(u"machadodeassis@gmail.com"));
+  std::vector<EntityAttributeUpdateDetails> details = {
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Owner",
+          /*attribute_value=*/u"Machado de Assis",
+          EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Model",
+          /*attribute_value=*/u"Käfer",
+          EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Maker",
+          /*attribute_value=*/u"Volkswagen",
+          EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
+  ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
+      .WillByDefault(testing::Return(details));
+  ShowAndVerifyUi();
+}
+
 // This tests corner cases related to attribute names and values sizes.
 IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Update) {
