@@ -521,19 +521,19 @@ enum class CompositingMode {
   kSupportsDirectCompositing
 };
 
-class FakeCanvasResourceProvider : public CanvasResourceProvider {
+class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
  public:
   FakeCanvasResourceProvider(gfx::Size size,
                              RasterModeHint hint,
                              CanvasResourceProvider::Delegate* delegate,
                              CompositingMode compositing_mode)
-      : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
-                               size,
-                               GetN32FormatForCanvas(),
-                               kPremul_SkAlphaType,
-                               gfx::ColorSpace::CreateSRGB(),
-                               SharedGpuContext::ContextProviderWrapper(),
-                               delegate),
+      : CanvasResourceProviderSharedImage(
+            size,
+            GetN32FormatForCanvas(),
+            kPremul_SkAlphaType,
+            gfx::ColorSpace::CreateSRGB(),
+            SharedGpuContext::ContextProviderWrapper(),
+            delegate),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
