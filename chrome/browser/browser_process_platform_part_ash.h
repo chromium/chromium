@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 
 class BrowserProcessPlatformPartTestApi;
@@ -27,7 +26,6 @@ class AccountManagerFactory;
 class AshProxyMonitor;
 class AutoSignOutService;
 class BrowserContextFlusher;
-class BrowserRestoreObserver;
 class ChromeSessionManager;
 class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
@@ -187,8 +185,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   void CreateProfileHelper();
 
   void ShutdownPrimaryProfileServices();
-
-  std::unique_ptr<ash::BrowserRestoreObserver> browser_restore_observer_;
 
   std::unique_ptr<ash::ChromeSessionManager> session_manager_;
 

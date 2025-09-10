@@ -16,7 +16,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
-#include "chrome/browser/ash/app_restore/browser_restore_observer.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
@@ -112,9 +111,7 @@ class PrimaryProfileServicesShutdownNotifierFactory
 }  // namespace
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart()
-    : browser_restore_observer_(
-          std::make_unique<ash::BrowserRestoreObserver>()),
-      created_profile_helper_(false),
+    : created_profile_helper_(false),
       browser_context_flusher_(std::make_unique<ash::BrowserContextFlusher>()),
       account_manager_factory_(std::make_unique<ash::AccountManagerFactory>()) {
 }
