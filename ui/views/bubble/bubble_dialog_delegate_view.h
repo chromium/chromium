@@ -314,6 +314,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // constructed from a views::View*, so that code that previously uses an
   // anchor view can easily migrate to accept a WebUI anchor.
   void SetAnchor(BubbleAnchor anchor);
+  BubbleAnchor GetAnchor() const;
 
   //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
@@ -663,6 +664,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   BubbleBorder::Shadow shadow_;
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
+  raw_ptr<ui::TrackedElement> anchor_tracked_element_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;

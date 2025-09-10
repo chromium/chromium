@@ -1100,6 +1100,7 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
     if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
       SetAnchorView(element_views->view());
     } else {
+      anchor_tracked_element_ = tracked_element;
       SetAnchorView(nullptr);
       SetAnchorRect(tracked_element->GetScreenBounds());
 
@@ -1114,6 +1115,16 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
     SetAnchorView(nullptr);
     SetAnchorRect(gfx::Rect());
   }
+}
+
+BubbleAnchor BubbleDialogDelegate::GetAnchor() const {
+  if (GetAnchorView()) {
+    return GetAnchorView();
+  }
+  if (anchor_tracked_element_) {
+    return anchor_tracked_element_;
+  }
+  return nullptr;
 }
 
 void BubbleDialogDelegate::SizeToContents() {
