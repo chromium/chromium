@@ -124,9 +124,7 @@ bool DictHas(const base::Value::Dict& dict, std::string_view path) {
 namespace {
 // Cannot use Value::DebugString here due to newlines.
 std::string ToJSON(const base::ValueView& value) {
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  return json;
+  return base::WriteJson(value).value_or("");
 }
 
 class DictHasPathValueMatcher

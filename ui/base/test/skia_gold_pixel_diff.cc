@@ -176,8 +176,7 @@ bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
   }
 
   base::Value root(std::move(ds));
-  std::string content;
-  base::JSONWriter::Write(root, &content);
+  std::string content = base::WriteJson(root).value_or("");
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(keys_file, base::File::Flags::FLAG_CREATE_ALWAYS |
                                  base::File::Flags::FLAG_WRITE);

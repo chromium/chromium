@@ -327,8 +327,7 @@ void FormatJSONResponse(const base::ValueView& value,
                         net::HttpStatusCode status,
                         BasicHttpResponse* http_response,
                         const std::string& prefix = "") {
-  std::string response_json;
-  base::JSONWriter::Write(value, &response_json);
+  std::string response_json = base::WriteJson(value).value_or("");
   http_response->set_content(base::StrCat({prefix, response_json}));
   http_response->set_code(status);
 }

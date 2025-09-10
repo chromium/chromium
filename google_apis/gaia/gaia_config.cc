@@ -72,10 +72,8 @@ bool GaiaConfig::GetAPIKeyIfExists(std::string_view key,
 
 void GaiaConfig::SerializeContentsToCommandLineSwitch(
     base::CommandLine* command_line) const {
-  std::string config_contents;
-  base::JSONWriter::Write(parsed_config_, &config_contents);
   command_line->AppendSwitchASCII(switches::kGaiaConfigContents,
-                                  config_contents);
+                                  base::WriteJson(parsed_config_).value_or(""));
 }
 
 // static

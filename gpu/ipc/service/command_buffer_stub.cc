@@ -83,9 +83,7 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
   ~DevToolsChannelData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
-    std::string tmp;
-    base::JSONWriter::Write(value_, &tmp);
-    *out += tmp;
+    *out += base::WriteJson(value_).value_or("");
   }
 
  private:
