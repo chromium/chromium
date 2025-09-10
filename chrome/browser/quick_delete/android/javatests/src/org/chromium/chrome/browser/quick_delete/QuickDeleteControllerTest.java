@@ -152,7 +152,7 @@ public class QuickDeleteControllerTest {
                                 DeleteBrowsingDataAction.QUICK_DELETE)
                         .build();
 
-        mTabSwitcher = dialog.confirmDelete().first;
+        mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ true).first;
 
         histogramWatcher.assertExpected();
         assertDataTypesCleared(
@@ -167,7 +167,7 @@ public class QuickDeleteControllerTest {
     public void testDelete_AllTime() throws TimeoutException {
         QuickDeleteDialogFacility dialog = mSecondPage.openRegularTabAppMenu().clearBrowsingData();
         dialog = dialog.setTimePeriodInSpinner(TimePeriod.ALL_TIME);
-        mTabSwitcher = dialog.confirmDelete().first;
+        mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ false).first;
 
         assertDataTypesCleared(
                 TimePeriod.ALL_TIME,
@@ -181,7 +181,7 @@ public class QuickDeleteControllerTest {
     public void testDelete_LastHour() throws TimeoutException {
         QuickDeleteDialogFacility dialog = mSecondPage.openRegularTabAppMenu().clearBrowsingData();
         dialog = dialog.setTimePeriodInSpinner(TimePeriod.LAST_HOUR);
-        mTabSwitcher = dialog.confirmDelete().first;
+        mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ false).first;
 
         assertDataTypesCleared(
                 TimePeriod.LAST_HOUR,
@@ -267,7 +267,7 @@ public class QuickDeleteControllerTest {
         assertEquals(1, realPage.getTabModel().getCount());
 
         QuickDeleteDialogFacility dialog = realPage.openRegularTabAppMenu().clearBrowsingData();
-        mTabSwitcher = dialog.confirmDelete().first;
+        mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ true).first;
 
         assertEquals(1, realPage.getTabModel().getCount());
         histogramWatcher.assertExpected();

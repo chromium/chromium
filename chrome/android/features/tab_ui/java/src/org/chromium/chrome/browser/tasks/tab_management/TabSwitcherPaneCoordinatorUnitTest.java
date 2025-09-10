@@ -30,7 +30,9 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -550,5 +552,38 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         reset(mPriceWelcomeMessageController);
         mIsVisibleSupplier.set(false);
         verify(mPriceWelcomeMessageController).removeObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinnedTabStrip_FeatureEnabled() {
+        assertNotNull(mCoordinator.getPinnedTabsCoordinatorForTesting());
+
+        // Verify that the container is a LinearLayout.
+        ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
+        assertTrue(container instanceof LinearLayout);
+        assertEquals(LinearLayout.VERTICAL, ((LinearLayout) container).getOrientation());
+
+        // Verify the children of the LinearLayout.
+        assertEquals(2, container.getChildCount());
+        assertTrue(
+                container.getChildAt(0)
+                        instanceof
+                        org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView);
+        assertTrue(
+                container.getChildAt(1)
+                        instanceof
+                        org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinnedTabStrip_FeatureDisabled() {
+        assertNull(mCoordinator.getPinnedTabsCoordinatorForTesting());
+
+        // Verify that the container is a LinearLayout with the original TabListRecyclerView.
+        ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
+        assertTrue(container instanceof LinearLayout);
+        assertTrue(container.getChildAt(0) instanceof TabListRecyclerView);
     }
 }

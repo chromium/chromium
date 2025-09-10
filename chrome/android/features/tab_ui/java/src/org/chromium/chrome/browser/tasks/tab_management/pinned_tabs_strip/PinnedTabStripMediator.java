@@ -6,17 +6,21 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.FAVICON_FETCHER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.GRID_CARD_SIZE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_PINNED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_CARD_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
+
+import android.app.Activity;
+import android.util.Size;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -35,24 +39,29 @@ import java.util.List;
 @NullMarked
 public class PinnedTabStripMediator {
 
+    private final Activity mActivity;
     private final TabListModel mTabGridListModel;
     private final TabListModel mPinnedTabsModelList;
     private final GridLayoutManager mTabGridListLayoutManager;
     private final PropertyModel mStripPropertyModel;
+    private int mPinnedTabStripItemWidth = -1;
 
     /**
      * Constructor for the PinnedTabsStripMediator.
      *
+     * @param activity The current activity.
      * @param tabGridListLayoutManager The layout manager for the main tab grid.
      * @param tabGridListModel The model for the main tab grid.
      * @param pinnedTabsModelList The model for the pinned tabs strip.
      * @param stripPropertyModel The property model for the pinned tabs strip.
      */
     public PinnedTabStripMediator(
+            Activity activity,
             GridLayoutManager tabGridListLayoutManager,
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel) {
+        mActivity = activity;
         mTabGridListLayoutManager = tabGridListLayoutManager;
         mTabGridListModel = tabGridListModel;
         mPinnedTabsModelList = pinnedTabsModelList;
@@ -93,7 +102,7 @@ public class PinnedTabStripMediator {
         int firstVisiblePosition = mTabGridListLayoutManager.findFirstVisibleItemPosition();
         List<ListItem> newPinnedTabs = new ArrayList<>();
 
-        for (int i = 0; i < mTabGridListModel.size(); i++) {
+        for (int i = 0; i < mTabGridListModel.size() && i < firstVisiblePosition; i++) {
             ListItem item = mTabGridListModel.get(i);
             if (item == null) continue;
 
@@ -103,7 +112,7 @@ public class PinnedTabStripMediator {
                 continue;
             }
 
-            if (model.get(IS_PINNED) && i < firstVisiblePosition) {
+            if (model.get(IS_PINNED)) {
                 newPinnedTabs.add(createPinnedTabListItem(model));
             }
         }
@@ -117,13 +126,15 @@ public class PinnedTabStripMediator {
      * @return A new ListItem for the pinned tabs strip.
      */
     private ListItem createPinnedTabListItem(PropertyModel model) {
+        Size pinnedTabSize = new Size(mPinnedTabStripItemWidth, -1);
+
         PropertyModel newModel =
                 new PropertyModel.Builder(ALL_KEYS_TAB_GRID)
                         .with(TAB_ID, model.get(TAB_ID))
                         .with(TITLE, model.get(TITLE))
                         .with(FAVICON_FETCHER, model.get(FAVICON_FETCHER))
                         .with(IS_SELECTED, model.get(IS_SELECTED))
-                        .with(TAB_GROUP_CARD_COLOR, model.get(TAB_GROUP_CARD_COLOR))
+                        .with(GRID_CARD_SIZE, pinnedTabSize)
                         .with(TAB_CLICK_LISTENER, model.get(TAB_CLICK_LISTENER))
                         .with(
                                 TAB_ACTION_BUTTON_DATA,
@@ -138,8 +149,6 @@ public class PinnedTabStripMediator {
      * @param newPinnedTabs The new list of pinned tabs to display.
      */
     private void updatePinnedTabsModel(List<ListItem> newPinnedTabs) {
-        int oldSize = mPinnedTabsModelList.size();
-
         // Perform a granular update instead of clear() and addAll() to prevent flashing.
         for (int i = 0; i < newPinnedTabs.size(); i++) {
             ListItem newItem = newPinnedTabs.get(i);
@@ -158,10 +167,8 @@ public class PinnedTabStripMediator {
                     newPinnedTabs.size(), mPinnedTabsModelList.size() - newPinnedTabs.size());
         }
 
-        if (oldSize < mPinnedTabsModelList.size()) {
-            mStripPropertyModel.set(
-                    PinnedTabStripProperties.SCROLL_TO_POSITION, mPinnedTabsModelList.size() - 1);
-        }
+        mStripPropertyModel.set(
+                PinnedTabStripProperties.SCROLL_TO_POSITION, mPinnedTabsModelList.size() - 1);
     }
 
     /**
@@ -171,5 +178,20 @@ public class PinnedTabStripMediator {
     private void updateStripVisibility() {
         boolean shouldBeVisible = !mPinnedTabsModelList.isEmpty();
         mStripPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, shouldBeVisible);
+    }
+
+    void onSizeChanged(Size cardSize) {
+        int delta =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_width_delta);
+        mPinnedTabStripItemWidth = cardSize.getWidth() - delta;
+
+        if (!mPinnedTabsModelList.isEmpty()) {
+            Size newSize = new Size(mPinnedTabStripItemWidth, -1);
+            for (ListItem item : mPinnedTabsModelList) {
+                item.model.set(GRID_CARD_SIZE, newSize);
+            }
+        }
     }
 }

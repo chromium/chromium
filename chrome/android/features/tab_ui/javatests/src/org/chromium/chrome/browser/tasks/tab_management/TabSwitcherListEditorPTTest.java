@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -78,6 +79,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Before
     public void setUp() {
+        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
@@ -126,7 +128,8 @@ public class TabSwitcherListEditorPTTest {
         int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.loadedTabElement.value().getId();
-        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
+        RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
+        RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
@@ -134,14 +137,13 @@ public class TabSwitcherListEditorPTTest {
 
         editor.openAppMenuWithEditor().closeTabs();
 
-        // Go back to PageStation for InitialStateRule to reset
-
         // Dismiss the undo snackbar because it might overlap with the New Tab button.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tabSwitcher.getActivity().getSnackbarManager().dismissAllSnackbars());
 
-        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
+        // Go back to PageStation for InitialStateRule to reset
+        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(thirdPage);
     }
 
     @Test

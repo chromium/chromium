@@ -5,11 +5,15 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.hamcrest.Matcher;
 
@@ -30,8 +34,15 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         assert regularTabsButtonElement != null;
         declareEnterCondition(
                 new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
-        if (!mRegularTabsExist) {
+        if (mRegularTabsExist) {
+            recyclerViewElement =
+                    declareView(
+                            paneHostElement.descendant(
+                                    RecyclerView.class, withId(R.id.tab_list_recycler_view)),
+                            unscopedOption());
+        } else {
             declareView(EMPTY_STATE_TEXT);
+            recyclerViewElement = null;
         }
     }
 

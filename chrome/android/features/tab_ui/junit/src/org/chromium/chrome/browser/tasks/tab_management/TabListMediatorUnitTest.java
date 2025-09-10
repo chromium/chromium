@@ -4372,6 +4372,7 @@ public class TabListMediatorUnitTest {
         assertEquals(
                 TabActionButtonType.CLOSE,
                 mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+        assertFalse(mModelList.get(POSITION1).model.get(TabProperties.IS_PINNED));
 
         // Scenario 2: Tab is PINNED
         // Mock the tab at POSITION1 as pinned.
@@ -4383,6 +4384,7 @@ public class TabListMediatorUnitTest {
         assertEquals(
                 TabActionButtonType.PIN,
                 mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+        assertTrue(mModelList.get(POSITION1).model.get(TabProperties.IS_PINNED));
     }
 
     @Test

@@ -19,8 +19,10 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Size;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -67,6 +69,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -189,6 +192,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private TabListCoordinator.@Nullable DragObserver mDragObserver;
     private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
+    private @Nullable PinnedTabStripCoordinator mPinnedTabsCoordinator;
 
     private int mEdgeToEdgeBottomInsets;
 
@@ -367,7 +371,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* selectionDelegateProvider= */ null,
                             this::getPriceWelcomeMessageController,
                             parentView,
-                            /* attachToParent= */ true,
+                            /* attachToParent= */ false,
                             COMPONENT_NAME,
                             /* onModelTokenChange= */ null,
                             /* hasEmptyView= */ supportsEmptyState,
@@ -386,6 +390,32 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
+            // Create a `LinearLayout` to hold both the pinned tab strip and the regular tab
+            // list.
+            LinearLayout layout =
+                    (LinearLayout)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(
+                                            R.layout.tab_switcher_pane_layout,
+                                            parentView,
+                                            /* attachToParent= */ false);
+            layout.addView(recyclerView);
+            parentView.addView(layout);
+
+            // TODO(crbug.com/436614730): Inline the view construction once feature is launched.
+            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+                // If the feature is enabled, create and set up the pinned tab strip, and add it as
+                // a sibling of the regular tab list. The pinned tab strip will be positioned above
+                // the regular tab list by virtue of being added to the parent `LinearLayout`
+                // first.
+                mPinnedTabsCoordinator =
+                        new PinnedTabStripCoordinator(mActivity, parentView, tabListCoordinator);
+
+                TabListRecyclerView pinnedTabStripRecyclerView =
+                        mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
+
+                layout.addView(pinnedTabStripRecyclerView, /* index= */ 0);
+            }
 
             if (XrUtils.isXrDevice()) {
                 recyclerView.setVerticalFadingEdgeEnabled(true);
@@ -530,6 +560,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         }
         if (mTabSwitcherGroupSuggestionService != null) {
             mTabSwitcherGroupSuggestionService.destroy();
+        }
+        if (mPinnedTabsCoordinator != null) {
+            mPinnedTabsCoordinator.destroy();
         }
     }
 
@@ -885,6 +918,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     @Nullable
     EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
         return mEdgeToEdgePadAdjuster;
+    }
+
+    @Nullable PinnedTabStripCoordinator getPinnedTabsCoordinatorForTesting() {
+        return mPinnedTabsCoordinator;
     }
 
     /* package */ @Nullable TabGridDialogCoordinator getTabGridDialogCoordinatorForTesting() {
