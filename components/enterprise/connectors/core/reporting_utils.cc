@@ -253,6 +253,24 @@ ThreatType ToProtoThreatType(const std::string& threat_type) {
   NOTREACHED();
 }
 
+proto::TriggeredRuleInfo::Action ActionProtoFromTriggerRuleAction(
+    const TriggeredRule::Action& action) {
+  switch (action) {
+    case TriggeredRule::Action::
+        ContentAnalysisResponse_Result_TriggeredRule_Action_ACTION_UNSPECIFIED:
+      return proto::TriggeredRuleInfo::ACTION_UNKNOWN;
+    case TriggeredRule::Action::
+        ContentAnalysisResponse_Result_TriggeredRule_Action_REPORT_ONLY:
+      return proto::TriggeredRuleInfo::REPORT_ONLY;
+    case TriggeredRule::Action::
+        ContentAnalysisResponse_Result_TriggeredRule_Action_WARN:
+      return proto::TriggeredRuleInfo::WARN;
+    case TriggeredRule::Action::
+        ContentAnalysisResponse_Result_TriggeredRule_Action_BLOCK:
+      return proto::TriggeredRuleInfo::BLOCK;
+  }
+}
+
 google::protobuf::RepeatedPtrField<proto::TriggeredRuleInfo>
 GetTriggerRulesFromContentAnalysisResult(
     const ContentAnalysisResponse::Result& result) {
@@ -266,6 +284,8 @@ GetTriggerRulesFromContentAnalysisResult(
     if (base::StringToInt(trigger.rule_id(), &rule_id_int)) {
       triggered_rule.set_rule_id(rule_id_int);
     }
+    triggered_rule.set_action(
+        ActionProtoFromTriggerRuleAction(trigger.action()));
     *triggered_rules.Add() = triggered_rule;
   }
 

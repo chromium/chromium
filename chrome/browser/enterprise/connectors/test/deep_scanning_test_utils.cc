@@ -297,8 +297,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 }
 
 void EventReportValidator::ExpectSensitiveDataEvents(
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent
-        expected_sensitive_data_event,
+    const std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+        expected_sensitive_data_events,
     const std::vector<std::string>& expected_filenames,
     const std::vector<std::string>& expected_sha256s,
     const std::vector<std::string>& expected_results,
@@ -307,11 +307,16 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   base::flat_map<std::string, std::string> results;
   base::flat_map<std::string, std::string> filenames_and_hashes;
   base::flat_map<std::string, std::string> scan_ids;
+  base::flat_map<std::string,
+                 chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+      expected_data_event;
 
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes[expected_filenames[i]] = expected_sha256s[i];
     results[expected_filenames[i]] = expected_results[i];
     scan_ids[expected_filenames[i]] = expected_scan_ids[i];
+    expected_data_event[expected_filenames[i]] =
+        expected_sensitive_data_events[i];
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
@@ -326,8 +331,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   EXPECT_CALL(*client_, UploadSecurityEvent)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [expected_sensitive_data_event, dlp_verdicts, results,
-           filenames_and_hashes, scan_ids, barrier_closure](
+          [expected_data_event, dlp_verdicts, results, filenames_and_hashes,
+           scan_ids, barrier_closure](
               bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest request,
               base::OnceCallback<void(policy::CloudPolicyClient::Result)>
@@ -338,12 +343,11 @@ void EventReportValidator::ExpectSensitiveDataEvents(
             auto sensitive_data_event =
                 request.events().Get(0).sensitive_data_event();
 
-            EXPECT_EQ(filenames_and_hashes.at(sensitive_data_event.file_name()),
+            const auto filename = sensitive_data_event.file_name();
+            EXPECT_EQ(filenames_and_hashes.at(filename),
                       sensitive_data_event.download_digest_sha_256());
-            EXPECT_EQ(scan_ids.at(sensitive_data_event.file_name()),
-                      sensitive_data_event.scan_id());
-            EXPECT_EQ(GetEventResultProto(
-                          results.at(sensitive_data_event.file_name())),
+            EXPECT_EQ(scan_ids.at(filename), sensitive_data_event.scan_id());
+            EXPECT_EQ(GetEventResultProto(results.at(filename)),
                       sensitive_data_event.event_result());
 
             // Clear the validated fields, so that the captured proto can match
@@ -354,7 +358,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
             sensitive_data_event.clear_download_digest_sha_256();
 
             EXPECT_THAT(sensitive_data_event,
-                        EqualsProto(expected_sensitive_data_event));
+                        EqualsProto(expected_data_event.at(filename)));
 
             barrier_closure.Run();
           });

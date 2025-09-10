@@ -1364,6 +1364,8 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1473,6 +1475,8 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1553,6 +1557,8 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
     expected_event.set_clicked_through(true);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1664,6 +1670,8 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1781,6 +1789,8 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, OpenNow) {
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1969,6 +1979,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -2130,6 +2142,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
     expected_event.set_clicked_through(false);
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;

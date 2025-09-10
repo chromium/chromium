@@ -1064,6 +1064,8 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
     triggered_rule.set_rule_id(12345);
     triggered_rule.set_rule_name("fake rule");
     triggered_rule.set_url_category("test rule category");
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
     *expected_event.add_triggered_rule_info() = triggered_rule;
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();

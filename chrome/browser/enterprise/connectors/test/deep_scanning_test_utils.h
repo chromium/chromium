@@ -107,8 +107,8 @@ class EventReportValidator : public EventReportValidatorBase {
           expected_sensitive_data_event);
 
   void ExpectSensitiveDataEvents(
-      chrome::cros::reporting::proto::DlpSensitiveDataEvent
-          expected_sensitive_data_event,
+      const std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+          expected_sensitive_data_events,
       const std::vector<std::string>& expected_filenames,
       const std::vector<std::string>& expected_sha256s,
       const std::vector<std::string>& expected_results,

@@ -886,10 +886,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_1;
     triggered_rule_1.set_rule_id(1);
     triggered_rule_1.set_rule_name("resource rule 1");
+    triggered_rule_1.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
     *expected_event.add_triggered_rule_info() = triggered_rule_1;
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_2;
     triggered_rule_2.set_rule_id(3);
     triggered_rule_2.set_rule_name("resource rule 2");
+    triggered_rule_2.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule_2;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1026,10 +1030,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_1;
     triggered_rule_1.set_rule_id(1);
     triggered_rule_1.set_rule_name("resource rule 1");
+    triggered_rule_1.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
     *expected_event.add_triggered_rule_info() = triggered_rule_1;
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_2;
     triggered_rule_2.set_rule_id(3);
     triggered_rule_2.set_rule_name("resource rule 2");
+    triggered_rule_2.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule_2;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1242,6 +1250,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
     triggered_rule.set_rule_id(1);
     triggered_rule.set_rule_name("resource rule 1");
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -1382,6 +1392,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
     triggered_rule.set_rule_id(1);
     triggered_rule.set_rule_name("resource rule 1");
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;
@@ -2204,6 +2216,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
     triggered_rule.set_rule_name("some_dlp_rule");
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_data_event.add_triggered_rule_info() = triggered_rule;
 
     *expected_data_event.add_referrers() = referrers;
@@ -2354,6 +2368,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
     chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
     triggered_rule.set_rule_id(1);
     triggered_rule.set_rule_name("resource rule 1");
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
     *expected_event.add_triggered_rule_info() = triggered_rule;
 
     ::chrome::cros::reporting::proto::UrlInfo referrers;

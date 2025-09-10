@@ -322,6 +322,8 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   ASSERT_EQ(triggered_rule.rule_id(), 12345);
   ASSERT_EQ(triggered_rule.url_category(), "test rule category");
   ASSERT_EQ(triggered_rule.rule_name(), "fake rule");
+  ASSERT_EQ(triggered_rule.action(),
+            chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     ASSERT_EQ(event.referrers_size(), 1);
