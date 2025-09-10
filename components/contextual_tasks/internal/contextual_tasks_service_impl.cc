@@ -23,6 +23,15 @@ ContextualTask ContextualTasksServiceImpl::CreateTask() {
   return it->second;
 }
 
+std::optional<ContextualTask> ContextualTasksServiceImpl::GetTaskById(
+    const base::Uuid& task_id) const {
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
 std::vector<ContextualTask> ContextualTasksServiceImpl::GetTasks() const {
   std::vector<ContextualTask> tasks;
   for (const auto& pair : tasks_) {

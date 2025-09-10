@@ -25,6 +25,8 @@ class ContextualTasksService : public KeyedService {
 
   // Methods for creating and managing tasks.
   virtual ContextualTask CreateTask() = 0;
+  virtual std::optional<ContextualTask> GetTaskById(
+      const base::Uuid& task_id) const = 0;
   virtual std::vector<ContextualTask> GetTasks() const = 0;
   virtual void DeleteTask(const base::Uuid& task_id) = 0;
 

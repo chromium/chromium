@@ -23,6 +23,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
 
   // ContextualTasksService implementation.
   ContextualTask CreateTask() override;
+  std::optional<ContextualTask> GetTaskById(
+      const base::Uuid& task_id) const override;
   std::vector<ContextualTask> GetTasks() const override;
   void DeleteTask(const base::Uuid& task_id) override;
   void AssignServerIdToTask(const base::Uuid& task_id,
