@@ -15,7 +15,6 @@ import subprocess
 import sys
 import tempfile
 import time
-from collections.abc import Collection
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 
@@ -457,7 +456,7 @@ def main() -> int:
 
     is_btrfs = _check_btrfs(root_path)
     if is_btrfs and not args.force:
-        subprocess.run(['sudo', '-v'])
+        subprocess.run(['sudo', '-v'], check=True)
 
     _check_uncommitted_changes(src_path)
 

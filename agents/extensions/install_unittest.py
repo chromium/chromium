@@ -70,7 +70,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     @unittest.mock.patch(
         'subprocess.check_output', side_effect=FileNotFoundError
     )
-    def test_get_dir_hash(self, mock_check_output):
+    def test_get_dir_hash(self, _):
         """Tests the get_dir_hash function's fallback mechanism."""
         hash1 = install.get_dir_hash(self.extension1_dir)
         hash2 = install.get_dir_hash(self.extension1_dir)
@@ -78,7 +78,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.assertIsNotNone(hash1)
 
         # Test that a change in content changes the hash
-        with open(self.extension1_dir / 'main.py', 'w') as f:
+        with open(self.extension1_dir / 'main.py', 'w', encoding='utf-8') as f:
             f.write('print("world")')
         hash3 = install.get_dir_hash(self.extension1_dir)
         self.assertNotEqual(hash1, hash3)
@@ -129,13 +129,15 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         hash1 = install.get_dir_hash(self.extension1_dir)
 
         # Modify a file in the tests directory and check the hash is the same
-        with open(self.extension1_dir / 'tests' / 'test.py', 'w') as f:
+        with open(self.extension1_dir / 'tests' / 'test.py',
+                  'w',
+                  encoding='utf-8') as f:
             f.write('print("test2")')
         hash2 = install.get_dir_hash(self.extension1_dir)
         self.assertEqual(hash1, hash2)
 
         # Modify a file outside the tests directory and check the hash changes
-        with open(self.extension1_dir / 'main.py', 'w') as f:
+        with open(self.extension1_dir / 'main.py', 'w', encoding='utf-8') as f:
             f.write('print("new world")')
         hash3 = install.get_dir_hash(self.extension1_dir)
         self.assertNotEqual(hash1, hash3)
@@ -143,7 +145,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     @unittest.mock.patch(
         'subprocess.check_output', side_effect=FileNotFoundError
     )
-    def test_get_dir_hash_fallback(self, mock_check_output):
+    def test_get_dir_hash_fallback(self, _):
         """Tests the get_dir_hash function's fallback mechanism."""
         hash1 = install.get_dir_hash(self.extension1_dir)
         hash2 = install.get_dir_hash(self.extension1_dir)
@@ -187,7 +189,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         )
 
     @unittest.mock.patch('builtins.input', return_value='y')
-    def test_add_extension_copy(self, mock_input):
+    def test_add_extension_copy(self, _):
         """Tests the add_extension function with copying."""
         install.add_extension(
             'sample_1',
@@ -200,7 +202,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.assertFalse(dest_path.is_symlink())
 
     @unittest.mock.patch('builtins.input', return_value='y')
-    def test_add_extension_symlink(self, mock_input):
+    def test_add_extension_symlink(self, _):
         """Tests the add_extension function with symlinking."""
         install.add_extension(
             'sample_1',
@@ -214,9 +216,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
     @unittest.mock.patch('builtins.input', return_value='n')
     @unittest.mock.patch('install.is_up_to_date', return_value=False)
-    def test_add_extension_decline_update(
-        self, mock_is_up_to_date, mock_input
-    ):
+    def test_add_extension_decline_update(self, _, __):
         """Adding an existing extension is skipped if the user declines."""
         install.add_extension(
             'sample_1',
@@ -307,7 +307,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     def test_main_update_all(
         self,
         mock_find_extensions,
-        mock_get_installed,
+        _,
         mock_update_extension,
         mock_get_project_root,
     ):
@@ -344,7 +344,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         )
 
     @unittest.mock.patch('install.get_project_root', return_value=None)
-    def test_main_no_project_root(self, mock_get_project_root):
+    def test_main_no_project_root(self, _):
         """Tests that main exits if no project root is found for a local op."""
         with unittest.mock.patch(
             'sys.stderr', new_callable=io.StringIO

@@ -5,7 +5,6 @@
 
 import json
 import logging
-import os
 import pathlib
 import subprocess
 import sys
@@ -87,7 +86,7 @@ def call_api(prompt: str, options: dict[str, Any],
     _install_extensions(extensions)
     try:
         start_time = time.time()
-        process = subprocess.Popen(
+        process = subprocess.Popen(  # pylint: disable=consider-using-with
             command,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
