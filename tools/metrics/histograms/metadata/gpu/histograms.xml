@@ -2261,16 +2261,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.SyncDestroyCompositorFrameSink.ExecutionTime" units="ms"
-    expires_after="2025-08-30">
-  <owner>kartarsingh@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <summary>
-    Records the time spent by Browser waiting for the synchronous
-    DestroyCompositorFrameSink call to finish.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
