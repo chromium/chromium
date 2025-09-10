@@ -858,7 +858,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (event.detail.expanded) {
       this.activeFolderPath_ = this.bookmarksService_.findPathToId(bookmark.id);
     } else if (bookmark === this.getActiveFolder_()) {
-      this.pop('activeFolderPath_');
+      this.activeFolderPath_ = this.activeFolderPath_.slice(0, -1);
     }
     this.notifyBookmarksListResize_();
   }

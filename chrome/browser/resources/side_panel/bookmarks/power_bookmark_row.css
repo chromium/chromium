@@ -14,7 +14,9 @@
 }
 
 cr-url-list-item[size=compact] {
-  --cr-url-list-item-padding: 6px 14px;
+  margin-left: 10px;
+  --cr-url-list-item-padding: 6px;
+  width: inherit;
 }
 
 /* Visually hide the label but allow the screen reader to pick it up. */
@@ -46,6 +48,20 @@ cr-expand-button {
   flex-direction: row-reverse;
   --cr-section-vertical-padding: 0px;
   margin-left: calc(var(--depth) * var(--margin-per-depth));
+
+  --cr-expand-button-icon-size: 16px;
+  --cr-expand-button-size: 20px;
+}
+
+cr-expand-button[selected] {
+  background-color: var(--color-side-panel-bookmarks-active-folder-background);
+  color: var(--color-side-panel-bookmarks-active-folder-foreground);
+  --cr-primary-text-color:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
+  --cr-secondary-text-color:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
+  --color-list-item-folder-icon-foreground:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
 }
 
 #bookmark {

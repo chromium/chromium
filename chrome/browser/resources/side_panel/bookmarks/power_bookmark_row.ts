@@ -27,8 +27,8 @@ import {getHtml} from './power_bookmark_row.html.js';
 import {PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
-export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
-export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 17;
+export const NESTED_BOOKMARKS_BASE_MARGIN = 28;
+export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 12;
 export const BOOKMARK_ROW_LOAD_EVENT = 'bookmark-row-connected-event';
 
 export class PowerBookmarkRowElement extends CrLitElement {
@@ -68,8 +68,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
       toggleExpand: {type: Boolean},
+      isSelected: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
+      activeFolderPath: {type: Array},
     };
   }
 
@@ -97,10 +99,12 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor rowAriaDescription: string = '';
   accessor trailingIconTooltip: string = '';
   accessor toggleExpand: boolean = false;
+  accessor isSelected: boolean = false;
   accessor imageUrls: {[key: string]: string} = {};
   accessor updatedElementIds: string[] = [];
   accessor isPriceTracked: boolean = false;
   accessor canDrag: boolean = true;
+  accessor activeFolderPath: BookmarksTreeNode[] = [];
 
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
@@ -150,6 +154,12 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+
+    if (changedProperties.has('activeFolderPath')) {
+      this.isSelected = this.activeFolderPath?.length > 0 &&
+          this.activeFolderPath[this.activeFolderPath.length - 1].id ===
+              this.bookmark.id;
+    }
 
     if (changedProperties.has('compact')) {
       this.listItemSize =
