@@ -327,8 +327,7 @@ public class StripDragShadowViewUnitTest {
 
         // Verify card color
         @ColorRes
-        int expectedBackgroundColor =
-                TabUiThemeUtil.getTabStripSelectedTabColor(mActivity, incognito);
+        int expectedBackgroundColor = TabUiThemeUtil.getDraggedTabBackgroundColor(mActivity);
         assertEquals(
                 "Unexpected card color.",
                 expectedBackgroundColor,

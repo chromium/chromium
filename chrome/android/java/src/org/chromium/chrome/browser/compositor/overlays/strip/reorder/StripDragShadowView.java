@@ -190,8 +190,7 @@ public class StripDragShadowView extends FrameLayout {
 
         // Background color
         mCardView.setBackgroundTintList(
-                ColorStateList.valueOf(
-                        TabUiThemeUtil.getTabStripSelectedTabColor(context, isIncognito)));
+                ColorStateList.valueOf(TabUiThemeUtil.getDraggedTabBackgroundColor(context)));
 
         // Title text
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
@@ -237,8 +236,7 @@ public class StripDragShadowView extends FrameLayout {
 
         // Background color
         mCardView.setBackgroundTintList(
-                ColorStateList.valueOf(
-                        TabUiThemeUtil.getTabStripSelectedTabColor(context, isIncognito)));
+                ColorStateList.valueOf(TabUiThemeUtil.getDraggedTabBackgroundColor(context)));
 
         // Multi tab title text
         int numberOfSelectedTabs = multiSelectedTabs.size();

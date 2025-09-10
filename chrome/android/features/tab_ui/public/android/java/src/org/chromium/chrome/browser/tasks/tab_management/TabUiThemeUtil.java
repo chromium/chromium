@@ -87,6 +87,11 @@ public class TabUiThemeUtil {
         return SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
     }
 
+    /** Returns the dragged tab background color. */
+    public static @ColorInt int getDraggedTabBackgroundColor(Context context) {
+        return SemanticColorUtils.getColorSurfaceBright(context);
+    }
+
     /**
      * Returns the tab strip multi-selected tab color. This is a semitransparent color intended to
      * be shown on the tab strip. To prevent transparency issues with overlapping tab strip views,
