@@ -35,8 +35,7 @@ static base::android::ScopedJavaLocalRef<jstring> MojoClassToJSON(
   auto options = MojoClass::New();
   CHECK(MojoClass::Deserialize(span.data(), span.size(), &options));
   base::Value value = webauthn::ToValue(options);
-  std::string json;
-  base::JSONWriter::Write(value, &json);
+  std::string json = base::WriteJson(value).value_or("");
   return base::android::ConvertUTF8ToJavaString(env, json);
 }
 

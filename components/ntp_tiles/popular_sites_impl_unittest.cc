@@ -138,8 +138,8 @@ class PopularSitesTest : public ::testing::Test {
 
   void RespondWithV5JSON(const std::string& url,
                          const TestPopularSiteVector& sites) {
-    std::string sites_string;
-    base::JSONWriter::Write(CreateListFromTestSites(sites), &sites_string);
+    std::string sites_string =
+        base::WriteJson(CreateListFromTestSites(sites)).value_or("");
     test_url_loader_factory_.AddResponse(url, sites_string);
   }
 
@@ -153,8 +153,7 @@ class PopularSitesTest : public ::testing::Test {
       section_value.Set(kSites, CreateListFromTestSites(section.second));
       sections_value.Append(std::move(section_value));
     }
-    std::string sites_string;
-    base::JSONWriter::Write(sections_value, &sites_string);
+    std::string sites_string = base::WriteJson(sections_value).value_or("");
     test_url_loader_factory_.AddResponse(url, sites_string);
   }
 

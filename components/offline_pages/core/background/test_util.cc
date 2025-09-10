@@ -44,9 +44,7 @@ std::string SavePageRequest::ToString() const {
   result.Set("auto_fetch_notification_state",
              EnumString(auto_fetch_notification_state_));
 
-  std::string result_string;
-  base::JSONWriter::Write(result, &result_string);
-  return result_string;
+  return base::WriteJson(result).value_or("");
 }
 
 // Implemented in test_util.cc.

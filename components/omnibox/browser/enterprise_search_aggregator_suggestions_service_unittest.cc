@@ -130,8 +130,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
   experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
   root.Set("experimentIds", std::move(experiment_ids_list));
 
-  std::string test_request_body;
-  base::JSONWriter::Write(root, &test_request_body);
+  std::string test_request_body = base::WriteJson(root).value_or("");
   const std::u16string query = u"test";
   const GURL test_endpoint = GURL("https://fake_url.com");
 
@@ -199,8 +198,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
   experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
   root.Set("experimentIds", std::move(experiment_ids_list));
 
-  std::string test_request_body;
-  base::JSONWriter::Write(root, &test_request_body);
+  std::string test_request_body = base::WriteJson(root).value_or("");
   const std::u16string query = u"test";
   const GURL test_endpoint = GURL("https://fake_url.com");
 

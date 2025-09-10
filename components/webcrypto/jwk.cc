@@ -402,8 +402,7 @@ void JwkWriter::SetBytes(std::string_view member_name,
 }
 
 void JwkWriter::ToJson(std::vector<uint8_t>* utf8_bytes) const {
-  std::string json;
-  base::JSONWriter::Write(dict_, &json);
+  std::string json = base::WriteJson(dict_).value_or("");
   utf8_bytes->assign(json.begin(), json.end());
 }
 

@@ -777,7 +777,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Store the metadata that came with the response in case we need to pass
     // it along with the prefetch query to Instant.
-    base::JSONWriter::Write(extras, &results->metadata);
+    results->metadata = base::WriteJson(extras).value_or("");
   }
 
   // Processed list of match subtypes, one vector per match.

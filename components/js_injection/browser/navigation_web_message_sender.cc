@@ -362,9 +362,7 @@ void NavigationWebMessageSender::DidFinishNavigation(
 
 std::unique_ptr<WebMessage> NavigationWebMessageSender::CreateWebMessage(
     base::Value::Dict message_dict) {
-  base::Value message(std::move(message_dict));
-  std::string json_message;
-  base::JSONWriter::Write(message, &json_message);
+  std::string json_message = base::WriteJson(message_dict).value_or("");
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
   web_message->message = base::UTF8ToUTF16(json_message);
   return web_message;

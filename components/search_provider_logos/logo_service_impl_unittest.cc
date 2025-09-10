@@ -212,13 +212,12 @@ std::string MakeServerResponse(const SkBitmap& image,
       dict.SetByDottedPath("ddljson.dark_cta_data_uri", dark_data_uri);
   }
   dict.SetByDottedPath("ddljson.fingerprint", fingerprint);
-  if (time_to_live != base::TimeDelta())
+  if (time_to_live != base::TimeDelta()) {
     dict.SetByDottedPath("ddljson.time_to_live_ms",
                          static_cast<int>(time_to_live.InMilliseconds()));
+  }
 
-  std::string output;
-  base::JSONWriter::Write(dict, &output);
-  return output;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string MakeServerResponse(const Logo& logo, base::TimeDelta time_to_live) {

@@ -486,9 +486,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 
   auto enable_tailored_security_service =
       base::Value::Dict().Set("history_recording_enabled", is_enabled);
-  std::string post_data;
-  base::JSONWriter::Write(enable_tailored_security_service, &post_data);
-  request->SetPostData(post_data);
+  request->SetPostData(
+      base::WriteJson(enable_tailored_security_service).value_or(""));
 
   request->Start();
   Request* request_ptr = request.get();

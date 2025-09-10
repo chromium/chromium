@@ -662,8 +662,8 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   for (const auto& alternate_url : data.alternate_urls) {
     alternate_urls_value.Append(alternate_url);
   }
-  std::string alternate_urls;
-  base::JSONWriter::Write(alternate_urls_value, &alternate_urls);
+  std::string alternate_urls =
+      base::WriteJson(alternate_urls_value).value_or("");
 
   s->BindInt64(id_column, data.id);
   s->BindString16(starting_column, data.short_name());

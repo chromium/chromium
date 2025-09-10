@@ -177,8 +177,7 @@ void ExecuteScript(blink::WebLocalFrame* frame,
                    std::string_view prefix,
                    const base::Value& parameters,
                    std::string_view suffix) {
-  std::string json;
-  base::JSONWriter::Write(parameters, &json);
+  std::string json = base::WriteJson(parameters).value_or("");
   frame->ExecuteScript(blink::WebScriptSource(
       blink::WebString::FromUTF8(base::StrCat({prefix, json, suffix}))));
 }

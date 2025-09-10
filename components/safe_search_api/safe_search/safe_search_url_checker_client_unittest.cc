@@ -38,9 +38,7 @@ std::string BuildResponse(bool is_porn) {
   base::Value::List classifications_list;
   classifications_list.Append(std::move(classification_dict));
   dict.Set("classifications", std::move(classifications_list));
-  std::string result;
-  base::JSONWriter::Write(dict, &result);
-  return result;
+  return base::WriteJson(dict).value_or("");
 }
 
 auto kURLs = std::to_array<const char*>({
