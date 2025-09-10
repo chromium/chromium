@@ -37,7 +37,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ModalDialogViewUnitTest {
     private static final int MIN_DIALOG_WIDTH = 280;
     private static final int MIN_DIALOG_HEIGHT = 500;
-    private static final int MAX_DIALOG_WIDTH_TABLET = 600;
+    private static final int MAX_DIALOG_WIDTH_TABLET = 560;
     private static final float MAX_DIALOG_WIDTH_PERCENT_PHONE = 0.65f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -199,8 +199,9 @@ public class ModalDialogViewUnitTest {
         var heightMeasureSpec = MeasureSpec.makeMeasureSpec(windowHeight, MeasureSpec.AT_MOST);
         mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
 
-        // windowWidth - 2 * horizontalMargin = 600 - 2 * 16.
-        int expectedWidth = 568;
+        // windowWidth - 2 * horizontalMargin = 600 - 2 * 16 = 568. Capped at max tablet width
+        // (560).
+        int expectedWidth = MAX_DIALOG_WIDTH_TABLET;
         // windowHeight - 2 * verticalMargin = 600 - 2 * 40.
         int expectedHeight = 520;
         assertEquals("Width is incorrect.", expectedWidth, mDialogView.getMeasuredWidth());
