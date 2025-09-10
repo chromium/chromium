@@ -27,7 +27,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/widget/widget.h"
 

@@ -16,7 +16,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view_factory.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
 class KeyboardReplacingSurfaceVisibilityController;

@@ -104,7 +104,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

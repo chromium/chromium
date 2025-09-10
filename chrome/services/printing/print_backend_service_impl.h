@@ -26,7 +26,7 @@
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/types/expected.h"

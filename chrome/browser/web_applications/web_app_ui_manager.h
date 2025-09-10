@@ -22,7 +22,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 class BrowserWindow;

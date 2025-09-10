@@ -11,7 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // JNI bridge to display the acknowledgement sheet when filling grouped
 // credentials on Android.

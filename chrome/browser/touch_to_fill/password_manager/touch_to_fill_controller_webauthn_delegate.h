@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/webauthn/shared_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContents;

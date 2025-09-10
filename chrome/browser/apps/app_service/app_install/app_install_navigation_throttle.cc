@@ -24,7 +24,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/url_util.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));

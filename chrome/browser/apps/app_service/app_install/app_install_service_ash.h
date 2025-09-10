@@ -17,7 +17,7 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/arc_app_installer.h"
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));

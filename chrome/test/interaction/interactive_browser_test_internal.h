@@ -19,7 +19,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 
 class DevToolsAgentCoverageObserver;

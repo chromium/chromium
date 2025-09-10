@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 

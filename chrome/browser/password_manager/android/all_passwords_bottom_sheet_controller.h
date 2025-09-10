@@ -15,7 +15,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace password_manager {

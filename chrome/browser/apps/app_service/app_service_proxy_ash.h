@@ -31,7 +31,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Avoid including this header file directly or referring directly to
 // AppServiceProxyAsh as a type. Instead:

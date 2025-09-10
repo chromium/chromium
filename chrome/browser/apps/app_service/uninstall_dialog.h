@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;

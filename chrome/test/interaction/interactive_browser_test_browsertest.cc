@@ -30,7 +30,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"

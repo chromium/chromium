@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class AddUsernameDialogBridge {
  public:

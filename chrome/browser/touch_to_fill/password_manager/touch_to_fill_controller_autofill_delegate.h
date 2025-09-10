@@ -21,7 +21,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
 class PasskeyCredential;
