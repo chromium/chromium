@@ -40,7 +40,7 @@ class BackingStoreCursorImpl : public BackingStore::Cursor {
   StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                           const blink::IndexedDBKey& primary_key) override;
   StatusOr<bool> Advance(uint32_t count) override;
-  bool TryResetToLastSavedPosition() override;
+  Status TryResetToLastSavedPosition() override;
 
  protected:
   BackingStoreCursorImpl(base::WeakPtr<DatabaseConnection> db,

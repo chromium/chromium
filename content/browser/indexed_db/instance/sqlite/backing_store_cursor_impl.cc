@@ -122,13 +122,13 @@ StatusOr<bool> BackingStoreCursorImpl::Advance(uint32_t count) {
   return true;
 }
 
-bool BackingStoreCursorImpl::TryResetToLastSavedPosition() {
+Status BackingStoreCursorImpl::TryResetToLastSavedPosition() {
   sql::Statement* statement = GetStatement();
   if (!statement) {
-    return false;
+    return Status::IOError("Database connection lost");
   }
   InvalidateStatement(*statement);
-  return true;
+  return Status::OK();
 }
 
 Status BackingStoreCursorImpl::UpdateRecord(sql::Statement& statement) {

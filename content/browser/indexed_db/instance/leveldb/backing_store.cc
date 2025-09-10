@@ -3137,14 +3137,14 @@ void BackingStore::Cursor::SavePosition() {
   saved_members_ = {CloneIterator(this), current_key_.Clone()};
 }
 
-bool BackingStore::Cursor::TryResetToLastSavedPosition() {
+Status BackingStore::Cursor::TryResetToLastSavedPosition() {
   if (!saved_members_) {
-    return false;
+    return Status::InvalidArgument("Position not saved");
   }
   std::tie(iterator_, current_key_) = *std::move(saved_members_);
   saved_members_.reset();
   // `CloneIterator()` may have returned nullptr.
-  return iterator_ != nullptr;
+  return iterator_ != nullptr ? Status::OK() : Status::IOError();
 }
 
 BackingStore::Cursor::Cursor(base::WeakPtr<Transaction> transaction,
@@ -3563,12 +3563,10 @@ class ObjectStoreCursorImpl : public BackingStore::Cursor {
   ~ObjectStoreCursorImpl() override = default;
 
   // BackingStore::Cursor:
-  bool TryResetToLastSavedPosition() override {
-    if (!BackingStore::Cursor::TryResetToLastSavedPosition()) {
-      return false;
-    }
+  Status TryResetToLastSavedPosition() override {
+    IDB_RETURN_IF_ERROR(BackingStore::Cursor::TryResetToLastSavedPosition());
     current_value_ = {};
-    return true;
+    return Status::OK();
   }
   IndexedDBValue& GetValue() override { return current_value_; }
   bool LoadCurrentRow(Status* s) override;
@@ -3637,14 +3635,12 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
     BackingStore::Cursor::SavePosition();
     saved_primary_key_ = primary_key_.Clone();
   }
-  bool TryResetToLastSavedPosition() override {
-    if (!BackingStore::Cursor::TryResetToLastSavedPosition()) {
-      return false;
-    }
+  Status TryResetToLastSavedPosition() override {
+    IDB_RETURN_IF_ERROR(BackingStore::Cursor::TryResetToLastSavedPosition());
     CHECK(saved_primary_key_);
     primary_key_ = *std::move(saved_primary_key_);
     saved_primary_key_.reset();
-    return true;
+    return Status::OK();
   }
   IndexedDBValue& GetValue() override { NOTREACHED(); }
   const IndexedDBKey& GetPrimaryKey() const override { return primary_key_; }
@@ -3753,15 +3749,13 @@ class IndexCursorImpl : public BackingStore::Cursor {
     saved_members_ = {primary_key_.Clone(), current_value_.Clone(),
                       primary_leveldb_key_};
   }
-  bool TryResetToLastSavedPosition() override {
-    if (!BackingStore::Cursor::TryResetToLastSavedPosition()) {
-      return false;
-    }
+  Status TryResetToLastSavedPosition() override {
+    IDB_RETURN_IF_ERROR(BackingStore::Cursor::TryResetToLastSavedPosition());
     CHECK(saved_members_);
     std::tie(primary_key_, current_value_, primary_leveldb_key_) =
         *std::move(saved_members_);
     saved_members_.reset();
-    return true;
+    return Status::OK();
   }
   IndexedDBValue& GetValue() override { return current_value_; }
   const IndexedDBKey& GetPrimaryKey() const override { return primary_key_; }

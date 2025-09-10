@@ -23,6 +23,7 @@
 #include "content/browser/indexed_db/instance/callback_helpers.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/status.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -365,7 +366,11 @@ void Cursor::PrefetchReset(int used_prefetches) {
   }
 
   reached_end_during_prefetch_ = false;
-  if (!cursor_->TryResetToLastSavedPosition()) {
+  Status s = cursor_->TryResetToLastSavedPosition();
+  if (!s.ok()) {
+    if (s.IsInvalidArgument()) {
+      mojo::ReportBadMessage(s.ToString());
+    }
     cursor_.reset();
   }
 

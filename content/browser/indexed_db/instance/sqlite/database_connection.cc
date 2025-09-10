@@ -379,8 +379,10 @@ class ObjectStoreCursorImpl : public BackingStoreCursorImpl {
 
   void SavePosition() override { saved_position_ = position_; }
 
-  bool TryResetToLastSavedPosition() override {
-    TRANSIENT_CHECK(saved_position_);
+  Status TryResetToLastSavedPosition() override {
+    if (!saved_position_) {
+      return Status::InvalidArgument("Position not saved");
+    }
     position_ = *std::move(saved_position_);
     saved_position_.reset();
     return BackingStoreCursorImpl::TryResetToLastSavedPosition();
@@ -588,8 +590,10 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
     saved_position_ = {position_, object_store_position_};
   }
 
-  bool TryResetToLastSavedPosition() override {
-    TRANSIENT_CHECK(saved_position_);
+  Status TryResetToLastSavedPosition() override {
+    if (!saved_position_) {
+      return Status::InvalidArgument("Position not saved");
+    }
     std::tie(position_, object_store_position_) = *std::move(saved_position_);
     saved_position_.reset();
     return BackingStoreCursorImpl::TryResetToLastSavedPosition();

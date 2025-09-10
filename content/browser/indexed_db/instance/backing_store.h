@@ -238,8 +238,10 @@ class BackingStore {
     // Saves the current position of the cursor.
     virtual void SavePosition() = 0;
     // Attempts to reset the cursor to the last saved position. The cursor
-    // may not be in a valid state if this returns false.
-    virtual bool TryResetToLastSavedPosition() = 0;
+    // instance is no longer usable if the returned `Status` is not `ok()`. A
+    // status of type `kInvalidArgument` indicates that the position was not
+    // saved prior to this call.
+    virtual Status TryResetToLastSavedPosition() = 0;
   };
 
   virtual ~BackingStore() = default;
