@@ -251,7 +251,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1166457390969131095">Folosește și salvează parole și chei de acces din Contul Google</translation>
 <translation id="1166583374608765787">Examinează actualizarea numelui</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> aparține desktopului <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Aplicațiile web izolate aplică automat această setare</translation>
 <translation id="1168020859489941584">Se deschide în <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema recentă <ph name="INDEX" /> din <ph name="SUBJECT" /> creată cu AI, în stil <ph name="STYLE" />, cu starea de spirit <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Setează schimbarea automată a limbii, astfel încât să corespundă conținutului selectat</translation>
@@ -1612,7 +1611,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> sistemul va reporni în timpul acestui proces.</translation>
-<translation id="209423774103268003">Cititoarele de carduri inteligente sunt accesate</translation>
 <translation id="2095774564753225041">Tipurile de fișiere acceptate</translation>
 <translation id="2096716221239095980">Șterge toate datele</translation>
 <translation id="2097950021134740304">Anulează eliminarea abonamentului</translation>
@@ -2637,7 +2635,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">A modificat această filă</translation>
-<translation id="2790750268015892264">Aplicațiile web izolate nu pot controla cititoarele de carduri inteligente. Aplicațiile nu vor avea acces la carduri inteligente.</translation>
 <translation id="2791529110887957050">Elimină Linux</translation>
 <translation id="2791952154587244007">A apărut o eroare. Aplicația de tip chioșc nu se va putea lansa automat pe acest dispozitiv.</translation>
 <translation id="2792465461386711506">Activează Sincronizarea Chrome pentru a vedea filele Chrome recente pe telefon</translation>
@@ -3554,7 +3551,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – afișezi fila serviciului Gemini</translation>
 <translation id="345078987193237421">Astfel, se permite accesul la cameră pentru aplicații, site-uri care au permisiunea adecvată pentru camera foto și servicii de sistem</translation>
-<translation id="3451362021220965191">Aplicațiile web izolate controlează cititoarele de carduri inteligente pentru a obține acces la cardurile inteligente introduse sau prezentate acestora. Cardurile inteligente conțin de obicei identități folosite pentru autentificarea sau autorizarea operațiunilor, conectarea la servicii etc.</translation>
 <translation id="3452999110156026232">Acces pentru părinți</translation>
 <translation id="3453082738208775226">Eliberezi spațiul de stocare offline?</translation>
 <translation id="3453597230179205517">Accesul la locație este blocat</translation>
@@ -5955,7 +5951,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5120886753782992638">Dă clic aici pentru a accesa <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistemul de operare al containerului Linux nu mai este acceptat. Acesta nu va mai primi actualizări de securitate și remedieri ale erorilor, iar funcțiile care rulează se pot întrerupe în mod neașteptat. Fă upgrade la cea mai recentă versiune pentru a folosi în continuare Linux.</translation>
 <translation id="5121130586824819730">Hard diskul este plin. Salvați în altă locație sau eliberați mai mult spațiu pe hard disk.</translation>
-<translation id="5121803000325086087">Aplicațiile web izolate pot să solicite permisiunea de a controla cititoarele de carduri inteligente. Aplicațiile vor avea acces la cardurile inteligente prezentate cititoarelor pe care le controlează.</translation>
 <translation id="5123433949759960244">Baschet</translation>
 <translation id="5125714798187802869">Activează</translation>
 <translation id="5125751979347152379">Adresă URL nevalidă.</translation>
@@ -10412,7 +10407,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="825238165904109940">Afișează întotdeauna adresele URL complete</translation>
 <translation id="8252569384384439529">Se încarcă...</translation>
 <translation id="8253198102038551905">Pentru a vedea proprietățile rețelei, dă clic pe „+”</translation>
-<translation id="8254871563792426806">Acest site accesează cititoarele de carduri inteligente conectate la dispozitivul tău și, eventual, cardurile inteligente disponibile pentru acestea</translation>
 <translation id="8255212965098517578">Fotografiile, notificările și aplicațiile recente</translation>
 <translation id="8255927332875030912">Căutare + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Lăbuș</translation>

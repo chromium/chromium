@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">Фиока 12</translation>
 <translation id="1864927262126810325">Од <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Кабелски и сателитски оператори</translation>
-<translation id="1866757068250903512">Контролирајте ги уредите за автентикација со име <ph name="READERNAME" /> и паметните картички што се користат со нив</translation>
 <translation id="1870473978371099486">Услуги за приватно подучување</translation>
 <translation id="1871208020102129563">Прокси е поставен да користи фиксни прокси-сервери, а не ПАК-скрипта на URL.</translation>
 <translation id="1871284979644508959">Задолжително поле</translation>
@@ -842,6 +841,7 @@
 <translation id="23703388716193220">Опрема за голф</translation>
 <translation id="2370368710215137370">Прикачување датотеки</translation>
 <translation id="2370739752330685659">Можеби подоцна</translation>
+<translation id="2371084566192454134">Картички и групи картички</translation>
 <translation id="2374629208601905275">Согласно со конкретен закон во вашиот регион, Chrome бара да го изберете вашиот стандарден пребарувач. Овие пребарувачи се популарни во вашиот регион, а се прикажани во редослед по случаен избор.</translation>
 <translation id="2376455483361831781">Нова табела</translation>
 <translation id="2377241607395428273">Софтвер за графика и анимација</translation>
@@ -4909,6 +4909,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> користи неподдржан протокол.</translation>
 <translation id="918454845714257218">Проверете го кодот на <ph name="SIDE_OF_CARD" /> и пробајте пак</translation>
 <translation id="9186203289258525843">Копче за поставување на Chrome како стандарден прелистувач, активирајте го за да го поставите Chrome како стандарден прелистувач на системот</translation>
+<translation id="9186371298532546532">Користете ја адресава на повеќе места</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ја промени картичкава</translation>
 <translation id="9189789270972826888">Кликнете ги деталите за картичката подолу за да ги копирате и залепите ако не е пополнета картичката. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Темите постари од 4 седмици се бришат автоматски</translation>
@@ -4924,6 +4925,7 @@
 <translation id="920643408853370361">Патничко осигурување</translation>
 <translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
 <translation id="9209339767782560829">Се јави проблем при користењето на сертификатот за најавување.</translation>
+<translation id="9210152531668884481">Прифаќам</translation>
 <translation id="9210825002219699214">Патување со авион</translation>
 <translation id="9213433120051936369">Приспособете го изгледот</translation>
 <translation id="9215416866750762878">Дадена апликација го спречува Chrome безбедно да се поврзе на сајтов</translation>

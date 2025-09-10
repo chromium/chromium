@@ -252,7 +252,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1166457390969131095">Naudokite ir išsaugokite slaptažodžius iš „Google“ paskyros</translation>
 <translation id="1166583374608765787">Peržiūrėkite atnaujintą pavadinimą</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ priklauso to darbalaukiui „<ph name="DESK_TITLE" />“</translation>
-<translation id="1166644470305877068">Izoliuotoms žiniatinklio programoms šis nustatymas pritaikomas automatiškai</translation>
 <translation id="1168020859489941584">Atidaroma po <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Naujausia <ph name="INDEX" /> DI tema iš <ph name="SUBJECT" /> <ph name="STYLE" /> stiliumi su nuotaika <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatiškai keisti kalbą, kad atitiktų pasirinktą turinį</translation>
@@ -1626,7 +1625,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> vykdant procesą sistema bus paleista iš naujo.</translation>
-<translation id="209423774103268003">Pasiekiami išmaniųjų kortelių skaitytuvai</translation>
 <translation id="2095774564753225041">Palaikomi failų tipai</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
 <translation id="2097950021134740304">Atšaukti prenumeratos pamiršimą</translation>
@@ -2654,7 +2652,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Gerai</translation>
 <translation id="2790112944253231361">Pakeitė šį skirtuką</translation>
-<translation id="2790750268015892264">Izoliuotos žiniatinklio programos negali valdyti išmaniųjų kortelių skaitytuvų. Programos negaus prieigos prie jokios išmaniosios kortelės.</translation>
 <translation id="2791529110887957050">Pašalinti „Linux“</translation>
 <translation id="2791952154587244007">Įvyko klaida. Šiame įrenginyje nebus galima automatiškai paleisti viešojo terminalo programų.</translation>
 <translation id="2792465461386711506">Įjunkite „Chrome“ sinchronizavimo funkciją, kad galėtumėte peržiūrėti pastaruosius „Chrome“ skirtukus telefonu</translation>
@@ -3572,7 +3569,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3450180775417907283">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį.</translation>
 <translation id="3450251767853793660">„<ph name="WINDOW_TITLE" />“ – bendrinate šį skirtuką su „Gemini“</translation>
 <translation id="345078987193237421">Tai leidžia naudoti prieigą prie vaizdo kameros programoms, svetainėms, turinčioms vaizdo kameros leidimą, ir sistemos paslaugoms</translation>
-<translation id="3451362021220965191">Izoliuotos žiniatinklio programos valdo išmaniųjų kortelių skaitytuvus, kad gautų prieigą prie įdėtų ar pateiktų išmaniųjų kortelių. Išmaniosios kortelės paprastai apima tapatybes, naudojamas operacijoms autentifikuoti ar prieigos teisei įgalinti, prisijungti prie paslaugų ir kt.</translation>
 <translation id="3452999110156026232">Tėvų prieiga</translation>
 <translation id="3453082738208775226">Išvalyti saugyklą neprisijungus?</translation>
 <translation id="3453597230179205517">Prieiga prie vietovės užblokuota</translation>
@@ -5976,7 +5972,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5120886753782992638">Spustelėkite čia, kad apsilankytumėte adresu <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operacinė sistema „Linux“ sudėtiniame faile nebepalaikoma. Nebebus teikiami saugos naujiniai ir riktų pataisymai bei gali atsirasti nenumatytų šiuo metu veikiančių funkcijų trikčių. Jei norite toliau naudoti „Linux“, naujovinkite į naujausią versiją.</translation>
 <translation id="5121130586824819730">Jūsų standusis diskas pilnas. Išsaugokite kitoje vietoje arba atlaisvinkite vietos standžiajame diske.</translation>
-<translation id="5121803000325086087">Izoliuotos žiniatinklio programos gali prašyti valdyti išmaniųjų kortelių skaitytuvus. Programos gaus prieigą prie skaitytojams pateiktų išmaniųjų kortelių, kurias jos kontroliuoja.</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
 <translation id="5125714798187802869">Aktyvinti</translation>
 <translation id="5125751979347152379">Negaliojantis URL.</translation>
@@ -10440,7 +10435,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="825238165904109940">Visada rodyti visus URL</translation>
 <translation id="8252569384384439529">Įkeliama...</translation>
 <translation id="8253198102038551905">Spustelėkite „+“, kad peržiūrėtumėte tinklo savybes</translation>
-<translation id="8254871563792426806">Ši svetainė pasiekia išmaniųjų kortelių skaitytuvus, prijungtus prie jūsų įrenginio, ir galimai jiems pasiekiamas išmaniąsias korteles</translation>
 <translation id="8255212965098517578">Naujausios nuotraukos, pranešimai ir programos</translation>
 <translation id="8255927332875030912">Paieškos klavišas + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Žaismingasis</translation>

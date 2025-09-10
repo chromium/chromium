@@ -252,7 +252,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166457390969131095">Gunakan serta simpan kata laluan dan kunci laluan daripada Google Account anda</translation>
 <translation id="1166583374608765787">Semak kemaskinian nama</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> milik meja <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Apl Web Terpencil mengikut tetapan ini secara automatik</translation>
 <translation id="1168020859489941584">Dibuka dalam <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema AI <ph name="INDEX" /> terbaharu daripada <ph name="SUBJECT" />, dalam gaya <ph name="STYLE" /> dengan perasaan <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Tukar bahasa secara automatik untuk memadankan kandungan yang dipilih</translation>
@@ -1623,7 +1622,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Sistem akan mengebut semula semasa proses ini.</translation>
-<translation id="209423774103268003">Pembaca kad pintar anda sedang diakses</translation>
 <translation id="2095774564753225041">Jenis fail yang disokong</translation>
 <translation id="2096716221239095980">Padamkan semua data</translation>
 <translation id="2097950021134740304">Batalkan tindakan melupakan langganan</translation>
@@ -2651,7 +2649,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Okey</translation>
 <translation id="2790112944253231361">Menukar tab ini</translation>
-<translation id="2790750268015892264">Apl Web Terpencil tidak dapat mengawal pembaca kad pintar. Apl tidak akan memperoleh akses kepada mana-mana kad pintar.</translation>
 <translation id="2791529110887957050">Alih keluar Linux</translation>
 <translation id="2791952154587244007">Ralat telah berlaku. Aplikasi kios tidak akan dapat dilancarkan secara automatik pada peranti ini.</translation>
 <translation id="2792465461386711506">Hidupkan Penyegerakan Chrome untuk melihat tab Chrome baru-baru ini daripada telefon anda</translation>
@@ -3569,7 +3566,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3450180775417907283"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Anda berkongsi tab ini dengan Gemini</translation>
 <translation id="345078987193237421">Tindakan ini membenarkan akses kamera untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
-<translation id="3451362021220965191">Apl Web Terpencil mengawal pembaca kad pintar untuk memperoleh akses kepada kad pintar yang dimasukkan atau ditunjukkan kepada mereka. Lazimnya, kad pintar mengandungi identiti yang digunakan untuk mengesahkan atau mengizinkan operasi, log kepada perkhidmatan dll.</translation>
 <translation id="3452999110156026232">Akses Ibu Bapa</translation>
 <translation id="3453082738208775226">Kosongkan storan luar talian?</translation>
 <translation id="3453597230179205517">Akses lokasi telah disekat</translation>
@@ -5973,7 +5969,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5120886753782992638">Klik di sini untuk melawati <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistem pengendalian dalam bekas Linux anda tidak disokong lagi. OS itu akan berhenti menerima kemaskinian keselamatan serta pembetulan pepijat dan ciri yang berfungsi pada masa ini mungkin akan rosak tanpa dijangka. Sila kemas kini kepada versi terbaharu untuk terus menggunakan Linux.</translation>
 <translation id="5121130586824819730">Cakera keras anda telah penuh. Sila simpan ke lokasi lain atau sediakan lagi ruang pada cakera keras.</translation>
-<translation id="5121803000325086087">Apl Web Terpencil boleh meminta untuk mengawal pembaca kad pintar. Apl akan memperoleh akses kepada kad pintar yang ditunjukkan kepada pembaca di bawah kawalan mereka.</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
 <translation id="5125714798187802869">Aktifkan</translation>
 <translation id="5125751979347152379">URL tidak sah.</translation>
@@ -10430,7 +10425,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="825238165904109940">Sentiasa Paparkan URL Penuh</translation>
 <translation id="8252569384384439529">Memuat naik...</translation>
 <translation id="8253198102038551905">Klik '+' untuk mendapatkan sifat rangkaian</translation>
-<translation id="8254871563792426806">Laman ini sedang mengakses pembaca kad pintar yang disambungkan kepada peranti anda dan kad pintar yang berkemungkinan tersedia untuk pembaca tersebut</translation>
 <translation id="8255212965098517578">Foto, pemberitahuan dan apl terkini</translation>
 <translation id="8255927332875030912">Carian + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>

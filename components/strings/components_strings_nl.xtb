@@ -532,7 +532,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1863257867908022953">Lade 12</translation>
 <translation id="1864927262126810325">Van <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel- en schotelaanbieders</translation>
-<translation id="1866757068250903512">Verificatie-apparaten met de naam <ph name="READERNAME" /> en de smartcards die ermee worden gebruikt, beheren</translation>
 <translation id="1870473978371099486">Privélessen</translation>
 <translation id="1871208020102129563">Proxy is ingesteld op het gebruik van vaste proxyservers, niet op een script-URL van het PAC-type.</translation>
 <translation id="1871284979644508959">Verplicht veld</translation>
@@ -842,6 +841,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="23703388716193220">Golfbenodigdheden</translation>
 <translation id="2370368710215137370">Bestanden uploaden</translation>
 <translation id="2370739752330685659">Misschien later</translation>
+<translation id="2371084566192454134">Tabbladen en tabbladgroepen</translation>
 <translation id="2374629208601905275">Op basis van een wet in je regio vraagt Chrome je om je standaard zoekmachine te kiezen. Deze zoekmachines zijn populair in je regio en worden in willekeurige volgorde getoond.</translation>
 <translation id="2376455483361831781">Nieuwe tabel</translation>
 <translation id="2377241607395428273">Grafische en animatiesoftware</translation>
@@ -4902,6 +4902,7 @@ Aanvullende informatie:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> gebruikt een niet-ondersteund protocol.</translation>
 <translation id="918454845714257218">Check de code op de <ph name="SIDE_OF_CARD" /> en probeer het opnieuw</translation>
 <translation id="9186203289258525843">Knop Chrome instellen als standaardbrowser. Activeer deze om Chrome in te stellen als de standaardbrowser van het systeem.</translation>
+<translation id="9186371298532546532">Dit adres op meer plaatsen gebruiken</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> heeft dit tabblad gewijzigd</translation>
 <translation id="9189789270972826888">Klik op de kaartgegevens hieronder om ze te kopiëren en te plakken als de kaart niet is ingevuld. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Onderwerpen ouder dan 4 weken worden automatisch verwijderd</translation>
@@ -4917,6 +4918,7 @@ Aanvullende informatie:
 <translation id="920643408853370361">Reisverzekeringen</translation>
 <translation id="9207861905230894330">Kan artikel niet toevoegen.</translation>
 <translation id="9209339767782560829">Er is een probleem opgetreden bij het gebruik van je inlogcertificaat.</translation>
+<translation id="9210152531668884481">Ja, graag</translation>
 <translation id="9210825002219699214">Vliegreizen</translation>
 <translation id="9213433120051936369">Weergave aanpassen</translation>
 <translation id="9215416866750762878">Een app voorkomt dat Chrome veilig verbinding kan maken met deze site</translation>

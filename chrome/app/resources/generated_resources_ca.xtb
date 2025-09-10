@@ -101,7 +101,7 @@
 <translation id="1061130374843955397">Et donem la benvinguda al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Crea un codi QR per a aquest enllaç</translation>
 <translation id="1061904396131502319">Ja gairebé és l'hora de fer una pausa</translation>
-<translation id="10619348099955377">Copia el nom de visualització</translation>
+<translation id="10619348099955377">Copia el nom visible</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1066964438793906105">Cerca programari maliciós</translation>
 <translation id="1067661089446014701">Per augmentar la seguretat, pots encriptar les contrasenyes al dispositiu abans que es desin al teu Compte de Google</translation>
@@ -251,7 +251,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1166457390969131095">Utilitza i desa contrasenyes i claus d'accés al teu Compte de Google</translation>
 <translation id="1166583374608765787">Revisa l'actualització del nom</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertany a l'escriptori <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Les aplicacions web aïllades segueixen aquesta opció de configuració automàticament</translation>
 <translation id="1168020859489941584">Obrint a <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema d'IA recent <ph name="INDEX" /> de <ph name="SUBJECT" />, d'estil <ph name="STYLE" />, amb un estat d'ànim <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Canvia automàticament l'idioma perquè coincideixi amb el contingut seleccionat</translation>
@@ -706,7 +705,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1482626744466814421">Afegeix aquesta pestanya a les adreces d'interès...</translation>
 <translation id="1482772681918035149">editar les contrasenyes</translation>
 <translation id="1483137792530497944">Riu</translation>
-<translation id="1483431819520123112">El nom de visualització s'ha copiat al porta-retalls</translation>
+<translation id="1483431819520123112">El nom visible s'ha copiat al porta-retalls</translation>
 <translation id="1483493594462132177">Envia</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484176899013802755">Pintura a l'oli brillant que representa un prat banyat pel sol.</translation>
@@ -1611,7 +1610,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: el sistema es reiniciarà durant el procés.</translation>
-<translation id="209423774103268003">S'està accedint als teus lectors de targetes intel·ligents</translation>
 <translation id="2095774564753225041">Tipus de fitxer compatibles</translation>
 <translation id="2096716221239095980">Suprimeix totes les dades</translation>
 <translation id="2097950021134740304">Cancel·la per oblidar la subscripció</translation>
@@ -2636,7 +2634,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">D'acord</translation>
 <translation id="2790112944253231361">Ha canviat aquesta pestanya</translation>
-<translation id="2790750268015892264">Les aplicacions web aïllades no poden controlar els lectors de targetes intel·ligents. Aquestes aplicacions no tindran accés a cap targeta intel·ligent.</translation>
 <translation id="2791529110887957050">Suprimeix Linux</translation>
 <translation id="2791952154587244007">S'ha produït un error. L'aplicació de quiosc no es podrà iniciar automàticament en aquest dispositiu.</translation>
 <translation id="2792465461386711506">Activa l'opció Sincronització de Chrome per consultar les pestanyes de Chrome més recents des del teu telèfon</translation>
@@ -3552,7 +3549,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3450180775417907283"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estàs compartint aquesta pestanya amb Gemini</translation>
 <translation id="345078987193237421">Permet l'accés a la càmera per a les aplicacions, per als llocs web que tenen permís per accedir a la càmera i per als serveis del sistema</translation>
-<translation id="3451362021220965191">Les aplicacions web aïllades controlen els lectors de targetes intel·ligents per obtenir accés a les targetes intel·ligents que s'hi insereixen o se'ls mostren. Les targetes intel·ligents solen contenir identitats que s'utilitzen per autenticar o autoritzar operacions, iniciar la sessió en serveis, etc.</translation>
 <translation id="3452999110156026232">Accés parental</translation>
 <translation id="3453082738208775226">Vols netejar l'emmagatzematge sense connexió?</translation>
 <translation id="3453597230179205517">L'accés a la ubicació està bloquejat</translation>
@@ -4893,7 +4889,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element s'ha desat només en aquest dispositiu. Per utilitzar-lo als altres dispositius que fas servir, desa'l al teu Compte de Google.}other{{ITEM_COUNT} elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> està compartint una finestra.</translation>
 <translation id="4364830672918311045">Mostra les notificacions</translation>
-<translation id="4367971618859387374">Nom de visualització</translation>
+<translation id="4367971618859387374">Nom visible</translation>
 <translation id="4368960422722232719">Mostra l'ús de memòria a la targeta de previsualització que apareix en passar el cursor per sobre d'una pestanya</translation>
 <translation id="4369151461324628035">No permetis que els llocs web es connectin a cap dispositiu de la teva xarxa local</translation>
 <translation id="4369215744064167350">Sol·licitud de lloc web aprovada</translation>
@@ -5952,7 +5948,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5120886753782992638">Fes clic aquí per visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">El sistema operatiu del teu contenidor de Linux ja no s'admet. Deixarà de rebre actualitzacions de seguretat i correccions d'errors, i pot ser que les funcions actuals deixin de funcionar de manera inesperada. Actualitza'l a la versió més recent per continuar utilitzant Linux.</translation>
 <translation id="5121130586824819730">El vostre disc dur és ple. Deseu-ho en una altra ubicació o allibereu espai del disc dur.</translation>
-<translation id="5121803000325086087">Les aplicacions web aïllades poden sol·licitar controlar els lectors de targetes intel·ligents. Les aplicacions obtindran accés a les targetes intel·ligents que es presentin als lectors sota el seu control.</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
 <translation id="5125714798187802869">Activa</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
@@ -6133,7 +6128,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5244474230056479698">S'està sincronitzant amb <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Comença a fer servir un compte de centre educatiu</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ha deixat de funcionar. Feu clic en aquest globus per reiniciar l'aplicació.</translation>
-<translation id="5247051749037287028">Nom de visualització (opcional)</translation>
+<translation id="5247051749037287028">Nom visible (opcional)</translation>
 <translation id="5247243947166567755">Selecciona <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">El navegador ha fallat abans de completar-se la baixada.</translation>
 <translation id="5249818097095743806">Fes servir la clau de seguretat</translation>
@@ -6651,7 +6646,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5620568081365989559">DevTools sol·licita accés complet a <ph name="FOLDER_PATH" />.
 Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5620612546311710611">estadístiques d'ús</translation>
-<translation id="5621272825308610394">Sense nom de visualització</translation>
+<translation id="5621272825308610394">Sense nom visible</translation>
 <translation id="5621350029086078628">Aquesta funció d'IA és experimental.</translation>
 <translation id="5622357006621202569">Activa la compartició persistent de dispositius USB amb els convidats.</translation>
 <translation id="562250930904332809">&amp;Desactiva Subtítols instantanis</translation>
@@ -10406,7 +10401,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="825238165904109940">Mostra sempre els URL complets</translation>
 <translation id="8252569384384439529">S'està penjant...</translation>
 <translation id="8253198102038551905">Feu clic a "+" per consultar les propietats de la xarxa</translation>
-<translation id="8254871563792426806">Aquest lloc web està accedint als lectors de targetes intel·ligents connectats al teu dispositiu i, possiblement, a les targetes intel·ligents que aquests lectors tenen disponibles</translation>
 <translation id="8255212965098517578">Fotos, notificacions i aplicacions recents</translation>
 <translation id="8255927332875030912">Cerca+<ph name="KEY" /></translation>
 <translation id="8256319818471787266">Gosset</translation>

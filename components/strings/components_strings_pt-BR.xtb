@@ -532,7 +532,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1863257867908022953">Bandeja 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Provedores de TV a cabo e por satélite</translation>
-<translation id="1866757068250903512">Controle os dispositivos de autenticação <ph name="READERNAME" /> e os cartões inteligentes usados com eles</translation>
 <translation id="1870473978371099486">Aulas particulares</translation>
 <translation id="1871208020102129563">O proxy foi configurado para utilizar servidores de proxy fixo e não um URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obrigatório</translation>
@@ -842,6 +841,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="23703388716193220">Equipamentos de golfe</translation>
 <translation id="2370368710215137370">Upload de arquivos</translation>
 <translation id="2370739752330685659">Talvez mais tarde</translation>
+<translation id="2371084566192454134">Guias e grupos de guias</translation>
 <translation id="2374629208601905275">Com base nas leis da sua região, o Chrome pede que você escolha o seu mecanismo de pesquisa padrão. Esses mecanismos são os mais usados na sua região e estão listados em ordem aleatória.</translation>
 <translation id="2376455483361831781">Nova tabela</translation>
 <translation id="2377241607395428273">Software gráfico e de animação</translation>

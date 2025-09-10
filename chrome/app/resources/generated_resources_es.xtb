@@ -251,7 +251,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1166457390969131095">Usar y guardar contraseñas y llaves de acceso en tu cuenta de Google</translation>
 <translation id="1166583374608765787">Revisa la actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Las aplicaciones web aisladas siguen esta configuración automáticamente</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente generado por IA n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estilo <ph name="STYLE" /> y el estado de ánimo <ph name="MOOD" /></translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
@@ -1611,7 +1610,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
-<translation id="209423774103268003">Se está accediendo a tus lectores de tarjetas inteligentes</translation>
 <translation id="2095774564753225041">Tipos de archivos compatibles</translation>
 <translation id="2096716221239095980">Eliminar todos los datos</translation>
 <translation id="2097950021134740304">No olvidar suscripción</translation>
@@ -2637,7 +2635,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2790112944253231361">Ha cambiado esta pestaña</translation>
-<translation id="2790750268015892264">Las aplicaciones web aisladas no pueden controlar lectores de tarjetas inteligentes. Las aplicaciones no tendrán acceso a tarjetas inteligentes.</translation>
 <translation id="2791529110887957050">Eliminar Linux</translation>
 <translation id="2791952154587244007">Se ha producido un error. La aplicación de kiosk no podrá iniciarse automáticamente en este dispositivo.</translation>
 <translation id="2792465461386711506">Activa Sincronización de Chrome para ver las pestañas recientes de Chrome de tu teléfono</translation>
@@ -3555,7 +3552,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3450180775417907283"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="345078987193237421">Esto permite que las aplicaciones, los sitios web con el permiso de cámara y los servicios del sistema puedan acceder a la cámara</translation>
-<translation id="3451362021220965191">Las aplicaciones web aisladas controlan los lectores de tarjetas inteligentes para acceder a las tarjetas inteligentes que se insertan o se presentan. Las tarjetas inteligentes suelen contener identidades que se usan para autenticar o autorizar operaciones, iniciar sesión en servicios, etc.</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">¿Liberar espacio de almacenamiento sin conexión?</translation>
 <translation id="3453597230179205517">El acceso a la ubicación está bloqueado</translation>
@@ -5955,7 +5951,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5120886753782992638">Haz clic aquí para visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">El sistema operativo de tu contenedor de Linux está obsoleto. Dejará de recibir actualizaciones de seguridad y corrección de errores, y es posible que las funciones que siguen funcionando dejen de hacerlo de forma inesperada. Para seguir usando Linux, actualiza el sistema operativo a la versión más reciente.</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda el archivo en otra ubicación o libera espacio en el disco duro.</translation>
-<translation id="5121803000325086087">Las aplicaciones web aisladas pueden solicitar controlar lectores de tarjetas inteligentes. Las aplicaciones podrán acceder a las tarjetas inteligentes presentadas a los lectores que estén bajo su control.</translation>
 <translation id="5123433949759960244">Balón de baloncesto</translation>
 <translation id="5125714798187802869">Activar</translation>
 <translation id="5125751979347152379">La URL no es válida.</translation>
@@ -10410,7 +10405,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="825238165904109940">Mostrar siempre URL completas</translation>
 <translation id="8252569384384439529">Subiendo...</translation>
 <translation id="8253198102038551905">Haz clic en + para consultar las propiedades de la red</translation>
-<translation id="8254871563792426806">Este sitio está accediendo a los lectores de tarjetas inteligentes conectados a tu dispositivo y, posiblemente, a las tarjetas inteligentes disponibles</translation>
 <translation id="8255212965098517578">Fotos, notificaciones y aplicaciones recientes</translation>
 <translation id="8255927332875030912">Búsqueda + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Perrito</translation>

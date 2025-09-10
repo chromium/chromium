@@ -251,7 +251,6 @@
 <translation id="1166457390969131095">ከእርስዎ Google መለያ የይለፍ ቃላት እና የይለፍ ቁልፎችን ይጠቀሙ እና ያስቀምጡ</translation>
 <translation id="1166583374608765787">የግምገማ ስም ዝማኔ</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> የዴስክ <ph name="DESK_TITLE" /> ነው</translation>
-<translation id="1166644470305877068">ገለልተኛ የድር መተግበሪያዎች ይህን ቅንብር በራስ-ሰር ይከተላሉ</translation>
 <translation id="1168020859489941584">ለመከፈት የቀረው ጊዜ <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="116896278675803795">የተመረጠውን ይዘት እንዲመሳሰል በራስ-ሰር ቋንቋን ይለውጡ</translation>
@@ -1619,7 +1618,6 @@
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" />  ስርዓቱ በሂደቱ ጊዜ ዳግም ይነሳል።</translation>
-<translation id="209423774103268003">ዘመናዊ ካርድ አንባቢዎችዎ እየተደረሰባቸው ነው</translation>
 <translation id="2095774564753225041">የሚደገፉ የፋይል አይነቶች</translation>
 <translation id="2096716221239095980">ሁሉንም ውሂብ ሰርዝ</translation>
 <translation id="2097950021134740304">የደንበኝነት ምዝገባ መርሳት ይቅር</translation>
@@ -2645,7 +2643,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2790112944253231361">ይህን ትር ለውጠዋል</translation>
-<translation id="2790750268015892264">ገለልተኛ የድር መተግበሪያዎች ዘመናዊ የካርድ አንባቢዎችን መቆጣጠር አይችሉም። መተግበሪያዎች ለማንኛውም ዘመናዊ ካርድ መዳረሻ አያገኙም።</translation>
 <translation id="2791529110887957050">Linuxን ያስወግዱ</translation>
 <translation id="2791952154587244007">አንድ ስህተት ተከስቷል። የኪዮስክ መተግበሪያ በዚህ መሣሪያ በራስ-መጀመር አይችልም።</translation>
 <translation id="2792465461386711506">የቅርብ ጊዜ የChrome ትሮችን ከስልክዎ ለመመልከት የChrome ስምረትን ያብሩ</translation>
@@ -3563,7 +3560,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል።</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - ይህን ትር ለGemini እያጋሩ ነው</translation>
 <translation id="345078987193237421">ይህ ለመተግበሪያዎች፣ የካሜራ ፈቃድ ላላቸው ድር ጣቢያዎች እና ለስርዓት አገልግሎቶች የካሜራ መዳረሻን ይፈቅዳል</translation>
-<translation id="3451362021220965191">ገለልተኛ የድር መተግበሪያዎች ወደ እነሱ ለገቡ ወይም ለቀረቡ የዘመናዊ ካርዶች መዳረሻ ለማግኘት ዘመናዊ የካርድ አንባቢዎችን ይቆጣጠራሉ። ዘመናዊ ካርዶች በተለምዶ ክወናዎችን ለማረጋገጥ ወይም ፍቃድ ለመስጠት፣ ወደ አገልግሎቶች ለመግባት፣ ወዘተ ጥቅም ላይ የሚውሉ ማንነቶችን ይይዛሉ።</translation>
 <translation id="3452999110156026232">የወላጅ መዳረሻ</translation>
 <translation id="3453082738208775226">ከመስመር ውጭ የሆነ ማከማቻ ይጸዳ?</translation>
 <translation id="3453597230179205517">የአካባቢ መዳረሻ ታግዷል</translation>
@@ -5963,7 +5959,6 @@
 <translation id="5120886753782992638"><ph name="APPROVED_URL" />ን ለመጎብኘት እዚህ ጠቅ ያድርጉ</translation>
 <translation id="5121052518313988218">በLinux መያዣዎ ውስጥ ያለው ስርዓተ ክወና ከእንግዲህ አይደገፍም። የደህንነት ዝማኔዎችን እና የሳንካ ጥገናዎችን መቀበል ያቆማል፣ እንዲሁም በአሁኑ ጊዜ የሚሰሩ ባህሪዎች ሳይታሰብ ሊሰበሩ ይችላሉ። Linuxን መጠቀሙን ለመቀጠል እባክዎ ወደ የቅርብ ጊዜው ስሪት ያሻሽሉ።</translation>
 <translation id="5121130586824819730">ደረቅ አንጻፊዎ ሙሉ ነው። እባክዎ ሌላ ቦታ ላይ ያስቀምጡ ወይም ደረቅ አንጻፊው ላይ ቦታ ያስለቅቁ።</translation>
-<translation id="5121803000325086087">ገለልተኛ የድር መተግበሪያዎች ዘመናዊ የካርድ አንባቢዎችን ለመቆጣጠር መጠየቅ ይችላሉ። መተግበሪያዎች በእነሱ ቁጥጥር ስር ላሉ አንባቢዎች ለቀረቡ ዘመናዊ ካርዶች መዳረሻ ያገኛሉ።</translation>
 <translation id="5123433949759960244">ቅርጫት ኳስ</translation>
 <translation id="5125714798187802869">አግብር</translation>
 <translation id="5125751979347152379">ልክ ያልሆነ URL።</translation>
@@ -10426,7 +10421,6 @@ nil</translation>
 <translation id="825238165904109940">ሁልጊዜ ሙሉ ዩአርኤሎችን አሳይ</translation>
 <translation id="8252569384384439529">በመስቀል ላይ…</translation>
 <translation id="8253198102038551905">የአውታረ መረብ ባህሪያትን ለማግኘት «+»ን ጠቅ ያድርጉ።</translation>
-<translation id="8254871563792426806">ይህ ጣቢያ ከመሣሪያዎ ጋር የተገናኙ ዘመናዊ ካርድ አንባቢዎችን እና ለእነሱ የሚገኙ ሊሆኑ የሚችሉ ዘመናዊ ካርዶችን እየደረሰ ነው</translation>
 <translation id="8255212965098517578">የቅርብ ጊዜ ፎቶዎች፣ ማሳወቂያዎች እና መተግበሪያዎች</translation>
 <translation id="8255927332875030912">ፍለጋ + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>

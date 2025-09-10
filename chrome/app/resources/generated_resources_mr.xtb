@@ -245,13 +245,13 @@
 <translation id="1162479191445552288">सुरू केल्यावर लाँच करा</translation>
 <translation id="1163931534039071049">फ्रेम स्रोत &amp;पहा</translation>
 <translation id="1164015913575846413">alt + click</translation>
+<translation id="1164286072721995435">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता. तुमचा डेटा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी वापरला जात नाही.</translation>
 <translation id="1164891049599601209">फसव्या साइटवर एंटर केला</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1166212789817575481">उजवीकडील टॅब बंद करा</translation>
 <translation id="1166457390969131095">तुमच्या Google खाते मधील पासवर्ड आणि पासकी वापरा व सेव्ह करा</translation>
 <translation id="1166583374608765787">अपडेट केलेल्या नावाचे पुनरावलोकन करा</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> हा <ph name="DESK_TITLE" /> डेस्‍कशी कनेक्ट केलेला आहे</translation>
-<translation id="1166644470305877068">आयसोलेटेड वेब ॲप्स हे सेटिंग आपोआप फॉलो करतात</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मध्ये उघडत आहे...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> शैलीमध्ये, <ph name="MOOD" /> मूड असलेली <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> अलीकडील AI थीम.</translation>
 <translation id="116896278675803795">निवडलेल्या आशयाशी जुळण्यासाठी भाषा आपोआप बदला</translation>
@@ -531,6 +531,7 @@
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
 <translation id="1354148503392558902">पासवर्ड बदलत आहे...</translation>
+<translation id="1354943694624358993">सद्य टॅब नेहमी शेअर करा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
 <translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
@@ -1621,7 +1622,6 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" />  प्रक्रियेदरम्यान सिस्टीम रीबूट होईल.</translation>
-<translation id="209423774103268003">तुमचे स्मार्ट कार्ड रीडर अ‍ॅक्सेस केले जात आहे</translation>
 <translation id="2095774564753225041">सपोर्ट असलेले फाइल प्रकार</translation>
 <translation id="2096716221239095980">सर्व डेटा हटवा</translation>
 <translation id="2097950021134740304">सदस्यत्व विसरणे रद्द करा</translation>
@@ -2649,7 +2649,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2790112944253231361">हा टॅब बदलला आहे</translation>
-<translation id="2790750268015892264">आयसोलेटेड वेब ॲप्स स्मार्ट कार्ड रीडरना नियंत्रित करू शकत नाहीत. ॲप्सना कोणत्याही स्मार्ट कार्डचा ॲक्सेस मिळणार नाही.</translation>
 <translation id="2791529110887957050">Linux काढून टाका</translation>
 <translation id="2791952154587244007">एक एरर आली. कियोस्क ॲप्लिकेशन या डिव्हाइसवर ऑटो लाँच करणे शक्य होणार नाही.</translation>
 <translation id="2792465461386711506">तुमच्या फोनवरून अलीकडील Chrome टॅब पाहण्यासाठी, Chrome सिंक सुरू करा</translation>
@@ -3567,7 +3566,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - तुम्ही हा टॅब Gemini सोबत शेअर करत आहात</translation>
 <translation id="345078987193237421">हे कॅमेराची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी कॅमेरा ॲक्सेसची अनुमती देते.</translation>
-<translation id="3451362021220965191">आयसोलेटेड वेब ॲप्स ही स्मार्ट कार्ड रीडरना त्यांनी घातलेल्या किंवा त्यांना प्रेझेंट केलेल्या स्मार्ट कार्डचा ॲक्सेस मिळवण्यासाठी नियंत्रित करतात. स्मार्ट कार्डमध्ये सहसा ओळखीचा समावेश असतो ज्याचा वापर ऑपरेशन ऑथेंटिकेट करण्यासाठी किंवा ऑथोरायझ करण्यासाठी, सेवांमध्ये लॉग इन करण्यासाठी, इत्यादींसाठी केला जातो.</translation>
 <translation id="3452999110156026232">पालक ॲक्सेस</translation>
 <translation id="3453082738208775226">ऑफलाइन स्टोरेज साफ करायचे आहे का?</translation>
 <translation id="3453597230179205517">स्थानाचा अ‍ॅक्सेस ब्लॉक केला गेला आहे</translation>
@@ -5745,6 +5743,7 @@
 <translation id="4956593309300508411">शेअर करणे थांबवायचे आहे का?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">फक्त या डिव्हाइसवरील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
+<translation id="4958916254663453555">तुम्ही Chrome मधील Gemini उघडाल, तेव्हा तुमचा सद्य टॅब आपोआप शेअर केला जाईल. सद्य टॅबचा संपूर्ण आशय आणि URL या गोष्टी Google ला पाठवल्या जातात.</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5854,6 +5853,7 @@
 <translation id="5045367873597907704">HID डिव्हाइसबद्दल</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
+<translation id="5047544190872578914">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता.</translation>
 <translation id="504953514574706691">सुचवलेल्या गटामधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">पडताळणी न केलेली फाइल डाउनलोड करा</translation>
@@ -5967,7 +5967,6 @@
 <translation id="5120886753782992638"><ph name="APPROVED_URL" /> ला भेट देण्यासाठी येथे क्लिक करा</translation>
 <translation id="5121052518313988218">तुमच्या Linux कंटेनरमधील ऑपरेटिंग सिस्टीमला आता सपोर्ट नाही. तिला सुरक्षा अपडेट आणि बग फिक्स मिळणे बंद होईल व सध्या काम करत असलेली वैशिष्‍ट्ये कदाचित अनपेक्षितपणे काम करणे थांबवतील. कृपया Linux वापरत राहण्यासाठी नवीनतम आवृत्तीवर अपग्रेड करा.</translation>
 <translation id="5121130586824819730">तुमची हार्ड डिस्क पूर्ण भरली आहे. कृपया दुसर्‍या स्‍थानावर सेव्ह करा किंवा हार्ड डिस्कवर अधिक जागा तयार करा.</translation>
-<translation id="5121803000325086087">आयसोलेटेड वेब ॲप्स ही स्मार्ट कार्ड रीडरना नियंत्रित करण्याची विनंती करू शकतात. ॲप्सना त्यांच्या नियंत्रणाखाली वाचकांना प्रेझेंट केलेल्या स्मार्ट कार्डचा ॲक्सेस मिळेल.</translation>
 <translation id="5123433949759960244">बास्केटबॉल</translation>
 <translation id="5125714798187802869">ॲक्टिव्हेट करा</translation>
 <translation id="5125751979347152379">चुकीची URL.</translation>
@@ -9332,6 +9331,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{टॅब बंद करून गट हटवायचा आहे का?}other{टॅब बंद करून गट हटवायचे आहेत का?}}</translation>
 <translation id="7509097596023256288">व्यवस्थापन सेट करत आहे</translation>
 <translation id="7509539379068593709">अ‍ॅप अनइंस्टॉल करा</translation>
+<translation id="7513438205469584978">तुमच्या <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google ॲक्टिव्हिटी<ph name="END_LINK_GOOGLE_ACTIVITY" /> वर आधारित सूचना</translation>
 <translation id="7514239104543605883">तुमच्या डिव्हाइसवर कॉपी करा</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7514417110442087199">असाइनमेंट जोडा</translation>
@@ -10426,7 +10426,6 @@ I feel - विटांची इमारत</translation>
 <translation id="825238165904109940">नेहमी पूर्ण URL दाखवा</translation>
 <translation id="8252569384384439529">अपलोड करत आहे…</translation>
 <translation id="8253198102038551905">नेटवर्क गुणधर्म मिळविण्यासाठी '+' क्लिक करा</translation>
-<translation id="8254871563792426806">ही साइट तुमच्या डिव्हाइसशी कनेक्ट केलेले स्मार्ट कार्ड रीडर आणि त्यांच्यासाठी संभाव्यपणे उपलब्ध असलेली स्‍मार्ट कार्ड अ‍ॅक्सेस करत आहे</translation>
 <translation id="8255212965098517578">अलीकडील फोटो, सूचना आणि अ‍ॅप्स</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">चमचमते</translation>

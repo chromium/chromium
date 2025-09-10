@@ -251,7 +251,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1166457390969131095">Usa e salva password e passkey del tuo Account Google</translation>
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Le app web isolate seguono automaticamente questa impostazione</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> all'apertura del file...</translation>
 <translation id="1168704243733734901">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambia automaticamente la lingua in base ai contenuti selezionati</translation>
@@ -1611,7 +1610,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> il sistema verrà riavviato durante la procedura.</translation>
-<translation id="209423774103268003">Accesso ai tuoi lettori di smart card attivo</translation>
 <translation id="2095774564753225041">Tipi di file supportati</translation>
 <translation id="2096716221239095980">Elimina tutti i dati</translation>
 <translation id="2097950021134740304">Annulla l'eliminazione dell'abbonamento</translation>
@@ -2636,7 +2634,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Ha modificato questa scheda</translation>
-<translation id="2790750268015892264">Le app web isolate non possono controllare i lettori di smart card. Non otterranno accesso a nessuna smart card.</translation>
 <translation id="2791529110887957050">Rimuovere Linux</translation>
 <translation id="2791952154587244007">Si è verificato un errore. Impossibile avviare automaticamente l'applicazione kiosk su questo dispositivo.</translation>
 <translation id="2792465461386711506">Attiva Sincronizzazione Chrome per visualizzare le schede recenti di Chrome dal telefono</translation>
@@ -3208,7 +3205,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
-<translation id="3209703592917353472">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo.</translation>
+<translation id="3209703592917353472">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo</translation>
 <translation id="32101887417650595">Impossibile collegarsi alla stampante</translation>
 <translation id="3210736980143419785">Impossibile completare il download</translation>
 <translation id="321084946921799184">Giallo e bianco</translation>
@@ -3554,7 +3551,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3450180775417907283"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" />: stai condividendo questa scheda con Gemini</translation>
 <translation id="345078987193237421">Consente l'accesso alla fotocamera per le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema</translation>
-<translation id="3451362021220965191">Le app web isolate controllano i lettori di smart card per ottenere accesso alle smart card inserite o presentate. Le smart card in genere contengono identità utilizzate per autenticare o autorizzare operazioni, accedere ai servizi e così via.</translation>
 <translation id="3452999110156026232">Accesso genitori</translation>
 <translation id="3453082738208775226">Vuoi liberare spazio di archiviazione offline?</translation>
 <translation id="3453597230179205517">L'accesso alla posizione è bloccato</translation>
@@ -5955,7 +5951,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5120886753782992638">Fai clic qui per visitare il sito <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Il sistema operativo nel tuo contenitore Linux non è più supportato. Smetterà di ricevere aggiornamenti della sicurezza e correzioni di bug e le funzionalità attive al momento potrebbero presentare problemi in modo inatteso. Esegui l'upgrade alla versione più recente per continuare a utilizzare Linux.</translation>
 <translation id="5121130586824819730">Il disco rigido è pieno. Salva in un'altra posizione o libera spazio sul disco rigido.</translation>
-<translation id="5121803000325086087">Le app web isolate possono chiedere di controllare i lettori di smart card. Otterranno accesso alle smart card presentate ai lettori sotto il loro controllo.</translation>
 <translation id="5123433949759960244">Basket</translation>
 <translation id="5125714798187802869">Attiva</translation>
 <translation id="5125751979347152379">URL non valido.</translation>
@@ -9560,7 +9555,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7679895819123160382">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. <ph name="PRODUCT_NAME" /> utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System). Le connessioni sicure non vengono utilizzate per alcuni domini configurati dall'amministratore.</translation>
 <translation id="7680416688940118410">Calibrazione del touchscreen</translation>
 <translation id="7681095912841365527">Il sito può usare il Bluetooth</translation>
-<translation id="7681597159868843240">Solitamente i siti usano i sensori di movimento del dispositivo per funzionalità come la realtà virtuale o il monitoraggio dell'attività fisica</translation>
+<translation id="7681597159868843240">In genere, i siti usano i sensori di movimento del dispositivo per funzionalità come la realtà virtuale o il monitoraggio dell'attività fisica</translation>
 <translation id="7681757571815416227">Per utilizzare il dispositivo con il profilo <ph name="DOMAIN" />, la tua organizzazione ha bisogno di informazioni sul dispositivo.
 
 Potrebbero essere incluse informazioni su software installati, file, browser, sistema operativo del dispositivo e indirizzi IP.</translation>
@@ -10408,7 +10403,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="825238165904109940">Mostra sempre URL completi</translation>
 <translation id="8252569384384439529">Caricamento...</translation>
 <translation id="8253198102038551905">Fai clic su "+" per visualizzare le proprietà della rete</translation>
-<translation id="8254871563792426806">Questo sito sta accedendo ai lettori di smart card collegati al tuo dispositivo e alle smart card potenzialmente disponibili</translation>
 <translation id="8255212965098517578">App, notifiche e foto recenti</translation>
 <translation id="8255927332875030912">Cerca + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Fido</translation>
@@ -10509,7 +10503,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8318266828739827371">Utilizza una visualizzazione a schermo diviso per vedere l'area ingrandita dello schermo. Utilizza il tasto per la ricerca + Ctrl + D per attivare e disattivare il riquadro d'ingrandimento ancorato.</translation>
 <translation id="8319414634934645341">Utilizzo chiave esteso</translation>
 <translation id="8320212361750431956">Attività recente</translation>
-<translation id="8321476692217554900">notifiche</translation>
+<translation id="8321476692217554900">Notifiche</translation>
 <translation id="8321837372750396788">Questo dispositivo <ph name="DEVICE_TYPE" /> verrà gestito da <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">A questa pagina è stato impedito l'accesso al microfono.</translation>
 <translation id="8323167517179506834">Digita un URL</translation>

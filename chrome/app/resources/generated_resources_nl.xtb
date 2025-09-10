@@ -245,13 +245,13 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1162479191445552288">Openen bij opstarten</translation>
 <translation id="1163931534039071049">&amp;Framebron bekijken</translation>
 <translation id="1164015913575846413">Alt + klikken</translation>
+<translation id="1164286072721995435">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Tabbladen aan de rechterkant sluiten</translation>
 <translation id="1166457390969131095">Wachtwoorden en toegangssleutels uit je Google-account gebruiken en opslaan</translation>
 <translation id="1166583374608765787">Naamupdate bekijken</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hoort bij bureau <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Geïsoleerde web-apps volgen deze instelling automatisch</translation>
 <translation id="1168020859489941584">Openen in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Recent AI-thema <ph name="INDEX" /> van <ph name="SUBJECT" />, in de stijl <ph name="STYLE" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Taal automatisch wijzigen in overeenkomst met geselecteerde content</translation>
@@ -531,6 +531,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1354148503392558902">Wachtwoord wijzigen...</translation>
+<translation id="1354943694624358993">Huidig tabblad altijd delen</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1355088659320425659">Geschiedenis en tabbladen</translation>
 <translation id="1356376170199999104">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet de microfoon aan met de fysieke schakelaar.</translation>
@@ -1611,7 +1612,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BR" />
 <ph name="BR" />
 <ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Het systeem wordt opnieuw opgestart tijdens het proces.</translation>
-<translation id="209423774103268003">Er wordt toegang verkregen tot je smartcardlezers</translation>
 <translation id="2095774564753225041">Ondersteunde bestandstypen</translation>
 <translation id="2096716221239095980">Alle gegevens verwijderen</translation>
 <translation id="2097950021134740304">Vergeten van abonnement annuleren</translation>
@@ -2636,7 +2636,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">heeft dit tabblad gewijzigd</translation>
-<translation id="2790750268015892264">Geïsoleerde web-apps kunnen geen smartcardlezers beheren. Apps krijgen geen toegang tot smartcards.</translation>
 <translation id="2791529110887957050">Linux verwijderen</translation>
 <translation id="2791952154587244007">Er is een fout opgetreden. Kiosk-app kan niet automatisch worden gestart op dit apparaat.</translation>
 <translation id="2792465461386711506">Zet de Chrome-synchronisatie aan om recente Chrome-tabbladen van je telefoon te bekijken</translation>
@@ -3552,7 +3551,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Je deelt deze pagina met Gemini</translation>
 <translation id="345078987193237421">Zo geef je cameratoegang aan apps, websites met camerarechten en systeemservices.</translation>
-<translation id="3451362021220965191">Geïsoleerde web-apps beheren smartcardlezers om toegang te krijgen tot smartcards die worden ingevoerd of aan hen worden gepresenteerd. Smartcards bevatten meestal identiteiten die worden gebruikt om bewerkingen te verifiëren of te autoriseren, in te loggen bij services, enzovoort.</translation>
 <translation id="3452999110156026232">Toegang door ouders</translation>
 <translation id="3453082738208775226">Offline opslag opschonen?</translation>
 <translation id="3453597230179205517">Locatietoegang is geblokkeerd</translation>
@@ -5730,6 +5728,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4956593309300508411">Delen stoppen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Alleen opslaan in een map op dit apparaat?</translation>
+<translation id="4958916254663453555">Je huidige tabblad wordt automatisch gedeeld als je Gemini opent in Chrome. De volledige content en URL van het huidige tabblad worden naar Google gestuurd.</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
 <translation id="4960020053211143927">Niet ondersteund door bepaalde apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5839,6 +5838,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5045367873597907704">Over HID-apparaten</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
+<translation id="5047544190872578914">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken.</translation>
 <translation id="504953514574706691">Tabblad uitgesloten van voorgestelde groep</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Niet-geverifieerd bestand downloaden</translation>
@@ -5952,7 +5952,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5120886753782992638">Klik hier om naar <ph name="APPROVED_URL" /> te gaan</translation>
 <translation id="5121052518313988218">Het besturingssysteem in je Linux-container wordt niet meer ondersteund. Het besturingssysteem krijgt geen beveiligingsupdates en bugfixes meer, en functies die nu nog werken kunnen onverwacht stoppen met werken. Upgrade naar de nieuwste versie om Linux te blijven gebruiken.</translation>
 <translation id="5121130586824819730">Je vaste schijf is vol. Sla op een andere locatie op of maak ruimte vrij op de vaste schijf.</translation>
-<translation id="5121803000325086087">Geïsoleerde web-apps kunnen vragen om smartcardlezers te beheren. Apps krijgen toegang tot smartcards die worden gepresenteerd aan lezers die onder hun beheer staan.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Activeren</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
@@ -9309,6 +9308,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Tabblad sluiten en groep verwijderen?}=1{Tabblad sluiten en groep verwijderen?}other{Tabbladen sluiten en groepen verwijderen?}}</translation>
 <translation id="7509097596023256288">Beheer instellen</translation>
 <translation id="7509539379068593709">App verwijderen</translation>
+<translation id="7513438205469584978">Suggesties op basis van je <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-activiteit<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopiëren naar je apparaat</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7514417110442087199">Toewijzing toevoegen</translation>
@@ -10403,7 +10403,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="825238165904109940">Altijd volledige URL's tonen</translation>
 <translation id="8252569384384439529">Uploaden...</translation>
 <translation id="8253198102038551905">Kik op '+' om netwerkeigenschappen op te halen</translation>
-<translation id="8254871563792426806">Deze site heeft toegang tot smartcardlezers die zijn aangesloten op je apparaat en misschien tot smartcards die beschikbaar zijn voor deze lezers</translation>
 <translation id="8255212965098517578">Recente foto's, meldingen en apps</translation>
 <translation id="8255927332875030912">Zoeken + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bello</translation>

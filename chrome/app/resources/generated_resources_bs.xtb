@@ -252,7 +252,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1166457390969131095">Korištenje i pohranjivanje lozinki i pristupnih ključeva s Google računa</translation>
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolirane web aplikacije automatski slijede ovu postavku</translation>
 <translation id="1168020859489941584">Otvara se za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. nedavna AI tema; predmet: <ph name="SUBJECT" />; stil: <ph name="STYLE" />; raspoloženje: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatski promijeni jezik da se podudara s odabranim sadržajem</translation>
@@ -1622,7 +1621,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" />  sistem će se ponovo pokrenuti za vrijeme ovog postupka.</translation>
-<translation id="209423774103268003">Čitačima pametnih kartica se pristupa</translation>
 <translation id="2095774564753225041">Podržane vrste fajlova</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2097950021134740304">Otkazivanje zaboravljanja pretplate</translation>
@@ -2650,7 +2648,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Uredu</translation>
 <translation id="2790112944253231361">Promijenio/la je karticu</translation>
-<translation id="2790750268015892264">Izolirane web aplikacije ne mogu upravljati čitačima pametnih kartica. Aplikacije neće dobiti pristup nijednoj pametnoj kartici.</translation>
 <translation id="2791529110887957050">Uklonite Linux</translation>
 <translation id="2791952154587244007">Došlo je do greške. Aplikacija za kiosk se neće moći automatski pokrenuti na ovom uređaju.</translation>
 <translation id="2792465461386711506">Uključite Sinhronizaciju Chromea da vidite nedavne kartice Chromea s telefona</translation>
@@ -3568,7 +3565,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – dijelite ovu karticu s Geminijem</translation>
 <translation id="345078987193237421">Ovo aplikacijama i web lokacijama s odobrenjem za kameru te sistemskim uslugama dozvoljava pristup kameri</translation>
-<translation id="3451362021220965191">Izolirane web aplikacije upravljaju čitačima pametnih kartica da dobiju pristup pametnim karticama koje se umetnu ili im se prikažu. Pametne kartice obično sadržavaju identitete koji se koriste za autentificiranje ili odobravanje radnji, prijavu na usluge itd.</translation>
 <translation id="3452999110156026232">Pristup roditelja</translation>
 <translation id="3453082738208775226">Obrisati offline pohranu?</translation>
 <translation id="3453597230179205517">Pristup lokaciji je blokiran</translation>
@@ -5972,7 +5968,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5120886753782992638">Kliknite ovdje da posjetite <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativni sistem u vašem spremniku za Linux više nije podržan. Prestat će primati sigurnosna ažuriranja i ispravke grešaka, a funkcije koje trenutno funkcioniraju se mogu neočekivano zaustaviti. Da nastavite koristiti Linux, nadogradite na najnoviju verziju.</translation>
 <translation id="5121130586824819730">Vaš tvrdi disk je pun.  Sačuvajte na drugoj lokaciji ili oslobodite više prostora na tvrdom disku.</translation>
-<translation id="5121803000325086087">Izolirane web aplikacije mogu zatražiti da upravljaju čitačima pametnih kartica. Aplikacije će dobiti pristup pametnim karticama koje se prikažu čitačima pod njihovim upravljanjem.</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5125714798187802869">Aktiviraj</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
@@ -10433,7 +10428,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="825238165904109940">Uvijek prikaži pune URL-ove</translation>
 <translation id="8252569384384439529">Otpremanje...</translation>
 <translation id="8253198102038551905">Klliknite na "+" da dođete do karakteristika mreže</translation>
-<translation id="8254871563792426806">Web lokacija pristupa čitačima pametnih kartica povezanim s uređajem i potencijalno pametnim karticama koje su im dostupne</translation>
 <translation id="8255212965098517578">Nedavne fotografije, obavještenja i aplikacije</translation>
 <translation id="8255927332875030912">tipku za pretraživanje i <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Reks</translation>

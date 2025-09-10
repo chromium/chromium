@@ -245,13 +245,13 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1162479191445552288">Ishga tushish vaqtida ochish</translation>
 <translation id="1163931534039071049">&amp;Freym kodini ko‘rish</translation>
 <translation id="1164015913575846413">alt + klik</translation>
+<translation id="1164286072721995435">Har safar yangi suhbat boshlanganda joriy varaq Geminiga ulashiladi. Joriy varaq ulashuvini istalganda toʻxtatish mumkin. Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="1164891049599601209">Soxta saytda kiritilgan</translation>
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1166212789817575481">O‘ng tomondagi ichki oynalarni yopish</translation>
 <translation id="1166457390969131095">Google hisobingizdagi parollar va kirish kalitlarini ishlatish va unga yangilarini saqlash</translation>
 <translation id="1166583374608765787">Nom oʻzgarishi tekshiruvi</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> nomli varaq <ph name="DESK_TITLE" /> ish stoliga tegishli</translation>
-<translation id="1166644470305877068">Izolatsiyalangan veb-ilovalarda bu sozlama avtomatik amal qiladi</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
 <translation id="1168704243733734901">Oxirgi AI mavzusi: <ph name="INDEX" />/<ph name="SUBJECT" />, uslub: <ph name="STYLE" />, kayfiyat: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Tanlangan kontentga moslash uchun tilni avtomatik almashtirish</translation>
@@ -531,6 +531,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1353980523955420967">PPD topilmadi. Chromebook internetga ulanganligini tekshiring va qaytadan urining.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> saytiga kamerangizdan foydalanish va siljitishga ruxsat bering</translation>
 <translation id="1354148503392558902">Parol oʻzgartirilmoqda...</translation>
+<translation id="1354943694624358993">Joriy varaqni doim ulashish</translation>
 <translation id="1355088139103479645">Barcha maʼlumotlar tozalansinmi?</translation>
 <translation id="1355088659320425659">Tarix va varaqlar</translation>
 <translation id="1356376170199999104">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> Jismoniy kalit yordamida mikrofonni yoqing.</translation>
@@ -1610,7 +1611,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" />  sozlash paytida tizim qayta ishga tushiriladi.</translation>
-<translation id="209423774103268003">Smart kart-riderlaringizga ruxsat berilgan</translation>
 <translation id="2095774564753225041">Mos fayl turlari</translation>
 <translation id="2096716221239095980">Hammasini oʻchirish</translation>
 <translation id="2097950021134740304">Obuna unutilishini bekor qilish</translation>
@@ -2638,7 +2638,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Bu varaqni oʻzgartirdi</translation>
-<translation id="2790750268015892264">Izolatsiyalangan veb-ilovalar smart karta riderlarini boshqara olmaydi. Ilovalar hech qanday smart karta axborotiga ruxsat olmaydi</translation>
 <translation id="2791529110887957050">Linux tizimini olib tashlash</translation>
 <translation id="2791952154587244007">Xatolik yuz berdi. Kiosk ilovalari ushbu qurilmada avtomatik ishga tushmaydi.</translation>
 <translation id="2792465461386711506">Telefoningizdagi oxirgi Chrome varaqlarini ochish uchun Chrome Sync funksiyasini yoqing</translation>
@@ -3554,7 +3553,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3450180775417907283"><ph name="MANAGER" /> domeni hoziroq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Bu varaq Geminiga ulashilmoqda</translation>
 <translation id="345078987193237421">Bu ilovalar, kamera ruxsatiga ega veb-saytlar va tizim xizmatlari uchun kameradan foydalanish imkonini beradi</translation>
-<translation id="3451362021220965191">Izolatsiyalangan veb-ilovalar smart karta riderlari orqali kontaktli va kontaktsiz smart kartalarga ruxsat oladi. Smart kartalarda haqiqiylik tekshiruvi yoki avtorizatsiya, hisobga kirish va boshqa axborotlar saqlanadi.</translation>
 <translation id="3452999110156026232">Ota-ona ruxsati</translation>
 <translation id="3453082738208775226">Oflayn xotira tozalansinmi?</translation>
 <translation id="3453597230179205517">Joylashuvga ruxsat: bloklangan</translation>
@@ -5733,6 +5731,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4956593309300508411">Ulashuv toʻxtatilsinmi?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Jild faqat shu qurilmada saqlansinmi?</translation>
+<translation id="4958916254663453555">Chrome orqali Gemini ochilganda joriy varaq avtomatik ulashiladi. Joriy varaqning toʻliq kontenti va URL manzili Googlega yuboriladi.</translation>
 <translation id="4959262764292427323">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
 <translation id="4960020053211143927">Ayrim ilovalarda ishlamaydi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5842,6 +5841,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5045367873597907704">HID qurilmalari haqida</translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="504561833207953641">Mavjud brauzer seansida ochilmoqda.</translation>
+<translation id="5047544190872578914">Har safar yangi suhbat boshlanganda joriy varaq Geminiga ulashiladi. Joriy varaq ulashuvini istalganda toʻxtatish mumkin.</translation>
 <translation id="504953514574706691">Varaq taklif etilgan guruhdan chiqarildi</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Tekshirilmagan faylni yuklab olish</translation>
@@ -5955,7 +5955,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5120886753782992638">Ochish uchun bosing: <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Linux konteyneringizdagi operatsion tizim endi ishlamaydi. Endi unga xavfsizlikka oid yangilanishlar kelmay qoladi, xatolari tuzatilmaydi va joriy funksiyalari kutilmaganda ishdan chiqishni boshlashi mumkin. Linuxdan foydalanishda davom etish uchun uni eng oxirgi versiyagacha yangilang.</translation>
 <translation id="5121130586824819730">Diskda yetarli bo‘sh joy qolmadi. Boshqa jildni tanlang yoki diskda joy bo‘shating.</translation>
-<translation id="5121803000325086087">Izolatsiyalangan veb-ilovalar smart karta riderlarini boshqarish uchun ruxsat soʻrashi mumkin. Ilovalar rider qurilmalarini boshqarishga va ularga tegishli smart kartalarga ruxsat oladi.</translation>
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5125714798187802869">Faollashtirish</translation>
 <translation id="5125751979347152379">Yaroqsiz URL manzil.</translation>
@@ -9316,6 +9315,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Varaq yopilib, guruh oʻchirilsinmi?}=1{Varaqlar yopilib, guruh oʻchirilsinmi?}other{Varaqlar yopilib, guruhlar oʻchirilsinmi?}}</translation>
 <translation id="7509097596023256288">Boshqaruv sozlanmoqda</translation>
 <translation id="7509539379068593709">Ilovani oʻchirish</translation>
+<translation id="7513438205469584978">Takliflar <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google faollik tarixingiz<ph name="END_LINK_GOOGLE_ACTIVITY" /> asosida tuzilgan</translation>
 <translation id="7514239104543605883">Qurilmaga nusxalash</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514417110442087199">Tayinlash</translation>
@@ -10409,7 +10409,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="825238165904109940">Doim butun URL manzillar chiqarilsin</translation>
 <translation id="8252569384384439529">Yuklanmoqda…</translation>
 <translation id="8253198102038551905">Tarmoq xususiyatlarini ko‘rish uchun “+” ustiga bosing</translation>
-<translation id="8254871563792426806">Bu sayt qurilmaga ulangan smart kart-riderlarga ruxsat olgan va ehtimolan ularning smart kartalaridan foydalanishi mumkin</translation>
 <translation id="8255212965098517578">Oxirgi suratlar, bildirishnomalar va ilovalar</translation>
 <translation id="8255927332875030912">Qidiruv + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Olapar</translation>

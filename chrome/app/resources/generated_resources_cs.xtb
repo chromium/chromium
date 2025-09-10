@@ -251,7 +251,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1166457390969131095">Používat hesla a přístupové klíče z účtu Google a ukládat je do něj</translation>
 <translation id="1166583374608765787">Zkontrolujte změnu názvu</translation>
 <translation id="1166596238782048887">Karta <ph name="TAB_TITLE" /> patří k ploše <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolované webové aplikace se automaticky řídí tímto nastavením</translation>
 <translation id="1168020859489941584">Složka se otevře za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nedávný motiv vygenerovaný umělou inteligencí <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automaticky změnit jazyk, aby odpovídal vybranému obsahu</translation>
@@ -1613,7 +1612,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém se během tohoto procesu restartuje.</translation>
-<translation id="209423774103268003">Web používá vaše čtečky čipových karet</translation>
 <translation id="2095774564753225041">Podporované typy souborů</translation>
 <translation id="2096716221239095980">Vymazat všechna data</translation>
 <translation id="2097950021134740304">Zrušit zapomenutí předplatného</translation>
@@ -2638,7 +2636,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Změnil(a) tuto kartu</translation>
-<translation id="2790750268015892264">Izolované webové aplikace nemohou ovládat čtečky čipových karet. Aplikace nezískají přístup k žádné čipové kartě.</translation>
 <translation id="2791529110887957050">Odstranit Linux</translation>
 <translation id="2791952154587244007">Došlo k chybě. Aplikace veřejného terminálu se v tomto zařízení nebude moci automaticky spustit.</translation>
 <translation id="2792465461386711506">Pokud chcete v telefonu zobrazit nedávné karty Chromu, zapněte Synchronizaci Chromu</translation>
@@ -3554,7 +3551,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3450180775417907283">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Tuto kartu sdílíte s Gemini</translation>
 <translation id="345078987193237421">Povolíte tím přístup ke kameře aplikacím a webům s oprávněním pro přístup ke kameře a systémovým službám.</translation>
-<translation id="3451362021220965191">Izolované webové aplikace ovládají čtečky čipových karet, aby získaly přístup k vloženým nebo přiloženým čipovým kartám. Čipové karty obvykle obsahují identity, které se používají k ověřování nebo autorizaci operací, přihlašování do služeb a podobně.</translation>
 <translation id="3452999110156026232">Rodičovský přístup</translation>
 <translation id="3453082738208775226">Vymazat offline úložiště?</translation>
 <translation id="3453597230179205517">Přístup k poloze je blokován</translation>
@@ -5954,7 +5950,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5120886753782992638">Kliknutím sem navštívíte adresu <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operační systém ve vašem kontejneru systému Linux již není podporován. Nebude již dostávat aktualizace zabezpečení a opravy chyb a funkce, které aktuálně fungují, mohou nečekaně přestat fungovat. Pokud chcete Linux používat i nadále, upgradujte na nejnovější verzi.</translation>
 <translation id="5121130586824819730">Pevný disk je plný. Uložte prosím soubor do jiného umístění nebo uvolněte místo na disku.</translation>
-<translation id="5121803000325086087">Izolované webové aplikace mohou žádat o ovládání čteček čipových karet. Aplikace získají přístup k čipovým kartám v příslušných čtečkách.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Aktivovat</translation>
 <translation id="5125751979347152379">Neplatná adresa URL.</translation>
@@ -10409,7 +10404,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="825238165904109940">Vždy zobrazovat úplné adresy URL</translation>
 <translation id="8252569384384439529">Nahrávání...</translation>
 <translation id="8253198102038551905">Vlastnosti sítě otevřete kliknutím na +.</translation>
-<translation id="8254871563792426806">Tenhle web přistupuje ke čtečkám čipových karet připojeným k zařízení a potenciálně také k čipovým kartám, které jsou prostřednictvím nich dostupné</translation>
 <translation id="8255212965098517578">Nedávné fotky, oznámení a aplikace</translation>
 <translation id="8255927332875030912">Hledat + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Štěně</translation>

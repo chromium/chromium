@@ -251,7 +251,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1166457390969131095">Gunakan dan simpan sandi serta kunci sandi dari Akun Google Anda</translation>
 <translation id="1166583374608765787">Tinjau pembaruan nama</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> milik desktop <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Aplikasi Web Terisolasi akan otomatis mengikuti setelan ini</translation>
 <translation id="1168020859489941584">Dibuka dalam waktu <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema AI terbaru <ph name="INDEX" /> dari <ph name="SUBJECT" />, dalam gaya <ph name="STYLE" />, dengan mood <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Ubah bahasa secara otomatis agar cocok dengan konten yang dipilih</translation>
@@ -1621,7 +1620,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" />  Sistem akan dimulai ulang selama proses berlangsung.</translation>
-<translation id="209423774103268003">Pembaca kartu smart Anda sedang diakses</translation>
 <translation id="2095774564753225041">Jenis file yang didukung</translation>
 <translation id="2096716221239095980">Hapus semua data</translation>
 <translation id="2097950021134740304">Batalkan melupakan langganan</translation>
@@ -2649,7 +2647,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2790112944253231361">Mengubah tab ini</translation>
-<translation id="2790750268015892264">Aplikasi Web Terisolasi tidak dapat mengontrol pembaca kartu smart. Aplikasi tidak akan mendapatkan akses ke kartu smart apa pun.</translation>
 <translation id="2791529110887957050">Hapus Linux</translation>
 <translation id="2791952154587244007">Terjadi error. Aplikasi kios tidak akan dapat diluncurkan secara otomatis di perangkat ini.</translation>
 <translation id="2792465461386711506">Aktifkan Sinkronisasi Chrome untuk melihat tab Chrome terbaru di ponsel Anda</translation>
@@ -3567,7 +3564,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3450180775417907283"><ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi sekarang dan mendownload update.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Anda membagikan tab ini kepada Gemini</translation>
 <translation id="345078987193237421">Tindakan ini mengizinkan akses kamera untuk aplikasi dan situs yang memiliki izin kamera, serta layanan sistem</translation>
-<translation id="3451362021220965191">Aplikasi Web Terisolasi mengontrol pembaca kartu smart untuk mendapatkan akses ke kartu smart yang dimasukkan atau ditampilkan kepada mereka. Kartu smart biasanya berisi identitas yang digunakan untuk mengautentikasi atau memberikan otorisasi operasi, login ke layanan, dll.</translation>
 <translation id="3452999110156026232">Akses Orang Tua</translation>
 <translation id="3453082738208775226">Kosongkan penyimpanan offline?</translation>
 <translation id="3453597230179205517">Akses lokasi diblokir</translation>
@@ -5969,7 +5965,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5120886753782992638">Klik di sini untuk mengunjungi <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistem operasi di penampung Linux Anda tidak lagi didukung. Sistem akan berhenti menerima update keamanan serta perbaikan bug, dan fitur yang saat ini berfungsi dapat mengalami error secara tidak terduga. Harap upgrade ke versi terbaru untuk terus menggunakan Linux.</translation>
 <translation id="5121130586824819730">Hard disk Anda sudah penuh. Simpan ke lokasi lain atau kosongkan lebih banyak ruang pada hard disk.</translation>
-<translation id="5121803000325086087">Aplikasi Web Terisolasi dapat meminta untuk mengontrol pembaca kartu smart. Aplikasi akan mendapatkan akses ke kartu smart yang ditampilkan ke pembaca yang berada di bawah kendalinya.</translation>
 <translation id="5123433949759960244">Bola basket</translation>
 <translation id="5125714798187802869">Aktifkan</translation>
 <translation id="5125751979347152379">URL tidak valid.</translation>
@@ -10424,7 +10419,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="825238165904109940">Selalu Tampilkan URL Lengkap</translation>
 <translation id="8252569384384439529">Mengupload...</translation>
 <translation id="8253198102038551905">Klik '+' untuk mendapatkan properti jaringan</translation>
-<translation id="8254871563792426806">Situs ini mengakses pembaca kartu smart yang terhubung ke perangkat Anda dan kartu smart yang mungkin tersedia untuk pembaca kartu tersebut</translation>
 <translation id="8255212965098517578">Foto terbaru, notifikasi, dan aplikasi</translation>
 <translation id="8255927332875030912">Penelusuran + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bleki</translation>

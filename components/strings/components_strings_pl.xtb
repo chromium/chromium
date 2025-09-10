@@ -532,7 +532,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1863257867908022953">Taca 12</translation>
 <translation id="1864927262126810325">Źródło: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Operatorzy kablowi i satelitarni</translation>
-<translation id="1866757068250903512">Steruj urządzeniami uwierzytelniającymi o nazwie <ph name="READERNAME" /> i używanymi z nimi kartami inteligentnymi</translation>
 <translation id="1870473978371099486">Korepetycje i prywatne lekcje</translation>
 <translation id="1871208020102129563">Proxy skonfigurowano do używania stałych serwerów proxy, a nie URL-a skryptu PAC.</translation>
 <translation id="1871284979644508959">Pole wymagane</translation>
@@ -842,6 +841,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="23703388716193220">Sprzęt golfowy</translation>
 <translation id="2370368710215137370">Przesyłanie plików</translation>
 <translation id="2370739752330685659">Może później</translation>
+<translation id="2371084566192454134">Karty i grupy kart</translation>
 <translation id="2374629208601905275">Zgodnie z przepisami prawa obowiązującymi w Twoim regionie Chrome prosi Cię o wybranie domyślnej wyszukiwarki. Te wyszukiwarki są popularne w Twoim regionie. Pokazujemy je w kolejności losowej.</translation>
 <translation id="2376455483361831781">Nowa tabela</translation>
 <translation id="2377241607395428273">Oprogramowanie do tworzenia grafiki i animacji</translation>

@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">트레이 12</translation>
 <translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">케이블 및 위성 사업자</translation>
-<translation id="1866757068250903512">이름이 <ph name="READERNAME" />인 인증 기기 및 해당 기기와 함께 사용되는 스마트 카드를 제어합니다.</translation>
 <translation id="1870473978371099486">개인 교습 서비스</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
@@ -842,6 +841,7 @@
 <translation id="23703388716193220">골프 장비</translation>
 <translation id="2370368710215137370">파일 업로드</translation>
 <translation id="2370739752330685659">나중에</translation>
+<translation id="2371084566192454134">탭 및 탭 그룹</translation>
 <translation id="2374629208601905275">거주 지역의 법률에 따라 사용자에게 기본 검색엔진을 선택하도록 요청하는 메시지가 Chrome에 표시됩니다. 거주 지역에서 인기 있는 검색엔진이 임의의 순서로 표시됩니다.</translation>
 <translation id="2376455483361831781">새 표</translation>
 <translation id="2377241607395428273">그래픽 및 애니메이션 소프트웨어</translation>
@@ -4908,6 +4908,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" />에서 지원되지 않는 프로토콜을 사용합니다.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" />에서 코드를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="9186203289258525843">Chrome을 기본 브라우저로 설정 버튼, Chrome을 시스템 기본 브라우저로 설정하려면 활성화하세요.</translation>
+<translation id="9186371298532546532">더 많은 위치에서 이 주소 사용</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />님이 이 탭을 변경했습니다.</translation>
 <translation id="9189789270972826888">카드가 입력되지 않은 경우 아래의 카드 세부정보를 클릭하고 복사하여 붙여넣으세요. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4주가 지난 주제는 자동으로 삭제됩니다.</translation>
@@ -4923,6 +4924,7 @@
 <translation id="920643408853370361">여행자 보험</translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9209339767782560829">로그인 인증서를 사용하는 중에 문제가 발생했습니다.</translation>
+<translation id="9210152531668884481">병합</translation>
 <translation id="9210825002219699214">항공 여행</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>

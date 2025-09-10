@@ -251,7 +251,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1166457390969131095">Izmantot un saglabāt paroles un piekļuves atslēgas no Google konta</translation>
 <translation id="1166583374608765787">Pārskatiet nosaukuma izmaiņas</translation>
 <translation id="1166596238782048887">“<ph name="TAB_TITLE" />” ir cilne no darbvietas “<ph name="DESK_TITLE" />”</translation>
-<translation id="1166644470305877068">Izolētās tīmekļa lietotnēs tiks automātiski lietots šis iestatījums</translation>
 <translation id="1168020859489941584">Atveras <ph name="TIME_REMAINING" /> ...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. MI nesen ģenerētais motīvs ar šādu objektu: <ph name="SUBJECT" />; stils: <ph name="STYLE" />, noskaņojums: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automātiski mainīt valodu atbilstoši atlasītajam saturam</translation>
@@ -1613,7 +1612,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Procesa laikā sistēma tiks atkārtoti palaista.</translation>
-<translation id="209423774103268003">Notiek piekļuve jūsu viedkaršu lasītājiem</translation>
 <translation id="2095774564753225041">Atbalstītie failu tipi</translation>
 <translation id="2096716221239095980">Dzēst visus datus</translation>
 <translation id="2097950021134740304">Atcelt abonementa aizmiršanu</translation>
@@ -2638,7 +2636,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Labi</translation>
 <translation id="2790112944253231361">Mainīja šo cilni</translation>
-<translation id="2790750268015892264">Izolētas tīmekļa lietotnes nevar kontrolēt viedkaršu lasītājus. Lietotnes nevarēs iegūt piekļuvi nevienai viedkartei.</translation>
 <translation id="2791529110887957050">Linux noņemšana</translation>
 <translation id="2791952154587244007">Notika kļūda. Šajā ierīcē kioska lietojumprogrammu nevarēs palaist automātiski.</translation>
 <translation id="2792465461386711506">Lai skatītu nesen atvērtās Chrome cilnes no sava tālruņa, ieslēdziet Chrome sinhronizāciju.</translation>
@@ -3554,7 +3551,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3450180775417907283"><ph name="MANAGER" /> pieprasa, lai jūs tūlīt izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> — jūs kopīgojat šo cilni ar Gemini</translation>
 <translation id="345078987193237421">Tādējādi kamerai drīkstēs piekļūt lietotnes, vietnes ar kameras atļauju un sistēmas pakalpojumi.</translation>
-<translation id="3451362021220965191">Izolētas tīmekļa lietotnes kontrolē viedkaršu lasītājus, lai iegūtu piekļuvi ievietotajām vai uzrādītajām viedkartēm. Viedkartēs parasti ir ietverti identitātes dati, kas tiek izmantoti, lai autentificētu vai pilnvarotu darbības, pierakstītos pakalpojumos utt.</translation>
 <translation id="3452999110156026232">Vecāku piekļuve</translation>
 <translation id="3453082738208775226">Vai atbrīvot vietu bezsaistes krātuvē?</translation>
 <translation id="3453597230179205517">Piekļuve atrašanās vietas datiem ir bloķēta.</translation>
@@ -5956,7 +5952,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5120886753782992638">Noklikšķiniet šeit, lai apmeklētu vietni <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Jūsu Linux konteinera operētājsistēma vairs netiek atbalstīta. Tai vairs netiks sūtīti drošības atjauninājumi un kļūdu labojumi, un funkcijas, kuras šobrīd var izmantot, var negaidīti pārtraukt darboties. Lai turpinātu Linux izmantošanu, jauniniet uz jaunāko versiju.</translation>
 <translation id="5121130586824819730">Cietais disks ir pilns. Saglabājiet citā atrašanās vietā vai atbrīvojiet vietu cietajā diskā.</translation>
-<translation id="5121803000325086087">Izolētas tīmekļa lietotnes var pieprasīt atļauju kontrolēt viedkaršu lasītājus. Lietotnes iegūs piekļuvi viedkartēm, kas tiks uzrādītas karšu lasītājiem, kurus tās kontrolē.</translation>
 <translation id="5123433949759960244">Basketbols</translation>
 <translation id="5125714798187802869">Aktivizēt</translation>
 <translation id="5125751979347152379">Nederīgs URL.</translation>
@@ -10412,7 +10407,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="825238165904109940">Vienmēr rādīt visus vietrāžus URL</translation>
 <translation id="8252569384384439529">Notiek augšupielāde...</translation>
 <translation id="8253198102038551905">Noklikšķiniet uz “+”, lai iegūtu tīkla rekvizītus</translation>
-<translation id="8254871563792426806">Šī vietne piekļūst viedkaršu lasītājiem, kas ir pievienoti jūsu ierīcei, un, iespējams, šajos lasītājos pieejamajās viedkartēs.</translation>
 <translation id="8255212965098517578">Jaunākie fotoattēli, paziņojumi un lietotnes</translation>
 <translation id="8255927332875030912">Meklēšanas taustiņš + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Džeris</translation>

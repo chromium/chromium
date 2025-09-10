@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">紙匣 12</translation>
 <translation id="1864927262126810325">來自「<ph name="SOURCE_NAME" />」</translation>
 <translation id="186539747722034544">有線和衛星電視服務供應商</translation>
-<translation id="1866757068250903512">控制名為 <ph name="READERNAME" /> 的驗證裝置和配合使用的智能卡</translation>
 <translation id="1870473978371099486">上門補習服務</translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
 <translation id="1871284979644508959">必填欄位</translation>
@@ -842,6 +841,7 @@
 <translation id="23703388716193220">高爾夫球用品</translation>
 <translation id="2370368710215137370">檔案上載</translation>
 <translation id="2370739752330685659">以後再說</translation>
+<translation id="2371084566192454134">分頁和分頁群組</translation>
 <translation id="2374629208601905275">根據你所在地區的法律規定，Chrome 會要求你選擇預設搜尋引擎。這些搜尋引擎是你所在地區的熱門之選，次序隨機排列。</translation>
 <translation id="2376455483361831781">新表格</translation>
 <translation id="2377241607395428273">平面設計和動畫軟件</translation>
@@ -4908,6 +4908,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用不支援的通訊協定。</translation>
 <translation id="918454845714257218">請檢查<ph name="SIDE_OF_CARD" />的安全碼，並再試一次</translation>
 <translation id="9186203289258525843">將 Chrome 設定做預設瀏覽器按鈕，啟動之後就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
+<translation id="9186371298532546532">在更多地方使用此地址</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更此分頁</translation>
 <translation id="9189789270972826888">如果系統尚未自動填寫資料，按一下下方的信用卡詳情即可複製並貼上。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
@@ -4923,6 +4924,7 @@
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9209339767782560829">使用登入憑證時發生問題。</translation>
+<translation id="9210152531668884481">我同意</translation>
 <translation id="9210825002219699214">航空旅遊</translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式令 Chrome 無法安全地連接至此網站</translation>

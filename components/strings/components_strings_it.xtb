@@ -532,7 +532,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1863257867908022953">Vassoio 12</translation>
 <translation id="1864927262126810325">Da <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Provider di servizi via cavo e satellite</translation>
-<translation id="1866757068250903512">Controlla i dispositivi di autenticazione denominati <ph name="READERNAME" /> e le smart card utilizzate con questi ultimi</translation>
 <translation id="1870473978371099486">Servizi di insegnamento privato</translation>
 <translation id="1871208020102129563">L'impostazione del proxy prevede l'utilizzo di server proxy fissi, non di un URL script .pac.</translation>
 <translation id="1871284979644508959">Campo obbligatorio</translation>
@@ -842,6 +841,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="23703388716193220">Attrezzature e articoli da golf</translation>
 <translation id="2370368710215137370">Caricamento file</translation>
 <translation id="2370739752330685659">Magari più tardi</translation>
+<translation id="2371084566192454134">Schede e gruppi di schede</translation>
 <translation id="2374629208601905275">In base a una legge della tua regione, Chrome ti chiede di scegliere il motore di ricerca predefinito. Questi motori di ricerca sono popolari nella tua regione e vengono mostrati in ordine casuale.</translation>
 <translation id="2376455483361831781">Nuova tabella</translation>
 <translation id="2377241607395428273">Software di grafica e animazione</translation>
@@ -4403,7 +4403,7 @@ Ulteriori dettagli:
 <translation id="8319269383395457801">Vendite residenziali</translation>
 <translation id="831997045666694187">Sera</translation>
 <translation id="8321448084834652864">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chromium.</translation>
-<translation id="8321476692217554900">notifiche</translation>
+<translation id="8321476692217554900">Notifiche</translation>
 <translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per chiedere a Google AI Mode</translation>
 <translation id="8322402665880479974">Letti e testiere</translation>
 <translation id="8323505966575306467">Aggiungi più protezione alle tue password</translation>

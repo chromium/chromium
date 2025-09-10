@@ -245,13 +245,13 @@
 <translation id="1162479191445552288">在开机时启动</translation>
 <translation id="1163931534039071049">查看框架的源代码(&amp;V)</translation>
 <translation id="1164015913575846413">alt + 点击</translation>
+<translation id="1164286072721995435">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
 <translation id="1166457390969131095">使用并保存您 Google 账号中的密码和通行密钥</translation>
 <translation id="1166583374608765787">查看名称更新</translation>
 <translation id="1166596238782048887">标签页“<ph name="TAB_TITLE" />”属于桌面“<ph name="DESK_TITLE" />”</translation>
-<translation id="1166644470305877068">独立式 Web 应用 (IWA) 会自动遵循此设置</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1168704243733734901">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" />，样式是<ph name="STYLE" />，情感基调是<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">自动更改语言以匹配所选内容</translation>
@@ -531,6 +531,7 @@
 <translation id="1353980523955420967">找不到 PPD。请确保您的 Chromebook 已连接到网络，然后重试。</translation>
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
 <translation id="1354148503392558902">正在更改密码…</translation>
+<translation id="1354943694624358993">始终分享当前标签页</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1356376170199999104">已允许 - <ph name="PERMISSION_DETAILS" />。请使用实物开关开启麦克风。</translation>
@@ -1604,7 +1605,6 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：在此过程中，系统将会重新启动。</translation>
-<translation id="209423774103268003">有网站正在访问您的智能卡读卡器</translation>
 <translation id="2095774564753225041">支持的文件类型</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2097950021134740304">取消清除订阅</translation>
@@ -2628,7 +2628,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2790112944253231361">更改了此标签页</translation>
-<translation id="2790750268015892264">独立式 Web 应用 (IWA) 无法控制智能卡读卡器。应用将无法访问任何智能卡。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">出现错误。自助服务终端应用在此设备上不能自动启动。</translation>
 <translation id="2792465461386711506">若要查看您手机上最近打开的 Chrome 标签页，请开启 Chrome 同步</translation>
@@ -3091,7 +3090,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3122883569442693641">更多详情</translation>
-<translation id="3124111068741548686">USER处理函数</translation>
+<translation id="3124111068741548686">USER 处理函数</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
 <translation id="3125816458150005808">您可以取消固定并从菜单中打开该功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -3544,7 +3543,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 您正在与 Gemini 分享此标签页</translation>
 <translation id="345078987193237421">这将允许具有相机权限的应用和网站以及系统服务使用相机</translation>
-<translation id="3451362021220965191">独立式 Web 应用 (IWA) 会控制智能卡读卡器，以便访问插入读卡器或读卡器感应到的智能卡。智能卡通常包含用于验证或授权操作、登录服务等的身份信息。</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453082738208775226">清理离线存储空间？</translation>
 <translation id="3453597230179205517">已禁止使用位置信息</translation>
@@ -5722,6 +5720,7 @@
 <translation id="4956593309300508411">要停止分享吗？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
+<translation id="4958916254663453555">打开 Chrome 中的 Gemini 时，系统会自动分享当前标签页。当前标签页的完整内容和网址都会发送给 Google。</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5831,6 +5830,7 @@
 <translation id="5045367873597907704">关于 HID 设备</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
+<translation id="5047544190872578914">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。</translation>
 <translation id="504953514574706691">已从建议的分组中排除标签页</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下载未经验证的文件</translation>
@@ -5944,7 +5944,6 @@
 <translation id="5120886753782992638">点击此处即可访问 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">您的 Linux 容器中的操作系统不再受支持。它将停止接收安全更新和问题修复，而且目前正常运行的功能可能会意外中断。请升级至最新版本，以继续使用 Linux。</translation>
 <translation id="5121130586824819730">您的硬盘已满。请保存到其他位置或在硬盘上腾出更多空间。</translation>
-<translation id="5121803000325086087">独立式 Web 应用 (IWA) 可以请求控制智能卡读卡器，并能够访问读卡器感应到的智能卡。</translation>
 <translation id="5123433949759960244">篮球</translation>
 <translation id="5125714798187802869">启用</translation>
 <translation id="5125751979347152379">网址无效。</translation>
@@ -7517,7 +7516,7 @@
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="6250887692313997958">选择要添加到拆分视图中的标签页</translation>
-<translation id="6251870443722440887">GDI处理函数</translation>
+<translation id="6251870443722440887">GDI 处理函数</translation>
 <translation id="6251924700383757765">隐私权政策</translation>
 <translation id="625369703868467034">网络状况</translation>
 <translation id="6253801023880399036">系统会将密码保存到 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
@@ -9302,6 +9301,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
 <translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509539379068593709">卸载应用</translation>
+<translation id="7513438205469584978">根据您的 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活动记录<ph name="END_LINK_GOOGLE_ACTIVITY" />为您推荐</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
@@ -10396,7 +10396,6 @@
 <translation id="825238165904109940">总是显示完整网址</translation>
 <translation id="8252569384384439529">正在上传…</translation>
 <translation id="8253198102038551905">点击“+”可查看网络属性</translation>
-<translation id="8254871563792426806">此网站正在访问连接到您的设备的智能卡读卡器，并且可能会访问读卡器中的智能卡</translation>
 <translation id="8255212965098517578">近期的照片、通知和应用</translation>
 <translation id="8255927332875030912">搜索键 + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">狗狗</translation>

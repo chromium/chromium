@@ -532,7 +532,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1863257867908022953">Zásobník č. 12</translation>
 <translation id="1864927262126810325">Zdroj: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Poskytovatelia káblovej a satelitnej televízie</translation>
-<translation id="1866757068250903512">Ovládajte overovacie zariadenia s názvom <ph name="READERNAME" /> a s nimi používané inteligentné karty</translation>
 <translation id="1870473978371099486">Súkromné vyučovanie</translation>
 <translation id="1871208020102129563">Proxy je nastavené na použitie pevne daných serverov proxy, nie skriptov PAC webovej adresy.</translation>
 <translation id="1871284979644508959">Povinné pole</translation>
@@ -842,6 +841,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="23703388716193220">Vybavenie na golf</translation>
 <translation id="2370368710215137370">Nahrávanie súborov</translation>
 <translation id="2370739752330685659">Možno neskôr</translation>
+<translation id="2371084566192454134">Karty a skupiny kariet</translation>
 <translation id="2374629208601905275">Na základe právneho predpisu vo vašej oblasti vás Chrome žiada, aby ste si vybrali predvolený vyhľadávač. Tieto vyhľadávače sú vo vašej oblasti populárne. Zobrazujú sa v náhodnom poradí.</translation>
 <translation id="2376455483361831781">Nová tabuľka</translation>
 <translation id="2377241607395428273">Softvér na grafiku a animácie</translation>
@@ -4905,6 +4905,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> využíva nepodporovaný protokol.</translation>
 <translation id="918454845714257218">Skontrolujte kód na <ph name="SIDE_OF_CARD" /> a skúste to znova</translation>
 <translation id="9186203289258525843">Tlačidlo Nastaviť Chrome ako predvolený prehliadač, ktorého aktivovaním nastavíte Chrome ako predvolený prehliadač systému</translation>
+<translation id="9186371298532546532">Používajte túto adresu na viacerých miestach</translation>
 <translation id="9189468832660648522">Používateľ <ph name="MEMBER_FIRST_NAME" /> zmenil túto kartu</translation>
 <translation id="9189789270972826888">Ak sa karta nevyplnila, kliknutím skopírujte a prilepte nižšie uvedené údaje karty. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Témy staršie ako štyri týždne sa automaticky odstraňujú</translation>
@@ -4920,6 +4921,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="920643408853370361">Cestovné poistenie</translation>
 <translation id="9207861905230894330">Článok sa nepodarilo pridať.</translation>
 <translation id="9209339767782560829">Pri používaní prihlasovacieho certifikátu sa vyskytol problém.</translation>
+<translation id="9210152531668884481">Súhlasím</translation>
 <translation id="9210825002219699214">Cestovanie lietadlom</translation>
 <translation id="9213433120051936369">Prispôsobenie vzhľadu</translation>
 <translation id="9215416866750762878">Bezpečnému pripojeniu Chromu k tomuto webu bráni aplikácia</translation>

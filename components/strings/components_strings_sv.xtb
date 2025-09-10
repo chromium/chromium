@@ -532,7 +532,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1863257867908022953">Fack 12</translation>
 <translation id="1864927262126810325">Från <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel- och parabolleverantörer</translation>
-<translation id="1866757068250903512">Styra autentiseringsenheter med namnet <ph name="READERNAME" /> och smartkorten som används med dem</translation>
 <translation id="1870473978371099486">Privat läxhjälp</translation>
 <translation id="1871208020102129563">Proxyn är inställd på att använda fasta proxyservrar, inte en webbadress med PAC-skript.</translation>
 <translation id="1871284979644508959">Obligatoriskt fält</translation>
@@ -842,6 +841,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="23703388716193220">Golfutrustning</translation>
 <translation id="2370368710215137370">Uppladdning av filer</translation>
 <translation id="2370739752330685659">Kanske senare</translation>
+<translation id="2371084566192454134">Flikar och flikgrupper</translation>
 <translation id="2374629208601905275">Enligt lagen i din region ber Chrome dig att välja en standardsökmotor. Dessa sökmotorer är populära i din region och visas i slumpmässig ordning.</translation>
 <translation id="2376455483361831781">Ny tabell</translation>
 <translation id="2377241607395428273">Grafik- och animationsprogram</translation>

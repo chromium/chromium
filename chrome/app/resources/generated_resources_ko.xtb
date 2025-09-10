@@ -245,13 +245,13 @@
 <translation id="1162479191445552288">시작할 때 실행</translation>
 <translation id="1163931534039071049">프레임 소스 보기(&amp;V)</translation>
 <translation id="1164015913575846413">Alt + 클릭</translation>
+<translation id="1164286072721995435">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
 <translation id="1166457390969131095">Google 계정에서 비밀번호와 패스키 사용 및 저장</translation>
 <translation id="1166583374608765787">이름 업데이트 검토</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> 탭이 <ph name="DESK_TITLE" /> 데스크로 이동했습니다</translation>
-<translation id="1166644470305877068">분리형 웹 앱은 자동으로 이 설정을 따름</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> 분위기와 <ph name="STYLE" /> 스타일인 <ph name="SUBJECT" />의 최근 AI 테마 <ph name="INDEX" /></translation>
 <translation id="116896278675803795">선택한 콘텐츠와 일치하도록 언어를 자동으로 변경합니다.</translation>
@@ -531,6 +531,7 @@
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1354148503392558902">비밀번호 변경 중...</translation>
+<translation id="1354943694624358993">항상 현재 탭 공유</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1356376170199999104">허용됨 – <ph name="PERMISSION_DETAILS" />. 물리적 스위치를 사용하여 마이크를 사용 설정하세요.</translation>
@@ -1622,7 +1623,6 @@
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 절차를 진행하는 동안 시스템이 재부팅됩니다.</translation>
-<translation id="209423774103268003">스마트 카드 리더에 액세스 중</translation>
 <translation id="2095774564753225041">지원되는 파일 형식</translation>
 <translation id="2096716221239095980">모든 데이터 삭제</translation>
 <translation id="2097950021134740304">구독 정보 삭제 취소</translation>
@@ -2651,7 +2651,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2790112944253231361">이 탭이 변경되었습니다.</translation>
-<translation id="2790750268015892264">분리형 웹 앱에서는 스마트 카드 리더를 제어할 수 없습니다. 앱이 스마트 카드에 액세스할 수 없습니다.</translation>
 <translation id="2791529110887957050">Linux 삭제</translation>
 <translation id="2791952154587244007">오류가 발생했습니다. 이 기기에서 키오스크 애플리케이션을 자동 실행할 수 없습니다.</translation>
 <translation id="2792465461386711506">휴대전화의 최근 Chrome 탭을 보려면 Chrome 동기화를 사용 설정하세요</translation>
@@ -3569,7 +3568,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Gemini와 이 탭을 공유 중</translation>
 <translation id="345078987193237421">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 대한 카메라 액세스가 허용됩니다.</translation>
-<translation id="3451362021220965191">분리형 웹 앱은 스마트 카드 리더를 제어하여 분리형 웹 앱에 삽입 또는 표시되는 스마트 카드에 액세스합니다. 보통 스마트 카드에는 작업을 인증하거나 승인하거나 서비스에 로그인하는 데 사용되는 ID가 포함됩니다.</translation>
 <translation id="3452999110156026232">부모 액세스</translation>
 <translation id="3453082738208775226">오프라인 스토리지를 정리하시겠습니까?</translation>
 <translation id="3453597230179205517">위치 정보 액세스가 차단됨</translation>
@@ -5748,6 +5746,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4956593309300508411">공유를 중지하시겠습니까?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
+<translation id="4958916254663453555">Chrome의 Gemini를 열면 현재 탭이 자동으로 공유됩니다. 현재 탭의 전체 콘텐츠와 URL이 Google로 전송됩니다.</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5857,6 +5856,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5045367873597907704">HID 기기 정보</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
+<translation id="5047544190872578914">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다.</translation>
 <translation id="504953514574706691">추천 그룹에서 탭이 제외됨</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">확인되지 않은 파일 다운로드</translation>
@@ -5970,7 +5970,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5120886753782992638">여기를 클릭하여 <ph name="APPROVED_URL" />을(를) 방문하세요.</translation>
 <translation id="5121052518313988218">Linux 컨테이너 내 운영체제가 더 이상 지원되지 않습니다. 더 이상 보안 업데이트 및 버그 수정을 받을 수 없으며 현재 작동하는 기능이 예기치 않게 중단될 수 있습니다. Linux를 계속 사용하려면 최신 버전으로 업그레이드하세요.</translation>
 <translation id="5121130586824819730">하드 디스크가 가득 찼습니다. 다른 위치에 저장하거나 하드 디스크에 더 많은 공간을 확보하시기 바랍니다.</translation>
-<translation id="5121803000325086087">분리형 웹 앱에서 스마트 카드 리더를 제어할 수 있도록 요청할 수 있습니다. 앱에서 제어하는 리더에 표시되는 스마트 카드에 액세스할 수 있게 됩니다.</translation>
 <translation id="5123433949759960244">농구공</translation>
 <translation id="5125714798187802869">활성화</translation>
 <translation id="5125751979347152379">잘못된 URL입니다.</translation>
@@ -9331,6 +9330,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{탭을 닫고 그룹을 삭제하시겠습니까?}=1{탭을 닫고 그룹을 삭제하시겠습니까?}other{탭을 닫고 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="7509097596023256288">관리 설정 중</translation>
 <translation id="7509539379068593709">앱 제거</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 활동<ph name="END_LINK_GOOGLE_ACTIVITY" />을 기반으로 한 추천</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7514417110442087199">할당 추가</translation>
@@ -10426,7 +10426,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="825238165904109940">항상 전체 URL 표시</translation>
 <translation id="8252569384384439529">업로드 중...</translation>
 <translation id="8253198102038551905">'+'를 클릭하여 네트워크 속성 보기</translation>
-<translation id="8254871563792426806">사이트에서 기기에 연결된 스마트 카드 리더 및 해당 리더에서 사용할 수 있는 스마트 카드에 액세스합니다.</translation>
 <translation id="8255212965098517578">최근 사진, 알림, 앱</translation>
 <translation id="8255927332875030912">검색 + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">멍멍이</translation>

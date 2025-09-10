@@ -531,7 +531,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1863257867908022953">Tarnov 12</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />dan</translation>
 <translation id="186539747722034544">Kabel va sputnik provayderlari</translation>
-<translation id="1866757068250903512"><ph name="READERNAME" /> nomli autentifikatsiya qurilmalari va ularda ishlatiladigan smart kartalarni boshqaring</translation>
 <translation id="1870473978371099486">Xususiy repetitorlik xizmatlari</translation>
 <translation id="1871208020102129563">Proksi-serverlar PAC fayli manzil orqali emas, o‘zgarmas manzil orqali sozlangan.</translation>
 <translation id="1871284979644508959">Kiritilishi shart</translation>
@@ -841,6 +840,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="23703388716193220">Golf jihozlari</translation>
 <translation id="2370368710215137370">Fayllarni yuklash</translation>
 <translation id="2370739752330685659">Keyinroq</translation>
+<translation id="2371084566192454134">Varaq va varaqlar guruhi</translation>
 <translation id="2374629208601905275">Mintaqangizdagi qonunga asoslanib, Chrome sizdan asosiy qidiruv tizimini tanlashingizni soʻraydi. Bu qidiruv tizimlari mintaqangizda mashhur va tasodifiy tartibda chiqariladi.</translation>
 <translation id="2376455483361831781">Yangi jadval</translation>
 <translation id="2377241607395428273">Grafika va animatsiya uchun dastur</translation>
@@ -4903,6 +4903,7 @@ Batafsil axborot:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sayti qo‘llab-quvvatlanmaydigan protokoldan foydalanmoqda.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> tomondagi kodni tekshiring va qayta urining</translation>
 <translation id="9186203289258525843">Chrome brauzerini standart brauzer qilish tugmasi, Chrome brauzerini standart brauzer qilish uchun faollashtiring</translation>
+<translation id="9186371298532546532">Boshqa joylarda ham shu manzildan foydalanish</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> bu varaqni oʻzgartirdi</translation>
 <translation id="9189789270972826888">Karta maʼlumotlari kiritilmagan boʻlsa, nusxa olib joylash uchun karta tafsilotini bosing. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Mavzular 4 haftadan keyin avtomatik oʻchib ketadi</translation>
@@ -4918,6 +4919,7 @@ Batafsil axborot:
 <translation id="920643408853370361">Sayohat sugʻurtasi</translation>
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>
 <translation id="9209339767782560829">Kirish sertifikatingiz bilan muammo yuz berdi.</translation>
+<translation id="9210152531668884481">Roziman</translation>
 <translation id="9210825002219699214">Avia sayohatlar</translation>
 <translation id="9213433120051936369">Dizaynini moslash</translation>
 <translation id="9215416866750762878">Ilova Chromening bu saytga xavfsiz ulanishiga xalaqit qilmoqda</translation>

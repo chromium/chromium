@@ -251,7 +251,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1166457390969131095">Google Hesabının parol və giriş açarlarını istifadə edib, yadda saxlayın</translation>
 <translation id="1166583374608765787">Ad güncəlləməsini nəzərdən keçirin</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> masasına aiddir</translation>
-<translation id="1166644470305877068">Təcrid edilmiş veb tətbiqlər bu ayara avtomatik əməl edir</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ərzində açılır...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> əhvalı ilə <ph name="STYLE" /> üslubunda <ph name="INDEX" /> indeksli son <ph name="SUBJECT" /> AI teması.</translation>
 <translation id="116896278675803795">Seçilmiş kontentə uyğunlaşmaq üçün dili avtomatik olaraq dəyişdirin</translation>
@@ -1611,7 +1610,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" />  Əməliyyat zamanı sistem yenidən işə başlayacaq.</translation>
-<translation id="209423774103268003">Smart kart oxuyucularına daxil olunur</translation>
 <translation id="2095774564753225041">Dəstəklənən fayl növləri</translation>
 <translation id="2096716221239095980">Bütün datanı silin</translation>
 <translation id="2097950021134740304">Abunənin unudulmasını ləğv edin</translation>
@@ -2639,7 +2637,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2790112944253231361">Bu tabı dəyişdi</translation>
-<translation id="2790750268015892264">Təcrid edilmiş veb-tətbiqlər smart kart oxuyanları idarə edə bilməz. Tətbiqlər smart karta giriş etməyəcək.</translation>
 <translation id="2791529110887957050">Linux'u silin</translation>
 <translation id="2791952154587244007">Xəta baş verdi. Kiosk tətbiqi bu cihazda avtomatik başladıla bilməyəcək.</translation>
 <translation id="2792465461386711506">Telefonunuzdan son Chrome tablarına baxmaq üçün Chrome Sinx funksiyasını aktiv edin</translation>
@@ -3557,7 +3554,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3450180775417907283"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Bu tabı Gemini ilə paylaşırsınız</translation>
 <translation id="345078987193237421">Bu, tətbiqlərlərə, kamera icazəsi olan veb-saytlara və sistem xidmətlərinə kameraya giriş imkanı verir</translation>
-<translation id="3451362021220965191">Təcrid edilmiş veb-tətbiqlər onlara daxil edilən və ya təqdim olunan smart kartlara giriş etmək üçün smart kart oxuyanları idarə edir. Smart kartlar əməliyyatları doğrulamaq və ya icazə vermək, xidmətlərə daxil olmaq və s. üçün istifadə olunan məlumatlardan ibarət olur.</translation>
 <translation id="3452999110156026232">Valideyn Girişi</translation>
 <translation id="3453082738208775226">Oflayn yaddaş təmizlənsin?</translation>
 <translation id="3453597230179205517">Məkana giriş bloklanıb</translation>
@@ -5957,7 +5953,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5120886753782992638"><ph name="APPROVED_URL" /> ünvanına baxış üçün bura klikləyin</translation>
 <translation id="5121052518313988218">Linux konteynerinizdəki əməliyyat sistemi artıq dəstəklənmir. Təhlükəsizlik güncəlləmələrini və baq düzəlişlərini almağı dayandıracaq və hazırda işləyən funksiyalar gözlənilmədən dayana bilər. Linux'dan istifadə etməyə davam etmək üçün ən son versiyaya təkmilləşdirin.</translation>
 <translation id="5121130586824819730">Sərt diskiniz doludur. Lütfən, başqa yerdə saxlayın və ya sərt diskdə daha çox boş yer saxlayın.</translation>
-<translation id="5121803000325086087">Təcrid edilmiş veb-tətbiqlər smart kart oxuyanları idarə etmək istəyə bilər. Tətbiqlər nəzarət etdikləri oxuyanlara təqdim olunan smart kartlara giriş edəcək.</translation>
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5125714798187802869">Aktivləşdirin</translation>
 <translation id="5125751979347152379">Yanlış URL.</translation>
@@ -10409,7 +10404,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="825238165904109940">Həmişə Tam URL'ləri Göstərin</translation>
 <translation id="8252569384384439529">Yüklənir...</translation>
 <translation id="8253198102038551905">Şəbəkə xüsusiyyətlərini əldə etmək üçün '+' klikləyin</translation>
-<translation id="8254871563792426806">Bu sayt cihazınıza qoşulmuş smart kart oxuyucularına və onlar üçün əlçatan olan potensial smart kartlara daxil olur</translation>
 <translation id="8255212965098517578">Son fotolar, bildirişlər və tətbiqlər</translation>
 <translation id="8255927332875030912">Axtarış + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>

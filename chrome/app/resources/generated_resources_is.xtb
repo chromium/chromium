@@ -251,7 +251,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166457390969131095">Nota og vista aðgangsorð og aðgangslykla á Google-reikningnum þínum</translation>
 <translation id="1166583374608765787">Fara yfir uppfærslu heitis</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilheyrir skrifborðinu <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Einangruð vefforrit fylgja þessari stillingu sjálfkrafa</translation>
 <translation id="1168020859489941584">Opnar í <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nýlegt gervigreindarþema <ph name="INDEX" /> af <ph name="SUBJECT" /> í <ph name="STYLE" />-stíl með <ph name="MOOD" />-stemningu.</translation>
 <translation id="116896278675803795">Skipta sjálfkrafa um tungumál í samræmi við valið efni</translation>
@@ -1622,7 +1621,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <ph name="BR" />
 <ph name="BR" />
 <ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" />  Kerfið mun endurræsa sig í ferlinu.</translation>
-<translation id="209423774103268003">Verið er að opna snjallkortalesarana þína</translation>
 <translation id="2095774564753225041">Studdar skráargerðir</translation>
 <translation id="2096716221239095980">Eyða öllum gögnum</translation>
 <translation id="2097950021134740304">Hætta við að gleyma áskrift</translation>
@@ -2650,7 +2648,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Í lagi</translation>
 <translation id="2790112944253231361">Breytti þessum flipa</translation>
-<translation id="2790750268015892264">Einangruð vefforrit geta ekki stjórnað snjallkortalesurum. Forrit fá ekki aðgang að snjallkortum.</translation>
 <translation id="2791529110887957050">Fjarlægja Linux</translation>
 <translation id="2791952154587244007">Villa kom upp. Sjálfsalaforrit mun ekki geta ræst sig sjálfkrafa á þessu tæki.</translation>
 <translation id="2792465461386711506">Kveikja á Chrome samstillingu til að skoða nýlega Chrome flipa í símanum</translation>
@@ -3568,7 +3565,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3450180775417907283"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Þú deilir þessum flipa með Gemini</translation>
 <translation id="345078987193237421">Þetta veitir forritum, vefsvæðum með myndavélarheimild og kerfisþjónustu aðgang að myndavélinni</translation>
-<translation id="3451362021220965191">Einangruð vefforrit stjórna snjallkortalesurum til að fá aðgang að snjallkortum sem eru sett í eða haldið upp að þeim. Snjallkort innihalda iðulega auðkennisupplýsingar sem notaðar eru til að auðkenna eða heimila aðgerðir, skrá þig inn í þjónustur og fleira.</translation>
 <translation id="3452999110156026232">Foreldraaðgangur</translation>
 <translation id="3453082738208775226">Hreinsa til í geymslurými án nettengingar?</translation>
 <translation id="3453597230179205517">Lokað er fyrir aðgang að staðsetningu</translation>
@@ -5970,7 +5966,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5120886753782992638">Smelltu hér til að opna <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Stýrikerfi Linux-geymisins er ekki lengur stutt. Stýrikerfið fær ekki lengur öryggisuppfærslur og villuleiðréttingar og eiginleikar sem virka núna kunna óvænt að bila. Uppfærðu í nýjustu útgáfuna til að halda áfram að nota Linux.</translation>
 <translation id="5121130586824819730">Harði diskurinn er fullur. Vistaðu á öðrum stað eða búðu til pláss á harða diskinum.</translation>
-<translation id="5121803000325086087">Einangruð vefforrit geta beðið um að stjórna snjallkortalesurum. Forrit fá aðgang að snjallkortum sem haldið er upp að lesurum sem þau stjórna.</translation>
 <translation id="5123433949759960244">Körfubolti</translation>
 <translation id="5125714798187802869">Virkja</translation>
 <translation id="5125751979347152379">Ógild vefslóð.</translation>
@@ -10426,7 +10421,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="825238165904109940">Sýna alltaf vefslóðir í fullri lengd</translation>
 <translation id="8252569384384439529">Hleður inn...</translation>
 <translation id="8253198102038551905">Smelltu á „+“ til að fá upp neteiginleika</translation>
-<translation id="8254871563792426806">Þetta vefsvæði er að opna snjallkortalesara sem eru tengdir við tækið þitt og hefur hugsanlega einnig aðgang að snjallkortum sem lesararnir hafa aðgang að</translation>
 <translation id="8255212965098517578">Nýlegar myndir, tilkynningar og forrit</translation>
 <translation id="8255927332875030912">Leitarlykill + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Lúkas</translation>

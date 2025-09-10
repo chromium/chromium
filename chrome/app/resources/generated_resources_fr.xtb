@@ -251,7 +251,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1166457390969131095">Utiliser et enregistrer les mots de passe et clés d'accès de votre compte Google</translation>
 <translation id="1166583374608765787">Examiner la modification du nom</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> fait partie du bureau <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Les applications Web isolées suivent automatiquement ce paramètre</translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Thème IA récent <ph name="INDEX" /> sur <ph name="SUBJECT" />, style <ph name="STYLE" /> et humeur <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Passer automatiquement à la langue du contenu sélectionné</translation>
@@ -1612,7 +1611,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Le système redémarre au cours de ce processus.</translation>
-<translation id="209423774103268003">Un site accède à vos lecteurs de carte à puce</translation>
 <translation id="2095774564753225041">Types de fichiers compatibles</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
 <translation id="2097950021134740304">Annuler l'oubli de l'abonnement</translation>
@@ -2450,7 +2448,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
 <translation id="2670168377011445813">Si Chrome trouve l'un de vos mots de passe du fait d'une violation de données publique, le Gestionnaire de mots de passe de Google peut vous proposer de le modifier pour vous si vous êtes connecté. <ph name="BEGIN_LINK" />En savoir plus sur la modification automatisée du mot de passe<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">Animations réduites</translation>
-<translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images de votre presse-papiers</translation>
+<translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images du presse-papiers</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2671451824761031126">Vos favoris et vos paramètres sont prêts</translation>
 <translation id="2672142220933875349">Fichier crx incorrect. Échec du déballage.</translation>
@@ -2637,7 +2635,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">A modifié cet onglet</translation>
-<translation id="2790750268015892264">Les applications Web isolées ne peuvent pas contrôler les lecteurs de cartes à puce. Les applis n'auront pas accès à une carte à puce.</translation>
 <translation id="2791529110887957050">Supprimer Linux</translation>
 <translation id="2791952154587244007">Une erreur s'est produite. Impossible de lancer automatiquement l'application kiosque sur cet appareil.</translation>
 <translation id="2792465461386711506">Activez la synchronisation Chrome pour afficher les onglets Chrome récents depuis votre téléphone</translation>
@@ -3029,7 +3026,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3060987956645097882">Nous n'avons pas pu établir la connexion avec votre téléphone. Vérifiez qu'il est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3061302636956643119">Le texte sera envoyé à Google pour être traité.</translation>
 <translation id="306166624240243643">Examiner les modifications apportées au nom et à l'URL</translation>
-<translation id="3064871050034234884">Le son des sites est activé</translation>
+<translation id="3064871050034234884">Les sites peuvent lire du son</translation>
 <translation id="3065041951436100775">Commentaires relatifs à l'arrêt de l'onglet</translation>
 <translation id="3065522099314259755">Latence de répétition du clavier</translation>
 <translation id="3067198179881736288">Installer l'application ?</translation>
@@ -3207,7 +3204,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3208703785962634733">Non confirmé</translation>
-<translation id="3209703592917353472">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
+<translation id="3209703592917353472">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté à ce site ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
 <translation id="32101887417650595">Connexion à l'imprimante impossible</translation>
 <translation id="3210736980143419785">Impossible de terminer le téléchargement</translation>
 <translation id="321084946921799184">Jaune et blanc</translation>
@@ -3553,7 +3550,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3450180775417907283"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Vous partagez cet onglet avec Gemini</translation>
 <translation id="345078987193237421">L'accès à l'appareil photo sera accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
-<translation id="3451362021220965191">Les applications Web isolées contrôlent les lecteurs de cartes à puce pour accéder aux cartes à puce qui sont insérées ou présentées à ces lecteurs. Les cartes à puce contiennent généralement des identités utilisées pour authentifier ou autoriser des opérations, se connecter à des services, etc.</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453082738208775226">Nettoyer l'espace de stockage hors connexion ?</translation>
 <translation id="3453597230179205517">L'accès à la position est bloqué</translation>
@@ -5201,7 +5197,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4580389561674319558">Visible par tous les contacts</translation>
 <translation id="4580596421317071374">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> sur cet appareil.</translation>
 <translation id="4581774856936278355">Erreur lors de la restauration de Linux</translation>
-<translation id="4582297591746054421">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
+<translation id="4582297591746054421">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme conserver la mise en forme du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
 <translation id="4584770411839426377">Fenêtre</translation>
 <translation id="4584836561445313300">Votre organisation pourra voir et gérer toutes les données de navigation existantes, comme les mots de passe, etc.</translation>
@@ -5954,7 +5950,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5120886753782992638">Clique ici pour consulter <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Le système d'exploitation de votre conteneur Linux n'est pas à jour. Il ne recevra plus les mises à jour de sécurité ni les corrections de bugs, et les fonctionnalités actuellement exécutées risquent de s'arrêter de façon inattendue. Veuillez installer la dernière version pour continuer d'utiliser Linux.</translation>
 <translation id="5121130586824819730">Votre disque dur est saturé. Veuillez enregistrer à un autre emplacement ou libérer de l'espace sur le disque dur.</translation>
-<translation id="5121803000325086087">Les applis Web isolées peuvent demander à contrôler les lecteurs de cartes à puce. Les applis pourront accéder aux cartes à puce présentées aux lecteurs qu'elles contrôlent.</translation>
 <translation id="5123433949759960244">Basket-ball</translation>
 <translation id="5125714798187802869">Activer</translation>
 <translation id="5125751979347152379">URL incorrecte</translation>
@@ -8378,7 +8373,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6842136130964845393">Pour toujours avoir accès à vos mots de passe enregistrés, confirmez votre identité</translation>
 <translation id="6842670680297285750">Nouvelle vue fractionnée avec l'onglet actuel</translation>
 <translation id="6842749380892715807">Les listes de sites au format XML ont été téléchargées pour la dernière fois le <ph name="LAST_DATE_DOWNLOAD" />.</translation>
-<translation id="6842868554183332230">En général, les sites détectent quand vous utilisez activement votre appareil pour définir votre disponibilité dans les applis de chat</translation>
+<translation id="6842868554183332230">Les sites détectent généralement les moments où vous êtes en train d'utiliser votre appareil, afin d'indiquer si vous êtes disponible dans les applications de chat</translation>
 <translation id="6843264316370513305">Débogage du réseau</translation>
 <translation id="6843423766595476978">Ok Google est à présent configuré</translation>
 <translation id="6843725295806269523">muet</translation>
@@ -10412,7 +10407,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="825238165904109940">Toujours afficher les URL en entier</translation>
 <translation id="8252569384384439529">Importation…</translation>
 <translation id="8253198102038551905">Cliquez sur "+" pour accéder aux propriétés réseau.</translation>
-<translation id="8254871563792426806">Ce site accède aux lecteurs de cartes à puce connectés à votre appareil et aux cartes à puce potentiellement disponibles</translation>
 <translation id="8255212965098517578">Photos, notifications et applis récentes</translation>
 <translation id="8255927332875030912">Recherche+<ph name="KEY" /></translation>
 <translation id="8256319818471787266">Médor</translation>
@@ -11424,7 +11418,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8946359700442089734">Les fonctionnalités de débogage n'ont pas été complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Réduire toutes les demandes dans la barre d'adresse</translation>
 <translation id="894763922177556086">Bonne</translation>
-<translation id="895054485242522631">Les sites peuvent utiliser des capteurs de mouvement</translation>
+<translation id="895054485242522631">Les sites peuvent utiliser les capteurs de mouvement</translation>
 <translation id="8951256747718668828">Échec de la restauration en raison d'une erreur</translation>
 <translation id="8951465597020890363">Voulez-vous vraiment quitter le mode Invité ?</translation>
 <translation id="8952831374766033534">Option de configuration non disponible : <ph name="ERROR_LINE" /></translation>
@@ -11542,7 +11536,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9020300839812600209">Saisissez une URL pour voir ce que LBS en ferait.</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Virus détecté.</translation>
-<translation id="902236149563113779">Les sites suivent généralement la position de votre caméra pour offrir des fonctionnalités de réalité augmentée, comme des jeux ou des indications d'itinéraire</translation>
+<translation id="902236149563113779">Les sites suivent généralement la position de votre caméra pour certaines fonctionnalités de RA, comme des jeux ou des indications d'itinéraire</translation>
 <translation id="9022847679183471841">Ce compte est déjà utilisé sur cet ordinateur par <ph name="AVATAR_NAME" />.</translation>
 <translation id="9022871169049522985">Les sites et les annonceurs peuvent mesurer les performances de leurs annonces</translation>
 <translation id="9023015617655685412">Ajouter cet onglet aux favoris…</translation>

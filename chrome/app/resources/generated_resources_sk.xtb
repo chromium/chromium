@@ -245,13 +245,13 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1162479191445552288">Aktivovať pre spustení</translation>
 <translation id="1163931534039071049">&amp;Zobraziť zdrojový kód rámu</translation>
 <translation id="1164015913575846413">alt + kliknutie</translation>
+<translation id="1164286072721995435">Aktuálna karta sa zdieľa s Gemini pri každom začatí novej konverzácie. Jej zdieľanie môžete kedykoľvek pozastaviť. Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="1164891049599601209">Zadané na klamlivom webe</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zatvoriť karty vpravo</translation>
 <translation id="1166457390969131095">Používajte a ukladajte heslá a prístupové kľúče zo svojho účtu Google</translation>
 <translation id="1166583374608765787">Kontrola aktualizácie názvu</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> patrí na plochu <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolované webové aplikácie sa automaticky riadia týmto nastavením</translation>
 <translation id="1168020859489941584">Čas do otvorenia: <ph name="TIME_REMAINING" /></translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. nedávny motív vytvorený umelou inteligenciou z <ph name="SUBJECT" /> v štýle <ph name="STYLE" /> vyjadrujúci náladu <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automaticky meniť jazyk tak, aby sa zhodoval s vybraným obsahom</translation>
@@ -533,6 +533,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1353980523955420967">Súbor PPD sa nepodarilo nájsť. Skontrolujte, či je Chromebook online, a skúste to znova.</translation>
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1354148503392558902">Mení sa heslo…</translation>
+<translation id="1354943694624358993">Vždy zdieľať aktuálnu kartu</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky dáta?</translation>
 <translation id="1355088659320425659">História a karty</translation>
 <translation id="1356376170199999104">Povolený – <ph name="PERMISSION_DETAILS" />. Fyzickým prepínačom zapnite mikrofón.</translation>
@@ -1613,7 +1614,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém sa počas príslušného procesu reštartuje.</translation>
-<translation id="209423774103268003">Vaše čítačky inteligentných kariet niekto používa</translation>
 <translation id="2095774564753225041">Podporované typy súborov</translation>
 <translation id="2096716221239095980">Odstrániť všetky dáta</translation>
 <translation id="2097950021134740304">Zrušiť odstránenie odberu</translation>
@@ -2638,7 +2638,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Táto karta bola zmenená</translation>
-<translation id="2790750268015892264">Izolované webové aplikácie nemôžu ovládať čítačky inteligentných kariet. Aplikácie nezískajú prístup k žiadnej inteligentnej karte.</translation>
 <translation id="2791529110887957050">Odstrániť Linux</translation>
 <translation id="2791952154587244007">Vyskytla sa chyba. Aplikácia verejného terminálu sa v tomto zariadení nebude môcť automaticky spustiť.</translation>
 <translation id="2792465461386711506">Ak si chcete v telefóne zobraziť nedávne karty Chromu, zapnite synchronizáciu Chromu</translation>
@@ -3556,7 +3555,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3450180775417907283"><ph name="MANAGER" /> vyžaduje, aby ste sa ihneď pripojili k sieti Wi-Fi a stiahli aktualizáciu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Túto kartu zdieľate s Gemini</translation>
 <translation id="345078987193237421">Týmto povolíte prístup ku kamere aplikáciám, webom s povoleným prístupom ku kamere a systémovým službám</translation>
-<translation id="3451362021220965191">Izolované webové aplikácie môžu ovládať čítačky inteligentných kariet, aby mohli získať prístup k vloženým alebo priloženým inteligentným kartám. Inteligentné karty zvyčajne obsahujú údaje o totožnosti, ktoré sa používajú na overovanie alebo autorizáciu operácií, prihlasovanie do služieb a podobne.</translation>
 <translation id="3452999110156026232">Rodičovský prístup</translation>
 <translation id="3453082738208775226">Chcete vyčistiť offline priestor?</translation>
 <translation id="3453597230179205517">Prístup k polohe je blokovaný</translation>
@@ -5735,6 +5733,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4956593309300508411">Chcete zastaviť zdieľanie?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Chcete uložiť do priečinka iba v tomto zariadení?</translation>
+<translation id="4958916254663453555">Keď otvoríte Gemini v Chrome, vaša aktuálna karta sa bude automaticky zdieľať. Celý jej obsah a webová adresa sa odošlú Googlu.</translation>
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="4960020053211143927">Niektoré aplikácie to nepodporujú</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5844,6 +5843,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5045367873597907704">Zariadenia s ľudským rozhraním</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
 <translation id="504561833207953641">Otvára sa v existujúcej relácii prehliadača.</translation>
+<translation id="5047544190872578914">Aktuálna karta sa zdieľa s Gemini pri každom začatí novej konverzácie. Jej zdieľanie môžete kedykoľvek pozastaviť.</translation>
 <translation id="504953514574706691">Karta bola vylúčená z navrhovanej skupiny</translation>
 <translation id="5050330054928994520">Prevod textu na reč</translation>
 <translation id="5051461727068120271">Stiahnuť neoverený súbor</translation>
@@ -5957,7 +5957,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5120886753782992638">Kliknutím tu prejdete na <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operačný systém vo vašom kontajneri Linux už nie je podporovaný. Prestane dostávať bezpečnostné aktualizácie a opravy chýb. Funkcie, ktoré momentálne používate, môžu byť neočakávane nedostupné. Ak chcete ďalej používať Linux, inovujte na najnovšiu verziu.</translation>
 <translation id="5121130586824819730">Pevný disk je plný. Uložte inde alebo uvoľnite viac miesta na pevnom disku. </translation>
-<translation id="5121803000325086087">Izolované webové aplikácie môžu žiadať o ovládanie čítačiek inteligentných kariet. Aplikácie získajú prístup k inteligentným kartám priloženým k čítačkám pod svoju kontrolu.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Aktivovať</translation>
 <translation id="5125751979347152379">Neplatná webová adresa.</translation>
@@ -9321,6 +9320,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Chcete zavrieť kartu a odstrániť skupinu?}=1{Chcete zavrieť karty a odstrániť skupinu?}few{Chcete zavrieť karty a odstrániť skupiny?}many{Close tabs and delete groups?}other{Chcete zavrieť karty a odstrániť skupiny?}}</translation>
 <translation id="7509097596023256288">Nastavenie správy</translation>
 <translation id="7509539379068593709">Odinštalovať aplikáciu</translation>
+<translation id="7513438205469584978">Návrhy na základe vašej <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktivity na Googli<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopírovať do zariadenia</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7514417110442087199">Pridať pridelenie</translation>
@@ -10415,7 +10415,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="825238165904109940">Vždy zobrazovať celé webové adresy</translation>
 <translation id="8252569384384439529">Nahráva sa...</translation>
 <translation id="8253198102038551905">Vlastnosti siete otvoríte kliknutím na tlačidlo plus (+)</translation>
-<translation id="8254871563792426806">Tento web má prístup k čítačkám inteligentných kariet pripojeným k vášmu zariadeniu a potenciálne k inteligentným kartám, ktoré sú pre ne k dispozícii</translation>
 <translation id="8255212965098517578">Nedávne fotky, upozornenia a aplikácie</translation>
 <translation id="8255927332875030912">Kláves vyhľadávania + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Rexo</translation>

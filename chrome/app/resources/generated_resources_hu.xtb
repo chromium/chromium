@@ -251,7 +251,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1166457390969131095">A Google-fiókjában lévő jelszavak és azonosítókulcsok használata és mentése</translation>
 <translation id="1166583374608765787">Névvel módosításának áttekintése</translation>
 <translation id="1166596238782048887">A(z) <ph name="TAB_TITLE" /> a következő számítógéphez tartozik: <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Az izolált internetes alkalmazások automatikusan követik ezt a beállítást.</translation>
 <translation id="1168020859489941584">Megnyitás <ph name="TIME_REMAINING" /> múlva...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. új AI-téma: <ph name="SUBJECT" />, <ph name="STYLE" /> stílusban, <ph name="MOOD" /> hangulattal.</translation>
 <translation id="116896278675803795">A nyelv automatikus módosítása, hogy igazodjon a kijelölt tartalomhoz</translation>
@@ -1620,7 +1619,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Megjegyzés:<ph name="END_BOLD" /> A rendszer újraindul a folyamat során.</translation>
-<translation id="209423774103268003">Aktív hozzáférés az Ön intelligens kártyaolvasóihoz</translation>
 <translation id="2095774564753225041">Támogatott fájltípusok</translation>
 <translation id="2096716221239095980">Minden adat törlése</translation>
 <translation id="2097950021134740304">Előfizetés elfelejtésének visszavonása</translation>
@@ -2648,7 +2646,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Módosította ezt a lapot</translation>
-<translation id="2790750268015892264">Az izolált internetes alkalmazások nem vezérelhetik az intelligenskártya-olvasókat. Az alkalmazások nem férnek hozzá egyetlen intelligens kártyához sem.</translation>
 <translation id="2791529110887957050">A Linux eltávolítása</translation>
 <translation id="2791952154587244007">Hiba történt. A kioszkalkalmazások nem fognak automatikusan elindulni ezen az eszközön.</translation>
 <translation id="2792465461386711506">Kapcsolja be a Chrome-szinkronizálást a telefonján nemrég megnyitott Chrome-lapok megtekintéséhez</translation>
@@ -3566,7 +3563,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3450180775417907283">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Ön megosztja ezt az lapot a Geminivel</translation>
 <translation id="345078987193237421">Ez lehetővé teszi a kamerához való hozzáférést az alkalmazások, a kameraengedéllyel rendelkező webhelyek és a rendszerszolgáltatások számára.</translation>
-<translation id="3451362021220965191">Az izolált internetes alkalmazások vezérelhetik az intelligenskártya-olvasókat, hogy hozzáférjenek a behelyezett vagy bemutatott intelligens kártyákhoz. Az intelligens kártyák általában olyan személyazonosító adatokat tartalmaznak, amelyeket műveletek hitelesítésére vagy engedélyezésére, szolgáltatásokba való bejelentkezésre stb. használnak.</translation>
 <translation id="3452999110156026232">Szülői hozzáférés</translation>
 <translation id="3453082738208775226">Szeretne offline tárhelyet felszabadítani?</translation>
 <translation id="3453597230179205517">A helyadatokhoz való hozzáférés le van tiltva</translation>
@@ -5967,7 +5963,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5120886753782992638">Kattints ide a következő megnyitásához: <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">A Linux-tárolóban lévő operációs rendszer már nem támogatott. Többé nem kap biztonsági frissítéseket és programhiba-javításokat, a jelenlegi funkciók működése pedig váratlanul megszűnhet. A Linux használatának folytatásához frissítsen a legújabb verzióra.</translation>
 <translation id="5121130586824819730">A merevlemez megtelt. Kérjük, mentsen másik helyre, vagy szabadítson fel elegendő helyet a merevlemezen.</translation>
-<translation id="5121803000325086087">Az izolált internetes alkalmazások kérhetik az intelligenskártya-olvasók vezérlését. Az alkalmazások hozzáférést kapnak az általuk vezérelt olvasóknak bemutatott intelligens kártyákhoz.</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
 <translation id="5125714798187802869">Bekapcsolás</translation>
 <translation id="5125751979347152379">Érvénytelen URL</translation>
@@ -10423,7 +10418,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="825238165904109940">Mindig mutassa a teljes URL-eket</translation>
 <translation id="8252569384384439529">Feltöltés…</translation>
 <translation id="8253198102038551905">Kattintson a „+” gombra a hálózati tulajdonságok lekéréséhez.</translation>
-<translation id="8254871563792426806">Ez a webhely hozzáfér az Ön eszközéhez csatlakoztatott intelligenskártya-olvasókhoz, és adott esetben a számukra hozzáférhető intelligens kártyákhoz.</translation>
 <translation id="8255212965098517578">Friss fotók, értesítések és alkalmazások</translation>
 <translation id="8255927332875030912">Keresés + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bundi</translation>

@@ -251,7 +251,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1166457390969131095">Bruk og lagre passord og passnøkler fra Google-kontoen din</translation>
 <translation id="1166583374608765787">Gjennomgå navneoppdatering</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Isolerte nettapper følger automatisk denne innstillingen</translation>
 <translation id="1168020859489941584">Åpner om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nylig AI-tema <ph name="INDEX" /> av <ph name="SUBJECT" /> i <ph name="STYLE" />-stil og med <ph name="MOOD" />-stemning.</translation>
 <translation id="116896278675803795">Bytt språk automatisk ut ifra det markerte innholdet</translation>
@@ -1615,7 +1614,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Systemet startes på nytt i løpet av prosessen.</translation>
-<translation id="209423774103268003">Smartkortleserne dine brukes</translation>
 <translation id="2095774564753225041">Støttede filtyper</translation>
 <translation id="2096716221239095980">Slett alle data</translation>
 <translation id="2097950021134740304">Avbryt glemming av abonnementet</translation>
@@ -2643,7 +2641,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Endret denne fanen</translation>
-<translation id="2790750268015892264">Isolerte nettapper kan ikke kontrollere smartkortlesere. Apper får ikke tilgang til smartkort.</translation>
 <translation id="2791529110887957050">Fjern Linux</translation>
 <translation id="2791952154587244007">Det oppsto en feil. Kioskappen er ikke i stand til å starte automatisk på denne enheten.</translation>
 <translation id="2792465461386711506">Slå på Chrome-synkronisering for å se nylige Chrome-faner fra telefonen din</translation>
@@ -3561,7 +3558,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3450180775417907283"><ph name="MANAGER" /> krever at du kobler til wifi nå og laster ned en oppdatering.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Du deler denne siden med Gemini</translation>
 <translation id="345078987193237421">Dette gir apper, nettsteder med kameratillatelsen og systemtjenester tilgang til kameraet</translation>
-<translation id="3451362021220965191">Isolerte nettapper kontrollerer smartkortlesere for å få tilgang til smartkort som settes inn eller presenteres for dem. Smartkort inneholder vanligvis identiteter som brukes til å autentisere eller autorisere operasjoner, logge på tjenester osv.</translation>
 <translation id="3452999110156026232">Foreldretilgang</translation>
 <translation id="3453082738208775226">Vil du rydde opp i lagringsplassen utenfor nettet?</translation>
 <translation id="3453597230179205517">Posisjonstilgang er blokkert</translation>
@@ -5960,7 +5956,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5120886753782992638">Klikk her for å besøke <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativsystemet i Linux-beholderen støttes ikke lenger. Det får ikke flere sikkerhetsoppdateringer eller feilrettinger, og funksjoner som virker for øyeblikket, kan plutselig slutte å fungere. Oppgrader til den nyeste versjonen for å fortsette å bruke Linux.</translation>
 <translation id="5121130586824819730">Harddisken din er full. Lagre på et annet sted, eller frigjør plass på harddisken.</translation>
-<translation id="5121803000325086087">Isolerte nettapper kan be om å få kontrollere smartkortlesere. Apper får tilgang til smartkort som presenteres for lesere de kontrollerer.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">Aktivér</translation>
 <translation id="5125751979347152379">Ugyldig nettadresse.</translation>
@@ -10414,7 +10409,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="825238165904109940">Vis alltid fullstendige nettadresser</translation>
 <translation id="8252569384384439529">Laster opp …</translation>
 <translation id="8253198102038551905">Klikk på «+» for å gå til nettverksegenskaper</translation>
-<translation id="8254871563792426806">Dette nettstedet bruker smartkortlesere som er koblet til enheten din, og potensielt smartkort som er tilgjengelige for dem</translation>
 <translation id="8255212965098517578">Nylige bilder, varsler og apper</translation>
 <translation id="8255927332875030912">Søk + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Fido</translation>

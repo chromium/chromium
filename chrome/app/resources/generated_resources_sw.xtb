@@ -251,7 +251,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1166457390969131095">Tumia na uhifadhi manenosiri pamoja na funguo za siri kwenye Akaunti yako ya Google</translation>
 <translation id="1166583374608765787">Kagua mabadiliko ya jina</translation>
 <translation id="1166596238782048887">Kichupo cha <ph name="TAB_TITLE" /> ni cha eneokazi la <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Programu za Wavuti Zilizotengwa hufuata mipangilio hii kiotomatiki</translation>
 <translation id="1168020859489941584">Inafungua baada ya <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Mandhari ya hivi majuzi yaliyotayarishwa kwa AI ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" />, katika muundo wa <ph name="STYLE" />, yenye hali ya <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Badilisha lugha kiotomatiki ili ilingane na maudhui uliyochagua</translation>
@@ -1617,7 +1616,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" /> Mfumo utazima na kuwaka tena wakati wa mchakato huu.</translation>
-<translation id="209423774103268003">Visomaji vyako mahiri vya kadi vinafikiwa</translation>
 <translation id="2095774564753225041">Aina za faili zinazotumika</translation>
 <translation id="2096716221239095980">Futa data yote</translation>
 <translation id="2097950021134740304">Ghairi kusahau usajili</translation>
@@ -2646,7 +2644,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Sawa</translation>
 <translation id="2790112944253231361">Amebadilisha kichupo hiki</translation>
-<translation id="2790750268015892264">Programu za Wavuti Zilizotengwa haziwezi kudhibiti visomaji vya kadi mahiri. Programu hizi hazitaweza kufikia kadi yoyote mahiri.</translation>
 <translation id="2791529110887957050">Ondoa Linux</translation>
 <translation id="2791952154587244007">Hitilafu fulani imetokea. Programu inayotumia skrini nzima haitaweza kujizindia kiotomatiki kwenye kifaa hiki.</translation>
 <translation id="2792465461386711506">Washa Usawazishaji wa Chrome ili uweze kuangalia vichupo vya Chrome vya hivi majuzi kwenye simu yako</translation>
@@ -3564,7 +3561,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3450180775417907283"><ph name="MANAGER" /> inahitaji uunganishe kwenye Wi-Fi sasa na upakue sasisho.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Unairuhusu Gemini ifikie kichupo hiki</translation>
 <translation id="345078987193237421">Hatua hii huruhusu kamera ifikiwe na programu, tovuti zilizo na ruhusa ya kufikia kamera na huduma za mfumo</translation>
-<translation id="3451362021220965191">Programu za Wavuti Zilizotengwa hudhibiti visomaji vya kadi mahiri ili kupata idhini ya kufikia kadi mahiri ambazo zimewekwa au kuwasilishwa kwao. Kadi mahiri huwa na vitambulisho vinavyotumiwa kuthibitisha au kuidhinisha shughuli, kuingia katika akaunti za huduma n.k.</translation>
 <translation id="3452999110156026232">Idhini ya Mzazi</translation>
 <translation id="3453082738208775226">Futa data kwenye hifadhi ya nje ya mtandao?</translation>
 <translation id="3453597230179205517">Ufikiaji wa mahali umezuiwa</translation>
@@ -5964,7 +5960,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5120886753782992638">Bofya hapa ili utembelee <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Mfumo wa uendeshaji katika metadata yako ya Linux hauwezi kutumika tena. Utaacha kupokea masasisho ya usalama na marekebisho ya hitilafu na huenda vipengele vinavyofanya kazi kwa sasa vikakosa kufanya kazi bila kutarajiwa. Tafadhali pata toleo jipya zaidi ili uendelee kutumia Linux.</translation>
 <translation id="5121130586824819730">Diski yako kuu imejaa. Tafadhali hifadhi kwenye eneo jingine au utafute nafasi zaidi kwenye diski kuu.</translation>
-<translation id="5121803000325086087">Programu za Wavuti Zilizotengwa zinaweza kuomba zidhibiti visomaji vya kadi mahiri. Programu hizi zitapata idhini ya kufikia kadi mahiri zinazowasilishwa kwa visomaji ambavyo zinadhibiti.</translation>
 <translation id="5123433949759960244">Mpira wa kikapu</translation>
 <translation id="5125714798187802869">Washa</translation>
 <translation id="5125751979347152379">URL hiyo si sahihi.</translation>
@@ -10420,7 +10415,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="825238165904109940">Onyesha URL Kamili Kila Wakati</translation>
 <translation id="8252569384384439529">Inapakia...</translation>
 <translation id="8253198102038551905">Bonyeza '+' ili kupata sifa za mtandao</translation>
-<translation id="8254871563792426806">Tovuti hii inafikia visomaji mahiri vya kadi vilivyounganishwa na kifaa chako na kadi mahiri zinazoweza kupatikana kwenye visomaji vya kadi</translation>
 <translation id="8255212965098517578">Picha, arifa na programu za hivi karibuni</translation>
 <translation id="8255927332875030912">Tafuta + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Spaki</translation>

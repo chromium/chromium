@@ -169,7 +169,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2802908157808345702">No permitir que los sitios envíen ventanas emergentes ni utilicen redirecciones</translation>
 <translation id="2814830417943086299">Ahora Chrome muestra tus pestañas recientes en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2822354292072154809">¿Seguro que quieres restablecer todos los permisos de los sitios de <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2850913818900871965">Solicita la vista para móvil</translation>
+<translation id="2850913818900871965">Solicitar vista para móvil</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2891975107962658722">Impide que un sitio guarde datos en tu dispositivo</translation>
@@ -364,7 +364,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5068293087784369013">Personalizar la página Nueva pestaña</translation>
 <translation id="5091013926750941408">Sitio web móvil</translation>
-<translation id="509133520954049755">Solicita la vista para ordenador</translation>
+<translation id="509133520954049755">Solicitar vista para ordenador</translation>
 <translation id="5091663350197390230">Cuando esta opción está activada, los sitios pueden usar JavaScript. Si está desactivada, los sitios no pueden usar JavaScript.</translation>
 <translation id="5099358668261120049">Esta acción eliminará todos los datos y las cookies almacenados por <ph name="ORIGIN" /> o por su aplicación en tu pantalla de inicio.</translation>
 <translation id="5100237604440890931">Contraído (hacer clic para ampliar)</translation>
@@ -485,7 +485,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6439114592976064011">No permitir que los sitios usen tu dispositivo y tus datos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Bajada de precio en tu pestaña abierta de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
-<translation id="6500423977866688905">Cuando la ventana es estrecha, solicita la vista para móvil</translation>
+<translation id="6500423977866688905">Cuando la ventana es estrecha, solicitar vista para móvil</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cuando esta opción está activada, los sitios pueden usar ventanas emergentes y redirecciones. Si está desactivada, los sitios no pueden usar ventanas emergentes ni redirecciones.</translation>
 <translation id="6540488083026747005">Has permitido el uso de cookies de terceros en este sitio</translation>

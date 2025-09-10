@@ -245,13 +245,13 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1162479191445552288">Ilunsad sa startup</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164015913575846413">alt + pag-click</translation>
+<translation id="1164286072721995435">Shine-share ang kasalukuyang tab sa Gemini sa tuwing magsisimula ka ng bagong pag-uusap. Puwede mong i-pause ang pag-share ng iyong kasalukuyang tab anumang oras. Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="1164891049599601209">Inilagay sa mapanlinlang na site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Isara ang Mga Tab na nasa Kanan</translation>
 <translation id="1166457390969131095">Gumamit at mag-save ng mga password at passkey mula sa iyong Google Account</translation>
 <translation id="1166583374608765787">Suriin ang update sa pangalan</translation>
 <translation id="1166596238782048887">Kabilang ang <ph name="TAB_TITLE" /> sa desk na <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Awtomatikong susundin ng Mga Naka-isolate na Web App ang setting na ito</translation>
 <translation id="1168020859489941584">Binubuksan sa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Kamakailang AI theme <ph name="INDEX" /> sa <ph name="SUBJECT" />, sa istilong <ph name="STYLE" />, na may mood na <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Awtomatikong baguhin ang wika para tumugma sa napiling content</translation>
@@ -532,6 +532,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1353980523955420967">Hindi makita ang PPD. Tiyaking online ang iyong Chromebook at subukan ulit.</translation>
 <translation id="1354045473509304750">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera</translation>
 <translation id="1354148503392558902">Pinapalitan ang password...</translation>
+<translation id="1354943694624358993">Palaging i-share ang kasalukuyang tab</translation>
 <translation id="1355088139103479645">I-delete ang lahat ng data?</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
 <translation id="1356376170199999104">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang mikropono gamit ang pisikal na switch.</translation>
@@ -1622,7 +1623,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" />  Mare-reboot ang system sa panahon ng proseso.</translation>
-<translation id="209423774103268003">Ina-access ang iyong mga smart card reader</translation>
 <translation id="2095774564753225041">Mga sinusuportahang uri ng file</translation>
 <translation id="2096716221239095980">I-delete ang lahat ng data</translation>
 <translation id="2097950021134740304">Kanselahin ang pagkalimot sa subscription</translation>
@@ -2650,7 +2650,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2790112944253231361">Binago ang tab na ito</translation>
-<translation id="2790750268015892264">Hindi makokontrol ng Mga Naka-isolate na Web App ang mga smart card reader. Hindi magkakaroon ng access ang mga app sa anumang smart card.</translation>
 <translation id="2791529110887957050">Alisin ang Linux</translation>
 <translation id="2791952154587244007">May naganap na error. Hindi awtomatikong malulunsad ang kiosk application sa device na ito.</translation>
 <translation id="2792465461386711506">I-on ang Chrome Sync para matingnan ang mga kamakailang tab ng Chrome mula sa iyong telepono</translation>
@@ -3568,7 +3567,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3450180775417907283">Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta ka sa Wi-Fi ngayon at mag-download ng update.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Shine-share mo ang tab na ito sa Gemini</translation>
 <translation id="345078987193237421">Pinapayagan nito ang access sa camera para sa mga app, website na may pahintulot sa camera, at serbisyo ng system</translation>
-<translation id="3451362021220965191">Kinokontrol ng Mga Naka-isolate na Web App ang mga smart card reader para magkaroon ng access sa mga smart card na ipinapasok o ipinapakita sa mga ito. Karaniwang naglalaman ang mga smart card ng mga pagkakakilanlan na ginagamit para mag-authenticate o magbigay ng pahintulot sa mga operasyon, mag-log in sa mga serbisyo, atbp.</translation>
 <translation id="3452999110156026232">Access ng Magulang</translation>
 <translation id="3453082738208775226">Linisin ang offline na storage?</translation>
 <translation id="3453597230179205517">Naka-block ang access sa lokasyon</translation>
@@ -5748,6 +5746,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4956593309300508411">Ihinto ang Pag-share?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">I-save lang sa folder sa device na ito?</translation>
+<translation id="4958916254663453555">Awtomatikong ishe-share ang iyong kasalukuyang tab kapag binuksan mo ang Gemini sa Chrome. Ipinapadala sa Google ang buong content at URL ng kasalukuyang tab.</translation>
 <translation id="4959262764292427323">Sine-save ang mga password sa iyong Google Account para magamit mo ang mga ito sa anumang device</translation>
 <translation id="4960020053211143927">Hindi sinusuportahan ng ilang app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5857,6 +5856,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5045367873597907704">Tungkol sa mga HID device</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="504561833207953641">Binubuksan sa kasalukuyang session ng browser.</translation>
+<translation id="5047544190872578914">Shine-share ang kasalukuyang tab sa Gemini sa tuwing magsisimula ka ng bagong pag-uusap. Puwede mong i-pause ang pag-share ng iyong kasalukuyang tab anumang oras.</translation>
 <translation id="504953514574706691">Ibinukod ang tab mula sa iminumungkahing grupo</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">I-download ang hindi na-verify na file</translation>
@@ -5970,7 +5970,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5120886753782992638">Mag-click dito para bisitahin ang <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Hindi na sinusuportahan ang operating system sa iyong Linux container Hindi na ito makakatanggap ng mga update sa seguridad at pag-aayos ng bug, at posibleng biglaang masira ang mga feature na kasalukuyang gumagana. Mag-upgrade sa pinakabagong bersyon para patuloy na magamit ang Linux.</translation>
 <translation id="5121130586824819730">Puno na ang iyong hard disk. Mangyaring i-save sa isa pang lokasyon o magbakante ng espasyo sa hard disk.</translation>
-<translation id="5121803000325086087">Puwedeng hilingin ng Mga Naka-isolate na Web App na kontrolin ang mga smart card reader. Magkakaroon ng access ang mga app sa mga smart card na ipinapakita sa mga reader sa ilalim ng pagkontrol ng mga ito.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">I-activate</translation>
 <translation id="5125751979347152379">Di-wastong URL.</translation>
@@ -9334,6 +9333,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Isara ang tab at i-delete ang grupo?}=1{Isara ang mga tab at i-delete ang grupo?}one{Isara ang mga tab at i-delete ang mga grupo?}other{Isara ang mga tab at i-delete ang mga grupo?}}</translation>
 <translation id="7509097596023256288">Pag-set up sa pamamahala</translation>
 <translation id="7509539379068593709">I-uninstall ang App</translation>
+<translation id="7513438205469584978">Mga suhestyon batay sa iyong <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktibidad sa Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopyahin sa iyong device</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514417110442087199">Magdagdag ng pagkakatalaga</translation>
@@ -10428,7 +10428,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="825238165904109940">Palaging Ipakita ang Mga Buong URL</translation>
 <translation id="8252569384384439529">Ina-upload...</translation>
 <translation id="8253198102038551905">I-click '+' upang makita ang mga property ng network</translation>
-<translation id="8254871563792426806">Ina-access ng site na ito ang mga smart card reader na nakakonekta sa iyong device at mga smart card na potensyal na available sa mga ito</translation>
 <translation id="8255212965098517578">Mga kamakailang larawan, notification, at app</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bantay</translation>

@@ -532,7 +532,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1863257867908022953">Khay 12</translation>
 <translation id="1864927262126810325">Từ <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Nhà cung cấp dịch vụ cáp và vệ tinh</translation>
-<translation id="1866757068250903512">Điều khiển các thiết bị xác thực có tên <ph name="READERNAME" /> và thẻ thông minh đi kèm</translation>
 <translation id="1870473978371099486">Dịch vụ dạy kèm</translation>
 <translation id="1871208020102129563">Proxy được đặt để sử dụng máy chủ proxy cố định chứ không phải URL tập lệnh .pac.</translation>
 <translation id="1871284979644508959">Trường bắt buộc</translation>
@@ -842,6 +841,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="23703388716193220">Thiết bị chơi gôn</translation>
 <translation id="2370368710215137370">Tải tệp lên</translation>
 <translation id="2370739752330685659">Để sau</translation>
+<translation id="2371084566192454134">Thẻ và nhóm thẻ</translation>
 <translation id="2374629208601905275">Dựa trên luật tại khu vực của bạn, Chrome sẽ yêu cầu bạn chọn công cụ tìm kiếm mặc định. Đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn và được hiển thị theo thứ tự ngẫu nhiên.</translation>
 <translation id="2376455483361831781">Bảng mới</translation>
 <translation id="2377241607395428273">Phần mềm hoạt hình và đồ hoạ</translation>
@@ -4911,6 +4911,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sử dụng giao thức không được hỗ trợ.</translation>
 <translation id="918454845714257218">Hãy kiểm tra mã trên <ph name="SIDE_OF_CARD" /> rồi thử lại</translation>
 <translation id="9186203289258525843">Nút Đặt Chrome làm trình duyệt mặc định, hãy nhấn nút này để đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
+<translation id="9186371298532546532">Sử dụng địa chỉ này ở nhiều nơi hơn</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> đã thay đổi thẻ này</translation>
 <translation id="9189789270972826888">Nếu thẻ chưa được điền, hãy nhấp vào thông tin thẻ bên dưới để sao chép và dán. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Các chủ đề đã tồn tại hơn 4 tuần sẽ tự động bị xoá</translation>
@@ -4926,6 +4927,7 @@ Thông tin chi tiết bổ sung:
 <translation id="920643408853370361">Bảo hiểm du lịch</translation>
 <translation id="9207861905230894330">Không thêm được bài viết.</translation>
 <translation id="9209339767782560829">Đã xảy ra sự cố khi sử dụng chứng chỉ đăng nhập của bạn.</translation>
+<translation id="9210152531668884481">Tôi đồng ý</translation>
 <translation id="9210825002219699214">Du lịch hàng không</translation>
 <translation id="9213433120051936369">Tùy chỉnh giao diện</translation>
 <translation id="9215416866750762878">Một ứng dụng hiện không cho Chrome kết nối an toàn với trang web này</translation>

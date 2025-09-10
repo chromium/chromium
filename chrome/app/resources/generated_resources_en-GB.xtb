@@ -245,13 +245,13 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1162479191445552288">Launch at startup</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164015913575846413">alt + click</translation>
+<translation id="1164286072721995435">Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab at any time. Your data is not used to improve generative AI models.</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Close Tabs to the Right</translation>
 <translation id="1166457390969131095">Use and save passwords and passkeys from your Google Account</translation>
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> belongs to desk <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Isolated web apps automatically follow this setting</translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Recent AI theme <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style, with <ph name="MOOD" /> mood.</translation>
 <translation id="116896278675803795">Automatically change language to match selected content</translation>
@@ -531,6 +531,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1354148503392558902">Changing password…</translation>
+<translation id="1354943694624358993">Always share current tab</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1355088659320425659">History and tabs</translation>
 <translation id="1356376170199999104">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on microphone using a physical switch.</translation>
@@ -1621,7 +1622,6 @@ You can manage this account’s settings by installing the Family Link app on yo
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> The system will reboot during the process.</translation>
-<translation id="209423774103268003">Your smart card readers are being accessed</translation>
 <translation id="2095774564753225041">Supported file types</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2097950021134740304">Cancel forgetting subscription</translation>
@@ -2649,7 +2649,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Changed this tab</translation>
-<translation id="2790750268015892264">Isolated web apps cannot control smart card readers. Apps won't gain access to any smart card.</translation>
 <translation id="2791529110887957050">Remove Linux</translation>
 <translation id="2791952154587244007">An error occurred. Kiosk application will not be able to auto-launch on this device.</translation>
 <translation id="2792465461386711506">Turn on Chrome Sync to view recent Chrome tabs from your phone</translation>
@@ -3221,7 +3220,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
-<translation id="3209703592917353472">A site you visit can save info about what you're doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
+<translation id="3209703592917353472">A site you visit can save info about what you're doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping basket. Often sites save this info temporarily on your device.</translation>
 <translation id="32101887417650595">Can’t connect to printer</translation>
 <translation id="3210736980143419785">Couldn’t finish download</translation>
 <translation id="321084946921799184">Yellow and white</translation>
@@ -3567,7 +3566,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – you're sharing this tab with Gemini</translation>
 <translation id="345078987193237421">This allows camera access for apps, websites with the camera permission and system services</translation>
-<translation id="3451362021220965191">Isolated web apps control smart card readers to gain access to smart cards that are inserted or presented to them. Smart cards usually contain identities that are used to authenticate or authorise operations, log in to services, etc.</translation>
 <translation id="3452999110156026232">Parent access</translation>
 <translation id="3453082738208775226">Clean up offline storage?</translation>
 <translation id="3453597230179205517">Location access is blocked</translation>
@@ -5747,6 +5745,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4956593309300508411">Stop sharing?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Save to a folder only on this device?</translation>
+<translation id="4958916254663453555">Your current tab will be automatically shared when you open Gemini in Chrome. The current tab's full content and URL are sent to Google.</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5856,6 +5855,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5045367873597907704">About HID devices</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
+<translation id="5047544190872578914">Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab at any time.</translation>
 <translation id="504953514574706691">Tab excluded from suggested group</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Download unverified file</translation>
@@ -5969,7 +5969,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5120886753782992638">Click here to visit <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.</translation>
 <translation id="5121130586824819730">Your hard disk is full.  Please save to another location or make more room on the hard disk.</translation>
-<translation id="5121803000325086087">Isolated web apps can ask to control smart card readers. Apps will gain access to smart cards presented to readers under their control.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">Activate</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
@@ -9153,7 +9152,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396017167185131589">Shared folders will appear here</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
-<translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones you allow</translation>
+<translation id="7399616692258236448">Location requests are automatically blocked for all sites except the ones you allow</translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7400059772197434086">is blocked from using your information on</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -9331,6 +9330,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{Close tab and delete group?}other{Close tabs and delete groups?}}</translation>
 <translation id="7509097596023256288">Setting up management</translation>
 <translation id="7509539379068593709">Uninstall app</translation>
+<translation id="7513438205469584978">Suggestions based on your <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google activity<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
@@ -10425,7 +10425,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
-<translation id="8254871563792426806">This site is accessing smart card readers connected to your device and potentially smart cards available to them</translation>
 <translation id="8255212965098517578">Recent photos, notifications and apps</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>
@@ -10743,7 +10742,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8467326454809944210">Choose another language</translation>
 <translation id="8468087214092422866">Not allowed to look for Bluetooth devices</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
-<translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
+<translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} reused password}other{{COUNT} reused passwords}}</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473540203671727883">Speak text under the mouse</translation>

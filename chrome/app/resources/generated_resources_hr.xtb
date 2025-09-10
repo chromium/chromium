@@ -252,7 +252,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1166457390969131095">Koristite i spremajte zaporke i pristupne ključeve sa svojeg Google računa</translation>
 <translation id="1166583374608765787">Pregled ažuriranja naziva</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolirane web-aplikacije automatski primjenjuju ovu postavku</translation>
 <translation id="1168020859489941584">Otvaranje u <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nedavna AI tema <ph name="INDEX" /> za <ph name="SUBJECT" /> u stilu <ph name="STYLE" /> s ugođajem <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatski promijeni jezik u jezik odabranog sadržaja</translation>
@@ -1615,7 +1614,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: sustav će se ponovo pokrenuti tijekom postupka.</translation>
-<translation id="209423774103268003">Pristupa se vašim čitačima pametnih kartica</translation>
 <translation id="2095774564753225041">Podržane vrste datoteka</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2097950021134740304">Otkaži zaboravljanje pretplate</translation>
@@ -2641,7 +2639,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">U redu</translation>
 <translation id="2790112944253231361">Korisnik je promijenio ovu karticu</translation>
-<translation id="2790750268015892264">Izolirane web-aplikacije ne mogu upravljati čitačima pametnih kartica. Aplikacije neće dobiti pristup nijednoj pametnoj kartici.</translation>
 <translation id="2791529110887957050">Uklanjanje Linuxa</translation>
 <translation id="2791952154587244007">Došlo je do pogreške. Aplikacije kioska neće se moći automatski pokrenuti na ovom uređaju.</translation>
 <translation id="2792465461386711506">Uključite Chrome sinkronizaciju da biste pregledali nedavne Chromeove kartice s telefona</translation>
@@ -3558,7 +3555,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahtijeva da se odmah povežete s Wi-Fijem i preuzmete ažuriranje.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – dijelite ovu karticu s Geminijem</translation>
 <translation id="345078987193237421">Time se omogućuje pristup kameri aplikacijama, web-lokacijama s dopuštenjem za kameru i uslugama sustava</translation>
-<translation id="3451362021220965191">Izolirane web-aplikacije upravljaju čitačima pametnih kartica kako bi dobile pristup pametnim karticama koje se u njih umetnu ili im se prezentiraju. Pametna kartica obično sadrži identitete koji se koriste za autentifikaciju ili autorizaciju radnji, prijavu na usluge itd.</translation>
 <translation id="3452999110156026232">Roditeljski pristup</translation>
 <translation id="3453082738208775226">Želite li očistiti offline pohranu?</translation>
 <translation id="3453597230179205517">Blokiran je pristup lokaciji</translation>
@@ -5961,7 +5957,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5120886753782992638">Klikni ovdje ako želiš posjetiti <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativni sustav Linuxovog spremnika više nije podržan. Prestat će primati sigurnosna ažuriranja i ispravke programskih pogrešaka, a značajke koje trenutačno funkcioniraju mogu neočekivano prestati funkcionirati. Nadogradite na najnoviju verziju da biste nastavili koristiti Linux.</translation>
 <translation id="5121130586824819730">Vaš je tvrdi disk pun. Spremite na neku drugu lokaciju ili oslobodite prostor na tvrdom disku.</translation>
-<translation id="5121803000325086087">Izolirane web-aplikacije mogu zatražiti da upravljaju čitačima pametnih kartica. Aplikacije će dobiti pristup pametnim karticama koje se prezentiraju čitačima pod njihovom kontrolom.</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5125714798187802869">Aktiviraj</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
@@ -6696,7 +6691,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5640159004008030285">Zaporka se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite je na svoj Google račun<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154">Počnite upotrebljavati <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Uređivač snimki zaslona</translation>
-<translation id="5641715878999557094">Aplikacija <ph name="EXTENSION_NAME" /> promijenila je stranicu koja se prikazuje kad kliknete gumb početnog zaslona.</translation>
+<translation id="5641715878999557094">Proširenje <ph name="EXTENSION_NAME" /> promijenilo je stranicu koja se prikazuje kad kliknete gumb početnog zaslona.</translation>
 <translation id="5642508497713047">CRL potpisnik</translation>
 <translation id="5643191124441701136">Sigurnosni kôd nalazi se na prednjoj strani kartice</translation>
 <translation id="5643321261065707929">Mreža s ograničenim prometom</translation>
@@ -10418,7 +10413,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="825238165904109940">Uvijek prikaži cijele URL-ove</translation>
 <translation id="8252569384384439529">Prijenos...</translation>
 <translation id="8253198102038551905">Kliknite "+" za proširenje svojstava mreže</translation>
-<translation id="8254871563792426806">Web-lokacija pristupa čitačima pametnih kartica povezanim s vašim uređajem, pa bi možda mogla pristupiti i pametnim karticama koje su im dostupne</translation>
 <translation id="8255212965098517578">Nedavne fotografije, obavijesti i aplikacije</translation>
 <translation id="8255927332875030912">Pretraživanje + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bobi</translation>

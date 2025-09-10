@@ -251,7 +251,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1166457390969131095">Gebruik en stoor wagwoorde en toegangsleutels uit jou Google-rekening</translation>
 <translation id="1166583374608765787">Gaan naamopdatering na</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> behoort aan lessenaar <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Geïsoleerde webapps volg hierdie instelling outomaties</translation>
 <translation id="1168020859489941584">Maak oop oor <ph name="TIME_REMAINING" /> …</translation>
 <translation id="1168704243733734901">Onlangse AI-tema <ph name="INDEX" /> van <ph name="SUBJECT" />, in <ph name="STYLE" />-styl, met <ph name="MOOD" />-luim.</translation>
 <translation id="116896278675803795">Verander taal outomaties om by gekose inhoud te pas</translation>
@@ -1621,7 +1620,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Let wel:<ph name="END_BOLD" /> Die stelsel sal tydens die proses herselflaai.</translation>
-<translation id="209423774103268003">Toegang word tot jou slimkaartlesers verkry</translation>
 <translation id="2095774564753225041">Gesteunde lêertipes</translation>
 <translation id="2096716221239095980">Vee alle data uit</translation>
 <translation id="2097950021134740304">Kanselleer vergeet van intekening</translation>
@@ -2649,7 +2647,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Het hierdie oortjie verander</translation>
-<translation id="2790750268015892264">Geïsoleerde webapps kan nie slimkaartlesers beheer nie. Apps sal nie toegang kry tot enige slimkaart nie.</translation>
 <translation id="2791529110887957050">Verwyder Linux</translation>
 <translation id="2791952154587244007">'n Fout het voorgekom. Kioskprogram sal nie outomaties op hierdie toestel kan begin nie.</translation>
 <translation id="2792465461386711506">Skakel Chrome-sinkronisering aan om onlangse Chrome-oortjies van jou foon af te bekyk</translation>
@@ -3567,7 +3564,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Jy deel tans hierdie oortjie met Gemini</translation>
 <translation id="345078987193237421">Dit laat kameratoegang vir apps, webwerwe met die kameratoestemming en stelseldienste toe</translation>
-<translation id="3451362021220965191">Geïsoleerde webapps beheer slimkaartlesers om toegang te kry tot slimkaarte wat ingevoeg of aan hulle gebied word. Slimkaarte bevat gewoonlik identiteite wat gebruik word om bedrywighede te waarmerk of te magtig, by dienste aan te meld ens.</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453082738208775226">Maak vanlyn berging skoon?</translation>
 <translation id="3453597230179205517">Liggingtoegang is geblokkeer</translation>
@@ -5969,7 +5965,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5120886753782992638">Klik hier om <ph name="APPROVED_URL" /> te besoek</translation>
 <translation id="5121052518313988218">Die bedryfstelsel in jour Linux-houer word nie meer gesteun nie. Dit sal ophou om sekuriteitopdaterings en foutoplossings te ontvang, en kenmerke wat tans werk kan dalk onverwags breek. Gradeer asseblief op na die jongste weergawe om voort te gaan om Linux te gebruik.</translation>
 <translation id="5121130586824819730">Jou hardeskyf is vol. Stoor asseblief na 'n ander ligging of maak plek op die hardeskyf.</translation>
-<translation id="5121803000325086087">Geïsoleerde webapps kan vra om slimkaartlesers te beheer. Apps sal toegang kry tot slimkaarte wat aan lesers onder hul beheer gebied word.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Aktiveer</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
@@ -10424,7 +10419,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="825238165904109940">Wys altyd volle URL'e</translation>
 <translation id="8252569384384439529">Laai tans op …</translation>
 <translation id="8253198102038551905">Klik '+' om netwerkeienskappe te kry</translation>
-<translation id="8254871563792426806">Hierdie werf verkry toegang tot slimkaartlesers wat aan jou toestel gekoppel is en moontlike slimkaarte wat aan hulle beskikbaar is</translation>
 <translation id="8255212965098517578">Onlangse foto's, kennisgewings en programme</translation>
 <translation id="8255927332875030912">Soek + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>

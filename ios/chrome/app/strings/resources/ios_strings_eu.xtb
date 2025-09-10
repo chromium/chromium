@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Ez da aldatu PINa. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="1063070031224282617">Aukeratu non gorde nahi duzun "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Zure interesetan oinarritutako iritziak</translation>
+<translation id="1072679792409426431">Administratzaileak desgaitu du</translation>
 <translation id="1074827084851510304">{password_count} pasahitz eta saioa hasteko informazioa inoiz ez gordetzeko aukeratu dituzun webguneen eta aplikazioen zerrenda ezabatuko dituzu. Webgune eta aplikazioetarako sortu dituzun kontuak ez dira ezabatuko.</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
 <translation id="1081114897601629648">Pasahitz hauek ez dira inportatu Google-ren Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
 <translation id="2297989278479054870">Saioa amaitu ondoren, Google-ko kontuko laster-markak, pasahitzak eta bestelako elementuak kendu egingo dira gailu honetatik.</translation>
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
+<translation id="2306265833370324042">Erakutsi <ph name="SEARCH_ENGINE_NAME" /> bilatzailearen xehetasunak</translation>
 <translation id="2309265394777270359">Itxi fitxa</translation>
 <translation id="2311077293164383652">Itxi fitxa ainguratua</translation>
 <translation id="2316129865977710310">Ez, eskerrik asko</translation>
@@ -737,7 +739,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3940195383040445971">Egin prezioen jarraipena fitxetan</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
 <translation id="3948600256434252210">Ezkutuko moduan arakatzeko, pasatu hatza eskuinera.</translation>
-<translation id="3949712484278252781">Gemini-rekin dituzun elkarrizketak eta <ph name="GOOGLE_WORKSPACE_DATA" /> ez dituzte gizakiek berrikusiko, eta ez dira erabiliko AAko eredu generatiboak hobetzeko.</translation>
+<translation id="3949712484278252781">Gemini-rekin dituzun elkarrizketak eta <ph name="GOOGLE_WORKSPACE_DATA" /> ez dituzte gizakiek berrikusiko, eta ez dira erabiliko AA generatiboko ereduak hobetzeko.</translation>
 <translation id="3950479158728806902">Sortu sarbide-gako bat automatikoki saioa bizkorrago hasteko</translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3955740319737378355">Eginda</translation>
@@ -928,7 +930,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
        Aukeratu zer egin nahi duzun gailuan lehendik dauden arakatze-datuekin.</translation>
 <translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
-<translation id="4691892551491778176">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AAko eredu generatiboak hobetzeko. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
+<translation id="4691892551491778176">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AA generatiboko ereduak hobetzeko. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="4697240968720007067">Lortu Google-ren aplikaziorik onenak sakatze bakarrarekin</translation>
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4709570498586527752">Zuretzat ordu ezberdinetan egokienak diren eginbideak</translation>
@@ -1200,6 +1202,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5709005673595820640">{count,plural, =1{Beste nonbait erabilitako {count} pasahitz daukazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda ezazu.}other{Beste nonbait erabilitako {count} pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda itzazu.}}</translation>
 <translation id="57094364128775171">Iradoki pasahitz konplexu bat…</translation>
 <translation id="5718049162805123412">Berehala aldatzea gomendatzen dizugu</translation>
+<translation id="5721040778297053709">Ezarri kreditu-txartela markoaren barnean</translation>
 <translation id="572328651809341494">Azkenaldiko fitxak</translation>
 <translation id="5724941645893276623">Sarea modu pribatuan arakatzeko, gehitu beste fitxa bat</translation>
 <translation id="5728072125198221967">Lotutako Google-ren zerbitzuak</translation>
@@ -1778,6 +1781,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="7889910613639381518">Sarbide erraz eta segurua, Google-ren Pasahitz-kudeatzailea zerbitzuaren widgetarekin.</translation>
 <translation id="7899199123054742721">Markatu guztiak irakurri gabeko gisa</translation>
 <translation id="7911190106180361398">Erakundeak ez dizu eman baimenik guztia sinkronizatzeko.</translation>
+<translation id="7918999344502274923">Ezkutatu <ph name="SEARCH_ENGINE_NAME" /> bilatzailearen xehetasunak</translation>
 <translation id="792357691529995513">Ez da aurkitu arazorik</translation>
 <translation id="7925108652071887026">Bete datuak automatikoki</translation>
 <translation id="7926975587469166629">Txartelaren goitizena</translation>

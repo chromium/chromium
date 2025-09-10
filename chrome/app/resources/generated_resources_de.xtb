@@ -245,13 +245,13 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1162479191445552288">Bei Hangout-Anruf automatisch starten</translation>
 <translation id="1163931534039071049">Frame-Quelltext &amp;anzeigen</translation>
 <translation id="1164015913575846413">Alt + Klick</translation>
+<translation id="1164286072721995435">Der aktuelle Tab wird dann jedes Mal, wenn du eine neue Unterhaltung beginnst, mit Gemini geteilt. Du kannst das Teilen des aktuellen Tabs jederzeit pausieren. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
 <translation id="1166457390969131095">Passwörter und Passkeys aus deinem Google-Konto verwenden und speichern</translation>
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
-<translation id="1166644470305877068">Für isolierte Web-Apps wird diese Einstellung automatisch übernommen</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
 <translation id="1168704243733734901">Aktuelles KI-Design <ph name="INDEX" /> von <ph name="SUBJECT" /> im Stil „<ph name="STYLE" />“ und mit der Stimmung „<ph name="MOOD" />“.</translation>
 <translation id="116896278675803795">Sprache automatisch an ausgewählte Inhalte anpassen</translation>
@@ -531,6 +531,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissere dich, dass dein Chromebook online ist und versuche es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
 <translation id="1354148503392558902">Passwort wird geändert…</translation>
+<translation id="1354943694624358993">Aktuellen Tab immer teilen</translation>
 <translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355088659320425659">Verlauf und Tabs</translation>
 <translation id="1356376170199999104">Zugelassen – <ph name="PERMISSION_DETAILS" />. Aktiviere das Mikrofon über den physischen Schalter.</translation>
@@ -1608,7 +1609,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Das System wird während des Vorgangs neu gestartet.</translation>
-<translation id="209423774103268003">Auf deine Smartcard-Lesegeräte wird gerade zugegriffen</translation>
 <translation id="2095774564753225041">Unterstützte Dateitypen</translation>
 <translation id="2096716221239095980">Alle Daten löschen</translation>
 <translation id="2097950021134740304">Entfernen des Abos abbrechen</translation>
@@ -2633,7 +2633,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2790112944253231361">Tab wurde geändert</translation>
-<translation id="2790750268015892264">Isolierte Web-Apps können keine Smartcard-Lesegeräte steuern. Apps erhalten keinen Zugriff auf Smartcards.</translation>
 <translation id="2791529110887957050">Linux entfernen</translation>
 <translation id="2791952154587244007">Ein Fehler ist aufgetreten. Die Kioskanwendung kann auf diesem Gerät nicht automatisch gestartet werden.</translation>
 <translation id="2792465461386711506">Aktiviere die Chrome-Synchronisierung, um die zuletzt auf deinem Smartphone geöffneten Chrome-Tabs zu sehen</translation>
@@ -3549,7 +3548,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> erfordert, dass du dein Gerät jetzt mit dem WLAN verbindest und ein Update herunterlädst.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – du teilst diesen Tab gerade mit Gemini</translation>
 <translation id="345078987193237421">Dadurch können Apps, Websites mit Kameraberechtigung und Systemdienste auf deine Kamera zugreifen</translation>
-<translation id="3451362021220965191">Isolierte Web-Apps steuern Smartcard-Lesegeräte, um Zugriff auf Smartcards zu erhalten, die eingesteckt oder ihnen präsentiert werden. Smartcards enthalten in der Regel Identitäten, die zur Authentifizierung oder Autorisierung von Vorgängen, zum Anmelden bei Diensten usw. verwendet werden.</translation>
 <translation id="3452999110156026232">Elternfreigabe</translation>
 <translation id="3453082738208775226">Offlinespeicherplatz freigeben?</translation>
 <translation id="3453597230179205517">Standortzugriff blockiert</translation>
@@ -5197,7 +5195,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4580389561674319558">Für alle Kontakte sichtbar</translation>
 <translation id="4580596421317071374">Passwörter werden auf diesem Gerät im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="4581774856936278355">Fehler beim Wiederherstellen von Linux</translation>
-<translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage aus, um Funktionen wie die Beibehaltung der Formatierung von Texten in der Zwischenablage umzusetzen</translation>
+<translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage für Funktionen aus, um beispielsweise die Formatierung von kopierten Texten beizubehalten</translation>
 <translation id="4582563038311694664">Alle Einstellungen zurücksetzen</translation>
 <translation id="4584770411839426377">Fenster</translation>
 <translation id="4584836561445313300">Deine Organisation kann alle vorhandenen Browserdaten, wie Passwörter und mehr, sehen und verwalten</translation>
@@ -5728,6 +5726,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4956593309300508411">Freigabe beenden?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">In einem Ordner auf diesem Gerät speichern?</translation>
+<translation id="4958916254663453555">Dein aktueller Tab wird automatisch geteilt, wenn du Gemini in Chrome öffnest. Der gesamte Inhalt und die URL des aktuellen Tabs werden an Google gesendet.</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
 <translation id="4960020053211143927">Wird von manchen Apps nicht unterstützt</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5837,6 +5836,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5045367873597907704">Info über HID-Geräte</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="504561833207953641">Wird in einer aktuellen Browsersitzung geöffnet.</translation>
+<translation id="5047544190872578914">Der aktuelle Tab wird dann jedes Mal, wenn du eine neue Unterhaltung beginnst, mit Gemini geteilt. Du kannst das Teilen des aktuellen Tabs jederzeit pausieren.</translation>
 <translation id="504953514574706691">Tab wurde aus der vorgeschlagenen Gruppe ausgeschlossen</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Ungeprüfte Datei herunterladen</translation>
@@ -5950,7 +5950,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5120886753782992638">Hier klicken, um <ph name="APPROVED_URL" /> aufzurufen</translation>
 <translation id="5121052518313988218">Das Betriebssystem in deinem Linux-Container wird nicht mehr unterstützt. Es erhält keine Sicherheitsupdates und Fehlerkorrekturen mehr. Außerdem kann es bei einigen Funktionen zu unerwarteten Fehlern kommen. Aktualisiere auf die neueste Version, um Linux weiter nutzen zu können.</translation>
 <translation id="5121130586824819730">Deine Festplatte ist voll. Wähle bitte einen anderen Speicherort aus oder gib Speicherplatz auf der Festplatte frei.</translation>
-<translation id="5121803000325086087">Isolierte Web-Apps können um die Erlaubnis bitten, Smartcard-Lesegeräte steuern zu dürfen. Apps erhalten Zugriff auf Smartcards, die den von ihnen gesteuerten Lesegeräten präsentiert werden.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">Aktivieren</translation>
 <translation id="5125751979347152379">Ungültige URL</translation>
@@ -9308,6 +9307,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab schließen und Gruppe löschen?}=1{Tabs schließen und Gruppe löschen?}other{Tabs schließen und Gruppen löschen?}}</translation>
 <translation id="7509097596023256288">Verwaltung wird eingerichtet</translation>
 <translation id="7509539379068593709">App deinstallieren</translation>
+<translation id="7513438205469584978">Vorschläge basierend auf deinen <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-Aktivitäten<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Auf mein Gerät kopieren</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514417110442087199">Zuweisung hinzufügen</translation>
@@ -10402,7 +10402,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="825238165904109940">Immer vollständige URLs anzeigen</translation>
 <translation id="8252569384384439529">Wird hochgeladen…</translation>
 <translation id="8253198102038551905">Auf "+" klicken, um die Netzwerkeigenschaften anzuzeigen</translation>
-<translation id="8254871563792426806">Diese Website greift auf Smartcard-Lesegeräte zu, die mit deinem Gerät verbunden sind, und möglicherweise auf Smartcards, die für sie verfügbar sind</translation>
 <translation id="8255212965098517578">Letzte Fotos, Benachrichtigungen und Apps</translation>
 <translation id="8255927332875030912">Suche + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bello</translation>

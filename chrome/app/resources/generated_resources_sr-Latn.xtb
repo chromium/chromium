@@ -245,13 +245,13 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1162479191445552288">Pokreni pri pokretanju uređaja</translation>
 <translation id="1163931534039071049">&amp;Prikaži izvor okvira</translation>
 <translation id="1164015913575846413">alt + klik</translation>
+<translation id="1164286072721995435">Deli aktuelnu karticu sa Gemini-jem svaki put kada započnete novu konverzaciju. U svakom trenutku možete da pauzirate deljenje aktuelne kartice. Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="1164891049599601209">Uneto je na obmanjujućem sajtu</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1166212789817575481">Zatvori kartice sa desne strane</translation>
 <translation id="1166457390969131095">Koristite i čuvajte lozinke i pristupne ključeve sa Google naloga</translation>
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887">Kartica <ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolovane veb-aplikacije automatski prate ovo podešavanje</translation>
 <translation id="1168020859489941584">Otvaranje za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. nedavna AI tema od <ph name="SUBJECT" />, u stilu <ph name="STYLE" /> sa raspoloženjem <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatski promeni jezik da se podudara sa izabranim sadržajem</translation>
@@ -533,6 +533,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1353980523955420967">Ne možemo da pronađemo PPD. Proverite da li je Chromebook onlajn i probajte ponovo.</translation>
 <translation id="1354045473509304750">Nastavite da dozvoljavate sajtu <ph name="HOST" /> da koristi i pomera kameru</translation>
 <translation id="1354148503392558902">Menja se lozinka…</translation>
+<translation id="1354943694624358993">Uvek deli aktuelnu karticu</translation>
 <translation id="1355088139103479645">Želite li da izbrišete sve podatke?</translation>
 <translation id="1355088659320425659">Istorija i kartice</translation>
 <translation id="1356376170199999104">Dozvoljeno je – <ph name="PERMISSION_DETAILS" />. Uključite mikrofon pomoću fizičkog prekidača.</translation>
@@ -1609,7 +1610,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Sistem će se restartovati tokom ovog procesa.</translation>
-<translation id="209423774103268003">Pristupa se čitačima pametnih kartica</translation>
 <translation id="2095774564753225041">Podržani tipovi fajlova</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2097950021134740304">Otkaži zaboravljanje pretplate</translation>
@@ -2634,7 +2634,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Potvrdi</translation>
 <translation id="2790112944253231361">Promenio/la je ovu karticu</translation>
-<translation id="2790750268015892264">Izolovane veb-aplikacije ne mogu da kontrolišu čitače pametnih kartica. Aplikacije neće dobiti pristup nijednoj pametnoj kartici.</translation>
 <translation id="2791529110887957050">Uklonite Linux</translation>
 <translation id="2791952154587244007">Došlo je do greške. Kiosk aplikacija neće moći automatski da se pokrene na ovom uređaju.</translation>
 <translation id="2792465461386711506">Uključite Chrome sinhronizaciju da biste pregledali nedavne Chrome kartice sa telefona</translation>
@@ -3552,7 +3551,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Delite ovu karticu sa Gemini-jem</translation>
 <translation id="345078987193237421">To omogućava pristup kameri za aplikacije, veb-sajtove sa dozvolom za kameru i sistemske usluge</translation>
-<translation id="3451362021220965191">Izolovane veb-aplikacije kontrolišu čitače pametnih kartica da bi dobile pristup pametnim karticama koje su umetnute ili predstavljene. Pametne kartice obično sadrže identitete koji se koriste za potvrdu ili ovlašćivanje operacija, prijavljivanje u usluge itd.</translation>
 <translation id="3452999110156026232">Roditeljski pristup</translation>
 <translation id="3453082738208775226">Želite li da oslobodite oflajn memorijski prostor?</translation>
 <translation id="3453597230179205517">Pristup lokaciji je blokiran</translation>
@@ -5732,6 +5730,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4956593309300508411">Zaustavljate deljenje?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite da sačuvate u folderu samo na ovom uređaju?</translation>
+<translation id="4958916254663453555">Aktuelna kartica će se automatski deliti kada otvorite Gemini u Chrome-u. Ceo sadržaj i URL aktuelne kartice se šalju Google-u.</translation>
 <translation id="4959262764292427323">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju</translation>
 <translation id="4960020053211143927">Neke aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5841,6 +5840,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5045367873597907704">O HID uređajima</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="504561833207953641">Otvara se u postojećoj sesiji pregledača.</translation>
+<translation id="5047544190872578914">Deli aktuelnu karticu sa Gemini-jem svaki put kada započnete novu konverzaciju. U svakom trenutku možete da pauzirate deljenje aktuelne kartice.</translation>
 <translation id="504953514574706691">Kartica je izuzeta iz predložene grupe</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Preuzmi neverifikovani fajl</translation>
@@ -5954,7 +5954,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5120886753782992638">Klikni ovde da bi posetio/la <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativni sistem u Linux kontejneru više nije podržan. Prestaće da dobija bezbednosna ažuriranja i ispravke grešaka, a funkcije koje trenutno rade mogu neočekivano da otkažu. Nadogradite na najnoviju verziju da biste nastavili da koristite Linux.</translation>
 <translation id="5121130586824819730">Hard-disk je pun. Sačuvajte na drugu lokaciju ili napravite više prostora na hard-disku.</translation>
-<translation id="5121803000325086087">Izolovane veb-aplikacije mogu da zatraže da kontrolišu čitače pametnih kartica. Aplikacije će dobiti pristup pametnim karticama koje su pod njihovom kontrolom.</translation>
 <translation id="5123433949759960244">Košarkaška lopta</translation>
 <translation id="5125714798187802869">Aktiviraj</translation>
 <translation id="5125751979347152379">Nevažeća URL adresa.</translation>
@@ -9319,6 +9318,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite da zatvorite karticu i izbrišete grupu?}=1{Želite da zatvorite kartice i izbrišete grupu?}one{Želite da zatvorite kartice i izbrišete grupe?}few{Želite da zatvorite kartice i izbrišete grupe?}other{Želite da zatvorite kartice i izbrišete grupe?}}</translation>
 <translation id="7509097596023256288">Upravljanje podešavanjem</translation>
 <translation id="7509539379068593709">Deinstaliraj aplikaciju</translation>
+<translation id="7513438205469584978">Predlozi zasnovani na vašim <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google aktivnostima<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopirajte na svoj uređaj</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7514417110442087199">Dodajte dodelu</translation>
@@ -10413,7 +10413,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="825238165904109940">Uvek prikazuj URL-ove u celosti</translation>
 <translation id="8252569384384439529">Otprema se...</translation>
 <translation id="8253198102038551905">Kliknite na „+“ da biste videli svojstva mreže</translation>
-<translation id="8254871563792426806">Ovaj sajt pristupa čitačima pametnih kartica povezanim sa uređajem i potencijalno pametnim karticama koje su im dostupne</translation>
 <translation id="8255212965098517578">Nedavne slike, obaveštenja i aplikacije</translation>
 <translation id="8255927332875030912">Taster za pretragu + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Iskrica</translation>

@@ -532,7 +532,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1863257867908022953">Bandeja 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveedores de cable y satélite</translation>
-<translation id="1866757068250903512">Controla los dispositivos de autenticación llamados <ph name="READERNAME" /> y las tarjetas inteligentes que se usan con ellos</translation>
 <translation id="1870473978371099486">Servicios de tutorías privadas</translation>
 <translation id="1871208020102129563">El proxy está configurado para usar servidores proxy fijos, no una URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
@@ -842,6 +841,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="23703388716193220">Equipo para golf</translation>
 <translation id="2370368710215137370">Carga de archivos</translation>
 <translation id="2370739752330685659">Tal vez más tarde</translation>
+<translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
 <translation id="2374629208601905275">De acuerdo con una ley de tu región, Chrome te pide que elijas el motor de búsqueda predeterminado. Estos motores de búsqueda son populares en tu región y se muestran en orden aleatorio.</translation>
 <translation id="2376455483361831781">Nueva tabla</translation>
 <translation id="2377241607395428273">Software de gráficos y animación</translation>
@@ -1325,7 +1325,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las actualizaciones de ChromeOS.</translation>
 <translation id="3209034400446768650">La página puede cobrar cargos</translation>
-<translation id="3212468046572043669">Comenzó la descarga. Para verla, arrastra desde la parte superior y presiona el botón Atrás</translation>
+<translation id="3212468046572043669">Comenzó la descarga. Para verla, arrastra desde la parte superior y presiona el botón Atrás.</translation>
 <translation id="3212581601480735796">Se supervisa tu actividad en <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">No se pudo usar WebAuthn</translation>
 <translation id="3215311088819828484">Se actualizó el resultado</translation>

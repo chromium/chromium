@@ -532,7 +532,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1863257867908022953">Bandexa 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Provedores de cable e satélite</translation>
-<translation id="1866757068250903512">Controla os dispositivos autenticados co nome <ph name="READERNAME" /> e as tarxetas intelixentes que se usen con eles</translation>
 <translation id="1870473978371099486">Clases particulares</translation>
 <translation id="1871208020102129563">O proxy está configurado para utilizar servidores proxy fixos, non un URL de script .pac.</translation>
 <translation id="1871284979644508959">O campo é obrigatorio</translation>
@@ -842,6 +841,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="23703388716193220">Equipamento de Golf</translation>
 <translation id="2370368710215137370">Carga de ficheiros</translation>
 <translation id="2370739752330685659">Quizais máis tarde</translation>
+<translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
 <translation id="2374629208601905275">De acordo cunha lei da túa rexión, Chrome pídeche que escollas un buscador predeterminado. Estes buscadores son populares na túa zona e móstranse en orde aleatoria.</translation>
 <translation id="2376455483361831781">Nova táboa</translation>
 <translation id="2377241607395428273">Software de animación e gráficos</translation>
@@ -3975,7 +3975,7 @@ Detalles adicionais:
 <translation id="7582602800368606489">Crear rapidamente un evento novo en Google Calendar</translation>
 <translation id="7586676035079382730">O acceso ás notificacións non está permitido</translation>
 <translation id="7588707273764747927">De transferencia</translation>
-<translation id="7589062909165841767">É posible que a túa Conta de Google teña activada opción <ph name="BEGIN_LINK_GAA" />Actividade nas aplicacións Gemini<ph name="END_LINK_GAA" /></translation>
+<translation id="7589062909165841767">É posible que a túa Conta de Google teña activada a opción <ph name="BEGIN_LINK_GAA" />Actividade nas aplicacións Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Queres compartir contido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> quere utilizar as cookies e os datos do sitio <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">O certificado do servidor inclúe un nome que está fóra do teu alcance.</translation>

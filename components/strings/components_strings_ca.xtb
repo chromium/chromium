@@ -532,7 +532,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1863257867908022953">Safata 12</translation>
 <translation id="1864927262126810325">De: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveïdors de serveis per cable i satèl·lit</translation>
-<translation id="1866757068250903512">Controla els dispositius d'autenticació anomenats <ph name="READERNAME" /> i les targetes intel·ligents que s'hi utilitzen</translation>
 <translation id="1870473978371099486">Serveis de classes particulars</translation>
 <translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL de script .pac.</translation>
 <translation id="1871284979644508959">Camp obligatori</translation>
@@ -842,6 +841,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="23703388716193220">Equipament de golf</translation>
 <translation id="2370368710215137370">Pujada de fitxers</translation>
 <translation id="2370739752330685659">Potser més tard</translation>
+<translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
 <translation id="2374629208601905275">D'acord amb una llei de la teva regió, Chrome et demana que triïs un motor de cerca predeterminat. Aquests motors de cerca són populars a la teva regió i es mostren en ordre aleatori.</translation>
 <translation id="2376455483361831781">Taula nova</translation>
 <translation id="2377241607395428273">Programari d'animació i gràfics</translation>

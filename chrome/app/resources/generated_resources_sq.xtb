@@ -251,7 +251,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1166457390969131095">Përdor dhe ruaj fjalëkalimet dhe çelësat e kalimit nga "Llogaria jote e Google"</translation>
 <translation id="1166583374608765787">Shqyrto përditësimin e emrit</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> i përket tavolinës së punës <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Aplikacionet e izoluara të uebit ndjekin automatikisht këtë cilësim</translation>
 <translation id="1168020859489941584">Po hapet në <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />", me atmosferën "<ph name="MOOD" />".</translation>
 <translation id="116896278675803795">Ndrysho automatikisht gjuhën që të përputhet me përmbajtjen e zgjedhur</translation>
@@ -1606,7 +1605,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" />  Sistemi do të rindizet gjatë procesit.</translation>
-<translation id="209423774103268003">Po kihet qasje te lexuesit e tu të kartave inteligjente</translation>
 <translation id="2095774564753225041">Llojet e mbështetura të skedarëve</translation>
 <translation id="2096716221239095980">Fshi të gjitha të dhënat</translation>
 <translation id="2097950021134740304">Anulo harrimin e abonimit</translation>
@@ -2631,7 +2629,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2790112944253231361">Kjo skedë u ndryshua</translation>
-<translation id="2790750268015892264">Aplikacionet e izoluara të uebit nuk mund të kontrollojnë lexuesit e kartave inteligjente. Aplikacionet nuk do të marrin qasje në asnjë kartë inteligjente.</translation>
 <translation id="2791529110887957050">Hiq Linux</translation>
 <translation id="2791952154587244007">Ndodhi një gabim. Aplikacioni kioskë nuk do të jetë në gjendje të niset automatikisht në këtë pajisje.</translation>
 <translation id="2792465461386711506">Aktivizo Sinkronizimin e Chrome për të shikuar skedat e fundit të Chrome nga telefoni yt</translation>
@@ -3546,7 +3543,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3450180775417907283"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Po e ndan këtë skedë me Gemini</translation>
 <translation id="345078987193237421">Kjo lejon qasjen te kamera për aplikacionet, uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit</translation>
-<translation id="3451362021220965191">Aplikacionet e izoluara të uebit kontrollojnë lexuesit e kartave inteligjente për të marrë qasje te kartat inteligjente që paraqiten ose futen tek ata. Kartat inteligjente zakonisht përfshijnë identitete që përdoren për të vërtetuar ose autorizuar veprime, për t'u identifikuar te shërbimet etj.</translation>
 <translation id="3452999110156026232">Qasja e prindit</translation>
 <translation id="3453082738208775226">Të pastrohet hapësira ruajtëse offline?</translation>
 <translation id="3453597230179205517">Qasja te vendndodhja është bllokuar</translation>
@@ -5943,7 +5939,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5120886753782992638">Kliko këtu për të vizituar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistemi operativ në kontejnerin e Linux nuk mbështetet më. Ai nuk do të marrë më përditësime sigurie dhe rregullime të defekteve në kod, dhe veçoritë që punojnë aktualisht mund të ndalojnë së funksionuari papritur. Përmirësoje me versionin më të fundit për të vazhduar të përdorësh Linux.</translation>
 <translation id="5121130586824819730">Disku është plot. Ruaje në një vend tjetër ose liro pak vend në disk.</translation>
-<translation id="5121803000325086087">Aplikacionet e izoluara të uebit mund të kërkojnë që të kontrollojnë lexuesit e kartave inteligjente. Aplikacionet do të marrin qasje te kartat e paraqitura te lexuesit nën kontrollin e tyre.</translation>
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5125714798187802869">Aktivizo</translation>
 <translation id="5125751979347152379">URL e pavlefshme.</translation>
@@ -6610,6 +6605,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5595307023264033512">Hapësira ruajtëse në total e përdorur nga sajtet: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
+<translation id="5596808802173376270">Problem me skedarin e dhënë të restaurimit - mund të jetë një lloj i pasaktë për vizitorin ekzistues të Linux. Kontrollo /var/log/messages për më shumë informacione.</translation>
 <translation id="5600348067066185292">Instalimi kërkon disa hapa të lehta. Do të të jepet një mundësi tjetër për të konfirmuar përpara se të bëhen ndryshime në kompjuterin tënd.</translation>
 <translation id="5600706100022181951">Përditësimi do të shkarkohet duke përdorur <ph name="UPDATE_SIZE_MB" /> MB të dhëna celulare. Dëshiron të vazhdosh?</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
@@ -10389,7 +10385,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="825238165904109940">Gjithmonë shfaq URL të plota</translation>
 <translation id="8252569384384439529">Po ngarkohet...</translation>
 <translation id="8253198102038551905">Kliko "+" për të gjetur karakteristikat e rrjetit</translation>
-<translation id="8254871563792426806">Ky sajt po qaset te lexuesit e kartave inteligjente të lidhur me pajisjen tënde dhe me gjasë kartat inteligjente që disponohen për lexuesit</translation>
 <translation id="8255212965098517578">Fotografitë, njoftimet dhe aplikacionet e fundit</translation>
 <translation id="8255927332875030912">Kërko + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Xixëllues</translation>

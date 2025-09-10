@@ -245,13 +245,13 @@
 <translation id="1162479191445552288">開機時啟動</translation>
 <translation id="1163931534039071049">檢視頁框原始碼(&amp;V)</translation>
 <translation id="1164015913575846413">Alt 鍵 + 按一下左鍵</translation>
+<translation id="1164286072721995435">每次開始新對話時與 Gemini 分享當前分頁。你可以隨時暫停分享當前分頁。你的資料不會用於改善生成式 AI 模型。</translation>
 <translation id="1164891049599601209">已在欺詐網站上輸入</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
 <translation id="1166457390969131095">使用並儲存 Google 帳戶中的密碼和密鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
-<translation id="1166644470305877068">「隔離的網絡應用程式」會自動採用此設定</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
 <translation id="1168704243733734901">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係<ph name="STYLE" />，情境係<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
@@ -531,6 +531,7 @@
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連線，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
 <translation id="1354148503392558902">正在變更密碼…</translation>
+<translation id="1354943694624358993">一律分享當前分頁</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355088659320425659">記錄和分頁</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。使用實體開關開啟麥克風。</translation>
@@ -1621,7 +1622,6 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在程序中途重新啟動。</translation>
-<translation id="209423774103268003">正在存取你的智能讀卡器</translation>
 <translation id="2095774564753225041">支援的檔案類型</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2097950021134740304">取消清除訂閱</translation>
@@ -2648,7 +2648,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2790112944253231361">已變更此分頁</translation>
-<translation id="2790750268015892264">「隔離的網絡應用程式」無法控制智能讀卡器，因此無法存取任何智能卡。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這部裝置上自動啟動 Kiosk 應用程式。</translation>
 <translation id="2792465461386711506">打開 Chrome 同步功能嚟睇返最近透過手機開啟嘅 Chrome 分頁</translation>
@@ -3564,7 +3563,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 你而家同 Gemini 分享緊呢個分頁</translation>
 <translation id="345078987193237421">此操作會允許應用程式、具有相機權限的網站和系統服務存取相機</translation>
-<translation id="3451362021220965191">「隔離的網絡應用程式」可控制智能讀卡器，以存取插入讀卡器或讀卡器感應到的智能卡。智能卡通常包含身分資料，用於驗證或授權操作、登入服務等。</translation>
 <translation id="3452999110156026232">家長存取權</translation>
 <translation id="3453082738208775226">要清理離線儲存空間嗎？</translation>
 <translation id="3453597230179205517">禁止存取位置</translation>
@@ -5740,6 +5738,7 @@
 <translation id="4956593309300508411">要停止分享嗎？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">只將資料夾儲存至此裝置嗎？</translation>
+<translation id="4958916254663453555">當你開啟 Chrome 版 Gemini 時，系統會自動分享當前分頁。當前分頁的所有內容和網址都會傳送到 Google。</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
 <translation id="4960020053211143927">部分應用程式不支援此設定</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5849,6 +5848,7 @@
 <translation id="5045367873597907704">關於 HID 裝置</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正在現有的瀏覽器工作階段中開啟。</translation>
+<translation id="5047544190872578914">每次開始新對話時與 Gemini 分享當前分頁。你可以隨時暫停分享當前分頁。</translation>
 <translation id="504953514574706691">喺建議群組度排除咗分頁</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下載未經驗證的檔案</translation>
@@ -5962,7 +5962,6 @@
 <translation id="5120886753782992638">請按這裡前往 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">系統已不再支援您 Linux 容器中的作業系統。作業系統將不再收到安全更新和錯誤修正項目，目前執行的功能亦可能無預警停止運作。如要繼續使用 Linux，請升級至最新版本。</translation>
 <translation id="5121130586824819730">您的硬碟已滿。請儲存至其他位置或在硬碟上騰出更多空間。</translation>
-<translation id="5121803000325086087">「隔離的網絡應用程式」可要求控制智能讀卡器，並存取讀卡器感應到的智能卡。</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5125714798187802869">啟用</translation>
 <translation id="5125751979347152379">網址無效。</translation>
@@ -9319,6 +9318,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
 <translation id="7509097596023256288">正在設定管理</translation>
 <translation id="7509539379068593709">解除安裝應用程式</translation>
+<translation id="7513438205469584978">根據你的 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活動<ph name="END_LINK_GOOGLE_ACTIVITY" />生成建議</translation>
 <translation id="7514239104543605883">複製至您的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派</translation>
@@ -10411,7 +10411,6 @@
 <translation id="825238165904109940">一律顯示完整網址</translation>
 <translation id="8252569384384439529">正在上載…</translation>
 <translation id="8253198102038551905">按一下 [+] 以取得網絡屬性</translation>
-<translation id="8254871563792426806">此網站正存取連接至你裝置的智能讀卡器，且可能會存取讀卡器中的智能卡</translation>
 <translation id="8255212965098517578">最近的相片、通知和應用程式</translation>
 <translation id="8255927332875030912">搜尋 + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">小黃</translation>

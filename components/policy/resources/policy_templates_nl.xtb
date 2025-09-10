@@ -1529,6 +1529,7 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 
 Dit apparaatbeleid is vergelijkbaar met het bestaande gebruikersbeleid <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
+<translation id="2090280024671359587">Tekst vastleggen toestaan en AI-modellen verbeteren.</translation>
 <translation id="2090712407517297305">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is zichtbaar op chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
@@ -3381,6 +3382,7 @@ Dit beleid is beperkt tot 1000 items.
 Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-on VPN met strikte modus actief is en het VPN geen verbinding heeft.</translation>
 <translation id="3405997282295704902">Niet toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="3406122462682235653">De gebruiker niet vragen (downloads beginnen meteen)</translation>
+<translation id="3410534959501660670">Instellingen voor de functie Tekst vastleggen</translation>
 <translation id="3411947169047929182">Beheert de configuratie voor WebRTC</translation>
 <translation id="341285788698114069">Met dit beleid bepaal je de prioriteit van het audioproces in Windows.
       Als je dit beleid toepast, wordt het audioproces uitgevoerd met een hogere prioriteit dan normaal.
@@ -6135,6 +6137,7 @@ Geldige waarden voor verwerking:
 
 Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) voor een gedetailleerde beschrijving van alle waarden voor verwerking.</translation>
 <translation id="5290940294294002042">Lijst met plug-ins opgeven die de gebruiker kan aan- of uitzetten</translation>
+<translation id="5292069729218406524">Tekst vastleggen toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
 <translation id="5293619885162445352">Toestaan dat <ph name="PEPPER_NAME" /> de nieuwe videodecoder gebruikt.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
@@ -9675,6 +9678,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7713608076604149344">Downloadbeperkingen</translation>
 <translation id="7713845740295404764">Inlog-/uitloggebeurtenissen rapporteren</translation>
 <translation id="7715711044277116530">Percentage waarmee de dimvertraging van het scherm in de presentatiemodus wordt geschaald</translation>
+<translation id="7715838249298819250">Tekst vastleggen niet toestaan</translation>
 <translation id="7716020145539921591">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Als je het beleid instelt, kun je de URL van de proxyserver opgeven. Dit beleid is alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven en je <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> hebt geselecteerd met <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10366,6 +10370,17 @@ Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) 
 
       Dit beleid wordt genegeerd voor gewone gebruikersaccounts.</translation>
 <translation id="8257863622304579015">De sandbox van de netwerkservice aanzetten</translation>
+<translation id="825834906982940588">Dit beleid beheert de instellingen van de functie Tekst vastleggen voor <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8259375588339409826">Chromium en Google Chrome ondersteunen dezelfde reeks beleidsregels. Dit document bevat mogelijk niet-vrijgegeven beleidsregels (dat wil zeggen, het item 'Ondersteund op' verwijst naar een nog niet vrijgegeven versie van <ph name="PRODUCT_NAME" />) die zonder kennisgeving kunnen worden gewijzigd of verwijderd en waarvoor geen enkele garanties worden geleverd, waaronder geen garanties met betrekking tot hun beveiligings- en privacy-eigenschappen.
 
 Deze beleidsregels zijn uitsluitend bedoeld voor het configureren van instanties van <ph name="PRODUCT_NAME" /> binnen je organisatie. Gebruik van deze beleidsregels buiten je organisatie (bijvoorbeeld in een openbaar gedistribueerd programma) wordt beschouwd als malware en wordt waarschijnlijk gelabeld als malware door Google en antivirusproviders.

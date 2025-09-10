@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">ถาด 12</translation>
 <translation id="1864927262126810325">จาก <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">ผู้ให้บริการเคเบิลและดาวเทียม</translation>
-<translation id="1866757068250903512">ควบคุมอุปกรณ์ตรวจสอบสิทธิ์ที่มีชื่อว่า <ph name="READERNAME" /> และสมาร์ทการ์ดที่ใช้กับอุปกรณ์ดังกล่าว</translation>
 <translation id="1870473978371099486">บริการติวส่วนตัว</translation>
 <translation id="1871208020102129563">พร็อกซีถูกตั้งค่าให้ใช้พร็อกซีเซิร์ฟเวอร์แบบคงที่ ไม่ใช่ URL สคริปต์ .pac</translation>
 <translation id="1871284979644508959">ช่องที่ต้องกรอก</translation>
@@ -842,6 +841,7 @@
 <translation id="23703388716193220">อุปกรณ์เล่นกอล์ฟ</translation>
 <translation id="2370368710215137370">การอัปโหลดไฟล์</translation>
 <translation id="2370739752330685659">ไว้คราวหลัง</translation>
+<translation id="2371084566192454134">แท็บและกลุ่มแท็บ</translation>
 <translation id="2374629208601905275">Chrome จะขอให้คุณเลือกเครื่องมือค้นหาเริ่มต้นตามกฎหมายในภูมิภาคของคุณ เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคของคุณ และแสดงแบบสุ่มลำดับ</translation>
 <translation id="2376455483361831781">ตารางใหม่</translation>
 <translation id="2377241607395428273">ซอฟต์แวร์กราฟิกและภาพเคลื่อนไหว</translation>

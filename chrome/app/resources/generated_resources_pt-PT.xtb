@@ -252,7 +252,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1166457390969131095">Usar e guardar palavras-passe e chaves de acesso da sua Conta Google</translation>
 <translation id="1166583374608765787">Analise a atualização do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertence ao espaço de trabalho <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">As apps Web isoladas seguem automaticamente esta definição</translation>
 <translation id="1168020859489941584">A abrir dentro de <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />, no estilo <ph name="STYLE" />, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Alterar automaticamente o idioma para corresponder ao conteúdo selecionado</translation>
@@ -1613,7 +1612,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> o sistema será reiniciado durante o processo.</translation>
-<translation id="209423774103268003">Os seus leitores de cartões inteligentes estão a ser acedidos</translation>
 <translation id="2095774564753225041">Tipos de ficheiro suportados</translation>
 <translation id="2096716221239095980">Eliminar todos os dados</translation>
 <translation id="2097950021134740304">Cancelar esquecimento da subscrição</translation>
@@ -2638,7 +2636,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2790112944253231361">Alterou este separador</translation>
-<translation id="2790750268015892264">As apps Web isoladas não podem controlar leitores de cartões inteligentes. As apps não vão ter acesso a nenhum cartão inteligente.</translation>
 <translation id="2791529110887957050">Remover Linux</translation>
 <translation id="2791952154587244007">Ocorreu um erro. A aplicação Quiosque não poderá ser iniciada automaticamente neste dispositivo.</translation>
 <translation id="2792465461386711506">Ative a Sincronização do Chrome para ver separadores recentes do Chrome no telemóvel.</translation>
@@ -3557,7 +3554,6 @@ Quer pará-lo?</translation>
 <translation id="3450180775417907283">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Está a partilhar este separador com o Gemini</translation>
 <translation id="345078987193237421">Isto permite o acesso à câmara para apps, Websites com a autorização de acesso à câmara e serviços do sistema</translation>
-<translation id="3451362021220965191">As apps Web isoladas controlam os leitores de cartões inteligentes para terem acesso aos cartões inteligentes inseridos ou apresentados. Normalmente, os cartões inteligentes contêm identidades usadas para autenticar ou autorizar operações, iniciar sessão em serviços, etc.</translation>
 <translation id="3452999110156026232">Acesso parental</translation>
 <translation id="3453082738208775226">Limpar o armazenamento offline?</translation>
 <translation id="3453597230179205517">O acesso à localização está bloqueado</translation>
@@ -5961,7 +5957,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5120886753782992638">Clique aqui para visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">O sistema operativo no seu contentor do Linux já não é suportado. Deixará de receber atualizações de segurança e correções de erros e as funcionalidades que funcionam atualmente podem falhar de forma inesperada. Atualize para a versão mais recente para continuar a utilizar o Linux.</translation>
 <translation id="5121130586824819730">O seu disco rígido está cheio. Guarde noutra localização ou liberte espaço no disco rígido.</translation>
-<translation id="5121803000325086087">As apps Web isoladas podem pedir para controlar leitores de cartões inteligentes. As apps vão ter acesso aos cartões inteligentes apresentados aos leitores sob o respetivo controlo.</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
 <translation id="5125714798187802869">Ativar</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
@@ -10419,7 +10414,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="825238165904109940">Mostrar sempre URLs completos</translation>
 <translation id="8252569384384439529">A carregar…</translation>
 <translation id="8253198102038551905">Clique em "+" para aceder às propriedades de rede</translation>
-<translation id="8254871563792426806">Este site está a aceder aos leitores de cartões inteligentes ligados ao seu dispositivo e, potencialmente, aos cartões inteligentes disponíveis para estes</translation>
 <translation id="8255212965098517578">Fotos, notificações e apps recentes</translation>
 <translation id="8255927332875030912">Pesquisa + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Pantufa</translation>

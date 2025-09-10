@@ -251,7 +251,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1166457390969131095">Usar e gardar contrasinais e claves de acceso da túa Conta de Google</translation>
 <translation id="1166583374608765787">Revisa o cambio do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> é do escritorio <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">As aplicacións web illadas seguirán automaticamente esta opción de configuración</translation>
 <translation id="1168020859489941584">O ficheiro abrirase en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambiar automaticamente o idioma para que coincida co do contido seleccionado</translation>
@@ -1610,7 +1609,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BR" />
 <ph name="BR" />
 <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> O sistema reiniciarase durante o proceso.</translation>
-<translation id="209423774103268003">Estase accedendo aos teus lectores de tarxetas intelixentes</translation>
 <translation id="2095774564753225041">Tipos de ficheiro compatibles</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
 <translation id="2097950021134740304">Cancelar a acción de esquecer subscrición</translation>
@@ -2635,7 +2633,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2790112944253231361">Pestana modificada</translation>
-<translation id="2790750268015892264">As aplicacións web illadas non poderán controlar os lectores de tarxetas intelixentes. As aplicacións non obterán acceso a ningunha tarxeta intelixente.</translation>
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Produciuse un erro. A aplicación de quiosco non poderá iniciarse automaticamente neste dispositivo.</translation>
 <translation id="2792465461386711506">Activar Sincronización de Chrome para acceder ás pestanas recentes de Chrome desde o teléfono</translation>
@@ -3553,7 +3550,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3450180775417907283"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" />: Estás compartindo esta pestana con Gemini</translation>
 <translation id="345078987193237421">Desta forma, as aplicacións, sitios web co permiso correspondente e os servizos do sistema poderán acceder á cámara</translation>
-<translation id="3451362021220965191">As aplicacións web illadas controlarán os lectores para obter acceso ás tarxetas intelixentes que se lles insiran ou se lles pasen por enriba. As tarxetas intelixentes normalmente conteñen identidades que se utilizan para autenticar ou autorizar operacións, iniciar sesión en servizos etc.</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">Queres liberar espazo de almacenamento sen conexión?</translation>
 <translation id="3453597230179205517">O acceso á localización está bloqueado</translation>
@@ -5958,7 +5954,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5120886753782992638">Fai clic aquí para visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Xa non se admite o sistema operativo do teu contedor de Linux. Deixará de recibir actualizacións de seguranza e correccións de erros, e as funcións que agora mesmo funcionan poderían deixar de facelo inesperadamente. Para seguir utilizando Linux, actualiza o contedor á última versión.</translation>
 <translation id="5121130586824819730">O teu disco duro está cheo. Garda o ficheiro noutra localización ou libera espazo no disco duro.</translation>
-<translation id="5121803000325086087">As aplicacións web illadas poderán pedir permiso para controlar os lectores de tarxetas intelixentes. As aplicacións obterán acceso ás tarxetas intelixentes que se atopen nos lectores baixo o seu control.</translation>
 <translation id="5123433949759960244">Baloncesto</translation>
 <translation id="5125714798187802869">Activar</translation>
 <translation id="5125751979347152379">URL non válido.</translation>
@@ -10409,7 +10404,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="825238165904109940">Mostrar sempre URL completos</translation>
 <translation id="8252569384384439529">Cargando…</translation>
 <translation id="8253198102038551905">Facer clic en "+" para obter as propiedades da rede</translation>
-<translation id="8254871563792426806">Este sitio está accedendo aos lectores de tarxetas intelixentes conectados ao teu dispositivo e, posiblemente, ás tarxetas dispoñibles para eles</translation>
 <translation id="8255212965098517578">Aplicacións, notificacións e fotos recentes</translation>
 <translation id="8255927332875030912">Busca + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Cadelo</translation>

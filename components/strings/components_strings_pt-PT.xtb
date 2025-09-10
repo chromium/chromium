@@ -532,7 +532,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1863257867908022953">Tabuleiro 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Fornecedores de cabo e satélite</translation>
-<translation id="1866757068250903512">Controle os dispositivos de autenticação com o nome <ph name="READERNAME" /> e os cartões inteligentes usados com eles</translation>
 <translation id="1870473978371099486">Serviços de aulas particulares</translation>
 <translation id="1871208020102129563">O proxy está definido para utilizar servidores proxy fixos e não um URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obrigatório</translation>
@@ -842,6 +841,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="23703388716193220">Equipamento de golfe</translation>
 <translation id="2370368710215137370">Carregamento de ficheiros</translation>
 <translation id="2370739752330685659">Talvez mais tarde</translation>
+<translation id="2371084566192454134">Separadores e grupos de separadores</translation>
 <translation id="2374629208601905275">Com base na legislação da sua região, o Chrome pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados em ordem aleatória.</translation>
 <translation id="2376455483361831781">Nova tabela</translation>
 <translation id="2377241607395428273">Gráficos e software de animação</translation>

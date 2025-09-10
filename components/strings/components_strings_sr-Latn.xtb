@@ -532,7 +532,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1863257867908022953">12. fioka</translation>
 <translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Dobavljači kablovskih i satelitskih usluga</translation>
-<translation id="1866757068250903512">Kontrolišite uređaje za potvrdu identiteta sa nazivom <ph name="READERNAME" /> i pametne kartice koje se koriste sa njima</translation>
 <translation id="1870473978371099486">Usluge privatnog podučavanja</translation>
 <translation id="1871208020102129563">Proksi je podešen da koristi fiksne proksi servere, a ne URL adresu .pac skripte.</translation>
 <translation id="1871284979644508959">Obavezno polje</translation>
@@ -842,6 +841,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="23703388716193220">Oprema za golf</translation>
 <translation id="2370368710215137370">Učitavanje fajlova</translation>
 <translation id="2370739752330685659">Možda kasnije</translation>
+<translation id="2371084566192454134">Kartice i grupe kartica</translation>
 <translation id="2374629208601905275">Na osnovu zakona u vašem regionu Chrome traži da odaberete podrazumevani pretraživač. Ovi pretraživači su popularni u vašem regionu i prikazuju se nasumičnim redosledom.</translation>
 <translation id="2376455483361831781">Nova tabela</translation>
 <translation id="2377241607395428273">Softver za grafiku i animaciju</translation>
@@ -4910,6 +4910,7 @@ Dodatni detalji:
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> koristi nepodržani protokol.</translation>
 <translation id="918454845714257218">Proverite kôd na <ph name="SIDE_OF_CARD" /> i probajte ponovo</translation>
 <translation id="9186203289258525843">Dugme Podesi Chrome kao podrazumevani pregledač, aktivirajte ga da biste podesili Chrome kao podrazumevani pregledač sistema</translation>
+<translation id="9186371298532546532">Koristite ovu adresu na više mesta</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> je promenio/la ovu karticu</translation>
 <translation id="9189789270972826888">Kliknite na podatke o kartici u nastavku da biste ih kopirali i nalepili ako kartica nije popunjena. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Teme starije od 4 nedelje se automatski brišu</translation>
@@ -4925,6 +4926,7 @@ Dodatni detalji:
 <translation id="920643408853370361">Putno osiguranje</translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspelo.</translation>
 <translation id="9209339767782560829">Došlo je do problema pri korišćenju sertifikata za prijavljivanje.</translation>
+<translation id="9210152531668884481">Može</translation>
 <translation id="9210825002219699214">Vazdušni saobraćaj</translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>
 <translation id="9215416866750762878">Aplikacija onemogućava Chrome-u da se bezbedno poveže sa ovim sajtom</translation>

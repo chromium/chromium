@@ -251,7 +251,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1166457390969131095">Utilisez et enregistrez les mots de passe et les clés d'accès de votre compte Google</translation>
 <translation id="1166583374608765787">Revoir la mise à jour du nom</translation>
 <translation id="1166596238782048887">Le tableau <ph name="TAB_TITLE" /> appartient au bureau <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Les applis Web isolées suivent automatiquement ce paramètre</translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Thème d'IA <ph name="INDEX" /> de <ph name="SUBJECT" /> récent, dans le style <ph name="STYLE" />, avec l'ambiance <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Changer automatiquement la langue pour correspondre au contenu sélectionné</translation>
@@ -1612,7 +1611,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Le système va redémarrer durant le processus.</translation>
-<translation id="209423774103268003">Vos lecteurs de cartes à puce sont en cours d'accès</translation>
 <translation id="2095774564753225041">Types de fichiers compatibles</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
 <translation id="2097950021134740304">Annuler l'abonnement en oubli</translation>
@@ -2637,7 +2635,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">A modifié cet onglet</translation>
-<translation id="2790750268015892264">Les applis Web isolées ne peuvent pas contrôler les lecteurs de cartes à puce. Les applis n'auront accès à aucune carte à puce.</translation>
 <translation id="2791529110887957050">Supprimer Linux</translation>
 <translation id="2791952154587244007">Une erreur s'est produite. Impossible de lancer automatiquement l'application de kiosque sur cet appareil.</translation>
 <translation id="2792465461386711506">Activez la synchronisation Chrome pour afficher les onglets Chrome récents de votre téléphone</translation>
@@ -3557,7 +3554,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3450180775417907283"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Vous partagez cet onglet avec Gemini</translation>
 <translation id="345078987193237421">Cela permet l'accès à l'appareil photo pour les applis, les sites Web avec l'autorisation de l'appareil photo et les services système</translation>
-<translation id="3451362021220965191">Les applis Web isolées contrôlent les lecteurs de cartes à puce pour accéder aux cartes à puce qui sont insérées ou qui leur sont présentées. Les cartes à puce contiennent généralement des identités utilisées pour authentifier ou autoriser des opérations, se connecter à des services, etc.</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453082738208775226">Nettoyer le stockage hors ligne?</translation>
 <translation id="3453597230179205517">L'accès à la position est bloqué</translation>
@@ -5958,7 +5954,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5120886753782992638">Cliquez ici pour accéder à <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Le système d'exploitation de votre conteneur Linux n'est plus pris en charge. Il ne recevra plus les mises à jour de sécurité ni les corrections de bogues, et certaines fonctionnalités qui fonctionnent actuellement pourraient s'interrompre de façon inattendue. Veuillez effectuer une mise à niveau vers la dernière version de Linux pour continuer de l'utiliser.</translation>
 <translation id="5121130586824819730">Votre disque dur est plein. Veuillez faire l'enregistrement à un autre endroit ou libérer de l'espace sur le disque dur.</translation>
-<translation id="5121803000325086087">Les applis Web isolées peuvent demander à contrôler les lecteurs de cartes à puce. Les applis auront accès aux cartes à puce présentées aux lecteurs sous leur contrôle.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">Activer</translation>
 <translation id="5125751979347152379">URL incorrecte.</translation>
@@ -10413,7 +10408,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="825238165904109940">Toujours afficher les URL en entier</translation>
 <translation id="8252569384384439529">Téléversement en cours…</translation>
 <translation id="8253198102038551905">Cliquez sur « + » pour afficher les propriétés du réseau</translation>
-<translation id="8254871563792426806">Ce site accède aux lecteurs de cartes à puce connectés à votre appareil et potentiellement aux cartes à puce qui s'y trouvent</translation>
 <translation id="8255212965098517578">Photos, notifications et applications récentes</translation>
 <translation id="8255927332875030912">Recherche + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Fido</translation>

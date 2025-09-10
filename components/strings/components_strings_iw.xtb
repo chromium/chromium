@@ -50,7 +50,7 @@
 <translation id="1080116354587839789">התאמה לרוחב</translation>
 <translation id="1081061862829655580">מגש 19</translation>
 <translation id="1082026381988252344">גלילה בתוכן הכרטיסייה המשותפת ושינוי מרחק התצוגה שלו</translation>
-<translation id="108859316315249327">ניסיון חוזר</translation>
+<translation id="108859316315249327">צריך לנסות שוב</translation>
 <translation id="1088664500620117635">המחיר הרגיל של <ph name="PRODUCT_NAME" /> נע בין <ph name="LOW_PRICE" /> ל-<ph name="HIGH_PRICE" />, אבל המחיר הנוכחי הוא <ph name="CURRENT_PRICE" /> באינטרנט.</translation>
 <translation id="1089439967362294234">שינוי סיסמה</translation>
 <translation id="1089599132348386324">‏אפשר לשנות את הבחירה בכל שלב בהגדרות של Chrome.</translation>
@@ -189,7 +189,7 @@
 <translation id="1308113895091915999">הצעה זמינה</translation>
 <translation id="1309375166585231290">ההורים שלך עדיין לא אישרו את זה</translation>
 <translation id="1310677614877521969">אירוח באינטרנט</translation>
-<translation id="1310938305420497484">קודם כול צריך לפתוח כרטיסיות ולהיכנס לאתרים</translation>
+<translation id="1310938305420497484">קודם צריך לפתוח כרטיסיות ולהיכנס לאתרים</translation>
 <translation id="1314311879718644478">הצגת תוכן של מציאות רבודה</translation>
 <translation id="1314509827145471431">כריכה בקצה הימני</translation>
 <translation id="1314784609072437689">שינוי מקלדת ברירת המחדל</translation>
@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">מגש 12</translation>
 <translation id="1864927262126810325">מקור: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">ספקי טלוויזיה בכבלים ובלוויין</translation>
-<translation id="1866757068250903512">שליטה בהתקני האימות בשם <ph name="READERNAME" /> ובכרטיסים החכמים שנעשה בהם שימוש איתם</translation>
 <translation id="1870473978371099486">שירותי שיעורים פרטיים</translation>
 <translation id="1871208020102129563">‏שרת ה-Proxy מוגדר להשתמש בשרתי Proxy קבועים, לא בכתובת אתר של סקריפט ‎.Pac</translation>
 <translation id="1871284979644508959">שדה חובה</translation>
@@ -620,7 +619,7 @@
 <translation id="2029735183873159415">חקר יוחסין וגניאלוגיה</translation>
 <translation id="2032962459168915086">‏<ph name="BEGIN_LINK" />לבדוק את שרת ה-Proxy ואת חומת האש<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">קיצור הדרך לא יכול להיות זהה למילת המפתח של ספק החיפוש שהוגדרה כברירת המחדל על ידי <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />:‏ <ph name="SHORTCUT_NAME" /></translation>
-<translation id="2034971124472263449">אני בכל זאת רוצה לשמור</translation>
+<translation id="2034971124472263449">לשמור בכל מקרה</translation>
 <translation id="2036514476578229158">‏ביקשת לבקר באתר הזה. ההורים שלך יכולים להגיב לבקשה ב-Family Link.</translation>
 <translation id="2036983605131262583">גליל חלופי</translation>
 <translation id="2040463897538655645">אחסון נשלף</translation>
@@ -842,7 +841,8 @@
 <translation id="23703388716193220">ציוד לגולף</translation>
 <translation id="2370368710215137370">העלאת קבצים</translation>
 <translation id="2370739752330685659">אולי יותר מאוחר</translation>
-<translation id="2374629208601905275">‏בהתאם לחוק באזור שלך, עליך לבחור את מנוע החיפוש שיוגדר כברירת המחדל ב-Chrome. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
+<translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
+<translation id="2374629208601905275">‏בהתאם לחוק באזור שלך, צריך לבחור את מנוע החיפוש שיוגדר כברירת המחדל ב-Chrome. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
 <translation id="2376455483361831781">טבלה חדשה</translation>
 <translation id="2377241607395428273">תוכנות גרפיקה ואנימציה</translation>
 <translation id="2378084239755710604">גיליון שמירת הכרטיס נסגר.</translation>
@@ -1456,7 +1456,7 @@
 <translation id="3433144818443565002">צ'אט קולי ווידאו צ'אט</translation>
 <translation id="3434025015623587566">‏למנהל הסיסמאות של Google נדרשת עוד גישה</translation>
 <translation id="3434346831962601311">אין נושאים חסומים</translation>
-<translation id="343474037147570563">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
+<translation id="343474037147570563">‏קבצים שמועלים או מצורפים נשלחים ל־Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3440783957068352691">ריבוע</translation>
@@ -1855,7 +1855,7 @@
 <translation id="4082333119419111506">Paper (Preprinted)</translation>
 <translation id="4082393374666368382">הגדרות - ניהול</translation>
 <translation id="4084219288110917128">‏מעטפה – C1</translation>
-<translation id="4085326869263783566">‏עזרה בכתיבה. כדי לפתוח מקישים על Tab ואז על Enter</translation>
+<translation id="4085326869263783566">‏עזרה בכתיבה. כדי לפתוח צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="4085769736382018559">השוואת מוצרים</translation>
 <translation id="4085778582400064057">כחול 2</translation>
 <translation id="4085859451613666999">‏הכרטיס נשמר בחשבון Google, כך שאפשר למלא את הפרטים שלו באופן אוטומטי ברכישות עתידיות</translation>
@@ -2221,7 +2221,7 @@
 <translation id="4698692901173737941">אומנויות לחימה</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">צד</translation>
-<translation id="4702656508969495934">מוצגות כתוביות מיידיות, ניתן להשתמש במעבר בין החלונות כדי להתמקד</translation>
+<translation id="4702656508969495934">מוצגות כתוביות מיידיות, כדי להתמקד בהן צריך להשתמש במעבר בין החלונות</translation>
 <translation id="4703342001883078444">משפחה ומערכות יחסים</translation>
 <translation id="4704745399240123930">הכרטיסים שהמוכר הזה לא מקבל, כמו כרטיסים וירטואליים, מושבתים.</translation>
 <translation id="4708268264240856090">החיבור שלך נקטע</translation>
@@ -3167,7 +3167,7 @@ Del</translation>
 <translation id="6264636978858465832">למנהל הסיסמאות נדרשת עוד גישה</translation>
 <translation id="6265794661083428563">העתקת ערך המדיניות <ph name="POLICY_NAME" /></translation>
 <translation id="6270066318535733958">חתירה בסירה</translation>
-<translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
+<translation id="6272088941196661550">‏חזרה לתהליך כדי לראות פעילות רלוונטית בהיסטוריית Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
 <translation id="6278015583149890680">‏‫Google Drive ו-OneDrive</translation>
 <translation id="6279228081537458128">תשלום אחר כך</translation>
@@ -3504,7 +3504,7 @@ Del</translation>
 <translation id="6820143000046097424">יציאות טוריות</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6825578344716086703">‏ניסית להגיע אל <ph name="DOMAIN" /> אבל השרת הציג אישור שנחתם באמצעות אלגוריתם חתימה חלש (כמו SHA-1). כלומר, ייתכן שפרטי הכניסה המאובטחים שהשרת הציג זויפו, וייתכן שהשרת אינו השרת שרצית (ייתכן שאתה מתקשר עם תוקף).</translation>
-<translation id="6826993739343257035">‏להתיר AR?</translation>
+<translation id="6826993739343257035">‏לאפשר AR?</translation>
 <translation id="6828150717884939426">שיחה</translation>
 <translation id="6828866289116430505">גנטיקה</translation>
 <translation id="6831043979455480757">תרגום</translation>
@@ -4229,7 +4229,7 @@ Del</translation>
 <translation id="8022542098135319050">סוכני נסיעות ושירותים לנסיעות</translation>
 <translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת</translation>
 <translation id="8027077570865220386">מגש 15</translation>
-<translation id="8027585818882015174">‏הכפתור להרצת בדיקת אבטחה ב-Chrome, מפעילים אותו כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
+<translation id="8027585818882015174">‏הכפתור להרצת בדיקת אבטחה ב-Chrome, יש להפעיל אותו כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, כדי ליצור בקלות טופס חדש ב-Google Forms, יש ללחוץ על Tab ואז על Enter</translation>
 <translation id="8028892419725165118">משחקים לקהל הרחב</translation>
 <translation id="8028960012888758725">חיתוך אחרי העבודה</translation>

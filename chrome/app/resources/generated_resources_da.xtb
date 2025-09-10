@@ -245,13 +245,13 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Åbn ved opstart</translation>
 <translation id="1163931534039071049">&amp;Vis rammens kildetekst</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
+<translation id="1164286072721995435">Deler den aktuelle fane med Gemini, hver gang du starter en ny samtale. Du kan til enhver tid sætte delingen af din aktuelle fane på pause. Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1166212789817575481">Luk fanerne til højre</translation>
 <translation id="1166457390969131095">Brug og gem adgangskoder samt adgangsnøgler på din Google-konto</translation>
 <translation id="1166583374608765787">Gennemgå navneopdateringen</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Isolerede webapps følger automatisk denne indstilling</translation>
 <translation id="1168020859489941584">Åbner om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Seneste AI-tema <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /> med stemningen <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Skift automatisk sprog, så det passer med det valgte indhold</translation>
@@ -532,6 +532,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">PPD-filen kan ikke findes. Sørg for, at din Chromebook er online, og prøv igen.</translation>
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1354148503392558902">Ændrer adgangskoden…</translation>
+<translation id="1354943694624358993">Del altid den aktuelle fane</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1356376170199999104">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér mikrofonen ved hjælp af den fysiske kontakt.</translation>
@@ -1623,7 +1624,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" />  Systemet genstarter under processen.</translation>
-<translation id="209423774103268003">Der er adgang til dine chipkortlæsere</translation>
 <translation id="2095774564753225041">Understøttede filtyper</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2097950021134740304">Glem ikke abonnementet alligevel</translation>
@@ -2651,7 +2651,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Har ændret denne fane</translation>
-<translation id="2790750268015892264">Isolerede webapps kan ikke styre chipkortlæsere. Apps får ikke adgang til chipkort.</translation>
 <translation id="2791529110887957050">Fjern Linux</translation>
 <translation id="2791952154587244007">Der opstod en fejl. Terminalapplikationen kan ikke åbnes automatisk på denne enhed.</translation>
 <translation id="2792465461386711506">Aktivér Chrome-synkronisering for at se de seneste Chrome-faner på din telefon</translation>
@@ -3569,7 +3568,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3450180775417907283"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Du deler denne fane med Gemini</translation>
 <translation id="345078987193237421">Dette giver apps, websites med kameratilladelse og systemtjenester adgang til kameraet</translation>
-<translation id="3451362021220965191">Isolerede webapps styrer chipkortlæsere for at få adgang til chipkort, der er indsat i eller præsenteret for dem. Chipkort indeholder normalt identiteter, der bruges til at godkende eller autorisere handlinger, logge ind i tjenester osv.</translation>
 <translation id="3452999110156026232">Forældreadgang</translation>
 <translation id="3453082738208775226">Vil du frigøre offlinelagerplads?</translation>
 <translation id="3453597230179205517">Lokationsadgang er blokeret</translation>
@@ -5749,6 +5747,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4956593309300508411">Vil du stoppe delingen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du gemme det i en mappe, der kun er på denne enhed?</translation>
+<translation id="4958916254663453555">Din aktuelle fane deles automatisk, når du åbner Gemini i Chrome. Alt indholdet på den aktuelle fane og dens webadresse sendes til Google.</translation>
 <translation id="4959262764292427323">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed</translation>
 <translation id="4960020053211143927">Understøttes ikke af visse apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5858,6 +5857,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5045367873597907704">Om HID-enheder</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
+<translation id="5047544190872578914">Deler den aktuelle fane med Gemini, hver gang du starter en ny samtale. Du kan til enhver tid sætte delingen af din aktuelle fane på pause.</translation>
 <translation id="504953514574706691">Fanen er ekskluderet fra den foreslåede gruppe</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Download uverificeret fil</translation>
@@ -5971,7 +5971,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5120886753782992638">Klik her for at besøge <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativsystemet i din Linux-container understøttes ikke længere. Det stopper med at modtage sikkerhedsopdateringer og fejlrettelser, og funktioner, der i øjeblikket fungerer, kan holde op med at fungere helt uventet. Opgrader til den nyeste version for at fortsætte med at bruge Linux.</translation>
 <translation id="5121130586824819730">Din harddisk er fuld. Gem på en anden placering, eller frigør mere plads på harddisken.</translation>
-<translation id="5121803000325086087">Isolerede webapps kan anmode om at styre chipkortlæsere. Apps får adgang til chipkort, der præsenteres for læsere under deres kontrol.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">Aktivér</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
@@ -9335,6 +9334,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanerne og slette gruppen?}one{Vil du lukke fanerne og slette gruppen?}other{Vil du lukke fanerne og slette grupperne?}}</translation>
 <translation id="7509097596023256288">Konfiguration af administration</translation>
 <translation id="7509539379068593709">Afinstaller app</translation>
+<translation id="7513438205469584978">Forslag baseret på din <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-aktivitet<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopiér til din enhed</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Tilføj tildeling</translation>
@@ -10429,7 +10429,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="825238165904109940">Vis altid komplette webadresser</translation>
 <translation id="8252569384384439529">Uploader…</translation>
 <translation id="8253198102038551905">Klik på "+" for at få vist netværksegenskaber</translation>
-<translation id="8254871563792426806">Dette website har adgang til chipkortlæsere, der er knyttet til din enhed, og muligvis til chipkort, der er tilgængelige for dem</translation>
 <translation id="8255212965098517578">Seneste billeder, notifikationer og apps</translation>
 <translation id="8255927332875030912">Søgetast+<ph name="KEY" /></translation>
 <translation id="8256319818471787266">Fido</translation>

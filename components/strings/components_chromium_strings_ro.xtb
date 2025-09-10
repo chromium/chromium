@@ -9,7 +9,7 @@
           <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          și asigură-te că ai setat configurația la Fără proxy sau Directă.</translation>
+          și asigură-te că ai setat pentru configurație valoarea Fără proxy sau Directă.</translation>
 <translation id="275588974610408078">Raportarea blocărilor nu este disponibilă în Chromium.</translation>
 <translation id="3064346599913645280">Se afișează o pagină Chromium securizată</translation>
 <translation id="3255926992597692024">Chromium încearcă să modifice setările pentru completarea metodelor de plată.</translation>

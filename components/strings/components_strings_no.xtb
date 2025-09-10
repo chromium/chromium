@@ -532,7 +532,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1863257867908022953">Skuff 12</translation>
 <translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel- og satellittleverandører</translation>
-<translation id="1866757068250903512">Kontroller autentiseringsenheter med navnet <ph name="READERNAME" /> og smartkortene som brukes med dem</translation>
 <translation id="1870473978371099486">Privatundervisning</translation>
 <translation id="1871208020102129563">Mellomtjeneren er angitt til å bruke statiske proxytjenere, ikke en nettadresse med .pac-skript.</translation>
 <translation id="1871284979644508959">Obligatorisk felt</translation>
@@ -842,6 +841,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="23703388716193220">Golfutstyr</translation>
 <translation id="2370368710215137370">Opplasting av filer</translation>
 <translation id="2370739752330685659">Kanskje senere</translation>
+<translation id="2371084566192454134">Faner og fanegrupper</translation>
 <translation id="2374629208601905275">På grunn av en lov som gjelder i regionen din, ber vi deg om å velge en standardsøkemotor for Chrome. Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge.</translation>
 <translation id="2376455483361831781">Ny tabell</translation>
 <translation id="2377241607395428273">Programvare for tegning og animasjon</translation>

@@ -251,7 +251,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1166457390969131095">Usar y guardar contraseñas y llaves de acceso de tu Cuenta de Google</translation>
 <translation id="1166583374608765787">Revisar actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Las apps web aisladas siguen automáticamente esta configuración</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente de IA <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
@@ -1608,7 +1607,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
-<translation id="209423774103268003">Se está accediendo a tus lectores de tarjetas inteligentes</translation>
 <translation id="2095774564753225041">Tipos de archivos compatibles</translation>
 <translation id="2096716221239095980">Borrar todos los datos</translation>
 <translation id="2097950021134740304">No olvidar la suscripción</translation>
@@ -2633,7 +2631,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2790112944253231361">Cambió esta pestaña</translation>
-<translation id="2790750268015892264">Las apps web aisladas no pueden controlar lectores de tarjetas inteligentes. Las apps no tendrán acceso a ninguna tarjeta inteligente.</translation>
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Se produjo un error. La aplicación del kiosco no podrá iniciarse automáticamente en este dispositivo.</translation>
 <translation id="2792465461386711506">Activa la Sincronización de Chrome para ver las pestañas recientes de Chrome desde tu teléfono</translation>
@@ -3551,7 +3548,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3450180775417907283"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="345078987193237421">Esta opción permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
-<translation id="3451362021220965191">Las apps web aisladas controlan los lectores de tarjetas inteligentes para acceder a las que se insertan o se les presentan. Por lo general, las tarjetas inteligentes contienen identidades que se usan para autenticar o autorizar operaciones, acceder a servicios, etcétera.</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">¿Deseas liberar espacio de almacenamiento sin conexión?</translation>
 <translation id="3453597230179205517">Se bloqueó el acceso a la ubicación</translation>
@@ -5953,7 +5949,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5120886753782992638">Haz clic aquí para visitar <ph name="APPROVED_URL" />.</translation>
 <translation id="5121052518313988218">Ya no se admite el sistema operativo del contenedor de Linux. Dejará de recibir actualizaciones de seguridad y correcciones de errores. Es posible que las funciones actualmente en uso presenten errores inesperados. Para continuar usando Linux, actualiza a la versión más reciente.</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda en otra ubicación o libera espacio en el disco duro.</translation>
-<translation id="5121803000325086087">Las apps web aisladas pueden solicitar permiso para controlar lectores de tarjetas inteligentes. Las apps tendrán acceso a las tarjetas inteligentes que se presenten a los lectores bajo su control.</translation>
 <translation id="5123433949759960244">Básquet</translation>
 <translation id="5125714798187802869">Activar</translation>
 <translation id="5125751979347152379">URL no válido.</translation>
@@ -10409,7 +10404,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="825238165904109940">Mostrar siempre las URL completas</translation>
 <translation id="8252569384384439529">Subiendo…</translation>
 <translation id="8253198102038551905">Haz clic en "+" para ver las propiedades de red.</translation>
-<translation id="8254871563792426806">Este sitio accede a lectores de tarjetas inteligentes conectados a tu dispositivo y, posiblemente, a tarjetas inteligentes disponibles para ellos</translation>
 <translation id="8255212965098517578">Fotos, notificaciones y apps recientes</translation>
 <translation id="8255927332875030912">Búsqueda + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Bobby</translation>

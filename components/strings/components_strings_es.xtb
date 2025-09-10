@@ -532,7 +532,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1863257867908022953">Bandeja 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveedores de cable y satélite</translation>
-<translation id="1866757068250903512">Controlar los dispositivos de autenticación con el nombre <ph name="READERNAME" /> y las tarjetas inteligentes que se usan con ellos</translation>
 <translation id="1870473978371099486">Servicios de tutoría particulares</translation>
 <translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
@@ -842,6 +841,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="23703388716193220">Equipamiento de golf</translation>
 <translation id="2370368710215137370">Subida de archivos</translation>
 <translation id="2370739752330685659">Quizás más tarde</translation>
+<translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
 <translation id="2374629208601905275">De acuerdo con una ley de tu zona, Chrome te pide que elijas tu buscador predeterminado. Los buscadores que aparecen en la lista son populares en tu zona y se muestran en orden aleatorio.</translation>
 <translation id="2376455483361831781">Nueva tabla</translation>
 <translation id="2377241607395428273">Software de gráficos y animación</translation>

@@ -252,7 +252,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1166457390969131095">Używaj haseł i kluczy dostępu z konta Google i zapisuj je</translation>
 <translation id="1166583374608765787">Sprawdź zmienioną nazwę</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> należy do biurka <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Izolowane aplikacje internetowe automatycznie stosują to ustawienie</translation>
 <translation id="1168020859489941584">Otworzę za <ph name="TIME_REMAINING" />…</translation>
 <translation id="1168704243733734901">Ostatni motyw AI: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatycznie zmieniaj język, aby pasował do wybranych treści</translation>
@@ -1614,7 +1613,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> podczas tego procesu system uruchomi się ponownie.</translation>
-<translation id="209423774103268003">Możliwy jest dostęp do czytników kart inteligentnych</translation>
 <translation id="2095774564753225041">Obsługiwane typy plików</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
 <translation id="2097950021134740304">Anuluj zapominanie subskrypcji</translation>
@@ -2624,7 +2622,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Zmieniono tę kartę</translation>
-<translation id="2790750268015892264">Izolowane aplikacje internetowe nie mogą sterować czytnikami kart inteligentnych. Do żadnej karty inteligentnej nie mają dostępu.</translation>
 <translation id="2791529110887957050">Usuń Linuksa</translation>
 <translation id="2791952154587244007">Wystąpił błąd. Nie będzie można automatycznie uruchamiać aplikacji kiosku na tym urządzeniu.</translation>
 <translation id="2792465461386711506">Włącz Synchronizację Chrome, by wyświetlić ostatnio przeglądane karty Chrome z telefonu</translation>
@@ -3538,7 +3535,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3450180775417907283"><ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – udostępniasz tę kartę usłudze Gemini</translation>
 <translation id="345078987193237421">Z aparatu będą mogły korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe</translation>
-<translation id="3451362021220965191">Izolowane aplikacje internetowe sterują czytnikami kart inteligentnych, aby uzyskać dostęp do kart inteligentnych, które są do nich wkładane lub przez nie odczytywane. Karty inteligentne zwykle zawierają dane dotyczące tożsamości, które są używane do uwierzytelniania lub autoryzowania operacji, logowania się w usługach itp.</translation>
 <translation id="3452999110156026232">Dostęp rodzica</translation>
 <translation id="3453082738208775226">Wyczyścić pamięć offline?</translation>
 <translation id="3453597230179205517">Dostęp do lokalizacji jest zablokowany</translation>
@@ -5939,7 +5935,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5120886753782992638">Aby otworzyć stronę <ph name="APPROVED_URL" />, kliknij tutaj</translation>
 <translation id="5121052518313988218">System operacyjny w Twoim kontenerze Linuksa nie jest już obsługiwany. Nie będzie otrzymywać kolejnych aktualizacji zabezpieczeń ani poprawek błędów, a funkcje, które teraz działają, mogą nieoczekiwanie zacząć sprawiać problemy. Aby nadal używać Linuksa, uaktualnij go do najnowszej wersji.</translation>
 <translation id="5121130586824819730">Dysk twardy jest pełny. Zapisz w innej lokalizacji lub zwolnij miejsce na dysku.</translation>
-<translation id="5121803000325086087">Izolowane aplikacje internetowe mogą prosić o możliwość sterowania czytnikami kart inteligentnych. Pozwala im to uzyskiwać dostęp do kart inteligentnych wyświetlanych przez czytniki, które są pod ich kontrolą.</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
 <translation id="5125714798187802869">Aktywuj</translation>
 <translation id="5125751979347152379">Nieprawidłowy adres URL.</translation>
@@ -10395,7 +10390,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="825238165904109940">Zawsze pokazuj całe adresy URL</translation>
 <translation id="8252569384384439529">Przesyłam…</translation>
 <translation id="8253198102038551905">Kliknij „+”, by zobaczyć właściwości sieci</translation>
-<translation id="8254871563792426806">Ta strona ma dostęp do czytników kart inteligentnych podłączonych do Twojego urządzenia i potencjalnie może odczytywać karty inteligentne</translation>
 <translation id="8255212965098517578">Ostatnie zdjęcia, powiadomienia i aplikacje</translation>
 <translation id="8255927332875030912">Wyszukaj + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Tofik</translation>

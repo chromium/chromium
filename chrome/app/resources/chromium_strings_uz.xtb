@@ -177,6 +177,9 @@
 <translation id="3155163173539279776">Chromium’ni qayta ishga tushiring</translation>
 <translation id="3161522574479303604">Barcha tillar</translation>
 <translation id="3179665906251668410">Havolani Chromium &amp;inkognito oynasida ochish</translation>
+<translation id="3183357154200327217">Kompyuterdagi boshqa dastur Chromium ishlashini oʻzgartirishi mumkin mavzuni oʻrnatdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Yangi Chromium profilini moslash</translation>
 <translation id="3224847870593914902">Chromiumdan Google hisobini olib tashlash uchun Sozlamalar orqali hisobdan chiqing</translation>
 <translation id="3234316605225071811">Keyinroq Chromium shakllarni toʻldirishda saqlangan axborotlarni avtomatik kiritishni taklif qilishi mumkin</translation>
@@ -239,6 +242,9 @@
 <translation id="4036079820698952681">Chromium brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4055805654398742145">Parollar menejeri</translation>
+<translation id="4061696872429826774">Kompyuterdagi boshqa dastur Chromium ishlashini oʻzgartirishi mumkin kengaytmani oʻrnatdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
 <translation id="4118474109249235144">Chromium Inkognito</translation>
 <translation id="4122186850977583290">Chromium haqida sahifasini oching</translation>
@@ -398,6 +404,9 @@
 <translation id="6174920971222007286">Bu fayl xavfli boʻlishi mumkin<ph name="LINE_BREAK" />Parol bilan tasdiqlasangiz, Chromium bu yuklanmani tekshirishi mumkin. Fayl Google Saytlarni xavfsiz kezish serveriga yuborilishi, ammo faylning kontenti va parol qurilmada saqlanishi haqidagi axborot.</translation>
 <translation id="6182736845697986886">Yangilanish serveridagi ichki xato sababli oʻrnatilmadi.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chromium hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
+<translation id="6204922163963157461">Kompyuterdagi boshqa dastur Chromium ishlashini oʻzgartirishi mumkin ilovani oʻrnatdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Bu kompyuterda allaqachon Chromium‘ning so‘nggi versiyasi o‘rnatilgan. Agar dastur ishlamayotgan bo‘lsa, uni o‘chirib qaytadan o‘rnatib ko‘ring.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium hozir qayta ishga tushadi}=1{Chromium 1 soniyadan keyin qayta ishga tushadi}other{Chromium # soniyadan keyin qayta ishga tushadi}}</translation>
 <translation id="6239161312595354541">Rasmli qidiruv orqali bu video haqida savol berish</translation>

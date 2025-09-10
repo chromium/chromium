@@ -252,7 +252,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166457390969131095">Använd och spara lösenord och nycklar från Google-kontot</translation>
 <translation id="1166583374608765787">Granska uppdaterat namn</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hör till skrivbordet <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Isolerade webbappar följer automatiskt den här inställningen</translation>
 <translation id="1168020859489941584">Öppnar om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Aktuellt AI-tema <ph name="INDEX" /> på <ph name="SUBJECT" />, i <ph name="STYLE" />-stil, med <ph name="MOOD" />-stämning.</translation>
 <translation id="116896278675803795">Ändra språk automatiskt för att matcha valt innehåll</translation>
@@ -1623,7 +1622,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Systemet startas om under aktiveringen.</translation>
-<translation id="209423774103268003">Smartkortsläsarna används</translation>
 <translation id="2095774564753225041">Filtyper som stöds</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2097950021134740304">Avbryt att ta bort prenumerationen</translation>
@@ -2651,7 +2649,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Ändrade den här fliken</translation>
-<translation id="2790750268015892264">Isolerade webbappar kan inte styra smartkortsläsare. Appar får inte åtkomst till något smartkort.</translation>
 <translation id="2791529110887957050">Ta bort Linux</translation>
 <translation id="2791952154587244007">Ett fel har inträffat. Kioskappen kan inte startas automatiskt på den här enheten.</translation>
 <translation id="2792465461386711506">Aktivera Chrome Sync för att se de senaste flikarna i Chrome från telefonen</translation>
@@ -3569,7 +3566,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3450180775417907283"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Du delar den här fliken med Gemini</translation>
 <translation id="345078987193237421">Detta ger kameraåtkomst för appar, webbplatser med kamerabehörighet och systemtjänster</translation>
-<translation id="3451362021220965191">Isolerade webbappar styr smartkortsläsare för att få åtkomst till smartkort som har infogats eller visats för dem. Smartkort innehåller vanligtvis identiteter som används för att autentisera eller auktorisera åtgärder, logga in på tjänster och liknande.</translation>
 <translation id="3452999110156026232">Föräldraåtkomst</translation>
 <translation id="3453082738208775226">Vill du rensa i lagringsutrymmet offline?</translation>
 <translation id="3453597230179205517">Platsåtkomst har blockerats</translation>
@@ -5973,7 +5969,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5120886753782992638">Klicka här om du vill besöka <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativsystemet i Linux-behållaren stöds inte längre. Det får inga fler säkerhetsuppdateringar eller felkorrigeringar, och funktioner som fungerar för närvarande kan oväntat få problem. Uppgradera till den senaste versionen för att fortsätta använda Linux.</translation>
 <translation id="5121130586824819730">Hårddisken är full. Spara på en annan plats eller gör mer plats på hårddisken.</translation>
-<translation id="5121803000325086087">Isolerade webbappar kan begära behörighet att styra smartkortsläsare. Appar får åtkomst till smartkort som visas för läsare som de styr.</translation>
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5125714798187802869">Aktivera</translation>
 <translation id="5125751979347152379">Ogiltig webbadress.</translation>
@@ -10430,7 +10425,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="825238165904109940">Visa alltid hela webbadresser</translation>
 <translation id="8252569384384439529">Laddar upp …</translation>
 <translation id="8253198102038551905">Klicka på + för att hämta nätverksegenskaperna</translation>
-<translation id="8254871563792426806">Den här webbplatsen använder smartkortsläsare som är anslutna till enheten och eventuellt smartkort som är tillgängliga för dem</translation>
 <translation id="8255212965098517578">Senaste foton, aviseringar och appar</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Ludde</translation>

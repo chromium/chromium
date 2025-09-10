@@ -245,13 +245,13 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1162479191445552288">Chạy lúc khởi động</translation>
 <translation id="1163931534039071049">&amp;Xem nguồn khung</translation>
 <translation id="1164015913575846413">alt + nhấp chuột</translation>
+<translation id="1164286072721995435">Chia sẻ thẻ hiện tại với Gemini mỗi khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể tạm dừng chia sẻ thẻ hiện tại bất cứ lúc nào. Dữ liệu của bạn không được dùng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1166212789817575481">Đóng các thẻ bên phải</translation>
 <translation id="1166457390969131095">Sử dụng và lưu mật khẩu cũng như khoá truy cập từ Tài khoản Google của bạn</translation>
 <translation id="1166583374608765787">Xem lại bản cập nhật tên</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> thuộc không gian làm việc <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Các ứng dụng web tách biệt sẽ tự động tuân theo chế độ cài đặt này</translation>
 <translation id="1168020859489941584">Đang mở trong <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Giao diện AI tạo gần đây <ph name="INDEX" /> về <ph name="SUBJECT" />, theo kiểu <ph name="STYLE" />, mang tâm trạng <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Tự động thay đổi ngôn ngữ để khớp với nội dung đã chọn</translation>
@@ -531,6 +531,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1353980523955420967">Không tìm thấy PPD. Hãy đảm bảo Chromebook của bạn đã kết nối mạng rồi thử lại.</translation>
 <translation id="1354045473509304750">Tiếp tục cho phép <ph name="HOST" /> sử dụng và di chuyển máy ảnh của bạn</translation>
 <translation id="1354148503392558902">Đang thay đổi mật khẩu...</translation>
+<translation id="1354943694624358993">Luôn chia sẻ thẻ hiện tại</translation>
 <translation id="1355088139103479645">Xóa tất cả dữ liệu?</translation>
 <translation id="1355088659320425659">Nhật ký và thẻ</translation>
 <translation id="1356376170199999104">Được phép – <ph name="PERMISSION_DETAILS" />. Hãy bật micrô bằng công tắc vật lý.</translation>
@@ -1621,7 +1622,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
-<translation id="209423774103268003">Đang truy cập vào máy đọc thẻ thông minh của bạn</translation>
 <translation id="2095774564753225041">Các loại tệp được hỗ trợ</translation>
 <translation id="2096716221239095980">Xoá mọi dữ liệu</translation>
 <translation id="2097950021134740304">Huỷ yêu cầu xoá gói thuê bao</translation>
@@ -2649,7 +2649,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2790112944253231361">Đã thay đổi thẻ này</translation>
-<translation id="2790750268015892264">Các ứng dụng web tách biệt không thể kiểm soát máy đọc thẻ thông minh. Ứng dụng sẽ không có quyền truy cập vào thẻ thông minh.</translation>
 <translation id="2791529110887957050">Xóa Linux</translation>
 <translation id="2791952154587244007">Đã xảy ra lỗi. Ứng dụng kiosk sẽ không thể tự động chạy trên thiết bị này.</translation>
 <translation id="2792465461386711506">Bật tính năng Chrome Sync để xem các thẻ Chrome gần đây trên điện thoại của bạn</translation>
@@ -3567,7 +3566,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3450180775417907283"><ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Bạn đang chia sẻ thẻ này với Gemini</translation>
 <translation id="345078987193237421">Nếu bạn bật thì các ứng dụng, trang web có quyền truy cập camera và các dịch vụ hệ thống sẽ có thể sử dụng camera</translation>
-<translation id="3451362021220965191">Các ứng dụng web tách biệt kiểm soát máy đọc thẻ thông minh để có quyền truy cập vào các thẻ thông minh được lắp hoặc cấp cho máy đọc. Thẻ thông minh thường chứa các thông tin nhận dạng dùng để xác thực hoặc uỷ quyền cho các hoạt động, đăng nhập vào dịch vụ, v.v.</translation>
 <translation id="3452999110156026232">Phiên truy cập của cha mẹ</translation>
 <translation id="3453082738208775226">Dọn dẹp bộ nhớ ngoại tuyến?</translation>
 <translation id="3453597230179205517">Quyền truy cập thông tin vị trí đang bị chặn</translation>
@@ -5747,6 +5745,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4956593309300508411">Dừng chia sẻ?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Chỉ lưu vào một thư mục trên thiết bị này?</translation>
+<translation id="4958916254663453555">Thẻ hiện tại của bạn sẽ tự động được chia sẻ khi bạn mở Gemini trong Chrome. Toàn bộ nội dung và URL của thẻ hiện tại sẽ được gửi đến Google.</translation>
 <translation id="4959262764292427323">Các mật khẩu được lưu trong Tài khoản Google của bạn, vì vậy, bạn có thể sử dụng các mật khẩu đó trên bất cứ thiết bị nào</translation>
 <translation id="4960020053211143927">Một số ứng dụng vẫn chưa hỗ trợ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5856,6 +5855,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5045367873597907704">Giới thiệu về thiết bị HID</translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="504561833207953641">Mở trong phiên trình duyệt hiện tại.</translation>
+<translation id="5047544190872578914">Chia sẻ thẻ hiện tại với Gemini mỗi khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể tạm dừng chia sẻ thẻ hiện tại bất cứ lúc nào.</translation>
 <translation id="504953514574706691">Đã loại trừ thẻ khỏi nhóm được đề xuất</translation>
 <translation id="5050330054928994520">Chuyển văn bản sang lời nói (TTS)</translation>
 <translation id="5051461727068120271">Tải tệp chưa xác minh xuống</translation>
@@ -5969,7 +5969,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5120886753782992638">Nhấp vào đây để truy cập <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Hệ điều hành trong vùng chứa Linux của bạn không còn được hỗ trợ. Hệ điều hành này sẽ dừng nhận các bản cập nhật bảo mật và sửa lỗi, đồng thời các tính năng hiện đang hoạt động có thể ngừng hoạt động đột ngột. Vui lòng nâng cấp lên phiên bản mới nhất để tiếp tục sử dụng Linux.</translation>
 <translation id="5121130586824819730">Đĩa cứng của bạn đã đầy.  Hãy lưu vào một vị trí khác hoặc tạo thêm dung lượng trống trên đĩa cứng.</translation>
-<translation id="5121803000325086087">Các ứng dụng web tách biệt có thể yêu cầu kiểm soát máy đọc thẻ thông minh. Ứng dụng sẽ có quyền truy cập vào các thẻ thông minh được cấp cho máy đọc dưới sự kiểm soát của ứng dụng.</translation>
 <translation id="5123433949759960244">Bóng rổ</translation>
 <translation id="5125714798187802869">Kích hoạt</translation>
 <translation id="5125751979347152379">URL không hợp lệ.</translation>
@@ -9333,6 +9332,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Đóng thẻ và xoá nhóm?}=1{Đóng các thẻ và xoá nhóm?}other{Đóng các thẻ và xoá các nhóm?}}</translation>
 <translation id="7509097596023256288">Thiết lập tính năng quản lý</translation>
 <translation id="7509539379068593709">Gỡ cài đặt ứng dụng</translation>
+<translation id="7513438205469584978">Nội dung đề xuất dựa trên <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />hoạt động của bạn trên Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Sao chép vào thiết bị của bạn</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7514417110442087199">Thêm công tắc được gán</translation>
@@ -10427,7 +10427,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="825238165904109940">Luôn hiển thị URL đầy đủ</translation>
 <translation id="8252569384384439529">Đang tải lên...</translation>
 <translation id="8253198102038551905">Hãy nhấp vào '+' để nhận thuộc tính mạng</translation>
-<translation id="8254871563792426806">Trang web này đang truy cập vào máy đọc thẻ thông minh được kết nối với thiết bị của bạn và có thể truy cập vào thẻ thông minh có sẵn cho máy đọc thẻ</translation>
 <translation id="8255212965098517578">Ảnh, thông báo và ứng dụng gần đây</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Cún con tinh nghịch</translation>

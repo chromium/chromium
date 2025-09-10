@@ -177,6 +177,7 @@
 <translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3161522574479303604">すべての言語</translation>
 <translation id="3179665906251668410">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
+<translation id="3183357154200327217">パソコン上の別のプログラムにより、Chromium の動作方法を変更する可能性のあるテーマが追加されました。<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">新しい Chromium プロフィールをカスタマイズ</translation>
 <translation id="3224847870593914902">Chromium から Google アカウントを削除するには、[設定] ページで Chromium からログアウトしてください</translation>
 <translation id="3234316605225071811">今後、Chromium で保存した情報を使用してフォームに自動入力するかどうかを確認するメッセージが表示されます</translation>
@@ -241,6 +242,7 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chromium の品質向上にご協力ください</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
+<translation id="4061696872429826774">パソコン上の別のプログラムにより、Chromium の動作方法を変更する可能性のある拡張機能が追加されました。<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4118474109249235144">Chromium のシークレット モード</translation>
 <translation id="4122186850977583290">Chromium についてのページに移動</translation>
@@ -400,6 +402,7 @@
 <translation id="6174920971222007286">このファイルは危険な可能性があります<ph name="LINE_BREAK" />パスワードを入力すると、Chromium でダウンロードを確認します。ファイルに関する情報は Google セーフ ブラウジングに送信されますが、ファイルのコンテンツとパスワードはデバイスで保持されます。</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
+<translation id="6204922163963157461">パソコン上の別のプログラムにより、Chromium の動作方法を変更する可能性のあるアプリが追加されました。<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
 <translation id="6239161312595354541">画像検索でこの動画について質問する</translation>

@@ -251,7 +251,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1166457390969131095">Defnyddio a chadw cyfrineiriau a chodau pas o'ch Cyfrif Google</translation>
 <translation id="1166583374608765787">Adolygu diweddariad enw</translation>
 <translation id="1166596238782048887">Mae <ph name="TAB_TITLE" /> yn perthyn i ddesg <ph name="DESK_TITLE" /></translation>
-<translation id="1166644470305877068">Mae Ap Gwe Ynysig yn dilyn y gosodiad hwn yn awtomatig</translation>
 <translation id="1168020859489941584">Wrthi'n agor mewn <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Thema AI diweddar <ph name="INDEX" /> o <ph name="SUBJECT" />, mewn arddull <ph name="STYLE" />, gyda hwyl <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Newid iaith i gyd-fynd â'r cynnwys a ddewisir yn awtomatig</translation>
@@ -1624,7 +1623,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" />  Bydd y system yn ailgychwyn yn ystod y broses.</translation>
-<translation id="209423774103268003">Mae eich darllenwyr cerdyn clyfar yn cael eu cyrchu</translation>
 <translation id="2095774564753225041">Mathau o ffeiliau a gefnogir</translation>
 <translation id="2096716221239095980">Dileu'r holl ddata</translation>
 <translation id="2097950021134740304">Canslo anghofio'r tanysgrifiad</translation>
@@ -2652,7 +2650,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Iawn</translation>
 <translation id="2790112944253231361">Wedi newid y tab hwn</translation>
-<translation id="2790750268015892264">Ni all Apiau Gwe Ynysig reoli darllenwyr cardiau clyfar. Ni fydd apiau yn cael mynediad at unrhyw gerdyn clyfar.</translation>
 <translation id="2791529110887957050">Tynnu Linux</translation>
 <translation id="2791952154587244007">Bu gwall. Ni fydd yr ap Kiosk yn gallu hunan-lansio ar y ddyfais hon.</translation>
 <translation id="2792465461386711506">Trowch Gysoni Chrome ymlaen i weld tabiau Chrome diweddar o'ch ffôn</translation>
@@ -3570,7 +3567,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3450180775417907283">Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi nawr a lawrlwytho diweddariad.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Rydych yn rhannu'r tab hwn gyda Gemini</translation>
 <translation id="345078987193237421">Mae hyn yn caniatáu mynediad camera ar gyfer apiau, gwefannau gyda chaniatâd camera, a gwasanaethau system</translation>
-<translation id="3451362021220965191">Mae Apiau Gwe Ynysig yn rheoli darllenwyr cardiau smart i gael mynediad at gardiau clyfar sy'n cael eu mewnosod neu eu cyflwyno iddynt. Mae cardiau clyfar fel arfer yn cynnwys manylion adnabod a ddefnyddir i ddilysu neu awdurdodi gweithrediadau, mewngofnodi i wasanaethau, ac ati.</translation>
 <translation id="3452999110156026232">Mynediad Rhieni</translation>
 <translation id="3453082738208775226">Glanhau storfa all-lein?</translation>
 <translation id="3453597230179205517">Mae mynediad lleoliad wedi'i rwystro</translation>
@@ -5972,7 +5968,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5120886753782992638">Cliciwch yma i fynd i <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Ni chefnogir y system weithredu yn eich cynhwysydd Linux bellach. Ni fydd yn derbyn diweddariadau diogelwch nac atgyweiriadau bygiau, ac mae'n bosib bydd nodweddion sy'n gweithio ar hyn o bryd yn torri'n annisgwyl. Uwchraddiwch i'r fersiwn ddiweddaraf i barhau i ddefnyddio Linux.</translation>
 <translation id="5121130586824819730">Mae eich disg caled yn llawn.  Cadwch i leoliad arall neu gwnewch fwy o le ar y disg caled.</translation>
-<translation id="5121803000325086087">Gall Apiau Gwe Ynysig ofyn i reoli darllenwyr cardiau clyfar. Bydd apiau yn cael mynediad at gardiau clyfar a gyflwynir i ddarllenwyr o dan eu rheolaeth.</translation>
 <translation id="5123433949759960244">Pêl-fasged</translation>
 <translation id="5125714798187802869">Gweithredu</translation>
 <translation id="5125751979347152379">URL annilys.</translation>
@@ -7615,10 +7610,10 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6291953229176937411">&amp;Dangos yn Finder</translation>
 <translation id="6293862149782163840">Mae <ph name="DEVICE_NAME" /> wedi'i ddiffodd</translation>
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
-<translation id="6295140892595702619">Defnyddiwch eich meicroffon i sgwrsio â Gemini. Pan fyddwch yn siarad â Gemini, mae sain yn cael ei storio yn Gemini Apps Activity (os yw ymlaen). Nid yw eich data yn cael ei ddefnyddio i wella modelau AI cynhyrchiol</translation>
+<translation id="6295140892595702619">Defnyddiwch eich meicroffon i sgwrsio â Gemini. Pan fyddwch yn siarad â Gemini, mae sain yn cael ei storio yng ngweithgarwch Apiau Gemini (os yw ymlaen). Nid yw eich data yn cael eu defnyddio i wella modelau AI cynhyrchiol</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
-<translation id="6296481987471548530">Defnyddiwch eich union leoliad ar gyfer y canlyniadau Gemini mwyaf cywir, yn lle amcangyfrif o leoliad yn seiliedig ar eich cyfeiriad IP. Nid yw eich data yn cael ei ddefnyddio i wella modelau AI cynhyrchiol</translation>
+<translation id="6296481987471548530">Defnyddiwch eich union leoliad ar gyfer y canlyniadau Gemini mwyaf cywir, yn lle lleoliad a amcangyfrifir yn seiliedig ar eich cyfeiriad IP. Nid yw eich data yn cael eu defnyddio i wella modelau AI cynhyrchiol</translation>
 <translation id="6297986260307280218">Anfon data defnydd a diagnostig. Helpwch i wella'ch profiad Android drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Bydd hyn yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y <ph name="BEGIN_LINK1" />gosodiad<ph name="END_LINK1" /> hwn gan y perchennog. Mae'n bosib y bydd y perchennog yn dewis anfon data diagnostig a defnydd ar gyfer y ddyfais hon at Google. Os caiff eich gosodiad Gweithgarwch ar y We ac Apiau ychwanegol ei droi ymlaen, gellir cadw'r data hyn i'ch cyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK2_END" />Dysgu rhagor<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Yn effeithio ar y gwefannau a restrir yma. Mae mewnosod “[*.]” cyn enw parth yn creu eithriad ar gyfer y parth cyfan. Er enghraifft, bydd ychwanegu "[*.]google.com" yn golygu y bydd cwcis trydydd parti yn gallu bod yn weithredol ar gyfer mail.google.com, oherwydd ei fod yn rhan o google.com.</translation>
 <translation id="6298962879096096191">Defnyddio Google Play i osod apiau Android</translation>
@@ -10434,7 +10429,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="825238165904109940">Dangos cyfeiriadau URL Llawn Bob Amser</translation>
 <translation id="8252569384384439529">Wrthi'n uwchlwytho...</translation>
 <translation id="8253198102038551905">Cliciwch '+' i gael priodweddau'r rhwydwaith</translation>
-<translation id="8254871563792426806">Mae'r wefan hon yn cyrchu peiriannau darllen cardiau clyfar sy'n gysylltiedig â'ch dyfais a'r cardiau clyfar o bosib sydd ar gael iddynt</translation>
 <translation id="8255212965098517578">Lluniau, hysbysiadau ac apiau diweddar</translation>
 <translation id="8255927332875030912">Chwilio + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>

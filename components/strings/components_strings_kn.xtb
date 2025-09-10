@@ -531,7 +531,6 @@
 <translation id="1863257867908022953">ಟ್ರೇ 12</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> ನಿಂದ</translation>
 <translation id="186539747722034544">ಕೇಬಲ್ ಮತ್ತು ಸ್ಯಾಟಲೈಟ್ ಪೂರೈಕೆದಾರರು</translation>
-<translation id="1866757068250903512"><ph name="READERNAME" /> ಎಂಬ ಹೆಸರಿನ ದೃಢೀಕರಣ ಸಾಧನಗಳು ಮತ್ತು ಅವುಗಳೊಂದಿಗೆ ಬಳಸಲಾಗುವ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="1870473978371099486">ಖಾಸಗಿ ಬೋಧನಾ ಸೇವೆಗಳು</translation>
 <translation id="1871208020102129563">.pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಅಲ್ಲದೆ, ನಿಗಧಿತ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳನ್ನು ಬಳಸಲು ಪ್ರಾಕ್ಸಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ.</translation>
 <translation id="1871284979644508959">ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರ</translation>
@@ -841,6 +840,7 @@
 <translation id="23703388716193220">ಗಾಲ್ಫ್ ಉಪಕರಣ</translation>
 <translation id="2370368710215137370">ಫೈಲ್‌ಗಳ ಅಪ್‌ಲೋಡ್‌</translation>
 <translation id="2370739752330685659">ಬಹುಶಃ ನಂತರ</translation>
+<translation id="2371084566192454134">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="2374629208601905275">ನಿಮ್ಮ ಪ್ರದೇಶದ ಕಾನೂನನ್ನು ಆಧರಿಸಿ, ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು Chrome ನಿಮ್ಮನ್ನು ಕೇಳುತ್ತದೆ. ಈ ಸರ್ಚ್ ಎಂಜಿನ್‌ಗಳು ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಜನಪ್ರಿಯವಾಗಿವೆ ಮತ್ತು ಯಾದೃಚ್ಛಿಕ ಕ್ರಮದಲ್ಲಿ ತೋರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2376455483361831781">ಹೊಸ ಟೇಬಲ್</translation>
 <translation id="2377241607395428273">ಗ್ರಾಫಿಕ್ಸ್ ಮತ್ತು ಆ್ಯನಿಮೇಷನ್ ಸಾಫ್ಟ್‌ವೇರ್</translation>
@@ -4906,6 +4906,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ಬೆಂಬಲಿತವಲ್ಲದ ಪ್ರೋಟೋಕಾಲ್ ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ನಲ್ಲಿ ಕೋಡ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="9186203289258525843">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ ಬಟನ್, Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="9186371298532546532">ಈ ವಿಳಾಸವನ್ನು ಹೆಚ್ಚಿನ ಸ್ಥಳಗಳಲ್ಲಿ ಬಳಸಿ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ಅವರು ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="9189789270972826888">ಕಾರ್ಡ್ ಅನ್ನು ಭರ್ತಿ ಮಾಡದಿದ್ದಲ್ಲಿ ಕಾಪಿ ಮಾಡಿ, ಪೇಸ್ಟ್ ಮಾಡಲು ಕೆಳಗಿನ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ವಿಷಯಗಳನ್ನು ಸ್ವಯಂ-ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -4921,6 +4922,7 @@
 <translation id="920643408853370361">ಪ್ರಯಾಣ ವಿಮೆ</translation>
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9209339767782560829">ನಿಮ್ಮ ಲಾಗಿನ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸುವಾಗ ಸಮಸ್ಯೆ ಉಂಟಾಗಿದೆ.</translation>
+<translation id="9210152531668884481">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="9210825002219699214">ವಿಮಾನ ಪ್ರಯಾಣ</translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chrome ನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>

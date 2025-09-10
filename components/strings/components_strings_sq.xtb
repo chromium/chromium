@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
 <translation id="1082026381988252344">Lëviz dhe zmadho përmbajtjet e skedës së ndarë</translation>
+<translation id="108859316315249327">Provo përsëri</translation>
 <translation id="1088664500620117635">Çmimi i zakonshëm për <ph name="PRODUCT_NAME" /> është <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />, por çmimi aktual është <ph name="CURRENT_PRICE" /> nëpër ueb.</translation>
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
 <translation id="1089599132348386324">Mund të ndërrosh mendje në çdo kohë te cilësimet e Chrome.</translation>
@@ -529,7 +530,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1863257867908022953">Tabakaja 12</translation>
 <translation id="1864927262126810325">Nga <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Ofrues të transmetimeve televizive kabllore dhe satelitore</translation>
-<translation id="1866757068250903512">Kontrollo pajisjet e verifikimit me emrin <ph name="READERNAME" /> dhe kartat inteligjente të përdorura me to</translation>
 <translation id="1870473978371099486">Shërbime kursesh private</translation>
 <translation id="1871208020102129563">Përfaqësuesi është caktuar të përdorë serverë përfaqësues fiksë, jo një shkrim URL-je .pac.</translation>
 <translation id="1871284979644508959">Fushë e detyrueshme</translation>
@@ -839,6 +839,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="23703388716193220">Pajisje për golf</translation>
 <translation id="2370368710215137370">Ngarkimi i skedarëve</translation>
 <translation id="2370739752330685659">Ndoshta më vonë</translation>
+<translation id="2371084566192454134">Skedat dhe grupet e skedave</translation>
 <translation id="2374629208601905275">Në bazë të një ligji në rajonin tënd, Chrome të kërkon të zgjedhësh motorin e parazgjedhur të kërkimit. Këta motorë kërkimi janë të njohur në rajonin tënd dhe shfaqen në renditje të rastësishme.</translation>
 <translation id="2376455483361831781">Tabela e re</translation>
 <translation id="2377241607395428273">Softuerë të grafikave dhe të animacionit</translation>
@@ -2466,6 +2467,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5097099694988056070">Statistikat e pajisjes si p.sh. përdorimin e njësisë CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 inç</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Shtyp "Tab" dhe më pas "Enter" për të pyetur "Modalitetin e IA-së"</translation>
 <translation id="510644072453496781">Karton (fundor)</translation>
 <translation id="5106648964679263509">Karta virtuale për <ph name="BNPL_ISSUER_NAME" /> është plotësuar</translation>
 <translation id="5108567515277121477">Karta e besnikërisë</translation>
@@ -3473,6 +3475,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6786145470008421571">Zarf 6 x 9 inç</translation>
 <translation id="6786747875388722282">Shtesat</translation>
 <translation id="6787094689637422836">Ne po prezantojnë veçori të reja të privatësisë që të japin më shumë mundësi zgjedhjeje për reklamat që shikon.</translation>
+<translation id="6788615780749001893">Butoni i "Modalitetit të IA-së", shtyp "Enter" për të pyetur "Modalitetin e IA-së"</translation>
 <translation id="6789062271869667677">I vazhdueshëm (i gjatë)</translation>
 <translation id="678982761784843853">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="6790428901817661496">Luaj</translation>

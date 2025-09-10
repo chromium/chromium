@@ -179,6 +179,9 @@
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3161522574479303604">모든 언어</translation>
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
+<translation id="3183357154200327217">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 테마를 추가했습니다.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
 <translation id="3224847870593914902">Chromium에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chromium에서 로그아웃하세요</translation>
 <translation id="3234316605225071811">나중에 Chromium에서 저장된 정보를 사용하여 양식을 자동으로 작성할지 묻습니다.</translation>
@@ -243,6 +246,9 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chromium 개선에 참여</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
+<translation id="4061696872429826774">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="4118474109249235144">Chromium 시크릿 모드</translation>
 <translation id="4122186850977583290">Chromium 정보 페이지로 이동</translation>
@@ -402,6 +408,9 @@
 <translation id="6174920971222007286">위험한 파일일 수도 있습니다.<ph name="LINE_BREAK" />비밀번호를 제공하면 Chromium에서 이 다운로드 항목을 확인할 수 있습니다. 파일에 관한 정보는 Google 세이프 브라우징으로 전송되지만 파일 콘텐츠와 비밀번호는 기기에 보관됩니다.</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
+<translation id="6204922163963157461">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 앱을 추가했습니다.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="6239161312595354541">이미지 검색에 이 동영상에 관해 질문하기</translation>

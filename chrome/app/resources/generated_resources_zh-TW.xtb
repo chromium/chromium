@@ -251,7 +251,6 @@
 <translation id="1166457390969131095">使用及儲存 Google 帳戶中的密碼和密碼金鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
-<translation id="1166644470305877068">隔離網頁應用程式會自動按照這項設定運作</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168704243733734901">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格為<ph name="STYLE" />，情境為<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
@@ -1611,7 +1610,6 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
-<translation id="209423774103268003">網站正在存取智慧卡讀卡機</translation>
 <translation id="2095774564753225041">支援的檔案類型</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2097950021134740304">取消清除訂閱</translation>
@@ -2636,7 +2634,6 @@
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2790112944253231361">已變更這個分頁</translation>
-<translation id="2790750268015892264">隔離網頁應用程式無法控制智慧讀卡機，因此無法存取任何智慧卡片。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這個裝置上自動啟動 Kiosk 應用程式。</translation>
 <translation id="2792465461386711506">開啟 Chrome 同步功能即可查看最近透過手機開啟的 Chrome 分頁</translation>
@@ -3551,7 +3548,6 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 正在與 Gemini 分享這個分頁</translation>
 <translation id="345078987193237421">系統服務和具有攝影機權限的應用程式、網站將可存取攝影機</translation>
-<translation id="3451362021220965191">隔離網頁應用程式可控制智慧讀卡機，存取已插入讀卡機內或讀卡機感應到的智慧卡片。智慧卡通常內含身分資訊，用於驗證或授權作業或者登入服務等等。</translation>
 <translation id="3452999110156026232">家長存取</translation>
 <translation id="3453082738208775226">要清理離線儲存空間嗎？</translation>
 <translation id="3453597230179205517">位置資訊存取權已停用</translation>
@@ -5948,7 +5944,6 @@
 <translation id="5120886753782992638">請按這裡前往 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">系統已不再支援你 Linux 容器中的作業系統。該作業系統不會再收到安全性更新和錯誤修正項目，當前執行的功能也可能無預警停止運作。如要繼續使用 Linux，請升級至最新版本。</translation>
 <translation id="5121130586824819730">你的硬碟已滿。請選擇其他儲存位置，或清出足夠的硬碟空間。</translation>
-<translation id="5121803000325086087">隔離網頁應用程式可要求控制智慧讀卡機，並存取讀卡機感應到的智慧卡片。</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5125714798187802869">啟用</translation>
 <translation id="5125751979347152379">網址無效。</translation>
@@ -10398,7 +10393,6 @@
 <translation id="825238165904109940">一律顯示完整網址</translation>
 <translation id="8252569384384439529">上傳中...</translation>
 <translation id="8253198102038551905">按一下 [+] 即可查看網路屬性</translation>
-<translation id="8254871563792426806">這個網站正在存取裝置連接的智慧卡讀卡機，以及可供讀取的智慧卡</translation>
 <translation id="8255212965098517578">最近的相片、通知和應用程式</translation>
 <translation id="8255927332875030912">搜尋鍵 + <ph name="KEY" /> 鍵</translation>
 <translation id="8256319818471787266">小黃</translation>

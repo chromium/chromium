@@ -62,7 +62,7 @@
 <translation id="2918484639460781603">الانتقال إلى الإعدادات</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{تم اختيار عنصر واحد (<ph name="ITEMS_COUNT_ONE" />)}zero{تم اختيار <ph name="ITEMS_COUNT_MANY" /> عنصر}two{تم اختيار عنصرَين (<ph name="ITEMS_COUNT_MANY" />)}few{تم اختيار <ph name="ITEMS_COUNT_MANY" /> عناصر}many{تم اختيار <ph name="ITEMS_COUNT_MANY" /> عنصرًا}other{تم اختيار <ph name="ITEMS_COUNT_MANY" /> عنصر}}</translation>
-<translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
+<translation id="3008554597174452548">التوقّف عن تتبُّع سعر المنتج</translation>
 <translation id="3026391124054406831">يجب إنشاء مجموعات لتنظيم علامات التبويب.</translation>
 <translation id="3051031624272448591">يمكنك استعادتها في أي وقت من خلال السجلّ</translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>

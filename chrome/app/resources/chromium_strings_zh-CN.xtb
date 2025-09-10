@@ -177,6 +177,9 @@
 <translation id="3155163173539279776">重新启动 Chromium</translation>
 <translation id="3161522574479303604">所有语言</translation>
 <translation id="3179665906251668410">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
+<translation id="3183357154200327217">计算机上的其他程序添加了一个主题，该主题可能会改变 Chromium 的工作方式。
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">自定义您的新 Chromium 个人资料</translation>
 <translation id="3224847870593914902">若要从 Chromium 中移除您的 Google 账号，请在“设置”页面中退出 Chromium</translation>
 <translation id="3234316605225071811">Chromium 以后可以询问您是否要使用已保存的信息为您自动填写表单</translation>
@@ -241,6 +244,9 @@
 <translation id="4036079820698952681">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chromium</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
+<translation id="4061696872429826774">计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chromium 的工作方式。
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
 <translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
@@ -400,6 +406,9 @@
 <translation id="6174920971222007286">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码，Chromium 可为您检查此下载内容。系统会将该文件的相关信息发送给 Google 安全浏览功能，但文件内容和密码会保留在您的设备上。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
+<translation id="6204922163963157461">计算机上的其他程序添加了一个应用，该应用可能会改变 Chromium 的工作方式。
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">此计算机已安装了更高版本的 Chromium。如果软件无法正常运行，请卸载 Chromium 并重试。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 将立即重新启动}=1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
 <translation id="6239161312595354541">向图片搜索功能询问此视频</translation>

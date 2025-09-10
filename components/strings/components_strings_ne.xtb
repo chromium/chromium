@@ -532,7 +532,6 @@
 <translation id="1863257867908022953">ट्रे १२</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> बाट प्राप्त जानकारी</translation>
 <translation id="186539747722034544">केबल तथा स्याटेलाइट प्रदायक</translation>
-<translation id="1866757068250903512"><ph name="READERNAME" /> नामक प्रमाणीकरण डिभाइसहरू र ती डिभाइसमा प्रयोग गरिएका स्मार्ट कार्डहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="1870473978371099486">निजी ट्युसन सेवा</translation>
 <translation id="1871208020102129563">प्रोक्सी निश्चित प्रोक्सी सर्भर प्रयोग गर्न सेट गरिएको छ, .pac स्क्रिप्ट युआरएल होइन।</translation>
 <translation id="1871284979644508959">आवश्यक क्षेत्र</translation>
@@ -842,6 +841,7 @@
 <translation id="23703388716193220">गोल्फसम्बन्धी उपकरण</translation>
 <translation id="2370368710215137370">अपलोड गरिने फाइलहरू</translation>
 <translation id="2370739752330685659">सायद पछि</translation>
+<translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
 <translation id="2374629208601905275">तपाईंको क्षेत्रको कानुनका आधारमा Chrome ले तपाईंलाई आफ्नो डिफल्ट सर्च इन्जिन छनौट गर्न लगाउँछ। तपाईंको क्षेत्रमा लोकप्रिय रहेका यी सर्च इन्जिनहरू अनियमित क्रमअनुसार देखाइन्छन्।</translation>
 <translation id="2376455483361831781">नयाँ तालिका</translation>
 <translation id="2377241607395428273">ग्राफिक्स र एनिमेसन सफ्टवेयर</translation>
@@ -1860,7 +1860,7 @@
 <translation id="4085326869263783566">मलाई लेख्न मद्दत गर्नुहोस्। खोल्न ट्याब की थिचिराखेका बेला इन्टर की थिच्नुहोस्</translation>
 <translation id="4085769736382018559">उत्पादनहरूको तुलना गर्नुहोस्</translation>
 <translation id="4085778582400064057">निलो २</translation>
-<translation id="4085859451613666999">भविष्यमा गरिने खरिदहरूका हकमा तपाईंको कार्डसम्बन्धी जानकारी अटोफिल गर्न सकियोस् भन्नाका लागि तपाईंको कार्ड तपाईंको Google खातामा सेभ गरिएको छ</translation>
+<translation id="4085859451613666999">तपाईं भविष्यमा खरिदहरू गर्दा आफ्नो कार्डसम्बन्धी जानकारी अटोफिल गर्न सक्नुहोस् भन्नाका लागि तपाईंको कार्ड तपाईंको Google खातामा सेभ गरिएको छ</translation>
 <translation id="4088981014127559358">सतह १ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">ठेगाना भर्नुहोस्</translation>
@@ -4259,7 +4259,7 @@
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
-<translation id="8076880883123051368">तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्। जस्तै, तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /></translation>
+<translation id="8076880883123051368">तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /> जस्ता तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोप्य फाइल अपलोड गर्ने हो?}other{गोप्य फाइलहरू अपलोड गर्ने हो?}}</translation>
 <translation id="8079031581361219619">साइट पुनः लोड गर्ने हो?</translation>

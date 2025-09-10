@@ -180,6 +180,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3161522574479303604">All languages</translation>
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
+<translation id="3183357154200327217">Another program on your computer added a theme that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Customise your new Chromium profile</translation>
 <translation id="3224847870593914902">To remove your Google Account from Chromium, sign out of Chromium in the Settings page</translation>
 <translation id="3234316605225071811">Later, Chromium can ask if you want to use saved info to autofill forms for you</translation>
@@ -244,6 +247,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
+<translation id="4061696872429826774">Another program on your computer added an extension that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chromium automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="4118474109249235144">Chromium Incognito</translation>
 <translation id="4122186850977583290">Go to the About Chromium page</translation>
@@ -403,6 +409,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6174920971222007286">This file may be dangerous<ph name="LINE_BREAK" />Chromium can check this download for you if you provide the password. Info about the file gets sent to Google Safe Browsing, but the file content and password stay on your device.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
+<translation id="6204922163963157461">Another program on your computer added an app that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
 <translation id="6239161312595354541">Ask image search about this video</translation>

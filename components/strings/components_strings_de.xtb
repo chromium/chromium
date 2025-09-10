@@ -532,7 +532,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1863257867908022953">Fach 12</translation>
 <translation id="1864927262126810325">Quelle: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel- und Satellitenanbieter</translation>
-<translation id="1866757068250903512">Authentifizierungsgeräte mit dem Namen „<ph name="READERNAME" />“ und die damit verbundenen Smartcards steuern</translation>
 <translation id="1870473978371099486">Private Nachhilfe</translation>
 <translation id="1871208020102129563">Der Proxy ist zur Verwendung von festen Proxyservern konfiguriert, nicht zur Verwendung einer PAC-Script-URL.</translation>
 <translation id="1871284979644508959">Pflichtfeld</translation>
@@ -842,6 +841,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="23703388716193220">Golfausrüstung</translation>
 <translation id="2370368710215137370">Datei-Upload</translation>
 <translation id="2370739752330685659">Jetzt nicht</translation>
+<translation id="2371084566192454134">Tabs und Tabgruppen</translation>
 <translation id="2374629208601905275">Gemäß einem Gesetz in deiner Region wirst du von Chrome aufgefordert, deine Standardsuchmaschine festzulegen. Diese Suchmaschinen sind in deiner Region beliebt und werden in zufälliger Reihenfolge angezeigt.</translation>
 <translation id="2376455483361831781">Neue Tabelle</translation>
 <translation id="2377241607395428273">Grafik- und Animationssoftware</translation>
@@ -4909,6 +4909,7 @@ Weitere Details:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> verwendet ein nicht unterstütztes Protokoll.</translation>
 <translation id="918454845714257218">Prüfe den Code auf der <ph name="SIDE_OF_CARD" /> und versuch es noch einmal</translation>
 <translation id="9186203289258525843">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – aktivieren, um Chrome als Standardbrowser für das System festzulegen</translation>
+<translation id="9186371298532546532">Diese Adresse an weiteren Orten verwenden</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> hat diesen Tab geändert</translation>
 <translation id="9189789270972826888">Falls die Karte nicht automatisch ausgefüllt wurde, klicke unten auf die Kartendetails, um sie manuell einzufügen. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Themen, die älter als 4 Wochen sind, werden automatisch gelöscht</translation>
@@ -4924,6 +4925,7 @@ Weitere Details:
 <translation id="920643408853370361">Reiseversicherung</translation>
 <translation id="9207861905230894330">Der Artikel konnte nicht hinzugefügt werden.</translation>
 <translation id="9209339767782560829">Beim Verwenden deines Anmeldezertifikats ist ein Problem aufgetreten.</translation>
+<translation id="9210152531668884481">Speichern</translation>
 <translation id="9210825002219699214">Flugreisen</translation>
 <translation id="9213433120051936369">Layout anpassen</translation>
 <translation id="9215416866750762878">Eine Anwendung verhindert, dass Chrome eine sichere Internetverbindung zu dieser Website herstellt</translation>
