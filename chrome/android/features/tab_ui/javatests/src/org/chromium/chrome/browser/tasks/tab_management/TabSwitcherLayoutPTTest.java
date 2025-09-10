@@ -323,6 +323,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    @DisabledTest(message = "crbug.com/444244174")
     public void testRenderGrid_PinnedTabs_Scrolled() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         RegularNewTabPageStation pageStation =
