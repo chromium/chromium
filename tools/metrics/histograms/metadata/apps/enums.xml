@@ -438,6 +438,16 @@ chromium-metrics-reviews@google.com.
   <int value="508" label="Show Continue Section"/>
 </enum>
 
+<enum name="CopyShortcutResult">
+  <summary>Result of copying the app shortcut.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to launch copier"/>
+  <int value="2" label="Fail to send Mojo invitation"/>
+  <int value="3" label="Fail to establish Mojo connection"/>
+  <int value="4" label="Fail to call CopyWebAppShortcut"/>
+  <int value="5" label="Copy shortcut failed"/>
+</enum>
+
 <enum name="DiscoveryError">
   <int value="0" label="Success"/>
   <int value="1" label="Error, request failed"/>
