@@ -50,6 +50,8 @@ class ReceiverHandlerDelegateImpl : public ReceiverHandlerDelegate {
       const net::NetworkTrafficAnnotationTag& traffic_annotation)
       const override;
 
+  bool IsAppEnabled(std::string_view url) override;
+
  private:
   raw_ptr<content::WebUI> web_ui_;
 };

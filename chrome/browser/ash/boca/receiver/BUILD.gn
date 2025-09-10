@@ -14,6 +14,7 @@ static_library("receiver") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/app_mode",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca:invalidation_delegate",
     "//chromeos/ash/components/boca:invalidations",
@@ -21,9 +22,34 @@ static_library("receiver") {
     "//chromeos/ash/components/boca/session_api",
     "//components/gcm_driver",
     "//components/gcm_driver/instance_id",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//google_apis/common",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "receiver_handler_delegate_impl_unittest.cc" ]
+
+  deps = [
+    ":receiver",
+    "//base",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
   ]
 }

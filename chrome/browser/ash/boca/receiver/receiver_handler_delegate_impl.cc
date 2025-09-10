@@ -5,11 +5,15 @@
 #include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -23,11 +27,14 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace ash::boca_receiver {
 
@@ -66,6 +73,18 @@ ReceiverHandlerDelegateImpl::CreateRequestSender(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       /*custom_user_agent=*/"", traffic_annotation);
+}
+
+bool ReceiverHandlerDelegateImpl::IsAppEnabled(std::string_view url) {
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return false;
+  }
+  std::optional<KioskApp> app = KioskController::Get().GetAppById(
+      KioskAppId::ForWebApp(session->account_id()));
+  return app.has_value() && app->url().has_value() &&
+         app->url().value() == GURL(url);
 }
 
 }  // namespace ash::boca_receiver

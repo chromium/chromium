@@ -38,6 +38,8 @@ class ReceiverHandlerDelegate {
       std::string_view requester_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) const = 0;
 
+  virtual bool IsAppEnabled(std::string_view url) = 0;
+
  protected:
   ReceiverHandlerDelegate() = default;
 };
