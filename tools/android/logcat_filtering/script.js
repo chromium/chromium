@@ -234,6 +234,15 @@ function toggleDropdown(dropdownList) {
         list.style.display = 'none';
       }
     });
+
+    // Get the dropdown header to position the list against
+    const header = dropdownList.previousElementSibling;
+    const rect = header.getBoundingClientRect();
+
+    // Set the dropdown list's position based on the header
+    dropdownList.style.left = `${rect.left}px`;
+    dropdownList.style.top = `${rect.bottom}px`;
+
     dropdownList.style.display = 'block';
   }
 }

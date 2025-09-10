@@ -94,6 +94,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  /* Prevent the content underneath from showing through */
+  background-color: var(--controls-bg-color);
   /* Ensure the controls stay on top of other content */
   z-index: 100;
   width: 100%;
@@ -185,10 +187,12 @@ body {
 }
 
 .dropdown-list {
+  position: fixed;
+  z-index: 200;
   list-style: none;
   padding: 0;
   margin: 0;
-  border-top: 1px solid var(--dropdown-list-border-color);
+  border: 1px solid var(--dropdown-border-color);
   border-radius: 0 0 4px 4px;
   /* To contain the rounded corners */
   overflow: hidden;
