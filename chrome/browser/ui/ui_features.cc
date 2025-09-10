@@ -110,6 +110,12 @@ BASE_FEATURE(kReloadSelectionModel,
              "ReloadSelectionModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enforces close tab hotkey to only close the active view of a split tab,
+// when it is the only tab in selection model.
+BASE_FEATURE(kCloseActiveTabInSplitViewViaHotkey,
+             "CloseActiveTabInSplitViewViaHotkey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a scrim is shown behind window modal dialogs to cover the
 // entire browser window. This gives user a visual cue that the browser window
 // is not interactable.
