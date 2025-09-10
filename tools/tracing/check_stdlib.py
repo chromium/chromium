@@ -17,8 +17,10 @@ def main():
   tool = os.path.join(perfetto_dir, "tools", "check_sql_modules.py")
   stdlib_sources = os.path.join(perfetto_dir, "..", "..", "base", "tracing",
                                 "stdlib")
+
+  vpython = 'vpython3.bat' if sys.platform == 'win32' else 'vpython3'
   completed_process = subprocess.run(
-      ["vpython3", tool, "--stdlib-sources", stdlib_sources],
+      [vpython, tool, "--stdlib-sources", stdlib_sources],
       check=False,
       capture_output=True)
   sys.stderr.buffer.write(completed_process.stderr)
