@@ -128,3 +128,7 @@ features = ["compiled_data"]
 version = "4.1.0"
 default-features = false
 features = ["deflate-flate2"]
+
+# Can be removed once temporal_rs is updated to 0.0.15
+[dependencies.zoneinfo64]
+version = "0.2.0"

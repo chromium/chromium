@@ -326,6 +326,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."regex-syntax:0.8.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."resb:0.1.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."rustc-demangle-capi:0.1.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -492,6 +495,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zip:4.6.1"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zoneinfo64:0.2.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [[exemptions.aho-corasick]]

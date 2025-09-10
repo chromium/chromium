@@ -138,6 +138,7 @@ dependencies = [
  "syn",
  "temporal_capi",
  "zip",
+ "zoneinfo64",
 ]
 
 [[package]]
@@ -849,6 +850,15 @@ version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "resb"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "potential_utf",
+ "serde",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1311,4 +1321,16 @@ dependencies = [
  "flate2",
  "indexmap",
  "memchr",
+]
+
+[[package]]
+name = "zoneinfo64"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "calendrical_calculations",
+ "icu_locale_core",
+ "potential_utf",
+ "resb",
+ "serde",
 ]

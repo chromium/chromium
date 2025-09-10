@@ -496,15 +496,18 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
         // json: json files are include!()'d into source code in the wycheproof crate
         // data: .rs.data files used by ICU4X
         // dat: zoneinfo.dat file from jiff-tzdb
-        Some("md") | Some("h") | Some("json") | Some("data") | Some("dat") => match mode {
-            Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
-                files.inputs.push(filepath.to_owned())
+        // res: zoneinfo64.res from zoneinfo64
+        Some("md") | Some("h") | Some("json") | Some("data") | Some("dat") | Some("res") => {
+            match mode {
+                Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
+                    files.inputs.push(filepath.to_owned())
+                }
+                BuildScriptExternalSourcesAndInputs | BuildScriptExternalInputsOnly => {
+                    files.build_script_inputs.push(filepath.to_owned())
+                }
+                LibsOnly => (),
             }
-            BuildScriptExternalSourcesAndInputs | BuildScriptExternalInputsOnly => {
-                files.build_script_inputs.push(filepath.to_owned())
-            }
-            LibsOnly => (),
-        },
+        }
         Some("lib") if mode == LibsOnly => files.native_libs.push(filepath.to_owned()),
         _ => (),
     };
