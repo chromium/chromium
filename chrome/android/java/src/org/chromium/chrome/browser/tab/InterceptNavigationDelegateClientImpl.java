@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -118,11 +119,19 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public void closeTab() {
         if (mTab.isClosing()) return;
-        assumeNonNull(mTab.getActivity())
-                .getTabModelSelector()
-                .tryCloseTab(
-                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
-                        /* allowDialog= */ false);
+        ChromeActivity activity = assumeNonNull(mTab.getActivity());
+        if (mTab.isCustomTab() && !activity.didFinishNativeInitialization()) {
+            // Test the assumption that the tab hasn't been added to a tab model yet.
+            assert activity.getTabModelSelector().getModelForTabId(mTab.getId()) == null;
+            // Tab is closing before being attached to a tab model. Delay the closing until native
+            // initialization finishes.
+            mTab.setDidCloseWhileDetached();
+        } else {
+            activity.getTabModelSelector()
+                    .tryCloseTab(
+                            TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                            /* allowDialog= */ false);
+        }
     }
 
     @Override
