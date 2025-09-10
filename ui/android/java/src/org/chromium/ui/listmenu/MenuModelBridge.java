@@ -18,6 +18,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -89,6 +90,7 @@ public class MenuModelBridge {
                                 CLICK_LISTENER,
                                 (view) -> {
                                     if (mNativePtr == 0) return;
+                                    RecordUserAction.record("ContextMenu.ExtensionItemClicked");
                                     MenuModelBridgeJni.get()
                                             .activatedAt(mNativePtr, indexForModelActivation);
                                 });
@@ -118,6 +120,7 @@ public class MenuModelBridge {
                                 CLICK_LISTENER,
                                 (view) -> {
                                     if (mNativePtr == 0) return;
+                                    RecordUserAction.record("ContextMenu.ExtensionItemClicked");
                                     MenuModelBridgeJni.get()
                                             .activatedAt(mNativePtr, indexForModelActivation);
                                 });
@@ -147,6 +150,7 @@ public class MenuModelBridge {
                                 CLICK_LISTENER,
                                 (view) -> {
                                     if (mNativePtr == 0) return;
+                                    RecordUserAction.record("ContextMenu.ExtensionItemClicked");
                                     MenuModelBridgeJni.get()
                                             .activatedAt(mNativePtr, indexForModelActivation);
                                 });

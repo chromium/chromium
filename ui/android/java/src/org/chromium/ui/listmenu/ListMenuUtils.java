@@ -15,6 +15,7 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITE
 
 import android.content.res.Resources;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.ListView;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
@@ -422,6 +424,7 @@ public class ListMenuUtils {
             Runnable dismissDialog,
             @Nullable FlyoutHandler flyoutHandler,
             @Nullable Boolean drillDownOverrideValue) {
+        long time = SystemClock.elapsedRealtime();
         if (headerModelList != null) {
             for (ListItem listItem : headerModelList) {
                 setupCallbacksRecursivelyForItem(
@@ -444,6 +447,9 @@ public class ListMenuUtils {
                     /* levelOfHoveredItem= */ 0,
                     drillDownOverrideValue);
         }
+        RecordHistogram.recordTimesHistogram(
+                "ListMenuUtils.SetupCallbacksRecursively.Duration",
+                SystemClock.elapsedRealtime() - time);
     }
 
     /**

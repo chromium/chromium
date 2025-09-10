@@ -8898,6 +8898,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextMenu.ExtensionItemClicked">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    From a context menu on Android, the user clicked an item which was
+    registered by an extension.
+  </description>
+</action>
+
 <action name="ContextualSearch.BackPressClose">
   <owner>donnd@chromium.org</owner>
   <description>

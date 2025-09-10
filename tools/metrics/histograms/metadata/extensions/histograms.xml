@@ -702,6 +702,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContextMenuHelpers.PopulateExtensionItems.Duration"
+    units="microseconds" expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Timing histogram for ContextMenuHelpers#PopulateExtensionItems method. This
+    is recorded only for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.CookieAPIPartitionKeyWellFormatted"
     enum="BooleanEnabled" expires_after="2026-04-30">
   <owner>arichiv@google.com</owner>

@@ -326,6 +326,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ListMenuUtils.SetupCallbacksRecursively.Duration"
+    units="microseconds" expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Timing histogram for ListMenuUtils#SetupCallbacksRecursively method.
+  </summary>
+</histogram>
+
+<histogram name="MenuModelBridge.AddExtensionItems.Duration"
+    units="microseconds" expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Timing histogram for MenuModelBridge#AddExtensionItems method. This is
+    recorded only for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="RenderTextHarfBuzz.GetFallbackFontsTime" units="ms"
     expires_after="2025-09-14">
   <owner>dayeung@chromium.org</owner>
