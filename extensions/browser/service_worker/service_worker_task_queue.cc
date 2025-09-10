@@ -473,12 +473,6 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   }
   option.scope = extension.url();
 
-  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
-    ++worker_reregistration_attempts_[context_id.token];
-  } else {
-    worker_reregistration_attempts_[context_id.token] = 0;
-  }
-
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension.id());
   service_worker_context->RegisterServiceWorker(
@@ -583,10 +577,11 @@ void ServiceWorkerTaskQueue::MaybeStartWorker(
 }
 
 bool ServiceWorkerTaskQueue::ShouldRetryRegistrationRequest(
-    base::UnguessableToken activation_token) {
+    const base::UnguessableToken& activation_token) const {
   auto iter = worker_reregistration_attempts_.find(activation_token);
-  CHECK(iter != worker_reregistration_attempts_.end());
-  return iter->second < 3;
+  int retries_performed =
+      (iter == worker_reregistration_attempts_.end()) ? 0 : iter->second;
+  return retries_performed < 3;
 }
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
@@ -653,6 +648,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   // If the registration failed due to timeout then retry registration.
   if (status_code == blink::ServiceWorkerStatusCode::kErrorTimeout &&
       ShouldRetryRegistrationRequest(context_id.token)) {
+    ++worker_reregistration_attempts_[context_id.token];
     // TODO(jlulejian): Consider doing this with a post task with delay and/or
     // with net::BackoffEntry to give more opportunity for the (hopefully
     // intermittent) timeout to resolve.
@@ -661,13 +657,14 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     return;
   }
 
-  // We aren't retrying anymore so emit metrics specifically about the retries.
-  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
+  // Retries exhausted or non-transient error (or success).
+  // Clean up the retries entry for this context. If there were retries
+  // attempted, emit metrics about the ultimate result.
+  if (worker_reregistration_attempts_.erase(context_id.token) > 0) {
     base::UmaHistogramBoolean(
         "Extensions.ServiceWorkerBackground."
         "WorkerRegistrationRetryAttemptsResult",
         success);
-    worker_reregistration_attempts_.erase(context_id.token);
   }
 
   // After retries are exhausted, emit the ultimate end result.

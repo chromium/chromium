@@ -352,9 +352,9 @@ class ServiceWorkerTaskQueue
 
   // Checks if the `activation_token` has any more worker registration retries
   // left. Retries are only performed on registration timeout and up to 3 times
-  // before silently failing. CHECK()s if called before a worker registration is
-  // attempted.
-  bool ShouldRetryRegistrationRequest(base::UnguessableToken activation_token);
+  // before silently failing.
+  bool ShouldRetryRegistrationRequest(
+      const base::UnguessableToken& activation_token) const;
 
   // Callbacks called when the worker is registered or unregistered,
   // respectively. `worker_previously_successfully_registered` true indicates
