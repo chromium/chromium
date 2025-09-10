@@ -98,6 +98,27 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
   ProcessRgbaFrame(timestamp_ns, std::move(plane));
 }
 
+void DesktopCapturerAndroid::OnI420FrameAvailable(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& release_cb,
+    jlong timestamp_ns,
+    const base::android::JavaRef<jobject>& y_buf,
+    jint y_unchecked_pixel_stride,
+    jint y_unchecked_row_stride,
+    const base::android::JavaRef<jobject>& u_buf,
+    jint u_unchecked_pixel_stride,
+    jint u_unchecked_row_stride,
+    const base::android::JavaRef<jobject>& v_buf,
+    jint v_unchecked_pixel_stride,
+    jint v_unchecked_row_stride,
+    jint unchecked_crop_left,
+    jint unchecked_crop_top,
+    jint unchecked_crop_right,
+    jint unchecked_crop_bottom) {
+  // TODO(crbug.com/352187279): Implement processing of I420 frames.
+  NOTREACHED();
+}
+
 void DesktopCapturerAndroid::OnStop(JNIEnv* env) {
   Shutdown();
 }

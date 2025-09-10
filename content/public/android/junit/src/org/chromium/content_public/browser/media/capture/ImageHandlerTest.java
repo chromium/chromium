@@ -83,6 +83,18 @@ public class ImageHandlerTest {
         return image;
     }
 
+    // New helper method to create a mock I420 image.
+    private Image createMockI420Image(long timestamp) {
+        final Image image = mock(Image.class);
+        // YUV_420_888 requires 3 planes.
+        when(image.getPlanes())
+                .thenReturn(new Plane[] {mock(Plane.class), mock(Plane.class), mock(Plane.class)});
+        when(image.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+        when(image.getCropRect()).thenReturn(TEST_CROP_RECT);
+        when(image.getTimestamp()).thenReturn(timestamp);
+        return image;
+    }
+
     private void onImageAvailable(Image image) {
         // Return `image` once, then nothing.
         when(mImageReader.acquireLatestImage()).thenReturn(image, (Image) null);
@@ -386,5 +398,74 @@ public class ImageHandlerTest {
                 .onRgbaFrameAvailable(
                         eq(mImageHandler), any(), eq(2L), eq(plane2), eq(TEST_CROP_RECT));
         verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testI420ImageAcquireAndRelease() throws Exception {
+        // Set up ImageHandler specifically for YUV format.
+        mImageHandler =
+                new ImageHandler(
+                        new CaptureState(
+                                TEST_WIDTH, TEST_HEIGHT, TEST_DPI, ImageFormat.YUV_420_888),
+                        mDelegate,
+                        mHandler,
+                        mImageReader);
+
+        final Image image = createMockI420Image(TEST_TIMESTAMP);
+        final Plane[] planes = image.getPlanes();
+
+        onImageAvailable(image);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onI420FrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(TEST_TIMESTAMP),
+                        eq(planes),
+                        eq(TEST_CROP_RECT));
+        verify(mDelegate, never()).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        releaseCb.getValue().run();
+
+        verify(image).close();
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testRgbaHandlerProcessesYuvImage() {
+        final Image image = createMockI420Image(TEST_TIMESTAMP);
+        final Plane[] planes = image.getPlanes();
+
+        onImageAvailable(image);
+
+        verify(mDelegate)
+                .onI420FrameAvailable(
+                        eq(mImageHandler),
+                        any(Runnable.class),
+                        eq(TEST_TIMESTAMP),
+                        eq(planes),
+                        eq(TEST_CROP_RECT));
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testInvalidYuvImageThrowsAssertionError() throws Exception {
+        final Image image = mock(Image.class);
+        final Plane plane = mock(Plane.class);
+        when(image.getPlanes()).thenReturn(new Plane[] {plane});
+        when(image.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+
+        // This should throw an AssertionError because the plane count is not 3.
+        onImageAvailable(image);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testUnexpectedImageFormatThrowsIllegalStateException() {
+        final Image image = mock(Image.class);
+        when(image.getFormat()).thenReturn(ImageFormat.JPEG);
+        onImageAvailable(image);
     }
 }

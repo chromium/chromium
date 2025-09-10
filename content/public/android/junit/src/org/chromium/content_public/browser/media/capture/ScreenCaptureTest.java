@@ -69,6 +69,7 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -230,6 +231,44 @@ public class ScreenCaptureTest {
         when(image.getFormat()).thenReturn(PixelFormat.RGBA_8888);
         when(image.getPlanes()).thenReturn(new Plane[] {plane});
         when(image.getCropRect()).thenReturn(new Rect());
+        return image;
+    }
+
+    private Image createMockYuvImage(
+            long timestamp,
+            Rect cropRect,
+            int yPixelStride,
+            int yRowStride,
+            int uPixelStride,
+            int uRowStride,
+            int vPixelStride,
+            int vRowStride) {
+        final Image image = mock(Image.class);
+        when(image.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+        when(image.getTimestamp()).thenReturn(timestamp);
+        when(image.getCropRect()).thenReturn(cropRect);
+
+        // Use real ByteBuffers we can't mock ByteBuffer.
+        final ByteBuffer yBuffer = ByteBuffer.allocate(1);
+        final ByteBuffer uBuffer = ByteBuffer.allocate(1);
+        final ByteBuffer vBuffer = ByteBuffer.allocate(1);
+
+        final Plane yPlane = mock(Plane.class);
+        when(yPlane.getBuffer()).thenReturn(yBuffer);
+        when(yPlane.getPixelStride()).thenReturn(yPixelStride);
+        when(yPlane.getRowStride()).thenReturn(yRowStride);
+
+        final Plane uPlane = mock(Plane.class);
+        when(uPlane.getBuffer()).thenReturn(uBuffer);
+        when(uPlane.getPixelStride()).thenReturn(uPixelStride);
+        when(uPlane.getRowStride()).thenReturn(uRowStride);
+
+        final Plane vPlane = mock(Plane.class);
+        when(vPlane.getBuffer()).thenReturn(vBuffer);
+        when(vPlane.getPixelStride()).thenReturn(vPixelStride);
+        when(vPlane.getRowStride()).thenReturn(vRowStride);
+
+        when(image.getPlanes()).thenReturn(new Plane[] {yPlane, uPlane, vPlane});
         return image;
     }
 
@@ -832,5 +871,120 @@ public class ScreenCaptureTest {
         final int heightPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().height;
         verify(mVirtualDisplay).resize(widthPx, heightPx, newDpi);
         verify(mVirtualDisplay).setSurface(handler.getSurface());
+    }
+
+    @Test
+    public void testOnI420FrameAvailable() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        // Fallback to YUV first.
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        when(reader0.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+        handler0.onImageAvailable(reader0);
+
+        // Verify fallback occurred and we have a YUV handler.
+        assertEquals(2, mImageHandlerStates.size());
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        assertEquals(ImageFormat.YUV_420_888, handler1.getCaptureState().format);
+
+        // Prepare a mock YUV image.
+        final int rowStride = 128;
+        final Rect cropRect = new Rect(10, 20, 50, 60);
+        final long timestamp = 12345L;
+        final Image image =
+                createMockYuvImage(
+                        timestamp,
+                        cropRect,
+                        /* yPixelStride= */ 1,
+                        /* yRowStride= */ rowStride,
+                        /* uPixelStride= */ 2,
+                        /* uRowStride= */ rowStride,
+                        /* vPixelStride= */ 2,
+                        /* vRowStride= */ rowStride);
+        final Plane[] planes = image.getPlanes();
+
+        when(reader1.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler1.onImageAvailable(reader1);
+
+        // Verify the native JNI call (onI420FrameAvailable) and its parameters.
+        final ByteBuffer buffer0 = planes[0].getBuffer();
+        final ByteBuffer buffer1 = planes[1].getBuffer();
+        final ByteBuffer buffer2 = planes[2].getBuffer();
+        verify(mNativeMock)
+                .onI420FrameAvailable(
+                        eq(NATIVE_POINTER),
+                        any(Runnable.class),
+                        eq(timestamp),
+                        eq(buffer0),
+                        eq(1),
+                        eq(rowStride),
+                        eq(buffer1),
+                        eq(2),
+                        eq(rowStride),
+                        eq(buffer2),
+                        eq(2),
+                        eq(rowStride),
+                        eq(cropRect.left),
+                        eq(cropRect.top),
+                        eq(cropRect.right),
+                        eq(cropRect.bottom));
+        verify(mNativeMock, never())
+                .onRgbaFrameAvailable(
+                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        anyInt(), anyInt());
+    }
+
+    @Test
+    public void testOnI420FrameAvailableAfterDestroy() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        // Fallback to YUV first.
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        when(reader0.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+        handler0.onImageAvailable(reader0);
+
+        // Destroy ScreenCapture.
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        mScreenCapture.destroy();
+
+        // Prepare a mock YUV image.
+        final int rowStride = 128;
+        final Rect cropRect = new Rect(10, 20, 50, 60);
+        final long timestamp = 12345L;
+        final Image image =
+                createMockYuvImage(
+                        timestamp,
+                        cropRect,
+                        /* yPixelStride= */ 1,
+                        /* yRowStride= */ rowStride,
+                        /* uPixelStride= */ 2,
+                        /* uRowStride= */ rowStride,
+                        /* vPixelStride= */ 2,
+                        /* vRowStride= */ rowStride);
+
+        // Simulate the frame arriving after destroy.
+        when(reader1.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler1.onImageAvailable(reader1);
+
+        // Verify no call to the native side.
+        verify(mNativeMock, never())
+                .onI420FrameAvailable(
+                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), any(), anyInt(),
+                        anyInt(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        anyInt());
     }
 }

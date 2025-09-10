@@ -32,6 +32,13 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                 Plane plane,
                 Rect cropRect);
 
+        void onI420FrameAvailable(
+                ImageHandler imageHandler,
+                Runnable releaseCb,
+                long timestampNs,
+                Plane[] planes,
+                Rect cropRect);
+
         void onClose(ImageHandler imageHandler);
 
         void recreateImageHandler(ScreenCapture.CaptureState captureState);
@@ -186,8 +193,16 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                         plane,
                         image.getCropRect());
                 break;
+            case ImageFormat.YUV_420_888:
+                assert image.getPlanes().length == 3;
+                mDelegate.onI420FrameAvailable(
+                        this,
+                        () -> releaseImage(reader, image),
+                        image.getTimestamp(),
+                        image.getPlanes(),
+                        image.getCropRect());
+                break;
             default:
-                // TODO(crbug.com/352187279): Support YUV420.
                 throw new IllegalStateException("Unexpected image format: " + image.getFormat());
         }
     }

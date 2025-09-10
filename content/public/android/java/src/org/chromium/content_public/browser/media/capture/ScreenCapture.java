@@ -439,6 +439,41 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     @Override
+    public void onI420FrameAvailable(
+            ImageHandler imageHandler,
+            Runnable releaseCb,
+            long timestampNs,
+            Plane[] planes,
+            Rect cropRect) {
+        // If the native side was destroyed, then exit without calling JNI methods.
+        if (mNativeDesktopCapturerAndroid == 0) return;
+
+        // Don't close old `ImageHandler`s until we have a Image written to the new
+        // Image handler. This is to make sure that if the OS is still trying to write
+        // to an older Surface from `ImageReader` it can.
+        closeImageHandlersBefore(imageHandler);
+
+        ScreenCaptureJni.get()
+                .onI420FrameAvailable(
+                        mNativeDesktopCapturerAndroid,
+                        releaseCb,
+                        timestampNs,
+                        planes[0].getBuffer(),
+                        planes[0].getPixelStride(),
+                        planes[0].getRowStride(),
+                        planes[1].getBuffer(),
+                        planes[1].getPixelStride(),
+                        planes[1].getRowStride(),
+                        planes[2].getBuffer(),
+                        planes[2].getPixelStride(),
+                        planes[2].getRowStride(),
+                        cropRect.left,
+                        cropRect.top,
+                        cropRect.right,
+                        cropRect.bottom);
+    }
+
+    @Override
     public void onClose(ImageHandler imageHandler) {
         final boolean removed = mImageHandlerQueue.remove(imageHandler);
         assert removed;
@@ -461,6 +496,24 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 ByteBuffer buf,
                 int pixelStride,
                 int rowStride,
+                int left,
+                int top,
+                int right,
+                int bottom);
+
+        void onI420FrameAvailable(
+                long nativeDesktopCapturerAndroid,
+                Runnable releaseCb,
+                long timestampNs,
+                ByteBuffer yBuffer,
+                int yPixelStride,
+                int yRowStride,
+                ByteBuffer uBuffer,
+                int uPixelStride,
+                int uRowStride,
+                ByteBuffer vBuffer,
+                int vPixelStride,
+                int vRowStride,
                 int left,
                 int top,
                 int right,
