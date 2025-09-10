@@ -320,10 +320,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
 
-  base::WeakPtr<CanvasResourceProvider> CreateWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   // Notifies the provider when the texture params associated with |resource|
   // are modified externally from the provider's SkSurface.
   virtual void NotifyTexParamsModified(const CanvasResource* resource) {}
@@ -503,8 +499,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;
   std::optional<cc::PaintRecord> last_recording_;
-
-  base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };
 
 // * Renders to a SharedImage, which manages memory internally.

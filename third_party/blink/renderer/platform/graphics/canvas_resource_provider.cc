@@ -175,6 +175,10 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
     return SnapshotInternal(orientation, reason);
   }
 
+  base::WeakPtr<CanvasResourceProviderBitmap> CreateWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   sk_sp<SkSurface> CreateSkSurface() const override {
     TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
@@ -182,6 +186,8 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
     const auto props = GetSkSurfaceProps();
     return SkSurfaces::Raster(info, &props);
   }
+
+  base::WeakPtrFactory<CanvasResourceProviderBitmap> weak_ptr_factory_{this};
 };
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
@@ -1041,6 +1047,10 @@ class CanvasResourceProviderSharedImageImpl
     }
   }
 
+  base::WeakPtr<CanvasResourceProviderSharedImageImpl> CreateWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
@@ -1082,6 +1092,9 @@ class CanvasResourceProviderSharedImageImpl
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
 
   bool notified_context_lost_ = false;
+
+  base::WeakPtrFactory<CanvasResourceProviderSharedImageImpl> weak_ptr_factory_{
+      this};
 };
 
 // * Renders to back buffer of a shared image swap chain.
@@ -1253,6 +1266,10 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     }
   }
 
+  base::WeakPtr<CanvasResourceProviderSwapChain> CreateWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   bool needs_present_ = false;
   bool needs_flush_ = false;
   const bool use_oop_rasterization_;
@@ -1260,6 +1277,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   // will always have the back texture copied to it prior to any new commands.
   bool initial_needs_clear_ = true;
   scoped_refptr<CanvasResourceSwapChain> resource_;
+
+  base::WeakPtrFactory<CanvasResourceProviderSwapChain> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<CanvasResourceProvider>

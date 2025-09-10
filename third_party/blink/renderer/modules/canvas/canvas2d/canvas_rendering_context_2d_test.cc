@@ -577,8 +577,13 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
                int y));
 
  private:
+  base::WeakPtr<FakeCanvasResourceProvider> CreateWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   bool is_accelerated_;
   bool supports_direct_compositing_;
+  base::WeakPtrFactory<FakeCanvasResourceProvider> weak_ptr_factory_{this};
 };
 
 // Sets up an accelerated CanvasResourceProvider, accelerated compositing, and a
