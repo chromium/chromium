@@ -483,12 +483,12 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         // this observer, the dynamic sizing logic would only work on the root popups.
         final ListObservable.ListObserver<Void> sizeUpdaterObserver =
                 new ListObservable.ListObserver<>() {
-                    private void updatePopupSize() {
+                    private void updatePopupSize(int count) {
                         popupContentView.post(
                                 () -> {
                                     if (mAnchoredPopupWindow != null
                                             && mAnchoredPopupWindow.isShowing()) {
-                                        configurePopupWindowSize(popupListMenu);
+                                        configurePopupWindowSize(popupListMenu, count);
                                     }
                                 });
                     }
@@ -499,17 +499,17 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             int index,
                             int count,
                             @Nullable Void payload) {
-                        updatePopupSize();
+                        updatePopupSize(count);
                     }
 
                     @Override
                     public void onItemRangeInserted(ListObservable source, int index, int count) {
-                        updatePopupSize();
+                        updatePopupSize(count);
                     }
 
                     @Override
                     public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                        updatePopupSize();
+                        updatePopupSize(count);
                     }
                 };
 
@@ -522,7 +522,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     bookmarkItems.removeObserver(sizeUpdaterObserver);
                 });
 
-        configurePopupWindowSize(popupListMenu);
+        configurePopupWindowSize(popupListMenu, bookmarkItems.size());
         mAnchoredPopupWindow.show();
     }
 
@@ -557,7 +557,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     }
 
     @VisibleForTesting
-    void configurePopupWindowSize(BasicListMenu popupListMenu) {
+    void configurePopupWindowSize(BasicListMenu popupListMenu, int count) {
         if (mAnchoredPopupWindow == null) {
             return;
         }
@@ -573,13 +573,18 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         // The final width is the smaller of the desired max width and the available screen width.
         int finalWidth = Math.min(maxWidthPx, availableWidth);
 
-        // Configure the height.
-        int minHeightPx = resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_min_height);
-
         // Measure size of menu_list. measuredHeight is the total height of all the items
         // inside menu_list plus padding.
         int[] measuredDimensions = popupListMenu.getMenuDimensions();
         int measuredHeight = measuredDimensions[1];
+
+        // Configure the height. When we are in the empty state, there should be a minimum height as
+        // defined by the UI spec. If there are bookmark items, the pop-up should shrink to wrap
+        // those items without a minimum height.
+        int minHeightPx =
+                count == 0
+                        ? resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_min_height)
+                        : measuredHeight;
 
         // Ensures that the height is at least minHeightPx.
         int heightFloor = Math.max(minHeightPx, measuredHeight);
