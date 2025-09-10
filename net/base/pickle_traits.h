@@ -563,7 +563,7 @@ struct PickleTraits<T> {
   }
 
   static constexpr std::make_index_sequence<std::tuple_size_v<T>>
-      kIndexSequence;
+      kIndexSequence{};
 };
 
 // bool is treated specially by base::Pickle.
