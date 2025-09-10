@@ -386,3 +386,9 @@ luci.builder_health_notifier(
     ignore_buckets = ["try"],
     notify_all_healthy = False,
 )
+
+luci.builder_health_notifier(
+    owner_email = "chrome-gpu-infra@google.com",
+    ignore_buckets = ["try"],
+    notify_all_healthy = False,
+)
