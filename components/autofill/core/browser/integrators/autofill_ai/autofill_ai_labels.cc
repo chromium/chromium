@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -34,25 +36,67 @@ namespace {
 // settings page.
 constexpr size_t kMaxNumberOfLabels = 2;
 
-// An AttributeType is disambiguating in value if two entities disagree on its
-// value. Ignores entities unrelated to the AttributeType.
+std::u16string GetInfo(const EntityInstance& entity,
+                       AttributeType type,
+                       const std::string& app_locale) {
+  base::optional_ref<const AttributeInstance> attribute =
+      entity.attribute(type);
+  return attribute ? attribute->GetCompleteInfo(app_locale) : std::u16string();
+}
+
+// Joins the non-empty values `attributes` in `entity` with the `delimiter` and
+// returns the resulting string.
+std::u16string JoinAttributes(const EntityInstance& entity,
+                              base::span<const AttributeType> attributes,
+                              std::u16string_view separator,
+                              const std::string& app_locale) {
+  std::vector<std::u16string> combination;
+  for (const AttributeType at : attributes) {
+    if (std::u16string value = GetInfo(entity, at, app_locale);
+        !value.empty()) {
+      combination.push_back(std::move(value));
+    }
+  }
+  return base::JoinString(combination, separator);
+}
+
+// Returns the value that should be added as label to `entity`, given a `type`
+// and formatted according to `app_locale`. Also return the set of
+// `AttributeType`s used to build that label, as sometimes many types come into
+// play.
+std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
+    const EntityInstance& entity,
+    AttributeType type,
+    const std::string& app_locale) {
+  using enum AttributeTypeName;
+  static constexpr std::array kAirports = {
+      AttributeType(kFlightReservationDepartureAirport),
+      AttributeType(kFlightReservationArrivalAirport)};
+  if (base::Contains(kAirports, type)) {
+    // The label for flight airport information should be:
+    // - Empty if no airport information is available.
+    // - "DEPARTURE–ARRIVAL" if both the departure and arrival airports are
+    //   available in the `entity`.
+    // - The one that is available otherwise.
+    return {JoinAttributes(entity, kAirports, u"\u2013", app_locale),
+            DenseSet<AttributeType>(kAirports)};
+  }
+  return {GetInfo(entity, type, app_locale), {type}};
+}
+
+// An AttributeType is disambiguating in value if two entities disagree on the
+// label derived from it. Ignores entities unrelated to the AttributeType.
 bool AtLeastTwoEntityInstancesDifferInAttribute(
     AttributeType type,
     base::span<const EntityInstance*> entities,
     const std::string& app_locale) {
-  auto get_info = [&app_locale](const EntityInstance& entity,
-                                AttributeType type) {
-    base::optional_ref<const AttributeInstance> attribute =
-        entity.attribute(type);
-    return attribute ? std::optional(attribute->GetCompleteInfo(app_locale))
-                     : std::nullopt;
-  };
   std::optional<std::optional<std::u16string>> seen_value;
   for (const EntityInstance* entity : entities) {
     if (!entity->type().attributes().contains(type)) {
       continue;
     }
-    std::optional<std::u16string> value = get_info(*entity, type);
+    std::u16string value =
+        GetValueAndTypesForLabel(*entity, type, app_locale).first;
     if (!seen_value) {
       seen_value = value;
     } else if (*seen_value != value) {
@@ -86,11 +130,14 @@ std::vector<AttributeType> GetOrderedAttributeTypesForDisambiguation(
 
 // Given a `type`, expands `labels` of each of `entities` that support `type`
 // with the information stored in its corresponding `AttributeInstance`.
+// - `tried_types` contains `AttributeType`s for which we already tried adding
+//   information for in some of `labels`.
 // - If `only_add_to_empty_labels` is true, the function adds a new label only
 //   to entities that currently have an empty label.
 void ExpandEntityLabels(AttributeType type,
                         base::span<const EntityInstance*> entities,
                         base::span<EntityLabel> labels,
+                        DenseSet<AttributeType>& tried_types,
                         bool only_add_to_empty_labels,
                         const std::string& app_locale) {
   const size_t max_number_of_labels =
@@ -108,20 +155,19 @@ void ExpandEntityLabels(AttributeType type,
       // The entity doesn't need more labels.
       continue;
     }
-    base::optional_ref<const AttributeInstance> attribute =
-        entity->attribute(type);
-    std::u16string label_value =
-        attribute ? attribute->GetCompleteInfo(app_locale) : std::u16string();
-    if (!label_value.empty()) {
-      label.push_back(label_value);
+    const auto [value, used_types] =
+        GetValueAndTypesForLabel(*entity, type, app_locale);
+    if (!value.empty()) {
+      tried_types.insert_all(used_types);
+      label.push_back(value);
     }
   }
 }
 
 // Iterates over `ordered_attributes` once and tries to find `AttributeType`s
 // for which labels can be added.
-// - `added_types` contains `AttributeType`s for which information is already
-//   present in some of `labels`.
+// - `tried_types` contains `AttributeType`s for which we already tried adding
+//   information for in some of `labels`.
 // - If `require_disambiguating_types` is true, the function will only add
 //   `AttributeType`s that are disambiguating.
 // - If `require_disambiguating_values` is true and `entities` contain more than
@@ -131,7 +177,7 @@ void ExpandEntityLabels(AttributeType type,
 void AddLabelsRound(base::span<const EntityInstance*> entities,
                     base::span<const AttributeType> ordered_attributes,
                     base::span<EntityLabel> labels,
-                    DenseSet<AttributeType>& added_types,
+                    DenseSet<AttributeType>& tried_types,
                     bool require_disambiguating_types,
                     bool require_disambiguating_values,
                     bool only_add_to_empty_labels,
@@ -141,7 +187,7 @@ void AddLabelsRound(base::span<const EntityInstance*> entities,
     return;
   }
   for (AttributeType type : ordered_attributes) {
-    if (added_types.contains(type)) {
+    if (tried_types.contains(type)) {
       // The current type was already added as label.
       continue;
     }
@@ -155,9 +201,8 @@ void AddLabelsRound(base::span<const EntityInstance*> entities,
                                                     app_locale)) {
       continue;
     }
-    added_types.insert(type);
-    ExpandEntityLabels(type, entities, labels, only_add_to_empty_labels,
-                       app_locale);
+    ExpandEntityLabels(type, entities, labels, tried_types,
+                       only_add_to_empty_labels, app_locale);
   }
 }
 
@@ -169,27 +214,27 @@ std::vector<EntityLabel> GetLabelsForEntities(
     bool prioritize_disambiguating_types,
     const std::string& app_locale) {
   std::vector<EntityLabel> labels(entities.size());
-  DenseSet<AttributeType> added_types;
+  DenseSet<AttributeType> tried_types;
 
   std::vector<AttributeType> ordered_attributes =
       GetOrderedAttributeTypesForDisambiguation(entities,
                                                 attribute_types_to_ignore);
 
   if (prioritize_disambiguating_types) {
-    AddLabelsRound(entities, ordered_attributes, labels, added_types,
+    AddLabelsRound(entities, ordered_attributes, labels, tried_types,
                    /*require_disambiguating_types=*/true,
                    /*require_disambiguating_values=*/true,
                    /*only_add_to_empty_labels=*/false, app_locale);
   }
 
-  AddLabelsRound(entities, ordered_attributes, labels, added_types,
+  AddLabelsRound(entities, ordered_attributes, labels, tried_types,
                  /*require_disambiguating_types=*/false,
                  /*require_disambiguating_values=*/true,
                  // This should only be false in the first call to the function.
                  /*only_add_to_empty_labels=*/prioritize_disambiguating_types,
                  app_locale);
 
-  AddLabelsRound(entities, ordered_attributes, labels, added_types,
+  AddLabelsRound(entities, ordered_attributes, labels, tried_types,
                  /*require_disambiguating_types=*/false,
                  /*require_disambiguating_values=*/false,
                  /*only_add_to_empty_labels=*/true, app_locale);

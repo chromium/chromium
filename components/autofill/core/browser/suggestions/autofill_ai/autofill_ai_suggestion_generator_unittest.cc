@@ -94,7 +94,11 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   AutofillAiSuggestionGeneratorTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiServerModel},
+                              features::kAutofillAiServerModel,
+                              features::kAutofillAiNationalIdCard,
+                              features::kAutofillAiKnownTravelerNumber,
+                              features::kAutofillAiRedressNumber,
+                              features::kAutofillAiWalletFlightReservation},
         /*disabled_features=*/{});
     autofill_client_.GetPersonalDataManager().SetPrefService(
         autofill_client_.GetPrefs());
@@ -735,6 +739,16 @@ TEST_F(
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · 2018-12-29"),
                              HasLabel(u"Passport · 2019-08-30")));
+}
+
+// Test that in flight reservation suggestion generation. The main label is a
+// combined airport information one. (Departure - Arrival).
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       LabelGeneration_FlightReservation_CombinedAirportLabel) {
+  SetEntities({test::GetFlightReservationEntityInstance()});
+  SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Flight reservation · MUC–BEY")));
 }
 
 // Test that if any of the entities suggested are from Google Wallet, the manage
