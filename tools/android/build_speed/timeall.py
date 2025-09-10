@@ -67,6 +67,10 @@ class Options:
 
 def run_benchmark(options: Options):
     outdir_name = f"out/Debug"
+    if '_test_' in options.benchmark:
+        target = "chrome_test_apk"
+    else:
+        target = "chrome_apk"
     cmd = [
         "tools/android/build_speed/benchmark.py",
         "-vv",
@@ -74,7 +78,7 @@ def run_benchmark(options: Options):
         "-C",
         outdir_name,
         "--target",
-        "chrome_apk",
+        target,
     ]
     if options.e:
         cmd.extend(["--emulator", options.e])
@@ -113,6 +117,7 @@ def main():
         "chrome_nosig",
         "base_sig",
         "module_internal_nosig",
+        "cta_test_sig",
     ]
 
     if args.debug:
