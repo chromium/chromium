@@ -126,9 +126,7 @@ std::string NetworkUIData::GetAsJson() const {
     dict.Set(kKeyUserSettings, user_settings_->Clone());
   }
 
-  std::string json;
-  base::JSONWriter::Write(dict, &json);
-  return json;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string NetworkUIData::GetONCSourceAsString() const {

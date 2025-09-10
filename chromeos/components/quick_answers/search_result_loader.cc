@@ -76,10 +76,7 @@ std::string BuildSearchRequestPayload(const std::string& selected_text,
   request_context.Set(kLanguageContextKey, std::move(language_context));
   payload.Set(kRequestContextKey, std::move(request_context));
 
-  std::string request_payload_str;
-  base::JSONWriter::Write(payload, &request_payload_str);
-
-  return request_payload_str;
+  return base::WriteJson(payload).value_or("");
 }
 
 }  // namespace

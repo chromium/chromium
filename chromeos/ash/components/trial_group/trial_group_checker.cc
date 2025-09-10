@@ -85,7 +85,7 @@ TrialGroupChecker::Status TrialGroupChecker::LookUpMembership(
   {
     base::Value::Dict request;
     request.Set("group", static_cast<int>(group_id_));
-    base::JSONWriter::Write(request, &upload_data);
+    upload_data = base::WriteJson(request).value_or("");
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

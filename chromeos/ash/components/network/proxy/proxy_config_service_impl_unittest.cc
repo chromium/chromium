@@ -572,7 +572,7 @@ class ProxyConfigServiceImplWithDescriptionTest : public testing::Test {
   void SetUserConfigInShill(const base::Value::Dict* pref_proxy_config_dict) {
     std::string proxy_config;
     if (pref_proxy_config_dict) {
-      base::JSONWriter::Write(*pref_proxy_config_dict, &proxy_config);
+      proxy_config = base::WriteJson(*pref_proxy_config_dict).value_or("");
     }
 
     NetworkStateHandler* network_state_handler =

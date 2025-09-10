@@ -399,8 +399,7 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
                : "org.chromium.arc.intent_helper.ACTION_SEND_NEW_PICTURE";
   base::Value::Dict value;
   value.Set("file_path", file_path);
-  std::string extras;
-  base::JSONWriter::Write(value, &extras);
+  std::string extras = base::WriteJson(value).value_or("");
 
   instance->SendBroadcast(action, "org.chromium.arc.intent_helper",
                           /*cls=*/std::string(), extras);

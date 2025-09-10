@@ -761,8 +761,7 @@ bool FakeSessionManagerClient::GetFlagsForUser(
     feature_flag_list.Append(feature_flag);
   }
   if (!feature_flag_list.empty()) {
-    std::string encoded;
-    base::JSONWriter::Write(feature_flag_list, &encoded);
+    std::string encoded = base::WriteJson(feature_flag_list).value_or("");
     out_flags_for_user->push_back(base::StringPrintf(
         "--%s=%s", chromeos::switches::kFeatureFlags, encoded.c_str()));
   }
@@ -773,8 +772,7 @@ bool FakeSessionManagerClient::GetFlagsForUser(
     origin_list_dict.Set(entry.first, entry.second);
   }
   if (!origin_list_dict.empty()) {
-    std::string encoded;
-    base::JSONWriter::Write(origin_list_dict, &encoded);
+    std::string encoded = base::WriteJson(origin_list_dict).value_or("");
     out_flags_for_user->push_back(base::StringPrintf(
         "--%s=%s", chromeos::switches::kFeatureFlagsOriginList,
         encoded.c_str()));
