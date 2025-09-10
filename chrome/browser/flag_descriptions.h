@@ -1151,9 +1151,6 @@ extern const char kEnableZeroCopyTabCaptureDescription[];
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 
-extern const char kExperimentalWebAssemblyJSPIName[];
-extern const char kExperimentalWebAssemblyJSPIDescription[];
-
 extern const char kExperimentalWebAssemblySharedEverythingName[];
 extern const char kExperimentalWebAssemblySharedEverythingDescription[];
 

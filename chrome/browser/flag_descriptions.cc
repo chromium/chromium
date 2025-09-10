@@ -1983,13 +1983,6 @@ const char kExperimentalWebAssemblyFeaturesName[] = "Experimental WebAssembly";
 const char kExperimentalWebAssemblyFeaturesDescription[] =
     "Enable web pages to use experimental WebAssembly features.";
 
-const char kExperimentalWebAssemblyJSPIName[] =
-    "Experimental WebAssembly JavaScript Promise Integration (JSPI)";
-const char kExperimentalWebAssemblyJSPIDescription[] =
-    "Enable web pages to use experimental WebAssembly JavaScript Promise "
-    "Integration (JSPI) "
-    "API.";
-
 const char kExperimentalWebAssemblySharedEverythingName[] =
     "Experimental WebAssembly Shared-Everything Threads";
 const char kExperimentalWebAssemblySharedEverythingDescription[] =

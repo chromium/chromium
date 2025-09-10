@@ -148,12 +148,6 @@ RenderProcessImpl::RenderProcessImpl()
     SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
                           "--no-liftoff");
 
-    // V8's Wasm stack switching support is sufficient to enable JavaScript
-    // Promise Integration.
-    SetV8FlagIfOverridden(features::kEnableExperimentalWebAssemblyJSPI,
-                          "--experimental-wasm-jspi",
-                          "--no-experimental-wasm-jspi");
-
     SetV8FlagIfOverridden(
         features::kEnableExperimentalWebAssemblySharedEverything,
         "--experimental-wasm-shared", "--no-experimental-wasm-shared");

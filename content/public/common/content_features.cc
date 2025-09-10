@@ -1147,11 +1147,6 @@ BASE_FEATURE(kWebAssemblyBaseline, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kElementCaptureOfOtherTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-// Enable WebAssembly JSPI.
-BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
-             "WebAssemblyExperimentalJSPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables WebAssembly Shared-Everything Threads.
 BASE_FEATURE(kEnableExperimentalWebAssemblySharedEverything,
              "WebAssemblyExperimentalSharedEverything",
