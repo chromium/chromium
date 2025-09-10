@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
@@ -157,6 +158,10 @@ public class CustomTabToolbarButtonsProperties {
     /** Property key for whether the CCT is incognito. */
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
+    /** Property key for the tint of the icons. */
+    public static final WritableObjectPropertyKey<ColorStateList> TINT =
+            new WritableObjectPropertyKey<>();
+
     public static PropertyModel create(
             boolean customActionButtonsVisible,
             PropertyListModel<PropertyModel, PropertyKey> customActionButtons,
@@ -167,7 +172,8 @@ public class CustomTabToolbarButtonsProperties {
             @Px int toolbarWidth,
             boolean omniboxEnabled,
             boolean titleVisible,
-            boolean isIncognito) {
+            boolean isIncognito,
+            ColorStateList tint) {
         return new PropertyModel.Builder(
                         CUSTOM_ACTION_BUTTONS_VISIBLE,
                         CUSTOM_ACTION_BUTTONS,
@@ -179,7 +185,8 @@ public class CustomTabToolbarButtonsProperties {
                         TOOLBAR_WIDTH,
                         OMNIBOX_ENABLED,
                         TITLE_VISIBLE,
-                        IS_INCOGNITO)
+                        IS_INCOGNITO,
+                        TINT)
                 .with(CUSTOM_ACTION_BUTTONS_VISIBLE, customActionButtonsVisible)
                 .with(CUSTOM_ACTION_BUTTONS, customActionButtons)
                 .with(SIDE_SHEET_MAXIMIZE_BUTTON, new SideSheetMaximizeButtonData())
@@ -191,6 +198,7 @@ public class CustomTabToolbarButtonsProperties {
                 .with(OMNIBOX_ENABLED, omniboxEnabled)
                 .with(TITLE_VISIBLE, titleVisible)
                 .with(IS_INCOGNITO, isIncognito)
+                .with(TINT, tint)
                 .build();
     }
 }

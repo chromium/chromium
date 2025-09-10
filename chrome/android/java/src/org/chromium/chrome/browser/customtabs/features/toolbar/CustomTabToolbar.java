@@ -1098,6 +1098,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateButtonsTint() {
+        // TODO(crbug.com/402213312): Remove tinting code here once it's fully MVC-ified.
         updateButtonTint(mCloseButton);
         if (mMinimizeButton != null) {
             updateButtonTint(mMinimizeButton);

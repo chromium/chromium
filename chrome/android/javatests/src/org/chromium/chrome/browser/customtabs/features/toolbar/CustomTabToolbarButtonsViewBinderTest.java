@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TITLE_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TOOLBAR_WIDTH;
+import static org.chromium.chrome.browser.ui.theme.BrandedColorScheme.APP_DEFAULT;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarB
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -109,7 +111,9 @@ public class CustomTabToolbarButtonsViewBinderTest {
                                     /* toolbarWidth= */ ViewUtils.dpToPx(mActivity, 500),
                                     /* omniboxEnabled= */ false,
                                     /* titleVisible= */ false,
-                                    /* isIncognito= */ false);
+                                    /* isIncognito= */ false,
+                                    /* tint */ ThemeUtils.getThemedToolbarIconTint(
+                                            mActivity, APP_DEFAULT));
 
                     // The view binder uses this tag to get the model.
                     mToolbar.setTag(R.id.view_model, mModel);

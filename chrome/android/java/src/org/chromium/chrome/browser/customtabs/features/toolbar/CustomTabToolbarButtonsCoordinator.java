@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -93,6 +94,7 @@ public class CustomTabToolbarButtonsCoordinator
                 intentDataProvider.getTitleVisibilityState() == TitleVisibility.VISIBLE;
         boolean isIncognito =
                 intentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO;
+        var tint = ChromeColors.getPrimaryIconTint(activity, isIncognito);
         mModel =
                 CustomTabToolbarButtonsProperties.create(
                         /* customActionButtonsVisible= */ true,
@@ -105,7 +107,8 @@ public class CustomTabToolbarButtonsCoordinator
                         toolbarWidth,
                         omniboxEnabled,
                         titleVisible,
-                        isIncognito);
+                        isIncognito,
+                        tint);
         view.setTag(R.id.view_model, mModel);
         CustomTabToolbarButtonsViewBinder viewBinder = new CustomTabToolbarButtonsViewBinder();
         PropertyModelChangeProcessor.create(mModel, view, viewBinder);
