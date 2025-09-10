@@ -326,6 +326,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor saveToDriveFileSizeBytes_: number = 0;
   protected accessor saveToDriveState_: SaveToDriveState =
       SaveToDriveState.UNINITIALIZED;
+  private saveToDriveRequestType_: SaveRequestType = SaveRequestType.ORIGINAL;
   protected accessor saveToDriveUploadedBytes_: number = 0;
   // </if>
   private pdfSearchifySaveEnabled_: boolean = false;
@@ -1297,6 +1298,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // state, so the next `onSaveToDrive_` call can re-trigger the upload flow.
     if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
       PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
+      this.saveToDriveRequestType_ = e.detail;
       return;
     }
     const bubble =
@@ -1312,6 +1314,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveToDriveBubbleRequestType.CANCEL_UPLOAD:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
             /*saveRequestType=undefined*/);
+        break;
+      case SaveToDriveBubbleRequestType.RETRY:
+        PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
+            this.saveToDriveRequestType_);
         break;
       default:
         // TODO(crbug.com/427449996): Implement the save PDF to drive logics.

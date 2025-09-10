@@ -193,6 +193,72 @@ const tests = [
 
     chrome.test.succeed();
   },
+
+  async function testSaveToDriveBubbleRetryUploadOriginal() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    // Click on the save button to initiate an upload.
+    privateProxy.sendUninitializedState();
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+
+    // Set the save to Drive state to session timeout error state and open the
+    // bubble.
+    privateProxy.sendSessionTimeoutError();
+    controls.$.save.click();
+    await microtasksFinished();
+
+    // Click the retry button in the bubble.
+    const retryButton = getRequiredElement(bubble, '#retry-button');
+    retryButton.click();
+    await privateProxy.whenCalled('saveToDrive');
+
+    chrome.test.assertEq(2, privateProxy.getCallCount('saveToDrive'));
+    const args = privateProxy.getArgs('saveToDrive');
+    chrome.test.assertEq(2, args.length);
+    chrome.test.assertEq('ORIGINAL', args[0]);
+    chrome.test.assertEq('ORIGINAL', args[1]);
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleRetryUploadEdited() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    // Click on the save button to initiate an edited upload.
+    privateProxy.sendUninitializedState();
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.hasEdits = true;
+    controls.$.save.click();
+    await microtasksFinished();
+    const buttons = controls.shadowRoot.querySelectorAll('button');
+    buttons[0]!.click();
+    await privateProxy.whenCalled('saveToDrive');
+
+    // Set the save to Drive state to session timeout error state and open the
+    // bubble.
+    privateProxy.sendSessionTimeoutError();
+    controls.$.save.click();
+    await microtasksFinished();
+
+    // Click the retry button in the bubble.
+    const retryButton = getRequiredElement(bubble, '#retry-button');
+    retryButton.click();
+    await privateProxy.whenCalled('saveToDrive');
+
+    chrome.test.assertEq(2, privateProxy.getCallCount('saveToDrive'));
+    const args = privateProxy.getArgs('saveToDrive');
+    chrome.test.assertEq(2, args.length);
+    chrome.test.assertEq('EDITED', args[0]);
+    chrome.test.assertEq('EDITED', args[1]);
+
+    chrome.test.succeed();
+  },
 ];
 
 chrome.test.runTests(tests);
