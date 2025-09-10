@@ -161,20 +161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSendExceeds30Days"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether the &quot;extra&quot; non-scheduled time it took to confirm
-    the aggregatable attribution report was sent exceeds 30 days. This is
-    primarily due to a report's scheduled report time taking place while the
-    browser is closed. Recorded when an aggregatable report is successfully
-    sent.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
     units="%" expires_after="2026-01-25">
   <owner>linnan@chromium.org</owner>
@@ -251,19 +237,6 @@ chromium-metrics-reviews@google.com.
     Records the time between a trigger and its reporting. This is emitted only
     when an aggregatable report is sent succeessfully to the reporting endpoint,
     and not emitted for debug reports.
-  </summary>
-</histogram>
-
-<histogram
-    name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfullyExceeds30Days"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether the time difference between a trigger and its reporting is
-    greater than 30 days. This is emitted only when an aggregatable report is
-    sent successfully to the reporting endpoint, and not emitted for debug
-    reports.
   </summary>
 </histogram>
 
@@ -624,18 +597,6 @@ chromium-metrics-reviews@google.com.
     particular attribution report was sent. This is primarily due to a report's
     scheduled report time taking place while the browser is closed. Recorded
     when an attribution report is successfully sent.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ExtraReportDelayForSuccessfulSendExceeds30Days"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether the &quot;extra&quot; non-scheduled time it took to confirm
-    the particular attribution report was sent exceeds 30 days. This is
-    primarily due to a report's scheduled report time taking place while the
-    browser is closed. Recorded when an attribution report is successfully sent.
   </summary>
 </histogram>
 
@@ -1385,19 +1346,6 @@ chromium-metrics-reviews@google.com.
     Records the time between a trigger and its reporting. This is emitted only
     when an event-level report is sent successfully to the reporting endpoint,
     and not emitted for debug reports.
-  </summary>
-</histogram>
-
-<histogram
-    name="Conversions.TimeFromTriggerToReportSentSuccessfullyExceeds30Days"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether the time difference between a trigger and its reporting is
-    greater than 30 days. This is emitted only when an event-level report is
-    sent successfully to the reporting endpoint, and not emitted for debug
-    reports.
   </summary>
 </histogram>
 
