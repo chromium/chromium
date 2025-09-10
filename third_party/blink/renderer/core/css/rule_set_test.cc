@@ -573,6 +573,8 @@ TEST(RuleSetTest, IsCoveredByBucketing) {
   EXPECT_THAT(CoveredByBucketing(":focus"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing(":focus-visible"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing(":host"), ElementsAreArray({false}));
+  EXPECT_THAT(CoveredByBucketing(":active-view-transition"),
+              ElementsAreArray({true}));
 }
 
 TEST(RuleSetTest, VisitedDependentRuleCount) {

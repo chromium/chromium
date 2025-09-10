@@ -3364,6 +3364,11 @@ bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
              ->IsSelectorFragmentAnchor();
 }
 
+bool SelectorChecker::MatchesActiveViewTransitionPseudoClass(
+    const Element& element) {
+  return GetTransitionForScope(element) != nullptr;
+}
+
 bool SelectorChecker::MatchesFocusPseudoClass(
     const Element& element,
     PseudoId matching_for_pseudo_element) {

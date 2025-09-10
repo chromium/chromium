@@ -33,6 +33,9 @@ void RuleSetGroup::AddRuleSet(RuleSet* rule_set) {
   if (!rule_set->FocusVisiblePseudoClassRules().empty()) {
     has_focus_visible_pseudo_class_rules_ |= rule_set_mask;
   }
+  if (!rule_set->ActiveViewTransitionRules().empty()) {
+    has_active_view_transition_pseudo_rules_ |= rule_set_mask;
+  }
 
   if (rule_set->SingleScope()) {
     single_scope_ |= rule_set_mask;
