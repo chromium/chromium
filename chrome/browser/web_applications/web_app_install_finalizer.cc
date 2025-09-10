@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -454,9 +455,15 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         << "Cannot create os hooks for a non-fully installed app";
   }
 
+  std::optional<WebAppScope> old_scope;
+  if (existing_web_app) {
+    old_scope = existing_web_app->GetScope();
+  }
+
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options);
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options,
+      std::move(old_scope));
 
   if (options.overwrite_existing_manifest_fields || !existing_web_app) {
     SetWebAppManifestFieldsAndWriteData(
@@ -488,16 +495,14 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
-  bool scope_changed =
-      existing_web_app->scope() != web_app_info.scope ||
-      existing_web_app->scope_extensions() != web_app_info.scope_extensions;
+  std::optional<WebAppScope> old_scope = existing_web_app->GetScope();
 
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
       provider_->registrar_unsafe().GetAppShortName(app_id),
       GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone(),
-      scope_changed);
+      std::move(old_scope));
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   if (web_app->isolation_data().has_value()) {
@@ -650,6 +655,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     InstallFinalizedCallback callback,
     webapps::AppId app_id,
     FinalizeOptions finalize_options,
+    std::optional<WebAppScope> old_scope,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
@@ -657,8 +663,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
                             webapps::InstallResultCode::kWriteDataFailed);
     return;
   }
-
-  provider_->install_manager().NotifyWebAppInstalled(app_id);
 
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   // TODO(dmurph): Verify this check is not needed and remove after
@@ -669,6 +673,11 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
         webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
     return;
   }
+  if (old_scope.has_value() && old_scope.value() != web_app->GetScope()) {
+    provider_->registrar_unsafe().NotifyWebAppEffectiveScopeChanged(app_id);
+  }
+
+  provider_->install_manager().NotifyWebAppInstalled(app_id);
 
   SynchronizeOsOptions synchronize_options;
   synchronize_options.add_shortcut_to_desktop = finalize_options.add_to_desktop;
@@ -730,7 +739,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     std::string old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
-    bool scope_changed,
+    std::optional<WebAppScope> old_scope,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
@@ -739,7 +748,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  if (scope_changed) {
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  if (old_scope.has_value() && old_scope.value() != web_app->GetScope()) {
     provider_->registrar_unsafe().NotifyWebAppEffectiveScopeChanged(app_id);
   }
 

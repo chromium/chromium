@@ -433,6 +433,8 @@ changes from sync would be handled.
     handling incoming sync data. In methods like `MergeFullSyncData` and
     `ApplyIncrementalSyncChanges`, it directly modifies `WebApp` objects in the
     registrar via a `ScopedRegistryUpdate`.
+      - Note from future: HOWEVER - changes in the sync scope are not then used
+        to write to the WebApp object.
 *   **No `WebAppInstallFinalizer`:** Crucially, this flow does *not* involve the
     `WebAppInstallFinalizer`. This means that neither `OnWebAppInstalled` nor
     `OnWebAppManifestUpdated` are called for sync-driven changes.
@@ -515,6 +517,9 @@ eventually orchestrated by the `WebAppInstallFinalizer` or the
     `WebApp` objects in the registrar. This process does not use the
     `WebAppInstallFinalizer` and instead notifies observers via
     `OnWebAppsWillBeUpdatedFromSync`.
+      - Note from future: Changes in the sync scope are not then used to write
+        to the WebApp object. Only the user_display_mode is synced if the app is
+        already installed.
 
 ### Current UI Update Mechanism
 The visibility of the custom tab bar is determined by

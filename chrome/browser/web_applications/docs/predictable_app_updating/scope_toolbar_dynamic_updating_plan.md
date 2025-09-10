@@ -145,27 +145,14 @@ delivering an end-to-end testable piece of functionality.
     *   **Build target:** `browser_tests`
     *   **Tests to run:** `browser_tests --gtest_filter=ManifestSilentUpdateCommandBrowserTest.*`
 
-### Phase 2: Sync Update Vertical
+### Phase 2: Re-installation Vertical and Test Infra
 
-*   [ ] **Task 2.1:** Plumb notification through `WebAppSyncBridge`.
-    *   In `WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar`, detect
-        if scope has changed.
-    *   Call `NotifyWebAppEffectiveScopeChanged` if it has.
-    *   **Build target:** `unit_tests`
-*   [ ] **Task 2.2:** Write sync update browser test.
-    *   In `single_client_web_apps_sync_test.cc`, add a test that installs an
-        app, opens it, navigates out of scope, triggers a sync update that
-        changes the scope, and verifies the toolbar hides.
+*   [x] **Task 3.1:** Implement testing infrastructure.
+    *   Implement a static `PreinstalledWebAppManager::SetParsedConfigsForTesting`
+        method that uses a `base::AutoReset` to manage the test-only
+        configuration.
     *   **Build target:** `browser_tests`
-    *   **Tests to run:** `browser_tests --gtest_filter=SingleClientWebAppsSyncTest.*`
-
-### Phase 3: Re-installation Vertical and Test Infra
-
-*   [ ] **Task 3.1:** Implement testing infrastructure.
-    *   Implement `WebAppProviderFactory::DelayStartForTesting`.
-    *   Implement `PreinstalledWebAppManager::SetParsedConfigsForTesting`.
-    *   **Build target:** `browser_tests`
-*   [ ] **Task 3.2:** Plumb notification through `WebAppInstallFinalizer` for
+*   [x] **Task 3.2:** Plumb notification through `WebAppInstallFinalizer` for
     installs.
     *   In `WebAppInstallFinalizer::FinalizeInstall`, detect if scope has
         changed for an existing app.
@@ -173,20 +160,20 @@ delivering an end-to-end testable piece of functionality.
     *   If scope changed and commit succeeded, call
         `NotifyWebAppEffectiveScopeChanged`.
     *   **Build target:** `unit_tests`
-*   [ ] **Task 3.3:** Write re-installation browser test.
+*   [x] **Task 3.3:** Write re-installation browser test.
     *   Create `web_app_browser_controller_browsertest.cc`.
     *   Add the test as described in the design doc, using the new test infra
         to simulate a preinstalled app being updated by a user install.
     *   **Build target:** `browser_tests`
     *   **Tests to run:** `browser_tests --gtest_filter=WebAppBrowserControllerBrowserTest.*`
 
-### Phase 4: Final Test Coverage
+### Phase 3: Final Test Coverage
 
 *   [ ] **Task 4.1:** Add scope extension update browser test.
     *   In `web_app_scope_extensions_browsertest.cc`, add a test that installs
-        an app with scope extensions, navigates to the extended scope, then
-        triggers a manifest update that removes the extensions, verifying the
-        toolbar appears.
+        an app without scope extensions, navigates to the extended scope,
+        triggers update to apply extensions, and verifies the toolbar is
+        removed. Also there should be a test that shows it is added.
     *   **Build target:** `browser_tests`
     *   **Tests to run:** `browser_tests --gtest_filter=WebAppScopeExtensionsBrowserTest.*`
 

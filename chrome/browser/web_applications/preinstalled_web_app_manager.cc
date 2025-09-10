@@ -95,6 +95,11 @@ bool g_override_previous_user_uninstall_for_testing_ = false;
 const base::Value::List* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
+std::vector<ExternalInstallOptions>& GetParsedConfigsForTesting() {
+  static base::NoDestructor<std::vector<ExternalInstallOptions>> instance;
+  return *instance;
+}
+
 const char kHistogramMigrationDisabledReason[] =
     "WebApp.Preinstalled.DisabledReason";
 
@@ -683,6 +688,14 @@ PreinstalledWebAppManager::SetConfigsForTesting(
 }
 
 // static
+base::AutoReset<std::vector<ExternalInstallOptions>>
+PreinstalledWebAppManager::SetParsedConfigsForTesting(
+    std::vector<ExternalInstallOptions> configs) {
+  return base::AutoReset<std::vector<ExternalInstallOptions>>(
+      &GetParsedConfigsForTesting(), std::move(configs));
+}
+
+// static
 base::AutoReset<FileUtilsWrapper*>
 PreinstalledWebAppManager::SetFileUtilsForTesting(
     FileUtilsWrapper* file_utils) {
@@ -772,6 +785,11 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 
   if (!preinstalling_enabled) {
     std::move(callback).Run({});
+    return;
+  }
+
+  if (!GetParsedConfigsForTesting().empty()) {
+    std::move(callback).Run(GetParsedConfigsForTesting());
     return;
   }
 

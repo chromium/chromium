@@ -39,6 +39,9 @@ class WebAppScope {
       base::PassKey<WebApp>);
   ~WebAppScope();
   WebAppScope(const WebAppScope&);
+  WebAppScope(WebAppScope&&);
+  WebAppScope& operator=(const WebAppScope&);
+  WebAppScope& operator=(WebAppScope&&);
 
   // Returns if the given `url` is considered 'in-scope' of this web app scope.
   bool IsInScope(const GURL& url,
@@ -52,10 +55,12 @@ class WebAppScope {
       const GURL& url,
       WebAppScopeScoreOptions options = WebAppScopeScoreOptions()) const;
 
+  bool operator==(const WebAppScope& other) const;
+
  private:
-  const webapps::AppId app_id_;
-  const GURL scope_;
-  const base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;
+  webapps::AppId app_id_;
+  GURL scope_;
+  base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;
 };
 
 }  // namespace web_app

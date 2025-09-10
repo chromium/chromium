@@ -88,6 +88,9 @@ WebAppScope::WebAppScope(
 
 WebAppScope::~WebAppScope() = default;
 WebAppScope::WebAppScope(const WebAppScope&) = default;
+WebAppScope::WebAppScope(WebAppScope&&) = default;
+WebAppScope& WebAppScope::operator=(const WebAppScope&) = default;
+WebAppScope& WebAppScope::operator=(WebAppScope&&) = default;
 
 bool WebAppScope::IsInScope(const GURL& url, WebAppScopeOptions options) const {
   if (!url.is_valid()) {
@@ -173,6 +176,11 @@ int WebAppScope::GetScopeScore(const GURL& url,
   return std::max(
       score, GetScopeExtensionsScore(app_id_, url, validated_scope_extensions_,
                                      ScoreBehavior::kMaximumScore));
+}
+
+bool WebAppScope::operator==(const WebAppScope& other) const {
+  return scope_ == other.scope_ &&
+         validated_scope_extensions_ == other.validated_scope_extensions_;
 }
 
 }  // namespace web_app

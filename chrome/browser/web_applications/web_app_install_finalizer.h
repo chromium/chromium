@@ -178,6 +178,7 @@ class WebAppInstallFinalizer {
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            webapps::AppId app_id,
                                            FinalizeOptions finalize_options,
+                                           std::optional<WebAppScope> old_scope,
                                            bool success);
 
   void OnInstallHooksFinished(InstallFinalizedCallback callback,
@@ -190,7 +191,7 @@ class WebAppInstallFinalizer {
       std::string old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebAppInstallInfo& web_app_info,
-      bool scope_changed,
+      std::optional<WebAppScope> old_scope,
       bool success);
 
   void OnUpdateHooksFinished(InstallFinalizedCallback callback,

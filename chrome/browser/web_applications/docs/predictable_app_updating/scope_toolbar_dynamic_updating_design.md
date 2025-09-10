@@ -84,8 +84,6 @@ this object to observers.
         `WebAppRegistrarObserver` interface.
     *   This method will be called from the `WebAppInstallFinalizer` after a
         successful update that modifies the scope.
-    *   It will also be called from the `WebAppSyncBridge` after it applies a
-        change from sync that modifies the scope.
 
 4.  **`WebAppBrowserController` Implementation:**
     *   The `WebAppBrowserController` class will inherit from
@@ -100,9 +98,9 @@ this object to observers.
 5.  **Notify scope observers:**
     *   The `OnWebAppEffectiveScopeChanged` observer method will be called from
         the three locations where an app's scope can be updated:
-        `WebAppInstallFinalizer` (for installations/updates),
-        `WebAppSyncBridge` (for sync updates), and through the manifest update
-        command which also funnels through `WebAppInstallFinalizer`.
+        `WebAppInstallFinalizer` (for installations/updates) and through the
+        manifest update command which also funnels through
+        `WebAppInstallFinalizer`.
     *   **`WebAppInstallFinalizer`:** In `FinalizeInstall` (for updates over
         existing apps) and `FinalizeUpdate`, a check will be added to compare
         the scope and `validated_scope_extensions` of the existing app with the
@@ -110,11 +108,6 @@ this object to observers.
         passed to `OnDatabaseCommitCompletedForInstall` and
         `OnDatabaseCommitCompletedForUpdate`. If the scope has changed and the
         database commit is successful,
-        `registrar->NotifyWebAppEffectiveScopeChanged(app_id)` will be called.
-    *   **`WebAppSyncBridge`:** In `ApplyIncrementalSyncChangesToRegistrar`,
-        before the registrar is updated with new data from sync, the new app
-        state will be compared with the existing app state in the registrar. If
-        the scope or `validated_scope_extensions` have changed,
         `registrar->NotifyWebAppEffectiveScopeChanged(app_id)` will be called.
     *   **`ManifestSilentUpdateCommand`:** This command uses
         `WebAppInstallFinalizer::FinalizeUpdate` to apply changes. Therefore,
@@ -138,27 +131,25 @@ existing and new browser test suites. The core idea is to trigger a scope change
 and then wait for the `OnWebAppEffectiveScopeChanged` notification before
 verifying the toolbar's visibility.
 
-To achieve a realistic test for re-installation, new test hooks will be added:
-*   **`WebAppProviderFactory::DelayStartForTesting()`:** A new static method
-    will prevent the `WebAppProvider` from starting immediately upon creation,
-    returning a `base::ScopedClosureRunner` that will start it on destruction.
-    This allows tests to configure subsystems before they start.
-*   **`PreinstalledWebAppManager::SetParsedConfigsForTesting()`:** A new method
-    to inject `ExternalInstallOptions` directly, bypassing file loading and
-    parsing.
+To achieve a realistic test for re-installation, a new test hook will be added:
+*   **`PreinstalledWebAppManager::SetParsedConfigsForTesting()`:** A new static
+    method to inject `ExternalInstallOptions` directly, bypassing file loading
+    and parsing. This will use a `base::AutoReset` to manage the test-only
+    configuration, ensuring it's automatically cleaned up after the test.
 
 1.  **New Test File (`web_app_browser_controller_browsertest.cc`):** A new
     browser test file will be created to house tests for the controller's UI
     behavior.
     *   **Re-installation Test:** This test will simulate a user-initiated
-        installation over an existing preinstalled app. First, it will use the
-        `DelayStartForTesting` and `SetParsedConfigsForTesting` hooks to have
-        the `PreinstalledWebAppManager` install an app with a narrow scope. The
-        test will then launch the app, navigate to a URL that is out of scope,
-        and verify that the custom tab bar is visible. After that, it will
-        trigger a user-initiated installation of the same app but with a new
-        manifest that has a wider scope (covering the current URL). The test
-        will wait for the `OnWebAppEffectiveScopeChanged` notification and
+        installation over an existing preinstalled app. In the test's
+        constructor or `SetUp`, it will call `SetParsedConfigsForTesting` to
+        configure the `PreinstalledWebAppManager` to install an app with a
+        narrow scope on startup. The test will then launch the app, navigate to
+        a URL that is out of scope, and verify that the custom tab bar is
+        visible. After that, it will trigger a user-initiated installation of
+        the same app but with a new manifest that has a wider scope (covering
+        the current URL). The test will wait for the
+        `OnWebAppEffectiveScopeChanged` notification and
         verify the toolbar becomes hidden.
 
 2.  **Sync Update Test (in `single_client_web_apps_sync_test.cc`):** A new test
@@ -228,9 +219,7 @@ The initial plan was to only use `WebAppInstallManagerObserver` methods
 (`OnWebAppInstalled` and `OnWebAppManifestUpdated`).
 *   **Pros:** Minimally invasive, as `WebAppBrowserController` already observes
     this.
-*   **Cons:** Incomplete. As discovered, this approach completely misses scope
-    changes that come from sync, as the `WebAppSyncBridge` does not trigger
-    installation or manifest update events.
+*   **Cons:** Ties implementation to internal process.
 
 ### Alternative Test Strategy: Using `ExternallyManagedAppManager`
 An alternative to the proposed testing strategy of integrating with the
