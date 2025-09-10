@@ -4896,6 +4896,11 @@ extern const char kEnableManagementPromotionBannerName[];
 extern const char kEnableManagementPromotionBannerDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kSearchInSettingsName[];
+extern const char kSearchInSettingsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 

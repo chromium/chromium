@@ -6442,6 +6442,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSpellcheckFullApiBlinkName,
      flag_descriptions::kAndroidSpellcheckFullApiBlinkDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidSpellcheckFullApiBlink)},
+    {"search-in-settings", flag_descriptions::kSearchInSettingsName,
+     flag_descriptions::kSearchInSettingsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSearchInSettings)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cros-touch-text-editing-redesign",
      flag_descriptions::kTouchTextEditingRedesignName,

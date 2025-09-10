@@ -9053,6 +9053,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "search-in-settings",
+    "owners": [ "adelm@google.com", "jinsukkimn@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name" : "search-web-in-side-panel",
     "owners": [ "chrome-cros@google.com", "pengchaocai@chromium.org" ],
     "expiry_milestone" : 115

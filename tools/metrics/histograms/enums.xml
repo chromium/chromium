@@ -10807,6 +10807,7 @@ from previous Chrome versions.
       label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
   <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
+  <int value="-1246125067" label="SearchInSettings:enabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
   <int value="-1243870410" label="CrOSLateBootCrasProcessorWavDump:disabled"/>
@@ -16023,6 +16024,7 @@ from previous Chrome versions.
   <int value="650013099" label="PrivacySandboxSettings2:disabled"/>
   <int value="650168383" label="PulseaudioLoopbackForScreenShare:enabled"/>
   <int value="650334758" label="MediaAppImageMantisRemoveBackground:disabled"/>
+  <int value="651286275" label="SearchInSettings:disabled"/>
   <int value="651421878" label="VideoRotateToFullscreen:enabled"/>
   <int value="651471603" label="MediaFoundationD3D11VideoCapture:enabled"/>
   <int value="651562604" label="RawClipboard:enabled"/>

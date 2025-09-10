@@ -3404,6 +3404,11 @@ const char kShowWarningsForSuspiciousNotificationsDescription[] =
     "notification content detection model returns a suspicious verdict.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kSearchInSettingsName[] = "Search in Settings";
+const char kSearchInSettingsDescription[] = "Enable search in settings";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const char kGlobalCacheListForGatingNotificationProtectionsName[] =
     "Global cache list for gating notification protections";
 const char kGlobalCacheListForGatingNotificationProtectionsDescription[] =
