@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.ui.util.ColorUtils;
 
 /** Maintains the toolbar color for {@link CustomTabActivity}. */
+@NullMarked
 public class CustomTabToolbarColorController
         implements ThemeColorProvider.ThemeColorObserver,
                 ThemeColorProvider.TintObserver,

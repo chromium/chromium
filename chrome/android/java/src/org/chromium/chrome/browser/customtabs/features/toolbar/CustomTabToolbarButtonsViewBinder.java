@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLICK_LISTENER;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLOSE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS;
@@ -41,6 +42,7 @@ import android.widget.ImageButton;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
@@ -53,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+@NullMarked
 public class CustomTabToolbarButtonsViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                         PropertyModel, CustomTabToolbar, PropertyKey>,
@@ -229,7 +232,7 @@ public class CustomTabToolbarButtonsViewBinder
                     isEndPosition);
         }
 
-        FrameLayout customActionButtons = view.getCustomActionButtonsParent();
+        FrameLayout customActionButtons = assumeNonNull(view.getCustomActionButtonsParent());
         // TODO(crbug.com/402213312): Think of how we can optimize this so we don't reinflate all
         // buttons any time if we add/remove one.
         customActionButtons.removeAllViews();
@@ -293,13 +296,13 @@ public class CustomTabToolbarButtonsViewBinder
         // Check if we have space for the side-sheet maximize button we should be showing it.
         if (posParams.availableWidth >= defaultButtonWidth
                 && model.get(SIDE_SHEET_MAXIMIZE_BUTTON).visible) {
-            view.ensureSideSheetMaximizeButtonInflated();
+            ImageButton sideSheetMaximizeButton = view.ensureSideSheetMaximizeButtonInflated();
             var sideSheetMaximizeButtonData = model.get(SIDE_SHEET_MAXIMIZE_BUTTON);
             prepareSideSheetMaximizeButton(view, sideSheetMaximizeButtonData, model.get(TINT));
 
             // The maximize button is currently end aligned.
             positionButton(
-                    view.getSideSheetMaximizeButton(),
+                    sideSheetMaximizeButton,
                     posParams,
                     defaultButtonWidth,
                     iconSpacing,
@@ -433,7 +436,7 @@ public class CustomTabToolbarButtonsViewBinder
 
         // Add the view at the beginning of the list. This isn't reflected in how the button is
         // positioned; it's only for keeping the index aligned with the params list.
-        view.getCustomActionButtonsParent().addView(button, 0);
+        assumeNonNull(view.getCustomActionButtonsParent()).addView(button, 0);
         positionButton(
                 button,
                 posParams,
@@ -579,7 +582,7 @@ public class CustomTabToolbarButtonsViewBinder
         FrameLayout customActionButtons = view.getCustomActionButtonsParent();
         if (optionalButton == null
                 || optionalButton.getVisibility() != View.VISIBLE
-                || customActionButtons.getChildCount() != 2) {
+                || assumeNonNull(customActionButtons).getChildCount() != 2) {
             return;
         }
 
