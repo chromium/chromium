@@ -175,14 +175,8 @@ TEST_F(HTMLCanvasElementModuleTest, CanvasNoisedAfterTransferToOffscreen) {
       /*resources=*/{});
   test::RunPendingTasks();
 
-  GetWindow()
-      ->GetRuntimeFeatureStateOverrideContext()
-      ->SetCanvasInterventionsForceDisabled();
   String data_url_no_interventions =
       canvas_element().toDataURL("image/png", exception_state);
-  GetWindow()
-      ->GetRuntimeFeatureStateOverrideContext()
-      ->SetCanvasInterventionsForceEnabled();
   GetDocument().GetExecutionContext()->SetCanvasNoiseToken(0x1234567890123456);
   String data_url_with_interventions =
       canvas_element().toDataURL("image/png", exception_state);

@@ -867,16 +867,6 @@
       status: "experimental",
     },
     {
-      // No status because this blink runtime feature doesn't work by itself.
-      // It's controlled by the corresponding Chromium feature,
-      // fingerprinting_protection_interventions::features::kCanvasNoise through
-      // modified_runtime_features and setting its status in the browser
-      // process.
-      name: "CanvasInterventions",
-      browser_process_read_write_access: true,
-      base_feature: "none",
-    },
-    {
       // crbug.com/389726691.
       name: "CanvasTextCacheLimit",
       status: "stable",
