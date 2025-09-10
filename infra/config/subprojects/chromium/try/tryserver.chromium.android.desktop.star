@@ -90,9 +90,13 @@ try_.orchestrator_builder(
         configs = [
             "ci/android-desktop-x64-compile-rel",
             "release_try_builder",
+            "use_clang_coverage",
+            "use_java_coverage",
+            "partial_code_coverage_instrumentation",
         ],
     ),
     compilator = "android-desktop-x64-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         # crbug.com/40617829
         "chromium.enable_cleandead": 100,
@@ -102,6 +106,8 @@ try_.orchestrator_builder(
     # are addressed
     # use_orchestrator_pool = True,
     tryjob = try_.job(),
+    use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.compilator_builder(

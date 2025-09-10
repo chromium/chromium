@@ -278,6 +278,9 @@ ci.thin_tester(
                 ],
             ),
         ],
+        mixins = [
+            "isolate_profile_data",
+        ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
                 args = [
