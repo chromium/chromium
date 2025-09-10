@@ -71,6 +71,12 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                   const base::android::JavaParamRef<jobject>& text,
                   const base::android::JavaParamRef<jstring>& text_str,
                   int relative_cursor_pos);
+  void ReplaceText(JNIEnv* env,
+                   const base::android::JavaParamRef<jobject>& obj,
+                   int start,
+                   int end,
+                   const base::android::JavaParamRef<jstring>& text,
+                   int relative_cursor_pos);
   void FinishComposingText(JNIEnv* env);
   void SetEditableSelectionOffsets(JNIEnv*, int start, int end);
   void SetComposingRegion(JNIEnv*, int start, int end);

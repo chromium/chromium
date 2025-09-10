@@ -24,6 +24,7 @@ import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.TextAttribute;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -386,6 +387,36 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     private void commitTextOnUiThread(final CharSequence text, final int newCursorPosition) {
         cancelCombiningAccentOnUiThread();
         mImeAdapter.sendCompositionToNative(text, newCursorPosition, true, 0);
+    }
+
+    /**
+     * @see InputConnection#replaceText(int, int, java.lang.CharSequence, int,
+     *     android.view.inputmethod.TextAttribute)
+     */
+    @Override
+    public boolean replaceText(
+            final int start,
+            final int end,
+            final CharSequence text,
+            final int newCursorPosition,
+            @Nullable final TextAttribute attribute) {
+        if (DEBUG_LOGS) {
+            Log.i(
+                    TAG,
+                    "replaceText [%d] [%d] [%s] [%d] [%s]",
+                    start,
+                    end,
+                    text,
+                    newCursorPosition,
+                    attribute);
+        }
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mImeAdapter.replaceText(start, end, text, newCursorPosition);
+                });
+        return true;
     }
 
     /**

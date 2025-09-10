@@ -1303,6 +1303,31 @@ public class ImeAdapterImpl
     }
 
     /**
+     * Send a request to the native counterpart to replace a given range of characters with the
+     * given text.
+     *
+     * @param start The character index where the replacement should start. Value is 0 or greater
+     * @param end the character index where the replacement should end. Value is 0 or greater
+     * @param text the text to replace.
+     * @param nextCursorPosition the new cursor position around the text.
+     * @return Whether the native counterpart of ImeAdapter received the call.
+     */
+    boolean replaceText(int start, int end, CharSequence text, int newCursorPosition) {
+        if (!isValid()) return false;
+
+        ImeAdapterImplJni.get().finishComposingText(mNativeImeAdapterAndroid);
+        ImeAdapterImplJni.get()
+                .replaceText(
+                        mNativeImeAdapterAndroid,
+                        ImeAdapterImpl.this,
+                        start,
+                        end,
+                        text.toString(),
+                        newCursorPosition);
+        return true;
+    }
+
+    /**
      * Send a request to the native counterpart to set the selection to given range.
      *
      * @param start Selection start index.
@@ -1759,6 +1784,14 @@ public class ImeAdapterImpl
                 ImeAdapterImpl self,
                 CharSequence text,
                 String textStr,
+                int newCursorPosition);
+
+        void replaceText(
+                long nativeImeAdapterAndroid,
+                ImeAdapterImpl self,
+                int start,
+                int end,
+                String text,
                 int newCursorPosition);
 
         void finishComposingText(long nativeImeAdapterAndroid);

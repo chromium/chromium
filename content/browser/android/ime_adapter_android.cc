@@ -361,6 +361,36 @@ void ImeAdapterAndroid::CommitText(JNIEnv* env,
                       relative_cursor_pos);
 }
 
+void ImeAdapterAndroid::ReplaceText(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    int start,
+    int end,
+    const base::android::JavaParamRef<jstring>& text_str,
+    int relative_cursor_pos) {
+  RenderWidgetHostImpl* rwhi = GetFocusedWidget();
+  if (!rwhi) {
+    return;
+  }
+
+  std::u16string text16 = ConvertJavaStringToUTF16(env, text_str);
+
+  std::vector<ui::ImeTextSpan> ime_text_spans =
+      GetImeTextSpansFromJava(env, obj, text_str, text16);
+
+  // relative_cursor_pos is as described in the Android API for
+  // InputConnection#commitText, whereas the parameters for
+  // ImeConfirmComposition are relative to the end of the composition.
+  if (relative_cursor_pos > 0) {
+    relative_cursor_pos--;
+  } else {
+    relative_cursor_pos -= text16.length();
+  }
+
+  rwhi->ImeCommitText(text16, ime_text_spans, gfx::Range(start, end),
+                      relative_cursor_pos);
+}
+
 void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
   if (!rwhi)
