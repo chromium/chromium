@@ -108,6 +108,7 @@ class MockNetworkContext : public network::TestNetworkContextWithHostResolver {
       network::mojom::RestrictedUDPSocketParamsPtr params,
       mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+      bool allow_multicast,
       CreateRestrictedUDPSocketCallback callback) override;
 
   MockUDPSocket* get_udp_socket() {
