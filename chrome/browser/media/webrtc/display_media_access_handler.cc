@@ -63,6 +63,10 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #endif
 
+BASE_FEATURE(kDisplayMediaRejectLongDomains,
+             "DisplayMediaRejectLongDomains",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -490,6 +494,17 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
     const GURL& request_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
+
+  // Reject captures for domains with more than 255 characters.
+  //
+  // Note, this check does not fully account for international characters, but
+  // since the puny-encodings of international domains are limited to 255 bytes,
+  // it is unlikely that valid domains are excluded by this check.
+  if (base::FeatureList::IsEnabled(kDisplayMediaRejectLongDomains) &&
+      GetApplicationTitle(web_contents).size() > 255u) {
+    RejectRequest(web_contents, MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
 
   WebContents* ui_web_contents = web_contents;
 
