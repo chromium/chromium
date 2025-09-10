@@ -633,9 +633,6 @@
             "blink_perf.webgl": {
                 "abridged": false
             },
-            "blink_perf.webgl_fast_call": {
-                "abridged": false
-            },
             "desktop_ui": {
                 "end": 1,
                 "abridged": false

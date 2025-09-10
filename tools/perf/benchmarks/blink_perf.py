@@ -721,10 +721,13 @@ class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
     return 'blink_perf.webcodecs'
 
 
-@benchmark.Info(
-    emails=['kbr@chromium.org', 'enga@chromium.org', 'webgl-team@google.com'],
-    component='Blink>WebGL',
-    documentation_url='https://bit.ly/blink-perf-benchmarks')
+@benchmark.Info(emails=[
+    'kbr@chromium.org',
+    'kainino@chromium.org',
+    'webgl-team@google.com',
+],
+                component='Blink>WebGL',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebGL(_BlinkPerfBenchmark):
   SUBDIR = 'webgl'
   SUPPORTED_PLATFORMS = [story.expectations.ALL]
@@ -733,30 +736,11 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.webgl'
 
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--disable-features=V8TurboFastApiCalls'])
-
 
 @benchmark.Info(emails=[
-    'kbr@chromium.org', 'enga@chromium.org',
-    'junov@chromium.org', 'webgl-team@google.com'
-],
-                component='Blink>WebGL',
-                documentation_url='https://bit.ly/blink-perf-benchmarks')
-class BlinkPerfWebGLFastCall(_BlinkPerfBenchmark):
-  SUBDIR = 'webgl'
-  SUPPORTED_PLATFORMS = [story.expectations.ALL]
-
-  @classmethod
-  def Name(cls):
-    return 'blink_perf.webgl_fast_call'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-features=V8TurboFastApiCalls'])
-
-
-@benchmark.Info(emails=[
-    'enga@chromium.org', 'cwallez@chromium.org', 'webgpu-developers@google.com'
+    'kainino@chromium.org',
+    'cwallez@chromium.org',
+    'webgpu-dev-team@google.com',
 ],
                 component='Blink>WebGPU',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
@@ -769,27 +753,7 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
     return 'blink_perf.webgpu'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-        ['--enable-unsafe-webgpu', '--disable-features=V8TurboFastApiCalls'])
-
-
-@benchmark.Info(emails=[
-    'enga@chromium.org', 'cwallez@chromium.org',
-    'junov@chromium.org', 'webgpu-developers@google.com'
-],
-                component='Blink>WebGPU',
-                documentation_url='https://bit.ly/blink-perf-benchmarks')
-class BlinkPerfWebGPUFastCall(_BlinkPerfBenchmark):
-  SUBDIR = 'webgpu'
-  SUPPORTED_PLATFORMS = [story.expectations.WIN_10, story.expectations.ALL_MAC]
-
-  @classmethod
-  def Name(cls):
-    return 'blink_perf.webgpu_fast_call'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-        ['--enable-unsafe-webgpu', '--enable-features=V8TurboFastApiCalls'])
+    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
 
 
 @benchmark.Info(emails=[

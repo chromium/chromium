@@ -1649,35 +1649,11 @@
     },
     {
         "duration": "9.0",
-        "name": "blink_perf.webgl_fast_call/binding-bind-buffer.html"
-    },
-    {
-        "duration": "2.0",
-        "name": "blink_perf.webgl_fast_call/binding-buffer-sub-data.html"
-    },
-    {
-        "duration": "4.0",
-        "name": "blink_perf.webgl_fast_call/binding-draw-arrays.html"
-    },
-    {
-        "duration": "3.0",
-        "name": "blink_perf.webgl_fast_call/binding-typed-array-uniforms.html"
-    },
-    {
-        "duration": "9.0",
         "name": "blink_perf.webgpu/binding-draw.html"
     },
     {
         "duration": "4.0",
         "name": "blink_perf.webgpu/binding-setBindGroup.html"
-    },
-    {
-        "duration": "9.0",
-        "name": "blink_perf.webgpu_fast_call/binding-draw.html"
-    },
-    {
-        "duration": "4.0",
-        "name": "blink_perf.webgpu_fast_call/binding-setBindGroup.html"
     },
     {
         "duration": "17.0",
