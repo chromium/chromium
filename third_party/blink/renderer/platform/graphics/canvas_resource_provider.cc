@@ -888,16 +888,34 @@ class CanvasResourceProviderSharedImageImpl
  private:
   // `viz::ContextLostObserver` implementation.
   void OnContextLost() override {
-    if (notify_context_lost_in_new_task_) {
-      std::move(notify_context_lost_in_new_task_).Run();
+    if (notified_context_lost_) {
+      return;
     }
+
+    // Notify the owner of this resource provider that the GPU context was
+    // lost. The call is done in a separate task, so that the owner can delete
+    // this resource provider if needed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
+                       CreateWeakPtr()));
+    notified_context_lost_ = true;
   }
 
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override {
-    if (notify_context_lost_in_new_task_) {
-      std::move(notify_context_lost_in_new_task_).Run();
+    if (notified_context_lost_) {
+      return;
     }
+
+    // Notify the owner of this resource provider that the GPU context was
+    // lost. The call is done in a separate task, so that the owner can delete
+    // this resource provider if needed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
+                       CreateWeakPtr()));
+    notified_context_lost_ = true;
   }
 
   void OnResourceRefReturned(
@@ -1063,12 +1081,7 @@ class CanvasResourceProviderSharedImageImpl
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
 
-  // Callback that notifies owners of this resource provider that the GPU
-  // context was lost. The call is done in a separate task, so that owners could
-  // delete this resource provider if needed.
-  base::OnceClosure notify_context_lost_in_new_task_ = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
+  bool notified_context_lost_ = false;
 };
 
 // * Renders to back buffer of a shared image swap chain.
