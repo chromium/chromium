@@ -116,8 +116,19 @@ size_t GetSizeOfPlane(gbm_bo* bo,
       ui::GetSharedImageFormatFromFourCCFormat(format);
   const base::CheckedNumeric<size_t> stride_for_plane =
       GetStrideForPlane(bo, plane);
+
+  // TODO(crbug.com/443776737): Linux platforms can have multiple memory planes
+  // for single-planar format, for eg. RGBX_8888 can have possible 3 memory
+  // planes. In such cases, the plane index can go out of bounds for
+  // SharedImageFormat as these are not format planes. This is needed on Linux
+  // because the buffer is just big blob of memory instead of platform-specific
+  // image and so sampling for channels is not so easily possible. For a proper
+  // fix, NativePixmapPlane shouldn't really need size and we should use stride
+  // and offset as long as the places where size is being used is for linear
+  // buffer formats.
+  int plane_index = si_format.is_single_plane() ? 0 : plane;
   const base::CheckedNumeric<size_t> subsampled_height =
-      si_format.GetPlaneSize(plane, size).height();
+      si_format.GetPlaneSize(plane_index, size).height();
 
   // Apply subsampling factor to get size in bytes.
   const base::CheckedNumeric<size_t> checked_plane_size =
