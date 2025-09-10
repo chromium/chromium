@@ -255,6 +255,16 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   blink::String ToString(bool verbose = false) const;
 
+  const Vector<wtf_size_t>& GetSpannerMainGapsIndices() const {
+    return spanner_main_gaps_indices_;
+  }
+  void SetSpannerMainGapsIndices(Vector<wtf_size_t>&& indices) {
+    spanner_main_gaps_indices_ = std::move(indices);
+  }
+
+  bool IsMultiColSpanner(wtf_size_t gap_index,
+                         GridTrackSizingDirection direction = kForRows) const;
+
  private:
   // Returns a list of intersection offsets for a main gap at `gap_index`. This
   // list includes:
@@ -309,6 +319,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // See third_party/blink/renderer/core/layout/gap/README.md for more
   // information.
 
+  // In order to correctly get the start and end intersections for a `CrossGap`,
+  // (i.e. stopping at spanners), we use two indices (`main_gap_running_index_`
+  // and `next_spanner_main_gap_index_`), to help us in doing this in constant
+  // time (for most cases). `next_spanner_main_gap_index_` is an index of
+  // `spanner_main_gaps_indices_`, which in turn is a vector of indices for
+  // spanner main gaps in `main_gaps_`, and it is used to track the next spanner
+  // main gap (the end offset/intersection of the cross gap we want to paint).
+  // `main_gap_running_index_` is an index of `main_gaps_`, and we use
+  // `spanner_main_gap_indices_` along with `next_spanner_main_gap_index_` to
+  // move `main_gap_running_index_` forward as we progress.
+  //
+  // After we are done painting a cross gap that goes from one spanner to the
+  // next (or to the end of the container), we advance the indices to point
+  // towards the next spanner main gap that we will paint up until.
+  void AdvanceMulticolRunningIndices(bool& should_add_content_end) const;
+
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
 
@@ -347,6 +373,20 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // TODO(samomekarajr): Explore removing this in favour of having this state
   // live at the parent paint call and passing in as an input/output param.
   mutable wtf_size_t main_gap_running_index_ = kNotFound;
+  // For multicol, for a given cross gap, we need to track the index the next
+  // spanner main gap, since this will be the end of that cross gap. This is a
+  // running index (in `spanner_main_gaps_indices_`) that gets updated as we
+  // progress, using the `spanner_main_gaps_indices_`.
+  //
+  // This must be mutable for the same reasons that `main_gap_running_index_` is
+  // mutable.
+  mutable wtf_size_t next_spanner_main_gap_index_ = 0;
+  // These are the indices (in `main_gaps_`) of the main gaps that are spanners.
+  // Only used for multicol.
+  //
+  // This must be mutable for the same reasons that `main_gap_running_index_` is
+  // mutable.
+  mutable Vector<wtf_size_t> spanner_main_gaps_indices_;
 };
 
 }  // namespace blink

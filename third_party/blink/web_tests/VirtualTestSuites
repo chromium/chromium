@@ -430,7 +430,8 @@
     "prefix": "css-gap-decorations-optimized",
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/css/css-gaps"],
+      "external/wpt/css/css-gaps",
+      "external/wpt/css/css-multicol"],
     "args": ["--enable-blink-features=CSSGapDecorationOptimized"],
     "expires": "Sep 1, 2026",
     "owners": ["samomekarajr@microsoft.com", "javiercon@microsoft.com"]

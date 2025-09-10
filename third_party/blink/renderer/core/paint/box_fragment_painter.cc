@@ -1802,7 +1802,8 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
   if (box_fragment_.GetGapGeometry() ||
-      RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+      RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
+      RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
     return;
   }
 

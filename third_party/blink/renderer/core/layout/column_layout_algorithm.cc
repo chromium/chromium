@@ -458,6 +458,9 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
             *content_block_start_,
             content_block_size - applicable_border_scrollbar_padding_block_end);
 
+        gap_geometry->SetSpannerMainGapsIndices(
+            std::move(spanner_main_gaps_indices_));
+
         // For multicol, the main direction will always be the rows.
         gap_geometry->SetMainDirection(kForRows);
       }
@@ -1612,6 +1615,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
     // introduction of new `CrossGap`s.
     CommitRangeOfCrossGapsBeforeCurrentMainGap();
     ResetRangeOfCrossGapsBeforeCurrentMainGap();
+    spanner_main_gaps_indices_.push_back(main_gaps_.size() - 1);
   }
 
   return BreakStatus::kContinue;

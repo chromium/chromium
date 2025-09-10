@@ -264,6 +264,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   std::optional<LayoutUnit> content_inline_start_;
   std::optional<LayoutUnit> content_block_start_;
 
+  // We use this to keep track of the indices of `MainGap`s that are created by
+  // spanners. This is used later by `GapGeometry` during paint time, since
+  // CrossGaps end at spanners. The indices correspond to indices in
+  // `main_gaps_`.
+  Vector<wtf_size_t> spanner_main_gaps_indices_;
+
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
