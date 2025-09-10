@@ -5,15 +5,19 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 const base::TimeDelta kTestSessionDuration = base::Seconds(5);
@@ -34,7 +38,20 @@ class BWGSessionHandlerTest : public PlatformTest {
     web_state_list_ = browser_->GetWebStateList();
     session_handler_ =
         [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+
+    // Set up mock handlers.
+    mock_bwg_handler_ = OCMProtocolMock(@protocol(BWGCommands));
+    mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
+    session_handler_.BWGHandler = mock_bwg_handler_;
+    session_handler_.settingsHandler = mock_settings_handler_;
+
     AddWebState();
+  }
+
+  void TearDown() override {
+    [mock_bwg_handler_ stopMocking];
+    [mock_settings_handler_ stopMocking];
+    PlatformTest::TearDown();
   }
 
   void AddWebState() {
@@ -58,6 +75,8 @@ class BWGSessionHandlerTest : public PlatformTest {
   raw_ptr<WebStateList> web_state_list_;
   base::HistogramTester histogram_tester_;
   BWGSessionHandler* session_handler_;
+  id mock_bwg_handler_;
+  id mock_settings_handler_;
 };
 
 // Tests that UIDidDisappearWithClientID records the session duration.
@@ -101,4 +120,50 @@ TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
       IOSGeminiFirstPromptSubmissionMethod::kText, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, true,
                                        1);
+}
+
+// Tests that the first run flag is properly handled.
+TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
+  NSString* client_id = GetClientID();
+
+  // Set first run flag.
+  web::WebState* web_state = web_state_list_->GetWebStateAt(0);
+  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  tab_helper->SetIsFirstRun(true);
+
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+                          pageContextAttached:NO];
+  task_environment_.FastForwardBy(kTestSessionDuration);
+  [session_handler_ UIDidDisappearWithClientID:client_id
+                                      serverID:kTestServerID];
+
+  // Verify first run flag was cleared.
+  EXPECT_FALSE(tab_helper->GetIsFirstRun());
+
+  // Session metrics should reflect first session.
+  histogram_tester_.ExpectTotalCount(kBWGSessionTimeHistogram, 1);
+}
+
+// Tests handling unrealized web states.
+TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
+  // Add an unrealized web state.
+  auto unrealized_web_state = std::make_unique<web::FakeWebState>();
+  unrealized_web_state->SetBrowserState(profile_.get());
+  unrealized_web_state->SetIsRealized(false);
+  BwgTabHelper::CreateForWebState(unrealized_web_state.get());
+  web_state_list_->InsertWebState(std::move(unrealized_web_state),
+                                  WebStateList::InsertionParams::Automatic());
+
+  // Add a realized web state.
+  AddWebState();
+
+  NSString* realized_client_id = GetClientID(2);
+
+  [session_handler_ UIDidAppearWithClientID:realized_client_id
+                                   serverID:kTestServerID];
+
+  // The unrealized web state should not be affected.
+  web::WebState* unrealized = web_state_list_->GetWebStateAt(1);
+  EXPECT_FALSE(unrealized->IsRealized());
 }
