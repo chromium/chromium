@@ -2543,20 +2543,23 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
     return;
   }
 
-  // Are there requests that have not finished before their expiration.
-  bool has_kill_on_timeout = false;
-  bool has_continue_on_timeout = false;
-  // In case, `request_timeouts_` can be modified in the callbacks initiated
-  // in `MaybeTimeoutRequest`, we keep its contents locally during the
-  // following while loop.
-  std::set<InflightRequestTimeoutInfo> request_timeouts;
-  request_timeouts.swap(request_timeouts_);
-  auto timeout_iter = request_timeouts.begin();
-  while (timeout_iter != request_timeouts.end()) {
-    const InflightRequestTimeoutInfo& info = *timeout_iter;
-    if (!RequestExpired(info.expiration_time)) {
+  // 1. Identify timed-out requests and extract their info. This is done in a
+  // separate loop to avoid race conditions where a timeout callback adds a new
+  // request that could be immediately timed out.
+  std::vector<InflightRequestTimeoutInfo> timed_out_infos;
+  auto it = request_timeouts_.begin();
+  while (it != request_timeouts_.end()) {
+    if (!RequestExpired(it->expiration_time)) {
       break;
     }
+    timed_out_infos.push_back(*it);
+    it = request_timeouts_.erase(it);
+  }
+
+  // 2. Run the error callbacks for the timed-out requests.
+  bool has_kill_on_timeout = false;
+  bool has_continue_on_timeout = false;
+  for (const auto& info : timed_out_infos) {
     if (MaybeTimeoutRequest(info)) {
       switch (info.timeout_behavior) {
         case KILL_ON_TIMEOUT:
@@ -2567,14 +2570,12 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
           break;
       }
     }
-    timeout_iter = request_timeouts.erase(timeout_iter);
   }
-  // Ensure the `request_timeouts_` won't be touched during the loop.
-  DCHECK(request_timeouts_.empty());
-  request_timeouts_.swap(request_timeouts);
-  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
-  // identified.
-  DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
+
+  // TODO(crbug.com/40864997): This was promoted from a DCHECK to validate
+  // the fix for this bug. If no crashes are observed by the next release
+  // cycle, this CHECK and other related DCHECKs in this file can be removed.
+  CHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
 
   if (has_kill_on_timeout &&
       running_status() != blink::EmbeddedWorkerStatus::kStopping) {
@@ -2680,9 +2681,18 @@ bool ServiceWorkerVersion::MaybeTimeoutRequest(
   TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker",
                                   "ServiceWorkerVersion::Request",
                                   TRACE_ID_LOCAL(request), "Error", "Timeout");
-  std::move(request->error_callback)
-      .Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
+
+  // Move the callback to a local variable before removing the request from the
+  // map, as the request object will be destroyed.
+  auto error_callback = std::move(request->error_callback);
+
+  // Remove the request from inflight_requests_ *before* running the callback.
+  // This restores the invariant that request_timeouts_ and inflight_requests_
+  // have the same size, preventing a DCHECK failure if the callback
+  // synchronously finishes another request.
   inflight_requests_.Remove(info.id);
+
+  std::move(error_callback).Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
   return true;
 }
 
