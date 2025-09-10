@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_auth_disconnect_request.h"
+#include "content/browser/webid/disconnect_request.h"
 
 #include <memory>
 #include <optional>
@@ -39,11 +39,10 @@ using ::testing::Return;
 
 using DisconnectResponse =
     content::IdpNetworkRequestManager::DisconnectResponse;
-using DisconnectStatusForMetrics = content::webid::DisconnectStatus;
+using DisconnectStatus = content::webid::DisconnectStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using blink::mojom::DisconnectStatus;
 
-namespace content {
+namespace content::webid {
 namespace {
 
 constexpr char kRpUrl[] = "https://rp.example";
@@ -93,10 +92,10 @@ class DisconnectRequestCallbackHelper {
   DisconnectRequestCallbackHelper& operator=(
       const DisconnectRequestCallbackHelper&) = delete;
 
-  DisconnectStatus status() const { return status_; }
+  blink::mojom::DisconnectStatus status() const { return status_; }
 
   // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(DisconnectStatus)> callback() {
+  base::OnceCallback<void(blink::mojom::DisconnectStatus)> callback() {
     return base::BindOnce(&DisconnectRequestCallbackHelper::ReceiverMethod,
                           base::Unretained(this));
   }
@@ -111,7 +110,7 @@ class DisconnectRequestCallbackHelper {
   }
 
  private:
-  void ReceiverMethod(DisconnectStatus status) {
+  void ReceiverMethod(blink::mojom::DisconnectStatus status) {
     status_ = status;
     was_called_ = true;
     wait_for_callback_loop_.Quit();
@@ -119,7 +118,7 @@ class DisconnectRequestCallbackHelper {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  DisconnectStatus status_;
+  blink::mojom::DisconnectStatus status_;
 };
 
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
@@ -213,9 +212,10 @@ class FederatedAuthDisconnectRequestTest
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void RunDisconnectTest(const Config& config,
-                         DisconnectStatus expected_disconnect_status,
-                         RenderFrameHost* rfh = nullptr) {
+  void RunDisconnectTest(
+      const Config& config,
+      blink::mojom::DisconnectStatus expected_disconnect_status,
+      RenderFrameHost* rfh = nullptr) {
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
     network_manager_ = network_manager.get();
@@ -223,7 +223,8 @@ class FederatedAuthDisconnectRequestTest
     if (!rfh) {
       rfh = static_cast<RenderFrameHost*>(main_test_rfh());
     }
-    if (expected_disconnect_status != DisconnectStatus::kSuccess) {
+    if (expected_disconnect_status !=
+        blink::mojom::DisconnectStatus::kSuccess) {
       EXPECT_CALL(*permission_delegate_, RevokeSharingPermission(_, _, _, _))
           .Times(0);
     }
@@ -239,7 +240,7 @@ class FederatedAuthDisconnectRequestTest
     options->account_hint = "accountHint";
 
     DisconnectRequestCallbackHelper callback_helper;
-    request_ = FederatedAuthDisconnectRequest::Create(
+    request_ = DisconnectRequest::Create(
         std::move(network_manager), permission_delegate_.get(), rfh,
         std::move(fedcm_metrics), std::move(options));
     request_->SetCallbackAndStart(callback_helper.callback(),
@@ -250,7 +251,7 @@ class FederatedAuthDisconnectRequestTest
   }
 
   void ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics status,
+      DisconnectStatus status,
       webid::RequesterFrameType requester_frame_type,
       bool should_record_duration) {
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
@@ -266,7 +267,7 @@ class FederatedAuthDisconnectRequestTest
 
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
-    if (status == DisconnectStatusForMetrics::kSuccess) {
+    if (status == DisconnectStatus::kSuccess) {
       EXPECT_TRUE(messages.empty());
     } else {
       ASSERT_EQ(messages.size(), 1u);
@@ -275,7 +276,7 @@ class FederatedAuthDisconnectRequestTest
   }
 
   void ExpectDisconnectUKM(const char* entry_name,
-                           DisconnectStatusForMetrics status,
+                           DisconnectStatus status,
                            webid::RequesterFrameType requester_frame_type,
                            bool should_record_duration) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
@@ -344,7 +345,7 @@ class FederatedAuthDisconnectRequestTest
   raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<MockApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
-  std::unique_ptr<FederatedAuthDisconnectRequest> request_;
+  std::unique_ptr<DisconnectRequest> request_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
@@ -364,10 +365,10 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
       .WillOnce(Return(PermissionStatus::GRANTED));
 
-  RunDisconnectTest(config, DisconnectStatus::kSuccess);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kSuccess);
   EXPECT_TRUE(DidFetchAllEndpoints());
 
-  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kSuccess,
                                          webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
@@ -375,11 +376,11 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
 TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
   Config config = kValidConfig;
   config.config_url = "http://idp.example/fedcm.json";
-  RunDisconnectTest(config, DisconnectStatus::kError);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
+      DisconnectStatus::kIdpNotPotentiallyTrustworthy,
       webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
@@ -406,10 +407,10 @@ TEST_F(FederatedAuthDisconnectRequestTest,
               RevokeSharingPermission(OriginFromString(kRpUrl),
                                       OriginFromString(kRpUrl),
                                       OriginFromString(kProviderUrl), _));
-  RunDisconnectTest(config, DisconnectStatus::kSuccess);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kSuccess);
   EXPECT_TRUE(DidFetchAllEndpoints());
 
-  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kSuccess,
                                          webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
@@ -435,12 +436,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
               RevokeSharingPermission(OriginFromString(kSameSiteIframeUrl),
                                       OriginFromString(kRpUrl),
                                       OriginFromString(kProviderUrl), _));
-  RunDisconnectTest(config, DisconnectStatus::kSuccess, same_site_iframe);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kSuccess,
+                    same_site_iframe);
   EXPECT_TRUE(DidFetchAllEndpoints());
 
   ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kSuccess,
-      webid::RequesterFrameType::kSameSiteIframe,
+      DisconnectStatus::kSuccess, webid::RequesterFrameType::kSameSiteIframe,
       /*should_record_duration=*/true);
 }
 
@@ -467,12 +468,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
               RevokeSharingPermission(OriginFromString(kCrossSiteIframeUrl),
                                       OriginFromString(kRpUrl),
                                       OriginFromString(kProviderUrl), _));
-  RunDisconnectTest(config, DisconnectStatus::kSuccess, cross_site_iframe);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kSuccess,
+                    cross_site_iframe);
   EXPECT_TRUE(DidFetchAllEndpoints());
 
   ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kSuccess,
-      webid::RequesterFrameType::kCrossSiteIframe,
+      DisconnectStatus::kSuccess, webid::RequesterFrameType::kCrossSiteIframe,
       /*should_record_duration=*/true);
 }
 
@@ -487,11 +488,11 @@ TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
                            OriginFromString(kProviderUrl)))
       .WillOnce(Return(false));
 
-  RunDisconnectTest(config, DisconnectStatus::kError);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kNoAccountToDisconnect,
+      DisconnectStatus::kNoAccountToDisconnect,
       webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
@@ -502,13 +503,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInSettings) {
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
       .WillOnce(Return(PermissionStatus::BLOCKED_SETTINGS));
 
-  RunDisconnectTest(config, DisconnectStatus::kError);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kDisabledInSettings,
-      webid::RequesterFrameType::kMainFrame,
-      /*should_record_duration=*/false);
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kDisabledInSettings,
+                                         webid::RequesterFrameType::kMainFrame,
+                                         /*should_record_duration=*/false);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
@@ -517,13 +517,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
       .WillOnce(Return(PermissionStatus::BLOCKED_VARIATIONS));
 
-  RunDisconnectTest(config, DisconnectStatus::kError);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  ExpectDisconnectMetricsAndConsoleError(
-      DisconnectStatusForMetrics::kDisabledInFlags,
-      webid::RequesterFrameType::kMainFrame,
-      /*should_record_duration=*/false);
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kDisabledInFlags,
+                                         webid::RequesterFrameType::kMainFrame,
+                                         /*should_record_duration=*/false);
 }
 
 // Tests that disconnect() succeeds even if FedCM is under embargo (e.g.
@@ -543,12 +542,12 @@ TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
                                       OriginFromString(kRpUrl),
                                       OriginFromString(kProviderUrl), _));
 
-  RunDisconnectTest(config, DisconnectStatus::kSuccess);
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kSuccess);
   EXPECT_TRUE(DidFetchAllEndpoints());
 
-  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kSuccess,
                                          webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
 
-}  // namespace content
+}  // namespace content::webid

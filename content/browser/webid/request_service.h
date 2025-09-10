@@ -38,13 +38,13 @@
 
 namespace content {
 
-class FederatedAuthDisconnectRequest;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
 namespace webid {
 
+class DisconnectRequest;
 class UserInfoRequest;
 
 using blink::mojom::IdentityProviderGetParametersPtr;
@@ -536,7 +536,7 @@ class CONTENT_EXPORT RequestService
   base::flat_set<std::unique_ptr<UserInfoRequest>> user_info_requests_;
 
   // Pending disconnect request.
-  std::unique_ptr<FederatedAuthDisconnectRequest> disconnect_request_;
+  std::unique_ptr<DisconnectRequest> disconnect_request_;
 
   // TODO(crbug.com/40238075): Refactor these member variables introduced
   // through the multi IDP prototype implementation to make them less confusing.

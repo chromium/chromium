@@ -2947,7 +2947,7 @@ test("content_unittests") {
     "../browser/webid/config_fetcher_unittest.cc",
     "../browser/webid/delegation/jwt_signer_unittest.cc",
     "../browser/webid/delegation/sd_jwt_unittest.cc",
-    "../browser/webid/federated_auth_disconnect_request_unittest.cc",
+    "../browser/webid/disconnect_request_unittest.cc",
     "../browser/webid/identity_registry_unittest.cc",
     "../browser/webid/idp_network_request_manager_unittest.cc",
     "../browser/webid/mappers_unittest.cc",

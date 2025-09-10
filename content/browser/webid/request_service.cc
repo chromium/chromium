@@ -28,8 +28,8 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/disconnect_request.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
-#include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
@@ -174,7 +174,7 @@ RequestService::~RequestService() {
   // naturally.
   user_info_requests_.clear();
 
-  // Calls |FederatedAuthDisconnectRequest|'s destructor to complete the
+  // Calls |DisconnectRequest|'s destructor to complete the
   // revocation request. This is needed because otherwise some resources like
   // `fedcm_metrics_` may no longer be usable when the destructor get invoked
   // naturally.
@@ -788,7 +788,7 @@ void RequestService::CompleteDisconnectRequest(
     blink::mojom::DisconnectStatus status) {
   // `disconnect_request_` may be null here if the completion is invoked from
   // the RequestService destructor, which destroys
-  // `disconnect_request_`. The FederatedAuthDisconnectRequest destructor would
+  // `disconnect_request_`. The DisconnectRequest destructor would
   // trigger the callback.
   if (!disconnect_request_ &&
       status == blink::mojom::DisconnectStatus::kSuccess) {
@@ -2532,11 +2532,10 @@ void RequestService::Disconnect(
 
   auto network_manager = CreateNetworkManager();
 
-  disconnect_request_ = FederatedAuthDisconnectRequest::Create(
+  disconnect_request_ = DisconnectRequest::Create(
       std::move(network_manager), permission_delegate_, &render_frame_host(),
       std::move(disconnect_metrics), std::move(options));
-  FederatedAuthDisconnectRequest* disconnect_request_ptr =
-      disconnect_request_.get();
+  DisconnectRequest* disconnect_request_ptr = disconnect_request_.get();
 
   disconnect_request_ptr->SetCallbackAndStart(
       base::BindOnce(&RequestService::CompleteDisconnectRequest,

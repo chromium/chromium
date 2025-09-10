@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
+#ifndef CONTENT_BROWSER_WEBID_DISCONNECT_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_DISCONNECT_REQUEST_H_
 
 #include <memory>
 #include <vector>
@@ -23,26 +23,24 @@ class RenderFrameHost;
 
 namespace webid {
 class ConfigFetcher;
+class DisconnectRequestTest;
 class Metrics;
 class RequestServiceTest;
-}  // namespace webid
 
 // Fetches data for a FedCM disconnect request.
-class CONTENT_EXPORT FederatedAuthDisconnectRequest {
+class CONTENT_EXPORT DisconnectRequest {
  public:
   // Returns an object which fetches data for disconnect request.
-  static std::unique_ptr<FederatedAuthDisconnectRequest> Create(
+  static std::unique_ptr<DisconnectRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      std::unique_ptr<webid::Metrics> fedcm_metrics,
+      std::unique_ptr<Metrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
-  FederatedAuthDisconnectRequest(const FederatedAuthDisconnectRequest&) =
-      delete;
-  FederatedAuthDisconnectRequest& operator=(
-      const FederatedAuthDisconnectRequest&) = delete;
-  ~FederatedAuthDisconnectRequest();
+  DisconnectRequest(const DisconnectRequest&) = delete;
+  DisconnectRequest& operator=(const DisconnectRequest&) = delete;
+  ~DisconnectRequest();
 
   // There is a separate method to set the callback because the callback relies
   // on having a pointer to this object, hence cannot be passed in the
@@ -52,28 +50,27 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
  private:
-  friend class FederatedAuthDisconnectRequestTest;
-  friend class webid::RequestServiceTest;
+  friend class DisconnectRequestTest;
+  friend class RequestServiceTest;
 
-  FederatedAuthDisconnectRequest(
+  DisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      std::unique_ptr<webid::Metrics> fedcm_metrics,
+      std::unique_ptr<Metrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   void OnAllConfigAndWellKnownFetched(
-      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
+      std::vector<ConfigFetcher::FetchResult> fetch_results);
 
   void OnDisconnectResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
                             const std::string& account_id);
 
   // Records disconnect metrics and completes the request.
   void Complete(blink::mojom::DisconnectStatus status,
-                webid::DisconnectStatus disconnect_status_for_metrics);
+                DisconnectStatus disconnect_status_for_metrics);
 
-  void AddConsoleErrorMessage(
-      webid::DisconnectStatus disconnect_status_for_metrics);
+  void AddConsoleErrorMessage(DisconnectStatus disconnect_status_for_metrics);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -82,8 +79,8 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   // Owned by |RequestService|
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  std::unique_ptr<webid::Metrics> fedcm_metrics_;
-  std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
+  std::unique_ptr<Metrics> fedcm_metrics_;
+  std::unique_ptr<ConfigFetcher> config_fetcher_;
   blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
 
   url::Origin origin_;
@@ -100,9 +97,10 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
 
   perfetto::NamedTrack perfetto_track_;
 
-  base::WeakPtrFactory<FederatedAuthDisconnectRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DisconnectRequest> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
+#endif  // CONTENT_BROWSER_WEBID_DISCONNECT_REQUEST_H_
