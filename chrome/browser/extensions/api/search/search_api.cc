@@ -145,11 +145,11 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       break;
     case Disposition::kNewTab:
       ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                      web_contents, browser_context(), url);
+                                      web_contents, url);
       break;
     case Disposition::kNewWindow:
       ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
-                                      web_contents, browser_context(), url);
+                                      web_contents, url);
       break;
   }
 

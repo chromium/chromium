@@ -314,7 +314,6 @@ class ExtensionTabUtil {
   // Navigates to a URL in a specific web contents.
   static void NavigateToURL(WindowOpenDisposition disposition,
                             content::WebContents* web_contents,
-                            content::BrowserContext* browser_context,
                             const GURL& url);
 
   // Returns true if navigating to `url` could kill a page or the browser

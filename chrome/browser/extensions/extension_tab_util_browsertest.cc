@@ -143,19 +143,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::WebContents* web_contents = GetActiveWebContents();
-  ExtensionTabUtil::NavigateToURL(
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, web_contents,
-      web_contents->GetBrowserContext(), GURL("chrome://version"));
-  auto url = GetActiveWebContents()->GetURL();
-  EXPECT_THAT(url, GURL("chrome://version"));
+
+  int initial_tab_count = GetTabCount();
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::CURRENT_TAB,
+                                  web_contents, GURL("chrome://version"));
+  EXPECT_EQ(initial_tab_count, GetTabCount());
+  auto url1 = GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url1, GURL("chrome://version"));
+
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  web_contents, GURL("chrome://history"));
+
+  EXPECT_EQ(initial_tab_count + 1, GetTabCount());
+  auto url2 = GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url2, GURL("chrome://history"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::WebContents* web_contents = GetActiveWebContents();
-  ExtensionTabUtil::NavigateToURL(
-      WindowOpenDisposition::NEW_WINDOW, web_contents,
-      web_contents->GetBrowserContext(), GURL("chrome://version"));
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+                                  web_contents, GURL("chrome://version"));
   // After opening a new window, the last active browser should be the new
   // one.
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
@@ -166,7 +174,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
 #else
   EXPECT_DEATH(ExtensionTabUtil::NavigateToURL(
                    WindowOpenDisposition::NEW_WINDOW, GetActiveWebContents(),
-                   GetActiveWebContents()->GetBrowserContext(),
                    GURL("chrome://version")),
                "");
 #endif

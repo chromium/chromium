@@ -1253,10 +1253,9 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
 
 void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
                                      content::WebContents* web_contents,
-                                     content::BrowserContext* browser_context,
                                      const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  NavigateParams params(Profile::FromBrowserContext(browser_context), url,
+  NavigateParams params(chrome::FindBrowserWithTab(web_contents), url,
                         ui::PAGE_TRANSITION_FROM_API);
   params.disposition = disposition;
   params.window_action = NavigateParams::SHOW_WINDOW;
@@ -1265,20 +1264,16 @@ void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
   }
   Navigate(&params);
 #else
-  // Fow now, only new foreground tab disposition is supported on Android.
+  // Fow now, only current tab and new foreground tab disposition are supported
+  // on Android.
   // TODO(crbug.com//440173000): Support other window dispositions for Android.
-  CHECK_EQ(disposition, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  TabModel* const tab_model =
-      TabModelList::GetTabModelForWebContents(web_contents);
-  std::unique_ptr<content::WebContents> new_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser_context));
-  content::WebContents* const new_web_contents = new_contents.release();
-  tab_model->CreateTab(/*parent=*/nullptr, new_web_contents,
-                       /*select=*/true);
-  content::NavigationController::LoadURLParams load_params(url);
-  load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
-  new_web_contents->GetController().LoadURLWithParams(load_params);
+  CHECK(disposition == WindowOpenDisposition::CURRENT_TAB ||
+        disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                ui::PAGE_TRANSITION_FROM_API,
+                                /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params,
+                        /*navigation_handle_callback=*/{});
 #endif
 }
 
