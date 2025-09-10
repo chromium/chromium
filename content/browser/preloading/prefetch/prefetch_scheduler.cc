@@ -312,6 +312,11 @@ void PrefetchScheduler::Progress() {
   // called from `PrefetchService` directly.
   is_progress_scheduled_ = false;
 
+  // Execute something that should be done for each start of `Progress()`.
+  //
+  // TODO(crbug.com/443681583)): Remove it if possible.
+  prefetch_service_->PrepareProgress(base::PassKey<PrefetchScheduler>());
+
   // #algorithm
   //
   // 1. Start prefetches with burst priority with limit for burst.

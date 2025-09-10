@@ -1305,13 +1305,7 @@ void PrefetchService::Prefetch() {
   base::AutoReset reset_guard(&prefetch_reentrancy_guard_, true);
 #endif
 
-  if (PrefetchCloseIdleSockets()) {
-    for (const auto& iter : owned_prefetches()) {
-      if (iter.second) {
-        iter.second->CloseIdleConnections();
-      }
-    }
-  }
+  PrepareProgress();
 
   base::WeakPtr<PrefetchContainer> next_prefetch = nullptr;
   base::WeakPtr<PrefetchContainer> prefetch_to_evict = nullptr;
@@ -1520,6 +1514,27 @@ void PrefetchService::AddRecentUnmatchedNavigatedKeysForMetrics(
     const PrefetchKey& navigated_key) {
   recent_unmatched_navigated_keys_for_metrics_.Put(navigated_key,
                                                    base::TimeTicks::Now());
+}
+
+void PrefetchService::PrepareProgress(base::PassKey<PrefetchScheduler>) {
+  PrepareProgress();
+}
+
+void PrefetchService::PrepareProgress() {
+  // Corresponds to the same code in `Prefetch()`.
+  //
+  // For necessity, see
+  // https://docs.google.com/document/d/1U1J8VvvVhhLL2YQSRDPH2x4tH-Vl38UjJvojMmENK0I
+  //
+  // TODO(crbug.com/443681583): Move the handling to `PrefetchContainer` if
+  // possible.
+  if (PrefetchCloseIdleSockets()) {
+    for (const auto& iter : owned_prefetches()) {
+      if (iter.second) {
+        iter.second->CloseIdleConnections();
+      }
+    }
+  }
 }
 
 void PrefetchService::EvictPrefetch(

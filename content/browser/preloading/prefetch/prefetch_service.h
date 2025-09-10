@@ -220,7 +220,11 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
                              serving_page_metrics_container);
 
   // Exposes methods for `PrefetchScheduler`. See documentation of private
-  // methods with the same names.
+  // methods with the same names except for `PrepareProgress()`.
+  //
+  // See the implementation for `PrepareProgress()`.
+  void PrepareProgress(base::PassKey<PrefetchScheduler>);
+  void PrepareProgress();
   void EvictPrefetch(base::PassKey<PrefetchScheduler>,
                      base::WeakPtr<PrefetchContainer> prefetch_container);
   bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
