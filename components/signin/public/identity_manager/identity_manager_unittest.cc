@@ -63,7 +63,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
@@ -370,7 +369,8 @@ class IdentityManagerTest : public testing::Test {
     ash_account_manager->SetPrefService(&pref_service_);
 
     auto* account_manager_facade =
-        ash::GetAccountManagerFacade(temp_profile_dir_.GetPath().value());
+        GetAccountManagerFactory()->GetAccountManagerFacade(
+            temp_profile_dir_.GetPath().value());
 
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,

@@ -17,7 +17,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -62,7 +62,8 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     const std::string& account_email = args[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
-    GetAccountManagerFacade(profile->GetPath().value())
+    AccountManagerFactory::Get()
+        ->GetAccountManagerFacade(profile->GetPath().value())
         ->ShowReauthAccountDialog(
             account_manager::AccountManagerFacade::AccountAdditionSource::
                 kAccountManagerMigrationWelcomeScreen,

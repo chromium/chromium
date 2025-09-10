@@ -45,7 +45,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/check_deref.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
@@ -239,7 +238,7 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
       signin_client->GetURLLoaderFactory());
 
   auto* account_manager_facade =
-      ash::GetAccountManagerFacade(user_data_dir.value());
+      account_manager_factory->GetAccountManagerFacade(user_data_dir.value());
 
   auto token_service = std::make_unique<FakeProfileOAuth2TokenService>(
       pref_service,

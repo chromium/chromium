@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -117,7 +116,8 @@ void AccountManagerEducoexistenceControllerTest::SetUp() {
                          ->GetAccountManagerFactory()
                          ->GetAccountManager(profile()->GetPath().value());
   account_manager_facade_ =
-      GetAccountManagerFacade(profile()->GetPath().value());
+      AccountManagerFactory::Get()->GetAccountManagerFacade(
+          profile()->GetPath().value());
 
   AddAccount(account_manager(), kPrimaryAccount, kPrimaryAccountGaiaId);
 }

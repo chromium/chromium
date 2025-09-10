@@ -55,7 +55,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -439,7 +439,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     auth_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
     arc_availability_setter_ = std::make_unique<AccountAppsAvailabilitySetter>(
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile()),
-        ash::GetAccountManagerFacade(profile()->GetPath().value()));
+        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+            profile()->GetPath().value()));
     arc_bridge_service_ = ArcServiceManager::Get()->arc_bridge_service();
     DCHECK(arc_bridge_service_);
     arc_bridge_service_->auth()->SetInstance(&auth_instance_);
