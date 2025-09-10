@@ -125,6 +125,15 @@ public class AutoPictureInPictureTabHelperTest {
                             newTab.getId(),
                             TabSelectionType.FROM_USER);
                 });
+
+        // Wait for the tab switch to complete.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab currentTab = mActivity.getTabModelSelector().getCurrentTab();
+                    return currentTab != null && currentTab.getId() == newTab.getId();
+                },
+                "Tab switch did not complete.");
+
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
 
@@ -163,6 +172,15 @@ public class AutoPictureInPictureTabHelperTest {
                             newTab.getId(),
                             TabSelectionType.FROM_USER);
                 });
+
+        // Wait for the tab switch to complete.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab currentTab = mActivity.getTabModelSelector().getCurrentTab();
+                    return currentTab != null && currentTab.getId() == newTab.getId();
+                },
+                "Tab switch did not complete.");
+
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
 
