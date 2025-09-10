@@ -8,6 +8,7 @@
 #include "base/byte_count.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/performance_manager/public/features.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
 class TabFeatures;
@@ -38,8 +39,11 @@ class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
 // Per-tab class to keep track of current memory usage for each tab.
 class TabResourceUsageTabHelper : public tabs::ContentsObservingTabFeature {
  public:
+  DECLARE_USER_DATA(TabResourceUsageTabHelper);
   explicit TabResourceUsageTabHelper(tabs::TabInterface& contents);
   ~TabResourceUsageTabHelper() override;
+
+  static TabResourceUsageTabHelper* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
@@ -49,10 +53,22 @@ class TabResourceUsageTabHelper : public tabs::ContentsObservingTabFeature {
 
   scoped_refptr<const TabResourceUsage> resource_usage() const;
 
+  // Registers callback if tab's resource usage is updated
+  using ResourceChangedCallback =
+      base::RepeatingCallback<void(scoped_refptr<const TabResourceUsage>)>;
+  base::CallbackListSubscription AddResourceUsageChangeCallback(
+      ResourceChangedCallback callback);
+
  private:
   friend class tabs::TabFeatures;
 
+  void NotifyResourceUsageChanged();
+
+  base::RepeatingCallbackList<void(scoped_refptr<const TabResourceUsage>)>
+      callback_list_;
   scoped_refptr<TabResourceUsage> resource_usage_;
+  ui::ScopedUnownedUserData<TabResourceUsageTabHelper>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_

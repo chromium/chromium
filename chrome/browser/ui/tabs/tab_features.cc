@@ -363,7 +363,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreateForWebContents(
           tab.GetContents());
 
-  resource_usage_helper_ = std::make_unique<TabResourceUsageTabHelper>(tab);
+  resource_usage_helper_ =
+      GetUserDataFactory().CreateInstance<TabResourceUsageTabHelper>(tab, tab);
 
   memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
 
@@ -402,12 +403,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           tab, &tab);
-}
-
-TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(
-    std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper) {
-  resource_usage_helper_ = std::move(resource_usage_helper);
-  return resource_usage_helper_.get();
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(

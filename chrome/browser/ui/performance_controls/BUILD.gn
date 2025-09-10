@@ -44,6 +44,7 @@ if (!is_android) {
       "//components/tabs:public",
       "//content/public/browser",
       "//ui/base",
+      "//ui/base/unowned_user_data",
       "//url",
     ]
   }
@@ -132,6 +133,7 @@ if (!is_android) {
       "//components/performance_manager",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/tabs:test_support",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

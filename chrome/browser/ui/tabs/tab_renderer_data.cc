@@ -158,7 +158,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
 
   if (const auto* const resource_tab_helper =
-          tab->GetTabFeatures()->resource_usage_helper()) {
+          TabResourceUsageTabHelper::From(tab)) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }
 

@@ -59,8 +59,7 @@ class TabResourceUsageTabHelperBrowsertest : public InteractiveBrowserTest {
           auto* const tab = tabs::TabInterface::GetFromContents(
               AsInstrumentedWebContents(el)->web_contents());
           CHECK(tab);
-          std::move(callback).Run(
-              *tab->GetTabFeatures()->resource_usage_helper());
+          std::move(callback).Run(*TabResourceUsageTabHelper::From(tab));
         });
   }
 
@@ -77,8 +76,7 @@ class TabResourceUsageTabHelperBrowsertest : public InteractiveBrowserTest {
           auto* const tab = tabs::TabInterface::GetFromContents(
               AsInstrumentedWebContents(el)->web_contents());
           CHECK(tab);
-          return std::move(callback).Run(
-              *tab->GetTabFeatures()->resource_usage_helper());
+          return std::move(callback).Run(*TabResourceUsageTabHelper::From(tab));
         },
         std::forward<M>(matcher));
   }

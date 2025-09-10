@@ -160,11 +160,8 @@ class TabHoverCardInteractiveUiTest
   }
 
   TabResourceUsageTabHelper* GetResourceUsageAt(int index) {
-    return browser()
-        ->tab_strip_model()
-        ->GetTabAtIndex(index)
-        ->GetTabFeatures()
-        ->resource_usage_helper();
+    return TabResourceUsageTabHelper::From(
+        browser()->tab_strip_model()->GetTabAtIndex(index));
   }
 
  private:

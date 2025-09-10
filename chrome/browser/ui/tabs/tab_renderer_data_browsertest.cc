@@ -348,7 +348,6 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_Thumbnail) {
 
 // TODO(crbug.com/443125652): Creating a test for
 // deferred functionality
-
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
@@ -361,9 +360,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
   EXPECT_FALSE(data_default.should_show_discard_status);
   EXPECT_TRUE(data_default.discarded_memory_savings.is_zero());
   EXPECT_TRUE(data_default.tab_resource_usage);
-  tab_strip_model->GetTabAtIndex(0)
-      ->GetTabFeatures()
-      ->resource_usage_helper()
+  TabResourceUsageTabHelper::From(tab_strip_model->GetTabAtIndex(0))
       ->SetMemoryUsage(base::ByteCount(1234));
   TabRendererData data_usage =
       TabRendererData::FromTabInModel(tab_strip_model, 0);

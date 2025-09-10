@@ -252,20 +252,11 @@ class TabFeatures {
     return inactive_window_mouse_event_controller_.get();
   }
 
-  TabResourceUsageTabHelper* resource_usage_helper() {
-    return resource_usage_helper_.get();
-  }
-
   MemorySaverChipTabHelper* memory_saver_chip_helper() {
     return memory_saver_chip_helper_.get();
   }
 
   TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
-
-  // Note: Temporary until there is a more uniform way to swap out features for
-  // testing.
-  TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(
-      std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper);
 
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);

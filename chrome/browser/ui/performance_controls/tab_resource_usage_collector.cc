@@ -84,8 +84,7 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
       if (web_contents) {
         if (auto* tab =
                 tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-          if (auto* const helper =
-                  tab->GetTabFeatures()->resource_usage_helper()) {
+          if (auto* const helper = TabResourceUsageTabHelper::From(tab)) {
             helper->SetMemoryUsage(memory_result->private_footprint);
             did_resource_update = true;
           }
