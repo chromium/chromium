@@ -252,8 +252,7 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 }
 
 // TODO(crbug.com/444090218): Test is flaky.
-- (void)
-    DISABLED_testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
+- (void)FLAKY_testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
   [self showAuthenticationSelection];
 
   // Select the text message otp challenge option.
