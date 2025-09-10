@@ -241,6 +241,15 @@ id<GREYMatcher> identityDiscMatcher() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsEditAccountListTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Checks that "done" close the view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewDoneButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsEditAccountListTableViewId)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the sign out button actually signs out and the account menu view

@@ -540,6 +540,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)closeSettings {
   [self stopManageAccountsNavigationController];
+  [self.mediator accountMenuIsUsable];
 }
 
 - (void)settingsWasDismissed {

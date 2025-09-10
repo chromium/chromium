@@ -1393,7 +1393,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (ManageAccountsCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.manageAccountsCoordinator,
            base::NotFatalUntil::M144);
+  // If this navigation controller was opened directly with the account manager,
+  // the navigation controller should be closed.
+  BOOL stopNavigationController = [self viewControllers].count == 1;
   [self stopManageAccountsCoordinator];
+  if (stopNavigationController) {
+    [self.settingsNavigationDelegate closeSettings];
+  }
 }
 
 #pragma mark - BWGSettingsCoordinatorDelegate
