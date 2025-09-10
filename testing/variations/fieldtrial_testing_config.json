@@ -12826,24 +12826,6 @@
             ]
         }
     ],
-    "IOSAutofillThrottleFilteredDocumentFormScan": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_With250msPeriod",
-                    "params": {
-                        "period-ms": "250"
-                    },
-                    "enable_features": [
-                        "AutofillThrottleFilteredDocumentFormScan"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
