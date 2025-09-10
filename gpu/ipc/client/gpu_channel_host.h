@@ -32,7 +32,7 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace IPC {
-class ChannelMojo;
+class Channel;
 }
 
 namespace gpu {
@@ -247,7 +247,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
    private:
     mutable base::Lock lock_;
-    std::unique_ptr<IPC::ChannelMojo> channel_ GUARDED_BY(lock_);
+    std::unique_ptr<IPC::Channel> channel_ GUARDED_BY(lock_);
   };
 
   struct OrderingBarrierInfo {

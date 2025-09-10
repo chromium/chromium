@@ -31,9 +31,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
-#include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_mojo.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -169,7 +167,7 @@ void ChildProcessHostImpl::CreateChannelMojo() {
 
   mojo::ScopedMessagePipeHandle bootstrap =
       mojo_invitation_->AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
-  channel_ = IPC::ChannelMojo::Create(
+  channel_ = IPC::Channel::Create(
       std::move(bootstrap), IPC::Channel::MODE_SERVER, this,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault());

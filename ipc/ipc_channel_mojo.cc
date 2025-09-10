@@ -84,17 +84,6 @@ base::ProcessId GetSelfPID() {
 
 //------------------------------------------------------------------------------
 
-// static
-std::unique_ptr<ChannelMojo> ChannelMojo::Create(
-    mojo::ScopedMessagePipeHandle handle,
-    Mode mode,
-    Listener* listener,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner) {
-  return base::WrapUnique(new ChannelMojo(std::move(handle), mode, listener,
-                                          ipc_task_runner, proxy_task_runner));
-}
-
 ChannelMojo::ChannelMojo(
     mojo::ScopedMessagePipeHandle handle,
     Mode mode,

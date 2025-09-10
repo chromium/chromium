@@ -31,7 +31,6 @@ component("ipc") {
       # Most sources go here since ios only needs the param_traits
       # code.
       "ipc_channel.h",
-      "ipc_channel_common.cc",
       "ipc_channel_factory.cc",
       "ipc_channel_factory.h",
       "ipc_channel_handle.h",

@@ -33,6 +33,7 @@
 
 namespace IPC {
 
+class Listener;
 class UrgentMessageObserver;
 
 //------------------------------------------------------------------------------
@@ -136,6 +137,12 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // - Client and named client: In these mode, the Channel merely
   //   connects to the already established IPC object.
   //
+  static std::unique_ptr<Channel> Create(
+      mojo::ScopedMessagePipeHandle handle,
+      Mode mode,
+      Listener* listener,
+      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
+      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 
   ~Channel() override;
 
@@ -152,7 +159,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // Pause the channel. Subsequent sends will be queued internally until
   // Unpause() is called and the channel is flushed either by Unpause() or a
   // subsequent call to Flush().
-  virtual void Pause();
+  virtual void Pause() = 0;
 
   // Unpause the channel. This allows subsequent Send() calls to transmit
   // messages immediately, without queueing. If |flush| is true, any messages
@@ -161,7 +168,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   //
   // Not all implementations support Unpause(). See ConnectPaused() above for
   // details.
-  virtual void Unpause(bool flush);
+  virtual void Unpause(bool flush) = 0;
 
   // Manually flush the pipe. This is only useful exactly once, and only after
   // a call to Unpause(false), in order to explicitly flush out any
@@ -169,7 +176,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   //
   // Not all implementations support Flush(). See ConnectPaused() above for
   // details.
-  virtual void Flush();
+  virtual void Flush() = 0;
 
   // Close this Channel explicitly.  May be called multiple times.
   // On POSIX calling close on an IPC channel that listens for connections will
@@ -181,7 +188,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // Gets a helper for associating Mojo interfaces with this Channel.
   //
   // NOTE: Not all implementations support this.
-  virtual AssociatedInterfaceSupport* GetAssociatedInterfaceSupport();
+  virtual AssociatedInterfaceSupport* GetAssociatedInterfaceSupport() = 0;
 
   // Overridden from ipc::Sender.
   // Send a message over the Channel to the listener on the other end.
@@ -194,7 +201,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // the channel.
   //
   // Only channel associated mojo interfaces support urgent messages.
-  virtual void SetUrgentMessageObserver(UrgentMessageObserver* observer);
+  virtual void SetUrgentMessageObserver(UrgentMessageObserver* observer) = 0;
 
   // Generates a channel ID that's non-predictable and unique.
   static std::string GenerateUniqueRandomChannelID();

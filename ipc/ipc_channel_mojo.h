@@ -39,14 +39,6 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       public Channel::AssociatedInterfaceSupport,
       public internal::MessagePipeReader::Delegate {
  public:
-  // Creates a ChannelMojo.
-  static std::unique_ptr<ChannelMojo> Create(
-      mojo::ScopedMessagePipeHandle handle,
-      Mode mode,
-      Listener* listener,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
-
   ChannelMojo(const ChannelMojo&) = delete;
   ChannelMojo& operator=(const ChannelMojo&) = delete;
 
@@ -71,6 +63,8 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       mojo::GenericPendingAssociatedReceiver receiver) override;
 
  private:
+  friend class Channel;
+
   ChannelMojo(
       mojo::ScopedMessagePipeHandle handle,
       Mode mode,

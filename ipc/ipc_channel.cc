@@ -13,18 +13,36 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "ipc/ipc_channel_mojo.h"
+
+namespace IPC {
 
 namespace {
 
 // Global atomic used to guarantee channel IDs are unique.
 base::AtomicSequenceNumber g_last_id;
 
-}  // namespace
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-namespace IPC {
+int g_global_pid = 0;
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 // static
 constexpr size_t Channel::kMaximumMessageSize;
+
+// static
+std::unique_ptr<Channel> Channel::Create(
+    mojo::ScopedMessagePipeHandle handle,
+    Mode mode,
+    Listener* listener,
+    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
+    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner) {
+  return base::WrapUnique(new ChannelMojo(std::move(handle), mode, listener,
+                                          ipc_task_runner, proxy_task_runner));
+}
 
 // static
 std::string Channel::GenerateUniqueRandomChannelID() {
@@ -40,6 +58,24 @@ std::string Channel::GenerateUniqueRandomChannelID() {
       process_id,
       g_last_id.GetNext(),
       base::RandInt(0, std::numeric_limits<int32_t>::max()));
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// static
+void Channel::SetGlobalPid(int pid) {
+  g_global_pid = pid;
+}
+
+// static
+int Channel::GetGlobalPid() {
+  return g_global_pid;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+Channel::~Channel() = default;
+
+void Channel::WillConnect() {
+  did_start_connect_ = true;
 }
 
 }  // namespace IPC

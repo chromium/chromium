@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_mojo.h"
 
 namespace IPC {
 
@@ -26,9 +25,9 @@ class PlatformChannelFactory : public ChannelFactory {
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
     DCHECK(handle_.is_mojo_channel_handle());
-    return ChannelMojo::Create(
-        mojo::ScopedMessagePipeHandle(handle_.mojo_handle), mode_, listener,
-        ipc_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault());
+    return Channel::Create(mojo::ScopedMessagePipeHandle(handle_.mojo_handle),
+                           mode_, listener, ipc_task_runner_,
+                           base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetIPCTaskRunner() override {
@@ -57,8 +56,8 @@ class MojoChannelFactory : public ChannelFactory {
   MojoChannelFactory& operator=(const MojoChannelFactory&) = delete;
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
-    return ChannelMojo::Create(std::move(handle_), mode_, listener,
-                               ipc_task_runner_, proxy_task_runner_);
+    return Channel::Create(std::move(handle_), mode_, listener,
+                           ipc_task_runner_, proxy_task_runner_);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetIPCTaskRunner() override {
