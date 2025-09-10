@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
@@ -73,6 +75,33 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
   // TODO(crbug.com/40280872): Determine the correct size for the thumbnail.
   return [page thumbnailOfSize:CGSizeMake(200, 200)
                         forBox:kPDFDisplayBoxCropBox];
+}
+
+// Creates an initial ContextualInputData object using the information from the
+// passed in `page_context` and `web_state`. Note that an image snapshot is not
+// populated as part of this function.
+std::unique_ptr<lens::ContextualInputData> CreateInputDataFromPageContext(
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context,
+    web::WebState* web_state) {
+  if (!page_context || !web_state) {
+    return nullptr;
+  }
+
+  std::string serialized_context;
+  page_context->SerializeToString(&serialized_context);
+
+  std::vector<uint8_t> vector_data(serialized_context.begin(),
+                                   serialized_context.end());
+
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(lens::ContextualInput(
+      std::move(vector_data), lens::MimeType::kAnnotatedPageContent));
+
+  input_data->page_url = web_state->GetVisibleURL();
+  input_data->page_title = base::UTF16ToUTF8(web_state->GetTitle());
+  return input_data;
 }
 
 }  // namespace
@@ -199,13 +228,15 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
   _pageContextWrapper = [[PageContextWrapper alloc]
         initWithWebState:webState
-      completionCallback:base::BindOnce(
-                             ^(PageContextWrapperCallbackResponse response){
-                                 // TODO(crbug.com/442565566): Attatch the
-                                 // context to the query.
-                             })];
+      completionCallback:base::BindOnce(^(
+                             PageContextWrapperCallbackResponse response) {
+        if (response.has_value()) {
+          [weakSelf didGetPageContext:std::move(response)];
+        }
+      })];
   _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
@@ -359,6 +390,55 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
     }
   }
   return nil;
+}
+
+// Transforms the page context into input data and uploads the data after a page
+// snapshot is generated.
+- (void)didGetPageContext:
+    (PageContextWrapperCallbackResponse)pageContextResponse {
+  if (!pageContextResponse.has_value()) {
+    return;
+  }
+
+  AIMInputItem* item = [[AIMInputItem alloc] init];
+  [_items addObject:item];
+  [self.consumer setItems:_items];
+  __block const base::UnguessableToken& token = item.fileToken;
+
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  __block std::unique_ptr<lens::ContextualInputData> input_data =
+      CreateInputDataFromPageContext(std::move(pageContextResponse.value()),
+                                     webState);
+
+  __weak __typeof(self) weakSelf = self;
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* image) {
+        [weakSelf didRetrieveColorSnapshot:image
+                                 inputData:std::move(input_data)
+                                     token:token];
+      });
+}
+
+// Handles uploading the context after the snapshot is generated.
+- (void)didRetrieveColorSnapshot:(UIImage*)image
+                       inputData:(std::unique_ptr<lens::ContextualInputData>)
+                                     input_data
+                           token:(const base::UnguessableToken&)token {
+  if (image) {
+    NSData* data = UIImagePNGRepresentation(image);
+    std::vector<uint8_t> image_vector_data([data length]);
+    [data getBytes:image_vector_data.data() length:[data length]];
+    input_data->viewport_screenshot_bytes = std::move(image_vector_data);
+  }
+  [self didLoadPreviewImage:image forItemWithToken:token];
+
+  // TODO(crbug.com/40280872): Plumb encoding options from a central config.
+  lens::ImageEncodingOptions image_options;
+  image_options.max_width = 1024;
+  image_options.max_height = 1024;
+  image_options.compression_quality = 80;
+  _composeboxQueryController->StartFileUploadFlow(token, std::move(input_data),
+                                                  image_options);
 }
 
 // Handles the read `data` from the given `url` for the item with the given

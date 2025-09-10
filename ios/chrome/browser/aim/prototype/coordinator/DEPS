@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/variations/model/client",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 ]
