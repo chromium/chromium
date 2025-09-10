@@ -45,12 +45,6 @@ constexpr uint32_t kUiSourceId = 1u;
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// ViewTreeHostUiResource:
-
-ViewTreeHostUiResource::ViewTreeHostUiResource() = default;
-ViewTreeHostUiResource::~ViewTreeHostUiResource() = default;
-
-// -----------------------------------------------------------------------------
 // ViewTreeHostRootViewFrameFactory:
 
 ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
@@ -58,8 +52,7 @@ ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
     : widget_(widget) {}
 
 // static
-std::unique_ptr<ViewTreeHostUiResource>
-ViewTreeHostRootViewFrameFactory::CreateUiResource(
+std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     UiSourceId ui_source_id,
@@ -67,7 +60,7 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
 
-  auto resource = std::make_unique<ViewTreeHostUiResource>();
+  auto resource = std::make_unique<UiResource>();
   resource->context_provider = aura::Env::GetInstance()
                                    ->context_factory()
                                    ->SharedMainThreadRasterContextProvider();
@@ -216,7 +209,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
 void ViewTreeHostRootViewFrameFactory::Paint(
     const gfx::Rect& invalidation_rect,
     const gfx::Transform& rotate_transform,
-    ViewTreeHostUiResource* resource) {
+    UiResource* resource) {
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();
 
@@ -280,20 +273,14 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                        gfx::ProtectedVideoType::kClear);
 }
 
-std::unique_ptr<ViewTreeHostUiResource>
-ViewTreeHostRootViewFrameFactory::AcquireUiResource(
+std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager& resource_manager) const {
-  std::unique_ptr<UiResource> ui_resource = resource_manager.GetResourceToReuse(
+  std::unique_ptr<UiResource> resource = resource_manager.GetResourceToReuse(
       size, kSharedImageFormat, kUiSourceId);
 
-  std::unique_ptr<ViewTreeHostUiResource> resource;
-
-  if (ui_resource) {
-    resource = base::WrapUnique(
-        static_cast<ViewTreeHostUiResource*>(ui_resource.release()));
-  } else {
+  if (!resource) {
     resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
                                 is_overlay_candidate);
   }
