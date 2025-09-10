@@ -8507,6 +8507,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.Startup.ChromiumInitTime.DrainRunQueueDuration"
+    units="ms" expires_after="2025-11-10">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records how long it takes to drain the run queue at the end of Chromium
+    initialization.
+
+    This histogram is recorded in the last step of chromium init and so, is not
+    recorded when init does not complete for any reason or if init had been
+    completed in previous runs.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime{StartupMode}"
     units="ms" expires_after="2026-03-01">
   <owner>colibie@google.com</owner>
