@@ -847,6 +847,15 @@ class WebIdlSchemaTest(unittest.TestCase):
                 'type': 'any'
             }
         }, object_dict['properties']['optionalObject'])
+    self.assertEqual(
+        {
+            'type': 'object',
+            'name': 'instanceOfObject',
+            'additionalProperties': {
+                'type': 'any'
+            },
+            'isInstanceOf': 'Blob'
+        }, object_dict['properties']['instanceOfObject'])
 
     any_dict = getType(schema, 'AnyDict')
     self.assertEqual('object', any_dict['type'])
@@ -890,6 +899,18 @@ class WebIdlSchemaTest(unittest.TestCase):
             'optional': True,
             'name': 'optionalAnyParam'
         }, any_params[1])
+
+    instance_of_params = getFunctionParameters(schema,
+                                               'instanceOfFunctionParam')
+    self.assertEqual(
+        {
+            'type': 'object',
+            'name': 'instanceOfParam',
+            'additionalProperties': {
+                'type': 'any'
+            },
+            'isInstanceOf': 'Entry'
+        }, instance_of_params[0])
 
 
 if __name__ == '__main__':

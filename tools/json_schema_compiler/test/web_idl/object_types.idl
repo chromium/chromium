@@ -5,6 +5,7 @@
 dictionary ObjectDict {
   object requiredObject;
   object? optionalObject;
+  [instanceOf=Blob] object instanceOfObject;
 };
 
 dictionary AnyDict {
@@ -20,6 +21,8 @@ interface ObjectTypes {
   static undefined anyParamFunction(
       any requiredAnyParam,
       optional any optionalAnyParam);
+  static undefined instanceOfFunctionParam(
+      [instanceOf=Entry] object instanceOfParam);
 };
 
 partial interface Browser {

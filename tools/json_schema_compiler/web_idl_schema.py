@@ -303,11 +303,20 @@ class Type():
     # TODO(crbug.com/340297705): Add support for more types.
     type_details = self.type_node.GetChildren()[0]
 
+    # Process any extended attributes first.
+    instance_of = None
+    for extended_attribute in GetExtendedAttributes(self.type_node.GetParent()):
+      if extended_attribute.GetName() == 'instanceOf':
+        instance_of = extended_attribute.GetProperty('VALUE')
+
     if type_details.IsA('PrimitiveType', 'StringType'):
       properties['type'] = self._TranslateBasicType(type_details)
-      # 'object' types also have an 'additionalProperties' attribute.
+      # 'object' types also have an 'additionalProperties' attribute and may
+      # have an 'instanceOf' extended attribute.
       if properties['type'] == 'object':
         properties['additionalProperties'] = {'type': 'any'}
+        if instance_of:
+          properties['isInstanceOf'] = instance_of
     elif type_details.IsA('Typeref'):
       # For custom types the name indicates the underlying referenced type.
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
