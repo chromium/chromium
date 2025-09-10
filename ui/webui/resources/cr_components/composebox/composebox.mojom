@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
 import "components/omnibox/browser/searchbox.mojom";
+import "url/mojom/url.mojom";
 
 // Information about a file selected by the user in the WebUI.
 struct SelectedFileInfo {
@@ -18,6 +19,16 @@ struct SelectedFileInfo {
   string mime_type;
   // Time that the file was selected at.
   mojo_base.mojom.JSTime selection_time;
+};
+
+// Information about a suggested tab in the WebUI.
+struct TabInfo {
+  // The unique identifier of the tab.
+  int32 tab_id;
+  // The title of the tab.
+  string title;
+  // The URL of the tab.
+  url.mojom.Url url;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -68,6 +79,8 @@ interface PageHandler {
 
   // Clears all files from cache.
   ClearFiles();
+  // Returns information about recent tabs.
+  GetTabs() => (array<TabInfo> tabs);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.
