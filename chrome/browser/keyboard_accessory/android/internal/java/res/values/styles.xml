@@ -47,6 +47,7 @@ found in the LICENSE file.
         <item name="cornerRadius">
             @dimen/keyboard_accessory_chip_corner_radius_redesign
         </item>
+        <item name="solidColorChip">true</item>
         <item name="iconWidth">
             @dimen/keyboard_accessory_bar_item_icon_width
         </item>
