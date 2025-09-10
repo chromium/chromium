@@ -75,6 +75,7 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
+                     hasCloseButton:NO
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO
@@ -95,6 +96,7 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest, CreateViewWithStepsTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
+                     hasCloseButton:NO
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:YES
@@ -116,6 +118,7 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:YES
+                     hasCloseButton:NO
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO
@@ -137,6 +140,7 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
+                     hasCloseButton:NO
                    hasRemindMeLater:YES
           useDefaultAppsDestination:NO
                            hasSteps:NO
@@ -157,6 +161,7 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest, AnimationViewTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:YES
+                     hasCloseButton:NO
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO

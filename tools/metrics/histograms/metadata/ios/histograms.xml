@@ -1371,6 +1371,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserVideoPromo.PersistedDuration" units="ms"
+    expires_after="2026-05-09">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The real time elapsed between the user tapping the primary action button on
+    the default browser video promo and the subsequent dismissal (swipe down,
+    tap X button, tap secondary button). Recorded once on promo dismissal if the
+    user tapped the primary button beforehand. If the app is killed in the
+    background before the user comes back to dismiss the promo, this will not be
+    recorded to.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultStatusAPI.CooldownError.DaysLeft" units="Days"
     expires_after="2026-02-25">
   <owner>gujen@google.com</owner>

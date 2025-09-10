@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -44,6 +45,9 @@ NSString* const kChromeKeypath = @"IDS_CHROME";
 // Spacing used in the bottom alert view.
 constexpr CGFloat kSpacing = 24;
 
+// The spacing around the close button.
+constexpr CGFloat kCloseButtonSpacing = 20;
+
 // Vertical center offset for tablets.
 constexpr CGFloat kTabletCenterOffset = 40;
 }  // namespace
@@ -59,6 +63,12 @@ constexpr CGFloat kTabletCenterOffset = 40;
 // Subview for information and action part of the view.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
 
+// The navigation bar for the close button, if present.
+@property(nonatomic, strong) UINavigationBar* navigationBar;
+
+// The action handler for interactions in this View Controller.
+@property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
+
 @end
 
 NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
@@ -70,6 +80,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 @implementation DefaultBrowserInstructionsViewController
 
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
+                       hasCloseButton:(BOOL)hasCloseButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
             useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
@@ -77,9 +88,13 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                             (id<ConfirmationAlertActionHandler>)actionHandler
                             titleText:(NSString*)titleText {
   if ((self = [super init])) {
+    self.actionHandler = actionHandler;
     useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
                                  IsUseDefaultAppsDestinationForPromosEnabled();
     [self addVideoSection:useDefaultAppsDestination];
+    if (hasCloseButton) {
+      [self addNavigationBarAndCloseButton];
+    }
     [self addInformationSectionWithDismissButton:hasDismissButton
                                 hasRemindMeLater:hasRemindMeLater
                        useDefaultAppsDestination:useDefaultAppsDestination
@@ -327,6 +342,48 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     return -kTabletCenterOffset;
   }
   return 0;
+}
+
+// Helper to create the navigation bar.
+- (void)addNavigationBarAndCloseButton {
+  UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
+  self.navigationBar = navigationBar;
+  navigationBar.translucent = YES;
+
+  UIBarButtonSystemItem buttonType = UIBarButtonSystemItemDone;
+  if (@available(iOS 26, *)) {
+    buttonType = UIBarButtonSystemItemCancel;
+  }
+
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:buttonType
+                           target:self
+                           action:@selector(didTapNavigationBarCloseButton)];
+  navigationItem.rightBarButtonItem = dismissButton;
+
+  navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  [navigationBar setItems:@[ navigationItem ]];
+
+  [self.view addSubview:self.navigationBar];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.navigationBar.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:kCloseButtonSpacing],
+    [navigationBar.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [navigationBar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor]
+  ]];
+}
+
+// Handle taps on the dismiss button.
+- (void)didTapNavigationBarCloseButton {
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
+    [self.actionHandler confirmationAlertDismissAction];
+  }
 }
 
 @end
