@@ -48,6 +48,16 @@ import java.net.URLDecoder;
  * </ul>
  */
 public class TestDocumentsProvider extends DocumentsProvider {
+    // TODO(crbug.com/443222522): Implement COLUMN_FLAGS projection
+    private static final String[] DEFAULT_PROJECTION_FOR_TEST =
+            new String[] {
+                DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_MIME_TYPE,
+                DocumentsContract.Document.COLUMN_SIZE,
+                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+            };
+
     // The authority cannot be static as its initialization depends on a Context. A ContentProvider
     // can be created before Application.onCreate() is called, which is where the static
     // application context in ContextUtils is set. Therefore, we must wait until the provider's
@@ -99,13 +109,19 @@ public class TestDocumentsProvider extends DocumentsProvider {
         return file.getAbsolutePath().substring(mCacheDir.getAbsolutePath().length() + 1);
     }
 
+    /**
+     * Return all available columns when the projection is null to follow the contract of
+     * DocumentsProvider#queryDocument and so on
+     * https://developer.android.com/reference/android/provider/DocumentsProvider.
+     */
     public Cursor query(String[] projection, File[] files) {
-        MatrixCursor cursor = new MatrixCursor(projection != null ? projection : new String[0]);
+        String[] resolvedProjection = projection == null ? DEFAULT_PROJECTION_FOR_TEST : projection;
+        MatrixCursor cursor = new MatrixCursor(resolvedProjection);
         for (File file : files) {
             if (file.exists()) {
-                Object[] row = new Object[projection != null ? projection.length : 0];
-                for (int i = 0; i < projection.length; i++) {
-                    String colName = projection[i];
+                Object[] row = new Object[resolvedProjection.length];
+                for (int i = 0; i < resolvedProjection.length; i++) {
+                    String colName = resolvedProjection[i];
                     if (DocumentsContract.Document.COLUMN_DOCUMENT_ID.equals(colName)) {
                         row[i] = getDocumentId(file);
                     } else if (DocumentsContract.Document.COLUMN_DISPLAY_NAME.equals(colName)) {
