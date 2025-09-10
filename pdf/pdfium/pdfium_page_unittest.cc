@@ -486,8 +486,8 @@ TEST_P(PDFiumPageLinkTest, GetLinkTarget) {
   ASSERT_EQ(1, target.page);
 
   // Make sure the target page's size is different from the first page's. This
-  // guarantees that the in-screen coordinates are calculated based on the
-  // target page's dimension.
+  // guarantees that the screen coordinates are calculated based on the target
+  // page's dimension.
   PDFiumPage& target_page = GetPDFiumPageForTest(*engine, target.page);
   ASSERT_TRUE(target_page.available());
   ASSERT_TRUE(first_page.available());

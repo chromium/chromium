@@ -197,26 +197,26 @@ class PDFiumPage {
   // NONSELECTABLE_AREA if link detection failed.
   Area GetLinkTarget(FPDF_LINK link, LinkTarget* target);
 
-  // Fills the output params with the in-page coordinates and the zoom value of
-  // the destination.
+  // Fills the output params with the PDF coordinates and the zoom value of the
+  // destination.
   void GetPageDestinationTarget(FPDF_DEST destination,
                                 std::optional<float>* dest_x,
                                 std::optional<float>* dest_y,
                                 std::optional<float>* zoom_value);
 
-  // For a named destination with "XYZ" view fit type, pre-processes the in-page
+  // For a named destination with "XYZ" view fit type, pre-processes the PDF
   // x/y coordinate in case it's out of the range of the page dimension. Then
   // transform it to a screen coordinate.
   float PreProcessAndTransformInPageCoordX(float x);
   float PreProcessAndTransformInPageCoordY(float y);
 
-  // Transforms an (x, y) position in page coordinates to screen coordinates.
+  // Transforms an (x, y) position in PDF coordinates to screen coordinates.
   gfx::PointF TransformPageToScreenXY(const gfx::PointF& xy);
 
-  // Transforms an in-page x coordinate to its value in screen coordinates.
+  // Transforms an PDF x coordinate to its value in screen coordinates.
   float TransformPageToScreenX(float x);
 
-  // Transforms an in-page y coordinate to its value in screen coordinates.
+  // Transforms an PDF y coordinate to its value in screen coordinates.
   float TransformPageToScreenY(float y);
 
   // Given a point in this page in PDF coordinates, returns the area type, or
@@ -238,14 +238,14 @@ class PDFiumPage {
   // of the page.
   bool IsCharIndexInBounds(int char_index);
 
-  // Given a rectangle in page coordinates, computes the range of continuous
+  // Given a rectangle in PDF coordinates, computes the range of continuous
   // characters which lie inside that rectangle. Returns false without
   // modifying the out parameters if no character lies inside the rectangle.
   bool GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
                                      int* start_index,
                                      int* char_len);
 
-  // Converts from page coordinates to screen coordinates.
+  // Converts from PDF coordinates to screen coordinates.
   gfx::Rect PageToScreen(const gfx::Point& page_point,
                          double zoom,
                          const PdfRect& rect,

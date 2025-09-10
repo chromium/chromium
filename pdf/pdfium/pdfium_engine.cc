@@ -448,8 +448,8 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
 
   // Generate a string of the parameters
   if (has_x_coord) {
-    // Handle out-of-range page coordinates and convert in-page coordinates to
-    // in-screen coordinates.
+    // Handle out-of-range PDF coordinates and convert PDF coordinates to screen
+    // coordinates.
     xyz_params =
         base::NumberToString(page->PreProcessAndTransformInPageCoordX(x)) + ",";
   } else {
@@ -492,9 +492,9 @@ void SetFitRParamsInScreenCoords(PDFiumPage* page, base::span<float> params) {
   params[3] = point_2.y();
 }
 
-// A helper function that transforms the in-page coordinates in `params` to
-// in-screen coordinates depending on the view's fit type. `params` is both an
-// input and a output parameter.
+// A helper function that transforms the PDF coordinates in `params` to screen
+// coordinates depending on the view's fit type. `params` is an in-out
+// parameter.
 void ParamsTransformPageToScreen(unsigned long view_fit_type,
                                  PDFiumPage* page,
                                  base::span<float> params) {
@@ -751,7 +751,7 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
     int index = visible_pages_[i];
     // Convert the current page's rectangle to screen rectangle.  We do this
     // instead of the reverse (converting the dirty rectangle from screen to
-    // page coordinates) because then we'd have to convert back to screen
+    // PDF coordinates) because then we'd have to convert back to screen
     // coordinates, and the rounding errors sometime leave pixels dirty or even
     // move the text up or down a pixel when zoomed.
     gfx::Rect page_rect_in_screen = GetPageScreenRect(index);
@@ -2781,9 +2781,9 @@ std::optional<PDFiumEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   unsigned long view_int =
       FPDFDest_GetView(dest, &result.num_params, result.params.data());
 
-  // FPDFDest_GetView() gets the in-page coordinates directly from the PDF
-  // document. The in-page coordinates need to be transformed into in-screen
-  // coordinates before getting sent to the viewport.
+  // FPDFDest_GetView() gets the PDF coordinates directly from the PDF document.
+  // The PDF coordinates need to be transformed into screen coordinates before
+  // getting sent to the viewport.
   PDFiumPage* page_ptr = pages_[page].get();
   ParamsTransformPageToScreen(view_int, page_ptr, result.params);
 

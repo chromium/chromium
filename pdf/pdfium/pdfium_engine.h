@@ -176,15 +176,15 @@ class PDFiumEngine : public DocumentLoader::Client,
     // Parameters for the view. Their meaning depends on the `view` and their
     // number is defined by `num_params` but is at most `kMaxViewParams`. Note:
     // If a parameter stands for the x/y coordinates, it should be transformed
-    // into the corresponding in-screen coordinates before it's sent to the
+    // into the corresponding screen coordinates before it's sent to the
     // viewport.
     std::array<float, kMaxViewParams> params;
 
     // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
-    // where x and y parameters are the in-screen coordinates and zoom is the
-    // zoom level. If a parameter is "null", then current value of that
-    // parameter in the viewport should be retained. Note: This string is empty
-    // if the view's fit type is not XYZ.
+    // where x and y parameters are the screen coordinates and zoom is the zoom
+    // level. If a parameter is "null", then current value of that parameter in
+    // the viewport should be retained. Note: This string is empty if the view's
+    // fit type is not XYZ.
     std::string xyz_params;
   };
 

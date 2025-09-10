@@ -1163,7 +1163,7 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
   GetPageDestinationTarget(destination, &x, &y, &target->zoom);
 
   // The page where a destination exists can be different from the page that it
-  // targets. Calculating the in-page coordinates should be based on the target
+  // targets. Calculating the PDF coordinates should be based on the target
   // page's size.
   PDFiumPage* target_page = engine_->GetPage(target->page);
   if (!target_page)
