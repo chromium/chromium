@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
@@ -25,12 +26,10 @@ namespace ash::input_method {
 namespace {
 
 void PersistSystemInputMethod(const std::string& input_method) {
-  if (!g_browser_process || !g_browser_process->local_state()) {
-    return;
-  }
-
-  g_browser_process->local_state()->SetString(
-      language_prefs::kPreferredKeyboardLayout, input_method);
+  PrefService* const local_state = g_browser_process->local_state();
+  CHECK(local_state);
+  local_state->SetString(language_prefs::kPreferredKeyboardLayout,
+                         input_method);
 }
 
 // Returns the user email, whether or not they have consented to browser sync.
