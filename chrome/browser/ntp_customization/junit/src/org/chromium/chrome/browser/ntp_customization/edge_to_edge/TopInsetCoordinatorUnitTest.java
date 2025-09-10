@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,6 +39,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -55,11 +57,12 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private Tab mNonNtpTab1;
     @Mock private Tab mNonNtpTab2;
     @Mock private WindowInsetsCompat mWindowInsetsCompat;
-    @Mock private ObservableSupplierImpl<@Nullable Tab> mTabObservableSupplier;
     @Mock private View mView;
     @Mock private NativePage mNativePage;
     @Mock private TopInsetCoordinator.Observer mObserver;
 
+    private final ObservableSupplierImpl<@Nullable Tab> mTabSupplier =
+            new ObservableSupplierImpl<>();
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private TopInsetCoordinator mTopInsetCoordinator;
 
@@ -79,7 +82,7 @@ public class TopInsetCoordinatorUnitTest {
         when(mNonNtpTab2.getNativePage()).thenReturn(null);
 
         mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
-        mTopInsetCoordinator = new TopInsetCoordinator(mTabObservableSupplier, mInsetObserver);
+        mTopInsetCoordinator = new TopInsetCoordinator(mTabSupplier, mInsetObserver);
         mTopInsetCoordinator.addObserver(mObserver);
 
         mWindowInsetsCompat = createWindowInsetsCompat(TOP_PADDING);
@@ -94,7 +97,7 @@ public class TopInsetCoordinatorUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnApplyWindowInsets_ConsumeTopInset() {
         Mockito.clearInvocations(mObserver);
-        mTopInsetCoordinator.onTabSwitched(mNtpTab);
+        setCurrentTab(mNtpTab);
 
         assertNotNull(mWindowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()));
         assertNotNull(mWindowInsetsCompat.getInsets(WindowInsetsCompat.Type.displayCutout()));
@@ -112,7 +115,7 @@ public class TopInsetCoordinatorUnitTest {
     public void testOnApplyWindowInsets_DoNotConsumeTopInset() {
         when(mNativePage.supportsEdgeToEdgeOnTop()).thenReturn(false);
         Mockito.clearInvocations(mObserver);
-        mTopInsetCoordinator.onTabSwitched(mNonNtpTab1);
+        setCurrentTab(mNonNtpTab1);
 
         WindowInsetsCompat result =
                 mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
@@ -126,7 +129,7 @@ public class TopInsetCoordinatorUnitTest {
     public void testOnTabSwitched_RetriggerOnApplyWindowInsets() {
         // Verifies that retriggerOnApplyWindowInsets() is called if the new tab is a NTP.
         Mockito.clearInvocations(mInsetObserver);
-        mTopInsetCoordinator.onTabSwitched(mNtpTab);
+        setCurrentTab(mNtpTab);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         // Updates |mConsumeTopInset| for the current NTP.
@@ -135,7 +138,7 @@ public class TopInsetCoordinatorUnitTest {
         assertTrue(mTopInsetCoordinator.getConsumeTopInsetForTesting());
 
         // Verifies that retriggerOnApplyWindowInsets() is called if the previous tab is a NTP.
-        mTopInsetCoordinator.onTabSwitched(mNonNtpTab1);
+        setCurrentTab(mNonNtpTab1);
         verify(mInsetObserver, times(2)).retriggerOnApplyWindowInsets();
         // Updates |mConsumeTopInset| for the current non NTP Tab.
         mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
@@ -146,7 +149,7 @@ public class TopInsetCoordinatorUnitTest {
         // Verifies that retriggerOnApplyWindowInsets() is NOT called if none of the new tab or the
         // previous tab is a NTP.
         Mockito.clearInvocations(mInsetObserver);
-        mTopInsetCoordinator.onTabSwitched(mNonNtpTab2);
+        setCurrentTab(mNonNtpTab2);
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
     }
 
@@ -159,7 +162,7 @@ public class TopInsetCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        mTopInsetCoordinator.onTabSwitched(mNonNtpTab1);
+        setCurrentTab(mNonNtpTab1);
         mTopInsetCoordinator.destroy();
 
         verify(mInsetObserver).removeInsetsConsumer(any(InsetObserver.WindowInsetsConsumer.class));
@@ -207,6 +210,39 @@ public class TopInsetCoordinatorUnitTest {
         verify(mInsetObserver, times(2)).retriggerOnApplyWindowInsets();
     }
 
+    @Test
+    public void testOnBackgroundChanged_AddAndRemoveObservers() {
+        mTabSupplier.set(mNtpTab);
+        verify(mNtpTab, never()).addObserver(any(TabObserver.class));
+
+        // Verifies that observers are added when a customized background color is selected.
+        mNtpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+                NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+        mTopInsetCoordinator.onNtpBackgroundChanged();
+        // Note: mTabSupplierObserver will add the first observer to mTrackingTab, and mTabObserver
+        // will be added as the second observer to mTrackingTab.
+        verify(mNtpTab, times(2)).addObserver(any(TabObserver.class));
+        assertNotNull(mTopInsetCoordinator.getTabSupplierObserverForTesting());
+        assertNotNull(mTopInsetCoordinator.getTrackingTabForTesting());
+
+        // Verifies that observers are NOT added again when a customized background type is changed.
+        Mockito.clearInvocations(mNtpTab);
+        mNtpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+                NtpCustomizationUtils.NtpBackgroundImageType.CHROME_THEME);
+        mTopInsetCoordinator.onNtpBackgroundChanged();
+        verify(mNtpTab, never()).addObserver(any(TabObserver.class));
+        assertNotNull(mTopInsetCoordinator.getTabSupplierObserverForTesting());
+        assertNotNull(mTopInsetCoordinator.getTrackingTabForTesting());
+
+        // Verifies that observers are removed when the customized background is removed.
+        mNtpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
+        mTopInsetCoordinator.onNtpBackgroundChanged();
+        verify(mNtpTab, times(2)).removeObserver(any(TabObserver.class));
+        assertNull(mTopInsetCoordinator.getTabSupplierObserverForTesting());
+        assertNull(mTopInsetCoordinator.getTrackingTabForTesting());
+    }
+
     private WindowInsetsCompat createWindowInsetsCompat(int top) {
         Insets systemInsets = Insets.of(0, top, 0, 0);
         Insets displayCutoutInsets = Insets.of(0, top, 0, 0);
@@ -214,5 +250,10 @@ public class TopInsetCoordinatorUnitTest {
         return builder.setInsets(WindowInsetsCompat.Type.systemBars(), systemInsets)
                 .setInsets(WindowInsetsCompat.Type.displayCutout(), displayCutoutInsets)
                 .build();
+    }
+
+    private void setCurrentTab(Tab tab) {
+        mTopInsetCoordinator.onTabSwitched(tab);
+        mTabSupplier.set(tab);
     }
 }

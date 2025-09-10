@@ -315,6 +315,10 @@ public class NtpCustomizationConfigManager {
         return mHomepageStateListeners.size();
     }
 
+    public void setBackgroundImageTypeFroTesting(@NtpBackgroundImageType int backgroundImageType) {
+        mBackgroundImageType = backgroundImageType;
+    }
+
     public void resetForTesting() {
         mHomepageStateListeners.clear();
         mIsInitialized = false;
