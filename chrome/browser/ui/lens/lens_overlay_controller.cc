@@ -2618,7 +2618,10 @@ void LensOverlayController::HideOverlay() {
 }
 
 void LensOverlayController::HideOverlayAndMaybeSetLivePageState() {
-  HideOverlay();
+  // If the overlay is not showing, there is nothing to hide.
+  if (IsOverlayShowing()) {
+    HideOverlay();
+  }
 
   // If the side panel is open, set the overlay state to kLivePageAndResults.
   if (results_side_panel_coordinator_->IsSidePanelBound()) {
