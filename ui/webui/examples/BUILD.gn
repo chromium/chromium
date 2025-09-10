@@ -50,6 +50,7 @@ static_library("webui_examples_lib") {
     ":resources_grit",
     "resources/browser:resources",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/resources/webui_gallery:resources",
     "//components/embedder_support:user_agent",
     "//components/guest_contents/browser",
