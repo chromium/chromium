@@ -1959,6 +1959,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(global_ai_button_dict));
   }
 
+  // Once the feature is fully launched and the base::Features are enabled by
+  // default, this dict can be removed.
   if (base::FeatureList::IsEnabled(::features::kDevToolsGdpProfiles)) {
     base::Value::Dict gdp_profiles_dict;
     gdp_profiles_dict.Set("enabled", base::FeatureList::IsEnabled(
@@ -1968,6 +1970,15 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         features::kDevToolsGdpProfilesStarterBadgeEnabled.Get());
     response_dict.Set("devToolsGdpProfiles", std::move(gdp_profiles_dict));
   }
+
+  base::Value::Dict gdp_profiles_availability_dict;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  gdp_profiles_availability_dict.Set("enabled", true);
+#else
+  gdp_profiles_availability_dict.Set("enabled", false);
+#endif
+  response_dict.Set("devToolsGdpProfilesAvailability",
+                    std::move(gdp_profiles_availability_dict));
 
   response_dict.Set(
       "devToolsLiveEdit",
