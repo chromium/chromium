@@ -94,13 +94,16 @@ void ReaderModeContentTabHelper::SetFullscreenController(
   find_tab_helper->SetFullscreenController(fullscreen_controller);
 }
 
-void ReaderModeContentTabHelper::ActivateTranslateOnPage() {
+void ReaderModeContentTabHelper::ActivateTranslateOnPage(
+    const std::string& source_code,
+    const std::string& target_code) {
   ChromeIOSTranslateClient* translateClient =
       ChromeIOSTranslateClient::FromWebState(web_state());
   CHECK(translateClient);
   translate::TranslateManager* translateManager =
       translateClient->GetTranslateManager();
-  translateManager->ShowTranslateUI(/*auto_translate=*/true,
+  translateManager->ShowTranslateUI(source_code, target_code,
+                                    /*auto_translate=*/true,
                                     /*triggered_from_menu=*/true);
 }
 

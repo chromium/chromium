@@ -1375,7 +1375,8 @@ TEST_F(TranslateManagerTest,
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+  translate_manager_->ShowTranslateUI(std::nullopt, "pl",
+                                      /* auto_translate */ true,
                                       /* triggered_from_menu= */ false);
 }
 
@@ -1406,7 +1407,39 @@ TEST_F(TranslateManagerTest, ShowTranslateUI_ExplicitTargetSameAsTarget) {
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+  translate_manager_->ShowTranslateUI(std::nullopt, "pl",
+                                      /* auto_translate */ true,
+                                      /* triggered_from_menu= */ false);
+}
+
+TEST_F(TranslateManagerTest, ShowTranslateUI_ExplicitSourceLanguage) {
+  manager_->set_application_locale("en");
+  mock_language_model_.details = {
+      MockLanguageModel::LanguageDetails("pl", 1.0),
+  };
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+  // TranslateManager::ShowTranslateUI should result in a translation, reflected
+  // by a call to TranslateClient::ShowTranslateUI using the
+  // TRANSLATE_STEP_TRANSLATING step and the specified languages.
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(TRANSLATE_STEP_TRANSLATING, "tl", "pl",
+                      TranslateErrors::NONE, false /* triggered_from_menu */))
+      .WillOnce(Return(true));
+
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("tl", true);
+  network_notifier_.SimulateOnline();
+
+  translate_manager_->ShowTranslateUI("fil", "pl", /* auto_translate */ true,
                                       /* triggered_from_menu= */ false);
 }
 

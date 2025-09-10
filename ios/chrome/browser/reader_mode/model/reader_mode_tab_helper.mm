@@ -12,11 +12,15 @@
 #import "base/time/time.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/google/core/common/google_util.h"
+#import "components/language/core/browser/language_model_manager.h"
+#import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_prefs.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
@@ -77,6 +81,28 @@ bool IsTranslateEnabled(ChromeIOSTranslateClient* translate_client) {
   return translate_client && translate_client->GetTranslateManager()
                                  ->GetLanguageState()
                                  ->IsPageTranslated();
+}
+
+// Returns the source language setting for the page in scope for
+// `translate_client`.
+std::string GetSourceLanguageCode(ChromeIOSTranslateClient* translate_client) {
+  return translate::TranslateDownloadManager::GetLanguageCode(
+      translate_client->GetTranslateManager()
+          ->GetLanguageState()
+          ->source_language());
+}
+
+// Returns the target language setting for `translate_client`.
+std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client,
+                                  web::WebState* web_state) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      translate_client->GetTranslatePrefs();
+  language::LanguageModel* language_model =
+      LanguageModelManagerFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()))
+          ->GetPrimaryModel();
+  return translate_client->GetTranslateManager()->GetTargetLanguageForDisplay(
+      translate_prefs.get(), language_model);
 }
 
 }  // namespace
@@ -291,7 +317,13 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     if (translate_client && translate_client->GetTranslateManager()
                                 ->GetLanguageState()
                                 ->IsPageTranslated()) {
-      reader_mode_content_tab_helper->ActivateTranslateOnPage();
+      // Get the last source language as determined by the language detection
+      // JavaScript on the original page.
+      const std::string source_code = GetSourceLanguageCode(translate_client);
+      const std::string target_code =
+          GetTargetLanguageCode(translate_client, web_state_.get());
+      reader_mode_content_tab_helper->ActivateTranslateOnPage(source_code,
+                                                              target_code);
     }
   }
 

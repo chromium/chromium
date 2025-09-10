@@ -126,10 +126,12 @@ class TranslateManager {
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);
 
-  // Show the translation UI with the target language enforced to |target_lang|.
-  // If |auto_translate| is true the page gets translated to the target
-  // language.
-  void ShowTranslateUI(const std::string& target_lang,
+  // Show the translation UI with the target code enforced to |target_code|
+  // and the source code |source_code|. If these language codes are not
+  // provided, defaults to last known language settings. If |auto_translate| is
+  // true the page gets translated to the target language.
+  void ShowTranslateUI(std::optional<std::string> source_code,
+                       std::optional<std::string> target_code,
                        bool auto_translate = false,
                        bool triggered_from_menu = false);
 

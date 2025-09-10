@@ -133,14 +133,15 @@ void AutoTranslateSnackbarController::OnDismissNoAction(JNIEnv* env) {
 void AutoTranslateSnackbarController::OnUndoActionPressed(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_target_language) {
-  const std::string target_language =
+  const std::string target_code =
       base::android::ConvertJavaStringToUTF8(env, j_target_language);
 
   ReportCompactInfobarEvent(InfobarEvent::INFOBAR_REVERT);
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIInteraction(
       UIInteraction::kRevert);
   translate_manager_->RevertTranslation();
-  translate_manager_->ShowTranslateUI(target_language,
+  translate_manager_->ShowTranslateUI(/* source_code */ std::nullopt,
+                                      target_code,
                                       /* auto_translate */ false,
                                       /* triggered_from_menu */ false);
   bridge_->WasDismissed();

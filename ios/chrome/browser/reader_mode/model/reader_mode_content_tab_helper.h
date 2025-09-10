@@ -38,7 +38,8 @@ class ReaderModeContentTabHelper
   // Sets the full screen controller that will passed to the `FindTabHelper`.
   void SetFullscreenController(FullscreenController* fullscreen_controller);
   // Activates translation on the Reader Mode web state.
-  void ActivateTranslateOnPage();
+  void ActivateTranslateOnPage(const std::string& source_code,
+                               const std::string& target_code);
 
   // WebStatePolicyDecider overrides:
   void ShouldAllowRequest(NSURLRequest* request,
