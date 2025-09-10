@@ -184,10 +184,18 @@ MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
 }
 
 // static
+MediaStreamAudioProcessingLayout MediaStreamAudioProcessingLayout::None() {
+  return MediaStreamAudioProcessingLayout(
+      AudioProcessingProperties::Disabled(),
+      EchoCanceller(EchoCanceller::Type::kNone), /*platform_effects=*/0,
+      kDummyWebrtcSettings);
+}
+
+// static
 // TODO(crbug.com://40247860, crbug.com://415952276): retire this
 // logic when restrictOwnAudio is launched.
 std::optional<MediaStreamAudioProcessingLayout>
-MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
+MediaStreamAudioProcessingLayout::MaybeMakeForProcessedDisplayCapture(
     const AudioProcessingProperties& properties,
     int channels) {
   if (!EchoCanceller::From(properties, /*available_platform_effects=*/0)

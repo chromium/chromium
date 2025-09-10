@@ -27,7 +27,10 @@ class MODULES_EXPORT MediaStreamAudioProcessingLayout {
       int enabled_platform_effects,
       bool multichannel_processing);
 
-  static std::optional<MediaStreamAudioProcessingLayout> MakeForDisplayCapture(
+  static MediaStreamAudioProcessingLayout None();
+
+  static std::optional<MediaStreamAudioProcessingLayout>
+  MaybeMakeForProcessedDisplayCapture(
       const AudioProcessingProperties& properties,
       int channels);
 
