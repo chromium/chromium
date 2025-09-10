@@ -146,17 +146,7 @@
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             },
-            "jetstream": {
-                "abridged": false
-            },
             "jetstream2": {
-                "abridged": false
-            },
-            "kraken": {
-                "abridged": false
-            },
-            "loading.desktop": {
-                "end": 16,
                 "abridged": false
             }
         },
@@ -167,20 +157,10 @@
         }
     },
     "10": {
-        "benchmarks": {
-            "loading.desktop": {
-                "begin": 16,
-                "end": 64,
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "11": {
         "benchmarks": {
-            "loading.desktop": {
-                "begin": 64,
-                "abridged": false
-            },
             "media.desktop": {
                 "end": 8,
                 "abridged": false
