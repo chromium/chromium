@@ -1432,8 +1432,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   // Specify an external data reference for the key::kUserAvatarImage policy.
   base::Value::Dict metadata = test::ConstructExternalDataReference(
       embedded_test_server()->GetURL(kExternalDataPath).spec(), kExternalData);
-  std::string policy;
-  base::JSONWriter::Write(metadata, &policy);
+  std::string policy = base::WriteJson(metadata).value_or("");
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();
@@ -1514,15 +1513,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
         &image_data));
   }
 
-  std::string policy;
-  base::JSONWriter::Write(
-      test::ConstructExternalDataReference(
-          embedded_test_server()
-              ->GetURL(std::string("/") +
-                       ash::test::kUserAvatarImage1RelativePath)
-              .spec(),
-          image_data),
-      &policy);
+  std::string path =
+      std::string("/") + ash::test::kUserAvatarImage1RelativePath;
+  std::string url = embedded_test_server()->GetURL(path).spec();
+  std::string policy =
+      base::WriteJson(test::ConstructExternalDataReference(url, image_data))
+          .value_or("");
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();

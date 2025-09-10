@@ -86,8 +86,9 @@ void ConstructAvatarPolicy(const std::string& file_name,
   ASSERT_TRUE(base::ReadFileToString(
       test_data_dir.Append("chromeos").Append("avatars").Append(file_name),
       policy_data));
-  base::JSONWriter::Write(
-      test::ConstructExternalDataReference(url, *policy_data), policy);
+  *policy =
+      base::WriteJson(test::ConstructExternalDataReference(url, *policy_data))
+          .value_or("");
 }
 
 class TestDelegate : public CloudExternalDataPolicyObserver::Delegate {

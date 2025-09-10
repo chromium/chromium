@@ -223,9 +223,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
 
   source->AddResourcePaths(kPolicyResources);
 
-  std::string variations_json_value;
-  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-  source->AddString("versionInfo", variations_json_value);
+  source->AddString("versionInfo",
+                    base::WriteJson(GetVersionInfo()).value_or(""));
 
   source->AddResourcePath("logs/policy_logs.js",
                           IDR_POLICY_LOGS_POLICY_LOGS_JS);

@@ -93,10 +93,7 @@ class CBCMInvalidationsInitializerTest
     dict.Set("access_token", access_token);
     dict.Set("refresh_token", refresh_token);
     dict.Set("expires_in", 9999);
-
-    std::string json;
-    base::JSONWriter::Write(dict, &json);
-    return json;
+    return base::WriteJson(dict).value_or("");
   }
 
  private:

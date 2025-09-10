@@ -451,8 +451,7 @@ class PayloadSizeComputationRateLimiterForUma {
 
 // Gets the size of payload as a JSON string.
 static int GetPayloadSize(const base::Value::Dict& payload) {
-  std::string payload_json;
-  base::JSONWriter::Write(payload, &payload_json);
+  std::string payload_json = base::WriteJson(payload).value_or("");
   return static_cast<int>(payload_json.size());
 }
 }  // namespace

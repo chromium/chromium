@@ -876,8 +876,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   // serialized `ui_data_dict`.
   void SetUIDataDict(const std::string& service_path,
                      const base::Value::Dict& ui_data_dict) {
-    std::string ui_data_json;
-    base::JSONWriter::Write(ui_data_dict, &ui_data_json);
+    std::string ui_data_json = base::WriteJson(ui_data_dict).value_or("");
     shill_service_client_test_->SetServiceProperty(
         service_path, shill::kUIDataProperty, base::Value(ui_data_json));
   }

@@ -72,9 +72,7 @@ std::string CreatePayload(
           .Set(kIdFieldName, response->id)
           .Set(kStatusFieldName, static_cast<int>(response->status));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 }  // namespace
 

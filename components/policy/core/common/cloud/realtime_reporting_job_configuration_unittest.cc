@@ -196,9 +196,7 @@ class RealtimeReportingJobConfigurationTest
   }
 
   static std::string CreateResponseString(const base::Value::Dict& response) {
-    std::string response_string;
-    base::JSONWriter::Write(response, &response_string);
-    return response_string;
+    return base::WriteJson(response).value_or("");
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

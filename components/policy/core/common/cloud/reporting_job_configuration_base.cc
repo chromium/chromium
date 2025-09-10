@@ -233,8 +233,7 @@ std::string ReportingJobConfigurationBase::GetPayload() {
   // Allow children to mutate the payload if need be.
   UpdatePayloadBeforeGetInternal();
 
-  std::string payload_string;
-  base::JSONWriter::Write(payload_, &payload_string);
+  std::string payload_string = base::WriteJson(payload_).value_or("");
 
   // Record UMA request payload size
   base::UmaHistogramCounts1M("Browser.ERP.SingleRequestPayloadSize",

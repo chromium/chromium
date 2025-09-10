@@ -175,9 +175,9 @@ class EncryptedReportingClientTest : public ::testing::Test {
         (*url_loader_factory_.pending_requests())[index].request.url.spec();
     EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
 
-    std::string response_string = "";
+    std::string response_string;
     if (response.has_value()) {
-      base::JSONWriter::Write(response.value(), &response_string);
+      response_string = base::WriteJson(response.value()).value_or("");
     }
     url_loader_factory_.SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);

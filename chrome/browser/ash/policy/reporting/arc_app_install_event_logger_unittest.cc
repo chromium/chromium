@@ -252,8 +252,7 @@ class AppInstallEventLoggerTest : public testing::Test {
     }
 
     arc_policy.Set("applications", std::move(list));
-    std::string arc_policy_string;
-    base::JSONWriter::Write(arc_policy, &arc_policy_string);
+    std::string arc_policy_string = base::WriteJson(arc_policy).value_or("");
     SetPolicy(&policy_map, key::kArcEnabled, base::Value(true));
     SetPolicy(&policy_map, key::kArcPolicy, base::Value(arc_policy_string));
 
@@ -485,8 +484,7 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   list.Append(std::move(package5));
   arc_policy.Set("applications", std::move(list));
 
-  std::string arc_policy_string;
-  base::JSONWriter::Write(arc_policy, &arc_policy_string);
+  std::string arc_policy_string = base::WriteJson(arc_policy).value_or("");
   SetPolicy(&new_policy_map, key::kArcEnabled, base::Value(true));
   SetPolicy(&new_policy_map, key::kArcPolicy, base::Value(arc_policy_string));
 

@@ -46,10 +46,8 @@ em::RemoteCommand GenerateScreenshotCommandProto(
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_SCREENSHOT);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
-  std::string payload;
   auto root_dict = base::Value::Dict().Set(kUploadUrlFieldName, upload_url);
-  base::JSONWriter::Write(root_dict, &payload);
-  command_proto.set_payload(payload);
+  command_proto.set_payload(base::WriteJson(root_dict).value_or(""));
   return command_proto;
 }
 
@@ -239,13 +237,11 @@ void DeviceCommandScreenshotTest::InitializeScreenshotJob(
 
 std::string DeviceCommandScreenshotTest::CreatePayloadFromResultCode(
     DeviceCommandScreenshotJob::ResultCode result_code) {
-  std::string payload;
   base::Value::Dict root_dict;
   if (result_code != DeviceCommandScreenshotJob::SUCCESS) {
     root_dict.Set(kResultFieldName, result_code);
   }
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 void DeviceCommandScreenshotTest::VerifyResults(

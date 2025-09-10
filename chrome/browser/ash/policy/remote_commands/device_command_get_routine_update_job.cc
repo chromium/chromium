@@ -95,9 +95,7 @@ std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
     root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
   }
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 }  // namespace

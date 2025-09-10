@@ -145,9 +145,9 @@ void ReportingServerConnector::TestEnvironment::
                                      StatusOr<base::Value::Dict> response) {
   const std::string& pending_request_url =
       (*url_loader_factory()->pending_requests())[0].request.url.spec();
-  std::string response_string = "";
+  std::string response_string;
   if (response.has_value()) {
-    base::JSONWriter::Write(response.value(), &response_string);
+    response_string = base::WriteJson(response.value()).value_or("");
   }
   url_loader_factory()->SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);

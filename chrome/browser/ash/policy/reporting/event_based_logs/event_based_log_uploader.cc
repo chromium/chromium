@@ -69,8 +69,7 @@ std::string GetUploadParameters(
           .Set(kUploadedEventTypeKey, static_cast<int>(trigger_event_type))
           .Set(kFileTypeKey, kEventBasedLogFileType)
           .Set(kUploadIdKey, upload_id);
-  std::string json;
-  base::JSONWriter::Write(upload_parameters_dict, &json);
+  std::string json = base::WriteJson(upload_parameters_dict).value_or("");
   return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
 }
 
