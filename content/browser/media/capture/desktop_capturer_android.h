@@ -33,7 +33,8 @@ namespace content {
 // pump, so we can keep everything on one thread.
 class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
  public:
-  DesktopCapturerAndroid(const webrtc::DesktopCaptureOptions& options);
+  explicit DesktopCapturerAndroid(const webrtc::DesktopCaptureOptions& options);
+
   DesktopCapturerAndroid(const DesktopCapturerAndroid&) = delete;
   DesktopCapturerAndroid& operator=(const DesktopCapturerAndroid&) = delete;
   ~DesktopCapturerAndroid() override;
@@ -90,8 +91,6 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
 
     // Java callback to run when this plane's buffer is no longer in use.
     base::android::ScopedJavaGlobalRef<jobject> release_cb;
-    // Timestamp of the frame in nanoseconds.
-    int64_t timestamp_ns;
     // Java ByteBuffer containing the plane data.
     base::android::ScopedJavaGlobalRef<jobject> buf;
     // The number of bytes between the start of adjacent pixels in a row.
