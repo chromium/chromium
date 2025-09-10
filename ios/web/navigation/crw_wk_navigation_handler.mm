@@ -1404,18 +1404,17 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return YES;
   }
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(pageTransition,
-                                                  ui::PAGE_TRANSITION_TYPED)) {
+  if (ui::PageTransitionCoreTypeIs(pageTransition, ui::PAGE_TRANSITION_TYPED)) {
     return YES;
   }
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(
-          pageTransition, ui::PAGE_TRANSITION_GENERATED)) {
+  if (ui::PageTransitionCoreTypeIs(pageTransition,
+                                   ui::PAGE_TRANSITION_GENERATED)) {
     return YES;
   }
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(
-          pageTransition, ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+  if (ui::PageTransitionCoreTypeIs(pageTransition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
     return YES;
   }
 
