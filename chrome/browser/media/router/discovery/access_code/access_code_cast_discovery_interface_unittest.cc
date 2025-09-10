@@ -62,7 +62,8 @@ constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
 const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
-const char kHttpMethod[] = "POST";
+constexpr endpoint_fetcher::HttpMethod kHttpMethod =
+    endpoint_fetcher::HttpMethod::kPost;
 const char kMockContentType[] = "mock_content_type";
 const char kEmail[] = "mock_email@gmail.com";
 const char kDefaultURL[] = "https://castedumessaging-pa.googleapis.com";
@@ -203,11 +204,18 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     //     removed. See ConsentLevel::kSync documentation for details.
     discovery_interface_->SetEndpointFetcherForTesting(
         std::make_unique<EndpointFetcher>(
-            kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
-            kMockContentType, std::vector<std::string>{kMockScope},
-            kMockTimeout, kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS,
             test_url_loader_factory, identity_test_env_.identity_manager(),
-            signin::ConsentLevel::kSync));
+            EndpointFetcher::RequestParams::Builder(
+                kHttpMethod, TRAFFIC_ANNOTATION_FOR_TESTS)
+                .SetAuthType(endpoint_fetcher::OAUTH)
+                .SetConsentLevel(signin::ConsentLevel::kSync)
+                .SetContentType(kMockContentType)
+                .SetTimeout(kMockTimeout)
+                .SetUrl(GURL(kMockEndpoint))
+                .SetOauthScopes(std::vector<std::string>{kMockScope})
+                .SetOauthConsumerName(kMockOAuthConsumerName)
+                .SetPostData(kMockPostData)
+                .Build()));
 
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
