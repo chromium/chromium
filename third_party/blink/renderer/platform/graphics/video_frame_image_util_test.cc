@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_frame.h"
@@ -41,7 +42,7 @@ class ScopedFakeGpuContext {
  public:
   explicit ScopedFakeGpuContext(bool disable_imagebitmap) {
     SharedGpuContext::Reset();
-    test_context_provider_ = viz::TestContextProvider::Create();
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
 
     if (disable_imagebitmap) {
       // Disable CanvasResourceProvider using GPU.
@@ -50,7 +51,9 @@ class ScopedFakeGpuContext {
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU);
     }
 
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   scoped_refptr<viz::ContextProvider> context_provider() const {
