@@ -423,5 +423,16 @@ TEST_F(InstallerDownloaderControllerTest, NoInfobarOnGuestProfile) {
   controller_->MaybeShowInfoBar();
 }
 
+TEST_F(InstallerDownloaderControllerTest, SkipsWhenActiveBrowserHasNoTabs) {
+  controller_->SetActiveWebContentsCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&]() -> content::WebContents* { return nullptr; }));
+  EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
+  controller_->MaybeShowInfoBar();
+}
+
 }  // namespace
 }  // namespace installer_downloader
