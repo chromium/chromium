@@ -336,6 +336,34 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void onReleaseTab_Merge_NotAttachedToWindow() {
+        // Simulate the selection of card#1 in TabListModel.
+        mModel.get(0)
+                .model
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
+        mModel.get(0).model.set(CARD_ALPHA, 0.8f);
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Simulate hovering on card#2.
+        mModel.get(1)
+                .model
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        when(mItemView1.isAttachedToWindow()).thenReturn(false);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mTabGroupModelFilter).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+        verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
+        assertThat(
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+    }
+
+    @Test
     public void onReleaseTab_MergeForward() {
         // Simulate the selection of card#2 in TabListModel.
         mModel.get(1)
@@ -1453,6 +1481,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(bottom).when(view).getBottom();
         doReturn(right - left).when(view).getWidth();
         doReturn(bottom - top).when(view).getHeight();
+        when(view.isAttachedToWindow()).thenReturn(true);
         return view;
     }
 }

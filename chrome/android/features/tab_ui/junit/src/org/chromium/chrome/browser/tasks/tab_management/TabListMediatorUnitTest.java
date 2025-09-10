@@ -439,6 +439,8 @@ public class TabListMediatorUnitTest {
         mViewHolder2 = prepareViewHolder(TAB2_ID, POSITION2);
         mFakeViewHolder1 = prepareFakeViewHolder(mItemView1, POSITION1);
         mFakeViewHolder2 = prepareFakeViewHolder(mItemView2, POSITION2);
+        when(mItemView1.isAttachedToWindow()).thenReturn(true);
+        when(mItemView2.isAttachedToWindow()).thenReturn(true);
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
         mSavedTabGroup1 = prepareSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE, SYNC_GROUP_COLOR1, 1);
@@ -1109,6 +1111,9 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabAt(3)).thenReturn(tab4);
         View itemView3 = mock(View.class);
         View itemView4 = mock(View.class);
+        when(itemView3.isAttachedToWindow()).thenReturn(true);
+        when(itemView4.isAttachedToWindow()).thenReturn(true);
+
         RecyclerView.ViewHolder fakeViewHolder3 = prepareFakeViewHolder(itemView3, 2);
         RecyclerView.ViewHolder fakeViewHolder4 = prepareFakeViewHolder(itemView4, 3);
 

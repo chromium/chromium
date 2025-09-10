@@ -400,7 +400,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                     onTabMergeToGroup(
                             mModel.getTabCardCountsBefore(mSelectedTabIndex),
                             mModel.getTabCardCountsBefore(mHoveredTabIndex));
-                    assumeNonNull(recyclerView.getLayoutManager()).removeView(selectedItemView);
+                    maybeRemoveRecyclerViewChild(recyclerView, selectedItemView);
                 }
                 mActionAttempted = true;
             } else {
@@ -432,7 +432,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                     // Handle the case where the recyclerView is cleared out after ungrouping the
                     // last tab in group.
                     if (assumeNonNull(recyclerView.getAdapter()).getItemCount() != 0) {
-                        assumeNonNull(recyclerView.getLayoutManager()).removeView(ungroupItemView);
+                        maybeRemoveRecyclerViewChild(recyclerView, ungroupItemView);
                     }
                     RecordUserAction.record("TabGrid.Drag.RemoveFromGroup." + mComponentName);
                 }
@@ -508,8 +508,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         // attempts to fix this also checked for matching item positions in the adapter, but
         // this led to phantom items in the recycler view due to the position the item view
         // thought it had pre-post being inconsistent with the state after the post.
-        // TODO(crbug.com/40641179): Figure out why the deleting signal is not properly sent when
-        // item is being dragged.
+        // TODO(crbug.com/443948545): Figure out why the deleting signal is not properly sent when
+        // item is being dragged and not remove views directly off of the RecyclerView.
         Runnable removeViewHolderRunnable =
                 () -> {
                     if (viewHolder.itemView.getParent() == null
@@ -522,7 +522,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
                     var layoutManager = recyclerView.getLayoutManager();
                     if (layoutManager != null && adapter.getItemCount() == 0) {
-                        layoutManager.removeView(viewHolder.itemView);
+                        maybeRemoveRecyclerViewChild(recyclerView, viewHolder.itemView);
                     }
                 };
         recyclerView.post(removeViewHolderRunnable);
@@ -703,7 +703,16 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
 
             View selectedItemView = selectedViewHolder.itemView;
-            assumeNonNull(recyclerView.getLayoutManager()).removeView(selectedItemView);
+            maybeRemoveRecyclerViewChild(recyclerView, selectedItemView);
+        }
+    }
+
+    private void maybeRemoveRecyclerViewChild(RecyclerView recyclerView, View view) {
+        // TODO(crbug.com/443948545): We should not be removing views directly off of
+        //  the RecyclerView, and should fix what is preventing it from reflecting
+        //  model updates instead.
+        if (view.isAttachedToWindow()) {
+            assumeNonNull(recyclerView.getLayoutManager()).removeView(view);
         }
     }
 
