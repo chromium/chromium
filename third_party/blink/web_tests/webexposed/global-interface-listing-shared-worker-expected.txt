@@ -1738,6 +1738,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface RestrictionTarget
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface RtcReceivedPacket
+[Worker]     attribute @@toStringTag
+[Worker]     getter data
+[Worker]     method constructor
+[Worker] interface RtcTransport
+[Worker]     attribute @@toStringTag
+[Worker]     getter onicecandidate
+[Worker]     method constructor
+[Worker]     method getReceivedPackets
+[Worker]     method sendPackets
+[Worker]     setter onicecandidate
 [Worker] interface Scheduler
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

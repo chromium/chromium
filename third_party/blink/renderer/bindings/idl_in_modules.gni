@@ -650,6 +650,8 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/peerconnection/rtc_track_event.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_track_event_init.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_transform_event.idl",
+  "//third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.idl",
+  "//third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport.idl",
   "//third_party/blink/renderer/modules/permissions/camera_device_permission_descriptor.idl",
   "//third_party/blink/renderer/modules/permissions/clipboard_permission_descriptor.idl",
   "//third_party/blink/renderer/modules/permissions/fullscreen_permission_descriptor.idl",

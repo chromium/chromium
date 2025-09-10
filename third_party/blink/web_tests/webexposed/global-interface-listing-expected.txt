@@ -8332,6 +8332,17 @@ interface Rewriter
     method measureInputUsage
     method rewrite
     method rewriteStreaming
+interface RtcReceivedPacket
+    attribute @@toStringTag
+    getter data
+    method constructor
+interface RtcTransport
+    attribute @@toStringTag
+    getter onicecandidate
+    method constructor
+    method getReceivedPackets
+    method sendPackets
+    setter onicecandidate
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter download

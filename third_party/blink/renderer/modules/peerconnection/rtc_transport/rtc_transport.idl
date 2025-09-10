@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary RtcTransportConfig {
+  DOMString name;
+
+  // ICE configuration.
+  sequence<RTCIceServer> iceServers;
+  boolean iceControlling;
+};
+
+dictionary RtcSendPacketParameters {
+  // The `id` is used by the app to map packets sent with `sendPackets` to
+  // information received in `RtcPacketSentInfo` and `RtcPacketFeedbackInfo`.
+  long long id;
+
+  // TODO(crbug.com/443019066): Change to support BYOB.
+  ArrayBuffer data;
+
+  DOMHighResTimeStamp desiredSendTime;
+};
+
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=RTCRtpTransport
+] interface RtcTransport {
+  [CallWith=ExecutionContext] constructor(RtcTransportConfig name);
+
+  void sendPackets(sequence<RtcSendPacketParameters> packets);
+  sequence<RtcReceivedPacket> getReceivedPackets();
+
+  attribute EventHandler onicecandidate;
+
+  // TODO(crbug.com/443019066): Add connection state events once they're discussed in the
+  //                            W3C WebRTC packet-level API design group.
+
+  // TODO(crbug.com/443019066): Add methods for providing remote ICE config and candidates
+  //                            that the app has received via app-level signalling.
+};

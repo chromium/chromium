@@ -1822,6 +1822,17 @@ interface Response
 interface RestrictionTarget
     attribute @@toStringTag
     method constructor
+interface RtcReceivedPacket
+    attribute @@toStringTag
+    getter data
+    method constructor
+interface RtcTransport
+    attribute @@toStringTag
+    getter onicecandidate
+    method constructor
+    method getReceivedPackets
+    method sendPackets
+    setter onicecandidate
 interface Scheduler
     attribute @@toStringTag
     method constructor
