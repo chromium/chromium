@@ -20,14 +20,6 @@ struct Options;
 
 namespace skia {
 
-// Returns true if Rust should be used for PNG decoding.
-//
-// See also  https://crbug.com/40278281 and the "Rollout plan" in
-// https://docs.google.com/document/d/1glx5ue5JDlCld5WzWgTOGK3wsMErQFnkY5N5Dsbi91Y
-inline bool IsRustyPngEnabled() {
-  return true;
-}
-
 // A helper that will encode a PNG image.
 SK_API bool EncodePng(SkWStream* dst,
                       const SkPixmap& src,

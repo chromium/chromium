@@ -14,8 +14,6 @@
 #include "base/strings/string_util.h"
 #include "skia/rusty_png_feature.h"
 #include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
@@ -38,11 +36,7 @@ namespace {
 
 std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
                                           SkCodec::Result* result) {
-  if (skia::IsRustyPngEnabled()) {
-    return SkPngRustDecoder::Decode(std::move(stream), result);
-  }
-
-  return SkPngDecoder::Decode(std::move(stream), result);
+  return SkPngRustDecoder::Decode(std::move(stream), result);
 }
 
 struct PreparationOutput {

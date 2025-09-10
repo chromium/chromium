@@ -37,22 +37,14 @@ SkPngRustEncoder::Options ConvertToRustOptions(
 bool EncodePng(SkWStream* dst,
                const SkPixmap& src,
                const SkPngEncoder::Options& options) {
-  if (IsRustyPngEnabled()) {
-    return SkPngRustEncoder::Encode(dst, src, ConvertToRustOptions(options));
-  }
-
-  return SkPngEncoder::Encode(dst, src, options);
+  return SkPngRustEncoder::Encode(dst, src, ConvertToRustOptions(options));
 }
 
 std::unique_ptr<SkEncoder> MakePngEncoder(
     SkWStream* dst,
     const SkPixmap& src,
     const SkPngEncoder::Options& options) {
-  if (IsRustyPngEnabled()) {
-    return SkPngRustEncoder::Make(dst, src, ConvertToRustOptions(options));
-  }
-
-  return SkPngEncoder::Make(dst, src, options);
+  return SkPngRustEncoder::Make(dst, src, ConvertToRustOptions(options));
 }
 
 }  // namespace skia
