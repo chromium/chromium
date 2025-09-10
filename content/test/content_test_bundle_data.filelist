@@ -176,6 +176,8 @@ data/accessibility/accname/name-file-title.html
 data/accessibility/accname/name-from-content-dfn-expected-blink.txt
 data/accessibility/accname/name-from-content-dfn.html
 data/accessibility/accname/name-from-content-expected-blink.txt
+data/accessibility/accname/name-from-content-of-address-expected-blink.txt
+data/accessibility/accname/name-from-content-of-address.html
 data/accessibility/accname/name-from-content-of-label-expected-blink.txt
 data/accessibility/accname/name-from-content-of-label.html
 data/accessibility/accname/name-from-content-of-labelledby-element-expected-blink.txt

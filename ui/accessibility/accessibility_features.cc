@@ -187,6 +187,14 @@ bool IsAXRandomizedStressTestsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAXRandomizedStressTests);
 }
 
+BASE_FEATURE(kAXObjectSupportsNameFromAddressContent,
+             "AXObjectSupportsNameFromAddressContent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsAXObjectSupportsNameFromAddressContentEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAXObjectSupportsNameFromAddressContent);
+}
+
 BASE_FEATURE(kAccessibilityOnScreenMode,
              "AccessibilityOnScreenAXMode",
              base::FEATURE_DISABLED_BY_DEFAULT);

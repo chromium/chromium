@@ -144,6 +144,12 @@ AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXRandomizedStressTests);
 AX_BASE_EXPORT bool IsAXRandomizedStressTestsEnabled();
 
+// When enabled, allows the content of <address> tags to be used in
+// calculating their ancestors' accessible names.
+// TODO(crbug.com/443765360): Remove killswitch after stability period.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXObjectSupportsNameFromAddressContent);
+AX_BASE_EXPORT bool IsAXObjectSupportsNameFromAddressContentEnabled();
+
 // Enable the experimental on-screen AXMode .
 // TODO(accessibility): Only turn on the experimental On-Screen mode for when
 // screen readers are not running. This is an experimental mode for now, so this
