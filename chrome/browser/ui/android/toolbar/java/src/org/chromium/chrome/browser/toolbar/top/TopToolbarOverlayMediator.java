@@ -116,7 +116,6 @@ public class TopToolbarOverlayMediator {
     private @Nullable OffsetTag mTopProgressBarOffsetTag;
     private @Nullable OffsetTag mBottomControlsOffsetTag;
     private @Nullable OffsetTag mBottomProgressBarOffsetTag;
-    private @ControlsPosition int mControlsPosition;
 
     private float mAnimatedProgress;
     private float mTargetProgress;
@@ -163,7 +162,6 @@ public class TopToolbarOverlayMediator {
         mIsVisibilityManuallyControlled = manualVisibilityControl;
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         mTabSupplier = tabSupplier;
-        mControlsPosition = mBrowserControlsStateProvider.getControlsPosition();
         mCaptureResourceIdSupplier = captureResourceIdSupplier;
         mCaptureResourceIdSupplier.addObserver(mOnCaptureResourceIdSupplierChange);
         updateVisibility();
@@ -259,9 +257,9 @@ public class TopToolbarOverlayMediator {
                                     ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                                             ? getBookmarkBarAdjustedContentOffset()
                                             : mBrowserControlsStateProvider.getTopControlsHeight();
-                            if (mControlsPosition == ControlsPosition.TOP) {
+                            if (getControlsPosition() == ControlsPosition.TOP) {
                                 mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, height);
-                            } else if (mControlsPosition == ControlsPosition.BOTTOM) {
+                            } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
                                 mModel.set(
                                         TopToolbarOverlayProperties.CONTENT_OFFSET,
                                         mBottomToolbarControlsOffsetSupplier.get()
@@ -303,7 +301,6 @@ public class TopToolbarOverlayMediator {
 
                     @Override
                     public void onControlsPositionChanged(int controlsPosition) {
-                        mControlsPosition = controlsPosition;
                         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                             updateOffsetTag();
                             if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
@@ -323,9 +320,9 @@ public class TopToolbarOverlayMediator {
     }
 
     private void updateOffsetTag() {
-        if (mControlsPosition == ControlsPosition.TOP) {
+        if (getControlsPosition() == ControlsPosition.TOP) {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, mTopControlsOffsetTag);
-        } else if (mControlsPosition == ControlsPosition.BOTTOM) {
+        } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, mBottomControlsOffsetTag);
         } else {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);
@@ -420,9 +417,9 @@ public class TopToolbarOverlayMediator {
                 mBottomProgressBarOffsetTag = null;
             }
 
-            if (mControlsPosition == ControlsPosition.TOP) {
+            if (getControlsPosition() == ControlsPosition.TOP) {
                 drawingInfo.offsetTag = mTopProgressBarOffsetTag;
-            } else if (mControlsPosition == ControlsPosition.BOTTOM) {
+            } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
                 drawingInfo.offsetTag = mBottomProgressBarOffsetTag;
             } else {
                 drawingInfo.offsetTag = null;
@@ -549,6 +546,11 @@ public class TopToolbarOverlayMediator {
         updateContentOffset();
     }
 
+    @ControlsPosition
+    int getControlsPosition() {
+        return mBrowserControlsStateProvider.getControlsPosition();
+    }
+
     private void updateContentOffset() {
         // When top-anchored, the content offset is used to position the toolbar
         // layer instead of the top controls offset because the top controls can
@@ -562,9 +564,8 @@ public class TopToolbarOverlayMediator {
         // provided to us indirectly via BottomControlsStacker, which controls the
         // position of bottom controls layers.
         int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-        // Don't use mControlsPosition here because it will not have been updated if this function
-        // gets called in the middle of a change of position.
-        if (mControlsPosition == ControlsPosition.BOTTOM) {
+
+        if (getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
             mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
             return;
