@@ -55,7 +55,6 @@ using ::ash::FakeSeneschalClient;
 using ::base::test::TestFuture;
 using ::chromeos::DBusMethodCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::MakeMatcher;
 using ::testing::Matcher;

@@ -126,7 +126,6 @@
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace {

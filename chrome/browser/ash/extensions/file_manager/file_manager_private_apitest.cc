@@ -396,48 +396,44 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
                               .AppendASCII("mount_path1")
                               .AsUTF8Unsafe(),
                           _))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("mount_path1", name.value());
-            ++events[0];
-            EXPECT_EQ(1, events[0]);
-            std::move(callback).Run(ash::MountError::kSuccess);
-          }))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("mount_path1", name.value());
-            ++events[1];
-            EXPECT_EQ(1, events[1]);
-            std::move(callback).Run(ash::MountError::kCancelled);
-          }));
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("mount_path1", name.value());
+        ++events[0];
+        EXPECT_EQ(1, events[0]);
+        std::move(callback).Run(ash::MountError::kSuccess);
+      })
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("mount_path1", name.value());
+        ++events[1];
+        EXPECT_EQ(1, events[1]);
+        std::move(callback).Run(ash::MountError::kCancelled);
+      });
 
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(ash::CrosDisksClient::GetArchiveMountPoint()
                               .AppendASCII("archive_mount_path")
                               .AsUTF8Unsafe(),
                           _))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("archive_mount_path", name.value());
-            ++events[2];
-            EXPECT_EQ(1, events[2]);
-            std::move(callback).Run(ash::MountError::kSuccess);
-          }))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("archive_mount_path", name.value());
-            ++events[3];
-            EXPECT_EQ(1, events[3]);
-            std::move(callback).Run(ash::MountError::kNeedPassword);
-          }));
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("archive_mount_path", name.value());
+        ++events[2];
+        EXPECT_EQ(1, events[2]);
+        std::move(callback).Run(ash::MountError::kSuccess);
+      })
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("archive_mount_path", name.value());
+        ++events[3];
+        EXPECT_EQ(1, events[3]);
+        std::move(callback).Run(ash::MountError::kNeedPassword);
+      });
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},
                                {.load_as_component = true}))

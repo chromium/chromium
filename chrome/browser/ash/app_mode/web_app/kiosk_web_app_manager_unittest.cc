@@ -36,7 +36,6 @@ namespace ash {
 namespace {
 
 using base::test::TestFuture;
-using testing::Invoke;
 
 const char kAppId[] = "testappid";
 const char kAppEmail[] = "test@example.com";

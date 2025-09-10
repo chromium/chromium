@@ -33,7 +33,6 @@
 
 using base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
@@ -97,8 +96,8 @@ class SpotlightCrdManagerImplTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
                        InitiateSpotlightSessionShouldStartCrdHost) {
   EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<1>(
-          Invoke([&](auto callback) { std::move(callback).Run("123"); })));
+      .WillOnce(
+          WithArg<1>([&](auto callback) { std::move(callback).Run("123"); }));
   TestFuture<const std::string&> success_future;
 
   manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
@@ -114,12 +113,12 @@ IN_PROC_BROWSER_TEST_F(
 
   TestFuture<void> error_callback_future;
   EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<2>(Invoke([&](auto callback) {
+      .WillOnce(WithArg<2>([&](auto callback) {
         base::UmaHistogramEnumeration(
             kCrdResultUma,
             policy::ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
         error_callback_future.SetValue();
-      })));
+      }));
 
   manager_->InitiateSpotlightSession(
       base::BindOnce([](const std::string& result) {

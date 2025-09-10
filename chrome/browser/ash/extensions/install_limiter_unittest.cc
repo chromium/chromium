@@ -232,17 +232,17 @@ TEST_F(InstallLimiterTest, InstallSmallBeforeLargeExtensions) {
     testing::InSequence s;
 
     EXPECT_CALL(*mock_installer_, AddInstallerCallback(_))
-        .WillOnce(Invoke([&](CrxInstaller::InstallerResultCallback callback) {
+        .WillOnce([&](CrxInstaller::InstallerResultCallback callback) {
           installer_callback = std::move(callback);
-        }));
+        });
     EXPECT_CALL(
         *mock_installer_,
         InstallCrxFile(Field(&extensions::CRXFileInfo::path, crx_path_small)))
-        .WillOnce(Invoke([&] {
+        .WillOnce([&] {
           std::optional<CrxInstallError> error;
           task_environment()->GetMainThreadTaskRunner()->PostTask(
               FROM_HERE, base::BindOnce(std::move(installer_callback), error));
-        }));
+        });
 
     EXPECT_CALL(*mock_installer_, AddInstallerCallback(_));
     EXPECT_CALL(

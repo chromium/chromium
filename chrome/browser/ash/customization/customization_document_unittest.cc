@@ -44,7 +44,6 @@ using extensions::ExternalInstallInfoUpdateUrl;
 using extensions::mojom::ManifestLocation;
 using ::testing::_;
 using ::testing::Exactly;
-using ::testing::Invoke;
 using ::testing::Mock;
 
 namespace {

@@ -20,7 +20,6 @@ namespace guest_os {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 enum class TestErrors {
   kFoo = 0,
@@ -45,11 +44,10 @@ TEST(CachedCallbackTest, IsNullInitially) {
 TEST(CachedCallbackTest, SuccessIsPropagated) {
   SuccessfulCache sc;
   borealis::NiceCallbackFactory<void(SuccessfulCache::Result)> callbacks;
-  EXPECT_CALL(callbacks, Call(_))
-      .WillOnce(Invoke([](SuccessfulCache::Result result) {
-        EXPECT_TRUE(result.has_value());
-        EXPECT_EQ(*result.value(), "success");
-      }));
+  EXPECT_CALL(callbacks, Call(_)).WillOnce([](SuccessfulCache::Result result) {
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result.value(), "success");
+  });
   sc.Get(callbacks.BindOnce());
   EXPECT_NE(sc.MaybeGet(), nullptr);
 }
@@ -91,11 +89,10 @@ class FailureCache : public SuccessfulCache {
 TEST(CachedCallbackTest, FailureIsPropagated) {
   FailureCache fc;
   borealis::NiceCallbackFactory<void(FailureCache::Result)> callbacks;
-  EXPECT_CALL(callbacks, Call(_))
-      .WillOnce(Invoke([](FailureCache::Result result) {
-        EXPECT_FALSE(result.has_value());
-        EXPECT_EQ(result.error(), TestErrors::kFoo);
-      }));
+  EXPECT_CALL(callbacks, Call(_)).WillOnce([](FailureCache::Result result) {
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), TestErrors::kFoo);
+  });
   fc.Get(callbacks.BindOnce());
 }
 
@@ -163,10 +160,10 @@ TEST(CachedCallbackTest, CanAbort) {
   // result of Reject(), which is a default-constructed E unless overridden.
   EXPECT_CALL(callbacks, Call(_))
       .Times(3)
-      .WillRepeatedly(Invoke([](NonCompletingCache::Result res) {
+      .WillRepeatedly([](NonCompletingCache::Result res) {
         EXPECT_FALSE(res.has_value());
         EXPECT_EQ(res.error(), TestErrors::kFoo);
-      }));
+      });
   ncc.reset();
 }
 

@@ -89,12 +89,10 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   void SetKeyLocations(const std::vector<uint8_t>& public_key,
                        const std::vector<TokenId>& key_locations) {
     ON_CALL(*platform_keys_service_, GetKeyLocations(public_key, _))
-        .WillByDefault(testing::Invoke(
-            [key_locations](std::vector<uint8_t> public_key_spki_der,
-                            GetKeyLocationsCallback callback) {
-              std::move(callback).Run(std::move(key_locations),
-                                      Status::kSuccess);
-            }));
+        .WillByDefault([key_locations](std::vector<uint8_t> public_key_spki_der,
+                                       GetKeyLocationsCallback callback) {
+          std::move(callback).Run(std::move(key_locations), Status::kSuccess);
+        });
   }
 
   bool IsCorporateKey(std::vector<uint8_t> public_key) const {

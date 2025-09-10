@@ -173,10 +173,9 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   AppLaunchedCallback app_launched_callback;
   PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;
   EXPECT_CALL(plugin_vm_manager, LaunchPluginVm(testing::_))
-      .WillOnce(testing::Invoke(
-          [&](PluginVmManager::LaunchPluginVmCallback callback) {
-            launch_plugin_vm_callback = std::move(callback);
-          }));
+      .WillOnce([&](PluginVmManager::LaunchPluginVmCallback callback) {
+        launch_plugin_vm_callback = std::move(callback);
+      });
   LaunchPluginVmApp(&profile_, app_id_,
                     {GetMyFilesFileSystemURL("PvmDefault/file")},
                     app_launched_callback.Get());

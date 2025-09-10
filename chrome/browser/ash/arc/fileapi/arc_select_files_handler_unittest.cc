@@ -369,13 +369,13 @@ TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {
 
 TEST_F(ArcSelectFilesHandlerTest, GetFileSelectorElements) {
   EXPECT_CALL(*mock_dialog_holder_, ExecuteJavaScript(kScriptGetElements, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const std::string&, JavaScriptResultCallback callback) {
             std::move(callback).Run(
                 base::JSONReader::Read("{\"dirNames\" :[\"dir1\", \"dir2\"],"
                                        " \"fileNames\":[\"file1\",\"file2\"]}")
                     .value());
-          }));
+          });
 
   mojom::FileSelectorElementsPtr expectedElements =
       mojom::FileSelectorElements::New();

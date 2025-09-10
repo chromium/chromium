@@ -56,20 +56,17 @@
 
 using ::base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {
 namespace {
 
-#define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)    \
-  ({                                                  \
-    TestFuture<bool> waiter;                          \
-    EXPECT_CALL(mock, method).WillOnce(Invoke([&]() { \
-      waiter.SetValue(true);                          \
-    }));                                              \
-    exec;                                             \
-    EXPECT_TRUE(waiter.Wait());                       \
+#define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)                        \
+  ({                                                                      \
+    TestFuture<bool> waiter;                                              \
+    EXPECT_CALL(mock, method).WillOnce([&]() { waiter.SetValue(true); }); \
+    exec;                                                                 \
+    EXPECT_TRUE(waiter.Wait());                                           \
   })
 
 class MockAppLauncherDelegate : public KioskAppLauncher::NetworkDelegate {

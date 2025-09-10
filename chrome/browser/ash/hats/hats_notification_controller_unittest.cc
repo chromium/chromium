@@ -39,7 +39,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;

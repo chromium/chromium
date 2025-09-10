@@ -51,7 +51,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Expectation;
 using testing::ExpectationSet;
-using testing::Invoke;
 using testing::Le;
 using testing::MockFunction;
 using testing::SaveArg;

@@ -35,7 +35,6 @@
 namespace arc {
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 using testing::WithArg;
 
@@ -134,11 +133,11 @@ class ArcCertInstallerTest : public testing::Test {
                                mojom::CommandResultType status) {
     EXPECT_CALL(*policy_instance_.get(),
                 OnCommandReceived(IsCommandPayloadForName(name), _))
-        .WillOnce(WithArg<1>(Invoke(
+        .WillOnce(WithArg<1>(
             [status](FakePolicyInstance::OnCommandReceivedCallback callback) {
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), status));
-            })));
+            }));
   }
 
   Profile* profile() { return profile_.get(); }
