@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
 
@@ -24,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
  * Button visibility checker using the rule set based on priority. The rule checker works only when
  * {@link ChromeFeatureList#sCctToolbarRefactor} is disabled.
  */
-@NullMarked
 public class ButtonVisibilityRule {
 
     @IntDef({
@@ -150,7 +148,7 @@ public class ButtonVisibilityRule {
      * @param view {@link View} of the button to which the visibility is applied.
      * @param visible {@code true} if the button is to be visible.
      */
-    public void addButton(int index, View view, boolean visible) {
+    public void addButton(int index, @Nullable View view, boolean visible) {
         addButtonInternal(index, view, visible, ButtonType.OTHER, null);
     }
 
