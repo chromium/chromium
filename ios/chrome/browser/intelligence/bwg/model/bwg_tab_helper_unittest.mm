@@ -7,15 +7,20 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 class BwgTabHelperTest : public PlatformTest {
  protected:
@@ -33,6 +38,8 @@ class BwgTabHelperTest : public PlatformTest {
     web_state_->SetBrowserState(profile_.get());
     BwgTabHelper::CreateForWebState(web_state_.get());
     tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+    mock_bwg_handler_ = OCMProtocolMock(@protocol(BWGCommands));
+    tab_helper_->SetBwgCommandsHandler(mock_bwg_handler_);
   }
 
   bool IsBwgUiShowing() { return tab_helper_->is_bwg_ui_showing_; }
@@ -50,6 +57,9 @@ class BwgTabHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<BwgTabHelper> tab_helper_;
+
+  // Mock BWG handler.
+  id mock_bwg_handler_;
 };
 
 TEST_F(BwgTabHelperTest, TestSetBwgUiShowing) {
@@ -81,6 +91,10 @@ TEST_F(BwgTabHelperTest, TestPrepareBwgFreBackgrounding) {
   ASSERT_FALSE(IsBwgSessionActiveInBackground());
   tab_helper_->PrepareBwgFreBackgrounding();
   ASSERT_TRUE(IsBwgSessionActiveInBackground());
+
+  // Showing the UI should reset the background state.
+  tab_helper_->SetBwgUiShowing(true);
+  ASSERT_FALSE(IsBwgSessionActiveInBackground());
 }
 
 TEST_F(BwgTabHelperTest, TestShouldShowZeroState_NoLastInteraction) {
@@ -179,6 +193,54 @@ TEST_F(BwgTabHelperTest, TestGetServerId_Expired) {
   ASSERT_FALSE(tab_helper_->GetServerId().has_value());
 }
 
+TEST_F(BwgTabHelperTest, TestWasShown_RestoresSession) {
+  OCMExpect([mock_bwg_handler_
+      startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen]);
+
+  // Background a session and then show the tab.
+  tab_helper_->PrepareBwgFreBackgrounding();
+  tab_helper_->WasShown(web_state_.get());
+
+  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
+}
+
+TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
+  OCMExpect([mock_bwg_handler_ dismissBWGFlowWithCompletion:nil]);
+
+  // Show the UI and then hide the tab.
+  tab_helper_->SetBwgUiShowing(true);
+  tab_helper_->WasHidden(web_state_.get());
+
+  ASSERT_TRUE(IsBwgSessionActiveInBackground());
+  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
+}
+
+TEST_F(BwgTabHelperTest, TestPageLoaded_ShowsPromo) {
+  OCMExpect([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);
+
+  // Set prefs to a state where the promo should be shown.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, false);
+  profile_->GetPrefs()->SetInteger(prefs::kIOSBWGPromoImpressionCount, 0);
+  // Make first run not recent.
+  ForceFirstRunRecency(2);
+
+  tab_helper_->PageLoaded(web_state_.get(),
+                          web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
+}
+
+TEST_F(BwgTabHelperTest, TestPageLoaded_DoesNotShowPromo) {
+  OCMReject([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);
+
+  // Set prefs to a state where the promo should not be shown.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+
+  tab_helper_->PageLoaded(web_state_.get(),
+                          web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
+}
+
 TEST_F(BwgTabHelperTest, WebStateDestroyed) {
   // Set some state.
   tab_helper_->SetBwgUiShowing(true);
@@ -188,4 +250,43 @@ TEST_F(BwgTabHelperTest, WebStateDestroyed) {
   web_state_.reset();
 
   // The test passes if it doesn't crash.
+}
+
+TEST_F(BwgTabHelperTest, WebStateDestroyed_CleansUpSession) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kGeminiCrossTab});
+  std::string server_id = "test_server_id";
+  tab_helper_->CreateOrUpdateBwgSessionInStorage(server_id);
+  ASSERT_EQ(tab_helper_->GetServerId().value(), server_id);
+
+  // Destroy the webstate.
+  web_state_.reset();
+
+  // Create a new webstate and tab helper to check the prefs.
+  web_state_ = std::make_unique<web::FakeWebState>();
+  web_state_->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+
+  ASSERT_FALSE(tab_helper_->GetServerId().has_value());
+}
+
+TEST_F(BwgTabHelperTest,
+       WebStateDestroyed_DoesNotCleanUpSession_GeminiCrossTabEnabled) {
+  feature_list_.InitWithFeatures({kGeminiCrossTab, kPageActionMenu}, {});
+  std::string server_id = "test_server_id";
+  tab_helper_->CreateOrUpdateBwgSessionInStorage(server_id);
+  ASSERT_EQ(tab_helper_->GetServerId().value(), server_id);
+
+  // Destroy the webstate.
+  web_state_.reset();
+
+  // Create a new webstate and tab helper to check the prefs.
+  web_state_ = std::make_unique<web::FakeWebState>();
+  web_state_->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+
+  ASSERT_EQ(tab_helper_->GetServerId().value(), server_id);
 }
