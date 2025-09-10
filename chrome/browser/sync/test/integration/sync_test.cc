@@ -1213,5 +1213,12 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
   }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    allowed_types.Put(syncer::DICTIONARY);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+
   return allowed_types;
 }

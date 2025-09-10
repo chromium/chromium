@@ -305,8 +305,12 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               syncer::DICTIONARY, data_type_store_factory,
               spellcheck_service_.value()->GetCustomDictionary()->AsWeakPtr(),
               dump_stack,
-              syncer::SyncableServiceBasedDataTypeController::DelegateMode::
-                  kLegacyFullSyncModeOnly));
+              base::FeatureList::IsEnabled(
+                  syncer::kSpellcheckSeparateLocalAndAccountDictionaries)
+                  ? syncer::SyncableServiceBasedDataTypeController::
+                        DelegateMode::kTransportModeWithSingleModel
+                  : syncer::SyncableServiceBasedDataTypeController::
+                        DelegateMode::kLegacyFullSyncModeOnly));
     }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
