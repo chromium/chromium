@@ -11,9 +11,14 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace sync_preferences {
 
@@ -58,6 +63,22 @@ class CrossDevicePrefTracker : public KeyedService {
   virtual std::optional<TimestampedPrefValue> GetMostRecentValue(
       std::string_view pref_name,
       const DeviceFilter& filter) const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Return the Java object that allows access to the CrossDevicePrefTracker.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
+  // Java versions of query methods.
+  virtual base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& pref_name,
+      std::optional<int> os_type,
+      std::optional<int> form_factor) const = 0;
+  virtual base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& pref_name,
+      std::optional<int> os_type,
+      std::optional<int> form_factor) const = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   CrossDevicePrefTracker() = default;

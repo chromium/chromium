@@ -385,6 +385,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/data_sharing:instant_message_delegate_factory_java",
       "//components/credential_management/android:java",
       "//components/enterprise/client_certificates/android:browser_binding_java",
+      "//components/sync_preferences/cross_device_pref_tracker/android:java",
       "//components/visited_url_ranking/public:public_java",
       "//google_apis/gaia/android:java",
 
