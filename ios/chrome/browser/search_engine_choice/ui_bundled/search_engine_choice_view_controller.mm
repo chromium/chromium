@@ -339,7 +339,7 @@ UITextView* CreateSubtitleTextView() {
     [scrollContentView addSubview:subtitle2TextView];
     subtitle2TextView.attributedText = subtitle2Text;
     // The text alignment needs to be set after the setting the attributed text.
-    subtitle1TextView.textAlignment = NSTextAlignmentCenter;
+    subtitle2TextView.textAlignment = NSTextAlignmentCenter;
 
     subtitleBottomAnchor = subtitle2TextView.bottomAnchor;
   }
