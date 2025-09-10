@@ -47,9 +47,6 @@ base::TimeDelta PrefetchTimeoutDuration();
 // bytes.
 size_t PrefetchMainframeBodyLengthLimit();
 
-// Whether idle sockets should be closed after every prefetch.
-bool PrefetchCloseIdleSockets();
-
 // Whether a spare renderer should be started after prefetching.
 bool PrefetchStartsSpareRenderer();
 

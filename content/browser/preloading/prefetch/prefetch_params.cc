@@ -97,11 +97,6 @@ size_t PrefetchMainframeBodyLengthLimit() {
                     "max_mainframe_body_length_kb", 5 * 1024);
 }
 
-bool PrefetchCloseIdleSockets() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kPrefetchUseContentRefactor, "close_idle_sockets", true);
-}
-
 bool PrefetchStartsSpareRenderer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              "isolated-prerender-start-spare-renderer") ||

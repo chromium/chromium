@@ -1527,11 +1527,9 @@ void PrefetchService::PrepareProgress() {
   //
   // TODO(crbug.com/443681583): Move the handling to `PrefetchContainer` if
   // possible.
-  if (PrefetchCloseIdleSockets()) {
-    for (const auto& iter : owned_prefetches()) {
-      if (iter.second) {
-        iter.second->CloseIdleConnections();
-      }
+  for (const auto& iter : owned_prefetches()) {
+    if (iter.second) {
+      iter.second->CloseIdleConnections();
     }
   }
 }
