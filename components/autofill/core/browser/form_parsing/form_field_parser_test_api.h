@@ -17,7 +17,7 @@ class FormFieldParserTestApi {
   explicit FormFieldParserTestApi(FormFieldParser* parser) : parser_(*parser) {}
 
   static bool Match(ParsingContext& context,
-                    const AutofillField& field,
+                    const FormFieldData& field,
                     std::u16string_view pattern,
                     DenseSet<MatchAttribute> match_attributes,
                     const char* regex_name = "") {

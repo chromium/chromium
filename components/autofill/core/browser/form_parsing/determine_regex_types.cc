@@ -25,10 +25,6 @@ namespace autofill {
 
 namespace {
 
-raw_ptr<const FormFieldData> ToPointer(const FormFieldData& field) {
-  return &field;
-}
-
 // Classifies each field using the regular expressions. The classifications
 // are returned, but not assigned to the `fields_` yet. Use
 // `AssignBestFieldTypes()` to do so.
@@ -36,27 +32,24 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
                                                ParsingContext& context) {
   FieldCandidatesMap field_type_map;
 
-  auto form_field_data_vector = base::ToVector(form.fields(), &ToPointer);
   if (ShouldRunHeuristics(form)) {
-    FormFieldParser::ParseFormFields(context, form_field_data_vector,
-                                     field_type_map);
+    FormFieldParser::ParseFormFields(context, form.fields(), field_type_map);
   } else if (ShouldRunHeuristicsForSingleFields(form)) {
-    FormFieldParser::ParseSingleFields(context, form_field_data_vector,
-                                       field_type_map);
-    FormFieldParser::ParseStandaloneCVCFields(context, form_field_data_vector,
+    FormFieldParser::ParseSingleFields(context, form.fields(), field_type_map);
+    FormFieldParser::ParseStandaloneCVCFields(context, form.fields(),
                                               field_type_map);
 
     // For standalone email fields, allow heuristics even when the minimum
     // number of fields is not met. See similar comments in
     // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    FormFieldParser::ParseStandaloneEmailFields(context, form_field_data_vector,
+    FormFieldParser::ParseStandaloneEmailFields(context, form.fields(),
                                                 field_type_map);
 
     // Try parsing standalone loyalty card fields after an attempt has been
     // made to parse multi-purpose input fields e.g. email or loyalty number
     // fields.
-    FormFieldParser::ParseStandaloneLoyaltyCardFields(
-        context, form_field_data_vector, field_type_map);
+    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, form.fields(),
+                                                      field_type_map);
   }
   return field_type_map;
 }

@@ -5,13 +5,12 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 
 namespace autofill {
 
-AutofillScanner::AutofillScanner(
-    const std::vector<raw_ptr<const FormFieldData>>& fields) {
+AutofillScanner::AutofillScanner(base::span<const FormFieldData> fields) {
   cursor_ = fields.begin();
   saved_cursor_ = fields.begin();
   begin_ = fields.begin();
@@ -27,11 +26,11 @@ void AutofillScanner::Advance() {
 
 const FormFieldData& AutofillScanner::Cursor() const {
   CHECK(!IsEnd());
-  return **cursor_;
+  return *cursor_;
 }
 
 const FormFieldData* AutofillScanner::Predecessor() const {
-  return cursor_ != begin_ ? *std::prev(cursor_) : nullptr;
+  return cursor_ != begin_ ? &*std::prev(cursor_) : nullptr;
 }
 
 bool AutofillScanner::IsEnd() const {

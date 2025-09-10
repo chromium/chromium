@@ -97,7 +97,7 @@ class FormFieldParserTestBase {
   FieldRendererId MakeFieldRendererId();
 
   // Fields that will be parsed.
-  std::vector<std::unique_ptr<AutofillField>> fields_;
+  std::vector<FormFieldData> fields_;
   // Actual outcome of parsing.
   FieldCandidatesMap field_candidates_map_;
   // Expectations of parsing.

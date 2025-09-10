@@ -10,16 +10,6 @@
 
 namespace autofill {
 
-namespace {
-
-void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
-  for (size_t i = 0; i < fields.size(); ++i) {
-    fields[i]->set_rank(i);
-  }
-}
-
-}  // namespace
-
 FormFieldParserTestBase::FormFieldParserTestBase() = default;
 FormFieldParserTestBase::~FormFieldParserTestBase() = default;
 
@@ -36,7 +26,7 @@ void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
   field_data.set_placeholder(base::UTF8ToUTF16(placeholder));
   field_data.set_max_length(max_length);
   field_data.set_renderer_id(MakeFieldRendererId());
-  fields_.push_back(std::make_unique<AutofillField>(field_data));
+  fields_.push_back(field_data);
   expected_classifications_.insert(
       std::make_pair(field_data.global_id(), expected_type));
 }
@@ -55,7 +45,7 @@ void FormFieldParserTestBase::AddSelectOneFormFieldData(
     const std::vector<SelectOption>& options,
     FieldType expected_type) {
   AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
-  FormFieldData& field_data = *fields_.back();
+  FormFieldData& field_data = fields_.back();
   field_data.set_options(options);
 }
 
@@ -74,15 +64,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternFile pattern_file) {
-  UpdateRanks(fields_);
-
-  // Must outlive `scanner`.
-  auto unowned_fields =
-      base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<const FormFieldData>(field.get());
-      });
-
-  AutofillScanner scanner(unowned_fields);
+  AutofillScanner scanner(fields_);
   ParsingContext context(fields_, client_country, page_language, pattern_file,
                          GetActiveRegexFeatures(), /*log_manager=*/nullptr);
   std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
@@ -102,18 +84,11 @@ void FormFieldParserTestBase::ClassifyAndVerify(
 void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
-  UpdateRanks(fields_);
   ParsingContext context(fields_, client_country, page_language,
                          *GetActivePatternFile(), /*active_features=*/{},
                          /*log_manager=*/nullptr);
 
-  // Must outlive `scanner`.
-  auto unowned_fields =
-      base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<const FormFieldData>(field.get());
-      });
-
-  AutofillScanner scanner(unowned_fields);
+  AutofillScanner scanner(fields_);
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of
     // all languages are used.

@@ -148,10 +148,7 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
   }
 
   FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      base::ToVector(form.fields(),
-                     [](const FormFieldData& field)
-                         -> raw_ptr<const FormFieldData> { return &field; }),
-      field_candidates_map, client_country, nullptr);
+      form.fields(), field_candidates_map, client_country, nullptr);
 
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     const auto& field_id = form.fields()[i].global_id();

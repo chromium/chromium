@@ -7,11 +7,8 @@
 
 #include <stddef.h>
 
-#include <memory>
-#include <vector>
-
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
 
 namespace autofill {
 
@@ -21,7 +18,7 @@ class FormFieldData;
 class AutofillScanner {
  public:
   explicit AutofillScanner(
-      const std::vector<raw_ptr<const FormFieldData>>& fields LIFETIME_BOUND);
+      base::span<const FormFieldData> fields LIFETIME_BOUND);
 
   AutofillScanner(const AutofillScanner&) = delete;
   AutofillScanner& operator=(const AutofillScanner&) = delete;
@@ -55,16 +52,16 @@ class AutofillScanner {
 
  private:
   // Indicates the current position in the stream, represented as a vector.
-  std::vector<raw_ptr<const FormFieldData>>::const_iterator cursor_;
+  base::span<const FormFieldData>::const_iterator cursor_;
 
   // The most recently saved cursor.
-  std::vector<raw_ptr<const FormFieldData>>::const_iterator saved_cursor_;
+  base::span<const FormFieldData>::const_iterator saved_cursor_;
 
   // The beginning pointer for the stream.
-  std::vector<raw_ptr<const FormFieldData>>::const_iterator begin_;
+  base::span<const FormFieldData>::const_iterator begin_;
 
   // The past-the-end pointer for the stream.
-  std::vector<raw_ptr<const FormFieldData>>::const_iterator end_;
+  base::span<const FormFieldData>::const_iterator end_;
 };
 
 }  // namespace autofill
