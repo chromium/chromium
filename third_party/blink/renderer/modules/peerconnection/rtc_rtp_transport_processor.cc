@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
-#include "third_party/blink/renderer/modules/peerconnection/intercepting_network_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
