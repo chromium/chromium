@@ -34,11 +34,6 @@ constexpr FormControlType kFieldTypes[] = {
     FormControlType::kInputNumber,
 };
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 class PhoneFieldParserTest : public testing::Test {
  public:
   PhoneFieldParserTest() = default;
@@ -140,10 +135,9 @@ void PhoneFieldParserTest::RunParsingTest(
 
   // Parse.
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(base::ToVector(list_, &to_form_field_data),
-                         GeoIpCountryCode(""), LanguageCode(""),
+  ParsingContext context(list_, GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile(), /*active_features=*/{},
-                         /*log_manager=*/{});
+                         /*log_manager=*/nullptr);
   field_ = Parse(context, scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 

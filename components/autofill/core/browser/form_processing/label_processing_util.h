@@ -17,6 +17,7 @@
 namespace autofill {
 
 class FormFieldData;
+class AutofillField;
 
 // Returns a map containing each field's parseable label **if** that label
 // differs from FormFieldData::label().
@@ -35,7 +36,10 @@ class FormFieldData;
 // in the interval by the result of the split. In the example above, the
 // parseable labels are "Street name" and "house number", respectively.
 base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
-    base::span<const raw_ptr<const FormFieldData>> fields);
+    base::span<const FormFieldData> fields);
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 std::vector<std::u16string_view> GetParseableLabelsForTest(  // IN-TEST
     std::vector<std::u16string_view> labels);

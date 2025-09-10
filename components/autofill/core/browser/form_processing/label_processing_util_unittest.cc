@@ -24,11 +24,6 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 TEST(LabelProcessingUtil, GetParseableNameLabels) {
   std::vector<std::u16string_view> labels = {u"City", u"Street & House Number",
                                              u"", u"Zip"};
@@ -92,14 +87,13 @@ TEST(LabelProcessingUtil, GetParseableLabels_Feature) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_THAT(GetParseableLabels(base::ToVector(fields, to_form_field_data)),
-                IsEmpty());
+    EXPECT_THAT(GetParseableLabels(fields), IsEmpty());
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_THAT(GetParseableLabels(base::ToVector(fields, to_form_field_data)),
+    EXPECT_THAT(GetParseableLabels(fields),
                 ElementsAre(Pair(fields[1]->global_id(), u"Street"),
                             Pair(fields[2]->global_id(), u"House Number"),
                             Pair(fields[3]->global_id(), u"Floor")));

@@ -18,11 +18,6 @@ void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
   }
 }
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 }  // namespace
 
 FormFieldParserTestBase::FormFieldParserTestBase() = default;
@@ -88,9 +83,8 @@ void FormFieldParserTestBase::ClassifyAndVerify(
       });
 
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
-                         client_country, page_language, pattern_file,
-                         GetActiveRegexFeatures(), /*log_manager=*/{});
+  ParsingContext context(fields_, client_country, page_language, pattern_file,
+                         GetActiveRegexFeatures(), /*log_manager=*/nullptr);
   std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
@@ -109,9 +103,9 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
   UpdateRanks(fields_);
-  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
-                         client_country, page_language, *GetActivePatternFile(),
-                         /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext context(fields_, client_country, page_language,
+                         *GetActivePatternFile(), /*active_features=*/{},
+                         /*log_manager=*/nullptr);
 
   // Must outlive `scanner`.
   auto unowned_fields =

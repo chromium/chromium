@@ -16,6 +16,7 @@
 
 namespace autofill {
 
+class AutofillField;
 class FormFieldData;
 
 // Returns a map containing each field's parseable name **if** that name
@@ -33,7 +34,10 @@ class FormFieldData;
 // Prefixes are only removed if they are shared by all and a sufficient number
 // of fields and they are sufficiently long.
 base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
-    base::span<const raw_ptr<const FormFieldData>> fields);
+    base::span<const FormFieldData> fields);
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 size_t FindLongestCommonAffixLengthForTest(  // IN-TEST
     base::span<std::u16string_view> strings,

@@ -52,6 +52,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -151,8 +152,29 @@ void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
   cache_.Put(key, value);
 }
 
+ParsingContext::ParsingContext(base::span<const FormFieldData> fields,
+                               GeoIpCountryCode client_country,
+                               LanguageCode page_language,
+                               PatternFile pattern_file,
+                               DenseSet<RegexFeature> active_features,
+                               LogManager* log_manager)
+    : name_overrides(GetParseableNames(fields)),
+      label_overrides(GetParseableLabels(fields)),
+      client_country(std::move(client_country)),
+      page_language(std::move(page_language)),
+      pattern_file(pattern_file),
+      active_features(active_features),
+      regex_cache(GetAutofillRegexCache()),
+      log_manager(log_manager) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCacheForRegexMatching)) {
+    matches_cache.emplace(
+        features::kAutofillEnableCacheForRegexMatchingCacheSizeParam.Get());
+  }
+}
+
 ParsingContext::ParsingContext(
-    base::span<const raw_ptr<const FormFieldData>> fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     GeoIpCountryCode client_country,
     LanguageCode page_language,
     PatternFile pattern_file,

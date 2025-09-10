@@ -135,8 +135,7 @@ RegexPredictions DetermineRegexTypes(const GeoIpCountryCode& client_country,
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language
           : LanguageCode();
-  ParsingContext context(base::ToVector(form.fields(), &ToPointer),
-                         client_country, page_language,
+  ParsingContext context(form.fields(), client_country, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else

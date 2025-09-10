@@ -89,11 +89,6 @@ using mojom::SubmissionIndicatorEvent;
 
 namespace {
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 std::string ServerTypesToString(const AutofillField& field) {
   std::vector<std::string_view> server_types =
       base::ToVector(field.server_predictions(), [](const auto& prediction) {
@@ -254,10 +249,10 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
   }
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
-      GetParseableNames(base::ToVector(fields_, &to_form_field_data));
+      GetParseableNames(fields_);
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(base::ToVector(fields_, &to_form_field_data));
+      GetParseableLabels(fields_);
 
   for (const auto& field : fields_) {
     FormFieldDataPredictions annotated_field;
@@ -757,10 +752,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   }
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
-      GetParseableNames(base::ToVector(form.fields(), &to_form_field_data));
+      GetParseableNames(form.fields());
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(base::ToVector(form.fields(), &to_form_field_data));
+      GetParseableLabels(form.fields());
 
   for (size_t i = 0; i < form.field_count(); ++i) {
     const AutofillField* field = form.field(i);

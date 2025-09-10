@@ -36,11 +36,6 @@ struct FieldTemplate {
   FieldType field_type = UNKNOWN_TYPE;
 };
 
-const raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 std::vector<std::unique_ptr<AutofillField>> CreateFields(
     const std::vector<FieldTemplate>& field_templates) {
   std::vector<std::unique_ptr<AutofillField>> result;
@@ -148,12 +143,15 @@ TEST(FormStructureRationalizationEngine,
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
   GeoIpCountryCode kBR = GeoIpCountryCode("BR");
   GeoIpCountryCode kUS = GeoIpCountryCode("US");
-  ParsingContext kMXContext({}, kMX, LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
-  ParsingContext kBRContext({}, kBR, LanguageCode("pt"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
-  ParsingContext kUSContext({}, kUS, LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ParsingContext kBRContext(std::vector<FormFieldData>{}, kBR,
+                            LanguageCode("pt"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ParsingContext kUSContext(std::vector<FormFieldData>{}, kUS,
+                            LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   EnvironmentCondition no_country_required =
       EnvironmentConditionBuilder().Build();
@@ -178,8 +176,9 @@ TEST(FormStructureRationalizationEngine,
      IsEnvironmentConditionFulfilled_CheckExperiment) {
   using internal::IsEnvironmentConditionFulfilled;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext({}, kMX, LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   EnvironmentCondition no_experiment_required =
       EnvironmentConditionBuilder().Build();
@@ -213,8 +212,9 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckPossibleTypes) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext({}, kMX, LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   FieldCondition no_possible_types_required = {};
   FieldCondition requires_address_line1_type = {
@@ -253,8 +253,9 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckRegex) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext({}, kMX, LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   FieldCondition no_regex_match_required = {};
   FieldCondition requires_dependent_locality_match = {
@@ -320,9 +321,8 @@ TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(base::ToVector(fields, &to_form_field_data), kMX,
-                            LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -351,9 +351,8 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(base::ToVector(fields, &to_form_field_data), kMX,
-                            LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -382,9 +381,8 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(base::ToVector(fields, &to_form_field_data), kMX,
-                            LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -416,9 +414,8 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(base::ToVector(fields, &to_form_field_data), kMX,
-                            LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(GetTypes(fields),
@@ -448,9 +445,8 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(base::ToVector(fields, &to_form_field_data), kMX,
-                            LanguageCode("es"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -476,9 +472,8 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
   });
 
   GeoIpCountryCode kDE = GeoIpCountryCode("DE");
-  ParsingContext kDEContext(base::ToVector(fields, &to_form_field_data), kDE,
-                            LanguageCode("de"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kDEContext(fields, kDE, LanguageCode("de"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kDEContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -504,9 +499,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(base::ToVector(fields, &to_form_field_data), kPL,
-                            LanguageCode("pl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -532,9 +526,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(base::ToVector(fields, &to_form_field_data), kPL,
-                            LanguageCode("pl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -557,9 +550,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(base::ToVector(fields, &to_form_field_data), kPL,
-                            LanguageCode("pl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -582,9 +574,8 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(base::ToVector(fields, &to_form_field_data), kPL,
-                            LanguageCode("pl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -608,9 +599,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(base::ToVector(fields, &to_form_field_data), kIT,
-                            LanguageCode("it"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kITContext(fields, kIT, LanguageCode("it"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -633,9 +623,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(base::ToVector(fields, &to_form_field_data), kIT,
-                            LanguageCode("it"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kITContext(fields, kIT, LanguageCode("it"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(
@@ -660,9 +649,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
   });
 
   GeoIpCountryCode kNL = GeoIpCountryCode("NL");
-  ParsingContext kNLContext(base::ToVector(fields, &to_form_field_data), kNL,
-                            LanguageCode("nl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -688,9 +676,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
   });
 
   GeoIpCountryCode kNL = GeoIpCountryCode("NL");
-  ParsingContext kNLContext(base::ToVector(fields, &to_form_field_data), kNL,
-                            LanguageCode("nl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -713,9 +700,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptWithNoNext) {
   });
 
   GeoIpCountryCode kNL = GeoIpCountryCode("NL");
-  ParsingContext kNLContext(base::ToVector(fields, &to_form_field_data), kNL,
-                            LanguageCode("nl"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -741,9 +727,8 @@ TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLocality) {
        {u"City", u"city", ADDRESS_HOME_CITY}});
 
   GeoIpCountryCode kIN = GeoIpCountryCode("IN");
-  ParsingContext kINContext(base::ToVector(fields, &to_form_field_data), kIN,
-                            LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
   EXPECT_THAT(
@@ -769,9 +754,8 @@ TEST(FormStructureRationalizationEngine, TestINAddressLine1WithNoNext) {
                     {u"City", u"city", ADDRESS_HOME_CITY}});
 
   GeoIpCountryCode kIN = GeoIpCountryCode("IN");
-  ParsingContext kINContext(base::ToVector(fields, &to_form_field_data), kIN,
-                            LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -798,9 +782,8 @@ TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLandmark) {
        {u"City", u"city", ADDRESS_HOME_CITY}});
 
   GeoIpCountryCode kIN = GeoIpCountryCode("IN");
-  ParsingContext kINContext(base::ToVector(fields, &to_form_field_data), kIN,
-                            LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
   EXPECT_THAT(
@@ -829,9 +812,8 @@ TEST(FormStructureRationalizationEngine,
        {u"City", u"city", ADDRESS_HOME_CITY}});
 
   GeoIpCountryCode kIN = GeoIpCountryCode("IN");
-  ParsingContext kINContext(base::ToVector(fields, &to_form_field_data), kIN,
-                            LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
   EXPECT_THAT(
@@ -859,9 +841,8 @@ TEST(FormStructureRationalizationEngine, TestJPAlternativeNames) {
        {u"Street Address", u"street-address", ADDRESS_HOME_STREET_ADDRESS}});
 
   GeoIpCountryCode kJP = GeoIpCountryCode("JP");
-  ParsingContext kJPContext(base::ToVector(fields, &to_form_field_data), kJP,
-                            LanguageCode("en"), GetPatternFile(),
-                            /*active_features=*/{}, /*log_manager=*/{});
+  ParsingContext kJPContext(fields, kJP, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   ApplyRationalizationEngineRules(kJPContext, fields, nullptr);
   EXPECT_THAT(GetTypes(fields),

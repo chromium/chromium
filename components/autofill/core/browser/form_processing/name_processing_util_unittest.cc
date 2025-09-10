@@ -22,11 +22,6 @@ using testing::IsEmpty;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
-}
-
 // Tests that the length of the longest common prefix is computed correctly.
 TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
   std::vector<std::u16string_view> strings = {
@@ -88,7 +83,7 @@ TEST(NameProcessingUtil, GetParseableNamesWithCommonPrefix) {
         /*label=*/"", /*name=*/name,
         /*value=*/"", /*type=*/FormControlType::kInputText)));
   }
-  EXPECT_THAT(GetParseableNames(base::ToVector(fields, &to_form_field_data)),
+  EXPECT_THAT(GetParseableNames(fields),
               UnorderedElementsAre(Pair(fields[0]->global_id(), u"Foo"),
                                    Pair(fields[1]->global_id(), u"Bar"),
                                    Pair(fields[2]->global_id(), u"Qux")));
@@ -104,8 +99,7 @@ TEST(NameProcessingUtil, GetParseableNamesWithoutCommonPrefix) {
         /*label=*/"", /*name=*/name,
         /*value=*/"", /*type=*/FormControlType::kInputText)));
   }
-  EXPECT_THAT(GetParseableNames(base::ToVector(fields, &to_form_field_data)),
-              IsEmpty());
+  EXPECT_THAT(GetParseableNames(fields), IsEmpty());
 }
 
 }  // namespace
