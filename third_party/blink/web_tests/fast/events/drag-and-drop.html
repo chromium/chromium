@@ -13,7 +13,7 @@
     var dropEffectElem;
     var consoleElm;
     var event;
-    
+
     window.onload = function()
     {
         dragMe = document.getElementById("dragMe");
@@ -21,20 +21,20 @@
         effectAllowedElem = document.getElementById("effectAllowed");
         dropEffectElem = document.getElementById("dropEffect");
         consoleElm = document.getElementById("console");
-        
+
         if (!dragMe || !dropTarget || !effectAllowedElem || !dropEffectElem || !consoleElm)
             return;
-        
+
         dragMe.ondragstart = dragStart;
         dragMe.ondragend = dragEnd;
-        
+
         dropTarget.ondragenter = dragEntered;
         dropTarget.ondragover = dragOver;
         dropTarget.ondrop = drop;
-        
+
         runTest();
     }
-    
+
     function dragStart(e)
     {
         event = e;
@@ -43,35 +43,35 @@
 
         e.dataTransfer.setData('Text', e.target.textContent);
     }
-    
+
     function dragEnd(e)
     {
         checkDragState(e);
         return;
     }
-    
+
     function dragEntered(e)
     {
         dragEnteredAndUpdated(e);
     }
-    
+
     function dragOver(e)
     {
         dragEnteredAndUpdated(e);
     }
-    
+
     function dragEnteredAndUpdated(e)
     {
         event = e;
         e.dataTransfer.dropEffect = dropEffectElem.options[dropEffectElem.selectedIndex].value;
         cancelDrag(e);
     }
-    
+
     function drop(e)
     {
         cancelDrag(e);
     }
-    
+
     function cancelDrag(e)
     {
         if (e.preventDefault)
@@ -81,28 +81,28 @@
             e.returnValue = false;
         }
     }
-    
+
     function checkDragState(e)
     {
         event = e;
         var chosenDropEffect = dropEffectElem.options[dropEffectElem.selectedIndex].value;
         var chosenEffectAllowed = effectAllowedElem.options[effectAllowedElem.selectedIndex].value;
         var actualDropEffect = e.dataTransfer.dropEffect;
-        
+
         if (chosenEffectAllowed === "undefined") {
             // If no effectAllowed is set, we should default to uninitialized. Make sure that's the case.
             shouldBeEqualToString("event.dataTransfer.effectAllowed", "uninitialized");
-            
+
             // Then set the chosenEffectAllowed so isDropEffectAllowed matches the HTML5 spec, and
             // doesn't need special cases for undefined.
             chosenEffectAllowed = "uninitialized";
         }
-        
+
         if (chosenEffectAllowed === "dummy") {
             // If a bad effectAllowed is attempted to be set, it should never be set, and the
             // effectAllowed should be uninitialized.
             shouldBeEqualToString("event.dataTransfer.effectAllowed", "uninitialized");
-            
+
             // Then set the chosenEffectAllowed so isDropEffectAllowed matches the HTML5 spec, and
             // doesn't need special cases for undefined.
             chosenEffectAllowed = "uninitialized";
@@ -112,13 +112,15 @@
             switch (chosenEffectAllowed) {
                 case "undefined":
                 case "copyLink":
+                case "copyMove":
                 case "uninitialized":
                 case "all":
                     expected = "copy";
                     break;
-                case "copyMove":
-                case "move":
                 case "linkMove":
+                  expected = "link";
+                  break;
+                case "move":
                     expected = "move";
                     break;
                 default:
@@ -129,9 +131,9 @@
             shouldBeEqualToString('event.dataTransfer.dropEffect', expected);
         else
             shouldBeEqualToString('event.dataTransfer.dropEffect', 'none');
-            
+
     }
-    
+
     function isDropEffectAllowed(chosenDropEffect, allowedDropEffect) {
         // Extracted from the HTML 5 drag-and-drop section, http://dev.w3.org/html5/spec/Overview.html#dnd
         if (chosenDropEffect == "none")
@@ -143,7 +145,7 @@
         if (chosenDropEffect == "link" && ["link", "copyLink", "linkMove", "uninitialized", "all"].indexOf(allowedDropEffect) != -1)
             return true;
         if (chosenDropEffect == "dummy" && ["copy", "link", "move", "copyLink", "copyMove", "linkMove", "uninitialized", "all"].indexOf(allowedDropEffect) != -1)
-            return true; 
+            return true;
         return false;
     }
 
@@ -151,18 +153,18 @@
     {
         if (!window.eventSender)
             return;
-            
+
         if (window.testRunner)
             testRunner.dumpAsText();
-            
+
         var startX = dragMe.offsetLeft + 10;
         var startY = dragMe.offsetTop + dragMe.offsetHeight / 2;
         var endX = dropTarget.offsetLeft + 10;
         var endY = dropTarget.offsetTop + dropTarget.offsetHeight / 2;
-        
+
         var numEffectAllowed = effectAllowedElem.options.length;
         var numEffects = dropEffectElem.options.length;
-        
+
         for (var i = 0; i < numEffectAllowed; ++i) {
             effectAllowedElem.options[i].selected = true;
             debug('<br />When effectAllowed == "' + effectAllowedElem.options[i].value + '"<br />');

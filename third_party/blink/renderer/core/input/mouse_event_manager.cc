@@ -1043,6 +1043,15 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
   initializer->setRelatedTarget(related_target);
   initializer->setView(frame_->GetDocument()->domWindow());
   initializer->setComposed(true);
+  if (RuntimeEnabledFeatures::PreserveDropEffectEnabled()) {
+    if (event_type == event_type_names::kDragenter ||
+        event_type == event_type_names::kDragover) {
+      data_transfer->SetDestinationOperationFromEffectAllowed();
+    } else if (event_type == event_type_names::kDragleave) {
+      data_transfer->SetDestinationOperation(
+          ui::mojom::blink::DragOperation::kNone);
+    }
+  }
   initializer->setGetDataTransfer(data_transfer);
   initializer->setSourceCapabilities(
       frame_->GetDocument()->domWindow()

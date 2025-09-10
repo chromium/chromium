@@ -75,7 +75,7 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "move"
 PASS event.dataTransfer.dropEffect is "none"
-PASS event.dataTransfer.dropEffect is "move"
+PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "copyLink"
 
@@ -91,7 +91,7 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "move"
 PASS event.dataTransfer.dropEffect is "link"
-PASS event.dataTransfer.dropEffect is "move"
+PASS event.dataTransfer.dropEffect is "link"
 
 When effectAllowed == "dummy"
 

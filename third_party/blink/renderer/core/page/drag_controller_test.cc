@@ -84,7 +84,7 @@ class DragControllerTest : public RenderingTest {
                   static_cast<DragOperationsMask>(kDragOperationMove), false);
     GetFrame().GetPage()->GetDragController().DragEnteredOrUpdated(&data,
                                                                    GetFrame());
-    GetFrame().GetPage()->GetDragController().PerformDrag(
+    GetFrame().GetPage()->GetDragController().PerformDrop(
         &data, GetFrame(), DragController::Operation());
   }
 
@@ -194,7 +194,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
       ->GetFrameView()
       ->SetLifecycleUpdatesThrottledForTesting();
 
-  WebView().GetPage()->GetDragController().PerformDrag(
+  WebView().GetPage()->GetDragController().PerformDrop(
       &data, *GetDocument().GetFrame(), DragController::Operation());
 
   // Test passes if we don't crash.
