@@ -120,10 +120,11 @@ void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
                                       base::BindOnce(&OnServiceStarted));
 }
 
-DbusByteArray PathToByteArray(const base::FilePath& path) {
-  return DbusByteArray(base::MakeRefCounted<base::RefCountedBytes>(
-      base::as_bytes(base::span_with_nul_from_cstring_view(
-          base::cstring_view(path.value())))));
+std::vector<uint8_t> PathToByteArray(const base::FilePath& path) {
+  std::vector<uint8_t> bytes(path.value().begin(), path.value().end());
+  // Null-terminate the array.
+  bytes.push_back(0);
+  return bytes;
 }
 
 std::vector<base::FilePath> ConvertUrisToPaths(
@@ -379,24 +380,24 @@ void SelectFileDialogLinuxPortal::SelectFileImplOnMainThread(
       std::move(parent_handle));
 }
 
-DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
+dbus_xdg::Dictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
     const base::FilePath& default_path,
     bool default_path_exists,
     const PortalFilterSet& filter_set) {
-  DbusDictionary dict;
+  dbus_xdg::Dictionary dict;
 
   switch (type_) {
     case SelectFileDialog::SELECT_UPLOAD_FOLDER:
-      dict.PutAs(kFileChooserOptionAcceptLabel,
-                 DbusString(l10n_util::GetStringUTF8(
-                     IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)));
+      dict[kFileChooserOptionAcceptLabel] =
+          dbus_utils::Variant::Wrap<"s">(l10n_util::GetStringUTF8(
+              IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON));
       [[fallthrough]];
     case SelectFileDialog::SELECT_FOLDER:
     case SelectFileDialog::Type::SELECT_EXISTING_FOLDER:
-      dict.PutAs(kFileChooserOptionDirectory, DbusBoolean(true));
+      dict[kFileChooserOptionDirectory] = dbus_utils::Variant::Wrap<"b">(true);
       break;
     case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
-      dict.PutAs(kFileChooserOptionMultiple, DbusBoolean(true));
+      dict[kFileChooserOptionMultiple] = dbus_utils::Variant::Wrap<"b">(true);
       break;
     default:
       break;
@@ -406,20 +407,20 @@ DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
     if (default_path_exists) {
       // If this is an existing directory, navigate to that directory, with no
       // filename.
-      dict.PutAs(kFileChooserOptionCurrentFolder,
-                 PathToByteArray(default_path));
+      dict[kFileChooserOptionCurrentFolder] =
+          dbus_utils::Variant::Wrap<"ay">(PathToByteArray(default_path));
     } else {
       // The default path does not exist, or is an existing file. We use
       // current_folder followed by current_name, as per the recommendation of
       // the GTK docs and the pattern followed by SelectFileDialogLinuxGtk.
-      dict.PutAs(kFileChooserOptionCurrentFolder,
-                 PathToByteArray(default_path.DirName()));
+      dict[kFileChooserOptionCurrentFolder] = dbus_utils::Variant::Wrap<"ay">(
+          PathToByteArray(default_path.DirName()));
 
       // current_folder is supported by xdg-desktop-portal but current_name
       // is not - only try to set this when invoking a save file dialog.
       if (type_ == SELECT_SAVEAS_FILE) {
-        dict.PutAs(kFileChooserOptionCurrentName,
-                   DbusString(default_path.BaseName().value()));
+        dict[kFileChooserOptionCurrentName] =
+            dbus_utils::Variant::Wrap<"s">(default_path.BaseName().value());
       }
     }
   }
@@ -427,17 +428,19 @@ DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
   if (!filter_set.filters.empty()) {
     DbusFilters filters_array;
     for (const auto& filter : filter_set.filters) {
-      filters_array.value().push_back(MakeFilterStruct(filter));
+      filters_array.push_back(MakeFilterStruct(filter));
     }
-    dict.PutAs(kFileChooserOptionFilters, std::move(filters_array));
+    dict[kFileChooserOptionFilters] =
+        dbus_utils::Variant::Wrap<"a(sa(us))">(std::move(filters_array));
 
     if (filter_set.default_filter) {
-      dict.PutAs(kFileChooserOptionCurrentFilter,
-                 MakeFilterStruct(*filter_set.default_filter));
+      dict[kFileChooserOptionCurrentFilter] =
+          dbus_utils::Variant::Wrap<"(sa(us))">(
+              MakeFilterStruct(*filter_set.default_filter));
     }
   }
 
-  dict.PutAs(kFileChooserOptionModal, DbusBoolean(true));
+  dict[kFileChooserOptionModal] = dbus_utils::Variant::Wrap<"b">(true);
 
   return dict;
 }
@@ -446,16 +449,15 @@ SelectFileDialogLinuxPortal::DbusFilter
 SelectFileDialogLinuxPortal::MakeFilterStruct(const PortalFilter& filter) {
   DbusFilterPatterns patterns;
   for (const std::string& pattern_str : filter.patterns) {
-    patterns.value().push_back(MakeDbusStruct(
-        DbusUint32(kFileChooserFilterKindGlob), DbusString(pattern_str)));
+    patterns.emplace_back(kFileChooserFilterKindGlob, pattern_str);
   }
-  return MakeDbusStruct(DbusString(filter.name), std::move(patterns));
+  return std::make_tuple(filter.name, std::move(patterns));
 }
 
 void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
     const std::string& method,
     const std::string& title,
-    DbusDictionary options,
+    dbus_xdg::Dictionary options,
     std::string parent_handle) {
   CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
   scoped_refptr<dbus::Bus> bus = dbus_thread_linux::GetSharedSessionBus();
@@ -467,10 +469,8 @@ void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
       base::BindOnce(&SelectFileDialogLinuxPortal::OnFileChooserResponse,
                      base::Unretained(this));
   file_chooser_request_ = std::make_unique<dbus_xdg::Request>(
-      bus, portal, kFileChooserInterfaceName, method,
-      MakeDbusParameters(DbusString(std::move(parent_handle)),
-                         DbusString(title)),
-      std::move(options), std::move(callback));
+      bus, portal, kFileChooserInterfaceName, method, std::move(options),
+      std::move(callback), std::move(parent_handle), title);
   invoker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnInvoker,
@@ -478,7 +478,7 @@ void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
 }
 
 void SelectFileDialogLinuxPortal::OnFileChooserResponse(
-    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
+    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
   CHECK(GetMainTaskRunner()->RunsTasksInCurrentSequence());
 
   file_chooser_request_.reset();
@@ -489,10 +489,10 @@ void SelectFileDialogLinuxPortal::OnFileChooserResponse(
   }
 
   std::vector<std::string> uris;
-  auto* wrapped_uris = results->GetAs<DbusArray<DbusString>>("uris");
-  if (wrapped_uris) {
-    for (auto& element : wrapped_uris->value()) {
-      uris.push_back(element.value());
+  if (auto it = results->find("uris"); it != results->end()) {
+    if (auto opt_uris =
+            std::move(it->second).Take<std::vector<std::string>>()) {
+      uris = std::move(*opt_uris);
     }
   }
 
@@ -508,9 +508,10 @@ void SelectFileDialogLinuxPortal::OnFileChooserResponse(
   }
 
   std::string current_filter_name;
-  auto* current_filter = results->GetAs<DbusFilter>("current_filter");
-  if (current_filter) {
-    current_filter_name = std::get<0>(current_filter->value()).value();
+  if (auto it = results->find("current_filter"); it != results->end()) {
+    if (auto current_filter = std::move(it->second).Take<DbusFilter>()) {
+      current_filter_name = std::get<0>(*current_filter);
+    }
   }
 
   CompleteOpen(std::move(paths), std::move(current_filter_name));
