@@ -263,6 +263,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
     case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
     case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
+    case SearchEngineChoiceScreenConditions::kAccountNotEligible:
       return regional_capabilities::FunnelStage::kNotEligible;
   }
   NOTREACHED();
@@ -420,6 +421,10 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation;
   }
 
+  if (status == ChoiceStatus::kAccountNotEligible) {
+    return SearchEngineChoiceScreenConditions::kAccountNotEligible;
+  }
+
   return SearchEngineChoiceScreenConditions::kEligible;
 #endif
 }
@@ -457,6 +462,8 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     case ChoiceStatus::kNotMade:
     case ChoiceStatus::kFromRestoredDevice:
       return SearchEngineChoiceScreenConditions::kEligible;
+    case ChoiceStatus::kAccountNotEligible:
+      return SearchEngineChoiceScreenConditions::kAccountNotEligible;
   }
   NOTREACHED();
 #endif
@@ -827,7 +834,14 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
 
   // -- Stage 3: Optional program-controlled DSP checks
 
-  // 3.1: Is it a non-prepopulated entry, that had to be explicitly user-added?
+  // 3.1: Check account eligibility based on capabilities.
+  if (!eligibility_config.managed_users_can_be_eligible) {
+    // TODO(crbug.com/434646235): Return kAccountNotEligible if the user is signed in,
+    // the capability has been fetched, and its value is false. Fall through to
+    // later checks otherwise.
+  }
+
+  // 3.2: Is it a non-prepopulated entry, that had to be explicitly user-added?
 
   if (eligibility_config.should_preserve_non_prepopulated_dse) {
     if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
@@ -844,13 +858,13 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
     }
   }
 
-  // 3.2: Was the choice made on a different device?
+  // 3.3: Was the choice made on a different device?
 
   if (renewal_reasons.Has(ChoiceRenewalReason::kOutdated)) {
     return ChoiceStatus::kFromRestoredDevice;
   }
 
-  // 3.3: Is the current DSP non-Google?
+  // 3.4: Is the current DSP non-Google?
 
   if (eligibility_config.should_preserve_non_google_dse) {
     if (default_search_provider->GetEngineType(

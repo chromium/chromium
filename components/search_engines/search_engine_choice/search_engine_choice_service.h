@@ -171,7 +171,7 @@ class SearchEngineChoiceService : public KeyedService {
   Client& GetClientForTesting();
 
   enum class ChoiceStatus {
-    // Metedata indicates that a search engine choice has been made and is
+    // Metadata indicates that a search engine choice has been made and is
     // considered valid.
     kValid,
     // No search engine choice has been made yet.
@@ -197,6 +197,9 @@ class SearchEngineChoiceService : public KeyedService {
     // The current default search provider has a prepopulated ID that doesn't
     // match any of the preopulated engines currently available.
     kCurrentIsUnknownPrepopulated,
+    // The user is not eligible for the choice screen based on their account
+    // capabilities.
+    kAccountNotEligible,
   };
   ChoiceStatus EvaluateSearchProviderChoiceForTesting(
       const TemplateURLService& template_url_service);

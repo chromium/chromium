@@ -42,6 +42,8 @@ enum class SearchEngineListType {
 // Note: The order of the fields is important, and reflects the priority order
 // in which eligibility checks are performed and their relative precedence.
 struct ChoiceScreenEligibilityConfig {
+  // Whether managed/supervised users can be eligible for the choice screen.
+  bool managed_users_can_be_eligible;
   // Relates to default search engine selections associated with a non-builtin
   // search engine service, likely entered manually be the user.
   bool should_preserve_non_prepopulated_dse;

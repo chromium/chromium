@@ -56,8 +56,11 @@ enum class SearchEngineChoiceScreenConditions {
   // The user's current location is not compatible with the regional scope *and*
   // the regional program requires restricting to its associated countries.
   kIncompatibleCurrentLocation = 18,
+  // The user is not eligible to make the choice because of their account
+  // capabilities.
+  kAccountNotEligible = 19,
 
-  kMaxValue = kIncompatibleCurrentLocation,
+  kMaxValue = kAccountNotEligible,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 }  // namespace search_engines

@@ -25,6 +25,7 @@ constexpr ProgramSettings kWaffleSettings{
     .search_engine_list_type = SearchEngineListType::kShuffled,
     .choice_screen_eligibility_config =
         ChoiceScreenEligibilityConfig{
+            .managed_users_can_be_eligible = true,
             .should_preserve_non_prepopulated_dse = true,
             .should_preserve_imported_choice = false,
             .should_preserve_non_google_dse = true,
@@ -39,6 +40,7 @@ constexpr ProgramSettings kTaiyakiSettings{
     .search_engine_list_type = SearchEngineListType::kShuffled,
     .choice_screen_eligibility_config =
         ChoiceScreenEligibilityConfig{
+            .managed_users_can_be_eligible = false,
             .should_preserve_non_prepopulated_dse = false,
             .should_preserve_imported_choice = true,
             .should_preserve_non_google_dse = false,
