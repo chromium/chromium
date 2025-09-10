@@ -73,7 +73,7 @@ class MODULES_EXPORT WebSocketStream final
   void DidConnect(const String& subprotocol, const String& extensions) override;
   void DidReceiveTextMessage(const String&) override;
   void DidReceiveBinaryMessage(
-      const Vector<base::span<const char>>& data) override;
+      const Vector<base::span<const uint8_t>>& data) override;
   void DidError() override;
   void DidConsumeBufferedAmount(uint64_t consumed) override;
   void DidStartClosingHandshake() override;

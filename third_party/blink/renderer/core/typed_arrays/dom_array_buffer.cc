@@ -215,7 +215,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Create(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   size_t size = 0;
   for (const auto& span : data) {
     size += span.size();
@@ -228,7 +228,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
 
   base::BufferIterator iterator(contents.ByteSpan());
   for (const auto& span : data) {
-    iterator.MutableSpan<char>(span.size()).copy_from(span);
+    iterator.MutableSpan<uint8_t>(span.size()).copy_from(span);
   }
 
   return Create(std::move(contents));

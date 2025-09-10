@@ -28,14 +28,14 @@ void WebSocketMessageChunkAccumulator::SetTaskRunnerForTesting(
   timer_.SetTaskRunnerForTesting(std::move(task_runner), tick_clock);
 }
 
-void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
+void WebSocketMessageChunkAccumulator::Append(base::span<const uint8_t> data) {
   if (!segments_.empty()) {
+    const size_t last_segment_size = GetLastSegmentSize();
     const size_t to_be_written =
-        std::min(data.size(), kSegmentSize - GetLastSegmentSize());
-    std::ranges::copy(
-        data.first(to_be_written),
-        UNSAFE_TODO(segments_.back().get() + GetLastSegmentSize()));
-    data = data.subspan(to_be_written);
+        std::min(data.size(), kSegmentSize - last_segment_size);
+    segments_.back()
+        .subspan(last_segment_size)
+        .copy_prefix_from(data.take_first(to_be_written));
     size_ += to_be_written;
   }
   while (!data.empty()) {
@@ -47,26 +47,24 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
       pool_.pop_back();
     }
     const size_t to_be_written = std::min(data.size(), kSegmentSize);
-    UNSAFE_TODO(memcpy(segment_ptr.get(), data.data(), to_be_written));
-    data = data.subspan(to_be_written);
+    segment_ptr.copy_prefix_from(data.take_first(to_be_written));
     size_ += to_be_written;
     segments_.push_back(std::move(segment_ptr));
   }
 }
 
-Vector<base::span<const char>> WebSocketMessageChunkAccumulator::GetView()
+Vector<base::span<const uint8_t>> WebSocketMessageChunkAccumulator::GetView()
     const {
-  Vector<base::span<const char>> view;
+  Vector<base::span<const uint8_t>> view;
   if (segments_.empty()) {
     return view;
   }
 
   view.reserve(segments_.size());
   for (wtf_size_t i = 0; i < segments_.size() - 1; ++i) {
-    view.push_back(UNSAFE_TODO(base::span(segments_[i].get(), kSegmentSize)));
+    view.push_back(segments_[i].as_span());
   }
-  view.push_back(
-      UNSAFE_TODO(base::span(segments_.back().get(), GetLastSegmentSize())));
+  view.push_back(segments_.back().first(GetLastSegmentSize()));
   return view;
 }
 

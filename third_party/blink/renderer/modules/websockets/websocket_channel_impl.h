@@ -352,13 +352,12 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void ConsumePendingDataFrames();
   void ConsumeDataFrame(bool fin,
                         MessageTypeForMojo type,
-                        const char* data,
-                        size_t data_size);
+                        base::span<const uint8_t> data);
   // Called when |writable_| becomes writable.
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state);
   MojoResult ProduceData(base::span<const char>* data,
                          uint64_t* consumed_buffered_amount);
-  String GetTextMessage(const Vector<base::span<const char>>& chunks,
+  String GetTextMessage(const Vector<base::span<const uint8_t>>& chunks,
                         wtf_size_t size);
   void OnConnectionError(const base::Location& set_from,
                          uint32_t custom_reason,

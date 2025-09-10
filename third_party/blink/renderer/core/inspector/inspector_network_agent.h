@@ -196,14 +196,15 @@ class CORE_EXPORT InspectorNetworkAgent final
       network::mojom::blink::WebSocketHandshakeRequest*,
       network::mojom::blink::WebSocketHandshakeResponse*);
   void DidCloseWebSocket(ExecutionContext*, uint64_t identifier);
-  void DidReceiveWebSocketMessage(uint64_t identifier,
-                                  int op_code,
-                                  bool masked,
-                                  const Vector<base::span<const char>>& data);
+  void DidReceiveWebSocketMessage(
+      uint64_t identifier,
+      int op_code,
+      bool masked,
+      const Vector<base::span<const uint8_t>>& data);
   void DidSendWebSocketMessage(uint64_t identifier,
                                int op_code,
                                bool masked,
-                               base::span<const char> payload);
+                               base::span<const uint8_t> payload);
   void DidReceiveWebSocketMessageError(uint64_t identifier, const String&);
 
   void WebTransportCreated(ExecutionContext*,

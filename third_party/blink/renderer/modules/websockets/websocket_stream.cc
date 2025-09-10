@@ -65,7 +65,7 @@ class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
 
   // API for WebSocketStream.
   void DidReceiveTextMessage(const String&);
-  void DidReceiveBinaryMessage(const Vector<base::span<const char>>&);
+  void DidReceiveBinaryMessage(const Vector<base::span<const uint8_t>>&);
   void DidStartClosingHandshake();
   void DidCloseCleanly(uint16_t code, const String& reason);
   void CloseWithError(v8::Local<v8::Value> error);
@@ -198,7 +198,7 @@ void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(
 }
 
 void WebSocketStream::UnderlyingSource::DidReceiveBinaryMessage(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this
            << " DidReceiveBinaryMessage()";
 
@@ -551,7 +551,7 @@ void WebSocketStream::DidReceiveTextMessage(const String& string) {
 }
 
 void WebSocketStream::DidReceiveBinaryMessage(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   DVLOG(1) << "WebSocketStream " << this << " DidReceiveBinaryMessage()";
   if (!channel_) {
     return;

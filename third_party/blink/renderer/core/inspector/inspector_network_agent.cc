@@ -702,14 +702,13 @@ String GetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
 std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
     int op_code,
     bool masked,
-    base::span<const char> payload) {
+    base::span<const uint8_t> payload) {
   return protocol::Network::WebSocketFrame::create()
       .setOpcode(op_code)
       .setMask(masked)
       // Only interpret the payload as UTF-8 when it's a text message
-      .setPayloadData(op_code == 1 ? String::FromUTF8WithLatin1Fallback(
-                                         base::as_bytes(payload))
-                                   : Base64Encode(base::as_bytes(payload)))
+      .setPayloadData(op_code == 1 ? String::FromUTF8WithLatin1Fallback(payload)
+                                   : Base64Encode(payload))
       .build();
 }
 
@@ -2044,12 +2043,12 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
     uint64_t identifier,
     int op_code,
     bool masked,
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   size_t size = 0;
   for (const auto& span : data) {
     size += span.size();
   }
-  Vector<char> flatten;
+  Vector<uint8_t> flatten;
   flatten.reserve(base::checked_cast<wtf_size_t>(size));
   for (const auto& span : data) {
     flatten.AppendSpan(span);
@@ -2064,7 +2063,7 @@ void InspectorNetworkAgent::DidSendWebSocketMessage(
     uint64_t identifier,
     int op_code,
     bool masked,
-    base::span<const char> payload) {
+    base::span<const uint8_t> payload) {
   GetFrontend()->webSocketFrameSent(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),

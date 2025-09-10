@@ -517,7 +517,7 @@ void DOMWebSocket::DidReceiveTextMessage(const String& msg) {
 }
 
 void DOMWebSocket::DidReceiveBinaryMessage(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   size_t size = 0;
   for (const auto& span : data) {
     size += span.size();
@@ -535,7 +535,7 @@ void DOMWebSocket::DidReceiveBinaryMessage(
     case V8BinaryType::Enum::kBlob: {
       auto blob_data = std::make_unique<BlobData>();
       for (const auto& span : data) {
-        blob_data->AppendBytes(base::as_bytes(span));
+        blob_data->AppendBytes(span);
       }
       auto* blob = MakeGarbageCollected<Blob>(
           BlobDataHandle::Create(std::move(blob_data), size));

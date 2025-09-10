@@ -48,7 +48,7 @@ class MODULES_EXPORT WebSocketChannelClient : public GarbageCollectedMixin {
   }
   virtual void DidReceiveTextMessage(const String&) {}
   virtual void DidReceiveBinaryMessage(
-      const Vector<base::span<const char>>& data) {}
+      const Vector<base::span<const uint8_t>>& data) {}
   virtual void DidError() {}
   virtual void DidConsumeBufferedAmount(uint64_t consumed) {}
   virtual void DidStartClosingHandshake() {}
