@@ -26,6 +26,8 @@ EXTENSIONS_TO_INSTALL = [
 ]
 
 TESTCASE_EXTENSION = '.promptfoo.yaml'
+_SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
+_TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
 
 
 class PromptfooInstallation(abc.ABC):
@@ -304,11 +306,75 @@ def discover_testcase_files() -> list[pathlib.Path]:
     return all_tests
 
 
-def main() -> int:
-    """Evaluates prompts using promptfoo.
+def _determine_shard_values(
+        parsed_shard_index: int | None,
+        parsed_total_shards: int | None) -> tuple[int, int]:
+    """Determines the values that should be used for sharding.
 
-    This will get a copy of promptfoo and create clean checkouts before running
-    tests.
+    If shard information is set both via command line arguments and environment
+    variables, the values from the command line are used. If no sharding
+    information is explicitly provided, a single shard is assumed.
+
+    Args:
+        parsed_shard_index: The shard index parsed from the command line
+            arguments.
+        parsed_total_shards: The total shards parsed from the command line
+            arguments.
+
+    Returns:
+        A tuple (shard_index, total_shards).
+    """
+    env_shard_index = os.environ.get(_SHARD_INDEX_ENV_VAR)
+    if env_shard_index is not None:
+        env_shard_index = int(env_shard_index)
+    env_total_shards = os.environ.get(_TOTAL_SHARDS_ENV_VAR)
+    if env_total_shards is not None:
+        env_total_shards = int(env_total_shards)
+
+    shard_index_set = (parsed_shard_index is not None
+                       or env_shard_index is not None)
+    total_shards_set = (parsed_total_shards is not None
+                        or env_total_shards is not None)
+    if shard_index_set != total_shards_set:
+        raise ValueError(
+            'Only one of shard index or total shards was set. Either both or '
+            'neither must be set.')
+
+    shard_index = 0
+    if parsed_shard_index is not None:
+        shard_index = parsed_shard_index
+        if env_shard_index is not None:
+            logging.warning(
+                'Shard index set by both arguments and environment variable. '
+                'Using value provided by arguments.')
+    elif env_shard_index is not None:
+        shard_index = env_shard_index
+
+    total_shards = 1
+    if parsed_total_shards is not None:
+        total_shards = parsed_total_shards
+        if env_total_shards is not None:
+            logging.warning(
+                'Total shards set by both arguments and environment variable. '
+                'Using value provided by arguments.')
+    elif env_total_shards is not None:
+        total_shards = env_total_shards
+
+    if shard_index < 0:
+        raise ValueError('Shard index must be non-negative')
+    if total_shards < 1:
+        raise ValueError('Total shards must be positive')
+    if shard_index >= total_shards:
+        raise ValueError('Shard index must be < total shards')
+
+    return shard_index, total_shards
+
+
+def _parse_args() -> argparse.Namespace:
+    """Parses command line args.
+
+    Returns:
+        An argparse.Namespace containing all parsed known arguments.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-clean',
@@ -325,6 +391,17 @@ def main() -> int:
                         help='Print debug information.')
     parser.add_argument('--filter',
                         help='Only run configs that contain this substring.')
+    parser.add_argument(
+        '--shard-index',
+        type=int,
+        help=(f'The index of the current shard. If set, --total-shards must '
+              f'also be set. Can also be set via {_SHARD_INDEX_ENV_VAR}.'))
+    parser.add_argument(
+        '--total-shards',
+        type=int,
+        help=(f'The total number of shards used to run these tests. If set, '
+              f'--shard-index must also be set. Can also be set via '
+              f'{_TOTAL_SHARDS_ENV_VAR}.'))
     promptfoo_install_group = parser.add_mutually_exclusive_group()
     promptfoo_install_group.add_argument(
         '--install-promptfoo-from-npm',
@@ -342,12 +419,32 @@ def main() -> int:
         const='main',
         help=('Build promptfoo from the given source revision. If no revision '
               'is specified, ToT will be used.'))
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main() -> int:
+    """Evaluates prompts using promptfoo.
+
+    This will get a copy of promptfoo and create clean checkouts before running
+    tests.
+    """
+    args = _parse_args()
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format='%(message)s',
     )
+
+    shard_index, total_shards = _determine_shard_values(
+        args.shard_index, args.total_shards)
+
+    configs_to_run = discover_testcase_files()
+    configs_to_run.sort()
+    if args.filter:
+        configs_to_run = [c for c in configs_to_run if args.filter in str(c)]
+    configs_to_run = configs_to_run[shard_index::total_shards]
+    if len(configs_to_run) == 0:
+        logging.info('No tests to run after filtering and sharding')
+        return 0
 
     result = subprocess.run(
         ['gclient', 'root'],
@@ -369,12 +466,6 @@ def main() -> int:
                                  args.promptfoo_version)
 
     returncode = 0
-    configs_to_run = discover_testcase_files()
-    if args.filter:
-        configs_to_run = [c for c in configs_to_run if args.filter in str(c)]
-    if len(configs_to_run) == 0:
-        logging.info('No tests to run')
-
     for config in configs_to_run:
         with WorkDir('workdir', root_path, not args.no_clean, args.verbose,
                      args.force, is_btrfs) as workdir:
