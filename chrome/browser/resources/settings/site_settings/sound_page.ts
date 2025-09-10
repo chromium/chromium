@@ -8,13 +8,25 @@ import './site_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
+import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './sound_page.html.js';
 
-export class SoundPageElement extends PolymerElement {
+interface BlockAutoplayStatus {
+  enabled: boolean;
+  pref: chrome.settingsPrivate.PrefObject<boolean>;
+}
+
+const SoundPageElementBase = WebUiListenerMixin(PolymerElement);
+
+export class SoundPageElement extends SoundPageElementBase {
   static get is() {
     return 'settings-sound-page';
   }
@@ -32,10 +44,63 @@ export class SoundPageElement extends PolymerElement {
         type: Object,
         value: ContentSettingsTypes,
       },
+
+      blockAutoplayStatus_: {
+        type: Object,
+        value() {
+          return {};
+        },
+      },
+
+      enableBlockAutoplayContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
+        },
+      },
     };
   }
 
   declare searchTerm: string;
+  declare private blockAutoplayStatus_: BlockAutoplayStatus;
+  declare private enableBlockAutoplayContentSetting_: boolean;
+
+  private browserProxy_: PrivacyPageBrowserProxy =
+      PrivacyPageBrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+
+    this.onBlockAutoplayStatusChanged_({
+      pref: {
+        key: '',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      enabled: false,
+    });
+
+    this.addWebUiListener(
+        'onBlockAutoplayStatusChanged',
+        (status: BlockAutoplayStatus) =>
+            this.onBlockAutoplayStatusChanged_(status));
+  }
+
+
+  /**
+   * Called when the block autoplay status changes.
+   */
+  private onBlockAutoplayStatusChanged_(autoplayStatus: BlockAutoplayStatus) {
+    this.blockAutoplayStatus_ = autoplayStatus;
+  }
+
+  /**
+   * Updates the block autoplay pref when the toggle is changed.
+   */
+  private onBlockAutoplayToggleChange_(event: Event) {
+    const target = event.target as SettingsToggleButtonElement;
+    this.browserProxy_.setBlockAutoplayEnabled(target.checked);
+  }
 }
 
 declare global {
