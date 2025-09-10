@@ -367,6 +367,9 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
   };
   // Mapping from suffix to weight from the DirectWrite documentation.
   // http://msdn.microsoft.com/en-us/library/windows/desktop/dd368082.aspx
+  //
+  // The list is intentionally incomplete, because it is for the backward
+  // compatibility with GDI. See issues for crrev.com/c/542603004.
   const static FamilyWeightSuffix kVariantForSuffix[] = {
       {u" thin", 5, FontSelectionValue(100)},
       {u" extralight", 11, FontSelectionValue(200)},
