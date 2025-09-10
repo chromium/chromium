@@ -159,9 +159,7 @@ void AddOverrideWithDuration(base::Value::Dict* policy,
 }
 
 std::string PolicyToString(const base::Value::Dict& policy) {
-  std::string json_string;
-  base::JSONWriter::Write(policy, &json_string);
-  return json_string;
+  return base::WriteJson(policy).value_or("");
 }
 
 }  // namespace time_limit_test_utils

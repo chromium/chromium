@@ -73,9 +73,7 @@ bool IsValidKioskAppManifest(const extensions::Manifest& manifest) {
 }
 
 std::string ValueToString(base::ValueView value) {
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  return json;
+  return base::WriteJson(value).value_or("");
 }
 
 }  // namespace

@@ -138,8 +138,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
-  std::string request_string;
-  base::JSONWriter::Write(request_data, &request_string);
+  std::string request_string = base::WriteJson(request_data).value_or("");
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("arc_auth_code_fetcher", R"(
       semantics {

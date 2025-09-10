@@ -149,8 +149,7 @@ Profile* WebTimeCalculationBrowserTest::GetProfile() {
 }
 
 void WebTimeCalculationBrowserTest::UpdatePolicy() {
-  std::string policy_value;
-  base::JSONWriter::Write(builder_.dict(), &policy_value);
+  std::string policy_value = base::WriteJson(builder_.dict()).value_or("");
 
   logged_in_user_mixin_.GetUserPolicyMixin()
       ->RequestPolicyUpdate()

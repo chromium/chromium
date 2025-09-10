@@ -2930,8 +2930,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     std::string search;
     if (launch_dir || type || volume_filter || query) {
-      std::string json_args;
-      base::JSONWriter::Write(arg_value, &json_args);
+      std::string json_args = base::WriteJson(arg_value).value_or("");
       search = base::StrCat(
           {"?", base::EscapeUrlEncodedData(json_args, /*use_plus=*/false)});
     }
@@ -3057,7 +3056,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       }
     }
 
-    base::JSONWriter::Write(dictionary, output);
+    *output = base::WriteJson(dictionary).value_or("");
     return;
   }
 
@@ -3143,7 +3142,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                        "/" + util::GetAndroidFilesMountPointName());
       }
     }
-    base::JSONWriter::Write(dictionary, output);
+    *output = base::WriteJson(dictionary).value_or("");
     return;
   }
 
@@ -3166,7 +3165,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     dictionary.Set("url", url.spec());
     dictionary.Set("origin", origin);
 
-    base::JSONWriter::Write(dictionary, output);
+    *output = base::WriteJson(dictionary).value_or("");
     return;
   }
 
@@ -3853,9 +3852,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "getHistogramCount") {
     GetHistogramCountMessage message;
     ASSERT_TRUE(GetHistogramCountMessage::ConvertJSONValue(value, &message));
-    base::JSONWriter::Write(base::Value(histograms_.GetBucketCount(
-                                message.histogram_name, message.value)),
-                            output);
+    *output = base::WriteJson(base::Value(histograms_.GetBucketCount(
+                                  message.histogram_name, message.value)))
+                  .value_or("");
 
     return;
   }
@@ -3865,10 +3864,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(GetTotalHistogramSum::ConvertJSONValue(value, &message));
     // GetTotalSum returns an int64_t which does not conform to JSON, convert to
     // a string to ensure it can be JSON encoded.
-    base::JSONWriter::Write(
-        base::Value(base::NumberToString(
-            histograms_.GetTotalSum(message.histogram_name))),
-        output);
+    *output =
+        base::WriteJson(base::Value(base::NumberToString(
+                            histograms_.GetTotalSum(message.histogram_name))))
+            .value_or("");
     return;
   }
 
@@ -3884,9 +3883,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "getUserActionCount") {
     GetUserActionCountMessage message;
     ASSERT_TRUE(GetUserActionCountMessage::ConvertJSONValue(value, &message));
-    base::JSONWriter::Write(
-        base::Value(user_actions_.GetActionCount(message.user_action_name)),
-        output);
+    *output =
+        base::WriteJson(
+            base::Value(user_actions_.GetActionCount(message.user_action_name)))
+            .value_or("");
 
     return;
   }
@@ -3958,9 +3958,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "getLastDriveDialogResult") {
     std::optional<drivefs::mojom::DialogResult> result =
         drive_volume_->last_dialog_result();
-    base::JSONWriter::Write(
-        base::Value(result ? static_cast<int32_t>(result.value()) : -1),
-        output);
+    *output =
+        base::WriteJson(
+            base::Value(result ? static_cast<int32_t>(result.value()) : -1))
+            .value_or("");
     return;
   }
 
@@ -3969,7 +3970,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(path) << "No supplied path to isItemPinned";
     std::optional<bool> is_pinned = drive_volume_->IsItemPinned(*path);
     ASSERT_TRUE(is_pinned.has_value()) << "Supplied path is unknown: " << *path;
-    base::JSONWriter::Write(base::Value(is_pinned.value()), output);
+    *output = base::WriteJson(base::Value(is_pinned.value())).value_or("");
     return;
   }
 
@@ -4049,7 +4050,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         result.Append(label->GetText());
       }
     }
-    base::JSONWriter::Write(result, output);
+    *output = base::WriteJson(result).value_or("");
     return;
   }
 
@@ -4138,7 +4139,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
           std::make_unique<GuestOsTestVolume>(profile(), ptr);
     }
 
-    base::JSONWriter::Write(base::Value(id), output);
+    *output = base::WriteJson(base::Value(id)).value_or("");
     return true;
   }
   if (name == "unregisterMountableGuest") {

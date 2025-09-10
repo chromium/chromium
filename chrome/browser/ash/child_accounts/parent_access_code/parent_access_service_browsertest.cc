@@ -102,8 +102,7 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
  protected:
   // Updates the policy containing the Parent Access Code config.
   void UpdatePolicy(const base::Value& dict) {
-    std::string config_string;
-    base::JSONWriter::Write(dict, &config_string);
+    std::string config_string = base::WriteJson(dict).value_or("");
 
     logged_in_user_mixin_.GetUserPolicyMixin()
         ->RequestPolicyUpdate()

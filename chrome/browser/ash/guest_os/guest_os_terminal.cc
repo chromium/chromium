@@ -474,9 +474,7 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
   base::Value::Dict dict;
   dict.Set(kShortcutKey, base::Value(kShortcutValueSSH));
   dict.Set(kProfileIdKey, base::Value(profileId));
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string ShortcutIdFromContainerId(Profile* profile,
@@ -506,9 +504,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
     }
   }
 
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
+  return base::WriteJson(dict).value_or("");
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(

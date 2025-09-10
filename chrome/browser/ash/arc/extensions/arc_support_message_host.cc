@@ -37,9 +37,7 @@ void ArcSupportMessageHost::SendMessage(const base::ValueView& message) {
   if (!client_)
     return;
 
-  std::string message_string;
-  base::JSONWriter::Write(message, &message_string);
-  client_->PostMessageFromNativeHost(message_string);
+  client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void ArcSupportMessageHost::SetObserver(Observer* observer) {

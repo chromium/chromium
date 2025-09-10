@@ -119,9 +119,7 @@ TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
   TestObserver observer;
   message_host()->SetObserver(&observer);
 
-  std::string value_string;
-  base::JSONWriter::Write(value, &value_string);
-  OnMessage(value_string);
+  OnMessage(base::WriteJson(value).value_or(""));
 
   message_host()->SetObserver(nullptr);
 

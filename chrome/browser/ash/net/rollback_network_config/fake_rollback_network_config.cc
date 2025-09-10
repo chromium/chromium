@@ -31,9 +31,7 @@ void FakeRollbackNetworkConfig::RollbackConfigImport(const std::string& config,
 
 void FakeRollbackNetworkConfig::RollbackConfigExport(ExportCallback callback) {
   if (imported_config_.has_value()) {
-    std::string serialized_config;
-    base::JSONWriter::Write(*imported_config_, &serialized_config);
-    std::move(callback).Run(serialized_config);
+    std::move(callback).Run(base::WriteJson(*imported_config_).value_or(""));
   } else {
     std::move(callback).Run(kEmptyConfig);
   }

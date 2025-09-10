@@ -135,8 +135,7 @@ GURL GetFileManagerMainPageUrlWithParams(
     arg_value.Set("volumeFilter", std::move(volume_filter_list));
   }
 
-  std::string json_args;
-  base::JSONWriter::Write(arg_value, &json_args);
+  std::string json_args = base::WriteJson(arg_value).value_or("");
 
   std::string url =
       GetFileManagerMainPageUrl().spec() + '?' +
