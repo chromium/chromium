@@ -1024,6 +1024,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-prefer-buy-now-pay-later-blocklists",
+    "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "autofill-save-card-bottomsheet",
     "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
     "expiry_milestone": 145
