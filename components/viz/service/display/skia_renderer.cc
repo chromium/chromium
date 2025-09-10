@@ -3164,9 +3164,7 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   // content restricted to the intersection of the DrawQuad and any defined
   // |backdrop_filter_bounds|.
   if (rpdq_params.backdrop_filter) {
-    SkRect backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
-    // Pass bounds do not match the display scale; they will be scaled and
-    // converted into an SkPath in |backdrop_filter_bounds| if defined.
+    SkRect backdrop_rect;
     std::optional<SkPath> pass_bounds =
         BackdropFilterBoundsForPass(quad->render_pass_id);
     std::optional<SkPath> backdrop_filter_bounds;
@@ -3182,15 +3180,9 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
         }
         // Scale by the filter's scale, but don't apply filter origin
         SkRRect result;
-        if (!backdrop_filter_bounds_as_rrect.transform(local_matrix, &result) ||
-            !backdrop_rect.intersect(result.rect())) {
-          // No visible backdrop filter
-          rpdq_params.backdrop_filter = nullptr;
-          return rpdq_params;
-        } else {
-          transformed_filter_bounds = result;
-          backdrop_filter_bounds = SkPath::RRect(result);
-        }
+        backdrop_filter_bounds_as_rrect.transform(local_matrix, &result);
+        backdrop_rect = result.rect();
+        backdrop_filter_bounds = SkPath::RRect(result);
 
         if (transformed_filter_bounds.contains(rpdq_params.filter_bounds)) {
           // The backdrop filter bounds are a no-op since the quad rect or
@@ -3216,12 +3208,19 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       } else {
         SkPath transformed_path;
         transformed_path.addPath(*pass_bounds, local_matrix);
-        if (!backdrop_rect.intersect(transformed_path.getBounds())) {
-          rpdq_params.backdrop_filter = nullptr;
-          return rpdq_params;
-        }
+        backdrop_rect = transformed_path.getBounds();
         backdrop_filter_bounds = transformed_path;
       }
+    } else {
+      // NOTE: This code is never hit during rendering of an ordinary webpage.
+      // Backdrop_filter_bounds is set unconditionally for any element with a
+      // backdrop-filter in
+      // PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter. This
+      // branch exists for UI code, which sometimes does not calculate its own
+      // backdrop_filter_bounds, passing null instead. In this case, defaulting
+      // to the visible rect is fine as it is what the UI code is expecting.
+      // See: crbug.com/984649
+      backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
     }
 
     // Besides ensuring the output of the backdrop filter doesn't go beyond its
@@ -3246,12 +3245,15 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           /*inner=*/SkImageFilters::Crop(backdrop_rect, sk_tile_mode, nullptr));
     }
 
+    SkRect bd_filter_extra_bounds = gfx::RectFToSkRect(params->visible_rect);
+    bd_filter_extra_bounds.intersect(backdrop_rect);
+
     // Update |filter_bounds| to include content produced by the backdrop. Under
     // most circumstances this will be a no-op since content is restricted to
     // underneath the RPDQ's draw region, but if a backdrop filter is combined
     // with some pixel-moving filters, that may not remain the case and this
     // ensures |filter_bounds| will contain all possible output.
-    rpdq_params.filter_bounds.join(backdrop_rect);
+    rpdq_params.filter_bounds.join(bd_filter_extra_bounds);
     rpdq_params.backdrop_filter_bounds = backdrop_filter_bounds;
   }
 
