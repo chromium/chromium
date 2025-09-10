@@ -14,4 +14,48 @@
   <message name="IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked from being copied by the DataControlsRules policy. This message will be visible to the user when they attempt to paste into any UI element (perhaps even outside of Chome) that supports displaying text.">
     Pasting this content here is blocked by your administrator.
   </message>
+
+  <!-- Data Controls dialog strings -->
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_PASTE_BLOCK_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard paste (ctrl-v) has been blocked by their admin.">
+    Pasting this content to this site is not allowed
+  </message>
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard paste (ctrl-v) is not recommended by their admin.">
+    Pasting this content to this site is not recommended
+  </message>
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_COPY_BLOCK_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard copy (ctrl-c) has been blocked by their admin.">
+    Copying from this site is not allowed
+  </message>
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard copy (ctrl-c) is not recommended by their admin.">
+    Copying from this site is not recommended
+  </message>
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_SHARE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user their share is not recommended by their admin.">
+    Sharing from this site is not recommended
+  </message>
+  <message name="IDS_DATA_CONTROLS_CLIPBOARD_ACTION_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user their action is not recommended by their admin.">
+    This action is not recommended
+  </message>
+  <message name="IDS_DATA_CONTROLS_BLOCKED_LABEL" desc="Generic text displayed in a dialog telling the user their action has been blocked by their administrator.">
+    Your administrator has blocked this action
+  </message>
+  <message name="IDS_DATA_CONTROLS_WARNED_LABEL" desc="Generic text displayed in a dialog telling the user their action is not recommended by their administrator.">
+    This action might violate your organization's policies
+  </message>
+  <message name="IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before pasting to a site.">
+    Paste anyway
+  </message>
+  <message name="IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before copying from a site.">
+    Copy anyway
+  </message>
+  <message name="IDS_DATA_CONTROLS_SHARE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before sharing from a site.">
+    Share anyway
+  </message>
+  <message name="IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before pasting to a site.">
+    Don't paste
+  </message>
+  <message name="IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before copying from a site.">
+    Don't copy
+  </message>
+  <message name="IDS_DATA_CONTROLS_SHARE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before sharing from a site.">
+    Don't share
+  </message>
 </grit-part>
