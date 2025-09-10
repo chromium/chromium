@@ -4944,7 +4944,6 @@ public class StripLayoutHelper
                         || StripLayoutTabDelegate.isTabVisible(stripLayoutTab));
     }
 
-    // TODO(crbug.com/441132620): Update to account for pinned tabs.
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
         boolean rtl = LocalizationUtils.isLayoutRtl();

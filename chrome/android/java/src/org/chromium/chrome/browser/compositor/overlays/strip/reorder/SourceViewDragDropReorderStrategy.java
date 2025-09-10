@@ -178,6 +178,13 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         return mViewBeingDragged;
     }
 
+    @Override
+    public boolean shouldAllowAutoScroll() {
+        // Do not allow auto-scroll when a pinned tab is dragged over unpinned tabs; pinned tabs can
+        // only be dropped into the pinned section.
+        return !TabStripDragHandler.isDraggingPinnedItem();
+    }
+
     boolean isReorderingTab() {
         return mActiveSubStrategy == mTabSubStrategy || mActiveSubStrategy == mMultiTabSubStrategy;
     }
