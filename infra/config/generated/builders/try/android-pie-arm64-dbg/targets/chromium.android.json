@@ -20,6 +20,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_smoke_test/",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
@@ -54,6 +55,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk/",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -93,6 +95,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_vr_apk/",
         "name": "chrome_public_test_vr_apk",
         "resultdb": {
           "enable": true,
@@ -128,6 +131,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk/",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -166,6 +170,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:monochrome_public_bundle_smoke_test/",
         "name": "monochrome_public_bundle_smoke_test",
         "resultdb": {
           "enable": true,
@@ -199,6 +204,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:monochrome_public_smoke_test/",
         "name": "monochrome_public_smoke_test",
         "resultdb": {
           "enable": true,
@@ -232,6 +238,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:monochrome_public_test_ar_apk/",
         "name": "monochrome_public_test_ar_apk",
         "resultdb": {
           "enable": true,
@@ -265,6 +272,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//services:services_unittests/",
         "name": "services_unittests",
         "resultdb": {
           "enable": true,
@@ -298,6 +306,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/browser/android/vr:vr_android_unittests/",
         "name": "vr_android_unittests",
         "resultdb": {
           "enable": true,
@@ -331,6 +340,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
         "name": "webview_instrumentation_test_apk",
         "resultdb": {
           "enable": true,

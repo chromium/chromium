@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/media/cma/backend:cast_audio_backend_unittests/",
         "name": "cast_audio_backend_unittests",
         "swarming": {
           "dimensions": {
@@ -25,6 +26,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/base:cast_base_unittests/",
         "name": "cast_base_unittests",
         "swarming": {
           "dimensions": {
@@ -39,6 +41,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/cast_core:cast_cast_core_unittests/",
         "name": "cast_cast_core_unittests",
         "swarming": {
           "dimensions": {
@@ -53,6 +56,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/crash:cast_crash_unittests/",
         "name": "cast_crash_unittests",
         "swarming": {
           "dimensions": {
@@ -67,6 +71,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/ui/display_settings:cast_display_settings_unittests/",
         "name": "cast_display_settings_unittests",
         "swarming": {
           "dimensions": {
@@ -81,6 +86,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/graphics:cast_graphics_unittests/",
         "name": "cast_graphics_unittests",
         "swarming": {
           "dimensions": {
@@ -95,6 +101,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast/media:cast_media_unittests/",
         "name": "cast_media_unittests",
         "swarming": {
           "dimensions": {
@@ -109,6 +116,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast:cast_shell_browsertests/",
         "name": "cast_shell_browsertests",
         "swarming": {
           "dimensions": {
@@ -123,6 +131,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chromecast:cast_shell_unittests/",
         "name": "cast_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -137,6 +146,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/cast:cast_unittests/",
         "name": "cast_unittests",
         "swarming": {
           "dimensions": {
@@ -151,6 +161,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//sandbox/linux:sandbox_linux_unittests/",
         "name": "sandbox_linux_unittests",
         "swarming": {
           "dimensions": {

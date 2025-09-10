@@ -8,6 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//android_webview/test:android_webview_junit_tests/",
         "name": "android_webview_junit_tests",
         "resultdb": {
           "enable": true,
@@ -29,6 +30,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_junit_tests/",
         "name": "base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -50,6 +52,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//build/android:build_junit_tests/",
         "name": "build_junit_tests",
         "resultdb": {
           "enable": true,
@@ -71,6 +74,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
         "name": "chrome_java_test_pagecontroller_junit_tests",
         "resultdb": {
           "enable": true,
@@ -92,6 +96,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/android:chrome_junit_tests/",
         "name": "chrome_junit_tests",
         "resultdb": {
           "enable": true,
@@ -113,6 +118,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components:components_junit_tests/",
         "name": "components_junit_tests",
         "resultdb": {
           "enable": true,
@@ -134,6 +140,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//content/public/android:content_junit_tests/",
         "name": "content_junit_tests",
         "resultdb": {
           "enable": true,
@@ -155,6 +162,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//device:device_junit_tests/",
         "name": "device_junit_tests",
         "resultdb": {
           "enable": true,
@@ -176,6 +184,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//testing/android/junit:junit_unit_tests/",
         "name": "junit_unit_tests",
         "resultdb": {
           "enable": true,
@@ -197,6 +206,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/",
         "name": "keyboard_accessory_junit_tests",
         "resultdb": {
           "enable": true,
@@ -218,6 +228,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//media/base/android:media_base_junit_tests/",
         "name": "media_base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -239,6 +250,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/module_installer/android:module_installer_junit_tests/",
         "name": "module_installer_junit_tests",
         "resultdb": {
           "enable": true,
@@ -260,6 +272,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//net/android:net_junit_tests/",
         "name": "net_junit_tests",
         "resultdb": {
           "enable": true,
@@ -281,6 +294,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/paint_preview/player/android:paint_preview_junit_tests/",
         "name": "paint_preview_junit_tests",
         "resultdb": {
           "enable": true,
@@ -302,6 +316,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/browser/password_check/android:password_check_junit_tests/",
         "name": "password_check_junit_tests",
         "resultdb": {
           "enable": true,
@@ -323,6 +338,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/browser/password_manager/android:password_manager_junit_tests/",
         "name": "password_manager_junit_tests",
         "resultdb": {
           "enable": true,
@@ -344,6 +360,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//services:services_junit_tests/",
         "name": "services_junit_tests",
         "resultdb": {
           "enable": true,
@@ -365,6 +382,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests/",
         "name": "touch_to_fill_junit_tests",
         "resultdb": {
           "enable": true,
@@ -386,6 +404,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui:ui_junit_tests/",
         "name": "ui_junit_tests",
         "resultdb": {
           "enable": true,
@@ -407,6 +426,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/android/webapk/libs/client:webapk_client_junit_tests/",
         "name": "webapk_client_junit_tests",
         "resultdb": {
           "enable": true,
@@ -428,6 +448,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/",
         "name": "webapk_shell_apk_h2o_junit_tests",
         "resultdb": {
           "enable": true,
@@ -449,6 +470,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/",
         "name": "webapk_shell_apk_junit_tests",
         "resultdb": {
           "enable": true,
