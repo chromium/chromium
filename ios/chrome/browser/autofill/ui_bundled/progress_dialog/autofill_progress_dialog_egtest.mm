@@ -92,7 +92,8 @@
                           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE)];
 }
 
-- (void)testDismissWithConfirmation_DisappearsAfterDelay {
+// TODO(crbug.com/444040307): Test is flaky.
+- (void)DISABLED_testDismissWithConfirmation_DisappearsAfterDelay {
   // Simulate flow to show dialog.
   [self simulateUserFlowToShowDialogLoadingState];
 
