@@ -215,7 +215,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<CanvasResourceProvider> provider,
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
     : is_accelerated_(false),
@@ -251,7 +251,7 @@ CanvasResourceSharedImage::CreateSoftware(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<CanvasResourceProvider> provider,
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
   auto resource = AdoptRef(new CanvasResourceSharedImage(
@@ -266,7 +266,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : context_provider_wrapper_(std::move(context_provider_wrapper)),
@@ -362,7 +362,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");

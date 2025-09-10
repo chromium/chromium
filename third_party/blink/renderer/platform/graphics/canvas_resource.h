@@ -23,6 +23,7 @@
 #include "skia/buildflags.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -199,7 +200,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<CanvasResourceProviderSharedImage>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   static scoped_refptr<CanvasResourceSharedImage> Create(
@@ -208,7 +209,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<CanvasResourceProviderSharedImage>,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
@@ -293,7 +294,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<CanvasResourceProviderSharedImage>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   CanvasResourceSharedImage(gfx::Size size,
@@ -301,7 +302,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                             SkAlphaType alpha_type,
                             const gfx::ColorSpace& color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                            base::WeakPtr<CanvasResourceProvider>,
+                            base::WeakPtr<CanvasResourceProviderSharedImage>,
                             bool is_accelerated,
                             gpu::SharedImageUsageSet shared_image_usage_flags);
 
@@ -334,7 +335,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const bool use_oop_rasterization_;
   const SkAlphaType alpha_type_;
   OwningThreadData owning_thread_data_;
-  base::WeakPtr<CanvasResourceProvider> provider_;
+  base::WeakPtr<CanvasResourceProviderSharedImage> provider_;
 };
 
 // Resource type for a given opaque external resource described on construction
