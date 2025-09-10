@@ -186,13 +186,18 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
   CanAddURLCallback can_add_url_;
 };
 
-HistoryService::HistoryService() : HistoryService(nullptr, nullptr) {}
+HistoryService::HistoryService()
+    : HistoryService(nullptr, nullptr, nullptr, nullptr) {}
 
-HistoryService::HistoryService(std::unique_ptr<HistoryClient> history_client,
-                               std::unique_ptr<VisitDelegate> visit_delegate)
+HistoryService::HistoryService(
+    std::unique_ptr<HistoryClient> history_client,
+    std::unique_ptr<VisitDelegate> visit_delegate,
+    syncer::DeviceInfoTracker* device_info_tracker,
+    syncer::LocalDeviceInfoProvider* local_device_info_provider)
     : history_client_(std::move(history_client)),
       visit_delegate_(std::move(visit_delegate)),
-      backend_loaded_(false) {}
+      device_info_tracker_(device_info_tracker),
+      local_device_info_provider_(local_device_info_provider) {}
 
 HistoryService::~HistoryService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -431,28 +436,6 @@ void HistoryService::AddObserver(HistoryServiceObserver* observer) {
 void HistoryService::RemoveObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
-}
-
-void HistoryService::SetDeviceInfoServices(
-    syncer::DeviceInfoTracker* device_info_tracker,
-    syncer::LocalDeviceInfoProvider* local_device_info_provider) {
-  CHECK(device_info_tracker != nullptr);
-  CHECK(local_device_info_provider != nullptr);
-
-  device_info_tracker_observation_.Reset();
-  device_info_tracker_ = device_info_tracker;
-  device_info_tracker_observation_.Observe(device_info_tracker);
-
-  OnDeviceInfoChange();
-
-  local_device_info_provider_ = local_device_info_provider;
-  local_device_info_available_subscription_ =
-      local_device_info_provider->RegisterOnInitializedCallback(
-          base::BindRepeating(
-              &HistoryService::SendLocalDeviceOriginatorCacheGuidToBackend,
-              weak_ptr_factory_.GetSafeRef()));
-
-  SendLocalDeviceOriginatorCacheGuidToBackend();
 }
 
 void HistoryService::SetCanAddForeignVisitsToSegmentsOnBackend(
@@ -1488,8 +1471,25 @@ bool HistoryService::Init(
     base::Process::TerminateCurrentProcessImmediately(0);
   }
 
-  if (history_client_)
+  if (device_info_tracker_) {
+    device_info_tracker_observation_.Observe(device_info_tracker_);
+
+    OnDeviceInfoChange();
+  }
+
+  if (local_device_info_provider_) {
+    local_device_info_available_subscription_ =
+        local_device_info_provider_->RegisterOnInitializedCallback(
+            base::BindRepeating(
+                &HistoryService::SendLocalDeviceOriginatorCacheGuidToBackend,
+                weak_ptr_factory_.GetSafeRef()));
+
+    SendLocalDeviceOriginatorCacheGuidToBackend();
+  }
+
+  if (history_client_) {
     history_client_->OnHistoryServiceCreated(this);
+  }
 
   return true;
 }

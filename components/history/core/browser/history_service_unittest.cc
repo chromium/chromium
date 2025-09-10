@@ -1368,7 +1368,7 @@ class OrderingHistoryServiceTest : public HistoryServiceTest {
 
     // Set up the HistoryService.
     history_service_ = std::make_unique<history::HistoryService>(
-        nullptr, std::move(visit_delegate));
+        nullptr, std::move(visit_delegate), nullptr, nullptr);
     if (!history_service_->Init(
             TestHistoryDatabaseParamsForPath(history_dir_))) {
       history_service_.reset();

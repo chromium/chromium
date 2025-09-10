@@ -95,10 +95,14 @@ class HistoryService : public KeyedService,
   // Must call Init after construction. The empty constructor provided only for
   // unit tests. When using the full constructor, `history_client` may only be
   // null during testing, while `visit_delegate` may be null if the embedder use
-  // another way to track visited links.
+  // another way to track visited links. `device_info_tracker` and
+  // `local_device_info_provider` may be null, but if non-null must outlive this
+  // class.
   HistoryService();
   HistoryService(std::unique_ptr<HistoryClient> history_client,
-                 std::unique_ptr<VisitDelegate> visit_delegate);
+                 std::unique_ptr<VisitDelegate> visit_delegate,
+                 syncer::DeviceInfoTracker* device_info_tracker,
+                 syncer::LocalDeviceInfoProvider* local_device_info_provider);
 
   HistoryService(const HistoryService&) = delete;
   HistoryService& operator=(const HistoryService&) = delete;
@@ -698,14 +702,6 @@ class HistoryService : public KeyedService,
 
   // Generic Stuff -------------------------------------------------------------
 
-  // Sets the history service's device info tracker and local device info
-  // provider.
-  // TODO(crbug.com/40250371): Remove this and pass the services in on
-  // construction instead.
-  void SetDeviceInfoServices(
-      syncer::DeviceInfoTracker* device_info_tracker,
-      syncer::LocalDeviceInfoProvider* local_device_info_provider);
-
   // Tells the `HistoryBackend` whether or not foreign history should be
   // added to segments data.
   void SetCanAddForeignVisitsToSegmentsOnBackend(bool add_foreign_visits);
@@ -1144,7 +1140,7 @@ class HistoryService : public KeyedService,
 
   // Has the backend finished loading? The backend is loaded once Init has
   // completed.
-  bool backend_loaded_;
+  bool backend_loaded_ = false;
 
   base::ObserverList<HistoryServiceObserver>::Unchecked observers_;
   FaviconsChangedCallbackList favicons_changed_callback_list_;

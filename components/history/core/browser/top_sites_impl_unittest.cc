@@ -118,7 +118,7 @@ class TopSitesImplTest : public HistoryUnitTestBase {
     TopSitesImpl::RegisterPrefs(
         search_engines_test_environment_.pref_service().registry());
     history_service_ = std::make_unique<HistoryService>(
-        nullptr, std::unique_ptr<VisitDelegate>());
+        nullptr, std::unique_ptr<VisitDelegate>(), nullptr, nullptr);
     ASSERT_TRUE(history_service_->Init(
         TestHistoryDatabaseParamsForPath(scoped_temp_dir_.GetPath())));
 

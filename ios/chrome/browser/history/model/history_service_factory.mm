@@ -30,17 +30,26 @@ namespace {
 constexpr int kMaxSyncedNewTabPageDisplays = 5;
 
 std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  syncer::DeviceInfoTracker* device_info_tracker = nullptr;
+  syncer::LocalDeviceInfoProvider* local_device_info_provider = nullptr;
+  if (device_info_sync_service) {
+    device_info_tracker = device_info_sync_service->GetDeviceInfoTracker();
+    local_device_info_provider =
+        device_info_sync_service->GetLocalDeviceInfoProvider();
+  }
+
   auto history_service = std::make_unique<history::HistoryService>(
       std::make_unique<HistoryClientImpl>(
           BookmarkModelFactory::GetForProfile(profile)),
-      nullptr);
+      /*visit_delegate=*/nullptr, device_info_tracker,
+      local_device_info_provider);
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
           profile->GetStatePath(), GetChannel()))) {
     return nullptr;
   }
 
-  syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile);
   if (device_info_sync_service) {
     PrefService* pref_service = profile->GetPrefs();
 
@@ -49,10 +58,6 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
 
     history_service->SetCanAddForeignVisitsToSegmentsOnBackend(
         display_count < kMaxSyncedNewTabPageDisplays);
-
-    history_service->SetDeviceInfoServices(
-        device_info_sync_service->GetDeviceInfoTracker(),
-        device_info_sync_service->GetLocalDeviceInfoProvider());
   }
 
   return history_service;
