@@ -140,20 +140,6 @@
 
 namespace {
 
-// Deprecated 09/2024.
-constexpr char kContentSettingsWindowLastTabIndex[] =
-    "content_settings_window.last_tab_index";
-constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
-constexpr char kSyncPasswordLengthAndHashSalt[] =
-    "profile.sync_password_length_and_hash_salt";
-constexpr char kContextualSearchEnabled[] = "search.contextual_search_enabled";
-constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
-constexpr char kBrowsingDataMigrationHasBeenPossible[] =
-    "ios.browsing_data_migration_controller.migration_has_been_possible";
-constexpr char
-    kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness[] =
-        "ios.magic_stack_segmentation.price_tracking_promo_freshness";
-
 // Deprecated 11/2024
 constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
 
@@ -223,6 +209,9 @@ inline constexpr char kParcelTrackingDisabled[] = "parcel_tracking.disabled";
 inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
 
+// Deprecated 09/2025.
+inline constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -286,29 +275,6 @@ void MigrateDictPref(std::string_view pref_name,
   if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
     target_pref_service->SetDict(
         pref_name, source_pref_service->GetDict(pref_name).Clone());
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
-// Migrates a Time pref from source to target PrefService.
-void MigrateTimePref(std::string_view pref_name,
-                     PrefService* target_pref_service,
-                     PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetTime(pref_name,
-                                 source_pref_service->GetTime(pref_name));
   }
 
   // In all cases, clear the pref from source.
@@ -381,15 +347,6 @@ void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     PrefService* profile_pref_service) {
   MigrateDictPref(pref_name, profile_pref_service,
                   GetApplicationContext()->GetLocalState());
-}
-
-// Helper function migrating the `base::Time` preference from Profile prefs
-// to LocalState prefs.
-void MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateTimePref(pref_name, GetApplicationContext()->GetLocalState(),
-                  profile_pref_service);
 }
 
 void MigrateBooleanFromUserDefaultsToProfilePrefs(
@@ -639,12 +596,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterIntegerPref(prefs::kIOSGMOSKOLastAttributionWindowType, 0);
 
-  // Deprecated 09/2024.
-  registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
-
-  // Deprecated 09/2024 (migrated to profile pref).
-  registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
-
   // Deprecated 02/2025.
   registry->RegisterIntegerPref(kNumberOfProfiles, 0);
   registry->RegisterListPref(kLastActiveProfiles);
@@ -665,9 +616,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       -1);
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
-      -1);
-  registry->RegisterIntegerPref(
-      kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
       -1);
 
   registry->RegisterBooleanPref(prefs::kMigrateWidgetsPrefs, false);
@@ -1074,34 +1022,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
 
-  // Deprecated 09/2024 (migrated to localState prefs).
-  registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
-
-  // Deprecated 09/2024 (migrated to localState prefs).
-  registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
-                             base::Time());
-
-  // Deprecated 09/2024 (migrated to localState prefs).
-  registry->RegisterIntegerPref(
-      prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
-
-  // Deprecated 09/2024.
-  registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
-
-  // Deprecated 09/2024.
-  registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
-
-  // Deprecated 09/2024 (migrated to LocalState pref).
-  registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
-                                0);
-
-  // Deprecated 09/2024.
-  registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
-  registry->RegisterStringPref(kSyncPasswordHash, std::string());
-  registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
-  registry->RegisterStringPref(kContextualSearchEnabled, std::string());
-  registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 3);
-
   // Deprecated 11/2024.
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
 
@@ -1146,19 +1066,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kParcelTrackingDisabled, false);
   registry->RegisterBooleanPref(
       kHomeCustomizationMagicStackParcelTrackingEnabled, false);
+
+  // Deprecated 09/2025.
+  registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
-
-  // Added 09/2024.
-  prefs->ClearPref(kBrowsingDataMigrationHasBeenPossible);
-
-  // Added 09/2024
-  prefs->ClearPref(
-      kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
 
   // Added 02/2025
   prefs->ClearPref(kNumberOfProfiles);
@@ -1202,43 +1118,8 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   // Added 09/2024.
-  prefs->ClearPref(kContentSettingsWindowLastTabIndex);
-  prefs->ClearPref(kSyncPasswordHash);
-  prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
-  prefs->ClearPref(kContextualSearchEnabled);
-  prefs->ClearPref(kNtpShownBookmarksFolder);
-
-  // Added 09/2024.
-  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosPreRestoreAccountInfo, prefs);
-
-  // Added 09/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kOSLockdownModeEnabled, prefs);
-
-  // Added 09/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kBrowserLockdownModeEnabled, prefs);
-
-  // Added 09/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, prefs);
-
-  // Added 09/2024.
-  MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kIdentityConfirmationSnackbarLastPromptTime, prefs);
-
-  // Added 09/2024.
-  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kIdentityConfirmationSnackbarDisplayCount, prefs);
-
-  // Added 09/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kIncognitoInterstitialEnabled, prefs);
-
-  // Added 09/2024.
-  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kAddressBarSettingsNewBadgeShownCount, prefs);
 
   // Added 09/2024.
   if (IsIosQuickDeleteEnabled()) {
@@ -1356,6 +1237,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kInvalidationTopicsToHandler);
   prefs->ClearPref(kParcelTrackingDisabled);
   prefs->ClearPref(kHomeCustomizationMagicStackParcelTrackingEnabled);
+
+  // Added 09/2025.
+  prefs->ClearPref(kNtpShownBookmarksFolder);
 }
 
 void MigrateObsoleteUserDefault() {

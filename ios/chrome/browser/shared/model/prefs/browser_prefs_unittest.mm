@@ -42,16 +42,9 @@ class BrowserPrefsTest : public PlatformTest {
 // Check that the migration of a pref from profile prefService to
 // localState prefService is performed correctly.
 TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
-  base::Time now = base::Time::Now();
-
   // Simulate registering a value different from default in profile prefService.
   pref_service_.SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
-  pref_service_.SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
-                        now);
-  pref_service_.SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount, 1);
-  pref_service_.SetBoolean(prefs::kIncognitoInterstitialEnabled, true);
-  pref_service_.SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount, 1);
 
   EXPECT_EQ(pref_service_.GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
@@ -59,32 +52,6 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   EXPECT_EQ(local_state()->GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
             false);
-
-  EXPECT_EQ(
-      pref_service_.GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime),
-      now);
-  EXPECT_EQ(local_state()->GetTime(
-                prefs::kIdentityConfirmationSnackbarLastPromptTime),
-            base::Time());
-
-  EXPECT_EQ(pref_service_.GetInteger(
-                prefs::kIdentityConfirmationSnackbarDisplayCount),
-            1);
-  EXPECT_EQ(local_state()->GetInteger(
-                prefs::kIdentityConfirmationSnackbarDisplayCount),
-            0);
-
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kIncognitoInterstitialEnabled),
-            true);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
-            false);
-
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
-      1);
-  EXPECT_EQ(
-      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
-      0);
 
   MigrateObsoleteProfilePrefs(&pref_service_);
 
@@ -95,32 +62,6 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   EXPECT_EQ(local_state()->GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
             true);
-
-  EXPECT_EQ(
-      pref_service_.GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime),
-      base::Time());
-  EXPECT_EQ(local_state()->GetTime(
-                prefs::kIdentityConfirmationSnackbarLastPromptTime),
-            now);
-
-  EXPECT_EQ(pref_service_.GetInteger(
-                prefs::kIdentityConfirmationSnackbarDisplayCount),
-            0);
-  EXPECT_EQ(local_state()->GetInteger(
-                prefs::kIdentityConfirmationSnackbarDisplayCount),
-            1);
-
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kIncognitoInterstitialEnabled),
-            false);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
-            true);
-
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
-      0);
-  EXPECT_EQ(
-      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
-      1);
 }
 
 // Check that the migration of a pref from localState prefService to
@@ -132,10 +73,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   dict_example.Set("Example_key", "Example_value");
 
   // Set initial values in local_state
-
-  // Account Info
-  local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
-                         dict_example.Clone());
 
   // Magic Stack Segmentation Impressions
   local_state()->SetInteger(
@@ -156,13 +93,7 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   local_state()->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
                             99);
 
-  // Verify initial state before migration
-
-  // Check Account Info
-  EXPECT_EQ(pref_service_.GetDict(prefs::kIosPreRestoreAccountInfo).size(),
-            0ul);
-  EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
-            dict_example);
+  // Verify initial state before migration.
 
   // Check Magic Stack Segmentation Impressions in pref_service (should be -1)
   EXPECT_EQ(pref_service_.GetInteger(
@@ -223,13 +154,7 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   MigrateObsoleteLocalStatePrefs(local_state());
   MigrateObsoleteProfilePrefs(&pref_service_);
 
-  // Verify state after migration
-
-  // Check Account Info
-  EXPECT_EQ(pref_service_.GetDict(prefs::kIosPreRestoreAccountInfo),
-            dict_example);
-  EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
-            0ul);
+  // Verify state after migration.
 
   // Check Magic Stack Segmentation Impressions in pref_service
   EXPECT_EQ(pref_service_.GetInteger(
