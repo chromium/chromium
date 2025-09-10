@@ -18179,6 +18179,21 @@
             ]
         }
     ],
+    "PersistentDefaultBrowserPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PersistentDefaultBrowserPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "PickerUI": [
         {
             "platforms": [
