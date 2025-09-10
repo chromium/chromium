@@ -85,9 +85,7 @@ void BuildFlatbufferAndSendToNetworkService(
               VLOG(1) << "Masked Domain List flatbuffer build failed";
               return std::nullopt;
             }
-            base::UmaHistogramTimes(
-                "NetworkService.IpProtection.ProxyAllowList."
-                "FlatbufferBuildTime",
+            ip_protection::Telemetry().MdlFlatbufferBuildTime(
                 base::Time::Now() - start_time);
 
             std::optional<int64_t> default_mdl_size =
@@ -146,10 +144,7 @@ void BuildFlatbufferAndSendToNetworkService(
 void OnMaskedDomainListReady(
     base::Version version,
     std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.ProxyAllowList."
-      "UpdateSuccess",
-      masked_domain_list.has_value());
+  ip_protection::Telemetry().MdlUpdateSuccess(masked_domain_list.has_value());
   if (masked_domain_list.has_value()) {
     VLOG(1) << "Received Masked Domain List";
     BuildFlatbufferAndSendToNetworkService(std::move(masked_domain_list));

@@ -45,6 +45,8 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void MdlEstimatedMemoryUsage(size_t) override;
   void MdlEstimatedDiskUsage(int64_t) override;
   void MdlSize(int64_t) override;
+  void MdlFlatbufferBuildTime(base::TimeDelta duration) override;
+  void MdlUpdateSuccess(bool success) override;
   void AndroidAuthClientCreationTime(base::TimeDelta duration) override;
   void AndroidAuthClientGetInitialDataTime(base::TimeDelta duration) override;
   void AndroidAuthClientAuthAndSignTime(base::TimeDelta duration) override;

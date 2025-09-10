@@ -270,6 +270,18 @@ void IpProtectionTelemetryUma::MdlSize(int64_t size) {
                                  /*buckets=*/50);
 }
 
+void IpProtectionTelemetryUma::MdlFlatbufferBuildTime(
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "NetworkService.IpProtection.ProxyAllowList.FlatbufferBuildTime",
+      duration);
+}
+
+void IpProtectionTelemetryUma::MdlUpdateSuccess(bool success) {
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess", success);
+}
+
 void IpProtectionTelemetryUma::AndroidAuthClientCreationTime(
     base::TimeDelta duration) {
   base::UmaHistogramMediumTimes(

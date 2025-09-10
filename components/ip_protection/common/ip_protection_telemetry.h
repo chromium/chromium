@@ -187,6 +187,12 @@ class IpProtectionTelemetry {
   // The size of the MDL protobuf data, in KB.
   virtual void MdlSize(int64_t) = 0;
 
+  // The time it takes to build the MDL flatbuffer, in ms.
+  virtual void MdlFlatbufferBuildTime(base::TimeDelta duration) = 0;
+
+  // Whether updating the MDL via component updater was successful.
+  virtual void MdlUpdateSuccess(bool success) = 0;
+
   // Time taken to create an Android IP Protection auth client, including
   // binding to the system-provided auth service.
   virtual void AndroidAuthClientCreationTime(base::TimeDelta duration) = 0;
