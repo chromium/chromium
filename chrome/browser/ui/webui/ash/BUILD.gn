@@ -60,6 +60,7 @@ group("browser_tests") {
     "//chrome/browser/ui/webui/ash/cros_components:browser_tests",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:browser_tests",
     "//chrome/browser/ui/webui/ash/edu_coexistence:browser_tests",
+    "//chrome/browser/ui/webui/ash/floating_workspace:browser_tests",
     "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
     "//chrome/browser/ui/webui/ash/login:browser_tests",
     "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",

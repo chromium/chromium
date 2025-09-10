@@ -47,3 +47,23 @@ static_library("floating_workspace") {
   allow_circular_includes_from =
       [ "//chrome/browser/ash/floating_workspace:floating_workspace" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "floating_workspace_dialog_browsertest.cc" ]
+
+  deps = [
+    ":floating_workspace",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
