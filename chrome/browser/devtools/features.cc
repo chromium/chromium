@@ -161,7 +161,7 @@ BASE_FEATURE(kDevToolsNewPermissionDialog,
 // Whether DevTools drawer can be toggled to vertical orientation.
 BASE_FEATURE(kDevToolsVerticalDrawer,
              "DevToolsVerticalDrawer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools shows submenu example prompts for the AI Assistance panel
 // in context menus.
