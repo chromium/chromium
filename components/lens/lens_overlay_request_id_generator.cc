@@ -42,10 +42,12 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
 
   bool increment_image_sequence =
       update_mode == RequestIdUpdateMode::kFullImageRequest ||
+      update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
       update_mode == RequestIdUpdateMode::kInitialRequest;
   bool increment_sequence = update_mode != RequestIdUpdateMode::kOpenInNewTab;
   bool increment_long_context =
       update_mode == RequestIdUpdateMode::kPageContentRequest ||
+      update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
       update_mode == RequestIdUpdateMode::kInitialRequest;
   bool create_analytics_id =
       update_mode != RequestIdUpdateMode::kSearchUrl &&

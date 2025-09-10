@@ -32,8 +32,7 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_resetsSequence) {
             1);
 }
 
-TEST_F(LensOverlayRequestIdGeneratorTest,
-       GetNextIdHasTimeUsec) {
+TEST_F(LensOverlayRequestIdGeneratorTest, GetNextIdHasTimeUsec) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
       request_id_generator.GetNextRequestId(
@@ -54,12 +53,12 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   ASSERT_EQ(first_id->image_sequence_id(), 1);
   ASSERT_EQ(first_id->long_context_id(), 1);
 
-  #if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Verify that the initial request id is only generated once.
   EXPECT_DEATH(request_id_generator.GetNextRequestId(
                    RequestIdUpdateMode::kInitialRequest),
                "");
-  #endif
+#endif
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
@@ -179,8 +178,7 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
        GetNextIdForPageContentUpdate_IncremenentsSequenceAndLongContextId) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlayContextualSearchbox,
-      {{"page-content-request-id-fix", "true"}});
+      lens::features::kLensOverlayContextualSearchbox, {});
 
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
@@ -194,6 +192,30 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
       request_id_generator.GetNextRequestId(
           RequestIdUpdateMode::kPageContentRequest);
   ASSERT_EQ(second_id->image_sequence_id(), 0);
+  ASSERT_EQ(second_id->sequence_id(), 2);
+  ASSERT_EQ(second_id->long_context_id(), 2);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+}
+
+TEST_F(
+    LensOverlayRequestIdGeneratorTest,
+    GetNextIdForPageContentWithViewportUpdate_IncremenentsSequenceAndLongContextId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox, {});
+
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentWithViewportRequest);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 1);
+
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentWithViewportRequest);
+  ASSERT_EQ(second_id->image_sequence_id(), 2);
   ASSERT_EQ(second_id->sequence_id(), 2);
   ASSERT_EQ(second_id->long_context_id(), 2);
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());

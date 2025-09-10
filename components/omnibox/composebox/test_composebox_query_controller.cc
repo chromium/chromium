@@ -95,8 +95,9 @@ TestComposeboxQueryController::CreateEndpointFetcher(
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    last_sent_file_upload_request_ = lens::LensOverlayServerRequest();
-    last_sent_file_upload_request_->ParseFromString(request_string);
+    lens::LensOverlayServerRequest sent_request;
+    sent_request.ParseFromString(request_string);
+    sent_upload_requests_.push_back(sent_request);
   }
 
   last_sent_cors_exempt_headers_.clear();

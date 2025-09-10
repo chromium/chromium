@@ -101,10 +101,21 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   const GURL& last_sent_fetch_url() const { return last_sent_fetch_url_; }
 
-  // Gets the last sent file upload request.
+  // Gets the sent upload request with the index from the end, e.g.
+  // recent_sent_upload_request(0) will return the last sent upload request.
+  std::optional<lens::LensOverlayServerRequest> recent_sent_upload_request(
+      size_t index_from_end) const {
+    size_t index = sent_upload_requests_.size() - index_from_end - 1;
+    if (index < 0 || index >= sent_upload_requests_.size()) {
+      return std::nullopt;
+    }
+    return std::make_optional(sent_upload_requests_[index]);
+  }
+
+  // Gets the last sent upload request.
   std::optional<lens::LensOverlayServerRequest> last_sent_file_upload_request()
       const {
-    return last_sent_file_upload_request_;
+    return recent_sent_upload_request(0);
   }
 
   // Gets the last sent cors exempt headers.
@@ -152,8 +163,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   // The last url for which a fetch request was sent by the query controller.
   GURL last_sent_fetch_url_;
 
-  // The last sent file upload request.
-  std::optional<lens::LensOverlayServerRequest> last_sent_file_upload_request_;
+  // The sent upload requests.
+  std::vector<lens::LensOverlayServerRequest> sent_upload_requests_;
 
   // The last sent cors exempt headers.
   std::vector<std::string> last_sent_cors_exempt_headers_;
