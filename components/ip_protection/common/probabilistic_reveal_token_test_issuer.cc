@@ -5,6 +5,7 @@
 #include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,10 +13,10 @@
 
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"

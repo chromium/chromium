@@ -5,6 +5,7 @@
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>

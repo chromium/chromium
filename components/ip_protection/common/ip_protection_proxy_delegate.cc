@@ -13,12 +13,9 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_core.h"

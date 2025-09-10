@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_data_types.h"
 
+#include <cstdint>
 #include <optional>
 #include <sstream>
 #include <string>

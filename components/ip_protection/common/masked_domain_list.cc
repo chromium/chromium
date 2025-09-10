@@ -4,16 +4,28 @@
 
 #include "components/ip_protection/common/masked_domain_list.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <map>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/ip_protection/common/flat/masked_domain_list_generated.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace ip_protection {

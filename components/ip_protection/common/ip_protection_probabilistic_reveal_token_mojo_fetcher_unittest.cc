@@ -4,11 +4,22 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_mojo_fetcher.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

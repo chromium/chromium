@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "third_party/boringssl/src/include/openssl/base.h"

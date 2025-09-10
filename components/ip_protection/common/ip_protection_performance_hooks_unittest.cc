@@ -4,11 +4,16 @@
 
 #include "components/ip_protection/common/ip_protection_performance_hooks.h"
 
+#include <string>
+#include <vector>
+
 #include "base/test/task_environment.h"
 #include "base/test/test_trace_processor.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "base/test/trace_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ip_protection {
 namespace {

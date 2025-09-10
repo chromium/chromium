@@ -299,6 +299,7 @@ source_set("ip_protection_proxy_config_manager_impl_unittest") {
     ":ip_protection_telemetry",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/common",
     "//net",
     "//testing/gmock",
     "//testing/gtest",

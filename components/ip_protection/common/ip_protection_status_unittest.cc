@@ -8,19 +8,19 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ip_protection/common/ip_protection_status_observer.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

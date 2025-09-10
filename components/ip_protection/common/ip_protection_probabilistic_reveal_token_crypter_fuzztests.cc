@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"

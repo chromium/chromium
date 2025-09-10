@@ -14,9 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/ip_protection/common/ip_protection_token_manager.h"  // IWYU pragma: keep
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

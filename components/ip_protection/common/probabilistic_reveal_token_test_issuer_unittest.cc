@@ -4,10 +4,14 @@
 
 #include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"

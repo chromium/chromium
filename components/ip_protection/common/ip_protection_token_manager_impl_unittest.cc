@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,14 +15,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"

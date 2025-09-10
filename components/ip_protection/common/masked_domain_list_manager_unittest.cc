@@ -10,17 +10,14 @@
 #include <tuple>
 #include <vector>
 
-#include "base/containers/contains.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/masked_domain_list.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"

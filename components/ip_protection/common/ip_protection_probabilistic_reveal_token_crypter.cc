@@ -12,6 +12,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"

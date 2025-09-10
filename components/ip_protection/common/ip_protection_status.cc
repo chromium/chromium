@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_status.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "components/ip_protection/common/ip_protection_status_observer.h"
 #include "content/public/browser/global_request_id.h"

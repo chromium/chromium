@@ -5,25 +5,27 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
+#include "base/types/expected.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/probabilistic_reveal_token_test_consumer.h"
 #include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
+#include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/network_switches.h"

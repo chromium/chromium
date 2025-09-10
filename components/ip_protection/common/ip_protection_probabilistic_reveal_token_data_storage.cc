@@ -7,18 +7,21 @@
 #include <optional>
 #include <string>
 
-#include "base/base64.h"
 #include "base/base64url.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/numerics/byte_conversions.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "base/sequence_checker.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
 

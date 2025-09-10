@@ -4,7 +4,13 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_mojo_fetcher.h"
 
+#include <optional>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 
 namespace ip_protection {
 

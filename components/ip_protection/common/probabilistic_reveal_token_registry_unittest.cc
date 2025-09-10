@@ -4,7 +4,9 @@
 
 #include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 
+#include <map>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"

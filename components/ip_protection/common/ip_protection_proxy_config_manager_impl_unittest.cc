@@ -14,10 +14,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/to_string.h"
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"

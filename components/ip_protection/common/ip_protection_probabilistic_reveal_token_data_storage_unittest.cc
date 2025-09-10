@@ -4,22 +4,25 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "sql/database.h"
 #include "sql/statement.h"
-#include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"

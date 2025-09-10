@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version_info/channel.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
