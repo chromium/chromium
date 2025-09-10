@@ -186,7 +186,7 @@ class URLPatternPredicate : public DocumentRulePredicate {
     // For each pattern of predicate’s patterns:
     for (const auto& pattern : patterns_) {
       // Match given pattern and href. If the result is not null, return true.
-      if (pattern->test(ToScriptStateForMainWorld(execution_context_),
+      if (pattern->test(execution_context_->GetIsolate(),
                         MakeGarbageCollected<V8URLPatternInput>(href),
                         ASSERT_NO_EXCEPTION)) {
         return true;
