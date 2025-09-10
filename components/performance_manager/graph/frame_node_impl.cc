@@ -40,17 +40,6 @@ const perfetto::NamedTrack CreateFrameNodeTrack(
           perfetto::StaticString(is_main_frame ? "MainFrameNode" : "FrameNode"),
           base::UnguessableTokenHash()(frame_token.value()), parent)
           .disable_sibling_merge();
-  TRACE_EVENT_INSTANT(
-      "performance_manager.graph", "FrameCreated", track,
-      perfetto::Flow::Global(track.uuid),
-      [render_frame_host](perfetto::EventContext& ctx) {
-        if (!render_frame_host) {
-          return;
-        }
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        render_frame_host->WriteIntoTrace(
-            ctx.Wrap(event->set_render_frame_host()));
-      });
   return base::trace_event::InitializeTrack(track);
 }
 
@@ -386,6 +375,17 @@ base::ByteCount FrameNodeImpl::GetResidentSetEstimate() const {
 base::ByteCount FrameNodeImpl::GetPrivateFootprintEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_footprint_estimate_;
+}
+
+void FrameNodeImpl::OnTraceSessionStart() {
+  TraceEdges();
+}
+
+void FrameNodeImpl::TraceEdges() {
+  TRACE_EVENT_INSTANT("performance_manager.graph", "AttachPage",
+                      perfetto::NamedTrack("Edges", 0, tracing_track_),
+                      perfetto::Flow::FromPointer(this));
+  page_node_->TraceFrame(base::PassKey<FrameNodeImpl>(), this);
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -850,6 +850,10 @@ void FrameNodeImpl::OnInitializingEdges() {
     parent_frame_node_->AddChildFrame(this);
   page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
+  if (auto* observer_list = TracingObserverList::GetFromGraph()) {
+    tracing_observation_.Observe(observer_list);
+  }
+  TraceEdges();
 }
 
 void FrameNodeImpl::OnBeforeLeavingGraph() {

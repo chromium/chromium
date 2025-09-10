@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
@@ -45,7 +46,8 @@ class FrameNodeImpl
           execution_context::FrameExecutionContext,
           resource_attribution::SharedCPUTimeResultData,
           // Keep this last to avoid merge conflicts.
-          NodeAttachedDataStorage> {
+          NodeAttachedDataStorage>,
+      public TracingObserver {
  public:
   static const char kDefaultPriorityReason[];
 
@@ -125,6 +127,9 @@ class FrameNodeImpl
   base::ByteCount GetResidentSetEstimate() const override;
   base::ByteCount GetPrivateFootprintEstimate() const override;
   void CrossProcessSubframeRenderProcessGone() override;
+
+  // TracingObserver implementation:
+  void OnTraceSessionStart() override;
 
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
@@ -295,6 +300,8 @@ class FrameNodeImpl
   // even if it is not current.
   FrameNodeImpl* GetFrameTreeRoot() const;
 
+  void TraceEdges();
+
   bool HasFrameNodeInAncestors(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
@@ -340,6 +347,9 @@ class FrameNodeImpl
 
   // Perfetto track that can record trace events for the page.
   const perfetto::NamedTrack tracing_track_;
+
+  base::ScopedObservation<TracingObserverList, TracingObserver>
+      tracing_observation_{this};
 
   NodeSet child_frame_nodes_;
 

@@ -307,17 +307,25 @@ void PageNodeImpl::AddFrame(base::PassKey<FrameNodeImpl>,
   DCHECK(graph()->NodeInGraph(frame_node));
 
   ++frame_node_count_;
-  auto frame_track = perfetto::NamedTrack(
-      "FrameNodes", frame_node->tracing_track().uuid, tracing_track());
-  TRACE_EVENT_BEGIN(
-      "performance_manager.graph",
-      perfetto::StaticString(
-          frame_node->parent_frame_node() == nullptr ? "MainFrame" : "Frame"),
-      frame_track, perfetto::Flow::Global(frame_node->tracing_track().uuid));
 
   if (frame_node->parent_frame_node() == nullptr) {
     main_frame_nodes_.insert(frame_node);
   }
+}
+
+void PageNodeImpl::TraceFrame(base::PassKey<FrameNodeImpl>,
+                              FrameNodeImpl* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(frame_node);
+  DCHECK(graph()->NodeInGraph(frame_node));
+  auto frame_track = perfetto::NamedTrack::FromPointer("FrameNodes", frame_node,
+                                                       tracing_track());
+  // Unmatched end event is a no-op.
+  TRACE_EVENT_END("performance_manager.graph", frame_track);
+  TRACE_EVENT_BEGIN(
+      "performance_manager.graph",
+      perfetto::StaticString(frame_node->IsMainFrame() ? "MainFrame" : "Frame"),
+      frame_track, perfetto::TerminatingFlow::FromPointer(frame_node));
 }
 
 void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
@@ -332,8 +340,8 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
     size_t removed = main_frame_nodes_.erase(frame_node);
     DCHECK_EQ(1u, removed);
   }
-  auto frame_track = perfetto::NamedTrack(
-      "FrameNodes", frame_node->tracing_track().uuid, tracing_track());
+  auto frame_track = perfetto::NamedTrack::FromPointer("FrameNodes", frame_node,
+                                                       tracing_track());
   TRACE_EVENT_END("performance_manager.graph", frame_track);
 }
 
