@@ -9603,10 +9603,6 @@ crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-se
 # Gardener 2025-06-16
 crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.serviceworker.html?gpu [ Failure Pass ]
 
-# <object> loaded HTML doesn't receive drag and drop events
-crbug.com/426054999 external/wpt/html/editing/dnd/images/023.html [ Timeout ]
-crbug.com/426054999 external/wpt/html/editing/dnd/images/024.html [ Timeout ]
-
 # Gardener 2025-06-19
 crbug.com/426081198 [ Mac ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Pass Timeout ]
 
