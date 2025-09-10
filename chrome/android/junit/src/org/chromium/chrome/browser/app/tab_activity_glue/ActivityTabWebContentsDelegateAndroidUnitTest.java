@@ -158,7 +158,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     private static final int TEST_DISPLAY_ID = 73;
     private static final float TEST_DENSITY = 1.0f;
-    private static final Rect TEST_BOUNDS = new Rect(0, 0, 1920, 1080);
+    private static final Rect TEST_LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
 
     private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
 
@@ -178,7 +178,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
         doReturn(TEST_DISPLAY_ID).when(mDisplayAndroid).getDisplayId();
         doReturn(TEST_DENSITY).when(mDisplayAndroid).getDipScale();
-        doReturn(TEST_BOUNDS).when(mDisplayAndroid).getBounds();
+        doReturn(TEST_LOCAL_BOUNDS).when(mDisplayAndroid).getLocalBounds();
     }
 
     @After
@@ -373,7 +373,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         final Rect passedBounds = captor.getValue();
         Assert.assertTrue(
                 "The bounds passed to moveTaskTo do not fit inside display",
-                TEST_BOUNDS.contains(passedBounds));
+                TEST_LOCAL_BOUNDS.contains(passedBounds));
     }
 
     @Test

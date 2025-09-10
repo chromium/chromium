@@ -238,6 +238,10 @@ public class PhysicalDisplayAndroidTest {
                 "Display bounds as array is incorrect: ",
                 new int[] {bounds.left, bounds.top, bounds.right, bounds.bottom},
                 physicalDisplayAndroid.getBoundsAsArray());
+        assertEquals(
+                "Display localBounds is incorrect: ",
+                new Rect(0, 0, bounds.width(), bounds.height()),
+                physicalDisplayAndroid.getLocalBounds());
     }
 
     public void checkDisplayIsInternal(

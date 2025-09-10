@@ -482,7 +482,7 @@ public abstract class DisplayUtil {
     @SuppressWarnings("CheckResult")
     public static Rect clampWindowToDisplay(Rect boundsPx, DisplayAndroid display) {
         final Rect output = new Rect(boundsPx);
-        final Rect limitingBounds = display.getBounds();
+        final Rect limitingBounds = display.getLocalBounds();
 
         output.offset(Math.max(limitingBounds.left - output.left, 0), 0);
         output.offset(Math.min(limitingBounds.right - output.right, 0), 0);

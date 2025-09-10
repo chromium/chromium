@@ -172,6 +172,11 @@ public class DisplayAndroid {
         return new int[] {mBounds.left, mBounds.top, mBounds.right, mBounds.bottom};
     }
 
+    /** Returns display local bounds in physical pixels. */
+    public Rect getLocalBounds() {
+        return new Rect(0, 0, getDisplayWidth(), getDisplayHeight());
+    }
+
     /** Returns the insets of the display. */
     @RequiresApi(Build.VERSION_CODES.R)
     public Insets getInsets() {
