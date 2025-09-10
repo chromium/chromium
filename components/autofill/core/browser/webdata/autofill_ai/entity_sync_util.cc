@@ -96,6 +96,87 @@ void ReadChromeValuablesMetadata(
   }
 }
 
+// Reads the `specifics` message and extract attribute-information from its
+// different fields. In particular, it also deserializes the metadata stored in
+// the sync message.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetFlightReservationAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  using enum AttributeTypeName;
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kFlightReservation);
+  const sync_pb::FlightReservation& flight_reservation =
+      specifics.flight_reservation();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+  auto add_attribute = [&](AttributeTypeName attribute_type_name,
+                           std::string value) {
+    AttributeInstance attribute((AttributeType(attribute_type_name)));
+    // Setting the VerificationStatus to `kNoStatus` is fine because it is only
+    // relevant for name types, and for those the status will later be set
+    // correctly in `ReadChromeValuablesMetadata`.
+    attribute.SetRawInfo(attribute.type().field_type(),
+                         base::UTF8ToUTF16(value),
+                         VerificationStatus::kNoStatus);
+    attributes.insert(std::move(attribute));
+  };
+
+  add_attribute(kFlightReservationFlightNumber,
+                flight_reservation.flight_number());
+  add_attribute(kFlightReservationTicketNumber,
+                flight_reservation.flight_ticket_number());
+  add_attribute(kFlightReservationConfirmationCode,
+                flight_reservation.flight_confirmation_code());
+  add_attribute(kFlightReservationPassengerName,
+                flight_reservation.passenger_name());
+  add_attribute(kFlightReservationDepartureAirport,
+                flight_reservation.departure_airport());
+  add_attribute(kFlightReservationArrivalAirport,
+                flight_reservation.arrival_airport());
+
+  ReadChromeValuablesMetadata(attributes,
+                              EntityType(EntityTypeName::kFlightReservation),
+                              specifics.serialized_chrome_valuables_metadata());
+  for (AttributeInstance& attribute : attributes) {
+    attribute.FinalizeInfo();
+  }
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information needed
+// in order to send this entity to the sync server.
+sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
+    const EntityInstance& entity) {
+  using enum AttributeTypeName;
+  CHECK_EQ(entity.type().name(), EntityTypeName::kFlightReservation);
+  auto get_value = [&](AttributeTypeName attribute_type_name) {
+    return base::UTF16ToUTF8(
+        entity.attribute(AttributeType(attribute_type_name))
+            ->GetCompleteRawInfo());
+  };
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(*entity.guid());
+
+  sync_pb::FlightReservation& flight_reservation =
+      *specifics.mutable_flight_reservation();
+  flight_reservation.set_flight_number(
+      get_value(kFlightReservationFlightNumber));
+  flight_reservation.set_flight_ticket_number(
+      get_value(kFlightReservationTicketNumber));
+  flight_reservation.set_flight_confirmation_code(
+      get_value(kFlightReservationConfirmationCode));
+  flight_reservation.set_passenger_name(
+      get_value(kFlightReservationPassengerName));
+  flight_reservation.set_departure_airport(
+      get_value(kFlightReservationDepartureAirport));
+  flight_reservation.set_arrival_airport(
+      get_value(kFlightReservationArrivalAirport));
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      SerializeChromeValuablesMetadata(entity);
+  return specifics;
+}
+
 // Takes an `entity` and returns a proto message with the information needed in
 // order to send this entity to the sync server.
 sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
@@ -172,8 +253,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     const EntityInstance& entity) {
   switch (entity.type().name()) {
     case EntityTypeName::kFlightReservation:
-      // TODO(crbug.com/436175248): Add support for flight reservations.
-      return sync_pb::AutofillValuableSpecifics();
+      return GetFlightReservationSpecifics(entity);
     case EntityTypeName::kVehicle:
       return GetVehicleInformationSpecifics(entity);
     case EntityTypeName::kPassport:
@@ -203,9 +283,18 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           /*are_attributes_read_only=*/
           EntityInstance::AreAttributesReadOnly(false));
     }
-    case sync_pb::AutofillValuableSpecifics::kFlightReservation:
-      // TODO(crbug.com/436547381): Handle flight reservations.
-      return std::nullopt;
+    case sync_pb::AutofillValuableSpecifics::kFlightReservation: {
+      // TODO(crbug.com/436174974): Update the value of
+      // `are_attributes_read_only` once it becomes available in the specifics.
+      return EntityInstance(
+          EntityType(EntityTypeName::kFlightReservation),
+          GetFlightReservationAttributesFromSpecifics(specifics), guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{},
+          /*record_type=*/EntityInstance::RecordType::kServerWallet,
+          /*are_attributes_read_only=*/
+          EntityInstance::AreAttributesReadOnly(false));
+    }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Such specifics shouldn't reach this function as they aren't supported

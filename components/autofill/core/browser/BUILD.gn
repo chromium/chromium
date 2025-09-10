@@ -1599,6 +1599,7 @@ source_set("unit_tests") {
     "webdata/autocomplete/autocomplete_sync_bridge_unittest.cc",
     "webdata/autocomplete/autocomplete_table_label_sensitive_unittest.cc",
     "webdata/autocomplete/autocomplete_table_unittest.cc",
+    "webdata/autofill_ai/entity_sync_util_unittest.cc",
     "webdata/autofill_ai/entity_table_unittest.cc",
     "webdata/autofill_sync_metadata_table_unittest.cc",
     "webdata/payments/autofill_wallet_credential_sync_bridge_unittest.cc",
