@@ -2387,9 +2387,6 @@ BASE_FEATURE_PARAM(int,
                    "compression_level",
                    1);
 
-BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kVSyncDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kVSyncDecodingHiddenOccludedTickDuration,

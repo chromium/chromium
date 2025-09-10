@@ -1775,11 +1775,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseZstdForParkableStrings);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kZstdCompressionLevel);
 
-// Causes MediaStreamVideoSource video frames to be transported on a
-// SequencedTaskRunner backed by the threadpool instead of the normal IO thread.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kUseThreadPoolForMediaStreamVideoTaskRunner);
-
 // Feature flag for driving decoding with the Metronome by VSyncs instead of by
 // timer.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);

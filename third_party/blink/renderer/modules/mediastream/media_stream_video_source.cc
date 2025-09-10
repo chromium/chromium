@@ -94,34 +94,15 @@ void MediaStreamVideoSource::AddTrack(
 
       MediaStreamVideoSourceCallbacks new_media_stream_callbacks;
 
-      // Callbacks are invoked from the IO thread. With
-      // UseThreadPoolForMediaStreamVideoTaskRunner disabled, the video task
-      // runner is the same as the IO thread and there is no need to post frames
-      // to the video task runner.
-      if (base::FeatureList::IsEnabled(
-              features::kUseThreadPoolForMediaStreamVideoTaskRunner)) {
-        new_media_stream_callbacks.deliver_frame_cb = base::BindPostTask(
-            video_task_runner(), std::move(deliver_frame_on_video_callback));
-        new_media_stream_callbacks.sub_capture_target_version_cb =
-            base::BindPostTask(
-                video_task_runner(),
-                std::move(new_sub_capture_target_version_on_video_callback));
-        new_media_stream_callbacks.frame_dropped_cb = base::BindPostTask(
-            video_task_runner(), std::move(frame_dropped_callback));
-        new_media_stream_callbacks.encoded_frame_cb = base::BindPostTask(
-            video_task_runner(),
-            std::move(deliver_encoded_frame_on_video_callback));
-        StartSourceImpl(std::move(new_media_stream_callbacks));
-      } else {
-        new_media_stream_callbacks.deliver_frame_cb =
-            deliver_frame_on_video_callback;
-        new_media_stream_callbacks.sub_capture_target_version_cb =
-            new_sub_capture_target_version_on_video_callback;
-        new_media_stream_callbacks.frame_dropped_cb = frame_dropped_callback;
-        new_media_stream_callbacks.encoded_frame_cb =
-            deliver_encoded_frame_on_video_callback;
-        StartSourceImpl(std::move(new_media_stream_callbacks));
-      }
+      // Callbacks are invoked from the IO thread.
+      new_media_stream_callbacks.deliver_frame_cb =
+          deliver_frame_on_video_callback;
+      new_media_stream_callbacks.sub_capture_target_version_cb =
+          new_sub_capture_target_version_on_video_callback;
+      new_media_stream_callbacks.frame_dropped_cb = frame_dropped_callback;
+      new_media_stream_callbacks.encoded_frame_cb =
+          deliver_encoded_frame_on_video_callback;
+      StartSourceImpl(std::move(new_media_stream_callbacks));
       break;
     }
     case STARTING:
