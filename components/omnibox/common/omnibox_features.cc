@@ -71,12 +71,6 @@ BASE_FEATURE(kDynamicMaxAutocomplete,
              "OmniboxDynamicMaxAutocomplete",
              enable_if(!IS_IOS));
 
-// If enabled, takes the search intent query params into account for triggering
-// switch to tab actions on matches.
-BASE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions,
-             "DisambiguateTabMatchingForEntitySuggestions",
-             ENABLED);
-
 // Enables omnibox focus as a trigger for zero-prefix suggestions on web and
 // SRP, subject to the same requirements and conditions as on-clobber
 // suggestions.

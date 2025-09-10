@@ -71,14 +71,11 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   // triggering of the Switch to Tab action on plain-text suggestions for
   // open entity SRPs, or vice versa, on entity suggestions for open plain-text
   // SRPs.
-  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
-      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, template_url_service_, std::u16string(),
-      keep_search_intent_params);
+      url, *input, template_url_service_, /*keyword=*/std::u16string(),
+      /*keep_search_intent_params=*/true);
   for (auto* web_contents : GetOpenWebContents()) {
-    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
-                                           keep_search_intent_params)) {
+    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents)) {
       return true;
     }
   }
@@ -123,8 +120,7 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents(
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,
-    content::WebContents* web_contents,
-    const bool keep_search_intent_params) const {
+    content::WebContents* web_contents) const {
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
@@ -134,7 +130,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
         web_contents->GetLastCommittedURL(), template_url_service_,
-        keep_search_intent_params);
+        /*keep_search_intent_params=*/true);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

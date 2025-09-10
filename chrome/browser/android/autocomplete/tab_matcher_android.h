@@ -34,8 +34,7 @@ class TabMatcherAndroid : public TabMatcher {
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> GetOpenAndroidTabs(
       const AutocompleteInput* input) const;
   GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos(
-      const AutocompleteInput* input,
-      const bool keep_search_intent_params) const;
+      const AutocompleteInput* input) const;
 
   raw_ptr<const TemplateURLService> template_url_service_;
   raw_ptr<Profile> profile_;
