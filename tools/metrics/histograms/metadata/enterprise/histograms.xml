@@ -4173,6 +4173,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkedProfile.Check" enum="NetworkedProfileCheck"
+    expires_after="2026-01-30">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Tracks events connected with checking whether the user profile is configured
+    on a network share. Windows only.
+  </summary>
+</histogram>
+
 <histogram name="SkyVault.LocalUserFilesCleanupCount" units="count"
     expires_after="2025-03-01">
   <owner>poromov@chromium.org</owner>

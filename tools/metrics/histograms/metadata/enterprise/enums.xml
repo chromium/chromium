@@ -2554,6 +2554,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Image download cancelled"/>
 </enum>
 
+<enum name="NetworkedProfileCheck">
+  <int value="0" label="Check was suppressed by command line flag."/>
+  <int value="1" label="WTSQuerySessionInformation call failed."/>
+  <int value="2" label="File access in profile dir failed."/>
+  <int value="3" label="Profile on a network share detected."/>
+  <int value="4" label="Profile not on a network share detected."/>
+  <int value="5" label="Check was suppressed because of remote session."/>
+  <int value="6"
+      label="User has clicked learn more on the notification bubble."/>
+  <int value="7" label="User has clicked OK on the notification bubble."/>
+</enum>
+
 <enum name="OidcInterceptionFunnelStep">
   <int value="0" label="Created throttle for valid redirection"/>
   <int value="1" label="Successfuly parsed out required info for registration"/>
