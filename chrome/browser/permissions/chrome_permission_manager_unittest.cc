@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -33,12 +34,12 @@ class ChromePermissionManagerTest : public ChromeRenderViewHostTestHarness {
         permissions::GetPermissionControllerDelegate(GetBrowserContext()));
   }
 
-  void OnPermissionChange(PermissionStatus permission) {
+  void OnPermissionChange(content::PermissionResult permission) {
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
     callback_called_ = true;
-    callback_result_ = permission;
+    callback_result_ = permission.status;
   }
 
   bool callback_called() const { return callback_called_; }
@@ -177,8 +178,11 @@ TEST_F(ChromePermissionManagerTest, SubscribeWithPermissionDelegation) {
       GetBrowserContext()->GetPermissionController();
 
   content::PermissionController::SubscriptionId subscription_id =
-      content::SubscribeToPermissionStatusChange(
-          permission_controller, blink::PermissionType::GEOLOCATION,
+      content::SubscribeToPermissionResultChange(
+          permission_controller,
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::GEOLOCATION),
           /*render_process_host=*/nullptr, child, url2,
           /*should_include_device_status=*/false,
           base::BindRepeating(&ChromePermissionManagerTest::OnPermissionChange,
@@ -213,5 +217,5 @@ TEST_F(ChromePermissionManagerTest, SubscribeWithPermissionDelegation) {
             permission_controller->GetPermissionStatusForCurrentDocument(
                 geolocation_permission_descriptor, child));
 
-  permission_controller->UnsubscribeFromPermissionStatusChange(subscription_id);
+  permission_controller->UnsubscribeFromPermissionResultChange(subscription_id);
 }

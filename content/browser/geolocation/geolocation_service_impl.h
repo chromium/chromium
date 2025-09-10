@@ -72,8 +72,7 @@ class CONTENT_EXPORT GeolocationServiceImpl
       bool user_gesture,
       CreateGeolocationCallback callback) override;
 
-  void HandlePermissionStatusChange(
-      blink::mojom::PermissionStatus permission_status);
+  void HandlePermissionResultChange(PermissionResult permission_result);
 
   void OnDisconnected();
 

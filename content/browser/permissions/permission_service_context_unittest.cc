@@ -11,6 +11,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -98,7 +99,8 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
     permission_service_context()->CreateSubscription(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(type),
-        origin_, current_status, last_status,
+        origin_, PermissionResult(current_status),
+        PermissionResult(last_status),
         /*should_include_device_status=*/false, observer->GetRemote());
     WaitForAsyncTasksToComplete();
     return observer;
@@ -175,8 +177,9 @@ TEST_F(PermissionServiceContextTest,
       content::PermissionDescriptorUtil::
           CreatePermissionDescriptorForPermissionType(
               PermissionType::GEOLOCATION),
-      url::Origin::Create(GURL(kTestUrl)), blink::mojom::PermissionStatus::ASK,
-      blink::mojom::PermissionStatus::ASK,
+      url::Origin::Create(GURL(kTestUrl)),
+      PermissionResult(blink::mojom::PermissionStatus::ASK),
+      PermissionResult(blink::mojom::PermissionStatus::ASK),
       /*should_include_device_status=*/false, observer_child->GetRemote());
   SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
                                  blink::mojom::PermissionStatus::ASK);

@@ -46,6 +46,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -1086,7 +1087,7 @@ class BrowserView : public BrowserWindow,
   // Updates the variable keeping track of the Window Management permission,
   // which together with borderless_mode_enabled_ controls whether the title bar
   // is shown or not.
-  void UpdateWindowManagementPermission(blink::mojom::PermissionStatus status);
+  void UpdateWindowManagementPermission(content::PermissionResult result);
 
   // Sets the callback which is called when the status of the Window Management
   // permission changes.

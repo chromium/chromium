@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
@@ -71,47 +72,46 @@ WebEnginePermissionDelegate::GetPermissionResultForOriginWithoutContext(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
-                          embedding_origin.GetURL());
-
   return content::PermissionResult(
-      status, content::PermissionStatusSource::UNSPECIFIED);
+      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
+                          embedding_origin.GetURL()));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
-  return frame->permission_controller()->GetPermissionState(
-      blink::PermissionDescriptorToPermissionType(permission_descriptor),
-      render_frame_host->GetLastCommittedOrigin());
+  return content::PermissionResult(
+      frame->permission_controller()->GetPermissionState(
+          blink::PermissionDescriptorToPermissionType(permission_descriptor),
+          render_frame_host->GetLastCommittedOrigin()));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForWorker(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
   // Use |worker_origin| for requesting_origin and embedding_origin because
   // workers don't have embedders.
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  return content::PermissionResult(
+      GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
-  return frame->permission_controller()->GetPermissionState(
-      blink::PermissionDescriptorToPermissionType(permission_descriptor),
-      overridden_origin);
+  return content::PermissionResult(
+      frame->permission_controller()->GetPermissionState(
+          blink::PermissionDescriptorToPermissionType(permission_descriptor),
+          overridden_origin));
 }
 
 void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
@@ -121,7 +121,7 @@ void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
+void WebEnginePermissionDelegate::UnsubscribeFromPermissionResultChange(
     content::PermissionController::SubscriptionId subscription_id) {
   // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.

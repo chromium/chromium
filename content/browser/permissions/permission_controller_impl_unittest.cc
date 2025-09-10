@@ -77,7 +77,7 @@ class TestPermissionManager : public MockPermissionManager {
   TestPermissionManager() = default;
   ~TestPermissionManager() override = default;
 
-  PermissionStatus GetPermissionStatusForCurrentDocument(
+  PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) override {
@@ -91,10 +91,10 @@ class TestPermissionManager : public MockPermissionManager {
     }
 
     if (override_status_.contains(url)) {
-      return override_status_[url];
+      return PermissionResult(override_status_[url]);
     }
 
-    return PermissionStatus::ASK;
+    return PermissionResult(PermissionStatus::ASK);
   }
 
   void SetPermissionStatus(GURL url, PermissionStatus status) {
@@ -120,18 +120,12 @@ const struct {
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {PermissionResult(PermissionStatus::DENIED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED)},
-     {PermissionResult(PermissionStatus::DENIED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::DENIED),
+      PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::GRANTED)},
+     {PermissionResult(PermissionStatus::DENIED),
+      PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::GRANTED)},
      /*expect_death=*/false},
 
     // No delegates needed - all overridden.
@@ -140,53 +134,39 @@ const struct {
       {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {},
      {},
-     {PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::ASK,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::ASK)},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
     {{{PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::GEOLOCATION, PermissionType::MIDI_SYSEX},
      {
-         PermissionResult(PermissionStatus::GRANTED,
-                          PermissionStatusSource::UNSPECIFIED),
-         PermissionResult(PermissionStatus::ASK,
-                          PermissionStatusSource::UNSPECIFIED),
+         PermissionResult(PermissionStatus::GRANTED),
+         PermissionResult(PermissionStatus::ASK),
      },
-     {PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::DENIED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::ASK,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::DENIED),
+      PermissionResult(PermissionStatus::ASK)},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
     {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
       {PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::MIDI_SYSEX},
-     {PermissionResult(PermissionStatus::ASK,
-                       PermissionStatusSource::UNSPECIFIED)},
-     {PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::DENIED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::ASK,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::ASK)},
+     {PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::DENIED),
+      PermissionResult(PermissionStatus::ASK)},
      /*expect_death=*/false},
 
     // Too many delegates (causes death).
     {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
       {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {PermissionType::BACKGROUND_SYNC},
-     {PermissionResult(PermissionStatus::DENIED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::DENIED),
+      PermissionResult(PermissionStatus::GRANTED)},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true},
@@ -195,10 +175,8 @@ const struct {
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED),
-      PermissionResult(PermissionStatus::GRANTED,
-                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::GRANTED),
+      PermissionResult(PermissionStatus::GRANTED)},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true}};
@@ -476,8 +454,8 @@ TEST_F(PermissionControllerImplTest,
 
 TEST_F(PermissionControllerImplTest,
        NotifyChangedSubscriptionsCallsOnChangeOnly) {
-  using PermissionStatusCallback =
-      base::RepeatingCallback<void(PermissionStatus)>;
+  using PermissionResultCallback =
+      base::RepeatingCallback<void(PermissionResult)>;
   GURL kUrl = GURL(kTestUrl);
   url::Origin kTestOrigin = url::Origin::Create(kUrl);
 
@@ -489,18 +467,22 @@ TEST_F(PermissionControllerImplTest,
                                                   PermissionType::GEOLOCATION,
                                                   PermissionStatus::DENIED);
 
-  base::MockCallback<PermissionStatusCallback> geo_callback;
-  permission_controller()->SubscribeToPermissionStatusChange(
-      PermissionType::GEOLOCATION, nullptr, nullptr, kUrl,
+  base::MockCallback<PermissionResultCallback> geo_callback;
+  permission_controller()->SubscribeToPermissionResultChange(
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          PermissionType::GEOLOCATION),
+      nullptr, nullptr, kUrl,
       /*should_include_device_status=*/false, geo_callback.Get());
 
-  base::MockCallback<PermissionStatusCallback> sync_callback;
-  permission_controller()->SubscribeToPermissionStatusChange(
-      PermissionType::BACKGROUND_SYNC, nullptr, nullptr, kUrl,
+  base::MockCallback<PermissionResultCallback> sync_callback;
+  permission_controller()->SubscribeToPermissionResultChange(
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          PermissionType::BACKGROUND_SYNC),
+      nullptr, nullptr, kUrl,
       /*should_include_device_status=*/false, sync_callback.Get());
 
   // Geolocation should change status, so subscriber is updated.
-  EXPECT_CALL(geo_callback, Run(PermissionStatus::ASK));
+  EXPECT_CALL(geo_callback, Run(PermissionResult(PermissionStatus::ASK)));
   EXPECT_CALL(sync_callback, Run).Times(0);
   permission_controller()->SetOverrideForDevTools(kTestOrigin, kTestOrigin,
                                                   PermissionType::GEOLOCATION,

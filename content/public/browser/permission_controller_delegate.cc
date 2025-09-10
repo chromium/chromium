@@ -23,15 +23,6 @@ bool PermissionControllerDelegate::IsPermissionOverridable(
   return true;
 }
 
-PermissionResult
-PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderFrameHost* render_frame_host,
-    bool should_include_device_status) {
-  return PermissionResult(PermissionStatus::DENIED,
-                          PermissionStatusSource::UNSPECIFIED);
-}
-
 std::optional<gfx::Rect>
 PermissionControllerDelegate::GetExclusionAreaBoundsInScreen(
     content::WebContents* web_contents) const {

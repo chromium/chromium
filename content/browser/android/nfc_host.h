@@ -38,7 +38,7 @@ class NFCHost : public WebContentsObserver {
 
  private:
   void MaybeResumeOrSuspendOperations(Visibility visibility);
-  void OnPermissionStatusChange(blink::mojom::PermissionStatus status);
+  void OnPermissionResultChange(PermissionResult permission_result);
   void Close();
 
   // The permission controller for this browser context.

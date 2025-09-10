@@ -24,12 +24,12 @@ void TestFontAccessPermissionManager::RequestPermissionsFromCurrentDocument(
   request_callback_.Run(std::move(callback));
 }
 
-blink::mojom::PermissionStatus
-TestFontAccessPermissionManager::GetPermissionStatusForCurrentDocument(
+PermissionResult
+TestFontAccessPermissionManager::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
-  return permission_status_for_current_document_;
+  return PermissionResult(permission_status_for_current_document_);
 }
 
 }  // namespace content

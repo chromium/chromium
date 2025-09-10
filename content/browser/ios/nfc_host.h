@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -57,7 +58,7 @@ class NFCHost : public WebContentsObserver, public device::mojom::NFC {
 
  private:
   void MaybeResumeOrSuspendOperations(Visibility visibility);
-  void OnPermissionStatusChange(blink::mojom::PermissionStatus status);
+  void OnPermissionResultChange(PermissionResult permission_result);
   void Close();
   void ClearState();
   void EnableSessionIfNecessary();

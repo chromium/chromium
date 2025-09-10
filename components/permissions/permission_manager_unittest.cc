@@ -202,10 +202,12 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   PermissionStatus GetPermissionStatusForCurrentDocument(
       PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
-    return GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(permission),
-        render_frame_host, /*should_include_device_status*/ false);
+    return GetPermissionManager()
+        ->GetPermissionResultForCurrentDocument(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(permission),
+            render_frame_host, /*should_include_device_status*/ false)
+        .status;
   }
 
   content::PermissionResult GetPermissionResultForCurrentDocument(
@@ -221,10 +223,12 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) {
-    return GetPermissionManager()->GetPermissionStatusForWorker(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(permission),
-        render_process_host, worker_origin);
+    return GetPermissionManager()
+        ->GetPermissionResultForWorker(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(permission),
+            render_process_host, worker_origin)
+        .status;
   }
 
   bool IsPermissionOverridable(PermissionType permission,

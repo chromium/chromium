@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
@@ -18,6 +20,11 @@ namespace url {
 class Origin;
 }
 
+// A matcher that matches permission descriptors to their PermissionType
+MATCHER_P(PermissionDescriptorToPermissionTypeMatcher, permission_type, "") {
+  return ::testing::Matches(::testing::Eq(permission_type))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
 namespace content {
 
 // A helper method that gives access to
@@ -38,20 +45,20 @@ void AddNotifyListenerObserver(PermissionController* permission_controller,
                                base::RepeatingClosure callback);
 
 // A helper method that gives access to
-// content/browser/PermissionControllerImpl::SubscribeToPermissionStatusChange
+// content/browser/PermissionControllerImpl::SubscribeToPermissionResultChange
 // to
 // //content embedders in tests.
 //
-// PermissionController::UnsubscribeFromPermissionStatusChange can be used to
+// PermissionController::UnsubscribeFromPermissionResultChange can be used to
 // unsubscribe.
-PermissionController::SubscriptionId SubscribeToPermissionStatusChange(
+PermissionController::SubscriptionId SubscribeToPermissionResultChange(
     PermissionController* permission_controller,
-    blink::PermissionType permission,
+    blink::mojom::PermissionDescriptorPtr permission_descriptor,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool should_include_device_status,
-    const base::RepeatingCallback<void(PermissionStatus)>& callback);
+    const base::RepeatingCallback<void(PermissionResult)>& callback);
 
 }  // namespace content
 

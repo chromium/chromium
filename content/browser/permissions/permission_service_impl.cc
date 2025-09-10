@@ -198,7 +198,7 @@ void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
   std::vector<PermissionStatus> statuses(permissions.size());
   std::ranges::transform(
       permissions, statuses.begin(), [&](const auto& permission) {
-        return this->GetCombinedPermissionAndDeviceStatus(permission);
+        return this->GetCombinedPermissionAndDeviceResult(permission).status;
       });
   client->OnEmbeddedPermissionControlRegistered(/*allow=*/true,
                                                 std::move(statuses));
@@ -273,7 +273,7 @@ void PermissionServiceImpl::RequestPermissions(
   if (!context_->render_frame_host()) {
     std::vector<PermissionStatus> result(permissions.size());
     for (size_t i = 0; i < permissions.size(); ++i) {
-      result[i] = GetPermissionStatus(permissions[i]);
+      result[i] = GetPermissionResult(permissions[i]).status;
     }
     std::move(callback).Run(result);
     return;
@@ -336,7 +336,7 @@ void PermissionServiceImpl::OnRequestPermissionsResponse(
 
 void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
                                           PermissionStatusCallback callback) {
-  std::move(callback).Run(GetPermissionStatus(permission));
+  std::move(callback).Run(GetPermissionResult(permission).status);
 }
 
 void PermissionServiceImpl::RevokePermission(
@@ -348,18 +348,19 @@ void PermissionServiceImpl::RevokePermission(
     ReceivedBadMessage();
     return;
   }
-  PermissionStatus status = GetPermissionStatusForCurrentContext(permission);
+  PermissionResult result = GetPermissionResultForCurrentContext(permission);
 
   // Resetting the permission should only be possible if the permission is
   // already granted.
-  if (status != PermissionStatus::GRANTED) {
-    std::move(callback).Run(status);
+  if (result.status != PermissionStatus::GRANTED) {
+    std::move(callback).Run(result.status);
     return;
   }
 
   ResetPermissionStatus(*permission_type);
 
-  std::move(callback).Run(GetPermissionStatusForCurrentContext(permission));
+  std::move(callback).Run(
+      GetPermissionResultForCurrentContext(permission).status);
 }
 
 void PermissionServiceImpl::AddPermissionObserver(
@@ -372,9 +373,9 @@ void PermissionServiceImpl::AddPermissionObserver(
     return;
   }
 
-  PermissionStatus current_status = GetPermissionStatus(permission);
+  PermissionResult current_result = GetPermissionResult(permission);
   context_->CreateSubscription(
-      permission, origin_, current_status, last_known_status,
+      permission, origin_, current_result, PermissionResult(last_known_status),
       /*should_include_device_status*/ false, std::move(observer));
 }
 
@@ -389,13 +390,13 @@ void PermissionServiceImpl::AddCombinedPermissionObserver(
   }
   bool should_include_device_status =
       PermissionUtil::IsDevicePermission(permission);
-  PermissionStatus current_status =
+  PermissionResult current_result =
       should_include_device_status
-          ? GetCombinedPermissionAndDeviceStatus(permission)
-          : GetPermissionStatusForCurrentContext(permission);
-  context_->CreateSubscription(permission, origin_, current_status,
-                               last_known_status, should_include_device_status,
-                               std::move(observer));
+          ? GetCombinedPermissionAndDeviceResult(permission)
+          : GetPermissionResultForCurrentContext(permission);
+  context_->CreateSubscription(
+      permission, origin_, current_result, PermissionResult(last_known_status),
+      should_include_device_status, std::move(observer));
 }
 
 void PermissionServiceImpl::NotifyEventListener(
@@ -429,12 +430,12 @@ void PermissionServiceImpl::NotifyEventListener(
       ->NotifyEventListener();
 }
 
-PermissionStatus PermissionServiceImpl::GetPermissionStatus(
+PermissionResult PermissionServiceImpl::GetPermissionResult(
     const PermissionDescriptorPtr& permission) {
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
   if (PermissionUtil::IsDomainOverride(permission) &&
       context_->render_frame_host()) {
@@ -447,60 +448,61 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatus(
                                permisison_descriptor_ptr_array,
                                context_->render_frame_host(), permission)) {
       return PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->GetPermissionStatusForEmbeddedRequester(
+          ->GetPermissionResultForEmbeddedRequester(
               permission, context_->render_frame_host(),
               PermissionUtil::ExtractDomainOverride(permission));
     }
   }
 
-  return GetPermissionStatusForCurrentContext(permission);
+  return GetPermissionResultForCurrentContext(permission);
 }
 
-PermissionStatus PermissionServiceImpl::GetPermissionStatusForCurrentContext(
+PermissionResult PermissionServiceImpl::GetPermissionResultForCurrentContext(
     const PermissionDescriptorPtr& permission) {
   BrowserContext* browser_context = context_->GetBrowserContext();
   if (!browser_context) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   if (context_->render_frame_host()) {
     return browser_context->GetPermissionController()
-        ->GetPermissionStatusForCurrentDocument(permission,
+        ->GetPermissionResultForCurrentDocument(permission,
                                                 context_->render_frame_host());
   }
 
   if (context_->render_process_host()) {
     return browser_context->GetPermissionController()
-        ->GetPermissionStatusForWorker(
+        ->GetPermissionResultForWorker(
             permission, context_->render_process_host(), origin_);
   }
 
   DCHECK(!context_->GetEmbeddingOrigin().has_value());
   return browser_context->GetPermissionController()
-      ->GetPermissionResultForOriginWithoutContext(permission, origin_)
-      .status;
+      ->GetPermissionResultForOriginWithoutContext(permission, origin_);
 }
 
-PermissionStatus PermissionServiceImpl::GetCombinedPermissionAndDeviceStatus(
+PermissionResult PermissionServiceImpl::GetCombinedPermissionAndDeviceResult(
     const PermissionDescriptorPtr& permission) {
   BrowserContext* browser_context = context_->GetBrowserContext();
   if (!browser_context) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   RenderFrameHost* render_frame_host = context_->render_frame_host();
   if (!render_frame_host) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
-  return PermissionControllerImpl::FromBrowserContext(browser_context)
-      ->GetCombinedPermissionAndDeviceStatus(permission, render_frame_host);
+  return PermissionResult(
+      PermissionControllerImpl::FromBrowserContext(browser_context)
+          ->GetCombinedPermissionAndDeviceStatus(permission,
+                                                 render_frame_host));
 }
 
 void PermissionServiceImpl::ResetPermissionStatus(blink::PermissionType type) {

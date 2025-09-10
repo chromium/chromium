@@ -46,21 +46,21 @@ class WebEnginePermissionDelegate
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+  content::PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+  content::PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  content::PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
   void OnPermissionStatusChangeSubscriptionAdded(
       content::PermissionController::SubscriptionId subscription_id) override;
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       content::PermissionController::SubscriptionId subscription_id) override;
 };
 

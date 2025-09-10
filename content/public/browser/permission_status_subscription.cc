@@ -6,8 +6,10 @@
 
 namespace content {
 
-PermissionStatusSubscription::PermissionStatusSubscription() = default;
+PermissionResultSubscription::PermissionResultSubscription(
+    blink::mojom::PermissionDescriptorPtr descriptor)
+    : permission_descriptor(std::move(descriptor)) {}
 
-PermissionStatusSubscription::~PermissionStatusSubscription() = default;
+PermissionResultSubscription::~PermissionResultSubscription() = default;
 
 }  // namespace content

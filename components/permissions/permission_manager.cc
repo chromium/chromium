@@ -335,16 +335,6 @@ PermissionManager::GetPermissionResultForOriginWithoutContext(
       embedding_origin.GetURL(), /*should_include_device_status=*/false);
 }
 
-PermissionStatus PermissionManager::GetPermissionStatusForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    bool should_include_device_status) {
-  return GetPermissionResultForCurrentDocument(permission_descriptor,
-                                               render_frame_host,
-                                               should_include_device_status)
-      .status;
-}
-
 content::PermissionResult
 PermissionManager::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
@@ -363,7 +353,7 @@ PermissionManager::GetPermissionResultForCurrentDocument(
       embedding_origin, should_include_device_status);
 }
 
-PermissionStatus PermissionManager::GetPermissionStatusForWorker(
+content::PermissionResult PermissionManager::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
@@ -372,11 +362,11 @@ PermissionStatus PermissionManager::GetPermissionStatusForWorker(
   return GetPermissionStatusInternal(permission_descriptor, render_process_host,
                                      /*render_frame_host=*/nullptr,
                                      worker_origin, worker_origin,
-                                     /*should_include_device_status=*/false)
-      .status;
+                                     /*should_include_device_status=*/false);
 }
 
-PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
+content::PermissionResult
+PermissionManager::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
@@ -386,11 +376,10 @@ PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
       GetEmbeddingOrigin(render_frame_host, requesting_origin.GetURL());
 
   return GetPermissionStatusInternal(
-             permission_descriptor,
-             /*render_process_host=*/nullptr, render_frame_host,
-             requesting_origin.GetURL(), embedding_origin,
-             /*should_include_device_status=*/false)
-      .status;
+      permission_descriptor,
+      /*render_process_host=*/nullptr, render_frame_host,
+      requesting_origin.GetURL(), embedding_origin,
+      /*should_include_device_status=*/false);
 }
 
 bool PermissionManager::IsPermissionOverridable(
@@ -417,14 +406,15 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
   if (!subscriptions() || subscriptions()->IsEmpty()) {
     return;
   }
-  content::PermissionStatusSubscription* subscription =
+  content::PermissionResultSubscription* subscription =
       subscriptions()->Lookup(subscription_id);
   if (!subscription) {
     return;
   }
   ContentSettingsType content_type =
       PermissionUtil::PermissionTypeToContentSettingsType(
-          subscription->permission);
+          blink::PermissionDescriptorToPermissionType(
+              subscription->permission_descriptor));
   auto& type_count = subscription_type_counts_[content_type];
   if (type_count == 0) {
     PermissionContextBase* context = GetPermissionContext(content_type);
@@ -440,8 +430,6 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
         content::RenderFrameHost::FromID(subscription->render_process_id,
                                          subscription->render_frame_id),
         subscription->requesting_origin);
-    // TODO(crbug.com/408965890): Add support for multi-state permissions. The
-    // following won't work for detecting changes in permission options.
     subscription->permission_result = GetPermissionStatusInternal(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(
@@ -453,8 +441,6 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
         subscription->requesting_origin, subscription->embedding_origin,
         subscription->should_include_device_status);
   } else {
-    // TODO(crbug.com/408965890): Add support for multi-state permissions. The
-    // following won't work for detecting changes in permission options.
     subscription->permission_result = GetPermissionStatusInternal(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(
@@ -471,7 +457,7 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
                                          subscription->embedding_origin);
 }
 
-void PermissionManager::UnsubscribeFromPermissionStatusChange(
+void PermissionManager::UnsubscribeFromPermissionResultChange(
     content::PermissionController::SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_)
@@ -480,14 +466,15 @@ void PermissionManager::UnsubscribeFromPermissionStatusChange(
   if (!subscriptions()) {
     return;
   }
-  content::PermissionStatusSubscription* subscription =
+  content::PermissionResultSubscription* subscription =
       subscriptions()->Lookup(subscription_id);
   if (!subscription)
     return;
 
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsType(
-          subscription->permission);
+          blink::PermissionDescriptorToPermissionType(
+              subscription->permission_descriptor));
   auto type_count = subscription_type_counts_.find(type);
   CHECK(type_count != subscription_type_counts_.end());
   // type_count is zero only in the tests that we are directly calling
@@ -549,14 +536,15 @@ void PermissionManager::OnPermissionChanged(
   for (content::PermissionController::SubscriptionsMap::iterator iter(
            subscriptions());
        !iter.IsAtEnd(); iter.Advance()) {
-    content::PermissionStatusSubscription* subscription =
+    content::PermissionResultSubscription* subscription =
         iter.GetCurrentValue();
     if (!subscription) {
       continue;
     }
     if (!content_type_set.Contains(
             PermissionUtil::PermissionTypeToContentSettingsType(
-                subscription->permission))) {
+                blink::PermissionDescriptorToPermissionType(
+                    subscription->permission_descriptor)))) {
       continue;
     }
 
@@ -582,23 +570,23 @@ void PermissionManager::OnPermissionChanged(
             : content::RenderProcessHost::FromID(
                   subscription->render_process_id);
 
-    content::PermissionResult new_value = GetPermissionStatusInternal(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(
-                subscription->permission),
-        rph, rfh, subscription->requesting_origin_delegation, embedding_origin,
+    content::PermissionResult new_result = GetPermissionStatusInternal(
+        subscription->permission_descriptor, rph, rfh,
+        subscription->requesting_origin_delegation, embedding_origin,
         subscription->should_include_device_status);
 
     if (subscription->permission_result &&
-        subscription->permission_result->status == new_value.status) {
+        subscription->permission_result->status == new_result.status &&
+        subscription->permission_result->retrieved_permission_setting ==
+            new_result.retrieved_permission_setting) {
       continue;
     }
 
-    subscription->permission_result = new_value;
+    subscription->permission_result = new_result;
 
     // Add the callback to |callbacks| which will be run after the loop to
     // prevent re-entrance issues.
-    callbacks.push_back(base::BindOnce(subscription->callback, new_value.status,
+    callbacks.push_back(base::BindOnce(subscription->callback, new_result,
                                        /*ignore_status_override=*/false));
   }
 

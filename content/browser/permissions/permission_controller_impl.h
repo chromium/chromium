@@ -87,15 +87,15 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  SubscriptionId SubscribeToPermissionStatusChange(
-      PermissionType permission,
+  SubscriptionId SubscribeToPermissionResultChange(
+      blink::mojom::PermissionDescriptorPtr permission_descriptor,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
+      const base::RepeatingCallback<void(PermissionResult)>& callback) override;
 
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       SubscriptionId subscription_id) override;
 
   // If there's currently a permission prompt bubble for the given WebContents,
@@ -117,7 +117,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
 
-  PermissionStatus GetPermissionStatusInternal(
+  PermissionResult GetPermissionResultInternal(
       const blink::mojom::PermissionDescriptorPtr& permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
@@ -129,6 +129,10 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   // PermissionController implementation.
   PermissionStatus GetPermissionStatusForWorker(
+      const blink::mojom::PermissionDescriptorPtr& permission,
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) override;
+  PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) override;
@@ -151,8 +155,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/40864728): Migrate to `std::set`.
   // TODO(crbug.com/40275129): `RequestPermissions` and
-  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
-  // them together.
+  // `RequestPermissionsFromCurrentDocument` do exactly the same things.
+  // Merge them together.
   void RequestPermissions(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
@@ -171,16 +175,16 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
 
-  PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
 
   using SubscriptionsStatusMap =
-      base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;
+      base::flat_map<SubscriptionsMap::KeyType, PermissionResult>;
 
-  PermissionStatus GetSubscriptionCurrentValue(
-      const content::PermissionStatusSubscription& subscription);
+  PermissionResult GetSubscriptionCurrentResult(
+      const content::PermissionResultSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
       const std::optional<GURL>& requesting_origin = std::nullopt,
       const std::optional<GURL>& embedding_origin = std::nullopt);
@@ -189,10 +193,10 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // If `ignore_status_override` is true, the status override is not applied,
   // which means that the permission status change will be notified to
   // subscribed users even the status has been overridden.
-  void PermissionStatusChange(
-      const base::RepeatingCallback<void(PermissionStatus)>& callback,
+  void PermissionResultChange(
+      const base::RepeatingCallback<void(PermissionResult)>& callback,
       SubscriptionId subscription_id,
-      PermissionStatus status,
+      PermissionResult result,
       bool ignore_status_override = false);
   bool IsSubscribedToPermissionChangeEvent(
       blink::PermissionType permission,

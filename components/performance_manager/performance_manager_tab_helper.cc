@@ -491,14 +491,16 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 
   // Create new change subscription.
   permission_controller_subscription_id_ =
-      permission_controller->SubscribeToPermissionStatusChange(
-          blink::PermissionType::NOTIFICATIONS,
+      permission_controller->SubscribeToPermissionResultChange(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           /*render_process_host=*/nullptr,
           web_contents()->GetPrimaryMainFrame(),
           url::Origin::Create(web_contents()->GetLastCommittedURL()).GetURL(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&PerformanceManagerTabHelper::
-                                  OnNotificationPermissionStatusChange,
+                                  OnNotificationPermissionResultChange,
                               // Unretained is safe because the subscription
                               // is removed when `this` is deleted.
                               base::Unretained(this)));
@@ -512,9 +514,9 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void PerformanceManagerTabHelper::OnNotificationPermissionStatusChange(
-    blink::mojom::PermissionStatus permission_status) {
-  page_node_->OnNotificationPermissionStatusChange(permission_status);
+void PerformanceManagerTabHelper::OnNotificationPermissionResultChange(
+    content::PermissionResult permission_result) {
+  page_node_->OnNotificationPermissionStatusChange(permission_result.status);
 }
 
 void PerformanceManagerTabHelper::
@@ -525,7 +527,7 @@ void PerformanceManagerTabHelper::
   }
 
   CHECK(permission_controller);
-  permission_controller->UnsubscribeFromPermissionStatusChange(
+  permission_controller->UnsubscribeFromPermissionResultChange(
       permission_controller_subscription_id_);
 }
 

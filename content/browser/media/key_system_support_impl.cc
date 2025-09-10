@@ -40,7 +40,7 @@ KeySystemSupportImpl::~KeySystemSupportImpl() {
   render_frame_host()
       .GetBrowserContext()
       ->GetPermissionController()
-      ->UnsubscribeFromPermissionStatusChange(permission_subscription_id_);
+      ->UnsubscribeFromPermissionResultChange(permission_subscription_id_);
 #endif
 }
 
@@ -150,8 +150,10 @@ void KeySystemSupportImpl::SetUpPermissionListeners() {
       render_frame_host()
           .GetBrowserContext()
           ->GetPermissionController()
-          ->SubscribeToPermissionStatusChange(
-              blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+          ->SubscribeToPermissionResultChange(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER),
               /*render_process_host=*/nullptr, &render_frame_host(),
               PermissionUtil::GetLastCommittedOriginAsURL(&render_frame_host()),
               /*should_include_device_status=*/false,
@@ -175,9 +177,9 @@ void KeySystemSupportImpl::SetUpPermissionListeners() {
 }
 
 void KeySystemSupportImpl::OnProtectedMediaIdentifierPermissionUpdated(
-    blink::mojom::PermissionStatus status) {
+    PermissionResult permission_result) {
   const bool is_protected_identifier_allowed =
-      status == blink::mojom::PermissionStatus::GRANTED;
+      permission_result.status == blink::mojom::PermissionStatus::GRANTED;
 
   if (is_protected_identifier_allowed == is_protected_identifier_allowed_) {
     return;

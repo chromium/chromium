@@ -34,14 +34,14 @@ class RenderProcessHost;
 class CONTENT_EXPORT PermissionController
     : public base::SupportsUserData::Data {
  public:
-  // Identifier for an active PermissionStatusSubscription. This is
+  // Identifier for an active PermissionResultSubscription. This is
   // intentionally a distinct type from
   // PermissionControllerDelegate::SubscriptionId as the concrete identifier
   // values may be different.
   using SubscriptionId = base::IdType64<PermissionController>;
 
   using SubscriptionsMap =
-      base::IDMap<std::unique_ptr<PermissionStatusSubscription>,
+      base::IDMap<std::unique_ptr<PermissionResultSubscription>,
                   SubscriptionId>;
 
   ~PermissionController() override = default;
@@ -49,7 +49,16 @@ class CONTENT_EXPORT PermissionController
   // Returns the status of the given |permission| for a worker on
   // |worker_origin| running in the renderer corresponding to
   // |render_process_host|.
+  // TODO(crbug.com/443991476):
   virtual PermissionStatus GetPermissionStatusForWorker(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) = 0;
+
+  // Returns the permission result of the given |permission| for a worker on
+  // |worker_origin| running in the renderer corresponding to
+  // |render_process_host|.
+  virtual PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) = 0;
@@ -117,22 +126,22 @@ class CONTENT_EXPORT PermissionController
   virtual void ResetPermission(blink::PermissionType permission,
                                const url::Origin& origin) = 0;
 
-  // Create a new subscription for permission status changes and call the
+  // Create a new subscription for permission result changes and call the
   // permission_controller_delegate.
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  virtual SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
+  virtual SubscriptionId SubscribeToPermissionResultChange(
+      blink::mojom::PermissionDescriptorPtr permission_descriptor,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback) = 0;
+      const base::RepeatingCallback<void(PermissionResult)>& callback) = 0;
 
-  // Unsubscribe permission status change. This function will remove
+  // Unsubscribe permission status result. This function will remove
   // subscription from subscriptions list and call
   // permission_controller_delegate to remove related data in the delegate.
-  virtual void UnsubscribeFromPermissionStatusChange(
+  virtual void UnsubscribeFromPermissionResultChange(
       SubscriptionId subscription_id) = 0;
 
   // Returns `true` if a document subscribed to

@@ -57,6 +57,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_observer.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -4459,8 +4460,9 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
   if (is_audio_request) {
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
-    audio_subscription_id = controller->SubscribeToPermissionStatusChange(
-        blink::PermissionType::AUDIO_CAPTURE,
+    audio_subscription_id = controller->SubscribeToPermissionResultChange(
+        PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+            blink::PermissionType::AUDIO_CAPTURE),
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_render_frame_host_id), origin,
         /*should_include_device_status=*/false,
@@ -4473,8 +4475,9 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
   if (is_video_request) {
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
-    video_subscription_id = controller->SubscribeToPermissionStatusChange(
-        blink::PermissionType::VIDEO_CAPTURE,
+    video_subscription_id = controller->SubscribeToPermissionResultChange(
+        PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+            blink::PermissionType::VIDEO_CAPTURE),
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_render_frame_host_id), origin,
         /*should_include_device_status=*/false,
@@ -4534,16 +4537,16 @@ void MediaStreamManager::UnsubscribeFromPermissionControllerOnUIThread(
     return;
   }
 
-  controller->UnsubscribeFromPermissionStatusChange(audio_subscription_id);
-  controller->UnsubscribeFromPermissionStatusChange(video_subscription_id);
+  controller->UnsubscribeFromPermissionResultChange(audio_subscription_id);
+  controller->UnsubscribeFromPermissionResultChange(video_subscription_id);
 }
 
 void MediaStreamManager::PermissionChangedCallback(
     GlobalRenderFrameHostId requesting_render_frame_host_id,
     int requester_id,
     int page_request_id,
-    blink::mojom::PermissionStatus status) {
-  if (status == blink::mojom::PermissionStatus::GRANTED) {
+    PermissionResult permission_result) {
+  if (permission_result.status == blink::mojom::PermissionStatus::GRANTED) {
     return;
   }
 
@@ -4554,7 +4557,7 @@ void MediaStreamManager::PermissionChangedCallback(
         FROM_HERE,
         base::BindOnce(&MediaStreamManager::PermissionChangedCallback,
                        base::Unretained(this), requesting_render_frame_host_id,
-                       requester_id, page_request_id, status));
+                       requester_id, page_request_id, permission_result));
 
     return;
   }

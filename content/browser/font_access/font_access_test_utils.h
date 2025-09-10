@@ -35,7 +35,7 @@ class TestFontAccessPermissionManager : public MockPermissionManager {
       base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
       override;
 
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+  PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;

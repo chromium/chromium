@@ -95,11 +95,11 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       const mojo::Remote<blink::mojom::EmbeddedPermissionControlClient>&
           client);
 
-  blink::mojom::PermissionStatus GetPermissionStatus(
+  PermissionResult GetPermissionResult(
       const blink::mojom::PermissionDescriptorPtr& permission);
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentContext(
+  PermissionResult GetPermissionResultForCurrentContext(
       const blink::mojom::PermissionDescriptorPtr& permission);
-  blink::mojom::PermissionStatus GetCombinedPermissionAndDeviceStatus(
+  PermissionResult GetCombinedPermissionAndDeviceResult(
       const blink::mojom::PermissionDescriptorPtr& permission);
   void ResetPermissionStatus(blink::PermissionType type);
   void ReceivedBadMessage();

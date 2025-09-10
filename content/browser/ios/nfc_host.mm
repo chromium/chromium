@@ -348,14 +348,14 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
     subscription_id_ =
-        permission_controller_->SubscribeToPermissionStatusChange(
+        permission_controller_->SubscribeToPermissionResultChange(
             blink::PermissionType::NFC, /*render_process_host=*/nullptr,
             render_frame_host,
             render_frame_host->GetMainFrame()
                 ->GetLastCommittedOrigin()
                 .GetURL(),
             /*should_include_device_status=*/false,
-            base::BindRepeating(&NFCHost::OnPermissionStatusChange,
+            base::BindRepeating(&NFCHost::OnPermissionResultChange,
                                 base::Unretained(this)));
   }
 
@@ -389,8 +389,8 @@ void NFCHost::MaybeResumeOrSuspendOperations(Visibility visibility) {
   }
 }
 
-void NFCHost::OnPermissionStatusChange(blink::mojom::PermissionStatus status) {
-  if (status != blink::mojom::PermissionStatus::GRANTED) {
+void NFCHost::OnPermissionResultChange(PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
     Close();
   }
 }

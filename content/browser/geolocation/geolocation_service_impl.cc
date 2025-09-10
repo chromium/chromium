@@ -139,23 +139,25 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
   subscription_id_ =
       PermissionControllerImpl::FromBrowserContext(
           render_frame_host_->GetBrowserContext())
-          ->SubscribeToPermissionStatusChange(
-              blink::PermissionType::GEOLOCATION,
+          ->SubscribeToPermissionResultChange(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION),
               /*render_process_host=*/nullptr, render_frame_host_,
               requesting_url,
               /*should_include_device_status=*/false,
               base::BindRepeating(
-                  &GeolocationServiceImpl::HandlePermissionStatusChange,
+                  &GeolocationServiceImpl::HandlePermissionResultChange,
                   weak_factory_.GetWeakPtr()));
 }
 
-void GeolocationServiceImpl::HandlePermissionStatusChange(
-    blink::mojom::PermissionStatus permission_status) {
-  if (permission_status != blink::mojom::PermissionStatus::GRANTED &&
+void GeolocationServiceImpl::HandlePermissionResultChange(
+    PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED &&
       subscription_id_.value()) {
     PermissionControllerImpl::FromBrowserContext(
         render_frame_host_->GetBrowserContext())
-        ->UnsubscribeFromPermissionStatusChange(subscription_id_);
+        ->UnsubscribeFromPermissionResultChange(subscription_id_);
     geolocation_context_->OnPermissionRevoked(requesting_origin_);
     DecrementActivityCount();
   }

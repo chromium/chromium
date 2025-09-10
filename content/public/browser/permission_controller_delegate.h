@@ -76,33 +76,26 @@ class CONTENT_EXPORT PermissionControllerDelegate {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;
 
-  // Should return the permission status for the current document in the given
-  // RenderFrameHost. This is used over `GetPermissionStatus` whenever possible
-  // as this API takes into account the lifecycle state of a given document
-  // (i.e. whether it's in back-forward cache or being prerendered) in addition
-  // to its origin.
+  // Should return the permission result for the current document in the given
+  // RenderFrameHost. This is used over
+  // `GetPermissionResultForOriginWithoutContext` whenever possible as this API
+  // takes into account the lifecycle state of a given document (i.e. whether
+  // it's in back-forward cache or being prerendered) in addition to its origin.
   // When called with should_include_device_status set to true, the delegate
   // should return a combination of the document permission status (site-level)
   // and the device-level permission status. For example, it should return
   // PermissionStatus::DENIED in scenarios where the site-level permission is
   // granted but the device-level permission is not.
-  virtual PermissionStatus GetPermissionStatusForCurrentDocument(
+  virtual PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) = 0;
 
-  // The method does the same as `GetPermissionStatusForCurrentDocument` but
-  // additionally returns a source or reason for the permission status.
-  virtual PermissionResult GetPermissionResultForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      RenderFrameHost* render_frame_host,
-      bool should_include_device_status);
-
-  // Returns the status of the given `permission` for a worker on
+  // Returns the PermissionResult of the given `permission` for a worker on
   // `worker_origin` running in `render_process_host`, also performing
   // additional checks such as Permission Policy.  Use this over
-  // GetPermissionStatus whenever possible.
-  virtual PermissionStatus GetPermissionStatusForWorker(
+  // GetPermissionResultWithoutContext whenever possible.
+  virtual PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) = 0;
@@ -113,7 +106,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // `requesting_origin` as a separate parameter because it does not equal the
   // last committed origin of the requesting frame.  It is designed to be used
   // only for `TOP_LEVEL_STORAGE_ACCESS`.
-  virtual PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  virtual PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) = 0;
@@ -130,8 +123,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Unregisters from permission status change notifications. This function
   // is only called by PermissionController. In any other cases, please call the
-  // `PermissionController::UnsubscribeFromPermissionStatusChange`.
-  virtual void UnsubscribeFromPermissionStatusChange(
+  // `PermissionController::UnsubscribeFromPermissionResultChange`.
+  virtual void UnsubscribeFromPermissionResultChange(
       content::PermissionController::SubscriptionId subscription_id) {}
 
   // If there's currently a permission UI presenting for the given WebContents,

@@ -16,6 +16,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -148,8 +149,8 @@ class PerformanceManagerTabHelper
 
   // Callback invoked when the current main frame's notification permission
   // status changes.
-  void OnNotificationPermissionStatusChange(
-      blink::mojom::PermissionStatus permission_status);
+  void OnNotificationPermissionResultChange(
+      content::PermissionResult permission_result);
 
   // Unsubscribe from changes to the current main frame's notification
   // permission status, or no-op if there is no subscription.

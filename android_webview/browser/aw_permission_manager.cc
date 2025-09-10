@@ -178,9 +178,7 @@ class AwPermissionManager::PendingRequest {
         render_frame_id(render_frame_id),
         callback(std::move(callback)),
         results(permissions.size(),
-                content::PermissionResult(
-                    PermissionStatus::DENIED,
-                    content::PermissionStatusSource::UNSPECIFIED)),
+                content::PermissionResult(PermissionStatus::DENIED)),
         cancelled_(false) {
     for (size_t i = 0; i < permissions.size(); ++i) {
       permission_index_map_.insert(std::make_pair(permissions[i], i));
@@ -323,9 +321,7 @@ void AwPermissionManager::RequestPermissions(
       DVLOG(0) << "Dropping permissions request for "
                << static_cast<int>(permissions[i]);
       pending_request_raw->SetPermissionResult(
-          permissions[i], content::PermissionResult(
-                              PermissionStatus::DENIED,
-                              content::PermissionStatusSource::UNSPECIFIED));
+          permissions[i], content::PermissionResult(PermissionStatus::DENIED));
       continue;
     }
 
@@ -358,9 +354,8 @@ void AwPermissionManager::RequestPermissions(
         // and that requires an explicit user approval, which is not implemented
         // yet. See crbug.com/1271620
         pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+            permissions[i],
+            content::PermissionResult(PermissionStatus::GRANTED));
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
@@ -391,9 +386,8 @@ void AwPermissionManager::RequestPermissions(
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::DENIED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+            permissions[i],
+            content::PermissionResult(PermissionStatus::DENIED));
         break;
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
@@ -406,9 +400,7 @@ void AwPermissionManager::RequestPermissions(
           auto is_granted = cached_value->second ? PermissionStatus::GRANTED
                                                  : PermissionStatus::DENIED;
           pending_request_raw->SetPermissionResult(
-              permissions[i],
-              content::PermissionResult(
-                  is_granted, content::PermissionStatusSource::UNSPECIFIED));
+              permissions[i], content::PermissionResult(is_granted));
           break;
         }
 
@@ -431,24 +423,21 @@ void AwPermissionManager::RequestPermissions(
         // sensors) works in the WebView. SensorProviderImpl::GetSensor()
         // filters requests for other types of sensors.
         pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+            permissions[i],
+            content::PermissionResult(PermissionStatus::GRANTED));
         break;
       case PermissionType::WAKE_LOCK_SYSTEM:
         pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::DENIED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+            permissions[i],
+            content::PermissionResult(PermissionStatus::DENIED));
         break;
       case PermissionType::LOCAL_NETWORK_ACCESS:
         // PermissionType::LOCAL_NETWORK_ACCESS requests are always granted so
         // that local network requests in WebView work as-is. WebView is
         // currently out-of-scope for Local Network Access restrictions.
         pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+            permissions[i],
+            content::PermissionResult(PermissionStatus::GRANTED));
         break;
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
@@ -528,8 +517,7 @@ void AwPermissionManager::OnRequestResponse(
       continue;
     }
     it.GetCurrentValue()->SetPermissionResult(
-        permission, content::PermissionResult(
-                        status, content::PermissionStatusSource::UNSPECIFIED));
+        permission, content::PermissionResult(status));
     if (it.GetCurrentValue()->IsCompleted()) {
       complete_request_ids.push_back(it.GetCurrentKey());
       if (!it.GetCurrentValue()->IsCancelled()) {
@@ -672,42 +660,43 @@ AwPermissionManager::GetPermissionResultForOriginWithoutContext(
       GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
                           embedding_origin.GetURL());
 
-  return content::PermissionResult(
-      status, content::PermissionStatusSource::UNSPECIFIED);
+  return content::PermissionResult(status);
 }
 
-PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
+content::PermissionResult
+AwPermissionManager::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  return GetPermissionStatusInternal(
+  return content::PermissionResult(GetPermissionStatusInternal(
       permission_descriptor,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()),
-      web_contents);
+      web_contents));
 }
 
-PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
+content::PermissionResult AwPermissionManager::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  return content::PermissionResult(
+      GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
 }
 
-PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
+content::PermissionResult
+AwPermissionManager::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
-  return GetPermissionStatusInternal(
+  return content::PermissionResult(GetPermissionStatusInternal(
       permission_descriptor, requesting_origin.GetURL(),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()),
-      content::WebContents::FromRenderFrameHost(render_frame_host));
+      content::WebContents::FromRenderFrameHost(render_frame_host)));
 }
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
@@ -802,9 +791,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
         NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
     pending_request->SetPermissionResult(
-        permission, content::PermissionResult(
-                        PermissionStatus::DENIED,
-                        content::PermissionStatusSource::UNSPECIFIED));
+        permission, content::PermissionResult(PermissionStatus::DENIED));
   }
 
   // If there are still active requests, we should not remove request_id here,

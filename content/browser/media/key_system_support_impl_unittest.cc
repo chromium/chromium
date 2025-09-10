@@ -140,11 +140,11 @@ class KeySystemSupportImplTest : public RenderViewHostTestHarness {
                             blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER),
                     main_rfh()->HasTransientUserActivation()),
                 _))
-        .WillByDefault(RunOnceCallback<2>(PermissionResult(
-            permission_status, PermissionStatusSource::UNSPECIFIED)));
+        .WillByDefault(RunOnceCallback<2>(PermissionResult(permission_status)));
 
     KeySystemSupportImpl::GetForCurrentDocument(main_rfh())
-        ->OnProtectedMediaIdentifierPermissionUpdated(permission_status);
+        ->OnProtectedMediaIdentifierPermissionUpdated(
+            PermissionResult(permission_status));
   }
 
  protected:

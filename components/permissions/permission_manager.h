@@ -124,19 +124,15 @@ class PermissionManager : public KeyedService,
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  PermissionStatus GetPermissionStatusForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      bool should_include_device_status) override;
   content::PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
-  PermissionStatus GetPermissionStatusForWorker(
+  content::PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  content::PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
@@ -146,7 +142,7 @@ class PermissionManager : public KeyedService,
       base::optional_ref<const url::Origin> embedding_origin) override;
   void OnPermissionStatusChangeSubscriptionAdded(
       content::PermissionController::SubscriptionId subscription_id) override;
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       content::PermissionController::SubscriptionId subscription_id) override;
   std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       content::WebContents* web_contents) const override;

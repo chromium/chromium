@@ -2976,7 +2976,7 @@ void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
 
   if (auto* permission_service_context =
           PermissionServiceContext::GetForCurrentDocument(this)) {
-    permission_service_context->StoreStatusAtBFCacheEntry();
+    permission_service_context->StoreResultAtBFCacheEntry();
   }
 }
 
@@ -18262,7 +18262,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       old_state == LifecycleStateImpl::kInBackForwardCache) {
     if (auto* permission_service_context =
             PermissionServiceContext::GetForCurrentDocument(this)) {
-      permission_service_context->NotifyPermissionStatusChangedIfNeeded();
+      permission_service_context->NotifyPermissionResultChangedIfNeeded();
     }
   }
 

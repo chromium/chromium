@@ -1981,7 +1981,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     contents->GetPrimaryMainFrame()
         ->GetBrowserContext()
         ->GetPermissionController()
-        ->UnsubscribeFromPermissionStatusChange(
+        ->UnsubscribeFromPermissionResultChange(
             window_management_subscription_id_.value());
     window_management_subscription_id_.reset();
   }
@@ -2695,9 +2695,9 @@ void BrowserView::UpdateBorderlessModeEnabled() {
 }
 
 void BrowserView::UpdateWindowManagementPermission(
-    blink::mojom::PermissionStatus status) {
+    content::PermissionResult result) {
   window_management_permission_granted_ =
-      status == blink::mojom::PermissionStatus::GRANTED;
+      result.status == blink::mojom::PermissionStatus::GRANTED;
 
   // The layout has to update to reflect the borderless mode view change.
   InvalidateLayout();
@@ -2717,19 +2717,19 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   }
 
   UpdateWindowManagementPermission(
-      controller
-          ->GetPermissionResultForOriginWithoutContext(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      blink::PermissionType::WINDOW_MANAGEMENT),
-              origin)
-          .status);
+      controller->GetPermissionResultForOriginWithoutContext(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::WINDOW_MANAGEMENT),
+          origin));
 
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
   window_management_subscription_id_ =
-      controller->SubscribeToPermissionStatusChange(
-          blink::PermissionType::WINDOW_MANAGEMENT,
+      controller->SubscribeToPermissionResultChange(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::WINDOW_MANAGEMENT),
           /*render_process_host*/ nullptr, rfh, origin.GetURL(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,

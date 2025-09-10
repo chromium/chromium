@@ -40,6 +40,7 @@
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/buildflags.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture.mojom.h"
@@ -769,7 +770,7 @@ class CONTENT_EXPORT MediaStreamManager
       GlobalRenderFrameHostId requesting_render_frame_host_id,
       int requester_id,
       int page_request_id,
-      blink::mojom::PermissionStatus status);
+      PermissionResult permission_result);
 
   // Start tracking capture-handle changes for tab-capture.
   void MaybeStartTrackingCaptureHandleConfig(
