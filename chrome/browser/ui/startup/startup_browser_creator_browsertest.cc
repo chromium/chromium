@@ -3283,10 +3283,9 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-    std::string json;
     base::Value::Dict local_state;
     local_state.SetByDottedPath(prefs::kWasRestarted, true);
-    base::JSONWriter::Write(local_state, &json);
+    std::string json = base::WriteJson(local_state).value_or("");
 
     base::FilePath local_state_path =
         user_data_dir.Append(chrome::kLocalStateFilename);

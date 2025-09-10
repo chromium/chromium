@@ -453,8 +453,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
     dict.Set(field_value.first, field_value.second);
   }
 
-  std::string product_specific_data_json;
-  base::JSONWriter::Write(dict, &product_specific_data_json);
+  std::string product_specific_data_json = base::WriteJson(dict).value_or("");
 
   param_url = net::AppendQueryParameter(param_url, "product_specific_data",
                                         product_specific_data_json);
@@ -465,8 +464,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   base::Value::List language_list;
   language_list.Append(g_browser_process->GetApplicationLocale());
 
-  std::string language_list_json;
-  base::JSONWriter::Write(language_list, &language_list_json);
+  std::string language_list_json = base::WriteJson(language_list).value_or("");
   param_url =
       net::AppendQueryParameter(param_url, "languages", language_list_json);
 

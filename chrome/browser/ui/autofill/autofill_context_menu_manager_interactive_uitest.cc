@@ -181,10 +181,10 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        FeedbackDialogArgsAutofillMetadata) {
-  std::string expected_metadata;
-  base::JSONWriter::Write(
-      data_logs::FetchAutofillFeedbackData(GetAutofillManager()),
-      &expected_metadata);
+  std::string expected_metadata =
+      base::WriteJson(
+          data_logs::FetchAutofillFeedbackData(GetAutofillManager()))
+          .value_or("");
 
   // Test that none feedback dialog exists.
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
@@ -220,15 +220,15 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   ASSERT_TRUE(GetAutofillManager()->FindCachedFormById(form.global_id()));
 
   // Set up expected trigger form and field signatures.
-  std::string expected_metadata;
   base::Value::Dict extra_logs;
   auto form_structure = std::make_unique<FormStructure>(form);
   extra_logs.Set("triggerFormSignature", form_structure->FormSignatureAsStr());
   extra_logs.Set("triggerFieldSignature",
                  form_structure->field(0)->FieldSignatureAsStr());
-  base::JSONWriter::Write(data_logs::FetchAutofillFeedbackData(
-                              GetAutofillManager(), std::move(extra_logs)),
-                          &expected_metadata);
+  std::string expected_metadata =
+      base::WriteJson(data_logs::FetchAutofillFeedbackData(
+                          GetAutofillManager(), std::move(extra_logs)))
+          .value_or("");
 
   // Set up context menu params with the correct trigger form and field.
   autofill_context_menu_manager_->set_params_for_testing(

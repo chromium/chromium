@@ -377,8 +377,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   request_dict.Set("width", base::Value(size));
   request_dict.Set("height", base::Value(size));
 
-  std::string request_message;
-  base::JSONWriter::Write(request_dict, &request_message);
+  std::string request_message = base::WriteJson(request_dict).value_or("");
 
   // Open a channel to the image loader extension using a message host that send
   // the image loader request.

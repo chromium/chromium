@@ -1370,9 +1370,9 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     if (window_id) {
       options.Set("windowId", *window_id);
     }
-    std::string args_str;
-    base::JSONWriter::Write(base::Value::List().Append(std::move(options)),
-                            &args_str);
+    std::string args_str =
+        base::WriteJson(base::Value::List().Append(std::move(options)))
+            .value_or("");
     function->set_user_gesture(true);
     EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args_str, profile))
         << function->GetError();
@@ -2117,9 +2117,9 @@ class ExtensionCloseSidePanelBrowserTest
       options.Set("windowId", *window_id);
     }
 
-    std::string args_str;
-    base::JSONWriter::Write(base::Value::List().Append(std::move(options)),
-                            &args_str);
+    std::string args_str =
+        base::WriteJson(base::Value::List().Append(std::move(options)))
+            .value_or("");
     EXPECT_TRUE(
         api_test_utils::RunFunction(function.get(), args_str, profile()))
         << function->GetError();

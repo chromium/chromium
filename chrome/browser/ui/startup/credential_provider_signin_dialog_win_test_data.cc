@@ -107,9 +107,7 @@ CredentialProviderSigninDialogTestDataStorage::MakeValidSignInResponseValue()
 std::string
 CredentialProviderSigninDialogTestDataStorage::GetSuccessfulSigninResult()
     const {
-  std::string json;
-  base::JSONWriter::Write(expected_success_signin_result_, &json);
-  return json;
+  return base::WriteJson(expected_success_signin_result_).value_or("");
 }
 
 std::string CredentialProviderSigninDialogTestDataStorage::

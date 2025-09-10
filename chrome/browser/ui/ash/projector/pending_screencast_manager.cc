@@ -197,10 +197,7 @@ const std::string BuildRequestBody(
   contentHints.Set(kDriveRequestIndexableTextKey, indexable_text);
   root.Set(kDriveRequestContentHintsKey, std::move(contentHints));
 
-  std::string request_body;
-  base::JSONWriter::Write(std::move(root), &request_body);
-
-  return request_body;
+  return base::WriteJson(root).value_or("");
 }
 
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
