@@ -38,7 +38,7 @@ public class WebApkSyncService {
     }
 
     static void onWebApkUsed(
-            BrowserServicesIntentDataProvider intendDataProvider,
+            @Nullable BrowserServicesIntentDataProvider intendDataProvider,
             WebappDataStorage storage,
             boolean isInstall) {
         WebApkSpecifics specifics =

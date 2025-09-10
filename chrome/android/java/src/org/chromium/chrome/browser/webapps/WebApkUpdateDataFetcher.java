@@ -54,8 +54,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
          */
         void onGotManifestData(
                 @Nullable BrowserServicesIntentDataProvider fetchedInfo,
-                String primaryIconUrl,
-                String splashIconUrl);
+                @Nullable String primaryIconUrl,
+                @Nullable String splashIconUrl);
     }
 
     /**

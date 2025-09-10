@@ -8,12 +8,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -34,6 +34,7 @@ import java.util.List;
  * device.
  */
 @JNINamespace("webapps")
+@NullMarked
 public class PwaRestorePromoUtils {
     private static final String TAG = "PwaRestore";
 
@@ -160,9 +161,9 @@ public class PwaRestorePromoUtils {
 
     private static void onRestorableAppsAvailable(
             boolean success,
-            @NonNull String[] appIds,
-            @NonNull String[] appNames,
-            @NonNull List<Bitmap> icons,
+            String[] appIds,
+            String[] appNames,
+            List<Bitmap> icons,
             WindowAndroid windowAndroid,
             int arrowResourceId) {
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
@@ -170,6 +171,7 @@ public class PwaRestorePromoUtils {
             success = false;
         } else {
             Activity activity = windowAndroid.getActivity().get();
+            assert activity != null;
             PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
                     new PwaRestoreBottomSheetCoordinator(
                             appIds, appNames, icons, activity, controller, arrowResourceId);
@@ -188,5 +190,5 @@ public class PwaRestorePromoUtils {
                     ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE,
                     DisplayStage.ERROR_LAUNCHING_PROMO);
         }
-      }
+    }
 }

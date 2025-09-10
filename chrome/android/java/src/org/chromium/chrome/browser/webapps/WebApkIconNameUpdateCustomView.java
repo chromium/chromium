@@ -60,7 +60,8 @@ public class WebApkIconNameUpdateCustomView extends LinearLayout {
      * @param oldAppShortName The short name of the currently installed app.
      * @param newAppShortName The proposed short name for the updated app.
      */
-    public void configureShortNames(String oldAppShortName, String newAppShortName) {
+    public void configureShortNames(
+            @Nullable String oldAppShortName, @Nullable String newAppShortName) {
         TextView currentShortName = findViewById(R.id.short_app_name_old);
         TextView updatedShortName = findViewById(R.id.short_app_name_new);
         currentShortName.setText(oldAppShortName);
@@ -75,7 +76,7 @@ public class WebApkIconNameUpdateCustomView extends LinearLayout {
      * @param oldAppName The name of the currently installed app.
      * @param newAppName The proposed name for the updated app.
      */
-    public void configureNames(String oldAppName, String newAppName) {
+    public void configureNames(@Nullable String oldAppName, @Nullable String newAppName) {
         TextView currentLongName = findViewById(R.id.app_name_old);
         TextView updatedLongName = findViewById(R.id.app_name_new);
         currentLongName.setText(oldAppName);

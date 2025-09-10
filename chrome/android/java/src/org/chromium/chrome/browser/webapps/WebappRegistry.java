@@ -138,7 +138,7 @@ public class WebappRegistry {
     public void register(final String webappId, final FetchWebappDataStorageCallback callback) {
         new AsyncTask<WebappDataStorage>() {
             @Override
-            protected final WebappDataStorage doInBackground() {
+            protected WebappDataStorage doInBackground() {
                 // Create the WebappDataStorage on the background thread, as this must create and
                 // open a new SharedPreferences.
                 WebappDataStorage storage = WebappDataStorage.open(webappId);
@@ -150,7 +150,7 @@ public class WebappRegistry {
             }
 
             @Override
-            protected final void onPostExecute(WebappDataStorage storage) {
+            protected void onPostExecute(WebappDataStorage storage) {
                 // Update the last used time in order to prevent
                 // {@link WebappRegistry@unregisterOldWebapps()} from deleting the
                 // WebappDataStorage. Must be run on the main thread as
@@ -169,7 +169,7 @@ public class WebappRegistry {
      * @param webappId The id of the web app.
      * @return The storage object for the web app, or null if webappId is not registered.
      */
-    public @Nullable WebappDataStorage getWebappDataStorage(String webappId) {
+    public @Nullable WebappDataStorage getWebappDataStorage(@Nullable String webappId) {
         return mStorages.get(webappId);
     }
 

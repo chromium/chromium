@@ -9,18 +9,19 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 
 /** Delegate for retrieving WebApkInfo. */
+@NullMarked
 public class WebApkHandlerDelegate {
     private long mNativePointer;
 
@@ -28,16 +29,16 @@ public class WebApkHandlerDelegate {
     interface Natives {
         void onWebApkInfoRetrieved(
                 long nativeWebApkHandlerDelegate,
-                @JniType("std::string") String name,
-                @JniType("std::string") String shortName,
-                @JniType("std::string") String packageName,
+                @Nullable @JniType("std::string") String name,
+                @Nullable @JniType("std::string") String shortName,
+                @Nullable @JniType("std::string") String packageName,
                 @JniType("std::string") String id,
                 int shellApkVersion,
                 int versionCode,
                 @JniType("std::string") String uri,
                 @JniType("std::string") String scope,
-                @JniType("std::string") String manifestUrl,
-                @JniType("std::string") String manifestStartUrl,
+                @Nullable @JniType("std::string") String manifestUrl,
+                @Nullable @JniType("std::string") String manifestStartUrl,
                 @Nullable String manifestId,
                 int displayMode,
                 int orientation,
@@ -93,7 +94,9 @@ public class WebApkHandlerDelegate {
     }
 
     private void onGotBackingBrowser(
-            PackageInfo packageInfo, boolean isBackingBrowser, String backingBrowserPackageName) {
+            PackageInfo packageInfo,
+            boolean isBackingBrowser,
+            @Nullable String backingBrowserPackageName) {
         if (mNativePointer == 0) {
             return;
         }

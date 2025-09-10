@@ -180,7 +180,7 @@ public class WebappDataStorage {
     public void getSplashScreenImage(final FetchCallback<@Nullable Bitmap> callback) {
         new AsyncTask<@Nullable Bitmap>() {
             @Override
-            protected final @Nullable Bitmap doInBackground() {
+            protected @Nullable Bitmap doInBackground() {
                 String encodedIcon = mPreferences.getString(KEY_SPLASH_ICON, null);
                 if (encodedIcon == null) {
                     return null;
@@ -189,7 +189,7 @@ public class WebappDataStorage {
             }
 
             @Override
-            protected final void onPostExecute(@Nullable Bitmap result) {
+            protected void onPostExecute(@Nullable Bitmap result) {
                 assert callback != null;
                 callback.onDataRetrieved(result);
             }
@@ -238,7 +238,7 @@ public class WebappDataStorage {
      * BrowserServicesIntentDataProvider}.
      */
     public void updateFromWebappIntentDataProvider(
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            @Nullable BrowserServicesIntentDataProvider intentDataProvider) {
         if (intentDataProvider == null) return;
         WebappInfo info = WebappInfo.create(intentDataProvider);
 

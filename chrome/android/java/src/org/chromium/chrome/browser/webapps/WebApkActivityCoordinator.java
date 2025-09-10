@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
@@ -21,6 +20,7 @@ import java.util.function.Supplier;
  * Coordinator for the WebAPK activity component. Add methods here if other components need to
  * communicate with the WebAPK activity component.
  */
+@NullMarked
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<WebApkUpdateManager> mWebApkUpdateManager;
@@ -39,13 +39,13 @@ public class WebApkActivityCoordinator implements DestroyObserver {
                         return;
                     }
 
+                    assert storage != null;
                     onDeferredStartupWithStorage(storage, didCreateStorage);
                 });
         lifecycleDispatcher.register(this);
     }
 
-    public void onDeferredStartupWithStorage(
-            @NonNull WebappDataStorage storage, boolean didCreateStorage) {
+    public void onDeferredStartupWithStorage(WebappDataStorage storage, boolean didCreateStorage) {
         assert storage != null;
         storage.incrementLaunchCount();
 
@@ -62,6 +62,8 @@ public class WebApkActivityCoordinator implements DestroyObserver {
 
         Origin origin = Origin.create(scope);
         String packageName = storage.getWebApkPackageName();
+        assert origin != null;
+        assert packageName != null;
 
         InstalledWebappRegistrar.getInstance()
                 .registerClient(packageName, origin, storage.getUrl());

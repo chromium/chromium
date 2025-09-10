@@ -226,8 +226,10 @@ public class UrlUtilities {
         return UrlUtilitiesJni.get().isUrlWithinScope(url, scopeUrl);
     }
 
-    /** @return whether two URLs match, ignoring the #fragment. */
-    public static boolean urlsMatchIgnoringFragments(String url, String url2) {
+    /**
+     * @return whether two URLs match, ignoring the #fragment.
+     */
+    public static boolean urlsMatchIgnoringFragments(@Nullable String url, @Nullable String url2) {
         if (TextUtils.equals(url, url2)) return true;
         return UrlUtilitiesJni.get().urlsMatchIgnoringFragments(url, url2);
     }
@@ -389,7 +391,7 @@ public class UrlUtilities {
 
         boolean isUrlWithinScope(String url, String scopeUrl);
 
-        boolean urlsMatchIgnoringFragments(String url, String url2);
+        boolean urlsMatchIgnoringFragments(@Nullable String url, @Nullable String url2);
 
         boolean urlsFragmentsDiffer(String url, String url2);
 
