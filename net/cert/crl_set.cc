@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -88,7 +89,7 @@ static const int kCurrentFileVersion = 0;
 
 bool ReadCRL(std::string_view* data,
              std::string* out_parent_spki_hash,
-             std::vector<std::string>* out_serials) {
+             std::vector<std::vector<uint8_t>>* out_serials) {
   if (data->size() < crypto::hash::kSha256Size) {
     return false;
   }
@@ -119,8 +120,8 @@ bool ReadCRL(std::string_view* data,
     if (data->size() < serial_length)
       return false;
 
-    out_serials->push_back(std::string());
-    out_serials->back() = std::string(data->substr(0, serial_length));
+    out_serials->push_back(
+        base::ToVector(base::as_byte_span(data->substr(0, serial_length))));
     data->remove_prefix(serial_length);
   }
 
@@ -251,7 +252,7 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
 
   while (!data.empty()) {
     std::string spki_hash;
-    std::vector<std::string> blocked_serials;
+    std::vector<std::vector<uint8_t>> blocked_serials;
 
     if (!ReadCRL(&data, &spki_hash, &blocked_serials)) {
       return false;
@@ -327,9 +328,9 @@ CRLSet::Result CRLSet::CheckSubject(std::string_view encoded_subject,
   return REVOKED;
 }
 
-CRLSet::Result CRLSet::CheckSerial(std::string_view serial_number,
+CRLSet::Result CRLSet::CheckSerial(base::span<const uint8_t> serial_number,
                                    std::string_view issuer_spki_hash) const {
-  std::string_view serial(serial_number);
+  base::span<const uint8_t> serial(serial_number);
 
   if (!serial.empty() && (serial[0] & 0x80) != 0) {
     // This serial number is negative but the process which generates CRL sets
@@ -338,8 +339,9 @@ CRLSet::Result CRLSet::CheckSerial(std::string_view serial_number,
   }
 
   // Remove any leading zero bytes.
-  while (serial.size() > 1 && serial[0] == 0x00)
-    serial.remove_prefix(1);
+  while (serial.size() > 1 && serial[0] == 0x00) {
+    serial = serial.subspan(1u);
+  }
 
   auto it = crls_.find(std::string(issuer_spki_hash));
   if (it == crls_.end())
@@ -387,19 +389,19 @@ scoped_refptr<CRLSet> CRLSet::BuiltinCRLSet() {
 
 // static
 scoped_refptr<CRLSet> CRLSet::EmptyCRLSetForTesting() {
-  return ForTesting(false, nullptr, "", "", {});
+  return ForTesting(false, nullptr, {}, "", {});
 }
 
 // static
 scoped_refptr<CRLSet> CRLSet::ExpiredCRLSetForTesting() {
-  return ForTesting(true, nullptr, "", "", {});
+  return ForTesting(true, nullptr, {}, "", {});
 }
 
 // static
 scoped_refptr<CRLSet> CRLSet::ForTesting(
     bool is_expired,
     const SHA256HashValue* issuer_spki,
-    std::string_view serial_number,
+    base::span<const uint8_t> serial_number,
     std::string_view utf8_common_name,
     const std::vector<std::string>& acceptable_spki_hashes_for_cn) {
   std::string subject_hash;
@@ -439,9 +441,9 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
 
   if (issuer_spki) {
     std::string spki(base::as_string_view(*issuer_spki));
-    std::vector<std::string> serials;
+    std::vector<std::vector<uint8_t>> serials;
     if (!serial_number.empty()) {
-      serials.push_back(std::string(serial_number));
+      serials.push_back(base::ToVector(serial_number));
       // |serial_number| is in DER-encoded form, which means it may have a
       // leading 0x00 to indicate it is a positive INTEGER. CRLSets are stored
       // without these leading 0x00, as handled in CheckSerial(), so remove
@@ -450,7 +452,7 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
       // be one, and the next byte should have the high bit set.
       DCHECK_EQ(serials[0][0] & 0x80, 0);  // Negative serials are not allowed.
       if (serials[0][0] == 0x00) {
-        serials[0].erase(0, 1);
+        serials[0] = base::ToVector(serial_number.subspan(1u));
         // If there was a leading 0x00, then the high-bit of the next byte
         // should have been set.
         DCHECK(!serials[0].empty() && serials[0][0] & 0x80);

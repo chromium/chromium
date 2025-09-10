@@ -115,8 +115,7 @@ CertificateSelector::CertificateTableModel::CertificateTableModel(
     row.issuer = base::UTF8ToUTF16(cert->issuer().GetDisplayName());
     row.provider = base::UTF8ToUTF16(provider_names[i]);
     if (cert->serial_number().size() < std::numeric_limits<size_t>::max() / 2) {
-      row.serial = base::UTF8ToUTF16(base::HexEncode(
-          cert->serial_number().data(), cert->serial_number().size()));
+      row.serial = base::UTF8ToUTF16(base::HexEncode(cert->serial_number()));
     }
     rows_.push_back(row);
   }

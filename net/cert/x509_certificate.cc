@@ -14,6 +14,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -700,22 +701,22 @@ X509Certificate::X509Certificate(
     ParsedFields parsed,
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
-    : parsed_(std::move(parsed)),
-      // CertBuffersFromCertAndIntermediates will always return a vector with
-      // at least one element.
+    :  // CertBuffersFromCertAndIntermediates will always return a vector with
+       // at least one element.
       cert_buffers_(
           CertBuffersFromCertAndIntermediates(std::move(cert_buffer),
-                                              std::move(intermediates))) {}
+                                              std::move(intermediates))),
+      parsed_(std::move(parsed)) {}
 
 X509Certificate::X509Certificate(
     const X509Certificate& other,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
-    : parsed_(other.parsed_),
-      // CertBuffersFromCertAndIntermediates will always return a vector with
-      // at least one element.
+    :  // CertBuffersFromCertAndIntermediates will always return a vector with
+       // at least one element.
       cert_buffers_(
           CertBuffersFromCertAndIntermediates(bssl::UpRef(other.cert_buffer()),
-                                              std::move(intermediates))) {}
+                                              std::move(intermediates))),
+      parsed_(other.parsed_) {}
 
 X509Certificate::~X509Certificate() = default;
 
@@ -763,7 +764,10 @@ bool X509Certificate::ParsedFields::Initialize(
       !GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
     return false;
   }
-  serial_number_ = tbs.serial_number.AsString();
+  // `tbs.serial_number` just references data inside `cert_buffer`, so it's
+  // okay to save it into a span even though `tbs` gets destroyed at the end of
+  // this method.
+  serial_number_ = tbs.serial_number;
   return true;
 }
 

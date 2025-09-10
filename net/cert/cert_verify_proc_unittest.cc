@@ -528,7 +528,10 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
       x509_util::CryptoBufferAsStringPiece(root->GetCertBuffer()), &spki));
   SHA256HashValue spki_sha256 = crypto::hash::Sha256(base::as_byte_span(spki));
-  SetUpCertVerifyProc(CRLSet::ForTesting(false, &spki_sha256, "", "", {}));
+  SetUpCertVerifyProc(CRLSet::ForTesting(/*is_expired=*/false, &spki_sha256,
+                                         /*serial_number=*/{},
+                                         /*utf8_common_name=*/"",
+                                         /*acceptable_spki_hashes_for_cn=*/{}));
 
   // Consider the root of the test chain a valid EV root for the test policy.
   ScopedTestEVPolicy scoped_test_ev_policy(

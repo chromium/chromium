@@ -17,7 +17,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string spki_hash = data_provider.ConsumeBytesAsString(32);
   std::string issuer_hash = data_provider.ConsumeBytesAsString(32);
   size_t serial_length = data_provider.ConsumeIntegralInRange(4, 19);
-  std::string serial = data_provider.ConsumeBytesAsString(serial_length);
+  std::vector<uint8_t> serial =
+      data_provider.ConsumeBytes<uint8_t>(serial_length);
   std::string crlset_data = data_provider.ConsumeRemainingBytesAsString();
 
   scoped_refptr<net::CRLSet> out_crl_set;

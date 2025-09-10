@@ -11460,7 +11460,10 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   std::string common_name = test_server.GetCertificate()->subject().common_name;
 
   {
-    auto crl_set = CRLSet::ForTesting(false, nullptr, "", common_name, {});
+    auto crl_set = CRLSet::ForTesting(
+        /*is_expired=*/false, /*issuer_spki=*/nullptr, /*serial_number=*/{},
+        common_name,
+        /*acceptable_spki_hashes_for_cn=*/{});
     ASSERT_TRUE(crl_set);
     UpdateCertVerifier(crl_set);
 
@@ -11487,8 +11490,9 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
       test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
   std::string spki_hash(base::as_string_view(spki_hash_value));
   {
-    auto crl_set =
-        CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});
+    auto crl_set = CRLSet::ForTesting(
+        /*is_expired=*/false, /*issuer_spki=*/nullptr, /*serial_number=*/{},
+        common_name, {spki_hash});
     ASSERT_TRUE(crl_set);
     UpdateCertVerifier(crl_set);
 

@@ -41,6 +41,10 @@ const uint8_t kSHA1Oid[] = {0x2b, 0x0e, 0x03, 0x02, 0x1a};
 const uint8_t kSHA256Oid[] = {0x60, 0x86, 0x48, 0x01, 0x65,
                               0x03, 0x04, 0x02, 0x01};
 
+base::span<const uint8_t> SpanFromCBS(const CBS& cbs) {
+  return bssl::Span<const uint8_t>(cbs);
+}
+
 bool StringEqualToCBS(const std::string& value1, const CBS* value2) {
   if (CBS_len(value2) != value1.size())
     return false;
@@ -172,7 +176,7 @@ bool ParseSCTListFromExtensions(const CBS& extensions,
 // |certStatus| field.
 bool FindMatchingSingleResponse(CBS* responses,
                                 const CRYPTO_BUFFER* issuer,
-                                const std::string& cert_serial_number,
+                                base::span<const uint8_t> cert_serial_number,
                                 CBS* out_single_response) {
   std::string_view issuer_spki;
   if (!asn1::ExtractSPKIFromDERCert(
@@ -216,8 +220,9 @@ bool FindMatchingSingleResponse(CBS* responses,
     }
 
     // Check the serial number matches.
-    if (!StringEqualToCBS(cert_serial_number, &serial_number))
+    if (cert_serial_number != SpanFromCBS(serial_number)) {
       continue;
+    }
 
     // Check if the issuer_key_hash matches.
     // TODO(ekasper): also use the issuer name hash in matching.
@@ -347,10 +352,11 @@ bool GetX509SignedEntry(const CRYPTO_BUFFER* leaf, SignedEntryData* result) {
   return true;
 }
 
-bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
-                                    const std::string& cert_serial_number,
-                                    std::string_view ocsp_response,
-                                    std::string* sct_list) {
+bool ExtractSCTListFromOCSPResponse(
+    const CRYPTO_BUFFER* issuer,
+    base::span<const uint8_t> cert_serial_number,
+    std::string_view ocsp_response,
+    std::string* sct_list) {
   // The input is an bssl::OCSPResponse. See RFC2560, section 4.2.1. The SCT
   // list is in the extensions field of the SingleResponse which matches the
   // input certificate.

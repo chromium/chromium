@@ -165,8 +165,7 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
   }
 
   return connectors_internals::mojom::CertificateMetadata::New(
-      base::ToLowerASCII(base::HexEncode(certificate->serial_number().data(),
-                                         certificate->serial_number().size())),
+      base::ToLowerASCII(base::HexEncode(certificate->serial_number())),
       base::ToLowerASCII(
           base::HexEncode(certificate->CalculateChainFingerprint256())),
       base::UnlocalizedTimeFormatWithPattern(certificate->valid_start(),
