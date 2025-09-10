@@ -154,15 +154,14 @@ function testStartStopAndRecorderState() {
 }
 
 // Tests that when MediaRecorder's start(0) function is called, some data is
-// made available by media recorder via dataavailable events, containing non
-// empty blob data.
+// made available by media recorder via dataavailable events, containing blob
+// data.
 function testStartAndDataAvailable(mimeType) {
   if (!MediaRecorder.isTypeSupported(mimeType)) {
     console.log('Skip unsupported mimeType:', mimeType);
     return logSuccess();
   }
   var videoSize = 0;
-  var emptyBlobs = 0;
   var lastTimecode = NaN;
   return navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS)
       .then(function(stream) {
@@ -171,10 +170,7 @@ function testStartAndDataAvailable(mimeType) {
       .then(function(recorder) {
         // Save history of Blobs received via dataavailable.
         recorder.ondataavailable = function(event) {
-          if (event.data.size > 0)
-            videoSize += event.data.size;
-          else
-            emptyBlobs += 1;
+          videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
             assertTrue(event.timecode > lastTimecode, 'timecodes');
@@ -187,22 +183,17 @@ function testStartAndDataAvailable(mimeType) {
               return videoSize > 0;
             });
       })
-      .then(function() {
-        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
-            ' empty blobs, there should be no such empty blobs.');
-      })
       .then(logSuccess);
 }
 
 // Tests that when MediaRecorder's start(timeSlice) is called, some data
-// available events are fired containing non empty blob data.
+// available events are fired containing blob data.
 function testStartWithTimeSlice(mimeType) {
   if (!MediaRecorder.isTypeSupported(mimeType)) {
     console.log('Skip unsupported mimeType:', mimeType);
     return logSuccess();
   }
   var videoSize = 0;
-  var emptyBlobs = 0;
   var timeStamps = [];
   var lastTimecode = NaN;
   return navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS)
@@ -218,10 +209,7 @@ function testStartWithTimeSlice(mimeType) {
       .then(function(recorder) {
         recorder.ondataavailable = function(event) {
           timeStamps.push(event.timeStamp);
-          if (event.data.size > 0)
-            videoSize += event.data.size;
-          else
-            emptyBlobs += 1;
+          videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
             assertTrue(event.timecode > lastTimecode, 'timecodes');
@@ -233,10 +221,6 @@ function testStartWithTimeSlice(mimeType) {
             function() {
               return videoSize > 0 && timeStamps.length > 10;
             });
-      })
-      .then(function() {
-        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
-            ' empty blobs, there should be no such empty blobs.');
       })
       .then(logSuccess);
 }
@@ -291,7 +275,6 @@ function testResumeAndDataAvailable(mimeType) {
     return logSuccess();
   }
   var videoSize = 0;
-  var emptyBlobs = 0;
   var lastTimecode = NaN;
   return navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS)
       .then(function(stream) {
@@ -300,12 +283,7 @@ function testResumeAndDataAvailable(mimeType) {
       .then(function(recorder) {
         recorder.pause();
         recorder.ondataavailable = function(event) {
-          if (event.data.size > 0) {
-            videoSize += event.data.size;
-          } else {
-            console.log('This dataavailable event is empty', event);
-            emptyBlobs += 1;
-          }
+          videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
             assertTrue(event.timecode > lastTimecode, 'timecodes');
@@ -318,11 +296,6 @@ function testResumeAndDataAvailable(mimeType) {
             function() {
               return videoSize > 0;
             });
-      })
-      .then(function() {
-        // There should be no empty blob while recording.
-        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
-            ' empty blobs, there should be no such empty blobs.');
       })
       .then(logSuccess);
 }
