@@ -1674,6 +1674,10 @@ const FeatureEntry::FeatureParam kComposeboxNoEscClosure[] = {
 const FeatureEntry::FeatureParam kComposeboxShowContextMenu[] = {
     {"ShowContextMenu", "true"},
 };
+const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
+    {"ShowComposeboxZps", "true"},
+    {"ShowContextMenu", "true"},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
@@ -1685,6 +1689,8 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kComposeboxNoEscClosure), nullptr},
     {"- Show Contextual Input Menu", kComposeboxShowContextMenu,
      std::size(kComposeboxShowContextMenu), nullptr},
+    {"- Show Contextual Input Menu and ZPS", kComposeboxShowContextMenuAndZps,
+     std::size(kComposeboxShowContextMenuAndZps), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
