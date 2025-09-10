@@ -515,6 +515,14 @@ def _TestTargetsFromGnRefs(targets):
   return ret
 
 
+def _ParseRefsOutput(output):
+  targets = output.splitlines()
+  # Filter out any warnings messages. E.g. those about unused GN args.
+  # https://crbug.com/444024516
+  targets = [t for t in targets if t.startswith('//')]
+  return targets
+
+
 def FindTestTargets(target_cache, out_dir, paths, run_all):
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
@@ -529,13 +537,13 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
     gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn.py')
 
     cmd = [sys.executable, gn_path, 'refs', out_dir, '--all'] + paths
-    targets = RunCommand(cmd).splitlines()
+    targets = _ParseRefsOutput(RunCommand(cmd))
     test_targets = _TestTargetsFromGnRefs(targets)
 
-    # If not targets were identified as tests by looking at their names, ask GN
+    # If no targets were identified as tests by looking at their names, ask GN
     # if any are executables.
     if not test_targets and targets:
-      test_targets = RunCommand(cmd + ['--type=executable']).splitlines()
+      test_targets = _ParseRefsOutput(RunCommand(cmd + ['--type=executable']))
 
   if not test_targets:
     ExitWithMessage(
