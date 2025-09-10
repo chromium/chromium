@@ -90,13 +90,14 @@ bool SkipToken(base::span<const CharType>& chars, std::string_view token) {
   return true;
 }
 
-// Use a span version instead.
 template <typename CharType>
-UNSAFE_BUFFER_USAGE void SkipUntil(const CharType*& position,
-                                   const CharType* end,
-                                   CharType delimiter) {
-  while (position < end && *position != delimiter)
-    UNSAFE_TODO(++position);
+[[nodiscard]] size_t SkipUntil(base::span<const CharType> chars,
+                               size_t position,
+                               CharType delimiter) {
+  while (position < chars.size() && chars[position] != delimiter) {
+    ++position;
+  }
+  return position;
 }
 
 template <typename CharType, bool predicate(CharType)>

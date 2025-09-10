@@ -164,7 +164,8 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
       }
       case kViewTarget: {
         // Ignore arguments.
-        UNSAFE_TODO(SkipUntil<CharType>(ptr, end, ')'));
+        position = SkipUntil<CharType>(chars, position, ')');
+        ptr = UNSAFE_TODO(chars.data() + position);
         break;
       }
       case kZoomAndPan:
