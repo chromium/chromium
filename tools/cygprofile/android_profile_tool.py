@@ -40,16 +40,6 @@ class NoProfileDataError(Exception):
     return repr(self.value)
 
 
-def GetBrowserFromApk(apk: str):
-  browser = 'android-webview'
-  apk_name = os.path.basename(apk)
-  if 'TrichromeWebView' in apk_name:
-    browser = browser + '-trichrome'
-  if 'Monochrome.apk' in apk_name or 'Google' in apk_name:
-    browser = browser + '-google'
-  return browser
-
-
 def RunCommand(command: List[str]):
   """Run a command from current build directory root.
 
@@ -202,7 +192,7 @@ class AndroidProfileTool:
     changer = self._SetCommandLineFlags(package_info)
 
     chromium_out_dir = os.path.abspath(os.path.join(os.path.dirname(apk), '..'))
-    browser = GetBrowserFromApk(apk)
+    browser = 'android-webview-standalone'
 
     profile_benchmark = 'orderfile_generation.webview_startup'
     if self._debug:

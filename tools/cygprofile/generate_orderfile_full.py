@@ -443,7 +443,7 @@ class OrderfileGenerator:
     try:
       chromium_out_dir = os.path.abspath(
           os.path.join(os.path.dirname(apk), '..'))
-      browser = android_profile_tool.GetBrowserFromApk(apk)
+      browser = 'android-webview-standalone'
       out_dir = tempfile.mkdtemp()
       android_profile_tool.RunCommand([
           'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
