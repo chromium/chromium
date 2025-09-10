@@ -17,11 +17,13 @@ repack("packed_resources") {
   sources = [
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ios/web/test/test_resources.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
   deps = [
     ":resources",
     "//ios/web:resources",
+    "//ui/strings:app_locale_settings",
     "//ui/webui/resources",
   ]
   output = "$target_gen_dir/resources.pak"

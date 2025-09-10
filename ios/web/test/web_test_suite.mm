@@ -5,6 +5,7 @@
 #import "ios/web/public/test/web_test_suite.h"
 
 #import "base/check.h"
+#import "base/files/file_path.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
 #import "components/crash/core/common/objc_zombie.h"
@@ -36,16 +37,14 @@ void WebTestSuite::Initialize() {
 
   RegisterWebSchemes();
 
-  // Force unittests to run using en-US so if testing string output will work
-  // regardless of the system language.
-  ui::ResourceBundle::InitSharedInstanceWithLocale(
-      "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-  base::FilePath resources_pack_path;
-  base::PathService::Get(base::DIR_ASSETS, &resources_pack_path);
-  resources_pack_path =
-      resources_pack_path.Append(FILE_PATH_LITERAL("resources.pak"));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      resources_pack_path, ui::kScaleFactorNone);
+  // Load the resources produced by //ios/web/test:packed_resources if the test
+  // has not already loaded other resources (e.g., by //ios/chrome tests).
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    base::FilePath resources_pack_path =
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .Append(FILE_PATH_LITERAL("resources.pak"));
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(resources_pack_path);
+  }
 }
 
 void WebTestSuite::Shutdown() {

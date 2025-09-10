@@ -43,6 +43,7 @@ test("ios_components_unittests") {
     "//ios/components/security_interstitials/lookalikes:unit_tests",
     "//ios/components/security_interstitials/safe_browsing:unit_tests",
     "//ios/components/ui_util:unit_tests",
+    "//ios/web/test:packed_resources",
   ]
 
   assert_no_deps = ios_assert_no_deps
