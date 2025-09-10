@@ -18,7 +18,7 @@
 namespace audio {
 
 BASE_FEATURE(kRestrictOwnAudioAddChromiumBack,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<LoopbackMixin>
