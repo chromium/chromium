@@ -117,6 +117,51 @@ The test verifies functionality of querying style information for view-transitio
                     ]
                 }
             }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    ruleTypes : [
+                    ]
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 0
+                                }
+                                text : :active-view-transition
+                            }
+                        ]
+                        text : :active-view-transition
+                    }
+                    startingStyles : [
+                    ]
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : view-transition-name
+                                value : root
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
         ]
         parentLayoutNodeId : 1
         pseudoElements : [
