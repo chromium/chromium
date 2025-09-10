@@ -218,7 +218,9 @@ void BwgTabHelper::PageLoaded(
 
 void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observation_.Reset();
-  CleanupSessionFromPrefs(GetClientId());
+  if (!IsGeminiCrossTabEnabled()) {
+    CleanupSessionFromPrefs(GetClientId());
+  }
   web_state_ = nullptr;
 }
 
