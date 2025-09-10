@@ -8,7 +8,7 @@ import '../tab_group.js';
 
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabsSnapshot, TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
-import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {Container, Data, SplitTab, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
@@ -18,6 +18,7 @@ import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
 import {getTemplate} from '../tab_list.html.js';
 import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
 
+import {SplitTabElement} from './split_tab_playground.js';
 import {TabGroupElement} from './tab_group_playground.js';
 import {TabElement} from './tab_playground.js';
 
@@ -183,10 +184,13 @@ export class TabListPlaygroundElement extends CustomElement {
   }
 
   private onCollectionCreated_(event: OnCollectionCreatedEvent) {
-    console.info('onTabGroupCreated_', event);
-    // Intentionally not creating a TabGroupElement here. The TabGroupElement
-    // will be created when a tab is added to the group in onTabMoved_, which
-    // is fired after this event.
+    if (event.data.splitTab) {
+      this.createSplitTabElement_(event.data.splitTab);
+    } else if (event.data.tabGroup) {
+      // Intentionally not creating a TabGroupElement here. The TabGroupElement
+      // will be created when a tab is added to the group in onTabMoved_, which
+      // is fired after this event.
+    }
   }
 
   private onDragEnd_(draggedElement: HTMLElement, x: number, y: number) {
@@ -249,15 +253,6 @@ export class TabListPlaygroundElement extends CustomElement {
         {parentId: parentId, index: targetIdx});
   }
 
-  private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
-    const tabElement = new TabElement();
-    tabElement.tab = tab;
-    tabElement.isPinned = isPinned;
-    tabElement.setAttribute('data-node-id', tab.id);
-    tabElement.dragEndHandler = this.onDragEnd_.bind(this);
-    return tabElement;
-  }
-
   private findNodeElement_(nodeId: string): HTMLElement|null {
     if (!nodeId) {
       return null;
@@ -286,42 +281,48 @@ export class TabListPlaygroundElement extends CustomElement {
       this.clearChildren_(this.unpinnedTabsElement_);
 
       if (tabsSnapshot.tabStrip) {
-        this.processContainer_(tabsSnapshot.tabStrip, false);
+        this.buildTree_(tabsSnapshot.tabStrip, this.shadowRoot!);
       }
     });
   }
 
-  private processContainer_(container: Container, parentIsPinned: boolean) {
-    if (!container || !container.data) {
-      return;
-    }
+  private buildTree_(container: Container, parentDomElement: ParentNode) {
     const data: Data = container.data;
-    let isPinned = parentIsPinned;
-    let groupId: string|null = null;
+    let currentElement: HTMLElement|null = null;
+    let childTargetElement: ParentNode = parentDomElement;
 
-    if (data.pinnedTabs) {
-      isPinned = true;
-    } else if (data.tabGroup) {
-      groupId = data.tabGroup.id;
+    if (data.tabGroup) {
+      const tabGroupElement = this.createTabGroupElement_(data.tabGroup.id);
+      tabGroupElement.updateVisuals(this.toTabGroupVisualData_(data.tabGroup));
+      currentElement = tabGroupElement;
+      childTargetElement = tabGroupElement;
+    } else if (data.splitTab) {
+      currentElement = this.createSplitTabElement_(data.splitTab);
+      childTargetElement = currentElement;
     } else if (data.tab) {
-      const newTab = data.tab;
-      let element = this.findNodeElement_(newTab.id);
-      if (element instanceof TabElement) {
-        element.tab = newTab;
-        element.isPinned = isPinned;
-      } else if (!element) {
-        element = this.createTabElement_(newTab, isPinned);
-      }
+      const isPinned = parentDomElement === this.pinnedTabsElement_;
+      currentElement = this.createTabElement_(data.tab, isPinned);
+    } else if (data.pinnedTabs) {
+      childTargetElement = this.pinnedTabsElement_;
+    } else if (data.unpinnedTabs) {
+      childTargetElement = this.unpinnedTabsElement_;
     }
 
-    container.children.forEach((childNode: Container, index: number) => {
-      if (childNode.data.tab) {
-        const tabElement = this.createTabElement_(childNode.data.tab, isPinned);
-        this.placeElement_(tabElement, index, isPinned, groupId);
-      } else {
-        this.processContainer_(childNode, isPinned);
-      }
-    });
+    if (currentElement) {
+      parentDomElement.appendChild(currentElement);
+    }
+
+    container.children.forEach(
+        child => this.buildTree_(child, childTargetElement));
+  }
+
+  private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
+    const tabElement = new TabElement();
+    tabElement.tab = tab;
+    tabElement.isPinned = isPinned;
+    tabElement.setAttribute('data-node-id', tab.id);
+    tabElement.dragEndHandler = this.onDragEnd_.bind(this);
+    return tabElement;
   }
 
   private createTabGroupElement_(nodeId: string): TabGroupElement {
@@ -330,6 +331,14 @@ export class TabListPlaygroundElement extends CustomElement {
     tabGroupElement.dragEndHandler = this.onDragEnd_.bind(this);
     this.unpinnedTabsElement_.appendChild(tabGroupElement);
     return tabGroupElement;
+  }
+
+  private createSplitTabElement_(splitTab: SplitTab): SplitTabElement {
+    console.info('createSplitTabElement');
+    const splitTabElement = new SplitTabElement();
+    splitTabElement.setAttribute('data-node-id', splitTab.id);
+    splitTabElement.dragEndHandler = this.onDragEnd_.bind(this);
+    return splitTabElement;
   }
 
   private findOrCreateTabGroupElement_(groupId: string): TabGroupElement {

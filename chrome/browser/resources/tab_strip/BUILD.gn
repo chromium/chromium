@@ -33,6 +33,7 @@ build_webui("build") {
     "tab.ts",
     "tab_group.ts",
     "tab_list.ts",
+    "playground/split_tab_playground.ts",
   ]
 
   ts_files = [
