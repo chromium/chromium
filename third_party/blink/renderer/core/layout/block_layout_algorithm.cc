@@ -806,10 +806,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
       }
 
       if (clamp_bfc_offset != kIndefiniteSize) {
-        if (!RuntimeEnabledFeatures::CSSLineClampEnabled()) {
-          clamp_bfc_offset = kIndefiniteSize;
-        }
-
         WebFeature use_counter_feature;
         if (Style().WebkitLineClamp() != 0 ||
             Style().Continue() == EContinue::kWebkitLegacy) {
@@ -1957,9 +1953,10 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
   }
 
   // Update line-clamp data, and abort if needed
-  if (!line_clamp_data_.UpdateAfterLayout(
-          layout_result, *container_builder_.BfcBlockOffset(),
-          *previous_inflow_position, Padding().block_end)) {
+  if (!line_clamp_data_.UpdateAfterLayout(layout_result, Node().GetDocument(),
+                                          *container_builder_.BfcBlockOffset(),
+                                          *previous_inflow_position,
+                                          Padding().block_end)) {
     container_builder_.SetLinesUntilClamp(
         line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
     container_builder_.SetLineClampAfterLayoutObject(
@@ -2677,9 +2674,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   // If the BFC block offset hasn't been resolved, the child we just laid out
   // must be empty (no lines and zero block size), so we can skip the update.
   if (auto bfc_block_offset = container_builder_.BfcBlockOffset()) {
-    if (!line_clamp_data_.UpdateAfterLayout(layout_result, *bfc_block_offset,
-                                            *previous_inflow_position,
-                                            Padding().block_end)) {
+    if (!line_clamp_data_.UpdateAfterLayout(
+            layout_result, Node().GetDocument(), *bfc_block_offset,
+            *previous_inflow_position, Padding().block_end)) {
       container_builder_.SetLinesUntilClamp(
           line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
       container_builder_.SetLineClampAfterLayoutObject(
@@ -3968,6 +3965,7 @@ void BlockLineClampData::UpdateFromStyle(int lines_until_clamp,
 
 bool BlockLineClampData::UpdateAfterLayout(
     const LayoutResult* layout_result,
+    Document& document,
     LayoutUnit bfc_block_offset,
     const PreviousInflowPosition& previous_inflow_position,
     LayoutUnit block_end_padding) {
@@ -4011,8 +4009,13 @@ bool BlockLineClampData::UpdateAfterLayout(
                             (collapsed_strut.Sum() - end_margin_strut.Sum());
 
     if (bfc_offset > data.clamp_bfc_offset) {
-      data.lines_until_clamp = old_lines_until_clamp;
-      return false;
+      if (data.IsClampByLines()) {
+        UseCounter::Count(document, WebFeature::kLineClampByLinesOverflows);
+      }
+      if (RuntimeEnabledFeatures::CSSLineClampEnabled()) {
+        data.lines_until_clamp = old_lines_until_clamp;
+        return false;
+      }
     }
 
     if (old_lines_until_clamp == data.lines_until_clamp ||

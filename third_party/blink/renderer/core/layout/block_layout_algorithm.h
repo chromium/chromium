@@ -91,6 +91,7 @@ struct BlockLineClampData {
 
   // Returns false if we need to relayout with a different clamp BFC offset.
   bool UpdateAfterLayout(const LayoutResult* layout_result,
+                         Document& document,
                          LayoutUnit bfc_block_offset,
                          const PreviousInflowPosition& previous_inflow_position,
                          LayoutUnit block_end_padding);
