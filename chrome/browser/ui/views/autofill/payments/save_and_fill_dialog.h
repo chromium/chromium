@@ -33,6 +33,7 @@ class SaveAndFillDialog : public views::DialogDelegateView,
   // DialogDelegateView:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnWidgetInitialized() override;
 
   std::u16string GetWindowTitle() const override;
 

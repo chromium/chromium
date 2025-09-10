@@ -84,6 +84,11 @@ void SaveAndFillDialog::RemovedFromWidget() {
   }
 }
 
+void SaveAndFillDialog::OnWidgetInitialized() {
+  views::DialogDelegateView::OnWidgetInitialized();
+  card_number_data_.GetInputTextField().RequestFocus();
+}
+
 std::u16string SaveAndFillDialog::GetWindowTitle() const {
   return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
