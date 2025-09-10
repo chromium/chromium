@@ -1212,7 +1212,7 @@ bool BoostRendererInitiatedNavigation() {
   static const bool boost_renderer_initiated_navigation =
       base::GetFieldTrialParamByFeatureAsBool(
           blink::features::kBoostRenderProcessForLoading,
-          "prioritize_renderer_initiated", false);
+          "prioritize_renderer_initiated", true);
   return boost_renderer_initiated_navigation;
 }
 

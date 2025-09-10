@@ -2205,7 +2205,16 @@ BASE_FEATURE_ENUM_PARAM(SoftNavigationHeuristicsMode,
 
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
-BASE_FEATURE(kBoostRenderProcessForLoading, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(
+    kBoostRenderProcessForLoading,
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/351953350): Enable this feature on Android as well after
+    // confirming that this feature doesn't regress anything.
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // An empty json array means that this feature is applied unconditionally. If
 // specified, it means that the specified URLs will be the target of the new
@@ -2223,7 +2232,7 @@ BASE_FEATURE_PARAM(bool,
                    kBoostRenderProcessForLoadingPrioritizePrerendering,
                    &kBoostRenderProcessForLoading,
                    "prioritize_prerendering",
-                   false);
+                   true);
 
 // If true is specified, kBoostRenderProcessForLoading feature only prioritizes
 // the renderer process that is used for prerendering. This is a part of an
