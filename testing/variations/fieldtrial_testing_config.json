@@ -20831,12 +20831,44 @@
     "RenderDocumentWithNavigationQueueing": [
         {
             "platforms": [
-                "android",
                 "chromeos",
+                "fuchsia",
+                "ios",
                 "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
+                {
+                    "name": "EnabledSubframeWithQueueing",
+                    "params": {
+                        "level": "subframe",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
+                {
+                    "name": "EnabledCrashedFrameWithQueueing",
+                    "params": {
+                        "level": "crashed-frame",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
                 {
                     "name": "EnabledAllFramesWithQueueing",
                     "params": {
@@ -20855,16 +20887,16 @@
             ]
         }
     ],
-    "RenderDocumentWithNavigationQueueing_Mac": [
+    "RenderDocumentWithNavigationQueueing_Android": [
         {
             "platforms": [
-                "mac"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledSubframeWithQueueing",
+                    "name": "EnabledAllFramesWithQueueing",
                     "params": {
-                        "level": "subframe",
+                        "level": "all-frames",
                         "queueing_level": "full"
                     },
                     "enable_features": [
