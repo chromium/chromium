@@ -48,8 +48,8 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     // This is slightly different from the spec but matches the expected
     // behavior.
     [RaisesException] Blob slice(optional [Clamp] long long start = 0, optional [Clamp] long long end = 0x7FFFFFFFFFFFFFFF, optional DOMString contentType = "");
-    [CallWith=ScriptState] ReadableStream stream();
-    [CallWith=ScriptState] Promise<USVString> text();
-    [CallWith=ScriptState] Promise<ArrayBuffer> arrayBuffer();
-    [RuntimeEnabled=BlobBytes, CallWith=ScriptState] Promise<Uint8Array> bytes();
+    [CallWith=ScriptState, NewObject] ReadableStream stream();
+    [CallWith=ScriptState, NewObject] Promise<USVString> text();
+    [CallWith=ScriptState, NewObject] Promise<ArrayBuffer> arrayBuffer();
+    [RuntimeEnabled=BlobBytes, CallWith=ScriptState, NewObject] Promise<Uint8Array> bytes();
 };
