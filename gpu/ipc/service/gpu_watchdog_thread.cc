@@ -505,6 +505,10 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
     return;
   }
 
+  // A GPU hang is detected.
+  TRACE_EVENT1("gpu,startup", "OnWatchdogTimeout", "timeoutMs",
+               watchdog_timeout_.InMilliseconds());
+
   // If the watched thread makes a progress after crash dump, the GPU process
   // will not be killed and every thing continues after this function.
   // Otherwise, this is the end of the GPU process.
