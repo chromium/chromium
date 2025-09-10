@@ -12,6 +12,7 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/app_mode/app_mode_utils.h",
   "+chrome/browser/ash/annotator",
+  "+chrome/browser/ash/boca/receiver",
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/mall",

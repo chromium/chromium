@@ -4,27 +4,32 @@
 
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_page_handler.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_receiver_app_bundle_resources_map.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources_map.h"
+#include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace ash {
 
-BocaReceiverUntrustedUIConfig::BocaReceiverUntrustedUIConfig()
-    : content::DefaultWebUIConfig<BocaReceiverUntrustedUI>(
-          content::kChromeUIUntrustedScheme,
-          kBocaReceiverHost) {}
+BocaReceiverUntrustedUIConfig::BocaReceiverUntrustedUIConfig(
+    CreateWebUIControllerFunc create_controller_func)
+    : ChromeOSWebUIConfig(content::kChromeUIUntrustedScheme,
+                          kBocaReceiverHost,
+                          create_controller_func) {}
 
 BocaReceiverUntrustedUIConfig::~BocaReceiverUntrustedUIConfig() = default;
 
@@ -34,8 +39,10 @@ bool BocaReceiverUntrustedUIConfig::IsWebUIEnabled(
   return features::IsBocaReceiverAppEnabled();
 }
 
-BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedWebUIController(web_ui) {
+BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<boca_receiver::ReceiverHandlerDelegate> delegate)
+    : ui::UntrustedWebUIController(web_ui), delegate_(std::move(delegate)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUntrustedBocaReceiverURL);
@@ -71,7 +78,7 @@ void BocaReceiverUntrustedUI::CreateUntrustedPageHandler(
     mojo::PendingRemote<boca_receiver::mojom::UntrustedPage> page) {
   page_handler_ =
       std::make_unique<boca_receiver::BocaReceiverUntrustedPageHandler>(
-          std::move(page));
+          std::move(page), delegate_.get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaReceiverUntrustedUI)

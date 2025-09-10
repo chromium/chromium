@@ -6,6 +6,7 @@
 #define ASH_WEBUI_BOCA_RECEIVER_APP_UI_BOCA_RECEIVER_UNTRUSTED_PAGE_HANDLER_H_
 
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -13,10 +14,13 @@
 
 namespace ash::boca_receiver {
 
+class ReceiverHandlerDelegate;
+
 class BocaReceiverUntrustedPageHandler {
  public:
-  explicit BocaReceiverUntrustedPageHandler(
-      mojo::PendingRemote<mojom::UntrustedPage> page);
+  BocaReceiverUntrustedPageHandler(
+      mojo::PendingRemote<mojom::UntrustedPage> page,
+      ReceiverHandlerDelegate* delegate);
 
   BocaReceiverUntrustedPageHandler(const BocaReceiverUntrustedPageHandler&) =
       delete;
@@ -27,6 +31,7 @@ class BocaReceiverUntrustedPageHandler {
 
  private:
   mojo::Remote<mojom::UntrustedPage> page_;
+  raw_ptr<ReceiverHandlerDelegate> delegate_;
 };
 
 }  // namespace ash::boca_receiver

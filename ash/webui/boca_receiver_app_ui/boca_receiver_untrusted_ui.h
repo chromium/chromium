@@ -5,9 +5,11 @@
 #ifndef ASH_WEBUI_BOCA_RECEIVER_APP_UI_BOCA_RECEIVER_UNTRUSTED_UI_H_
 #define ASH_WEBUI_BOCA_RECEIVER_APP_UI_BOCA_RECEIVER_UNTRUSTED_UI_H_
 
+#include <memory>
+
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -15,20 +17,23 @@
 
 namespace content {
 class BrowserContext;
+class WebUI;
 }  // namespace content
 
 namespace ash {
 
 namespace boca_receiver {
 class BocaReceiverUntrustedPageHandler;
+class ReceiverHandlerDelegate;
 }  // namespace boca_receiver
 
 class BocaReceiverUntrustedUI;
 
 class BocaReceiverUntrustedUIConfig
-    : public content::DefaultWebUIConfig<BocaReceiverUntrustedUI> {
+    : public ChromeOSWebUIConfig<BocaReceiverUntrustedUI> {
  public:
-  BocaReceiverUntrustedUIConfig();
+  explicit BocaReceiverUntrustedUIConfig(
+      CreateWebUIControllerFunc create_controller_func);
 
   BocaReceiverUntrustedUIConfig(const BocaReceiverUntrustedUIConfig&) = delete;
   BocaReceiverUntrustedUIConfig& operator=(
@@ -44,7 +49,9 @@ class BocaReceiverUntrustedUI
     : public ui::UntrustedWebUIController,
       public boca_receiver::mojom::UntrustedPageHandlerFactory {
  public:
-  explicit BocaReceiverUntrustedUI(content::WebUI* web_ui);
+  explicit BocaReceiverUntrustedUI(
+      content::WebUI* web_ui,
+      std::unique_ptr<boca_receiver::ReceiverHandlerDelegate> delegate);
 
   BocaReceiverUntrustedUI(const BocaReceiverUntrustedUI&) = delete;
   BocaReceiverUntrustedUI& operator=(const BocaReceiverUntrustedUI&) = delete;
@@ -65,6 +72,8 @@ class BocaReceiverUntrustedUI
 
   std::unique_ptr<boca_receiver::BocaReceiverUntrustedPageHandler>
       page_handler_;
+
+  std::unique_ptr<boca_receiver::ReceiverHandlerDelegate> delegate_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

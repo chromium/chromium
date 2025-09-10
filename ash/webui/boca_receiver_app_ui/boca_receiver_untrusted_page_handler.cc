@@ -7,13 +7,15 @@
 #include <utility>
 
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
+#include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash::boca_receiver {
 
 BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
-    mojo::PendingRemote<mojom::UntrustedPage> page)
-    : page_(std::move(page)) {}
+    mojo::PendingRemote<mojom::UntrustedPage> page,
+    ReceiverHandlerDelegate* delegate)
+    : page_(std::move(page)), delegate_(delegate) {}
 
 BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() = default;
 

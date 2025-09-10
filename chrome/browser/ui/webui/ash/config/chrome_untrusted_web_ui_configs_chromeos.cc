@@ -17,6 +17,7 @@
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
+#include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
@@ -48,6 +49,21 @@ std::unique_ptr<content::WebUIConfig> MakeDemoModeAppUntrustedUIConfig() {
   return std::make_unique<DemoModeAppUntrustedUIConfig>(create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeBocaReceiverUntrustedUIConfig() {
+  auto create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate =
+            std::make_unique<boca_receiver::ReceiverHandlerDelegateImpl>(
+                web_ui);
+        return std::make_unique<BocaReceiverUntrustedUI>(web_ui,
+                                                         std::move(delegate));
+      });
+
+  return std::make_unique<BocaReceiverUntrustedUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeUntrustedWebUIConfigs() {
   auto& map = content::WebUIConfigMap::GetInstance();
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
@@ -56,8 +72,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
   map.AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<BocaReceiverUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   map.AddUntrustedWebUIConfig(
