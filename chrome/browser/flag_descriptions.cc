@@ -2643,11 +2643,6 @@ const char kLensOverlayUpdatedVisualsName[] = "Lens overlay updated visuals";
 const char kLensOverlayUpdatedVisualsDescription[] =
     "Enables updated visuals in the Lens selection overlay.";
 
-const char kLensSearchSidePanelDefaultWidthChangeName[] =
-    "Lens search side panel default width change";
-const char kLensSearchSidePanelDefaultWidthChangeDescription[] =
-    "Enables changing the default width of the Lens search side panel.";
-
 const char kLensSearchAimM3Name[] = "Enables AIM in Lens side panel.";
 const char kLensSearchAimM3Description[] =
     "Enables AIM follow ups with the Lens overlay results side panel.";

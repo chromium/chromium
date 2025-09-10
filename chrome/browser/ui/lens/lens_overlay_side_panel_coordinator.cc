@@ -70,6 +70,7 @@ namespace {
 inline constexpr char kChromeSideSearchVersionHeaderName[] =
     "X-Chrome-Side-Search-Version";
 inline constexpr char kChromeSideSearchVersionHeaderValue[] = "1";
+inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 // Checks to see if the navigation is a same document navigation that is not in
 // the iframe. This is used to ignore navigations that are not relevant to the
@@ -1100,9 +1101,7 @@ GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
 }
 
 int LensOverlaySidePanelCoordinator::GetPreferredDefaultWidth() {
-  return lens::features::IsLensSearchSidePanelDefaultWidthChangeEnabled()
-             ? lens::features::GetLensSearchSidePanelDefaultWidth()
-             : SidePanelEntry::kSidePanelDefaultContentWidth;
+  return kSidePanelPreferredDefaultWidth;
 }
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
