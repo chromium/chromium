@@ -3,4 +3,5 @@ include_rules = [
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/variations/model/client",
+  "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
 ]

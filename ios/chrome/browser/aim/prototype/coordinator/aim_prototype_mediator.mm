@@ -25,8 +25,11 @@
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "ui/base/page_transition_types.h"
@@ -85,13 +88,18 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
   std::unique_ptr<ComposeboxFileUploadObserverBridge> _observerBridge;
   // Whether AI mode is enabled.
   BOOL _AIModeEnabled;
+  // The web state list.
+  raw_ptr<WebStateList> _webStateList;
+  // A page context wrapper used to extract annotated page content (APC).
+  PageContextWrapper* _pageContextWrapper;
 }
 
 - (instancetype)initWithUrlLoadingBrowserAgent:
                     (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
                      composeboxQueryController:
                          (std::unique_ptr<ComposeboxQueryControllerIOS>)
-                             composeboxQueryController {
+                             composeboxQueryController
+                                  webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -100,6 +108,7 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
     _observerBridge = std::make_unique<ComposeboxFileUploadObserverBridge>(
         self, _composeboxQueryController.get());
     _composeboxQueryController->NotifySessionStarted();
+    _webStateList = webStateList;
   }
   return self;
 }
@@ -185,8 +194,20 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
 }
 
 - (void)attachCurrentTabContent {
-  // TODO(crbug.com/442564280): Attach the current tab content to the user's
-  // query.
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+
+  _pageContextWrapper = [[PageContextWrapper alloc]
+        initWithWebState:webState
+      completionCallback:base::BindOnce(
+                             ^(PageContextWrapperCallbackResponse response){
+                                 // TODO(crbug.com/442565566): Attatch the
+                                 // context to the query.
+                             })];
+  _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
+  [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
 #pragma mark - ComposeboxFileUploadObserver

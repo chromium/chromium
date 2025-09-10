@@ -18,6 +18,7 @@ class ComposeboxQueryControllerIOS;
 @class AIMPrototypeMediator;
 class UrlLoadingBrowserAgent;
 class GURL;
+class WebStateList;
 
 // Delegate for the AIM prototype mediator.
 @protocol AIMPrototypeMediatorDelegate
@@ -36,7 +37,8 @@ class GURL;
                     (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
                      composeboxQueryController:
                          (std::unique_ptr<ComposeboxQueryControllerIOS>)
-                             composeboxQueryController;
+                             composeboxQueryController
+                                  webStateList:(WebStateList*)webStateList;
 
 - (void)disconnect;
 

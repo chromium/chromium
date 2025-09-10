@@ -70,7 +70,8 @@
 
   _mediator = [[AIMPrototypeMediator alloc]
       initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
-           composeboxQueryController:std::move(composeboxQueryController)];
+           composeboxQueryController:std::move(composeboxQueryController)
+                        webStateList:self.browser->GetWebStateList()];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;

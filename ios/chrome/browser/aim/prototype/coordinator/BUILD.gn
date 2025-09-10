@@ -16,6 +16,7 @@ source_set("coordinator") {
     "//components/search_engines",
     "//ios/chrome/browser/aim/prototype/public:features",
     "//ios/chrome/browser/aim/prototype/ui",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
