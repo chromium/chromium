@@ -474,6 +474,17 @@
       },
     },
   },
+  'linux_amd_890m_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:150e-25.0.7',
+        'os': 'Ubuntu-24.04',
+        'display_attached': '1',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'linux_amd_rx_5500_xt': {
     'fail_if_unused': False,
     'swarming': {

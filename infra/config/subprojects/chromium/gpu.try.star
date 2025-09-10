@@ -218,6 +218,15 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-890m-exp",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (AMD 890M)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-arc-140v-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",

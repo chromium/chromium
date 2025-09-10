@@ -30,6 +30,7 @@ ci/GPU Mac Builder (dbg)
 ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
 ci/Linux FYI Debug (NVIDIA)
+ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release

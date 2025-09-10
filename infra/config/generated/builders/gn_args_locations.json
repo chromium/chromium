@@ -796,6 +796,7 @@
     "chromeos-js-code-coverage": "try/chromeos-js-code-coverage/gn-args.json",
     "chromeos-js-coverage-rel": "try/chromeos-js-coverage-rel/gn-args.json",
     "compile-size": "try/compile-size/gn-args.json",
+    "gpu-fyi-try-linux-amd-890m-exp": "try/gpu-fyi-try-linux-amd-890m-exp/gn-args.json",
     "gpu-fyi-try-linux-amd-rel": "try/gpu-fyi-try-linux-amd-rel/gn-args.json",
     "gpu-fyi-try-linux-amd-rx-7600-rel": "try/gpu-fyi-try-linux-amd-rx-7600-rel/gn-args.json",
     "gpu-fyi-try-linux-intel-arc-140v-exp": "try/gpu-fyi-try-linux-intel-arc-140v-exp/gn-args.json",

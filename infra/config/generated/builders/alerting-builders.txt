@@ -130,6 +130,7 @@ ci/Linux Chromium OS ASan LSan Tests (1)
 ci/Linux ChromiumOS MSan Builder
 ci/Linux ChromiumOS MSan Tests
 ci/Linux FYI Debug (NVIDIA)
+ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
@@ -509,6 +510,7 @@ try/gpu-fyi-try-android-q-pixel-2-32
 try/gpu-fyi-try-android-r-pixel-4-32
 try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
+try/gpu-fyi-try-linux-amd-890m-exp
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-arc-140v-exp
