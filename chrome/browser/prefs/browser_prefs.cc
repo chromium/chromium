@@ -1155,6 +1155,10 @@ constexpr char kObsoleteUpmAutoExportCsvNeedsDeletion[] =
     "profile.upm_auto_export_csv_needs_deletion";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 09/2025.
+constexpr char kGaiaCookieLastListAccountsData[] =
+    "gaia_cookie.last_list_accounts_data";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1669,6 +1673,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kObsoleteEmptyProfileStoreLoginDatabase, false);
   registry->RegisterBooleanPref(kObsoleteUpmAutoExportCsvNeedsDeletion, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 09/2025.
+  registry->RegisterStringPref(kGaiaCookieLastListAccountsData, std::string());
 }
 
 }  // namespace
@@ -3021,6 +3028,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 09/2025.
   PageColorsController::MigrateObsoleteProfilePrefs(profile_prefs);
+  profile_prefs->ClearPref(kGaiaCookieLastListAccountsData);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

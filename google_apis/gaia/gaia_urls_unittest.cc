@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_features.h"
@@ -394,17 +393,9 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
 }
 
 TEST_F(GaiaUrlsTest, InitializeDefault_ListAccountsFormat) {
-  base::test::ScopedFeatureList feature_list;
-
-  // Default behaviour - kListAccountsUsesBinaryFormat enabled.
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
             "https://accounts.google.com/"
             "ListAccounts?gpsia=1&source=fake_source&laf=b64bin&json=standard");
-  feature_list.InitAndDisableFeature(
-      gaia::features::kListAccountsUsesBinaryFormat);
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
-            "https://accounts.google.com/"
-            "ListAccounts?gpsia=1&source=fake_source&json=standard");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {

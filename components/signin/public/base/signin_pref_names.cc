@@ -102,11 +102,6 @@ const char kSignedInWithCredentialProvider[] =
 // Boolean which stores if the user is allowed to signin to chrome.
 const char kSigninAllowed[] = "signin.allowed";
 
-// Contains last |ListAccounts| data which corresponds to Gaia cookies encoded
-// in jspb.
-const char kGaiaCookieLastListAccountsData[] =
-    "gaia_cookie.last_list_accounts_data";
-
 // Contains last |ListAccounts| data which corresponds to Gaia cookies in
 // base64-encoded protobuf.
 const char kGaiaCookieLastListAccountsBinaryData[] =

@@ -330,16 +330,12 @@ const GURL& GaiaUrls::google_apis_origin_url() const {
 
 GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
   if (source.empty()) {
+    // TODO(crbug.com/443901858): Append laf=b64bin parameter universally.
     return list_accounts_url_;
   } else {
     std::string query = list_accounts_url_.query();
-    if (base::FeatureList::IsEnabled(
-            gaia::features::kListAccountsUsesBinaryFormat)) {
-      return list_accounts_url_.Resolve(base::StringPrintf(
-          "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
-    }
     return list_accounts_url_.Resolve(base::StringPrintf(
-        "?gpsia=1&source=%s&%s", source.c_str(), query.c_str()));
+        "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
   }
 }
 

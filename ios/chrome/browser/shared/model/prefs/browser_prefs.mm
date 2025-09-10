@@ -211,6 +211,8 @@ inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
 
 // Deprecated 09/2025.
 inline constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
+constexpr char kGaiaCookieLastListAccountsData[] =
+    "gaia_cookie.last_list_accounts_data";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1069,6 +1071,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 09/2025.
   registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 0);
+  registry->RegisterStringPref(kGaiaCookieLastListAccountsData, std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1240,6 +1243,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2025.
   prefs->ClearPref(kNtpShownBookmarksFolder);
+  prefs->ClearPref(kGaiaCookieLastListAccountsData);
 }
 
 void MigrateObsoleteUserDefault() {

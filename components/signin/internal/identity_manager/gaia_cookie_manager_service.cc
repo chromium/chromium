@@ -435,27 +435,19 @@ GaiaCookieManagerService::GaiaCookieManagerService(
       listAccountsUnexpectedServerResponseRetried_(false),
       external_cc_result_fetched_(false),
       list_accounts_stale_(true) {
-  std::string gaia_cookie_last_list_accounts_data =
-      signin_client_->GetPrefs()->GetString(
-          prefs::kGaiaCookieLastListAccountsData);
   std::string gaia_cookie_last_list_accounts_binary_data =
       signin_client_->GetPrefs()->GetString(
           prefs::kGaiaCookieLastListAccountsBinaryData);
 
-  // Parse ListAccounts data from prefs. In case both jspb and protobuf encoded
-  // data are present prefer the jspb one.
-  bool parse_success = false;
-  if (!gaia_cookie_last_list_accounts_data.empty()) {
-    parse_success = gaia::ParseListAccountsData(
-        gaia_cookie_last_list_accounts_data, &accounts_);
-  } else if (!gaia_cookie_last_list_accounts_binary_data.empty()) {
-    parse_success = gaia::ParseBinaryListAccountsData(
-        gaia_cookie_last_list_accounts_binary_data, &accounts_);
-  }
+  // Parse ListAccounts data from prefs.
+  bool parse_success = gaia::ParseBinaryListAccountsData(
+      gaia_cookie_last_list_accounts_binary_data, &accounts_);
+
   if (!parse_success) {
     accounts_.clear();
     return;
   }
+
   InitializeListedAccountsIds();
 }
 
@@ -467,8 +459,6 @@ GaiaCookieManagerService::~GaiaCookieManagerService() {
 
 // static
 void GaiaCookieManagerService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kGaiaCookieLastListAccountsData,
-                               std::string());
   registry->RegisterStringPref(prefs::kGaiaCookieLastListAccountsBinaryData,
                                std::string());
 }
@@ -692,14 +682,9 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
          GaiaCookieRequestType::LIST_ACCOUNTS);
   fetcher_backoff_.InformOfRequest(true);
 
-  bool parse_success = base::FeatureList::IsEnabled(
-                           gaia::features::kListAccountsUsesBinaryFormat)
-                           ? gaia::ParseBinaryListAccountsData(data, &accounts_)
-                           : gaia::ParseListAccountsData(data, &accounts_);
+  bool parse_success = gaia::ParseBinaryListAccountsData(data, &accounts_);
   if (!parse_success) {
     accounts_.clear();
-    signin_client_->GetPrefs()->ClearPref(
-        prefs::kGaiaCookieLastListAccountsData);
     signin_client_->GetPrefs()->ClearPref(
         prefs::kGaiaCookieLastListAccountsBinaryData);
     GoogleServiceAuthError error =
@@ -709,18 +694,8 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          gaia::features::kListAccountsUsesBinaryFormat)) {
-    signin_client_->GetPrefs()->SetString(
-        prefs::kGaiaCookieLastListAccountsBinaryData, data);
-    signin_client_->GetPrefs()->ClearPref(
-        prefs::kGaiaCookieLastListAccountsData);
-  } else {
-    signin_client_->GetPrefs()->SetString(
-        prefs::kGaiaCookieLastListAccountsData, data);
-    signin_client_->GetPrefs()->ClearPref(
-        prefs::kGaiaCookieLastListAccountsBinaryData);
-  }
+  signin_client_->GetPrefs()->SetString(
+      prefs::kGaiaCookieLastListAccountsBinaryData, data);
   RecordListAccountsFailure(GoogleServiceAuthError::NONE);
 
   InitializeListedAccountsIds();

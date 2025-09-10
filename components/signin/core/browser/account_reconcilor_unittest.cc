@@ -2177,11 +2177,12 @@ TEST_F(AccountReconcilorMirrorTest,
 // This test is needed until chrome changes to use gaia obfuscated id.
 // The primary account manager and token service use the gaia "email" property,
 // which preserves dots in usernames and preserves case.
-// gaia::ParseListAccountsData() however uses gaia "displayEmail" which does not
-// preserve case, and then passes the string through gaia::CanonicalizeEmail()
-// which removes dots.  This tests makes sure that an email like
-// "Dot.S@hmail.com", as seen by the token service, will be considered the same
-// as "dots@gmail.com" as returned by gaia::ParseListAccountsData().
+// gaia::ParseBinaryListAccountsData() however uses gaia "displayEmail" which
+// does not preserve case, and then passes the string through
+// gaia::CanonicalizeEmail() which removes dots.  This tests makes sure that an
+// email like "Dot.S@hmail.com", as seen by the token service, will be
+// considered the same as "dots@gmail.com" as returned by
+// gaia::ParseBinaryListAccountsData().
 TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopWithDots) {
   AccountInfo account_info = ConnectProfileToAccount("Dot.S@gmail.com");
   signin::SetListAccountsResponseOneAccount(
