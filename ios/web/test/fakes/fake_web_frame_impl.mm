@@ -162,8 +162,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
       javascript_call += u", ";
     }
     first = false;
-    std::string paramString;
-    base::JSONWriter::Write(param, &paramString);
+    std::string paramString = base::WriteJson(param).value_or("");
     javascript_call += base::UTF8ToUTF16(paramString);
   }
   javascript_call += u"]);";

@@ -196,8 +196,7 @@ TEST_F(ScriptBlockingRuleApplierServiceTest, TestUpdateRuleList) {
   // canonical representation.
   std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value.has_value());
-  std::string expected_json;
-  base::JSONWriter::Write(*value, &expected_json);
+  std::string expected_json = base::WriteJson(*value).value_or("");
 
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(json);
 

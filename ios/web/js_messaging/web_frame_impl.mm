@@ -40,8 +40,7 @@ NSString* CreateFunctionCallWithParameters(
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
 
   for (const auto& value : parameters) {
-    std::string string_value;
-    base::JSONWriter::Write(value, &string_value);
+    std::string string_value = base::WriteJson(value).value_or("");
     [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
   }
 

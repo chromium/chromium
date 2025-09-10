@@ -67,9 +67,7 @@ std::string MojoFacade::HandleMojoMessage(
     return std::string();
   }
 
-  std::string json_result;
-  base::JSONWriter::Write(result, &json_result);
-  return json_result;
+  return base::WriteJson(result).value_or("");
 }
 
 MojoFacade::MessageNameAndArguments MojoFacade::GetMessageNameAndArguments(

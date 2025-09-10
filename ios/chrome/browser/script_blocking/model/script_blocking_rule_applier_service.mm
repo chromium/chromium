@@ -206,7 +206,5 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
       "IOS.FingerprintingProtection.RuleList.TotalRulesApplied." + suffix,
       rules_list.size());
 
-  std::string rules_json;
-  base::JSONWriter::Write(rules_list, &rules_json);
-  return rules_json;
+  return base::WriteJson(rules_list);
 }

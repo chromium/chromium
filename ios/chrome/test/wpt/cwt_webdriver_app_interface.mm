@@ -246,9 +246,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     return nil;
   }
 
-  std::string resultAsJSON;
-  base::JSONWriter::Write(*messageValue, &resultAsJSON);
-  return base::SysUTF8ToNSString(resultAsJSON);
+  return base::SysUTF8ToNSString(base::WriteJson(*messageValue).value_or(""));
 }
 
 + (void)enablePopups {

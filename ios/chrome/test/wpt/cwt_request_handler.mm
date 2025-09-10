@@ -306,9 +306,7 @@ CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
 
   auto response_content =
       base::Value::Dict().Set(kWebDriverValueResponseField, std::move(*result));
-  std::string response_content_string;
-  base::JSONWriter::Write(response_content, &response_content_string);
-  response->set_content(response_content_string);
+  response->set_content(base::WriteJson(response_content).value_or(""));
 
   return std::move(response);
 }
