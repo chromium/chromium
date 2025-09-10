@@ -162,13 +162,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   NSInteger section =
       [snapshot indexOfSectionIdentifier:kMagicStackSectionIdentifier];
 
-  // Consistency check: `item`'s ID is not in the collection view.
-  if ([self.diffableDataSource indexPathForItemIdentifier:item]) {
-    // TODO(b/341410600): Remove once validate in stable that it can be a hard
-    // expectation.
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  // Consistency check: `item`'s ID is not already in the collection view.
+  CHECK(![self.diffableDataSource indexPathForItemIdentifier:item]);
 
   // Store the identifier of the current item at the given index, if any, prior
   // to model updates.
