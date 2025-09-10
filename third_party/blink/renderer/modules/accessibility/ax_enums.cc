@@ -37,6 +37,9 @@ STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaFlowTo,
                    AXObjectVectorAttribute::kAriaFlowTo);
 
 String IgnoredReasonName(AXIgnoredReason reason) {
+  // LINT.IfChange(AXIgnoredReason)
+  // This must be kept in sync with the `AXPropertyName` definition in the
+  // Chrome DevTools protocol.
   switch (reason) {
     case kAXActiveFullscreenElement:
       return "activeFullscreenElement";
@@ -78,6 +81,7 @@ String IgnoredReasonName(AXIgnoredReason reason) {
     case kAXUninteresting:
       return "uninteresting";
   }
+  // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Accessibility.pdl:AXIgnoredReason)
   NOTREACHED();
 }
 

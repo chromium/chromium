@@ -110,7 +110,8 @@ experimental domain Accessibility
   # - from 'live' to 'root': attributes which apply to nodes in live regions
   # - from 'autocomplete' to 'valuetext': attributes which apply to widgets
   # - from 'checked' to 'selected': states which apply to widgets
-  # - from 'activedescendant' to 'owns' - relationships between elements other than parent/child/sibling.
+  # - from 'activedescendant' to 'owns': relationships between elements other than parent/child/sibling
+  # - from 'activeFullscreenElement' to 'uninteresting': reasons why this noode is hidden
   type AXPropertyName extends string
     enum
       actions
@@ -154,6 +155,25 @@ experimental domain Accessibility
       labelledby
       owns
       url
+      # LINT.IfChange(AXIgnoredReason)
+      activeFullscreenElement
+      activeModalDialog
+      activeAriaModalDialog
+      ariaHiddenElement
+      ariaHiddenSubtree
+      emptyAlt
+      emptyText
+      inertElement
+      inertSubtree
+      labelContainer
+      labelFor
+      notRendered
+      notVisible
+      presentationalRole
+      probablyPresentational
+      inactiveCarouselTabContent
+      uninteresting
+      # LINT.ThenChange(//third_party/blink/renderer/modules/accessibility/ax_enums.cc:AXIgnoredReason)
 
   # A node in the accessibility tree.
   type AXNode extends object
