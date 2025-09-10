@@ -13,9 +13,7 @@ import android.media.AudioManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -37,8 +35,6 @@ class ScoStateListener implements Destroyable {
     private static final IntentFilter INTENT_FILTER =
             new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
 
-    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-
     private final Consumer<Boolean> mCallback;
     private final BroadcastReceiver mBroadcastReceiver;
 
@@ -49,7 +45,7 @@ class ScoStateListener implements Destroyable {
      */
     private boolean mState;
 
-    public ScoStateListener(Consumer<Boolean> callback) {
+    ScoStateListener(Consumer<Boolean> callback) {
         mCallback = callback;
 
         mBroadcastReceiver =
@@ -65,10 +61,9 @@ class ScoStateListener implements Destroyable {
 
     @Override
     public void destroy() {
+        // No LifetimeAssert here due to browser cleanup not being run consistently on Android.
         Context context = ContextUtils.getApplicationContext();
         context.unregisterReceiver(mBroadcastReceiver);
-
-        LifetimeAssert.destroy(mLifetimeAssert);
     }
 
     private void onScoStateChangeBroadcast(Intent intent) {

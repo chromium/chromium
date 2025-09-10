@@ -11,9 +11,7 @@ import android.media.AudioManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Listens for changes to the list of audio devices exposed by the OS, invoking the provided
@@ -21,14 +19,12 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 class AudioDeviceListener implements Destroyable {
-    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-
     private final AudioManager mAudioManager;
 
     private final Runnable mCallback;
     private final AudioDeviceCallback mInternalCallback;
 
-    public AudioDeviceListener(Runnable callback) {
+    AudioDeviceListener(Runnable callback) {
         mAudioManager =
                 (AudioManager)
                         ContextUtils.getApplicationContext()
@@ -53,7 +49,7 @@ class AudioDeviceListener implements Destroyable {
 
     @Override
     public void destroy() {
+        // No LifetimeAssert here due to browser cleanup not being run consistently on Android.
         mAudioManager.unregisterAudioDeviceCallback(mInternalCallback);
-        LifetimeAssert.destroy(mLifetimeAssert);
     }
 }
