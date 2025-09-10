@@ -286,7 +286,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the Payments Bottom Sheet appears when tapping on a credit card
 // related field.
-- (void)testOpenPaymentsBottomSheetUseCreditCard {
+// TODO(crbug.com/444085918): Test is flaky.
+- (void)FLAKY_testOpenPaymentsBottomSheetUseCreditCard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
