@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
@@ -36,7 +37,30 @@ namespace blink {
 
 namespace {
 
-class ScrollIntoViewTest : public SimTest {};
+class ScrollIntoViewTest : public SimTest {
+ public:
+  ScrollIntoViewTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            ::features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(ScrollIntoViewTest, InstantScroll) {
   v8::HandleScope HandleScope(

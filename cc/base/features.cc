@@ -175,32 +175,31 @@ BASE_FEATURE(kUseLayerListsByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kProgrammaticScrollAnimationOverride,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierX1,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_x1",
-                   0.4);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierY1,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_y1",
-                   0.0);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierX2,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_x2",
-                   0.0);
-BASE_FEATURE_PARAM(double,
-                   kCubicBezierY2,
-                   &kProgrammaticScrollAnimationOverride,
-                   "cubic_bezier_y2",
-                   1.0);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kMaxAnimationDuration,
-                   &kProgrammaticScrollAnimationOverride,
-                   "max_animation_duration",
-                   base::Milliseconds(1500));
+#define PROGRAMMATIC_SCROLL_ANIMATION_CURVE(x1, y1, x2, y2, duration_ms)       \
+  BASE_FEATURE_PARAM(double, kCubicBezierX1,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_x1", \
+                     x1);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierY1,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_y1", \
+                     y1);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierX2,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_x2", \
+                     x2);                                                      \
+  BASE_FEATURE_PARAM(double, kCubicBezierY2,                                   \
+                     &kProgrammaticScrollAnimationOverride, "cubic_bezier_y2", \
+                     y2);                                                      \
+  BASE_FEATURE_PARAM(base::TimeDelta, kMaxAnimationDuration,                   \
+                     &kProgrammaticScrollAnimationOverride,                    \
+                     "max_animation_duration",                                 \
+                     base::Milliseconds(duration_ms))
+// Default to `gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT` on
+// Android. On other platforms, use the tweaked cubic bezier curve.
+#if BUILDFLAG(IS_ANDROID)
+PROGRAMMATIC_SCROLL_ANIMATION_CURVE(0.42, 0.0, 0.58, 1.0, 700);
+#else
+PROGRAMMATIC_SCROLL_ANIMATION_CURVE(0.4, 0.0, 0.0, 1.0, 1500);
+#endif
+#undef PROGRAMMATIC_SCROLL_ANIMATION_CURVE
 
 BASE_FEATURE(kSlimDirectReceiverIpc, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -9,8 +9,10 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,7 +54,24 @@ class AnnotationAgentImplTest : public SimTest {
 
  protected:
   AnnotationAgentImplTest()
-      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            ::features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
 
   // Helper to create a range to some text within a single text node. Verifies
   // the Range selects the `expected` text.
@@ -244,6 +263,9 @@ class AnnotationAgentImplTest : public SimTest {
     return GetDocument().Markers().glic_animation_state_ ==
            DocumentMarkerController::GlicAnimationState::kNotStarted;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the agent type is correctly set.
