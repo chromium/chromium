@@ -29,6 +29,8 @@ struct TabInfo {
   string title;
   // The URL of the tab.
   url.mojom.Url url;
+  // The time the tab was last active.
+  mojo_base.mojom.TimeTicks last_active;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -80,7 +82,7 @@ interface PageHandler {
   // Clears all files from cache.
   ClearFiles();
   // Returns information about recent tabs.
-  GetTabs() => (array<TabInfo> tabs);
+  GetRecentTabs() => (array<TabInfo> tabs);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.
