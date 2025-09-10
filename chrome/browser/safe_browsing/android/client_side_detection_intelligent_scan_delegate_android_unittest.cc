@@ -349,9 +349,6 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
 
-  // Caller should reset the session before calling InquireOnDeviceModel again.
-  EXPECT_TRUE(delegate_->ResetOnDeviceSession());
-
   // The second inquire is sent before the first one completes.
   delegate_->SetPauseSessionExecutionForTesting(false);
   base::test::TestFuture<IntelligentScanResult> future2;

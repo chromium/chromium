@@ -557,10 +557,6 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
-  // Caller is responsible to call ResetOnDeviceSession() before calling
-  // InquireOnDeviceModel again.
-  ASSERT_TRUE(delegate_->ResetOnDeviceSession());
-
   base::test::TestFuture<IntelligentScanResult> future2;
   delegate_->InquireOnDeviceModel("", future2.GetCallback());
 

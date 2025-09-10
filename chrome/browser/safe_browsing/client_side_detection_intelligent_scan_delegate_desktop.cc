@@ -148,9 +148,12 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::InquireOnDeviceModel(
     return;
   }
 
-  // The caller of this function is responsible for calling ResetOnDeviceSession
-  // before calling this function again.
-  CHECK(!session_);
+  // TODO(crbug.com/444148365): Intelligent scan delegate is per profile and may
+  // be shared with multiple ClientSideDetectionHost, so it is possible that one
+  // session created by one ClientSideDetectionHost is still alive when another
+  // ClientSideDetectionHost tries to create a new session. We should support
+  // multiple sessions per delegate.
+  ResetOnDeviceSession();
 
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
 
