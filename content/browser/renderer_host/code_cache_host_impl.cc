@@ -292,6 +292,10 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
   }
 
   if (IsPersistentCacheForCodeCacheEnabled()) {
+    if (!generated_code_cache_context_) {
+      return;
+    }
+
     std::string resource_key = GeneratedCodeCache::GetResourceKey(
         url, MojoCacheTypeToCodeCacheType(cache_type));
     std::string context_key = GeneratedCodeCache::GetContextKey(
@@ -332,6 +336,11 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   }
 
   if (IsPersistentCacheForCodeCacheEnabled()) {
+    if (!generated_code_cache_context_) {
+      std::move(callback).Run(base::Time(), {});
+      return;
+    }
+
     std::string resource_key = GeneratedCodeCache::GetResourceKey(
         url, MojoCacheTypeToCodeCacheType(cache_type));
     std::string context_key = GeneratedCodeCache::GetContextKey(
