@@ -702,28 +702,64 @@ suite('NewTabPageComposeboxTest', () => {
     // Add zps input.
     composeboxElement.$.input.value = '';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
 
-    // Composebox dropdown should show in zps.
     const composeboxDropdown =
         composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
     assertTrue(!!composeboxDropdown);
-    assertFalse(composeboxDropdown.hidden);
 
-    // Dropdown should not show for input with only spaces.
-    composeboxElement.$.input.value = ' ';
-    composeboxElement.$.input.dispatchEvent(new Event('input'));
-    await microtasksFinished();
+    // Composebox dropdown should not show for no matches.
     assertTrue(composeboxDropdown.hidden);
 
-    // Dropdown should show with text.
-    composeboxElement.$.input.value = ' hello';
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are available.
+    assertFalse(composeboxDropdown.hidden);
+  });
+
+  test('dropdown does not show when no typed suggestions enabled', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: false});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add zps input.
+    composeboxElement.$.input.value = '';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
+
+    const composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are available.
     assertFalse(composeboxDropdown.hidden);
 
-    // Restore.
-    loadTimeData.overrideValues(
-        {composeboxShowZps: false, composeboxShowTypedSuggest: false});
+    composeboxElement.$.input.value = 'Hello';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Dropdown should not show for typed input when typed suggest is
+    // disabled.
+    assertTrue(composeboxDropdown.hidden);
   });
 
   test('arrow up/down moves selection / focus', async () => {

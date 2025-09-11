@@ -71,7 +71,10 @@
   align-content: center;
   color: var(--color-new-tab-page-composebox-font-light);
   font-size: 16px;
-  padding-inline-start: var(--input-inline-spacing);
+  overflow: hidden;
+  padding-inline: var(--input-inline-spacing) 64px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #remove {

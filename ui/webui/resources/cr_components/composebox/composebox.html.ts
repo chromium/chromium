@@ -47,9 +47,11 @@ export function getHtml(this: ComposeboxElement) {
             @scroll="${this.handleScroll_}"></textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`
             <div id="smartCompose" part="smart-compose">
-              <span id="invisibleText">${this.input_}</span>
-              <span id="ghostText">${this.smartComposeInlineHint_}</span>
-              <span id="tabChip">Tab</span>
+              <!-- Comments in between spans to eliminate spacing between
+                   spans -->
+              <span id="invisibleText">${this.input_}</span><!--
+              --><span id="ghostText">${this.smartComposeInlineHint_}</span><!--
+              --><span id="tabChip">Tab</span>
             </div>
           `: ''}
         </div>

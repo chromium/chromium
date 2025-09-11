@@ -250,8 +250,9 @@
   border: none;
   caret-color: var(--google-blue-500);
   color: var(--color-new-tab-page-composebox-font-light);
-  height: 48px;
+  field-sizing: content;
   mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
+  height: calc-size(fit-content, min(size + 4px, 190px));
   outline: none;
   position: relative;
   resize: none;
