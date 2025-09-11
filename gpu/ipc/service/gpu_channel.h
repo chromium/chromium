@@ -80,7 +80,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
   // we don't want to do that in tests.
-  void Init(IPC::ChannelHandle channel_handle,
+  void Init(mojo::MessagePipeHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
   base::WeakPtr<GpuChannel> AsWeakPtr();

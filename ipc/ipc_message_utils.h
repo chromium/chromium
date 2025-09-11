@@ -34,7 +34,9 @@
 #include "base/types/id_type.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_param_traits.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -62,7 +64,6 @@ struct FileDescriptor;
 namespace IPC {
 
 class Message;
-struct ChannelHandle;
 
 #if BUILDFLAG(IS_WIN)
 class PlatformFileForTransit;
@@ -931,18 +932,6 @@ struct ParamTraits<base::StrongAlias<TagType, UnderlyingType>> {
 };
 
 // IPC types ParamTraits -------------------------------------------------------
-
-// A ChannelHandle is basically a platform-inspecific wrapper around the
-// fact that IPC endpoints are handled specially on POSIX.  See above comments
-// on FileDescriptor for more background.
-template <>
-struct COMPONENT_EXPORT(IPC) ParamTraits<IPC::ChannelHandle> {
-  typedef ChannelHandle param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-};
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<Message> {

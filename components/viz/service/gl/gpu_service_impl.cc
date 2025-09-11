@@ -57,7 +57,7 @@
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "gpu/vulkan/buildflags.h"
-#include "ipc/ipc_channel_handle.h"
+#include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"

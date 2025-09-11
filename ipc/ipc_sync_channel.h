@@ -16,10 +16,10 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace base {
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   // the channel will be initialized synchronously.
   // The naming pattern follows IPC::Channel.
   static std::unique_ptr<SyncChannel> Create(
-      const IPC::ChannelHandle& channel_handle,
+      const mojo::MessagePipeHandle& channel_handle,
       IPC::Channel::Mode mode,
       Listener* listener,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,

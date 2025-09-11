@@ -26,11 +26,11 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -1071,17 +1071,6 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
 
   *r = token.value();
   return true;
-}
-
-void ParamTraits<IPC::ChannelHandle>::Write(base::Pickle* m,
-                                            const param_type& p) {
-  WriteParam(m, p.mojo_handle);
-}
-
-bool ParamTraits<IPC::ChannelHandle>::Read(const base::Pickle* m,
-                                           base::PickleIterator* iter,
-                                           param_type* r) {
-  return ReadParam(m, iter, &r->mojo_handle);
 }
 
 void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {

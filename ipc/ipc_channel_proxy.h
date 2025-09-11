@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -81,7 +80,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   // dispatched to the listener.  The given task runner correspond to a thread
   // on which IPC::Channel is created and used (e.g. IO thread).
   static std::unique_ptr<ChannelProxy> Create(
-      const IPC::ChannelHandle& channel_handle,
+      const mojo::MessagePipeHandle& channel_handle,
       Channel::Mode mode,
       Listener* listener,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
@@ -105,7 +104,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   // proxy that was not initialized in its constructor. If |create_pipe_now| is
   // true, the pipe is created synchronously. Otherwise it's created on the IO
   // thread.
-  void Init(const IPC::ChannelHandle& channel_handle,
+  void Init(const mojo::MessagePipeHandle& channel_handle,
             Channel::Mode mode,
             bool create_pipe_now);
   void Init(std::unique_ptr<ChannelFactory> factory,

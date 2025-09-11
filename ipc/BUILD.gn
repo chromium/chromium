@@ -33,7 +33,6 @@ component("ipc") {
       "ipc_channel.h",
       "ipc_channel_factory.cc",
       "ipc_channel_factory.h",
-      "ipc_channel_handle.h",
       "ipc_channel_mojo.cc",
       "ipc_channel_mojo.h",
       "ipc_channel_proxy.cc",

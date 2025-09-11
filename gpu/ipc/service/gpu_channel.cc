@@ -763,7 +763,7 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
   return gpu_channel;
 }
 
-void GpuChannel::Init(IPC::ChannelHandle channel_handle,
+void GpuChannel::Init(mojo::MessagePipeHandle channel_handle,
                       base::WaitableEvent* shutdown_event) {
   sync_channel_ = IPC::SyncChannel::Create(this, io_task_runner_.get(),
                                            task_runner_.get(), shutdown_event);

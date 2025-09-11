@@ -19,13 +19,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc.mojom-forward.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/types.h>

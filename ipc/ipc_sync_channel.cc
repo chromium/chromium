@@ -439,7 +439,7 @@ void SyncChannel::SyncContext::OnShutdownEventSignaled(WaitableEvent* event) {
 
 // static
 std::unique_ptr<SyncChannel> SyncChannel::Create(
-    const IPC::ChannelHandle& channel_handle,
+    const mojo::MessagePipeHandle& channel_handle,
     Channel::Mode mode,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,

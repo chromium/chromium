@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(IPC) ChannelFactory {
  public:
   // Creates a factory for "native" channel emulation.
   static std::unique_ptr<ChannelFactory> Create(
-      const ChannelHandle& handle,
+      const mojo::MessagePipeHandle& handle,
       Channel::Mode mode,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner);
 

@@ -272,7 +272,7 @@ void ChannelProxy::Context::SetUrgentMessageObserver(
 
 // static
 std::unique_ptr<ChannelProxy> ChannelProxy::Create(
-    const IPC::ChannelHandle& channel_handle,
+    const mojo::MessagePipeHandle& channel_handle,
     Channel::Mode mode,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
@@ -309,7 +309,7 @@ ChannelProxy::~ChannelProxy() {
   Close();
 }
 
-void ChannelProxy::Init(const IPC::ChannelHandle& channel_handle,
+void ChannelProxy::Init(const mojo::MessagePipeHandle& channel_handle,
                         Channel::Mode mode,
                         bool create_pipe_now) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
