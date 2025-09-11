@@ -273,6 +273,9 @@ BASE_FEATURE(kBocaConfigureMaxStudents, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kBocaMaxNumStudentsAllowed{
     &kBocaConfigureMaxStudents, "BocaMaxNumStudentsAllowed", 100};
 
+// Enables or disables use of the courseWorkMaterials API in the Boca app.
+BASE_FEATURE(kBocaCourseWorkMaterialApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2593,6 +2596,10 @@ bool IsBocaReceiverAppEnabled() {
 
 bool IsBocaConfigureMaxStudentsEnabled() {
   return base::FeatureList::IsEnabled(kBocaConfigureMaxStudents);
+}
+
+bool IsBocaCourseWorkMaterialApiEnabled() {
+  return base::FeatureList::IsEnabled(kBocaCourseWorkMaterialApi);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
