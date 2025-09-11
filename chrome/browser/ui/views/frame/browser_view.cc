@@ -2383,10 +2383,7 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 }
 
 void BrowserView::SetDevToolsScrimVisibility(bool visible) {
-  if (base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
-    GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(
-        visible);
-  }
+  GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(visible);
 }
 
 void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
@@ -3048,10 +3045,6 @@ void BrowserView::OnWidgetShowStateChanged(views::Widget* widget) {
 
 void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
                                                        bool visible) {
-  if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {
-    return;
-  }
-
 #if !BUILDFLAG(IS_MAC)
   // MacOS does not need views window scrim. We use sheets to show window modals
   // (-[NSWindow beginSheet:]), which natively draw a scrim.

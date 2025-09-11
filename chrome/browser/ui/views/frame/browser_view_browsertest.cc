@@ -628,10 +628,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
 
 // Tests that a content area scrim is shown when a tab modal dialog is active.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
-  if (!base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
-    GTEST_SKIP();
-  }
-
   content::WebContents* contents = browser_view()->GetActiveWebContents();
   auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
 
@@ -660,10 +656,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
 // (-[NSWindow beginSheet:]), which natively draws a scrim.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
-  if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {
-    GTEST_SKIP();
-  }
-
   auto child_widget_delegate = std::make_unique<views::WidgetDelegate>();
   auto child_widget = std::make_unique<views::Widget>();
   child_widget_delegate->SetModalType(ui::mojom::ModalType::kWindow);
@@ -881,10 +873,6 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
-  if (!base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
-    GTEST_SKIP();
-  }
-
   // Create a split view with two tabs followed by a third that will show the
   // scrim.
   chrome::AddTabAt(browser(), GURL(), -1, true);

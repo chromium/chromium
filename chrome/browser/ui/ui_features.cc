@@ -116,19 +116,6 @@ BASE_FEATURE(kCloseActiveTabInSplitViewViaHotkey,
              "CloseActiveTabInSplitViewViaHotkey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, a scrim is shown behind window modal dialogs to cover the
-// entire browser window. This gives user a visual cue that the browser window
-// is not interactable.
-BASE_FEATURE(kScrimForBrowserWindowModal,
-             "ScrimForBrowserWindowModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, a scrim is shown behind tab modal dialogs to cover the content
-// area. This gives user a visual cue that the content area is not interactable.
-BASE_FEATURE(kScrimForTabModal,
-             "ScrimForTabModal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 // Add tab group colours when viewing tab groups using the top mac OS menu bar.
 BASE_FEATURE(kShowTabGroupsMacSystemMenu,
