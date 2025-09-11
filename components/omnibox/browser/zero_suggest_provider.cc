@@ -143,7 +143,8 @@ bool ShouldCacheResultTypeInContext(const ResultType result_type,
                                     const OEP::PageClassification page_class) {
   switch (result_type) {
     case ResultType::kRemoteNoURL:
-      return !omnibox::IsLensSearchbox(page_class);
+      return !(omnibox::IsLensSearchbox(page_class) ||
+               omnibox::IsComposebox(page_class));
     case ResultType::kRemoteSendURL:
       return omnibox::IsSearchResultsPage(page_class)
                  ? base::FeatureList::IsEnabled(
