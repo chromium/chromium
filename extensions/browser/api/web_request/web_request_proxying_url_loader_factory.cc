@@ -572,6 +572,11 @@ bool WebRequestProxyingURLLoaderFactory::IsForDownload() const {
          content::ContentBrowserClient::URLLoaderFactoryType::kDownload;
 }
 
+bool WebRequestProxyingURLLoaderFactory::IsForPrefetch() const {
+  return loader_factory_type_ ==
+         content::ContentBrowserClient::URLLoaderFactoryType::kPrefetch;
+}
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnLoaderCreated(
     mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
   TRACE_EVENT_WITH_FLOW1(
@@ -1572,9 +1577,10 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Make sure we are not proxying a browser initiated non-navigation
-  // request except for loading service worker scripts.
+  // request except for loading service worker scripts and browser-initiated
+  // prefetch.
   DCHECK(render_process_id_ != -1 || navigation_ui_data_ ||
-         IsForServiceWorkerScript());
+         IsForServiceWorkerScript() || IsForPrefetch());
 
   // The |web_request_id| doesn't really matter. It just needs to be
   // unique per-BrowserContext so extensions can make sense of it.

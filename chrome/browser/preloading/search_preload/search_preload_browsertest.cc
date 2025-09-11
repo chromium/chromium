@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -504,6 +505,13 @@ class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
       base::test::ScopedFeatureList& scoped_feature_list) override {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
+            // Check webRequest API.
+            //
+            // See http://crbug.com/438935264
+            {
+                extensions_features::kForceWebRequestProxyForTest,
+                {},
+            },
             {
                 features::kPrefetchPrerenderIntegration,
                 {},
