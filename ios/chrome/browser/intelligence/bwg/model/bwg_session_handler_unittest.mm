@@ -167,3 +167,60 @@ TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
   web::WebState* unrealized = web_state_list_->GetWebStateAt(1);
   EXPECT_FALSE(unrealized->IsRealized());
 }
+
+// Tests different input types for first prompt submission.
+TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
+  // Test Summarize input type.
+  BWGSessionHandler* handler1 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler1 didSendQueryWithInputType:BWGInputTypeSummarize
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kSummarize, 1);
+
+  // Test CheckThisSite input type.
+  BWGSessionHandler* handler2 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler2 didSendQueryWithInputType:BWGInputTypeCheckThisSite
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kCheckThisSite, 1);
+
+  // Test FindRelatedSites input type.
+  BWGSessionHandler* handler3 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler3 didSendQueryWithInputType:BWGInputTypeFindRelatedSites
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kFindRelatedSites, 1);
+
+  // Test AskAboutPage input type.
+  BWGSessionHandler* handler4 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler4 didSendQueryWithInputType:BWGInputTypeAskAboutPage
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kAskAboutPage, 1);
+
+  // Test CreateFaq input type.
+  BWGSessionHandler* handler5 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler5 didSendQueryWithInputType:BWGInputTypeCreateFaq
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kCreateFaq, 1);
+
+  // Test Unknown input type.
+  BWGSessionHandler* handler6 =
+      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  [handler6 didSendQueryWithInputType:BWGInputTypeUnknown
+                  pageContextAttached:NO];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kUnknown, 1);
+}
