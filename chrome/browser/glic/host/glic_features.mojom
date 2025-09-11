@@ -18,7 +18,7 @@ feature kGlicActorTabContext {
 
 feature kZeroStateSuggestionsV2 {
   const string name = "ZeroStateSuggestionsV2";
-  const bool default_state = false;
+  const bool default_state = true;
 };
 
 feature kGlicAppendModelQualityClientId {
