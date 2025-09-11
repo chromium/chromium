@@ -1534,6 +1534,28 @@ void FocusPreviousTabGroup(Browser* browser) {
   }
 }
 
+bool GroupAllUngroupedTabs(Browser* browser) {
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  if (!tab_strip_model->SupportsTabGroups()) {
+    return false;
+  }
+
+  int i = 0;
+  std::vector<int> indices;
+  for (const tabs::TabInterface* t : *tab_strip_model) {
+    if (!t->GetGroup() && !t->IsPinned()) {
+      indices.push_back(i);
+    }
+    ++i;
+  }
+  if (indices.size() == 0) {
+    return false;
+  }
+
+  tab_strip_model->AddToNewGroup(indices);
+  return true;
+}
+
 void MuteSite(Browser* browser) {
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),

@@ -213,6 +213,7 @@ BASE_DECLARE_FEATURE(kTabGroupHoverCards);
 // General improvements to tab group menus
 BASE_DECLARE_FEATURE(kTabGroupMenuImprovements);
 BASE_DECLARE_FEATURE(kTabGroupMenuMoreEntryPoints);
+bool IsTabGroupMenuMoreEntryPointsEnabled();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

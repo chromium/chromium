@@ -12126,6 +12126,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
           Create new tab group
         </message>
+        <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
+          Group all ungrouped tabs
+        </message>
         <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab groups' menu in the App Menu.">
           Tab groups
         </message>
@@ -12139,6 +12142,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
           Create New Tab Group
+        </message>
+        <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
+          Group All Ungrouped Tabs
         </message>
         <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab Groups' menu in the App Menu.">
           Tab Groups

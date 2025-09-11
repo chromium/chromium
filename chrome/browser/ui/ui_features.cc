@@ -294,6 +294,10 @@ BASE_FEATURE(kTabGroupMenuMoreEntryPoints,
              "TabGroupMenuMoreEntryPoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsTabGroupMenuMoreEntryPointsEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupMenuMoreEntryPoints);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables preview images in tab-hover cards.

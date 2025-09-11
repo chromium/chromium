@@ -1121,6 +1121,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       base::UmaHistogramEnumeration("TabGroups.Shortcuts",
                                     TabGroupShortcut::kAddNewTabToGroup);
       break;
+    case IDC_GROUP_UNGROUPED_TABS:
+      GroupAllUngroupedTabs(browser_);
+      break;
 
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);
@@ -1407,6 +1410,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_NEXT_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_PREV_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_GROUP_UNGROUPED_TABS, true);
 
   // Omnibox commands
   command_updater_.UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);

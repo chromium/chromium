@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -88,6 +89,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 #endif
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
+
+  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    model->AddItemWithStringId(IDC_GROUP_UNGROUPED_TABS,
+                               IDS_GROUP_UNGROUPED_TABS);
+  }
+
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
   model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
 #if BUILDFLAG(ENABLE_GLIC)
