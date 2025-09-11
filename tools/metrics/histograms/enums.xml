@@ -13380,6 +13380,8 @@ from previous Chrome versions.
   <int value="-306935714" label="lite-video-force-override-decision"/>
   <int value="-306885206" label="NtpModulesHeaderIcon:disabled"/>
   <int value="-306831741" label="TabGroupPaneAndroid:disabled"/>
+  <int value="-306412483"
+      label="OverlayScrollbarFlashOnlyOnceVisibleOnViewport:enabled"/>
   <int value="-304951461" label="TextSuggestionsTouchBar:enabled"/>
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304841801" label="AccessibilityFlashScreenFeature:enabled"/>
@@ -17237,6 +17239,8 @@ from previous Chrome versions.
   <int value="1088915385" label="new-password-form-parsing:enabled"/>
   <int value="1089014363" label="ArcAttestation:disabled"/>
   <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>
+  <int value="1089279056"
+      label="OverlayScrollbarFlashOnlyOnceVisibleOnViewport:disabled"/>
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
   <int value="1090167437" label="GlicPanelResetSizeAndLocationOnOpen:enabled"/>
   <int value="1090324500" label="EcheLauncher:enabled"/>

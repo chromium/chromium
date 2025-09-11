@@ -3208,6 +3208,12 @@ const char kOverlayScrollbarsFlashWhenMouseEnterDescription[] =
     "Flash Overlay Scrollbars When Mouse Enter a scrollable area. You must also"
     " enable Overlay Scrollbars.";
 
+const char kOverlayScrollbarsFlashOnceVisibleOnViewportName[] =
+    "Flash Overlay Scrollbars Once When Visible";
+const char kOverlayScrollbarsFlashOnceVisibleOnViewportDescription[] =
+    "Flash Overlay Scrollbars only once per scrollbar and when they become "
+    "visible on the viewport. You must also enable Overlay Scrollbars.";
+
 const char kOverlayStrategiesName[] = "Select HW overlay strategies";
 const char kOverlayStrategiesDescription[] =
     "Select strategies used to promote quads to HW overlays. Note that "
