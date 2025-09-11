@@ -59,10 +59,8 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -312,16 +310,6 @@ void OnWebAppInstallabilityChecked(
   NOTREACHED();
 }
 
-SupervisedUserExtensionsDelegate*
-GetSupervisedUserExtensionsDelegateFromContext(
-    content::BrowserContext* context) {
-  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-      ManagementAPI::GetFactoryInstance()
-          ->Get(context)
-          ->GetSupervisedUserExtensionsDelegate();
-  CHECK(supervised_user_extensions_delegate);
-  return supervised_user_extensions_delegate;
-}
 }  // namespace
 
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
@@ -448,46 +436,6 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
       web_app_url, web_contents_ptr,
       base::BindOnce(&OnWebAppInstallabilityChecked, profile->GetWeakPtr(),
                      std::move(callback), std::move(web_contents)));
-}
-
-void ChromeManagementAPIDelegate::EnableExtension(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id) const {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::EVERYTHING);
-  // The extension must exist as this method is invoked on enabling an extension
-  // from the extensions management page (see `ManagementSetEnabledFunction`).
-  CHECK(extension);
-
-  // TODO(crbug.com/371332103): Move this to the shared implementation file once
-  // tests are running. Desktop Android uses a stub delegate that should work
-  // until supervised users are implemented.
-  SupervisedUserExtensionsDelegate* extensions_delegate =
-      GetSupervisedUserExtensionsDelegateFromContext(context);
-  extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
-  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
-
-  // If the extension was disabled for a permissions increase, the Management
-  // API will have displayed a re-enable prompt to the user, so we know it's
-  // safe to grant permissions here.
-  ExtensionRegistrar::Get(context)->GrantPermissionsAndEnableExtension(
-      *extension);
-}
-
-void ChromeManagementAPIDelegate::DisableExtension(
-    content::BrowserContext* context,
-    const Extension* source_extension,
-    const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) const {
-  // TODO(crbug.com/371332103): Move this to the shared implementation file once
-  // tests are running. Desktop Android uses a stub delegate that should work
-  // until supervised users are implemented.
-  SupervisedUserExtensionsDelegate* extensions_delegate =
-      GetSupervisedUserExtensionsDelegateFromContext(context);
-  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
-  ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
-      source_extension, extension_id, disable_reason);
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(

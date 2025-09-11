@@ -5,9 +5,6 @@
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 
 #include "base/notimplemented.h"
-#include "extensions/browser/api/management/management_api.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/uninstall_reason.h"
 
 namespace extensions {
 
@@ -26,7 +23,8 @@ ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
     const Extension* extension,
     base::OnceCallback<void(bool)> callback) const {
   // TODO(crbug.com/410932770): Show a permission dialog. For now, pretend that
-  // the user accepted it.
+  // the user accepted it. When this dialog is built, also enable the test
+  // ManagementApiUnitTest.SetEnabled_IncreasedPermissions.
   NOTIMPLEMENTED() << "Skipping enable extension dialog";
   std::move(callback).Run(true);
   return nullptr;
@@ -61,31 +59,6 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
   NOTIMPLEMENTED();
-}
-
-void ChromeManagementAPIDelegate::EnableExtension(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id) const {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::EVERYTHING);
-  // The extension must exist as this method is invoked on enabling an extension
-  // from the extensions management page (see `ManagementSetEnabledFunction`).
-  CHECK(extension);
-
-  // TODO(crbug.com/crbug.com/410612887): Support supervised user metrics here.
-  ExtensionRegistrar::Get(context)->GrantPermissionsAndEnableExtension(
-      *extension);
-}
-
-void ChromeManagementAPIDelegate::DisableExtension(
-    content::BrowserContext* context,
-    const Extension* source_extension,
-    const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) const {
-  // TODO(crbug.com/crbug.com/410612887): Support supervised user metrics here.
-  ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
-      source_extension, extension_id, disable_reason);
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(

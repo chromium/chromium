@@ -17,6 +17,7 @@
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/launch_util.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
@@ -82,6 +83,17 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   std::unique_ptr<ExtensionUninstallDialog> extension_uninstall_dialog_;
 };
 
+SupervisedUserExtensionsDelegate*
+GetSupervisedUserExtensionsDelegateFromContext(
+    content::BrowserContext* context) {
+  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(context)
+          ->GetSupervisedUserExtensionsDelegate();
+  CHECK(supervised_user_extensions_delegate);
+  return supervised_user_extensions_delegate;
+}
+
 }  // namespace
 
 ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
@@ -106,6 +118,40 @@ ChromeManagementAPIDelegate::UninstallFunctionDelegate(
     bool show_programmatic_uninstall_ui) const {
   return std::make_unique<ManagementUninstallFunctionUninstallDialogDelegate>(
       function, target_extension, show_programmatic_uninstall_ui);
+}
+
+void ChromeManagementAPIDelegate::EnableExtension(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id) const {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->GetExtensionById(
+          extension_id, ExtensionRegistry::EVERYTHING);
+  // The extension must exist as this method is invoked on enabling an extension
+  // from the extensions management page (see `ManagementSetEnabledFunction`).
+  CHECK(extension);
+
+  SupervisedUserExtensionsDelegate* extensions_delegate =
+      GetSupervisedUserExtensionsDelegateFromContext(context);
+  extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
+  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
+
+  // If the extension was disabled for a permissions increase, the Management
+  // API will have displayed a re-enable prompt to the user, so we know it's
+  // safe to grant permissions here.
+  ExtensionRegistrar::Get(context)->GrantPermissionsAndEnableExtension(
+      *extension);
+}
+
+void ChromeManagementAPIDelegate::DisableExtension(
+    content::BrowserContext* context,
+    const Extension* source_extension,
+    const ExtensionId& extension_id,
+    disable_reason::DisableReason disable_reason) const {
+  SupervisedUserExtensionsDelegate* extensions_delegate =
+      GetSupervisedUserExtensionsDelegateFromContext(context);
+  extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
+  ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
+      source_extension, extension_id, disable_reason);
 }
 
 bool ChromeManagementAPIDelegate::UninstallExtension(
