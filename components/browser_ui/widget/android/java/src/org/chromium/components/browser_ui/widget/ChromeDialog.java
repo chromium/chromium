@@ -9,6 +9,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,11 +58,11 @@ public class ChromeDialog extends ComponentDialog {
             Activity activity, @StyleRes int themeResId, boolean shouldPadForWindowInsets) {
         super(activity, themeResId);
         mActivity = activity;
-        if (themeResId == R.style.ThemeOverlay_BrowserUI_Fullscreen) {
-            mIsFullScreen = true;
-        } else {
-            mIsFullScreen = false;
-        }
+
+        TypedArray a = getContext().obtainStyledAttributes(themeResId, R.styleable.ChromeDialog);
+        mIsFullScreen = a.getBoolean(R.styleable.ChromeDialog_isDialogFullscreen, false);
+        a.recycle();
+
         mShouldPadForWindowInsets = shouldPadForWindowInsets;
         if (mShouldPadForWindowInsets && getWindow() != null) {
             mInsetObserver =
