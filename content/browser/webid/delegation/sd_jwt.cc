@@ -301,6 +301,12 @@ std::optional<Header> Header::From(const base::Value::Dict& json) {
   }
   result.alg = *alg;
 
+  auto* jwk = json.FindDict("jwk");
+  if (jwk) {
+    // JWK is an optional parameter.
+    result.jwk = Jwk::From(*jwk);
+  }
+
   return result;
 }
 
@@ -309,6 +315,10 @@ std::optional<JSONString> Header::ToJson() const {
 
   header_dict.Set("typ", typ);
   header_dict.Set("alg", alg);
+
+  if (jwk) {
+    header_dict.Set("jwk", jwk->ToDict());
+  }
 
   auto result = base::WriteJson(header_dict);
 
@@ -405,6 +415,11 @@ std::optional<Payload> Payload::From(const base::Value::Dict& json) {
     }
   }
 
+  auto* email = json.FindString("email");
+  if (email) {
+    result.email = *email;
+  }
+
   return result;
 }
 
@@ -440,11 +455,11 @@ std::optional<JSONString> Payload::ToJson() const {
   }
 
   if (iat) {
-    payload_dict.Set("iat", (int)iat->ToTimeT());
+    payload_dict.Set("iat", static_cast<int>(iat->ToTimeT()));
   }
 
   if (exp) {
-    payload_dict.Set("exp", (int)exp->ToTimeT());
+    payload_dict.Set("exp", static_cast<int>(exp->ToTimeT()));
   }
 
   if (!sd_hash.value().empty()) {
@@ -461,6 +476,10 @@ std::optional<JSONString> Payload::ToJson() const {
 
   if (!_sd_alg.empty()) {
     payload_dict.Set("_sd_alg", _sd_alg);
+  }
+
+  if (!email.empty()) {
+    payload_dict.Set("email", email);
   }
 
   auto result = base::WriteJson(payload_dict);

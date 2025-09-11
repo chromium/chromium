@@ -124,9 +124,12 @@ using Base64String = base::StrongAlias<class Base64StringTag, std::string>;
 
 // https://datatracker.ietf.org/doc/html/rfc7519#section-5
 struct CONTENT_EXPORT Header {
-  // https://datatracker.ietf.org/doc/html/rfc7519#section-5.1
   std::string typ;
   std::string alg;
+  // The public key that corresponds to the key used to digitally
+  // sign the JWS.
+  // https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.3
+  std::optional<Jwk> jwk;
 
   Header();
   ~Header();
@@ -181,6 +184,9 @@ struct CONTENT_EXPORT Payload {
 
   // Used in the Key Binding JWT
   Base64String sd_hash;
+
+  // Profile-specific parameters.
+  std::string email;
 
   Payload();
   ~Payload();

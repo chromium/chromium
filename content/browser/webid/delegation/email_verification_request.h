@@ -1,0 +1,84 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "content/browser/webid/delegation/dns_request.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/idp_network_request_manager.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/webid/email_verifier.h"
+#include "crypto/keypair.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+// This class implements the Email Verification Protocol as described here:
+// https://github.com/dickhardt/email-verification-protocol
+
+namespace content::webid {
+
+// For a given email address, returns the domain. Returns std::nullopt if the
+// email is not valid.
+// e.g. "test@example.com" -> "example.com"
+CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
+    const std::string& email);
+
+// Performs the email verification process, which involves making a DNS TXT
+// record request to determine the issuer, and then fetching a token from the
+// issuer.
+class CONTENT_EXPORT EmailVerificationRequest : public EmailVerifier {
+ public:
+  EmailVerificationRequest(
+      std::unique_ptr<IdpNetworkRequestManager> network_manager,
+      std::unique_ptr<DnsRequest> dns_request);
+  ~EmailVerificationRequest() override;
+
+  EmailVerificationRequest(const EmailVerificationRequest&) = delete;
+  EmailVerificationRequest& operator=(const EmailVerificationRequest&) = delete;
+
+  // Starts the verification process for the given `email`.
+  void Verify(const std::string& email,
+              const std::string& nonce,
+              const url::Origin& website,
+              EmailVerifier::OnEmailVerifiedCallback callback) override;
+
+ private:
+  sdjwt::Jwt CreateRequestToken(const std::string& email,
+                                const url::Origin& website,
+                                const sdjwt::Jwk& public_key);
+  void OnDnsRequestComplete(
+      const std::string& email,
+      const std::string& nonce,
+      const url::Origin& website,
+      EmailVerifier::OnEmailVerifiedCallback callback,
+      const std::optional<std::vector<std::string>>& text_records);
+  void OnWellKnownFetched(
+      const std::string& email,
+      const url::Origin& issuer,
+      const std::string& nonce,
+      const url::Origin& website,
+      EmailVerifier::OnEmailVerifiedCallback callback,
+      IdpNetworkRequestManager::FetchStatus status,
+      const IdpNetworkRequestManager::WellKnown& well_known);
+  void OnTokenRequestComplete(
+      const std::string& nonce,
+      const url::Origin& website,
+      std::unique_ptr<crypto::keypair::PrivateKey> private_key,
+      EmailVerifier::OnEmailVerifiedCallback callback,
+      IdpNetworkRequestManager::FetchStatus token_status,
+      IdpNetworkRequestManager::TokenResult&& result);
+
+  std::unique_ptr<DnsRequest> dns_request_;
+  std::unique_ptr<IdpNetworkRequestManager> network_manager_;
+
+  base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};
+};
+
+}  // namespace content::webid
+
+#endif  // CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_

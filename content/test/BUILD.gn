@@ -2945,6 +2945,8 @@ test("content_unittests") {
     "../browser/web_package/signed_exchange_utils_unittest.cc",
     "../browser/web_package/subresource_signed_exchange_url_loader_factory_unittest.cc",
     "../browser/webid/config_fetcher_unittest.cc",
+    "../browser/webid/delegation/dns_request_unittest.cc",
+    "../browser/webid/delegation/email_verification_request_unittest.cc",
     "../browser/webid/delegation/jwt_signer_unittest.cc",
     "../browser/webid/delegation/sd_jwt_unittest.cc",
     "../browser/webid/disconnect_request_unittest.cc",

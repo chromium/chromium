@@ -103,6 +103,7 @@ constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
 // Shared between the well-known files and config files
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kLoginUrlKey[] = "login_url";
+constexpr char kIssuanceEndpointKey[] = "issuance_endpoint";
 
 // Keys in fedcm.json 'branding' dictionary.
 constexpr char kIdpBrandingBackgroundColorKey[] = "background_color";
@@ -126,6 +127,7 @@ constexpr char kBrandingIconSize[] = "size";
 
 // The id assertion endpoint contains a token result.
 constexpr char kTokenKey[] = "token";
+constexpr char kIssuanceTokenKey[] = "issuance_token";
 // The id assertion endpoint contains a URL, which indicates that
 // the serve wants to direct the user to continue on a pop-up
 // window before it provides a token result.
@@ -554,6 +556,16 @@ void OnWellKnownParsed(
     return;
   }
 
+  // IdP blindness can only be used when the feature is enabled.
+  if (webid::IsDelegationEnabled()) {
+    well_known.issuance_endpoint =
+        ExtractEndpoint(well_known_url, *dict, kIssuanceEndpointKey);
+    if (!well_known.issuance_endpoint.is_empty()) {
+      std::move(callback).Run(fetch_status, std::move(well_known));
+      return;
+    }
+  }
+
   well_known.accounts =
       ExtractEndpoint(well_known_url, *dict, kAccountsEndpointKey);
   well_known.login_url = ExtractEndpoint(well_known_url, *dict, kLoginUrlKey);
@@ -921,6 +933,9 @@ void OnTokenRequestParsed(
     token_value = nullptr;
   }
 
+  const std::string* issuance_token =
+      can_use_response ? response->FindString(kIssuanceTokenKey) : nullptr;
+
   // continue_on_callback is only set if authz is enabled.
   const std::string* continue_on = can_use_response && continue_on_callback
                                        ? response->FindString(kContinueOnKey)
@@ -958,6 +973,16 @@ void OnTokenRequestParsed(
     return;
   }
   DCHECK(response);
+
+  if (issuance_token && webid::IsDelegationEnabled()) {
+    token_result.token = base::Value(*issuance_token);
+    std::move(record_error_metrics_callback)
+        .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
+             /*error_url_type=*/std::nullopt);
+    std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                            std::move(token_result));
+    return;
+  }
 
   if (token_value) {
     token_result.token = token_value->Clone();

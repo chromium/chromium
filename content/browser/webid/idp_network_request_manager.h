@@ -141,6 +141,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::set<GURL> provider_urls;
     GURL accounts;
     GURL login_url;
+    GURL issuance_endpoint;
   };
 
   struct CONTENT_EXPORT ClientMetadata {

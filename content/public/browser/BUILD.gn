@@ -518,6 +518,7 @@ source_set("browser_sources") {
     "webauthn_security_utils.h",
     "webid/autofill_source.h",
     "webid/constants.h",
+    "webid/email_verifier.h",
     "webid/federated_identity_api_permission_context_delegate.cc",
     "webid/federated_identity_api_permission_context_delegate.h",
     "webid/federated_identity_auto_reauthn_permission_context_delegate.h",
