@@ -253,9 +253,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       // <if expr="enable_pdf_save_to_drive">
       pdfSaveToDriveEnabled_: {type: Boolean},
-      saveToDriveFileSizeBytes_: {type: Number},
+      saveToDriveProgress_: {type: Object},
       saveToDriveState_: {type: String},
-      saveToDriveUploadedBytes_: {type: Number},
       // </if>
 
       showPasswordDialog_: {type: Boolean},
@@ -323,11 +322,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
   // <if expr="enable_pdf_save_to_drive">
   protected accessor pdfSaveToDriveEnabled_: boolean = false;
-  protected accessor saveToDriveFileSizeBytes_: number = 0;
+  protected accessor saveToDriveProgress_: SaveToDriveProgress = {
+    status: SaveToDriveStatus.NOT_STARTED,
+    errorType: SaveToDriveErrorType.NO_ERROR,
+  };
   protected accessor saveToDriveState_: SaveToDriveState =
       SaveToDriveState.UNINITIALIZED;
   private saveToDriveRequestType_: SaveRequestType = SaveRequestType.ORIGINAL;
-  protected accessor saveToDriveUploadedBytes_: number = 0;
   // </if>
   private pdfSearchifySaveEnabled_: boolean = false;
   private pdfUseShowSaveFilePicker_: boolean = false;
@@ -1096,8 +1097,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
       return;
     }
-    this.saveToDriveUploadedBytes_ = progress.uploadedBytes ?? 0;
-    this.saveToDriveFileSizeBytes_ = progress.fileSizeBytes ?? 0;
+    this.saveToDriveProgress_ = progress;
     this.saveToDriveState_ =
         convertSaveToDriveProgressToSaveToDriveState(progress);
   }
@@ -1280,12 +1280,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (!this.isSaveToDriveUploading_()) {
       return 0;
     }
-    assert(
-        this.saveToDriveFileSizeBytes_ > 0,
-        'Invalid file size for save to Drive');
-    return Math.round(
-        (this.saveToDriveUploadedBytes_ / this.saveToDriveFileSizeBytes_) *
-        100);
+    const fileSizeBytes = this.saveToDriveProgress_.fileSizeBytes ?? 0;
+    assert(fileSizeBytes > 0, 'Invalid file size for save to Drive');
+    const uploadedBytes = this.saveToDriveProgress_.uploadedBytes ?? 0;
+    return Math.round((uploadedBytes / fileSizeBytes) * 100);
   }
 
   protected isSaveToDriveUploading_(): boolean {

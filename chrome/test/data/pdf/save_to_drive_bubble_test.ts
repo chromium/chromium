@@ -167,8 +167,8 @@ const tests = [
 
   async function testUploadingState() {
     const element = createBubbleElement();
-    element.bytesTransferred = 100;
-    element.bytesToTransfer = 200;
+    element.progress.uploadedBytes = 100;
+    element.progress.fileSizeBytes = 200;
     await testBubbleState(SaveToDriveState.UPLOADING, element, {
       progress: true,
       cancel: true,

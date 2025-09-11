@@ -6,6 +6,7 @@ import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.j
 
 import type {PdfViewerPrivateProxy, ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PdfViewerPrivateProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -61,6 +62,8 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
       errorType: SaveToDriveErrorType.NO_ERROR,
       uploadedBytes: uploadedBytes,
       fileSizeBytes: fileSizeBytes,
+      fileMetadata: 'uploading, 2 minutes left',
+      fileName: 'save_to_drive_test.pdf',
     });
   }
 
@@ -137,6 +140,13 @@ const tests = [
     await microtasksFinished();
     assertBubbleAndProgressBar(bubble, 0, 100);
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('#retry-button'));
+    const fileMetadata = getRequiredElement(bubble, '#file-metadata');
+    assert(fileMetadata.textContent);
+    chrome.test.assertEq(
+        'uploading, 2 minutes left', fileMetadata.textContent.trim());
+    const filename = getRequiredElement(bubble, '#filename');
+    assert(filename.textContent);
+    chrome.test.assertEq('save_to_drive_test.pdf', filename.textContent.trim());
 
     // Save to drive uploading 88/226 bytes.
     privateProxy.sendUploadInProgress(88, 226);
@@ -259,6 +269,9 @@ const tests = [
 
     chrome.test.succeed();
   },
+
+  // TODO(crbug.com/427451594): Write a test to check that the parent folder
+  // name is in the description for the `SUCCESS` state.
 ];
 
 chrome.test.runTests(tests);

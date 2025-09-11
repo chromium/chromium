@@ -130,9 +130,7 @@ ${this.showPropertiesDialog_ ? html`<viewer-properties-dialog
 
 <if expr="enable_pdf_save_to_drive">
 ${this.pdfSaveToDriveEnabled_ ? html`<viewer-save-to-drive-bubble
-    .bytesToTransfer="${this.saveToDriveFileSizeBytes_}"
-    .bytesTransferred="${this.saveToDriveUploadedBytes_}"
-    .fileName="${this.fileName_}"
+    .progress="${this.saveToDriveProgress_}"
     .state="${this.saveToDriveState_}"
     @save-to-drive-bubble-action="${this.onSaveToDriveBubbleAction_}">
 </viewer-save-to-drive-bubble>` : ''}

@@ -44,9 +44,7 @@ export class ViewerSaveToDriveBubbleElement extends
 
   static override get properties() {
     return {
-      bytesToTransfer: {type: Number},
-      bytesTransferred: {type: Number},
-      fileName: {type: String},
+      progress: {type: Object},
       state: {type: String},
 
       description_: {
@@ -58,21 +56,16 @@ export class ViewerSaveToDriveBubbleElement extends
         type: String,
         state: true,
       },
-
-      fileMetadata_: {
-        type: String,
-        state: true,
-      },
     };
   }
 
-  accessor bytesToTransfer: number = 0;
-  accessor bytesTransferred: number = 0;
-  accessor fileName: string = '';
+  accessor progress: chrome.pdfViewerPrivate.SaveToDriveProgress = {
+    status: chrome.pdfViewerPrivate.SaveToDriveStatus.NOT_STARTED,
+    errorType: chrome.pdfViewerPrivate.SaveToDriveErrorType.NO_ERROR,
+  };
   accessor state: SaveToDriveState = SaveToDriveState.UNINITIALIZED;
   protected accessor description_: TrustedHTML = sanitizeInnerHtml('');
   protected accessor dialogTitle_: string = '';
-  protected accessor fileMetadata_: string = '';
 
   private anchor_: HTMLElement|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -95,6 +88,22 @@ export class ViewerSaveToDriveBubbleElement extends
     this.positionDialog_();
     this.$.dialog.focus();
     this.eventTracker_.add(window, 'resize', this.positionDialog_.bind(this));
+  }
+
+  protected getFileName_(): string {
+    return this.progress.fileName ?? '';
+  }
+
+  protected getFileSizeBytes_(): number {
+    return this.progress.fileSizeBytes ?? 0;
+  }
+
+  protected getMetadata_(): string {
+    return this.progress.fileMetadata ?? '';
+  }
+
+  protected getUploadedBytes_(): number {
+    return this.progress.uploadedBytes ?? 0;
   }
 
   protected isSaveToDriveState_(state: SaveToDriveState): boolean {
@@ -142,19 +151,6 @@ export class ViewerSaveToDriveBubbleElement extends
   private onStateChanged_() {
     this.updateDescription_();
     this.updateDialogTitle_();
-    // TODO(crbug.com/427451594): Replace the `fileMetadata_` switch statement
-    // below with translated strings from the browser process.
-    switch (this.state) {
-      case SaveToDriveState.UPLOADING:
-        this.fileMetadata_ = '304/503 KB · 4 seconds left';
-        break;
-      case SaveToDriveState.SUCCESS:
-        this.fileMetadata_ = '503 KB · Done';
-        break;
-      default:
-        this.fileMetadata_ = '';
-        break;
-    }
   }
 
   private positionDialog_() {
@@ -192,13 +188,11 @@ export class ViewerSaveToDriveBubbleElement extends
         this.description_ = window.trustedTypes!.emptyHTML;
         break;
       case SaveToDriveState.SUCCESS:
-        // TODO(crbug.com/427451594): Replace `PLACEHOLDER` with the folder name
-        // we get from the server.
         this.description_ =
             this.i18nAdvanced('saveToDriveDialogSuccessMessage', {
               tags: ['b'],
               substitutions: [
-                'PLACEHOLDER',
+                this.progress.parentFolderName ?? '',
               ],
             });
         break;
