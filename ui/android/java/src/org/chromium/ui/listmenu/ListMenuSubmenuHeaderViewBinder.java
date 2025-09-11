@@ -6,8 +6,6 @@ package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
 
@@ -36,10 +34,6 @@ class ListMenuSubmenuHeaderViewBinder {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         } else if (propertyKey == KEY_LISTENER) {
             view.setOnKeyListener(model.get(KEY_LISTENER));
-        } else if (propertyKey == HOVER_LISTENER) {
-            view.setOnHoverListener(model.get(HOVER_LISTENER));
-        } else if (propertyKey == IS_HIGHLIGHTED) {
-            view.setHovered(model.get(IS_HIGHLIGHTED));
         }
     }
 }
