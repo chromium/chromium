@@ -1682,17 +1682,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId pseudo_id,
       const AtomicString& view_transition_name) const;
 
-  // Performs a full-update of the view-transition pseudo-element tree. A full
-  // update is required whenever the topology of the tree may have changed
-  // (i.e. after a capture phase).
-  void RecalcTransitionPseudoTreeStyle(
-      const Vector<AtomicString>& view_transition_names);
-
-  // Performs an incremental update of the view-transitions. This version does
-  // not create new view-transition pseudos, but simply ensures style changes
-  // propagate correctly.
-  // TODO(crbug.com/442622988): Handle creation here as well and deprecate
-  // RecalcTransitionPseudoTreeStyle.
+  // Performs an incremental update of the view-transition pseudo-elements.
   void UpdateTransitionPseudoElements(const StyleRecalcChange,
                                       const StyleRecalcContext&);
 
@@ -1947,7 +1937,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ClearPseudoElement(
       PseudoId,
       const AtomicString& view_transition_name = g_null_atom);
-  void ClearTransitionPseudoTreeIfNeeded(const StyleRecalcChange);
   void DetachTransitionPseudo();
   void AttachTransitionPseudo();
 

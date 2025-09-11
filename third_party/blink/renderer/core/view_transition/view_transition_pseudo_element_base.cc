@@ -94,4 +94,9 @@ ViewTransitionPseudoElementBase::GetContainedViewTransitionNames() const {
   return style_tracker_->ComputeContainedGroupNames(view_transition_name());
 }
 
+const AtomicString& ViewTransitionPseudoElementBase::GetContainingGroupName(
+    const AtomicString& target) const {
+  return style_tracker_->GetContainingGroupName(target);
+}
+
 }  // namespace blink

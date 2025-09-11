@@ -231,7 +231,7 @@ class ViewTransitionStyleTracker
 
   // This returns the resolved containing group name for a given view transition
   // name. Note that this only works once the transition starts.
-  AtomicString GetContainingGroupName(const AtomicString& name) const;
+  const AtomicString& GetContainingGroupName(const AtomicString& name) const;
 
   void WillEnterGetComputedStyleScope();
   void WillExitGetComputedStyleScope();

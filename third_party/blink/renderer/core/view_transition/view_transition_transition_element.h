@@ -45,6 +45,10 @@ class CORE_EXPORT ViewTransitionTransitionElement
   Vector<AtomicString> BuildChainFromThisToNestedGroup(
       const AtomicString& target);
 
+  // Logs the view transition subtree starting from the ::view-transition()
+  // element.
+  void LogSubtree() { LogSubtree(this); }
+
  private:
   // Logs the view transition subtree starting from this element.
   void LogSubtree(PseudoElement*, int indent = 0);

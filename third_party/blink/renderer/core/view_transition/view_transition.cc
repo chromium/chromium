@@ -610,7 +610,6 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       case State::kAnimateRequestPending:
-
         if (UnsupportedCapture() || !style_tracker_->Start()) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
           break;
@@ -1154,23 +1153,6 @@ void ViewTransition::NotifyInvokeDOMChangeCallback() {
 
 bool ViewTransition::PendingDomCallback() {
   return pending_dom_callback_;
-}
-
-void ViewTransition::RecalcTransitionPseudoTreeStyle() const {
-  Element* scope = Scope();
-  if (!scope) {
-    scope = document_->documentElement();
-  }
-  if (!scope || !scope->InActiveDocument()) {
-    return;
-  }
-
-  if (style_tracker_) {
-    scope->RecalcTransitionPseudoTreeStyle(
-        style_tracker_->GetViewTransitionNames());
-  } else {
-    scope->RecalcTransitionPseudoTreeStyle({});
-  }
 }
 
 void ViewTransition::RebuildTransitionPseudoLayoutTree() const {

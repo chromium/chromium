@@ -1099,7 +1099,7 @@ ViewTransitionStyleTracker::GetViewTransitionClassList(
   return element_data_map_.at(name)->class_list;
 }
 
-AtomicString ViewTransitionStyleTracker::GetContainingGroupName(
+const AtomicString& ViewTransitionStyleTracker::GetContainingGroupName(
     const AtomicString& name) const {
   if (!RuntimeEnabledFeatures::NestedViewTransitionEnabled() ||
       state_ != State::kStarted) {
@@ -2137,18 +2137,14 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
 void ViewTransitionStyleTracker::InvalidatePseudoStyle() {
   ua_style_sheet_ = nullptr;
 
-  auto* originating_element = OriginatingElement();
-  if (!originating_element) {
-    return;
+  if (Element* originating_element = OriginatingElement()) {
+    if (PseudoElement* pseudo_element =
+            originating_element->GetPseudoElement(kPseudoIdViewTransition)) {
+      pseudo_element->SetNeedsStyleRecalc(
+          kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kViewTransition));
+    }
   }
-
-  auto invalidate_style = [](PseudoElement* pseudo_element) {
-    pseudo_element->SetNeedsStyleRecalc(
-        kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kViewTransition));
-  };
-  ViewTransitionUtils::ForEachTransitionPseudo(*originating_element,
-                                               invalidate_style);
 }
 
 void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {

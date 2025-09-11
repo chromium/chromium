@@ -15,7 +15,7 @@ void ViewTransitionTransitionElement::LogSubtree(PseudoElement* node,
   if (!node) {
     return;
   }
-  LOG(INFO) << std::string(indent, ' ') << node->DebugName();
+  VLOG(2) << std::string(indent, ' ') << node->DebugName();
   LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionImagePair,
                                     node->view_transition_name()),
              indent + 2);

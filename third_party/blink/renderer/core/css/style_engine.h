@@ -922,7 +922,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               const StyleRecalcChange,
                                               const StyleRecalcContext&);
 
-  void RecalcTransitionPseudoStyle();
   void RebuildTransitionPseudoLayoutTrees();
 
   // We may need to update whitespaces in the layout tree after a flat tree

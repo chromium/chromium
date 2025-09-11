@@ -3943,19 +3943,6 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }
 
-void StyleEngine::RecalcTransitionPseudoStyle() {
-  // TODO(khushalsagar) : This forces a style recalc and layout tree rebuild
-  // for the pseudo-element tree each time we do a style recalc phase. See if
-  // we can optimize this to only when the pseudo-element tree is dirtied.
-  SelectorFilterParentScope filter_scope(
-      nullptr, SelectorFilterParentScope::ScopeType::kRoot);
-
-  ViewTransitionUtils::ForEachTransition(
-      *document_, [&](ViewTransition& transition) {
-        transition.RecalcTransitionPseudoTreeStyle();
-      });
-}
-
 void StyleEngine::RebuildTransitionPseudoLayoutTrees() {
   ViewTransitionUtils::ForEachTransition(
       *document_, [&](ViewTransition& transition) {
@@ -3966,33 +3953,6 @@ void StyleEngine::RebuildTransitionPseudoLayoutTrees() {
 void StyleEngine::RecalcStyle() {
   RecalcStyle(
       {}, StyleRecalcContext::FromAncestors(style_recalc_root_.RootElement()));
-  ViewTransition* transition = ViewTransitionUtils::GetTransition(*document_);
-  if (transition && !transition->IsCreatedViaScriptAPI()) {
-    // MPA transitions require a separate style update pass for view
-    // transitions.
-    // TODO(crbug.com/442622988): Determine if we need to keep this restriction.
-    // Ideally, this is not a fundamental blocker to streamlining the style
-    // update process.
-    RecalcTransitionPseudoStyle();
-  } else {
-    // SPA transitions and scoped view-transitions are updated as part of the
-    // regular style update process. This sanity check ensures that no dirty
-    // style bits remain after the update process.
-#if EXPENSIVE_DCHECKS_ARE_ON()
-    ViewTransitionUtils::ForEachTransition(
-        *document_, [&](ViewTransition& transition) {
-          auto validate_style = [](PseudoElement* pseudo_element) {
-            DCHECK(!pseudo_element->NeedsStyleRecalc())
-                << *pseudo_element << " is dirty after RecalcStyle()";
-          };
-          Element* scope = transition.Scope();
-          if (!scope) {
-            return;
-          }
-          ViewTransitionUtils::ForEachTransitionPseudo(*scope, validate_style);
-        });
-#endif
-  }
 }
 
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
