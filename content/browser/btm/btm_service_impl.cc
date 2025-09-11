@@ -575,8 +575,7 @@ void BtmServiceImpl::RecordBounce(
   }
 
   // Record the bounce at the storage layer.
-  storage_.AsyncCall(&BtmStorage::RecordBounce)
-      .WithArgs(url, redirect.time, stateful);
+  storage_.AsyncCall(&BtmStorage::RecordBounce).WithArgs(url, redirect.time);
 }
 
 // static

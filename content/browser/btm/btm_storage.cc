@@ -45,9 +45,7 @@ BtmState BtmStorage::ReadSite(std::string site) {
 
   if (state.has_value()) {
     // We should not have entries in the DB without any timestamps.
-    DCHECK(state->site_storage_times.has_value() ||
-           state->user_activation_times.has_value() ||
-           state->stateful_bounce_times.has_value() ||
+    DCHECK(state->user_activation_times.has_value() ||
            state->bounce_times.has_value() ||
            state->web_authn_assertion_times.has_value());
 
@@ -60,9 +58,8 @@ void BtmStorage::Write(const BtmState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  db_->Write(state.site(), state.site_storage_times(),
-             state.user_activation_times(), state.stateful_bounce_times(),
-             state.bounce_times(), state.web_authn_assertion_times());
+  db_->Write(state.site(), state.user_activation_times(), state.bounce_times(),
+             state.web_authn_assertion_times());
 }
 
 std::optional<PopupsStateValue> BtmStorage::ReadPopup(
@@ -155,14 +152,6 @@ void BtmStorage::RemoveRowsWithoutProtectiveEvent(
 
 // BtmTabHelper Function Impls ------------------------------------------------
 
-void BtmStorage::RecordStorage(const GURL& url, base::Time time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-
-  BtmState state = Read(url);
-  state.update_site_storage_time(time);
-}
-
 void BtmStorage::RecordUserActivation(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -179,14 +168,11 @@ void BtmStorage::RecordWebAuthnAssertion(const GURL& url, base::Time time) {
   state.update_web_authn_assertion_time(time);
 }
 
-void BtmStorage::RecordBounce(const GURL& url, base::Time time, bool stateful) {
+void BtmStorage::RecordBounce(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   BtmState state = Read(url);
   state.update_bounce_time(time);
-  if (stateful) {
-    state.update_stateful_bounce_time(time);
-  }
 }
 
 std::pair<std::set<std::string>, std::set<std::string>>

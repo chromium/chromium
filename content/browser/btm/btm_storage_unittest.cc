@@ -63,11 +63,8 @@ TEST(BtmGetSitesToClearTest, FiltersByTriggerParam) {
   TimestampRange event({base::Time::FromSecondsSinceUnixEpoch(1),
                         base::Time::FromSecondsSinceUnixEpoch(1)});
   storage.WriteForTesting(kBounceUrl, StateValue{.bounce_times = event});
-  storage.WriteForTesting(kStorageUrl, StateValue{.site_storage_times = event});
   storage.WriteForTesting(kStatefulBounceUrl,
-                          StateValue{.site_storage_times = event,
-                                     .stateful_bounce_times = event,
-                                     .bounce_times = event});
+                          StateValue{.bounce_times = event});
   // Call 'GetSitesToClear' when the trigger is unset.
   {
     base::test::ScopedFeatureList features;
@@ -102,13 +99,8 @@ TEST(BtmGetSitesToClearTest, CustomGracePeriod) {
   TimestampRange event({start, start});
   TimestampRange late_event({late_trigger, late_trigger});
 
-  storage.WriteForTesting(kUrl, StateValue{.site_storage_times = event,
-                                           .stateful_bounce_times = event,
-                                           .bounce_times = event});
-  storage.WriteForTesting(kLateUrl,
-                          StateValue{.site_storage_times = late_event,
-                                     .stateful_bounce_times = late_event,
-                                     .bounce_times = late_event});
+  storage.WriteForTesting(kUrl, StateValue{.bounce_times = event});
+  storage.WriteForTesting(kLateUrl, StateValue{.bounce_times = late_event});
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
@@ -141,11 +133,8 @@ TEST(BtmGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
 
   TimestampRange event({start, start});
   storage.WriteForTesting(kBounceUrl, StateValue{.bounce_times = event});
-  storage.WriteForTesting(kStorageUrl, StateValue{.site_storage_times = event});
   storage.WriteForTesting(kStatefulBounceUrl,
-                          StateValue{.site_storage_times = event,
-                                     .stateful_bounce_times = event,
-                                     .bounce_times = event});
+                          StateValue{.bounce_times = event});
 
   // Call 'GetSitesToClear' with a custom grace period when the trigger is
   // unset.
@@ -241,34 +230,29 @@ TEST(BtmUtilsTest, GetSiteForBtm) {
 TEST_F(BtmStorageTest, NewURL) {
   BtmState state = storage_.Read(GURL("http://example.com/"));
   EXPECT_FALSE(state.was_loaded());
-  EXPECT_FALSE(state.site_storage_times().has_value());
   EXPECT_FALSE(state.user_activation_times().has_value());
   EXPECT_FALSE(state.web_authn_assertion_times().has_value());
 }
 
 TEST_F(BtmStorageTest, SetValues) {
   GURL url("https://example.com");
-  auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
   auto time2 = base::Time::FromSecondsSinceUnixEpoch(2);
   auto time3 = base::Time::FromSecondsSinceUnixEpoch(3);
 
   {
     BtmState state = storage_.Read(url);
-    state.update_site_storage_time(time1);
     state.update_user_activation_time(time2);
     state.update_web_authn_assertion_time(time3);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
     BtmState state2 = storage_.Read(url);
-    EXPECT_FALSE(state2.site_storage_times().has_value());
     EXPECT_FALSE(state2.user_activation_times().has_value());
     EXPECT_FALSE(state2.web_authn_assertion_times().has_value());
   }
 
   BtmState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
-  EXPECT_EQ(state.site_storage_times()->first, std::make_optional(time1));
   EXPECT_EQ(state.user_activation_times()->first, std::make_optional(time2));
   EXPECT_EQ(state.web_authn_assertion_times()->first,
             std::make_optional(time3));
@@ -281,11 +265,11 @@ TEST_F(BtmStorageTest, SameSiteSameState) {
   GURL url2("http://subdomain2.example.com");
   auto time = base::Time::FromSecondsSinceUnixEpoch(1);
 
-  storage_.Read(url1).update_site_storage_time(time);
+  storage_.Read(url1).update_bounce_time(time);
 
   BtmState state = storage_.Read(url2);
   // State was recorded for url1, but can be read for url2.
-  EXPECT_EQ(time, state.site_storage_times()->first);
+  EXPECT_EQ(time, state.bounce_times()->first);
   EXPECT_FALSE(state.user_activation_times().has_value());
 }
 
@@ -295,13 +279,13 @@ TEST_F(BtmStorageTest, DifferentSiteDifferentState) {
   auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
   auto time2 = base::Time::FromSecondsSinceUnixEpoch(2);
 
-  storage_.Read(url1).update_site_storage_time(time1);
-  storage_.Read(url2).update_site_storage_time(time2);
+  storage_.Read(url1).update_user_activation_time(time1);
+  storage_.Read(url2).update_user_activation_time(time2);
 
   // Verify that url1 and url2 have independent state:
-  EXPECT_EQ(storage_.Read(url1).site_storage_times()->first,
+  EXPECT_EQ(storage_.Read(url1).user_activation_times()->first,
             std::make_optional(time1));
-  EXPECT_EQ(storage_.Read(url2).site_storage_times()->first,
+  EXPECT_EQ(storage_.Read(url2).user_activation_times()->first,
             std::make_optional(time2));
 }
 
@@ -317,8 +301,7 @@ TEST_F(BtmStorageTest, RemoveByTime_WebAuthnAssertion) {
 
   {
     const GURL url(base::StringPrintf("https://case%d.test", ++i));
-    storage_.WriteForTesting(
-        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end)});
+    storage_.WriteForTesting(url, {{}, {}, ToRange(delete_begin, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                           BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
@@ -327,7 +310,7 @@ TEST_F(BtmStorageTest, RemoveByTime_WebAuthnAssertion) {
   {
     const GURL url(base::StringPrintf("https://case%d.test", ++i));
     storage_.WriteForTesting(
-        url, {{}, {}, {}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
+        url, {{}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                           BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
@@ -336,7 +319,7 @@ TEST_F(BtmStorageTest, RemoveByTime_WebAuthnAssertion) {
   {
     const GURL url(base::StringPrintf("https://case%d.test", ++i));
     storage_.WriteForTesting(
-        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
+        url, {{}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                           BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
@@ -413,24 +396,23 @@ TEST_F(BtmStorageTest, RemoveByTimeWithNullRangeEndTime) {
 
   storage_.WriteForTesting(
       url1,
-      {/*site_storage_times= */ {{base::Time::FromSecondsSinceUnixEpoch(1),
-                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
-       /*user_activation_times= */ {
-           {base::Time::FromSecondsSinceUnixEpoch(5),
-            base::Time::FromSecondsSinceUnixEpoch(8)}}});
-  storage_.WriteForTesting(url2,
-                           {/*site_storage_times= */ TimestampRange(),
-                            /*user_activation_times= */ {
-                                {base::Time::FromSecondsSinceUnixEpoch(3),
-                                 base::Time::FromSecondsSinceUnixEpoch(5)}}});
+      {/*user_activation_times= */ {{base::Time::FromSecondsSinceUnixEpoch(5),
+                                     base::Time::FromSecondsSinceUnixEpoch(8)}},
+       /*bounce_times=*/{{base::Time::FromSecondsSinceUnixEpoch(1),
+                          base::Time::FromSecondsSinceUnixEpoch(3)}}});
+  storage_.WriteForTesting(
+      url2,
+      {/*user_activation_times= */ {{base::Time::FromSecondsSinceUnixEpoch(3),
+                                     base::Time::FromSecondsSinceUnixEpoch(5)}},
+       /*bounce_times=*/TimestampRange()});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kAll);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times()->first,
+  EXPECT_EQ(state1.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state1.site_storage_times()->second,
+  EXPECT_EQ(state1.bounce_times()->second,
             std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_activation_times(),
             std::nullopt);  // removed
@@ -447,21 +429,20 @@ TEST_F(BtmStorageTest, RemoveByTimeWithNullRangeBeginTime) {
 
   storage_.WriteForTesting(
       url1,
-      {/*site_storage_times= */ {{base::Time::FromSecondsSinceUnixEpoch(1),
-                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
-       /*user_activation_times= */ {
-           {base::Time::FromSecondsSinceUnixEpoch(5),
-            base::Time::FromSecondsSinceUnixEpoch(8)}}});
-  storage_.WriteForTesting(url2,
-                           {/*site_storage_times= */ TimestampRange(),
-                            /*user_activation_times= */ {
-                                {base::Time::FromSecondsSinceUnixEpoch(3),
-                                 base::Time::FromSecondsSinceUnixEpoch(5)}}});
+      {/*user_activation_times= */ {{base::Time::FromSecondsSinceUnixEpoch(5),
+                                     base::Time::FromSecondsSinceUnixEpoch(8)}},
+       /*bounce_times=*/{{base::Time::FromSecondsSinceUnixEpoch(1),
+                          base::Time::FromSecondsSinceUnixEpoch(3)}}});
+  storage_.WriteForTesting(
+      url2,
+      {/*user_activation_times= */ {{base::Time::FromSecondsSinceUnixEpoch(3),
+                                     base::Time::FromSecondsSinceUnixEpoch(5)}},
+       /*bounce_times=*/TimestampRange()});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kAll);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times(), std::nullopt);  // removed
+  EXPECT_EQ(state1.bounce_times(), std::nullopt);  // removed
   EXPECT_EQ(state1.user_activation_times()->first,
             std::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_activation_times()->second,
@@ -478,23 +459,22 @@ TEST_F(BtmStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(5),
-                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
-  storage_.WriteForTesting(url2,
-                           {TimestampRange(),
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
+  storage_.WriteForTesting(
+      url1, {{{base::Time::FromSecondsSinceUnixEpoch(5),
+               base::Time::FromSecondsSinceUnixEpoch(8)}},
+             /*bounce_times=*/{{base::Time::FromSecondsSinceUnixEpoch(1),
+                                base::Time::FromSecondsSinceUnixEpoch(3)}}});
+  storage_.WriteForTesting(url2, {{{base::Time::FromSecondsSinceUnixEpoch(3),
+                                    base::Time::FromSecondsSinceUnixEpoch(5)}},
+                                  /*bounce_times=*/TimestampRange()});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kAll);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times()->first,
+  EXPECT_EQ(state1.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state1.site_storage_times()->second,
+  EXPECT_EQ(state1.bounce_times()->second,
             std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_activation_times()->first,
             std::make_optional(delete_end));  // adjusted
@@ -512,19 +492,19 @@ TEST_F(BtmStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
 
-  storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(5),
-                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(
+      url1, {{{base::Time::FromSecondsSinceUnixEpoch(5),
+               base::Time::FromSecondsSinceUnixEpoch(8)}},
+             /*bounce_times=*/{{base::Time::FromSecondsSinceUnixEpoch(1),
+                                base::Time::FromSecondsSinceUnixEpoch(3)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kAll);
 
   BtmState state = storage_.Read(url1);
-  EXPECT_EQ(state.site_storage_times()->first,
+  EXPECT_EQ(state.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state.site_storage_times()->second,
+  EXPECT_EQ(state.bounce_times()->second,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state.user_activation_times()->first,
@@ -535,69 +515,28 @@ TEST_F(BtmStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 }
 
-TEST_F(BtmStorageTest, RemoveByTimeStorageOnly) {
-  GURL url1("https://example1.com");
-  GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
-  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
-
-  storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(5),
-                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
-  storage_.WriteForTesting(url2,
-                           {TimestampRange(),
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
-  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        BtmEventRemovalType::kStorage);
-
-  BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state1.site_storage_times()->second,
-            std::make_optional(delete_begin));  // adjusted
-  EXPECT_EQ(state1.user_activation_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
-  EXPECT_EQ(state1.user_activation_times()->second,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
-
-  BtmState state2 = storage_.Read(url2);
-  EXPECT_EQ(state2.user_activation_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
-  EXPECT_EQ(state2.user_activation_times()->second,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
-}
-
 TEST_F(BtmStorageTest, RemoveByTimeInteractionOnly) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(5),
-                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
-  storage_.WriteForTesting(url2,
-                           {TimestampRange(),
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
+  storage_.WriteForTesting(
+      url1, {{{base::Time::FromSecondsSinceUnixEpoch(5),
+               base::Time::FromSecondsSinceUnixEpoch(8)}},
+             /*bounce_times=*/{{base::Time::FromSecondsSinceUnixEpoch(1),
+                                base::Time::FromSecondsSinceUnixEpoch(3)}}});
+  storage_.WriteForTesting(url2, {{{base::Time::FromSecondsSinceUnixEpoch(3),
+                                    base::Time::FromSecondsSinceUnixEpoch(5)}},
+                                  /*bounce_times=*/TimestampRange()});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kHistory);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times()->first,
+  EXPECT_EQ(state1.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state1.site_storage_times()->second,
+  EXPECT_EQ(state1.bounce_times()->second,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.user_activation_times()->first,
@@ -662,32 +601,21 @@ TEST_F(BtmStorageTest, RemoveByTimeBounces) {
 
   storage_.WriteForTesting(url1,
                            {TimestampRange(),
-                            TimestampRange(),
                             {{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+                              base::Time::FromSecondsSinceUnixEpoch(3)}}});
   storage_.WriteForTesting(url2,
                            {TimestampRange(),
-                            TimestampRange(),
-                            TimestampRange(),
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         BtmEventRemovalType::kStorage);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.stateful_bounce_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
-  EXPECT_EQ(state1.stateful_bounce_times()->second,
-            std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.bounce_times()->second,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
+            std::make_optional(delete_begin));  // adjusted
 
   BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -700,37 +628,22 @@ TEST_F(BtmStorageTest, RemoveBySite) {
   GURL url4("https://example4.com");
 
   storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(1)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                           {{{base::Time::FromSecondsSinceUnixEpoch(2),
                               base::Time::FromSecondsSinceUnixEpoch(2)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
   storage_.WriteForTesting(url2,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(1)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                           {{{base::Time::FromSecondsSinceUnixEpoch(2),
                               base::Time::FromSecondsSinceUnixEpoch(2)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
   storage_.WriteForTesting(url3,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(2)}},
-                            TimestampRange(),
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(4)}},
+                           {TimestampRange(),
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
   storage_.WriteForTesting(url4,
-                           {TimestampRange(),
-                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                           {{{base::Time::FromSecondsSinceUnixEpoch(2),
                               base::Time::FromSecondsSinceUnixEpoch(2)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
@@ -744,23 +657,15 @@ TEST_F(BtmStorageTest, RemoveBySite) {
                         BtmEventRemovalType::kStorage);
 
   BtmState state1 = storage_.Read(url1);
-  EXPECT_FALSE(state1.site_storage_times().has_value());  // removed
   EXPECT_EQ(state1.user_activation_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
-  EXPECT_FALSE(state1.stateful_bounce_times().has_value());  // removed
   EXPECT_FALSE(state1.bounce_times().has_value());           // removed
 
   BtmState state2 = storage_.Read(url2);
-  EXPECT_EQ(state2.site_storage_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state2.user_activation_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
-  EXPECT_EQ(state2.stateful_bounce_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state2.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
@@ -769,13 +674,9 @@ TEST_F(BtmStorageTest, RemoveBySite) {
   EXPECT_FALSE(state3.was_loaded());  // removed
 
   BtmState state4 = storage_.Read(url2);
-  EXPECT_FALSE(state1.site_storage_times().has_value());  // no change
   EXPECT_EQ(state4.user_activation_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
-  EXPECT_EQ(state4.stateful_bounce_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state4.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
@@ -787,12 +688,8 @@ TEST_F(BtmStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
   storage_.WriteForTesting(url1,
-                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                              base::Time::FromSecondsSinceUnixEpoch(1)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                           {{{base::Time::FromSecondsSinceUnixEpoch(2),
                               base::Time::FromSecondsSinceUnixEpoch(2)}},
-                            {{base::Time::FromSecondsSinceUnixEpoch(3),
-                              base::Time::FromSecondsSinceUnixEpoch(3)}},
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
@@ -808,15 +705,9 @@ TEST_F(BtmStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   // (other than base::Time() to base::Time::Max()), is currently unsupported.
   // So url1's `BtmState` entry should be unaffected.
   BtmState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.user_activation_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
-  EXPECT_EQ(state1.stateful_bounce_times()->first,
-            std::make_optional(
-                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
@@ -828,12 +719,8 @@ TEST_F(BtmStorageTest, RemoveRows) {
   ASSERT_TRUE(url1.is_valid());
   ASSERT_TRUE(url2.is_valid());
 
-  StateValue test_value = {{{base::Time::FromSecondsSinceUnixEpoch(1),
-                             base::Time::FromSecondsSinceUnixEpoch(1)}},
-                           {{base::Time::FromSecondsSinceUnixEpoch(2),
+  StateValue test_value = {{{base::Time::FromSecondsSinceUnixEpoch(2),
                              base::Time::FromSecondsSinceUnixEpoch(2)}},
-                           {{base::Time::FromSecondsSinceUnixEpoch(3),
-                             base::Time::FromSecondsSinceUnixEpoch(3)}},
                            {{base::Time::FromSecondsSinceUnixEpoch(3),
                              base::Time::FromSecondsSinceUnixEpoch(4)}}};
 
@@ -858,12 +745,8 @@ TEST_F(BtmStorageTest, DidSiteHaveUserActivationSince) {
   storage_.WriteForTesting(
       url1,
       StateValue{
-          .site_storage_times{{base::Time::FromSecondsSinceUnixEpoch(1),
-                               base::Time::FromSecondsSinceUnixEpoch(1)}},
           .user_activation_times{{base::Time::FromSecondsSinceUnixEpoch(2),
                                   base::Time::FromSecondsSinceUnixEpoch(2)}},
-          .stateful_bounce_times{{base::Time::FromSecondsSinceUnixEpoch(3),
-                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
           .bounce_times{{base::Time::FromSecondsSinceUnixEpoch(3),
                          base::Time::FromSecondsSinceUnixEpoch(4)}}});
 

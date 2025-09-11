@@ -42,10 +42,6 @@ class Clock;
 class TickClock;
 }  // namespace base
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 class WebContents;
@@ -220,9 +216,6 @@ class CONTENT_EXPORT BtmBounceDetectorDelegate {
                                    BtmRedirectChainInfoPtr chain) = 0;
   // Report `sites` as redirectors to the inspector (e.g., DevTools).
   virtual void ReportRedirectors(std::set<std::string> sites) = 0;
-  virtual void OnSiteStorageAccessed(const GURL& first_party_url,
-                                     CookieOperation op,
-                                     bool http_cookie) = 0;
   virtual bool Are3PcsGenerallyEnabled() const = 0;
 };
 
@@ -430,12 +423,6 @@ class CONTENT_EXPORT RedirectChainDetector
     // chain, omitting the initial and final sites.
     // TODO(rtarpine) - replace with more general purpose method
     virtual void ReportRedirectors(const std::set<std::string>& sites) {}
-    // Called when most types of storage are accessed (including cookies,
-    // the Web Storage API, IndexedDB, etc). Does not report 3PCs, and
-    // attributes partitioned storage to the top-level URL.
-    virtual void OnSiteStorageAccessed(const GURL& first_party_url,
-                                       CookieOperation op,
-                                       bool http_cookie) {}
   };
 
   void AddObserver(Observer* observer);
@@ -467,9 +454,6 @@ class CONTENT_EXPORT RedirectChainDetector
   void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
                            BtmRedirectChainInfoPtr chain) override;
   void ReportRedirectors(std::set<std::string> sites) override;
-  void OnSiteStorageAccessed(const GURL& first_party_url,
-                             CookieOperation op,
-                             bool http_cookie) override;
   bool Are3PcsGenerallyEnabled() const override;
   // End BtmBounceDetectorDelegate overrides.
 
@@ -512,8 +496,6 @@ class CONTENT_EXPORT RedirectChainDetector
 class CONTENT_EXPORT BtmWebContentsObserver
     : public WebContentsObserver,
       public WebContentsUserData<BtmWebContentsObserver>,
-      public SharedWorkerService::Observer,
-      public DedicatedWorkerService::Observer,
       public RedirectChainDetector::Observer {
  public:
   static void MaybeCreateForWebContents(WebContents* web_contents);
@@ -554,51 +536,15 @@ class CONTENT_EXPORT BtmWebContentsObserver
   void ReportRedirectors(const std::set<std::string>& sites) override;
   void OnRedirectChainEnded(const std::vector<BtmRedirectInfoPtr>& redirects,
                             const BtmRedirectChainInfo& chain) override;
-  void OnSiteStorageAccessed(const GURL& first_party_url,
-                             CookieOperation op,
-                             bool http_cookie) override;
   // End RedirectChainDetector::Observer overrides.
 
   // Start WebContentsObserver overrides:
   void PrimaryPageChanged(Page& page) override;
-  void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
-                               const GURL& scope,
-                               AllowServiceWorkerResult allowed) override;
-  void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
-                               const GURL& scope,
-                               AllowServiceWorkerResult allowed) override;
   void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
       RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
-
-  // Start SharedWorkerService.Observer overrides:
-  void OnClientAdded(const blink::SharedWorkerToken& token,
-                     GlobalRenderFrameHostId render_frame_host_id) override;
-  void OnWorkerCreated(const blink::SharedWorkerToken& token,
-                       int worker_process_id,
-                       const url::Origin& security_origin,
-                       const base::UnguessableToken& dev_tools_token) override {
-  }
-  void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
-  }
-  void OnClientRemoved(const blink::SharedWorkerToken& token,
-                       GlobalRenderFrameHostId render_frame_host_id) override {}
-  using SharedWorkerService::Observer::OnFinalResponseURLDetermined;
-  // End SharedWorkerService.Observer overrides.
-
-  // Start DedicatedWorkerService.Observer overrides:
-  void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
-                       int worker_process_id,
-                       const url::Origin& security_origin,
-                       DedicatedWorkerCreator creator) override;
-  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
-                               DedicatedWorkerCreator creator) override {}
-  void OnFinalResponseURLDetermined(
-      const blink::DedicatedWorkerToken& worker_token,
-      const GURL& url) override {}
-  // End DedicatedWorkerService.Observer overrides.
 
   raw_ptr<RedirectChainDetector> detector_;
   // raw_ptr<> is safe here because BtmServiceImpl is a KeyedService,

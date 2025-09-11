@@ -2102,11 +2102,11 @@ class RemoveBtmEventsTester {
   }
 
   void WriteEventTimes(GURL url,
-                       std::optional<base::Time> storage_time,
+                       std::optional<base::Time> bounce_time,
                        std::optional<base::Time> interaction_time) {
-    if (storage_time.has_value()) {
-      storage_->AsyncCall(&BtmStorage::RecordStorage)
-          .WithArgs(url, storage_time.value());
+    if (bounce_time.has_value()) {
+      storage_->AsyncCall(&BtmStorage::RecordBounce)
+          .WithArgs(url, bounce_time.value());
     }
     if (interaction_time.has_value()) {
       storage_->AsyncCall(&BtmStorage::RecordUserActivation)
@@ -2145,9 +2145,11 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsForLastHour) {
   GURL url2("https://example2.com");
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
-  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
+  tester.WriteEventTimes(url1,
+                         /*bounce_time=*/base::Time::Now(),
                          /*interaction_time=*/std::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
+  tester.WriteEventTimes(url2,
+                         /*bounce_time=*/std::nullopt,
                          /*interaction_time=*/two_hours_ago);
 
   {
@@ -2155,7 +2157,7 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsForLastHour) {
     std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+    EXPECT_TRUE(state_val1->bounce_times.has_value());
     ASSERT_TRUE(state_val2.has_value());
     EXPECT_TRUE(state_val2->user_activation_times.has_value());
   }
@@ -2194,11 +2196,11 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
   GURL url3("https://example3.com");
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
-  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
+  tester.WriteEventTimes(url1, /*bounce_time=*/base::Time::Now(),
                          /*interaction_time=*/std::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
+  tester.WriteEventTimes(url2, /*bounce_time=*/std::nullopt,
                          /*interaction_time=*/base::Time::Now());
-  tester.WriteEventTimes(url3, /*storage_time=*/base::Time::Now(),
+  tester.WriteEventTimes(url3, /*bounce_time=*/base::Time::Now(),
                          /*interaction_time=*/two_hours_ago);
 
   {
@@ -2207,14 +2209,14 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
     std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+    EXPECT_TRUE(state_val1->bounce_times.has_value());
 
     ASSERT_TRUE(state_val2.has_value());
     EXPECT_TRUE(state_val2->user_activation_times.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.has_value());
     EXPECT_TRUE(state_val3->user_activation_times.has_value());
+    EXPECT_TRUE(state_val3->bounce_times.has_value());
   }
 
   // Remove interaction events from DIPS Storage.
@@ -2229,12 +2231,12 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
     std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+    EXPECT_TRUE(state_val1->bounce_times.has_value());
 
     EXPECT_FALSE(state_val2.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_activation_times.has_value());
     EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
 
@@ -2254,7 +2256,7 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
     EXPECT_FALSE(state_val2.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_FALSE(state_val3->site_storage_times.has_value());
+    EXPECT_FALSE(state_val3->bounce_times.has_value());
     EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
 }

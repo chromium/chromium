@@ -65,6 +65,11 @@ bool MigrateBtmSchemaToLatestVersion(sql::Database& db,
           return false;
         }
         break;
+      case 10:
+        if (!migrator.MigrateSchemaVersionFrom9To10()) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -331,6 +336,43 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom8To9() {
   return meta_table_->SetVersionNumber(9) &&
          meta_table_->SetCompatibleVersionNumber(
              std::min(9, BtmDatabase::kMinCompatibleSchemaVersion));
+}
+
+bool BtmDatabaseMigrator::MigrateSchemaVersionFrom9To10() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  static constexpr char kDropFirstSiteStorageTimeColumnSql[] =
+      "ALTER TABLE bounces DROP COLUMN first_site_storage_time";
+  DCHECK(db_->IsSQLValid(kDropFirstSiteStorageTimeColumnSql));
+  if (!db_->Execute(kDropFirstSiteStorageTimeColumnSql)) {
+    return false;
+  }
+
+  static constexpr char kDropLastSiteStorageTimeColumnSql[] =
+      "ALTER TABLE bounces DROP COLUMN last_site_storage_time";
+  DCHECK(db_->IsSQLValid(kDropLastSiteStorageTimeColumnSql));
+  if (!db_->Execute(kDropLastSiteStorageTimeColumnSql)) {
+    return false;
+  }
+
+  static constexpr char kDropFirstStatefulBounceTimeColumnSql[] =
+      "ALTER TABLE bounces DROP COLUMN first_stateful_bounce_time";
+  DCHECK(db_->IsSQLValid(kDropFirstStatefulBounceTimeColumnSql));
+  if (!db_->Execute(kDropFirstStatefulBounceTimeColumnSql)) {
+    return false;
+  }
+
+  static constexpr char kDropLastStatefulBounceTimeColumnSql[] =
+      "ALTER TABLE bounces DROP COLUMN last_stateful_bounce_time";
+  DCHECK(db_->IsSQLValid(kDropLastStatefulBounceTimeColumnSql));
+  if (!db_->Execute(kDropLastStatefulBounceTimeColumnSql)) {
+    return false;
+  }
+
+  return meta_table_->SetVersionNumber(10) &&
+         meta_table_->SetCompatibleVersionNumber(
+             std::min(10, BtmDatabase::kMinCompatibleSchemaVersion));
 }
 
 }  // namespace content

@@ -183,12 +183,8 @@ bool BtmDatabase::InitTables() {
   static constexpr char kBouncesSql[] =  // clang-format off
     "CREATE TABLE bounces("
       "site TEXT PRIMARY KEY NOT NULL,"
-      "first_site_storage_time INTEGER,"
-      "last_site_storage_time INTEGER,"
       "first_user_activation_time INTEGER,"
       "last_user_activation_time INTEGER,"
-      "first_stateful_bounce_time INTEGER,"
-      "last_stateful_bounce_time INTEGER,"
       "first_bounce_time INTEGER,"
       "last_bounce_time INTEGER,"
       "first_web_authn_assertion_time INTEGER,"
@@ -343,14 +339,10 @@ bool BtmDatabase::ExecuteSqlForTesting(const base::cstring_view sql) {
 }
 
 bool BtmDatabase::Write(const std::string& site,
-                        const TimestampRange& storage_times,
                         const TimestampRange& user_activation_times,
-                        const TimestampRange& stateful_bounce_times,
                         const TimestampRange& bounce_times,
                         const TimestampRange& web_authn_assertion_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(
-      IsNullOrWithin(/*inner=*/stateful_bounce_times, /*outer=*/bounce_times));
   if (!CheckDBInit()) {
     return false;
   }
@@ -364,17 +356,13 @@ bool BtmDatabase::Write(const std::string& site,
   static constexpr char kWriteSql[] =  // clang-format off
     "INSERT OR REPLACE INTO bounces("
       "site,"
-      "first_site_storage_time,"
-      "last_site_storage_time,"
       "first_user_activation_time,"
       "last_user_activation_time,"
-      "first_stateful_bounce_time,"
-      "last_stateful_bounce_time,"
       "first_bounce_time,"
       "last_bounce_time,"
       "first_web_authn_assertion_time,"
       "last_web_authn_assertion_time"
-    ") VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+    ") VALUES(?,?,?,?,?,?,?)";
   // clang-format on
   DCHECK(db_->IsSQLValid(kWriteSql));
 
@@ -382,11 +370,9 @@ bool BtmDatabase::Write(const std::string& site,
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kWriteSql));
   statement.BindString(0, site);
-  BindTimesOrNull(statement, storage_times, 1, 2);
-  BindTimesOrNull(statement, user_activation_times, 3, 4);
-  BindTimesOrNull(statement, stateful_bounce_times, 5, 6);
-  BindTimesOrNull(statement, bounce_times, 7, 8);
-  BindTimesOrNull(statement, web_authn_assertion_times, 9, 10);
+  BindTimesOrNull(statement, user_activation_times, 1, 2);
+  BindTimesOrNull(statement, bounce_times, 3, 4);
+  BindTimesOrNull(statement, web_authn_assertion_times, 5, 6);
 
   if (!statement.Run()) {
     return false;
@@ -442,12 +428,8 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   static constexpr char kReadSql[] = R"SQL(
     SELECT
       site,
-      first_site_storage_time,
-      last_site_storage_time,
       first_user_activation_time,
       last_user_activation_time,
-      first_stateful_bounce_time,
-      last_stateful_bounce_time,
       first_bounce_time,
       last_bounce_time,
       first_web_authn_assertion_time,
@@ -471,9 +453,9 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   }
 
   std::optional<base::Time> last_user_activation_time =
-      ColumnOptionalTime(statement, 4);
+      ColumnOptionalTime(statement, 2);
   std::optional<base::Time> last_web_authn_assertion_time =
-      ColumnOptionalTime(statement, 10);
+      ColumnOptionalTime(statement, 6);
   // If the last user activation and last web authn assertion have expired,
   // treat this entry as not in the database so that callers rewrite the entry
   // for `site` as if it were deleted.
@@ -485,31 +467,11 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   }
 
   std::vector<BtmErrorCode> errors;
-  TimestampRange site_storage_times = RangeFromColumns(statement, 1, 2, errors);
   TimestampRange user_activation_times =
-      RangeFromColumns(statement, 3, 4, errors);
-  TimestampRange stateful_bounce_times =
-      RangeFromColumns(statement, 5, 6, errors);
-  TimestampRange bounce_times = RangeFromColumns(statement, 7, 8, errors);
+      RangeFromColumns(statement, 1, 2, errors);
+  TimestampRange bounce_times = RangeFromColumns(statement, 3, 4, errors);
   TimestampRange web_authn_assertion_times =
-      RangeFromColumns(statement, 9, 10, errors);
-
-  // TODO(https://crbug.com/419808926): This no longer happens. Consider
-  // removing the check, logic, and database columns altogether.
-  if (!IsNullOrWithin(stateful_bounce_times, bounce_times)) {
-    DCHECK(stateful_bounce_times.has_value());
-    errors.push_back(
-        BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces);
-    if (!bounce_times.has_value()) {
-      bounce_times = stateful_bounce_times;
-    } else {
-      base::Time start =
-          std::min(stateful_bounce_times->first, bounce_times->first);
-      base::Time end =
-          std::max(stateful_bounce_times->second, bounce_times->second);
-      bounce_times = {start, end};
-    }
-  }
+      RangeFromColumns(statement, 5, 6, errors);
 
   if (site.empty()) {
     errors.push_back(BtmErrorCode::kRead_EmptySite_InDb);
@@ -529,8 +491,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     return std::nullopt;
   }
 
-  return StateValue{site_storage_times, user_activation_times,
-                    stateful_bounce_times, bounce_times,
+  return StateValue{user_activation_times, bounce_times,
                     web_authn_assertion_times};
 }
 
@@ -977,42 +938,6 @@ bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
   }
 
   if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
-    static constexpr char kClearStorageSql[] =  // clang-format off
-        "UPDATE bounces SET "
-            "first_site_storage_time=NULL,"
-            "last_site_storage_time=NULL "
-            "WHERE first_site_storage_time>=? AND "
-                  "last_site_storage_time<=?";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kClearStorageSql));
-
-    sql::Statement s_clear_storage(
-        db_->GetCachedStatement(SQL_FROM_HERE, kClearStorageSql));
-    s_clear_storage.BindTime(0, delete_begin);
-    s_clear_storage.BindTime(1, delete_end);
-
-    if (!s_clear_storage.Run()) {
-      return false;
-    }
-
-    static constexpr char kClearStatefulSql[] =  // clang-format off
-        "UPDATE bounces SET "
-            "first_stateful_bounce_time=NULL,"
-            "last_stateful_bounce_time=NULL "
-            "WHERE first_stateful_bounce_time>=? AND "
-                  "last_stateful_bounce_time<=?";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kClearStatefulSql));
-
-    sql::Statement s_clear_stateful(
-        db_->GetCachedStatement(SQL_FROM_HERE, kClearStatefulSql));
-    s_clear_stateful.BindTime(0, delete_begin);
-    s_clear_stateful.BindTime(1, delete_end);
-
-    if (!s_clear_stateful.Run()) {
-      return false;
-    }
-
     static constexpr char kClearBounceSql[] =  // clang-format off
         "UPDATE bounces SET "
             "first_bounce_time=NULL,"
@@ -1089,38 +1014,6 @@ bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   }
 
   if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
-    static constexpr char kUpdateFirstStorageSql[] =  // clang-format off
-        "UPDATE bounces SET first_site_storage_time=?2 "
-            "WHERE first_site_storage_time>=?1 AND "
-                  "first_site_storage_time<?2";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateFirstStorageSql));
-
-    sql::Statement s_first_storage(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStorageSql));
-    s_first_storage.BindTime(0, delete_begin);
-    s_first_storage.BindTime(1, delete_end);
-
-    if (!s_first_storage.Run()) {
-      return false;
-    }
-
-    static constexpr char kUpdateFirstStatefulSql[] =  // clang-format off
-        "UPDATE bounces SET first_stateful_bounce_time=?2 "
-            "WHERE first_stateful_bounce_time>=?1 AND "
-                  "first_stateful_bounce_time<?2";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateFirstStatefulSql));
-
-    sql::Statement s_first_stateful(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStatefulSql));
-    s_first_stateful.BindTime(0, delete_begin);
-    s_first_stateful.BindTime(1, delete_end);
-
-    if (!s_first_stateful.Run()) {
-      return false;
-    }
-
     static constexpr char kUpdateFirstBounceSql[] =  // clang-format off
         "UPDATE bounces SET first_bounce_time=?2 "
             "WHERE first_bounce_time>=?1 AND "
@@ -1193,38 +1086,6 @@ bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   }
 
   if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
-    static constexpr char kUpdateLastStorageSql[] =  // clang-format off
-        "UPDATE bounces SET last_site_storage_time=?1 "
-            "WHERE last_site_storage_time>?1 AND "
-                  "last_site_storage_time<=?2";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateLastStorageSql));
-
-    sql::Statement s_last_storage(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastStorageSql));
-    s_last_storage.BindTime(0, delete_begin);
-    s_last_storage.BindTime(1, delete_end);
-
-    if (!s_last_storage.Run()) {
-      return false;
-    }
-
-    static constexpr char kUpdateLastStatefulSql[] =  // clang-format off
-        "UPDATE bounces SET last_stateful_bounce_time=?1 "
-            "WHERE last_stateful_bounce_time>?1 AND "
-                  "last_stateful_bounce_time<=?2";
-    // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateLastStatefulSql));
-
-    sql::Statement s_last_stateful(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastStatefulSql));
-    s_last_stateful.BindTime(0, delete_begin);
-    s_last_stateful.BindTime(1, delete_end);
-
-    if (!s_last_stateful.Run()) {
-      return false;
-    }
-
     static constexpr char kUpdateLastBounceSql[] =  // clang-format off
         "UPDATE bounces SET last_bounce_time=?1 "
             "WHERE last_bounce_time>?1 AND "
@@ -1260,10 +1121,6 @@ bool BtmDatabase::ClearTimestampsBySite(bool preserve,
   if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
     sql::Statement s_clear_storage(db_->GetUniqueStatement(  // clang-format off
         base::StrCat({"UPDATE bounces SET "
-                          "first_site_storage_time=NULL,"
-                          "last_site_storage_time=NULL,"
-                          "first_stateful_bounce_time=NULL,"
-                          "last_stateful_bounce_time=NULL,"
                           "first_bounce_time=NULL,"
                           "last_bounce_time=NULL "
                           "WHERE site ", (preserve ? "NOT " : ""),
@@ -1287,12 +1144,8 @@ bool BtmDatabase::RemoveEmptyRows() {
 
   static constexpr char kCleanUpSql[] =  // clang-format off
     "DELETE FROM bounces "
-    "WHERE first_site_storage_time IS NULL "
-      "AND last_site_storage_time IS NULL "
-      "AND first_user_activation_time IS NULL "
+    "WHERE first_user_activation_time IS NULL "
       "AND last_user_activation_time IS NULL "
-      "AND first_stateful_bounce_time IS NULL "
-      "AND last_stateful_bounce_time IS NULL "
       "AND first_bounce_time IS NULL "
       "AND last_bounce_time IS NULL "
       "AND first_web_authn_assertion_time IS NULL "
@@ -1376,23 +1229,15 @@ size_t BtmDatabase::GarbageCollectOldest(const BtmDatabaseTable table,
         "MAX("
           "COALESCE("
             "last_user_activation_time,"
-            "last_web_authn_assertion_time,"
-            "last_site_storage_time"
-          "),"
-          "COALESCE("
-            "last_web_authn_assertion_time,"
-            "last_user_activation_time,"
-            "last_site_storage_time"
-          "),"
-          "COALESCE("
-            "last_site_storage_time,"
-            "last_user_activation_time,"
             "last_web_authn_assertion_time"
+          "),"
+          "COALESCE("
+            "last_web_authn_assertion_time,"
+            "last_user_activation_time"
           ")"
         ") ASC,"
         "last_user_activation_time ASC,"
-        "last_web_authn_assertion_time ASC,"
-        "last_site_storage_time ASC "
+        "last_web_authn_assertion_time ASC "
       "LIMIT ?"
     ")";
     // clang-format on
@@ -1440,23 +1285,15 @@ std::vector<std::string> BtmDatabase::GetGarbageCollectOldestSitesForTesting(
       "MAX("
         "COALESCE("
           "last_user_activation_time,"
-          "last_web_authn_assertion_time,"
-          "last_site_storage_time"
-        "),"
-        "COALESCE("
-          "last_web_authn_assertion_time,"
-          "last_user_activation_time,"
-          "last_site_storage_time"
-        "),"
-        "COALESCE("
-          "last_site_storage_time,"
-          "last_user_activation_time,"
           "last_web_authn_assertion_time"
+        "),"
+        "COALESCE("
+          "last_web_authn_assertion_time,"
+          "last_user_activation_time"
         ")"
       ") ASC,"
       "last_user_activation_time ASC,"
-      "last_web_authn_assertion_time ASC,"
-      "last_site_storage_time ASC";
+      "last_web_authn_assertion_time ASC";
     // clang-format on
     DCHECK(db_->IsSQLValid(kReadSql));
 

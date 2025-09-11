@@ -178,7 +178,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> state_a =
       GetBtmState(GetBtmService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
-  EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_a->user_activation_times->first);
 
   // Update the top-level page to have an iframe pointing to b.test.
@@ -207,7 +206,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   // (the iframe).
   state_a = GetBtmState(GetBtmService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
-  EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(frame_interaction_time),
             state_a->user_activation_times->second);
 
@@ -239,7 +237,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> state_1 =
       GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state_1.has_value());
-  EXPECT_FALSE(state_1->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_1->user_activation_times->first);
   EXPECT_EQ(state_1->user_activation_times->first,
             state_1->user_activation_times->second);
@@ -254,7 +251,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> state_2 =
       GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state_2.has_value());
-  EXPECT_FALSE(state_2->site_storage_times.has_value());
   EXPECT_NE(state_2->user_activation_times->second,
             state_2->user_activation_times->first);
   EXPECT_EQ(std::make_optional(time), state_2->user_activation_times->first);
@@ -309,97 +305,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   std::optional<StateValue> state_b =
       GetBtmState(GetBtmService(web_contents), url_b);
   EXPECT_FALSE(state_b.has_value());
-}
-
-IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
-                       StorageNotRecordedForThirdPartySubresource) {
-  // We host the "image" on an HTTPS server, because for it to write a
-  // cookie, the cookie needs to be SameSite=None and Secure.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.AddDefaultHandlers(GetTestDataFilePath());
-  ASSERT_TRUE(https_server.Start());
-
-  GURL page_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  GURL image_url =
-      https_server.GetURL("b.test", "/set-cookie?foo=bar;Secure;SameSite=None");
-  WebContents* web_contents = GetActiveWebContents();
-  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
-
-  SetBtmTime(time);
-  // Set SameSite=None cookie on b.test.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents, https_server.GetURL(
-                        "b.test", "/set-cookie?foo=bar;Secure;SameSite=None")));
-  ASSERT_TRUE(GetBtmState(GetBtmService(web_contents), image_url).has_value());
-  EXPECT_EQ(GetBtmState(GetBtmService(web_contents), image_url)
-                .value()
-                .site_storage_times->second,
-            time);
-
-  // Navigate top-level page to a.test.
-  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
-
-  // Advance time and cause a third-party cookie read by loading an "image" from
-  // b.test.
-  SetBtmTime(time + base::Seconds(10));
-  FrameCookieAccessObserver observer(web_contents,
-                                     web_contents->GetPrimaryMainFrame(),
-                                     CookieAccessDetails::Type::kRead);
-  ASSERT_TRUE(ExecJs(web_contents,
-                     JsReplace(
-                         R"(
-    let img = document.createElement('img');
-    img.src = $1;
-    document.body.appendChild(img);)",
-                         image_url),
-                     EXECUTE_SCRIPT_NO_USER_GESTURE));
-  observer.Wait();
-
-  // Nothing recorded for a.test (the top-level frame).
-  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), page_url).has_value());
-
-  // The last site storage timestamp for b.test (the site hosting the image)
-  // should be unchanged, since we don't record cookie accesses from loading
-  // third-party resources.
-  EXPECT_EQ(GetBtmState(GetBtmService(web_contents), image_url)
-                .value()
-                .site_storage_times->second,
-            time);
-}
-
-IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
-  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
-
-  SetBtmTime(time);
-  // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-
-  // One instance of site storage is recorded.
-  std::optional<StateValue> state_1 =
-      GetBtmState(GetBtmService(GetActiveWebContents()), url);
-  ASSERT_TRUE(state_1.has_value());
-  EXPECT_FALSE(state_1->user_activation_times.has_value());
-  EXPECT_EQ(std::make_optional(time), state_1->site_storage_times->first);
-  EXPECT_EQ(state_1->site_storage_times->second,
-            state_1->site_storage_times->first);
-
-  SetBtmTime(time + base::Seconds(10));
-  // Navigate to the URL again to rewrite the cookie.
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-
-  // A second, different, instance of site storage is recorded for the same
-  // site.
-  std::optional<StateValue> state_2 =
-      GetBtmState(GetBtmService(GetActiveWebContents()), url);
-  ASSERT_TRUE(state_2.has_value());
-  EXPECT_FALSE(state_2->user_activation_times.has_value());
-  EXPECT_NE(state_2->site_storage_times->second,
-            state_2->site_storage_times->first);
-  EXPECT_EQ(std::make_optional(time), state_2->site_storage_times->first);
-  EXPECT_EQ(std::make_optional(time + base::Seconds(10)),
-            state_2->site_storage_times->second);
 }
 
 namespace {
@@ -513,11 +418,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
     std::optional<StateValue> b_state =
         GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
     ASSERT_TRUE(b_state.has_value());
-    ASSERT_THAT(b_state->site_storage_times,
-                Optional(Pair(bounce_time, bounce_time)));
     ASSERT_THAT(b_state->bounce_times,
-                Optional(Pair(bounce_time, bounce_time)));
-    ASSERT_THAT(b_state->stateful_bounce_times,
                 Optional(Pair(bounce_time, bounce_time)));
 
     btm_storage->AsyncCall(&BtmStorage::RemoveRows)
@@ -587,14 +488,10 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> state =
       GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(state.has_value());
-  ASSERT_THAT(state->stateful_bounce_times,
-              Optional(Pair(old_bounce_time, old_bounce_time)));
   ASSERT_EQ(state->user_activation_times, std::nullopt);
   // c.test:
   state = GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(state.has_value());
-  ASSERT_THAT(state->stateful_bounce_times,
-              Optional(Pair(recent_bounce_time, recent_bounce_time)));
   ASSERT_EQ(state->user_activation_times, std::nullopt);
 
   // Remove browsing data for the past hour. This should include c.test but not
@@ -659,15 +556,11 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   std::optional<StateValue> b_state =
       GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
-  ASSERT_THAT(b_state->stateful_bounce_times,
-              Optional(Pair(bounce_time, bounce_time)));
   ASSERT_EQ(b_state->user_activation_times, std::nullopt);
 
   std::optional<StateValue> c_state =
       GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
-  ASSERT_THAT(c_state->stateful_bounce_times,
-              Optional(Pair(bounce_time, bounce_time)));
   ASSERT_EQ(c_state->user_activation_times, std::nullopt);
 
   // Open b.test in a new tab.
@@ -721,8 +614,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> b_state =
       GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
-  ASSERT_THAT(b_state->stateful_bounce_times,
-              Optional(Pair(bounce_time, bounce_time)));
   ASSERT_EQ(b_state->user_activation_times, std::nullopt);
 
   // Open b.test in a new tab.
@@ -772,8 +663,6 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   std::optional<StateValue> c_state =
       GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
-  ASSERT_THAT(c_state->stateful_bounce_times,
-              Optional(Pair(bounce_time, bounce_time)));
   ASSERT_EQ(c_state->user_activation_times, std::nullopt);
 
   // Open c.test on a new tab in a new window/profile.

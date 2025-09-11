@@ -62,14 +62,8 @@ class CONTENT_EXPORT BtmState {
   // default-initialized for a new site).
   bool was_loaded() const { return was_loaded_; }
 
-  TimestampRange site_storage_times() const {
-    return state_.site_storage_times;
-  }
   TimestampRange user_activation_times() const {
     return state_.user_activation_times;
-  }
-  TimestampRange stateful_bounce_times() const {
-    return state_.stateful_bounce_times;
   }
   // The time range of all bounces (both stateful and stateless).
   TimestampRange bounce_times() const { return state_.bounce_times; }
@@ -79,9 +73,7 @@ class CONTENT_EXPORT BtmState {
     return state_.web_authn_assertion_times;
   }
 
-  void update_site_storage_time(base::Time time);
   void update_user_activation_time(base::Time time);
-  void update_stateful_bounce_time(base::Time time);
   void update_bounce_time(base::Time time);
   void update_web_authn_assertion_time(base::Time time);
   StateValue ToStateValue() const { return state_; }

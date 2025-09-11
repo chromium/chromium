@@ -2974,70 +2974,6 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-// TODO(crbug.com/325196134): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
-                       DISABLED_StorageRecording_Throttled) {
-  WebContents* web_contents = GetActiveWebContents();
-  const base::Time start_time = test_clock_.Now();
-
-  // Record client-side storage access on a.test.
-  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, url));
-  SimulateCookieWrite();
-  // Verify the write was recorded in the BTM DB.
-  std::optional<StateValue> state =
-      GetBtmState(GetBtmService(web_contents), url);
-  ASSERT_THAT(state->site_storage_times,
-              testing::Optional(testing::Pair(start_time, start_time)));
-
-  // Write a cookie again, just before kBtmTimestampUpdateInterval elapses.
-  test_clock_.Advance(kBtmTimestampUpdateInterval - base::Seconds(1));
-  SimulateCookieWrite();
-  // Verify the second write was NOT recorded, due to throttling.
-  state = GetBtmState(GetBtmService(web_contents), url);
-  ASSERT_THAT(state->site_storage_times,
-              testing::Optional(testing::Pair(start_time, start_time)));
-
-  // Write a third time, after kBtmTimestampUpdateInterval has passed since the
-  // first write.
-  test_clock_.Advance(base::Seconds(1));
-  SimulateCookieWrite();
-  // Verify the third write WAS recorded.
-  state = GetBtmState(GetBtmService(web_contents), url);
-  ASSERT_THAT(state->site_storage_times,
-              testing::Optional(testing::Pair(
-                  start_time, start_time + kBtmTimestampUpdateInterval)));
-}
-
-// TODO(crbug.com/325196134): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
-                       DISABLED_StorageRecording_NotThrottled_AfterRefresh) {
-  WebContents* web_contents = GetActiveWebContents();
-  const base::Time start_time = test_clock_.Now();
-
-  // Record client-side storage access on a.test.
-  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, url));
-  SimulateCookieWrite();
-  // Verify the write was recorded in the BTM DB.
-  std::optional<StateValue> state =
-      GetBtmState(GetBtmService(web_contents), url);
-  ASSERT_THAT(state->site_storage_times,
-              testing::Optional(testing::Pair(start_time, start_time)));
-
-  // Navigate to a new page and write cookies again, only a second after the
-  // previous write.
-  test_clock_.Advance(base::Seconds(1));
-  const GURL url2 = embedded_test_server()->GetURL("b.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, url2));
-  SimulateCookieWrite();
-  // Verify the second write was also recorded (not throttled).
-  state = GetBtmState(GetBtmService(web_contents), url2);
-  ASSERT_THAT(state->site_storage_times,
-              testing::Optional(testing::Pair(start_time + base::Seconds(1),
-                                              start_time + base::Seconds(1))));
-}
-
 class AllSitesFollowingFirstPartyTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -3266,7 +3202,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxDataPreservationTest,
   base::test::TestFuture<void> record_bounce;
   btm_service->storage()
       ->AsyncCall(&BtmStorage::RecordBounce)
-      .WithArgs(attribution_url, base::Time::Now(), /*stateful=*/true)
+      .WithArgs(attribution_url, base::Time::Now())
       .Then(record_bounce.GetCallback());
   ASSERT_TRUE(record_bounce.Wait());
 
@@ -3721,8 +3657,8 @@ class BtmBounceDetectorBFCacheTest : public BtmBounceDetectorBrowserTest,
   }
 };
 
-// Confirm that BTM records a bounce that writes a cookie as stateful, even if
-// the user immediately navigates away.
+// Confirm that BTM records a bounce, even if the user immediately navigates
+// away.
 // TODO(https://crbug.com/425717555): Very flaky if BF Cache is disabled.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LateCookieAccessTest DISABLED_LateCookieAccessTest
@@ -3767,41 +3703,6 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
   EXPECT_THAT(
       redirect.access_type,
       testing::AnyOf(BtmDataAccessType::kWrite, BtmDataAccessType::kReadWrite));
-}
-
-// Confirm that BTM records a bounce that writes a cookie as stateful, even if
-// the chain ends immediately afterwards.
-// TODO(https://crbug.com/425717555): Very flaky if BF Cache is disabled.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_QuickEndChainTest DISABLED_QuickEndChainTest
-#else
-#define MAYBE_QuickEndChainTest QuickEndChainTest
-#endif
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, MAYBE_QuickEndChainTest) {
-  // Block 3PCs so BTM will record bounces.
-  browser_client().SetBlockThirdPartyCookiesByDefault(true);
-
-  const GURL initial_url =
-      embedded_test_server()->GetURL("a.test", "/empty.html");
-  const GURL bounce_url =
-      embedded_test_server()->GetURL("b.test", "/empty.html");
-  const GURL final_url =
-      embedded_test_server()->GetURL("c.test", "/empty.html");
-  WebContents* const web_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
-  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
-  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'bounce=true';",
-                     EXECUTE_SCRIPT_NO_USER_GESTURE));
-  ASSERT_TRUE(
-      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
-  // End the redirect chain without waiting for the cookie access notification.
-  EndRedirectChain();
-
-  std::optional<StateValue> state =
-      GetBtmState(GetBtmService(web_contents), bounce_url);
-  ASSERT_TRUE(state.has_value());
-  ASSERT_TRUE(state->stateful_bounce_times.has_value());
 }
 
 // Confirm that WCO::OnCookiesAccessed() is always called even if the user

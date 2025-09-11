@@ -61,14 +61,11 @@ class CONTENT_EXPORT BtmStorage {
 
   // DIPS Helper Method Impls --------------------------------------------------
 
-  // Record that `url` wrote to storage.
-  void RecordStorage(const GURL& url, base::Time time);
   // Record that there was a user activation on `url`.
   void RecordUserActivation(const GURL& url, base::Time time);
   void RecordWebAuthnAssertion(const GURL& url, base::Time time);
-  // Record that |url| redirected the user and whether it was |stateful|,
-  // meaning that |url| wrote to storage while redirecting.
-  void RecordBounce(const GURL& url, base::Time time, bool stateful);
+  // Record that |url| redirected the user.
+  void RecordBounce(const GURL& url, base::Time time);
 
   // Storage querying Methods --------------------------------------------------
 

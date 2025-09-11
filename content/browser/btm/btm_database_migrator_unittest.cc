@@ -178,19 +178,17 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToLatestVersion) {
     EXPECT_TRUE(db.DoesColumnExist("bounces", "site"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_bounce_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_stateful_bounce_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_stateful_bounce_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_site_storage_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_site_storage_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_user_activation_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_user_activation_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_stateful_bounce_time"));
-    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_stateful_bounce_time"));
     EXPECT_TRUE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateful_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateful_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_site_storage_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_site_storage_time"));
 
     ASSERT_TRUE(db.DoesTableExist("popups"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
@@ -204,10 +202,10 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToLatestVersion) {
     EXPECT_TRUE(db.DoesColumnExist("config", "int_value"));
 
     EXPECT_EQ(DbBouncesToString(&db),
-              "both-bounce-kinds.test|||4|4|1|4|1|6||\n"
-              "stateful-bounce.test|||4|4|1|1|1|1||\n"
-              "stateless-bounce.test|||4|4|||1|1||\n"
-              "storage.test|1|1|4|4||||||");
+              "both-bounce-kinds.test|4|4|1|6||\n"
+              "stateful-bounce.test|4|4|1|1||\n"
+              "stateless-bounce.test|4|4|1|1||\n"
+              "storage.test|4|4||||");
   }
 }
 
@@ -650,6 +648,46 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV8ToV9) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 9);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 9);
+  }
+}
+
+TEST_F(BtmDatabaseMigrationTest, MigrateV9ToV10) {
+  ASSERT_TRUE(LoadDatabase("v9.sql"));
+
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Verify pre-migration conditions.
+
+    ASSERT_EQ(GetDatabaseVersion(&db), 9);
+    ASSERT_EQ(GetDatabaseLastCompatibleVersion(&db), 9);
+
+    ASSERT_TRUE(db.DoesColumnExist("bounces", "first_site_storage_time"));
+    ASSERT_TRUE(db.DoesColumnExist("bounces", "last_site_storage_time"));
+    ASSERT_TRUE(db.DoesColumnExist("bounces", "first_stateful_bounce_time"));
+    ASSERT_TRUE(db.DoesColumnExist("bounces", "last_stateful_bounce_time"));
+
+    // Migrate.
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 9, 9));
+
+    sql::Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    BtmDatabaseMigrator migrator(&db, &meta_table);
+    ASSERT_TRUE(migrator.MigrateSchemaVersionFrom9To10());
+    ASSERT_TRUE(transaction.Commit());
+
+    // Verify post-migration conditions.
+
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_site_storage_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_site_storage_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateful_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateful_bounce_time"));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 10);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 10);
   }
 }
 

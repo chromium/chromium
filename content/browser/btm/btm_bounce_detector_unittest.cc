@@ -129,10 +129,6 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
         std::vector<std::string_view>(sites.begin(), sites.end()), ", "));
   }
 
-  void OnSiteStorageAccessed(const GURL& first_party_url,
-                             CookieOperation op,
-                             bool http_cookie) override {}
-
   bool Are3PcsGenerallyEnabled() const override { return false; }
 
   // Get the (committed) URL that the SourceId was generated for.
