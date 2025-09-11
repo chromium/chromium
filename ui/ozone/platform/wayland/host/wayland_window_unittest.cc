@@ -4743,6 +4743,7 @@ TEST_P(WaylandWindowTest, ConfigureWithSameStateAcksAndCommitsImmediately) {
   auto state = InitializeWlArrayWithActivatedState();
   constexpr uint32_t kConfigureSerial1 = 2u;
   constexpr uint32_t kConfigureSerial2 = 3u;
+  constexpr uint32_t kConfigureSerial3 = 4u;
 
   PostToServerAndWait([id = surface_id_,
                        bounds = kBounds](wl::TestWaylandServerThread* server) {
@@ -4751,7 +4752,10 @@ TEST_P(WaylandWindowTest, ConfigureWithSameStateAcksAndCommitsImmediately) {
     auto* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
         .Times(1);
+    // TODO(https://crbug.com/443275579): The proper fix should not
+    // AckConfigure() until the window is mapped.
     EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial1)).Times(1);
+    EXPECT_CALL(*mock_surface, Commit()).Times(0);
   });
 
   SendConfigureEvent(surface_id_, kBounds.size(), state, kConfigureSerial1);
@@ -4763,14 +4767,31 @@ TEST_P(WaylandWindowTest, ConfigureWithSameStateAcksAndCommitsImmediately) {
     ASSERT_TRUE(mock_surface);
     auto* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
+    // TODO(https://crbug.com/443275579): The proper fix should not
+    // AckConfigure() until the window is mapped.
     EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial2)).Times(1);
-    EXPECT_CALL(*mock_surface, Commit()).Times(1);
+    EXPECT_CALL(*mock_surface, Commit()).Times(0);
   });
 
   SendConfigureEvent(surface_id_, kBounds.size(), state, kConfigureSerial2);
-  // We deliberately do not advance frame to current here, because it should
-  // immediately ack and commit, which also implies that there should be no
-  // frame too.
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+
+  // Once window is mapped, commit immediately.
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/kBounds.size(),
+                                   /*buffer_scale=*/1.f);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial3)).Times(1);
+    EXPECT_CALL(*mock_surface, Commit()).Times(1);
+  });
+
+  SendConfigureEvent(surface_id_, kBounds.size(), state, kConfigureSerial3);
   VerifyAndClearExpectations();
 }
 
