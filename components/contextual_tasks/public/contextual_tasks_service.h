@@ -36,7 +36,8 @@ class ContextualTasksService : public KeyedService {
   // create tasks when removing server IDs.
   virtual void AssignServerIdToTask(const base::Uuid& task_id,
                                     ChatType type,
-                                    const std::string& server_id) = 0;
+                                    const std::string& server_id,
+                                    const std::string& title) = 0;
   virtual void RemoveServerIdFromTask(const base::Uuid& task_id,
                                       ChatType type,
                                       const std::string& server_id) = 0;

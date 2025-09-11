@@ -38,17 +38,21 @@ TEST(ContextualTaskTest, AddChat) {
   ContextualTask task(task_id);
   ChatType type = ChatType::kAiMode;
   std::string server_id = "server_id";
+  std::string title = "foo";
 
-  task.AddChat(type, server_id);
+  task.AddChat(type, server_id, title);
   EXPECT_TRUE(task.GetChat().has_value());
   EXPECT_EQ(task.GetChat()->type, type);
   EXPECT_EQ(task.GetChat()->server_id, server_id);
+  EXPECT_EQ(task.GetChat()->title, title);
 
   std::string server_id_2 = "server_id_2";
-  task.AddChat(type, server_id_2);
+  std::string title_2 = "foo_2";
+  task.AddChat(type, server_id_2, title_2);
   EXPECT_TRUE(task.GetChat().has_value());
   EXPECT_EQ(task.GetChat()->type, type);
   EXPECT_EQ(task.GetChat()->server_id, server_id_2);
+  EXPECT_EQ(task.GetChat()->title, title_2);
 }
 
 TEST(ContextualTaskTest, RemoveChat) {
@@ -57,7 +61,7 @@ TEST(ContextualTaskTest, RemoveChat) {
   ChatType type = ChatType::kAiMode;
   std::string server_id = "server_id";
 
-  task.AddChat(type, server_id);
+  task.AddChat(type, server_id, "foo");
   EXPECT_TRUE(task.GetChat().has_value());
 
   task.RemoveChat(type, "wrong_server_id");

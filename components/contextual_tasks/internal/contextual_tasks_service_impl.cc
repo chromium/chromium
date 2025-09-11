@@ -57,13 +57,14 @@ void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
 void ContextualTasksServiceImpl::AssignServerIdToTask(
     const base::Uuid& task_id,
     ChatType type,
-    const std::string& server_id) {
+    const std::string& server_id,
+    const std::string& title) {
   auto it = tasks_.find(task_id);
   if (it == tasks_.end()) {
     // Task not found, but we have a task ID. Create the task on the fly.
     it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
   }
-  it->second.AddChat(type, server_id);
+  it->second.AddChat(type, server_id, title);
 }
 
 void ContextualTasksServiceImpl::RemoveServerIdFromTask(

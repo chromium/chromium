@@ -29,7 +29,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
   void DeleteTask(const base::Uuid& task_id) override;
   void AssignServerIdToTask(const base::Uuid& task_id,
                             ChatType type,
-                            const std::string& server_id) override;
+                            const std::string& server_id,
+                            const std::string& title) override;
   void RemoveServerIdFromTask(const base::Uuid& task_id,
                               ChatType type,
                               const std::string& server_id) override;

@@ -20,13 +20,15 @@ enum class ChatType {
 
 // Represents a server-side conversation that is part of a `ContextualTask`.
 struct Chat {
-  Chat(ChatType type, const std::string& server_id);
+  Chat(ChatType type, const std::string& server_id, const std::string& title);
   ~Chat();
 
   // The type of conversation.
   ChatType type;
   // The server-side ID of the conversation.
   std::string server_id;
+  // Title of the chat that will be displayed to user.
+  std::string title;
 };
 
 // A task is a representation of a user's journey to accomplish a goal. It
@@ -47,7 +49,9 @@ class ContextualTask {
 
   // Adds the server-side conversation to the task. If a task already has a chat
   // attached to it, it will be overwritten.
-  void AddChat(ChatType type, const std::string& server_id);
+  void AddChat(ChatType type,
+               const std::string& server_id,
+               const std::string& title);
 
   // Removes the server-side conversation from the task.
   void RemoveChat(ChatType type, const std::string& server_id);

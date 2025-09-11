@@ -12,8 +12,10 @@
 
 namespace contextual_tasks {
 
-Chat::Chat(ChatType type, const std::string& server_id)
-    : type(type), server_id(server_id) {}
+Chat::Chat(ChatType type,
+           const std::string& server_id,
+           const std::string& title)
+    : type(type), server_id(server_id), title(title) {}
 Chat::~Chat() = default;
 
 ContextualTask::ContextualTask(const base::Uuid& task_id) : task_id_(task_id) {}
@@ -28,8 +30,10 @@ const base::Uuid& ContextualTask::GetTaskId() const {
   return task_id_;
 }
 
-void ContextualTask::AddChat(ChatType type, const std::string& server_id) {
-  chat_.emplace(type, server_id);
+void ContextualTask::AddChat(ChatType type,
+                             const std::string& server_id,
+                             const std::string& title) {
+  chat_.emplace(type, server_id, title);
 }
 
 void ContextualTask::RemoveChat(ChatType type, const std::string& server_id) {
