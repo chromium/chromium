@@ -263,4 +263,11 @@ TEST_F(SafeBrowsingPrefsTest, VerifyHashPrefixRealTimeChecksAllowedByPolicy) {
   prefs_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy, false);
   EXPECT_FALSE(AreHashPrefixRealTimeLookupsAllowedByPolicy(prefs_));
 }
+
+TEST_F(SafeBrowsingPrefsTest, InitializesExtensionTelemetryLastUploadTime) {
+  TestingPrefServiceSimple prefs;
+  safe_browsing::RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(prefs::kExtensionTelemetryLastUploadTime),
+            base::Time());
+}
 }  // namespace safe_browsing

@@ -284,7 +284,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       base::Time());
 
   registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
-                             base::Time::Now());
+                             base::Time());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
   registry->RegisterTimePref(
