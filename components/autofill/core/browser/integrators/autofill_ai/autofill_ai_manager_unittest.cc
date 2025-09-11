@@ -809,6 +809,43 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
       u"1234321");
 }
 
+// This test ensures that no save prompt is shown for an entity type
+// that has no import constraints.
+TEST_F(AutofillAiManagerImportFormTest,
+       NewEntity_DoNotShowSavePromptWhenEntityTypeHasNoImportConstraints) {
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
+       FLIGHT_RESERVATION_CONFIRMATION_CODE});
+  form->field(0)->set_value(u"1234321");
+  form->field(1)->set_value(u"567890");
+  form->field(2)->set_value(u"ABC1234");
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// This test ensures that no update prompt is shown for an entity type
+// that has no import constraints.
+TEST_F(AutofillAiManagerImportFormTest,
+       NewEntity_DoNotShowUpdatePromptWhenEntityTypeHasNoImportConstraints) {
+  test::FlightReservationOptions options{
+      .flight_number = u"123456",
+      .ticket_number = u"567890",
+      .confirmation_code = u"ABC1234",
+  };
+  EntityInstance entity = test::GetFlightReservationEntityInstance(options);
+  AddOrUpdateEntityInstance(entity);
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
+       FLIGHT_RESERVATION_CONFIRMATION_CODE});
+  form->field(0)->set_value(options.flight_number);
+  form->field(1)->set_value(options.ticket_number);
+  form->field(2)->set_value(u"differentCode");
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
   using enum AttributeTypeName;
   // The submitted form will have expiration date info.
