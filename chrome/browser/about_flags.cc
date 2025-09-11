@@ -9271,11 +9271,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
 
-    {"align-surface-layer-impl-to-pixel-grid",
-     flag_descriptions::kAlignSurfaceLayerImplToPixelGridName,
-     flag_descriptions::kAlignSurfaceLayerImplToPixelGridDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kAlignSurfaceLayerImplToPixelGrid)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"sct-auditing", flag_descriptions::kSCTAuditingName,
      flag_descriptions::kSCTAuditingDescription, kOsDesktop,

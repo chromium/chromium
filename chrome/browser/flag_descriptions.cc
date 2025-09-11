@@ -63,16 +63,6 @@ const char kAcceleratedVideoEncodeName[] = "Hardware-accelerated video encode";
 const char kAcceleratedVideoEncodeDescription[] =
     "Hardware-accelerated video encode where available.";
 
-const char kAlignSurfaceLayerImplToPixelGridName[] =
-    "Align SurfaceLayerImpls to pixel grid";
-const char kAlignSurfaceLayerImplToPixelGridDescription[] =
-    "Align SurfaceLayerImpl compositor textures to pixel grid. This is "
-    "important when an iframe is rendered cross-process to its parent, "
-    "and fails to align with the pixel grid (e.g. when the parent frame "
-    "has a non-integral scale factor). Failure to align to the pixel grid "
-    "can result in the iframe's text becoming blurry. SurfaceLayerImpl also "
-    "is used for <canvas>, which may also benefit from the alignment.";
-
 const char kAlignWakeUpsName[] = "Align delayed wake ups at 125 Hz";
 const char kAlignWakeUpsDescription[] =
     "Run most delayed tasks with a non-zero delay (including DOM Timers) on a "
