@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,7 +242,7 @@ public class ChromeBrowserInitializer {
                         }
 
                         @Override
-                        public void onSuccess() {
+                        public void onSuccess(@Nullable StartupMetrics metrics) {
                             tasks.start(false);
                         }
                     });

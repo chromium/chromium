@@ -11,7 +11,9 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
@@ -48,7 +50,7 @@ public class CastBrowserHelper {
                         /* scheduleFlushStartupTasks= */ false,
                         new BrowserStartupController.StartupCallback() {
                             @Override
-                            public void onSuccess() {
+                            public void onSuccess(@Nullable StartupMetrics metrics) {
                                 Log.i(TAG, "Browser initialization succeeded");
                                 NetworkChangeNotifier.init();
                                 // Cast shell always expects to receive notifications to track

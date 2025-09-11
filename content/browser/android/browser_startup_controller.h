@@ -9,8 +9,10 @@
 
 namespace content {
 
-void BrowserStartupComplete(int result,
-                            base::TimeDelta longest_blocking_duration);
+void BrowserStartupComplete(
+    int result,
+    base::TimeDelta longest_duration_of_posted_startup_tasks,
+    base::TimeDelta total_duration_of_posted_startup_tasks);
 bool ShouldStartGpuProcessOnBrowserStartup();
 void MinimalBrowserStartupComplete();
 
