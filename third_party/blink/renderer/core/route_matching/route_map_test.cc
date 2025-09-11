@@ -5,14 +5,27 @@
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-TEST(RouteMapTest, ParseAndMatch) {
-  Persistent<RouteMap> route_map = MakeGarbageCollected<RouteMap>();
-  route_map->ParseRoutes(R"({
+class RouteMapTest : public PageTestBase {
+ public:
+  RouteMap& GetRouteMap() const { return RouteMap::Ensure(GetDocument()); }
+
+  void SetURL(const String& url) {
+    GetDocument().SetURL(KURL(url));
+    GetRouteMap().UpdateActiveRoutes();
+  }
+};
+
+TEST_F(RouteMapTest, ParseAndMatch) {
+  SetURL("https://example.com/foo");
+
+  RouteMap& route_map = GetRouteMap();
+  route_map.ParseAndApplyRoutes(R"({
     "routes": [
       {
         "name": "route1",
@@ -25,22 +38,23 @@ TEST(RouteMapTest, ParseAndMatch) {
     ]
   })");
 
-  EXPECT_TRUE(
-      route_map->MatchesRoute(KURL("https://example.com/foo"), "route1"));
-  EXPECT_FALSE(
-      route_map->MatchesRoute(KURL("https://example.com/bar"), "route1"));
+  EXPECT_TRUE(route_map.MatchesRoute("route1"));
+  EXPECT_FALSE(route_map.MatchesRoute("route2"));
 
-  EXPECT_TRUE(
-      route_map->MatchesRoute(KURL("https://example.com/bar"), "route2"));
-  EXPECT_TRUE(
-      route_map->MatchesRoute(KURL("https://example.com/baz"), "route2"));
-  EXPECT_FALSE(
-      route_map->MatchesRoute(KURL("https://example.com/foo"), "route2"));
+  SetURL("https://example.com/bar");
+  EXPECT_FALSE(route_map.MatchesRoute("route1"));
+  EXPECT_TRUE(route_map.MatchesRoute("route2"));
+
+  SetURL("https://example.com/baz");
+  EXPECT_FALSE(route_map.MatchesRoute("route1"));
+  EXPECT_TRUE(route_map.MatchesRoute("route2"));
 }
 
-TEST(RouteMapTest, GetActiveRoutes) {
-  Persistent<RouteMap> route_map = MakeGarbageCollected<RouteMap>();
-  route_map->ParseRoutes(R"({
+TEST_F(RouteMapTest, GetActiveRoutes) {
+  SetURL("https://example.com/foo");
+
+  RouteMap& route_map = GetRouteMap();
+  route_map.ParseAndApplyRoutes(R"({
     "routes": [
       {
         "name": "route1",
@@ -57,13 +71,13 @@ TEST(RouteMapTest, GetActiveRoutes) {
     ]
   })");
 
-  HashSet<String> active_routes =
-      route_map->GetActiveRoutes(KURL("https://example.com/foo"));
+  HashSet<String> active_routes = route_map.GetActiveRoutes();
   EXPECT_EQ(2u, active_routes.size());
   EXPECT_TRUE(active_routes.Contains("route1"));
   EXPECT_TRUE(active_routes.Contains("route3"));
 
-  active_routes = route_map->GetActiveRoutes(KURL("https://example.com/bar"));
+  SetURL("https://example.com/bar");
+  active_routes = route_map.GetActiveRoutes();
   EXPECT_EQ(1u, active_routes.size());
   EXPECT_TRUE(active_routes.Contains("route2"));
 }

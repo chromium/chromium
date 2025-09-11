@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_route_matching = [
+  "route.cc",
+  "route.h",
   "route_map.cc",
   "route_map.h",
 ]

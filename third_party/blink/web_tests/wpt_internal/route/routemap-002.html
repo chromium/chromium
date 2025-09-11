@@ -2,17 +2,16 @@
 <title>Set new URL, then go back</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
-<!-- Assuming here that "route" is part of the test path. -->
 <script type="routemap">
   {
     "routes": [
       {
         "name": "r1",
-        "pattern": [ "route" ]
+        "pattern": { "protocol": "http*" }
       },
       {
         "name": "r2",
-        "pattern": [ "match-later" ]
+        "pattern": { "pathname": "*match-later*" }
       }
     ]
   }

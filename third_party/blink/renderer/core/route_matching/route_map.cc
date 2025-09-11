@@ -7,11 +7,42 @@
 #include "base/check_is_test.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/route_matching/route.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
+
+namespace {
+
+RouteMap::ParseResult AddPatternToRoute(const Document& document,
+                                        Route& route,
+                                        const JSONValue& value) {
+  base::expected<URLPattern*, String> pattern =
+      ParseURLPatternFromJSON(document.GetExecutionContext()->GetIsolate(),
+                              value, document.Url(), IGNORE_EXCEPTION);
+  if (pattern.has_value()) {
+    DCHECK(*pattern);
+    route.AddPattern(*pattern);
+    return RouteMap::ParseResult(RouteMap::ParseResult::kSuccess);
+  }
+  return RouteMap::ParseResult(RouteMap::ParseResult::kSyntaxError,
+                               pattern.error());
+}
+
+}  // anonymous namespace
+
+RouteMap::RouteMap(Document& document) : Supplement<Document>(document) {}
+RouteMap::RouteMap() : Supplement<Document>(nullptr) {
+  CHECK_IS_TEST();
+}
+
+void RouteMap::Trace(Visitor* v) const {
+  v->Trace(routes_);
+  Supplement<Document>::Trace(v);
+}
 
 // BEGIN Supplement support:
 
@@ -42,17 +73,10 @@ RouteMap& RouteMap::Ensure(Document& document) {
 
 // END Supplement support
 
-RouteMap::RouteMap(Document& document) : Supplement<Document>(document) {}
-RouteMap::RouteMap() : Supplement<Document>(nullptr) {
-  CHECK_IS_TEST();
-}
-
 RouteMap::ParseResult RouteMap::ParseAndApplyRoutes(
     const String& route_map_text) {
   RouteMap::ParseResult result = ParseRoutes(route_map_text);
-  Document* document = GetSupplementable();
-  CHECK(document);
-  document->GetStyleEngine().SetNeedsActiveStyleUpdate(*document);
+  UpdateActiveRoutes();
   return result;
 }
 
@@ -95,30 +119,35 @@ RouteMap::ParseResult RouteMap::ParseRoutes(const String& route_map_text) {
       if (it == routes_.end()) {
         // Create a new route entry, but don't add it until we've checked if the
         // data is valid.
-        route = MakeGarbageCollected<Route>();
+        route = MakeGarbageCollected<Route>(GetDocument());
       } else {
         route = it->value;
       }
 
       if (const JSONArray* patterns = input_route->GetArray(kPattern)) {
         // Parse an array of patterns.
-        for (const JSONValue& pattern_candidate : *patterns) {
-          String pattern;
-          if (!pattern_candidate.AsString(&pattern)) {
-            return ParseResult(ParseResult::kTypeError,
-                               "Invalid data type for pattern in route entry");
+        if (patterns->size() == 0) {
+          return ParseResult(ParseResult::kTypeError,
+                             "Missing pattern in route entry");
+        }
+        for (const JSONValue& pattern : *patterns) {
+          ParseResult result =
+              AddPatternToRoute(GetDocument(), *route, pattern);
+          if (!result.IsSuccess()) {
+            return result;
           }
-          route->patterns_.push_back(pattern);
         }
       } else {
         // No pattern array. Single pattern entry, then?
-        String single_pattern;
-        if (!input_route->GetString(kPattern, &single_pattern)) {
-          return ParseResult(
-              ParseResult::kTypeError,
-              "Missing or invalid data type for pattern in route entry");
+        const JSONValue* pattern = input_route->Get(kPattern);
+        if (!pattern) {
+          return ParseResult(ParseResult::kTypeError,
+                             "Missing pattern in route entry");
         }
-        route->patterns_.push_back(single_pattern);
+        ParseResult result = AddPatternToRoute(GetDocument(), *route, *pattern);
+        if (!result.IsSuccess()) {
+          return result;
+        }
       }
 
       if (it == routes_.end()) {
@@ -130,38 +159,33 @@ RouteMap::ParseResult RouteMap::ParseRoutes(const String& route_map_text) {
   return ParseResult(ParseResult::kSuccess);
 }
 
-bool RouteMap::MatchesRoute(const KURL& url, const String& route) const {
-  String path = url.GetPath().ToString();
+bool RouteMap::MatchesRoute(const String& route) const {
   const auto it = routes_.find(route);
   if (it == routes_.end()) {
     return false;
   }
-  for (const String& pattern : it->value->patterns_) {
-    if (path.Contains(pattern)) {
-      return true;
-    }
-  }
-
-  return false;
+  return it->value->matches();
 }
 
-HashSet<String> RouteMap::GetActiveRoutes(const KURL& url) const {
-  HashSet<String> active_routes;
-  String path = url.GetPath().ToString();
+bool RouteMap::UpdateActiveRoutes() {
+  bool changed = false;
   for (const auto& entry : routes_) {
-    for (const String& pattern : entry.value->patterns_) {
-      // TODO(crbug.com/436805487): This should use URLPattern
-      if (path.Contains(pattern)) {
-        active_routes.insert(entry.key);
-      }
+    changed = entry.value->UpdateMatchStatus() || changed;
+  }
+  if (changed) {
+    GetDocument().GetStyleEngine().RoutesMayHaveChanged();
+  }
+  return changed;
+}
+
+HashSet<String> RouteMap::GetActiveRoutes() const {
+  HashSet<String> active_routes;
+  for (const auto& entry : routes_) {
+    if (entry.value->matches()) {
+      active_routes.insert(entry.key);
     }
   }
   return active_routes;
-}
-
-void RouteMap::Trace(Visitor* v) const {
-  v->Trace(routes_);
-  Supplement<Document>::Trace(v);
 }
 
 }  // namespace blink

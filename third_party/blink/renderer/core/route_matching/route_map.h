@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -17,7 +15,7 @@
 namespace blink {
 
 class Document;
-class KURL;
+class Route;
 
 // TODO(crbug.com/436805487): Document this when we know more.
 //
@@ -27,12 +25,6 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
                                    public Supplement<Document> {
  public:
   static const char kSupplementName[];
-
-  struct Route final : public GarbageCollected<Route> {
-    HeapVector<String> patterns_;
-
-    void Trace(Visitor* v) const { v->Trace(patterns_); }
-  };
 
   struct ParseResult final {
     // TODO(crbug.com/436805487): Error reporting needs to be specced.
@@ -55,6 +47,8 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
         : status(status), message(message) {
       CHECK(status != kSuccess);
     }
+
+    bool IsSuccess() const { return status == kSuccess; }
   };
 
   explicit RouteMap(Document&);
@@ -62,21 +56,30 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   // For testing only.
   RouteMap();
 
+  void Trace(Visitor*) const final;
+
   // Supplement support. Document pointers may be null (in which case null will
   // be returned).
   static const RouteMap* Get(const Document*);
   static RouteMap* Get(Document*);
   static RouteMap& Ensure(Document&);
 
+  Document& GetDocument() const {
+    Document* document = GetSupplementable();
+    DCHECK(document);
+    return *document;
+  }
+
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
   ParseResult ParseRoutes(const String& route_map_text);
 
-  bool MatchesRoute(const KURL&, const String& route) const;
+  bool MatchesRoute(const String& route) const;
 
-  HashSet<String> GetActiveRoutes(const KURL&) const;
+  // Re-match all routes. Return true if any route changed state.
+  bool UpdateActiveRoutes();
 
-  void Trace(Visitor*) const final;
+  HashSet<String> GetActiveRoutes() const;
 
  private:
   HeapHashMap<String, Member<Route>> routes_;

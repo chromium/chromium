@@ -1204,9 +1204,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // See
   // https://github.com/WICG/declarative-partial-updates#part-2-route-matching
   if (frame_) {
-    Document* document = frame_->GetDocument();
-    if (document && RouteMap::Get(document)) {
-      document->GetStyleEngine().RoutesMayHaveChanged();
+    if (auto* routemap = RouteMap::Get(frame_->GetDocument())) {
+      routemap->UpdateActiveRoutes();
     }
   }
 }

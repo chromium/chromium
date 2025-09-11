@@ -963,9 +963,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       page_rule->SetCascadeLayer(cascade_layer);
       AddPageRule(page_rule);
     } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
-      const Document* document = medium.GetMediaValues().GetDocument();
-      if (const RouteMap* route_map = RouteMap::Get(document)) {
-        if (route_map->MatchesRoute(document->Url(), route_rule->GetName())) {
+      if (const auto* route_map =
+              RouteMap::Get(medium.GetMediaValues().GetDocument())) {
+        if (route_map->MatchesRoute(route_rule->GetName())) {
           AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
                         add_rule_flags, container_query, cascade_layer,
                         style_scope, apply_mixins_stack);
@@ -1163,11 +1163,10 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     }
   }
 
-  const Document* document = medium.GetDocument();
-  if (const RouteMap* route_map = RouteMap::Get(document)) {
+  if (const auto* route_map = RouteMap::Get(medium.GetDocument())) {
     // In case there are multiple style sheets, we only need to do this once:
     if (active_routes_.empty()) {
-      active_routes_ = route_map->GetActiveRoutes(document->Url());
+      active_routes_ = route_map->GetActiveRoutes();
     }
   }
 
@@ -1713,12 +1712,8 @@ bool RuleSet::DidMediaQueryResultsChange(
 }
 
 bool RuleSet::DidRoutesChange(const Document* document) const {
-  if (!document) {
-    return false;
-  }
   if (const RouteMap* route_map = RouteMap::Get(document)) {
-    HashSet<String> current_routes =
-        route_map->GetActiveRoutes(document->Url());
+    HashSet<String> current_routes = route_map->GetActiveRoutes();
     if (current_routes != active_routes_) {
       return true;
     }
