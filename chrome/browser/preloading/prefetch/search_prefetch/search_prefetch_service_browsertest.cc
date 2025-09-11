@@ -497,13 +497,6 @@ class SearchPrefetchServiceEnabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
-                       ServiceNotCreatedWhenIncognito) {
-  EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
-                         browser()->profile()->GetPrimaryOTRProfile(
-                             /*create_if_needed=*/true)));
-}
-
-IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        BasicPrefetchFunctionality) {
   base::HistogramTester histogram_tester;
   auto* search_prefetch_service =

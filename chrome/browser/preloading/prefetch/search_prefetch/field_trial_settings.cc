@@ -124,7 +124,7 @@ bool IsPrefetchIncognitoEnabled() {
   return SearchPrefetchServicePrefetchingIsEnabled() &&
          IsSearchNavigationPrefetchEnabled() &&
          base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
-                                                 "allow_incognito", false);
+                                                 "allow_incognito", true);
 }
 
 BASE_FEATURE(kAutocompleteDictionaryPreload,
