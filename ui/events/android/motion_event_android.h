@@ -132,13 +132,13 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                        size_t historical_index) const override;
   int GetSourceDeviceId(size_t pointer_index) const override;
   ToolType GetToolType(size_t pointer_index) const override;
-  int GetSource() const override;
   int GetButtonState() const override;
   int GetFlags() const override;
   Classification GetClassification() const override;
   // End ui::MotionEvent overrides
 
   int GetActionButton() const;
+  int GetSource() const;
   float ticks_x() const { return ticks_x_; }
   float ticks_y() const { return ticks_y_; }
   float GetTickMultiplier() const;
