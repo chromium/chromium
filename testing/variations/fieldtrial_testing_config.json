@@ -4499,6 +4499,25 @@
             ]
         }
     ],
+    "Canvas2DHibernationNoSmallCanvas": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Canvas2DHibernationNoSmallCanvas"
+                    ]
+                }
+            ]
+        }
+    ],
     "Canvas2DReclaimUnusedResources": [
         {
             "platforms": [
