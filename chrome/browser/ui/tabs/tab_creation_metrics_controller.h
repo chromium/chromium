@@ -22,27 +22,27 @@ class TabInterface;
 // LINT.IfChange(TabGroupingTransitionType)
 enum TabGroupingTransitionType {
   // Used when the transition type is not set.
-  kUninitialized = 0,
+  kUninitialized = -1,
 
   // The active tab was ungrouped when a new tab was created, and the new tab
   // was left ungrouped.
-  kUngroupedToUngrouped = 1,
+  kUngroupedToUngrouped = 0,
 
   // The active tab was ungrouped when a new tab was created, and the new tab
   // was left grouped.
-  kUngroupedToGrouped = 2,
+  kUngroupedToGrouped = 1,
 
   // The active tab was grouped when a new tab was created, and the new tab
   // was left ungrouped.
-  kGroupedToUngrouped = 3,
+  kGroupedToUngrouped = 2,
 
   // The active tab was grouped when a new tab was created, and the new tab
   // was grouped to the existing group of the active tab.
-  kGroupedToInPreviousGroup = 4,
+  kGroupedToInPreviousGroup = 3,
 
   // The active tab was grouped when a new tab was created, and the new tab
   // was grouped to a group different from the active tab's group.
-  kGroupedToOutsidePreviousGroup = 5,
+  kGroupedToOutsidePreviousGroup = 4,
 
   kMaxValue = kGroupedToOutsidePreviousGroup,
 };
