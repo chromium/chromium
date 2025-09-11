@@ -286,11 +286,11 @@ bool IsExtensionsExplicitBrowserSigninEnabled() {
 
 BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
              "SyncEnableBookmarksInTransportMode",
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_IOS)
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
 );
 
 BASE_FEATURE(kSkipRefreshTokenCheckInIdentityManager,

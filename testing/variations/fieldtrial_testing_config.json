@@ -25578,24 +25578,6 @@
             ]
         }
     ],
-    "UnoDesktopBookmarksAndReadingList": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadingListEnableSyncTransportModeUponSignIn",
-                        "SyncEnableBookmarksInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [
