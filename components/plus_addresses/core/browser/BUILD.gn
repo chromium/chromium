@@ -71,6 +71,8 @@ source_set("browser") {
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
+    "plus_address_jit_allocator.cc",
+    "plus_address_jit_allocator.h",
     "plus_address_preallocator.cc",
     "plus_address_preallocator.h",
     "plus_address_ui_utils.cc",
@@ -106,6 +108,7 @@ source_set("unit_tests") {
   sources = [
     "plus_address_blocklist_data_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
+    "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
   ]

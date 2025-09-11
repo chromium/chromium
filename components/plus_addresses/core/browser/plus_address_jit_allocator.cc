@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_jit_allocator.h"
+#include "components/plus_addresses/core/browser/plus_address_jit_allocator.h"
 
 #include <utility>
 

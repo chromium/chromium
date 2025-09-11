@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_JIT_ALLOCATOR_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_JIT_ALLOCATOR_H_
 
 #include <optional>
 
@@ -58,4 +58,4 @@ class PlusAddressJitAllocator : public PlusAddressAllocator {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_JIT_ALLOCATOR_H_
