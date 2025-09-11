@@ -1962,7 +1962,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2333166365943957309">Kullanıcı Arayüzü Hiyerarşisi</translation>
 <translation id="233375395665273385">Sil ve oturumu kapat</translation>
 <translation id="233471714539944337">Hassas içerik</translation>
-<translation id="2335758110242123814">Açık grup</translation>
+<translation id="2335758110242123814">Grubu aç</translation>
 <translation id="2336228925368920074">Tüm Sekmelere Yer İşareti Koy...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />, 1 sayfayı <ph name="PRINTER_NAME" /> adlı yazıcıda yazdırıyor</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1985,7 +1985,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="235028206512346451">Cihazınızdan uzaklaşırsanız ekranınız otomatik olarak kilitlenir. Cihazınızın önünde olduğunuz sürece ekranınız uyanık kalır. Kilit ekranı kullanmıyorsanız cihazınız kilitlenmek yerine uyku moduna geçer.</translation>
 <translation id="2351923523007389195">İzin veriliyor – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem konum erişimini<ph name="LINK_END" /> açın.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2353168619378866466">Açık Grup</translation>
+<translation id="2353168619378866466">Grubu aç</translation>
 <translation id="2353297238722298836">Kamera ve mikrofona izin verildi</translation>
 <translation id="2353910600995338714">Dışa aktarma başarılı</translation>
 <translation id="2355314311311231464">Hesap bilgileriniz alınamadığından temel hazırlık işlemi başarısız oldu. Lütfen tekrar deneyin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
@@ -3762,7 +3762,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3610369246614755442">Yuva fanının servise ihtiyacı var</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" /> şifresini değiştir</translation>
 <translation id="3611634011145829814">Abonelik sayfasına git</translation>
-<translation id="3611658447322220736">Yeni kapatılan siteler veri gönderip alma işlemini bitirebilir</translation>
+<translation id="3611658447322220736">Yeni kapatılan siteler veri gönderip alma işlemini tamamlayabilir</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; tarafından indirildi</translation>
 <translation id="3612731022682274718">Cihazınızdaki video dosyalarını başka bir ekranda yayınlayın</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> Klasörünü Göster</translation>
@@ -3910,7 +3910,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3707163604290651814"><ph name="NAME" /> olarak oturum açmış durumdasınız</translation>
 <translation id="3707348585109246684">Bağlantıyı yeni <ph name="APP" /> sekmesinde aç</translation>
 <translation id="3708295717182051206">Altyazı</translation>
-<translation id="3708684582558000260">Kapatılan sitelerin veri gönderme veya alma işlemini bitirmesine izin verme</translation>
+<translation id="3708684582558000260">Kapatılan sitelerin veri gönderip alma işlemini tamamlamasına izin verme</translation>
 <translation id="3709244229496787112">İndirme işlemi tamamlanmadan tarayıcı kapatıldı.</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için <ph name="FIELDS_STRING" /> bilgilerinizi bu siteyle paylaşacak.</translation>
 <translation id="3711931198657368127">Ya&amp;pıştır ve <ph name="URL" /> Adresine Git</translation>
@@ -4825,7 +4825,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4330387663455830245">Bu Dili (<ph name="LANGUAGE" />) Asla Çevirme</translation>
 <translation id="4332976768901252016">Ebeveyn Denetimlerini ayarlama</translation>
 <translation id="4333854382783149454">PKCS #1 RSA Şifrelemeli SHA-1</translation>
-<translation id="4334768748331667190"><ph name="MODULE_NAME" /> adlı satıcıyı bir daha görmeyeceksiniz</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> artık gösterilmeyecek</translation>
 <translation id="4335835283689002019">Güvenli Tarama kapalı</translation>
 <translation id="4338034474804311322">Şifreleri tekrar Google Şifre Yöneticisi'ne kaydetmeye başlamak için Google Play Hizmetleri'ni güncelleyin</translation>
 <translation id="4338363401382232853">Bölünmüş ekran pencere önerisi</translation>

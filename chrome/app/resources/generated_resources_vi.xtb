@@ -3927,7 +3927,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3707163604290651814">Hiện đăng nhập với tên <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Mở đường liên kết trong thẻ mới của <ph name="APP" /></translation>
 <translation id="3708295717182051206">Phụ đề</translation>
-<translation id="3708684582558000260">Không cho phép trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
+<translation id="3708684582558000260">Không cho phép các trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="3709244229496787112">Trình duyệt bị tắt trước khi quá trình tải xuống hoàn tất.</translation>
 <translation id="3710501561113687889">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ <ph name="FIELDS_STRING" /> của bạn với trang web này.</translation>
 <translation id="3711931198657368127">Dá&amp;n và truy cập <ph name="URL" /></translation>
@@ -7535,7 +7535,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6268252012308737255">Mở bằng <ph name="APP" /></translation>
 <translation id="6269050081341530851">Bản sao cũ nhất được giữ lại khi bạn đóng mục trùng lặp</translation>
 <translation id="6270309713620950855">Tắt tiếng thông báo nhắc nhở</translation>
-<translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
+<translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="6270486800167535228">Đã ghim tiện ích. Chọn để xem các lựa chọn khác</translation>
 <translation id="6270770586500173387">Gửi <ph name="BEGIN_LINK1" />thông tin hệ thống và ứng dụng<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />số liệu<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">đã hủy thao tác sửa</translation>
@@ -9837,7 +9837,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7893153962594818789">Bluetooth đang tắt trên <ph name="DEVICE_TYPE" /> này. Hãy nhập mật khẩu của bạn và bật Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Mặc định)</translation>
 <translation id="7896292361319775586">Lưu <ph name="FILE" />?</translation>
-<translation id="789722939441020330">Không cho phép trang web tự động tải nhiều tệp xuống</translation>
+<translation id="789722939441020330">Không cho phép các trang web tự động tải nhiều tệp xuống</translation>
 <translation id="7897900149154324287">Trong tương lai, đảm bảo rằng bạn đã ngắt kết nối thiết bị di động của mình trong ứng dụng Tệp trước khi tháo thiết bị. Nếu không, bạn có thể mất dữ liệu.</translation>
 <translation id="7898725031477653577">Luôn dịch</translation>
 <translation id="7900950034255258543">Để đảm bảo bạn có thể dùng thiết bị này một cách an toàn, tổ chức của bạn có thể xem thông tin về hệ điều hành, trình duyệt, chế độ cài đặt và phần mềm được cài đặt trên thiết bị</translation>

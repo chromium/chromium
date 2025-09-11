@@ -1543,7 +1543,7 @@
 <translation id="779591286616261875">新しい報告を送信</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="7802764839223122985">キーが設定されていません。<ph name="REASSIGN_INSTRUCTION" /></translation>
-<translation id="780301667611848630">キャンセル</translation>
+<translation id="780301667611848630">利用しない</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7811024689617730980">自動リセットの日付として 1～31 のうちいずれかを選択します</translation>
 <translation id="7813073042185856802">山</translation>
@@ -1613,7 +1613,7 @@
 <translation id="8079860070590459552">花畑</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="8082644724189923105">キーボード ゾーン</translation>
-<translation id="808894953321890993">パスワードの変更</translation>
+<translation id="808894953321890993">パスワードを変更</translation>
 <translation id="8088963492174775412">押すと録音を開始します</translation>
 <translation id="8094062939584182041">この問題に関するメールの送信を Google に許可する</translation>
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>

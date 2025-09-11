@@ -1019,7 +1019,7 @@
 <translation id="1682696837763999627">大きなマウスカーソル</translation>
 <translation id="1682867089915960590">カーソル ブラウジングをオンにしますか？</translation>
 <translation id="1686550358074589746">グライド入力を有効化</translation>
-<translation id="1686785653877010442">サイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信する場合がよくあります。</translation>
+<translation id="1686785653877010442">多くのサイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信します。</translation>
 <translation id="168715261339224929">お使いのどのデバイスでも同じブックマークを使用するには、同期を有効にします。</translation>
 <translation id="1688935057616748272">文字を入力してください</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
@@ -9675,7 +9675,7 @@
 <translation id="7799650166313181433">このデバイスと共有できるのは、<ph name="USER_EMAIL" /> にログインしているデバイスのみです。お使いのデバイス間では共有リクエストを承認する必要はありません。</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" /> のモバイルデータ通信を使用します。携帯通信会社によっては追加料金が発生する場合があります。バッテリー使用量が増える可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
-<translation id="780301667611848630">キャンセル</translation>
+<translation id="780301667611848630">利用しない</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
 <translation id="7805371082115476536">軽</translation>
@@ -10107,7 +10107,7 @@
 <translation id="8086121155774250556">このタブはデスクトップ画面を共有しています</translation>
 <translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
-<translation id="808894953321890993">パスワードの変更</translation>
+<translation id="808894953321890993">パスワードを変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
 <translation id="8090513782447872344">またいつでもご確認いただけます</translation>
 <translation id="8090686009202681725">AI を使用してテーマを作成</translation>

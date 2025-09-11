@@ -569,7 +569,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1383381142702995121">Gerenciar extensão</translation>
 <translation id="1383597849754832576">Não foi possível baixar os arquivos de fala. Tente novamente mais tarde.</translation>
 <translation id="1383861834909034572">Abrir quando estiver concluído</translation>
-<translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1383876407941801731">Pesquise</translation>
 <translation id="1384849755549338773">Oferecer o Google Tradutor para sites em outros idiomas</translation>
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1388253969141979417">Permitir o uso do microfone</translation>
@@ -743,7 +743,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
 <translation id="1507246803636407672">&amp;Descartar</translation>
-<translation id="1508931164824684991">Os sites podem usar o JavaScript</translation>
+<translation id="1508931164824684991">Os sites podem usar JavaScript</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acessar qualquer <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
 <translation id="1510238584712386396">Iniciador</translation>
@@ -1689,7 +1689,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2144536955299248197">Visualizador do certificado: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desenvolvimento de apps Android no Linux</translation>
 <translation id="2145917706968602070">Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
-<translation id="2146263598007866206">Os sites podem fazer o download automático de arquivos relacionados em conjunto para economizar tempo</translation>
+<translation id="2146263598007866206">Os sites podem fazer baixar automaticamente arquivos relacionados em conjunto para economizar tempo</translation>
 <translation id="2147218225094845757">Ocultar painel lateral</translation>
 <translation id="2147282432401652483">comando</translation>
 <translation id="2147402320887035428">Esse arquivo pode ser um malware.<ph name="LINE_BREAK" />A Navegação segura do Google está analisando se o arquivo é seguro. A verificação geralmente leva alguns segundos.</translation>
@@ -2464,7 +2464,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2670102641511624474">O app <ph name="APP_NAME" /> está compartilhando uma guia do Chrome.</translation>
 <translation id="2670350619068134931">Animações reduzidas</translation>
-<translation id="2670403088701171361">Não permitir que os sites acessem os textos e imagens da área de transferência</translation>
+<translation id="2670403088701171361">Não permitir que os sites acessem textos e imagens da sua área de transferência</translation>
 <translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2671451824761031126">Seus favoritos e configurações estão prontos</translation>
 <translation id="2672142220933875349">Arquivo crx defeituoso, a descompactação falhou.</translation>
@@ -2924,7 +2924,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="2990313168615879645">Adicionar Conta do Google</translation>
 <translation id="2990375978470734995">Para que essa mudança seja aplicada, reconecte os acessórios externos.</translation>
-<translation id="2990583317361835189">Não permitir que os sites usem os sensores de movimento</translation>
+<translation id="2990583317361835189">Não permitir que os sites usem sensores de movimento</translation>
 <translation id="2991182900092497283">Informe um motivo para colar esses dados:</translation>
 <translation id="2992931425024192067">Mostrar todo o conteúdo de notificações</translation>
 <translation id="2993517869960930405">Informações sobre o aplicativo</translation>
@@ -3036,7 +3036,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3060987956645097882">Não foi possível estabelecer uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="3061302636956643119">O texto será enviado ao Google para processamento.</translation>
 <translation id="306166624240243643">Revisar atualizações de nome e URL</translation>
-<translation id="3064871050034234884">Os sites podem ter áudio</translation>
+<translation id="3064871050034234884">Os sites podem tocar sons</translation>
 <translation id="3065041951436100775">Feedback para guia desativada.</translation>
 <translation id="3065522099314259755">Latência de repetição do teclado</translation>
 <translation id="3067198179881736288">Instalar app?</translation>
@@ -3094,7 +3094,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3109724472072898302">Recolhido</translation>
 <translation id="3112292765614504292">Tamanho do app: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Adicionou esta guia</translation>
-<translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no dispositivo</translation>
+<translation id="311394601889664316">Não permitir que os sites editem arquivos e pastas no dispositivo</translation>
 <translation id="3113970906450647715">Botão liberado</translation>
 <translation id="3115147772012638511">Aguardando o cache...</translation>
 <translation id="3115580024857770654">Recolher tudo</translation>
@@ -3216,7 +3216,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208584281581115441">Confirmar agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
-<translation id="3209703592917353472">Um site que você visita pode salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada em um site ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
+<translation id="3209703592917353472">Os sites que você visita podem salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada a eles ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
 <translation id="32101887417650595">Não foi possível se conectar à impressora</translation>
 <translation id="3210736980143419785">Não foi possível concluir o download</translation>
 <translation id="321084946921799184">Amarelo e branco</translation>
@@ -4042,7 +4042,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3774166835015494435">Fotos e notificações recentes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
-<translation id="3776508619697147021">Os sites podem pedir para fazer o download automático de vários arquivos</translation>
+<translation id="3776508619697147021">Os sites podem pedir para baixar automaticamente vários arquivos</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Chrome Web Store.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o celular</translation>
 <translation id="3777796259512476958">Desconecta você da maioria dos sites</translation>
@@ -9839,7 +9839,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7893153962594818789">O Bluetooth está desativado neste <ph name="DEVICE_TYPE" />. Digite sua senha e ative o Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (padrão)</translation>
 <translation id="7896292361319775586">Salvar <ph name="FILE" />?</translation>
-<translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
+<translation id="789722939441020330">Não permitir que os sites baixem automaticamente vários arquivos</translation>
 <translation id="7897900149154324287">No futuro, não se esqueça de ejetar o dispositivo removível no aplicativo "Arquivos" antes de desconectá-lo. Caso contrário, você poderá perder dados.</translation>
 <translation id="7898725031477653577">Sempre traduzir</translation>
 <translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador, as configurações e qual o software instalado no dispositivo.</translation>
