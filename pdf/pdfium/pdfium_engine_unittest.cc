@@ -2383,16 +2383,34 @@ class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
 #endif  // BUILDFLAG(IS_WIN)
   static constexpr gfx::PointF kStartTextPositionPage0{50.0f, 110.0f};
   static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
+
+  void TearDown() override {
+    // Reset `engine_` before PDFium gets uninitialized.
+    engine_.reset();
+    PDFiumEngineInkTest::TearDown();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    if (engine_) {
+      // Plugin size chosen so all pages of the document are visible.
+      engine_->PluginSizeUpdated({1024, 4096});
+
+      EXPECT_THAT(engine_->GetSelectedText(), IsEmpty());
+      EXPECT_THAT(engine_->GetSelectionRectMap(), IsEmpty());
+    }
+    return engine_.get();
+  }
+
+ private:
+  std::unique_ptr<PDFiumEngine> engine_;
+  TestClient client_;
 };
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByNonTextPoint) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Test point not on a page.
   EXPECT_FALSE(engine->ExtendSelectionByPoint({-30.0f, -30.0f}));
@@ -2402,21 +2420,13 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByNonTextPoint) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
 
   constexpr gfx::PointF kEndPosition(100.0f, 110.0f);
-  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kEndPosition));
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
 #if BUILDFLAG(IS_WIN)
@@ -2431,21 +2441,13 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
 
   constexpr gfx::PointF kEndPosition(75.0f, 480.0f);
-  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kEndPosition));
 
   constexpr char kExpectedText[] = "Goodbye, world!\nHello, ";
   EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
@@ -2464,16 +2466,8 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/2);
 
@@ -2490,13 +2484,9 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("form_text_fields.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Non-text position.
   EXPECT_FALSE(engine->IsSelectableTextOrLinkArea(kNonTextPositionPage0));
@@ -2509,29 +2499,16 @@ TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaLink) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Link position.
   EXPECT_TRUE(engine->IsSelectableTextOrLinkArea({155.0f, 230.0f}));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithTripleClick) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/3);
 
