@@ -149,9 +149,6 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @param newPos The new position of the selected tile that was moved.
          */
         void onCustomTileReorder(int newPos);
-
-        /** Called on Custom Tile add, pin, unpin, unpin-undo, update. */
-        void onCustomTileNonReorderChange();
     }
 
     /**
@@ -632,7 +629,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     private class CustomTileModificationDelegateImpl implements CustomTileModificationDelegate {
-        public CustomTileModificationDelegateImpl() {}
+        CustomTileModificationDelegateImpl() {}
 
         // CustomTileModificationDelegate implementation.
         @Override
@@ -701,11 +698,6 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (tile != null) {
                 mObserver.onCustomTileCreation(tile);
             }
-            mObserver.onCustomTileNonReorderChange();
-        }
-
-        private void handleCustomTileDelete() {
-            mObserver.onCustomTileNonReorderChange();
         }
 
         private boolean addCustomLinkAndUpdateOnSuccess(
@@ -742,8 +734,6 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         private void deleteCustomLinkAndUpdateOnSuccess(Tile tile) {
             // On success, onSiteSuggestionsAvailable() triggers.
-            Runnable onSuccessCallback = this::handleCustomTileDelete;
-            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             boolean success = mTileGroupDelegate.deleteCustomLink(tile.getUrl());
             if (success) {
                 mTileGroupDelegate.showTileUnpinSnackbar(
@@ -752,8 +742,6 @@ public class TileGroup implements MostVisitedSites.Observer {
                             addCustomLinkAndUpdateOnSuccess(
                                     tile.getTitle(), tile.getUrl(), tile.getIndex());
                         });
-            } else {
-                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
             }
         }
 
@@ -775,7 +763,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     private class OfflineModelObserver extends SuggestionsOfflineModelObserver<Tile> {
-        public OfflineModelObserver(OfflinePageBridge bridge) {
+        OfflineModelObserver(OfflinePageBridge bridge) {
             super(bridge);
         }
 
