@@ -594,8 +594,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(action_detail.redirect_url(), "http://google.com/pages/");
 }
 
+// TODO(crbug.com/444383306): Deflake this test on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetectsAndReportsTabsApiSignal \
+  DISABLED_DetectsAndReportsTabsApiSignal
+#else
+#define MAYBE_DetectsAndReportsTabsApiSignal DetectsAndReportsTabsApiSignal
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
-                       DetectsAndReportsTabsApiSignal) {
+                       MAYBE_DetectsAndReportsTabsApiSignal) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
