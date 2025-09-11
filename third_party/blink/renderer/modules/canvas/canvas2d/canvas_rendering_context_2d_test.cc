@@ -343,7 +343,26 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
-  test::TaskEnvironment task_environment_;
+  void LoseContext(bool wait_for_context_lost_callback = true) {
+    EXPECT_FALSE(Context2D()->IsContextLost());
+    base::RunLoop run_loop;
+    if (wait_for_context_lost_callback) {
+      CanvasElement().addEventListener(
+          event_type_names::kContextlost,
+          MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    }
+    test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+        GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+    test::RunPendingTasks();
+    if (wait_for_context_lost_callback) {
+      run_loop.Run();
+    }
+    EXPECT_TRUE(Context2D()->IsContextLost());
+    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
+  }
+
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<HTMLCanvasElement> canvas_element_;
 
@@ -516,6 +535,8 @@ void CanvasRenderingContext2DTestBase::TearDown() {
 
   // Prevent CanvasPerformanceMonitor state from leaking between tests.
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+
+  task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 //============================================================================
@@ -1926,24 +1947,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
-  // Set a minimal restoration delay to make the test fast.
-  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
-
   // Lose the GPU context.
-  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
-      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-
-  // Wait for context to be lost.
-  {
-    EXPECT_FALSE(Context2D()->IsContextLost());
-    base::RunLoop run_loop;
-    CanvasElement().addEventListener(
-        event_type_names::kContextlost,
-        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
-  }
+  LoseContext();
 
   // Wait for context to be restored.
   {
@@ -1952,7 +1957,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     CanvasElement().addEventListener(
         event_type_names::kContextrestored,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
-    run_loop.Run();
+    task_environment_.FastForwardBy(
+        BaseRenderingContext2D::kTryRestoreContextInterval);
+    EXPECT_TRUE(run_loop.AnyQuitCalled());
     EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
     EXPECT_THAT(Context2D()->GetResourceProviderForTesting(),
@@ -1970,30 +1977,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
-  // Set a minimal restoration delay to make the test fast.
-  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
-
-  // Lose the GPU context.
-  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
-      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-
-  // Wait for context to be lost.
-  {
-    EXPECT_FALSE(Context2D()->IsContextLost());
-    base::RunLoop run_loop;
-    CanvasElement().addEventListener(
-        event_type_names::kContextlost,
-        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
-  }
+  LoseContext();
 
   // Context restoration will fail, wait for the context to give up.
   {
     EXPECT_TRUE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
+    task_environment_.FastForwardBy(
+        (BaseRenderingContext2D::kMaxTryRestoreContextAttempts + 1) *
+        BaseRenderingContext2D::kTryRestoreContextInterval);
     run_loop.Run();
     EXPECT_TRUE(Context2D()->IsContextLost());
     EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
@@ -2352,9 +2345,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasHibernationHandler* handler = Context2D()->GetHibernationHandler();
   viz::TestContextSupport* context_support = test_context_provider_->support();
 
-  // Set a minimal restoration delay to make the test fast.
-  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler->IsHibernating());
   EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
 
@@ -2369,11 +2359,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().addEventListener(
       event_type_names::kContextrestored,
       MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
-  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
-      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-  EXPECT_FALSE(Context2D()->IsContextLost());
-  blink::test::RunPendingTasks();
-  EXPECT_TRUE(Context2D()->IsContextLost());
+  LoseContext(false);
 
   // Run hibernation task.
   RunIdleTasks();
@@ -2386,6 +2372,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
 
   // Wait for context to be restored.
+  task_environment_.FastForwardBy(
+      BaseRenderingContext2D::kTryRestoreContextInterval);
   run_loop.Run();
   EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
@@ -2865,19 +2853,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->GetOrCreateCanvas2DResourceProvider();
 
   auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
-  base::RunLoop run_loop;
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
-  // NOTE: It is necessary to install the quit closure before running tasks
-  // below in order to avoid test flake, as it is possible that encoding occurs
-  // on a background thread *before* we run the run loop to wait for encoding.
-  // As long as the quit closure has been invoked as part of encoding in that
-  // case, the run loop will immediately exit out when Run() is invoked
-  // (otherwise it would spin until timing out).
-  handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
 
   EXPECT_FALSE(handler.is_encoded());
   EXPECT_FALSE(handler.IsHibernating());
@@ -2895,7 +2870,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_TRUE(handler.IsHibernating());
 
   // Wait for encoding to complete on a background thread.
-  run_loop.Run();
+  task_environment_.FastForwardBy(
+      CanvasHibernationHandler::kBeforeCompressionDelay);
   EXPECT_TRUE(handler.is_encoded());
 
   // Draw into the canvas while the page is backgrounded.
@@ -2917,20 +2893,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
-  base::RunLoop run_loop;
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
-  // NOTE: It is necessary to install the quit closure before running tasks
-  // below in order to avoid test flake, as it is possible that encoding occurs
-  // on a background thread *before* we run the run loop to wait for encoding.
-  // As long as the quit closure has been invoked as part of encoding in that
-  // case, the run loop will immediately exit out when Run() is invoked
-  // (otherwise it would spin until timing out).
-  handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
-
   ASSERT_FALSE(handler.is_encoded());
   ASSERT_FALSE(handler.IsHibernating());
 
@@ -2948,8 +2910,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(handler.IsHibernating());
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
-  // Wait for encoding to complete on a background thread.
-  run_loop.Run();
+  task_environment_.FastForwardBy(
+      CanvasHibernationHandler::kBeforeCompressionDelay);
   ASSERT_TRUE(handler.is_encoded());
 
   // Taking a snapshot of the canvas while hibernating should produce an

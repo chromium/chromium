@@ -177,7 +177,7 @@ void CanvasHibernationHandler::SaveForHibernation(
       task_runner, FROM_HERE,
       base::BindOnce(&CanvasHibernationHandler::OnAfterHibernation,
                      weak_ptr_factory_.GetWeakPtr(), epoch_),
-      before_compression_delay_);
+      kBeforeCompressionDelay);
 }
 
 void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
@@ -219,10 +219,6 @@ void CanvasHibernationHandler::OnEncoded(
     DCHECK_EQ(image_.get(), params->image.get());
     encoded_ = encoded;
     image_ = nullptr;
-  }
-
-  if (on_encoded_callback_for_testing_) {
-    on_encoded_callback_for_testing_.Run();
   }
 }
 
