@@ -1853,17 +1853,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter size
 [Worker]     getter time
 [Worker]     method constructor
-[Worker] interface RTCRtpTransportProcessor
-[Worker]     attribute @@toStringTag
-[Worker]     getter customMaxBandwidth
-[Worker]     method constructor
-[Worker]     method readReceivedAcks
-[Worker]     method readSentRtp
-[Worker]     setter customMaxBandwidth
-[Worker] interface RTCRtpTransportProcessorEvent : Event
-[Worker]     attribute @@toStringTag
-[Worker]     getter processor
-[Worker]     method constructor
 [Worker] interface RTCTransformEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter transformer
@@ -4143,7 +4132,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
-[Worker]     getter onrtcrtptransportprocessor
 [Worker]     getter onrtctransform
 [Worker]     method cancelAnimationFrame
 [Worker]     method close
@@ -4157,7 +4145,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
-[Worker]     setter onrtcrtptransportprocessor
 [Worker]     setter onrtctransform
 PASS successfullyParsed is true
 
