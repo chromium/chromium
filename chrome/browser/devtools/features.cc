@@ -177,7 +177,7 @@ BASE_FEATURE(kDevToolsAiDebugWithAi,
 // Whether the global AI entrypoint is enabled.
 BASE_FEATURE(kDevToolsGlobalAiButton,
              "DevToolsGlobalAiButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether the promotion animation is enabled.
 const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled{
     &kDevToolsGlobalAiButton, "promotion_enabled",
