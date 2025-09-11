@@ -258,6 +258,14 @@ crbug.com/436306660 [ android android-brya ] WebCodecs_ManualSVC_av01.0.04M.08_p
 crbug.com/436306660 [ android android-brya ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
 crbug.com/436306660 [ android android-brya ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 crbug.com/436306660 [ android android-brya ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-software [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-hardware [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
+crbug.com/444476426 [ android android-brya ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 # Common Android Desktop Failures
 crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
