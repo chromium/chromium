@@ -5,6 +5,7 @@
 #include "services/network/devtools_durable_msg.h"
 
 #include "base/functional/callback_helpers.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
@@ -24,13 +25,11 @@ class DurableMessageEncodedSourceStream : public net::SourceStream {
            net::CompletionOnceCallback callback) override {
     size_t consume = std::min(base::checked_cast<size_t>(buffer_size),
                               encoded_bytes_.size());
-    if (consume <= 0) {
+    if (consume == 0) {
       return 0;
     }
 
-    auto split_buffer = encoded_bytes_.split_at(consume);
-    dest_buffer->span().copy_prefix_from(split_buffer.first);
-    encoded_bytes_ = split_buffer.second;
+    dest_buffer->span().copy_prefix_from(encoded_bytes_.take_first(consume));
     return base::checked_cast<int>(consume);
   }
 
@@ -95,7 +94,9 @@ mojo_base::BigBuffer DevtoolsDurableMessage::Retrieve() const {
       // Update the offset of the `decode_buffer` to reflect the new data.
       decode_buffer->DidConsume(result);
     } else {
-      break;
+      // If someone makes a FilterSourceStream that decompresses asynchronously
+      // (on another thread, for example), then crash noisily.
+      CHECK_NE(result, net::ERR_IO_PENDING);
     }
   }
 

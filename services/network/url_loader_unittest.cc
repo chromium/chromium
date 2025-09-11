@@ -3058,7 +3058,7 @@ TEST_F(URLLoaderTest, DurableMessagePerformsClientSideDecodingGzip) {
   MockDurableMessageAccountingDelegate accounting_delegate;
   DevtoolsDurableMessage durable_message("test", accounting_delegate);
   set_durable_message(durable_message.GetWeakPtr());
-  size_t kGzippedBodyLength = 60;
+  constexpr size_t kGzippedBodyLength = 60;
   set_sniff();
   set_client_side_content_decoding_enabled();
   std::string encoded_body;

@@ -13,9 +13,12 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/filter/source_stream_type.h"
 #include "services/network/devtools_durable_msg_accounting_delegate.h"
+
+namespace mojo_base {
+class BigBuffer;
+}
 
 namespace network {
 
@@ -41,7 +44,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessage {
   base::WeakPtr<DevtoolsDurableMessage> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-  void SetClientDecodingTypes(std::vector<net::SourceStreamType> types) {
+  void set_client_decoding_types(std::vector<net::SourceStreamType> types) {
     client_decoding_types_ = std::move(types);
   }
 

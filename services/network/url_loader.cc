@@ -1324,7 +1324,7 @@ void URLLoader::ContinueOnResponseStarted() {
   // If client-side content decoding is requested, store the types of decoding
   // to be used with the Durable Message so it can decode on retrieval.
   if (devtools_durable_message_) {
-    devtools_durable_message_->SetClientDecodingTypes(
+    devtools_durable_message_->set_client_decoding_types(
         response_->client_side_content_decoding_types);
   }
 

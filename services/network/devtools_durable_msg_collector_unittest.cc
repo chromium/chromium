@@ -268,7 +268,7 @@ TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveDecodesGzipBody) {
   const std::string devtools_request_id = "request1";
   auto msg1 = collector.CreateDurableMessage(devtools_request_id);
   ASSERT_NE(msg1, nullptr);
-  msg1->SetClientDecodingTypes({net::SourceStreamType::kGzip});
+  msg1->set_client_decoding_types({net::SourceStreamType::kGzip});
 
   const std::string original_body = "Hello, world! This is a test.";
   auto compressed = net::CompressGzip(original_body);
