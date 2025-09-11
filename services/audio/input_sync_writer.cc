@@ -5,6 +5,7 @@
 #include "services/audio/input_sync_writer.h"
 
 #include <algorithm>
+#include <cinttypes>
 #include <memory>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/audio_glitch_info.h"
@@ -83,9 +85,12 @@ InputSyncWriter::InputSyncWriter(
            shared_memory_mapping_.size());
   CHECK_EQ(shared_memory_segment_size_,
            audio_bus_memory_size_ + sizeof(media::AudioInputBufferParameters));
-  DVLOG(1) << "shared memory size: " << shared_memory_mapping_.size();
-  DVLOG(1) << "shared memory segment count: " << shared_memory_segment_count;
-  DVLOG(1) << "audio bus memory size: " << audio_bus_memory_size_;
+  SendLogMessage("%s({shared_memory_segment_count=%u}, {params=%s})", __func__,
+                 shared_memory_segment_count,
+                 params.AsHumanReadableString().c_str());
+  SendLogMessage(
+      "%s => (shared_memory_segment_size=[%u], audio_bus_memory_size=[%u])",
+      __func__, shared_memory_segment_size_, audio_bus_memory_size_);
   DCHECK(glitch_counter_);
 
   audio_buses_.resize(shared_memory_segment_count);
@@ -189,8 +194,7 @@ void InputSyncWriter::Write(const media::AudioBus* data,
     overflow_data_.erase(overflow_data_.begin(), data_it);
 
     if (overflow_data_.empty()) {
-      static const char* message = "AISW: Fifo emptied.";
-      log_callback_.Run(message);
+      SendLogMessage("%s => (FIFO emptied)", __func__);
     }
   }
 
@@ -225,23 +229,21 @@ void InputSyncWriter::CheckTimeSinceLastWrite() {
   static const base::TimeDelta kLogDelayThreadhold = base::Milliseconds(500);
 
   base::TimeTicks new_write_time = base::TimeTicks::Now();
-  std::ostringstream oss;
   if (last_write_time_.is_null()) {
     // This is the first time Write is called.
     base::TimeDelta interval = new_write_time - creation_time_;
-    oss << "AISW::Write: audio input data received for the first time: delay "
-           "= "
-        << interval.InMilliseconds() << "ms";
+    SendLogMessage(
+        "%s => (audio input data received for the first time: delay=%" PRId64
+        " ms)",
+        __func__, interval.InMilliseconds());
   } else {
     base::TimeDelta interval = new_write_time - last_write_time_;
     if (interval > kLogDelayThreadhold) {
-      oss << "AISW::Write: audio input data delay unexpectedly long: delay = "
-          << interval.InMilliseconds() << "ms";
+      SendLogMessage(
+          "%s => (WARNING: audio input data delay unexpectedly long: "
+          "delay=%" PRId64 " ms)",
+          __func__, interval.InMilliseconds());
     }
-  }
-  const std::string log_message = oss.str();
-  if (!log_message.empty()) {
-    log_callback_.Run(log_message);
   }
 
   last_write_time_ = new_write_time;
@@ -321,14 +323,12 @@ bool InputSyncWriter::PushDataToFifo(
         "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
         TRACE_EVENT_SCOPE_THREAD);
     if (fifo_full_count_ <= 50 && fifo_full_count_ % 10 == 0) {
-      static const char* error_message = "AISW: No room in fifo.";
-      LOG(WARNING) << error_message;
-      log_callback_.Run(error_message);
+      SendLogMessage("%s => (WARNING: no room in FIFO)", __func__);
       if (fifo_full_count_ == 50) {
-        static const char* cap_error_message =
-            "AISW: Log cap reached, suppressing further fifo overflow logs.";
-        LOG(WARNING) << cap_error_message;
-        log_callback_.Run(error_message);
+        SendLogMessage(
+            "%s => (WARNING: log cap reached, suppressing further FIFO "
+            "overflow logs)",
+            __func__);
       }
     }
     ++fifo_full_count_;
@@ -336,8 +336,7 @@ bool InputSyncWriter::PushDataToFifo(
   }
 
   if (overflow_data_.empty()) {
-    static const char* message = "AISW: Starting to use fifo.";
-    log_callback_.Run(message);
+    SendLogMessage("%s => (starting to use the FIFO)", __func__);
   }
 
   // Push data to fifo.
@@ -395,9 +394,8 @@ bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
     // amount of logs.
     if (!had_socket_error_) {
       had_socket_error_ = true;
-      static const char* error_message = "AISW: No room in socket buffer.";
-      PLOG(WARNING) << error_message;
-      log_callback_.Run(error_message);
+      SendLogMessage("%s => (WARNING: no room in socket buffer, dropped data)",
+                     __func__);
       TRACE_EVENT_INSTANT0(
           "audio", "InputSyncWriter: No room in socket buffer - dropped data",
           TRACE_EVENT_SCOPE_THREAD);
@@ -421,6 +419,19 @@ media::AudioInputBuffer* InputSyncWriter::GetSharedInputBuffer(
   CHECK_LT(segment_id, audio_buses_.size());
   UNSAFE_TODO(ptr += segment_id * shared_memory_segment_size_);
   return reinterpret_cast<media::AudioInputBuffer*>(ptr);
+}
+
+void InputSyncWriter::SendLogMessage(const char* format, ...) {
+  if (log_callback_.is_null()) {
+    return;
+  }
+  va_list args;
+  va_start(args, format);
+  log_callback_.Run(
+      base::StrCat({"AISW::", base::StringPrintV(format, args),
+                    base::StringPrintf(" [this=0x%" PRIXPTR "]",
+                                       reinterpret_cast<uintptr_t>(this))}));
+  va_end(args);
 }
 
 }  // namespace audio

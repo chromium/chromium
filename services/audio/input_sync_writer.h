@@ -106,6 +106,9 @@ class InputSyncWriter final : public InputController::SyncWriter {
 
   media::AudioInputBuffer* GetSharedInputBuffer(uint32_t segment_id);
 
+  // Helper method for creating internal log messages prefixed with "AISW::".
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
+
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 
   // Socket used to signal that audio data is ready.
