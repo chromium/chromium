@@ -274,6 +274,14 @@ def _check_uncommitted_changes(cwd):
             'commit or stash them before running the evaluation.')
 
 
+def _build_chromium(cwd):
+    logging.info('Running `gn gen out/Default`')
+    subprocess.check_call(['gn', 'gen', 'out/Default'], cwd=cwd)
+    logging.info('Running `autoninja -C out/Default`')
+    subprocess.check_call(['autoninja', '-C', 'out/Default'], cwd=cwd)
+    logging.info('Finished building')
+
+
 def _check_btrfs(root_path) -> bool:
     result = subprocess.run(
         ['stat', '-c', '%i', root_path],
@@ -401,6 +409,9 @@ def _parse_args() -> argparse.Namespace:
         help=(f'The total number of shards used to run these tests. If set, '
               f'--shard-index must also be set. Can also be set via '
               f'{_TOTAL_SHARDS_ENV_VAR}.'))
+    parser.add_argument('--no-build',
+                        action='store_true',
+                        help='Do not build out/Default.')
     promptfoo_install_group = parser.add_mutually_exclusive_group()
     promptfoo_install_group.add_argument(
         '--install-promptfoo-from-npm',
@@ -459,6 +470,9 @@ def main() -> int:
         subprocess.run(['sudo', '-v'], check=True)
 
     _check_uncommitted_changes(src_path)
+
+    if not args.no_build:
+        _build_chromium(src_path)
 
     promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
     promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
