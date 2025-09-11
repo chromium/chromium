@@ -4,13 +4,14 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -115,7 +116,7 @@ void TestSizeByteByByte(const char* png_file,
   EXPECT_FALSE(decoder->Failed());
 }
 
-void WriteUint32(uint32_t val, png_byte* data) {
+void WriteUint32(uint32_t val, uint8_t* data) {
   data[0] = val >> 24;
   UNSAFE_TODO(data[1]) = val >> 16;
   UNSAFE_TODO(data[2]) = val >> 8;
@@ -224,7 +225,7 @@ void TestInvalidFctlSize(const char* png_file,
   ASSERT_FALSE(decoder->Failed());
 
   // Append the wrong size to the data stream
-  png_byte size_chunk[4];
+  uint8_t size_chunk[4];
   WriteUint32(20, size_chunk);
   invalid_data->Append(size_chunk);
 
@@ -595,7 +596,7 @@ TEST(AnimatedPNGTests, FrameOverflowX) {
   scoped_refptr<SharedBuffer> modified_data =
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
-  png_byte fctl[kFctlSize];
+  uint8_t fctl[kFctlSize];
   UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
 
   // Set the x_offset to a value that will overflow
@@ -629,7 +630,7 @@ TEST(AnimatedPNGTests, FrameOverflowY) {
   scoped_refptr<SharedBuffer> modified_data =
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
-  png_byte fctl[kFctlSize];
+  uint8_t fctl[kFctlSize];
   UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
 
   // Set the y_offset to a value that will overflow
@@ -662,7 +663,7 @@ TEST(AnimatedPNGTests, IdatSizeMismatch) {
   scoped_refptr<SharedBuffer> modified_data =
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
-  png_byte fctl[kFctlSize];
+  uint8_t fctl[kFctlSize];
   UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
   // Set the height to a smaller value, so it does not fill the image.
   WriteUint32(3, UNSAFE_TODO(fctl + 16));
@@ -695,7 +696,7 @@ TEST(AnimatedPNGTests, EmptyFdatFails) {
   constexpr size_t kOffsetThirdFdat = 352;
   scoped_refptr<SharedBuffer> modified_data =
       SharedBuffer::Create(base::span(data).first(kOffsetThirdFdat));
-  png_byte four_bytes[4u];
+  uint8_t four_bytes[4u];
   WriteUint32(0, four_bytes);
   modified_data->Append(four_bytes);
 
@@ -735,7 +736,7 @@ TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
   scoped_refptr<SharedBuffer> modified_data =
       SharedBuffer::Create(base::span(data).first(kOffsetThirdFctl));
   const size_t kFctlSize = 38u;
-  png_byte fctl[kFctlSize];
+  uint8_t fctl[kFctlSize];
   UNSAFE_TODO(memcpy(fctl, data.data() + kOffsetThirdFctl, kFctlSize));
   // Modify offset and crc.
   WriteUint32(4, UNSAFE_TODO(fctl + 20u));
@@ -913,7 +914,7 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
       SharedBuffer::Create(base::span(full_data).first(kPostIDAT));
   const size_t kFcTLSize = 38u;
   const size_t kFdATSize = 31u;
-  png_byte fdat[kFdATSize];
+  uint8_t fdat[kFdATSize];
   UNSAFE_TODO(
       memcpy(fdat, full_data.data() + kPostIDAT + kFcTLSize, kFdATSize));
   // Modify the sequence number
@@ -963,7 +964,7 @@ TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   const size_t kOffsetDisposalOp = 241 + 8 + 24;
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(base::span(full_data).first(kOffsetDisposalOp));
-  png_byte disposal_and_blending[6u];
+  uint8_t disposal_and_blending[6u];
   disposal_and_blending[0] = 7;
   disposal_and_blending[1] = 9;
   WriteUint32(2408835439u, UNSAFE_TODO(disposal_and_blending + 2u));
@@ -1046,7 +1047,7 @@ TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
   // No need to modify the blend op
   data->Append(base::span(original_data).subspan(kDisposeOffset + 1, 1u));
   // Modify the CRC
-  png_byte crc[4];
+  uint8_t crc[4];
   WriteUint32(2226670956, crc);
   data->Append(crc);
   data->Append(base::span(original_data).subspan(data->size()));
@@ -1094,7 +1095,7 @@ TEST(AnimatedPNGTests, SubsetFromIHDR) {
       SharedBuffer::Create(base::span(original_data).first(kFcTLOffset));
 
   const size_t kFcTLSize = 38u;
-  png_byte fc_tl[kFcTLSize];
+  uint8_t fc_tl[kFcTLSize];
   UNSAFE_TODO(memcpy(fc_tl, original_data.data() + kFcTLOffset, kFcTLSize));
   // Modify to have a subset frame (yOffset 1, height 34 out of 35).
   WriteUint32(34, UNSAFE_TODO(fc_tl + 16u));
@@ -1166,7 +1167,7 @@ TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
 
   // Arbitrary chunk of data.
   constexpr size_t kExtraChunkSize = 13;
-  constexpr png_byte kExtraChunk[kExtraChunkSize] = {
+  constexpr uint8_t kExtraChunk[kExtraChunkSize] = {
       0, 0, 0, 1, 't', 'R', 'c', 'N', 68, 82, 0, 87, 10};
   data->Append(kExtraChunk);
 
