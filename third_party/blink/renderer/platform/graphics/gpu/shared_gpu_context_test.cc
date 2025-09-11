@@ -8,8 +8,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
-#include "components/viz/test/test_gles2_interface.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,19 +99,13 @@ class SharedGpuContextTest : public Test {
     handle_ =
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
             task_runner_);
-    test_context_provider_ = viz::TestContextProvider::Create();
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
 
-    // These tests require a GLES2 context as that is what
-    // SharedGPUContext::IsValidWithoutRestoring() checks. However, they also
-    // create CanvasResourceProviderSharedImage instances, which we are in the
-    // process of changing to always require GPU rasterization. Just set GPU
-    // rasterization enabled on the GLES context to satisfy both requirements
-    // (note that the tests here don't actually *do* any canvas 2D
-    // rasterization).
-    test_context_provider_->UnboundTestContextGL()->set_gpu_rasterization(true);
-    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
-                                    /*cache = */ nullptr,
-                                    SetIsContextLost::kSetToFalse);
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get(),
+                                     /*cache = */ nullptr,
+                                     SetIsContextLost::kSetToFalse);
   }
 
   void TearDown() override {
@@ -132,7 +125,7 @@ TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
   EXPECT_NE(SharedGpuContext::ContextProviderWrapper(), nullptr);
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context =
       SharedGpuContext::ContextProviderWrapper();
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   EXPECT_TRUE(!!context);
 
@@ -182,7 +175,7 @@ TEST_F(SoftwareCompositingTest, CompositingMode) {
 TEST_F(SharedGpuContextTest, AccelerateImageBufferSurfaceAutoRecovery) {
   // Verifies that after a context loss, attempting to allocate an
   // AcceleratedImageBufferSurface will restore the context and succeed
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(

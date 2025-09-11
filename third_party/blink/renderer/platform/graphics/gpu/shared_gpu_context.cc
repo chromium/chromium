@@ -237,9 +237,17 @@ bool SharedGpuContext::IsValidWithoutRestoring() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   if (!this_ptr->context_provider_wrapper_)
     return false;
-  return this_ptr->context_provider_wrapper_->ContextProvider()
-             .ContextGL()
-             ->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
+  auto* gl_context =
+      this_ptr->context_provider_wrapper_->ContextProvider().ContextGL();
+
+  if (gl_context) {
+    return gl_context->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
+  }
+
+  auto* raster_interface =
+      this_ptr->context_provider_wrapper_->ContextProvider().RasterInterface();
+  CHECK(raster_interface);
+  return raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
 bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
