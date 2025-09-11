@@ -30,6 +30,8 @@ source_set("sync") {
     "local_or_syncable_bookmark_sync_service_factory.h",
     "prefs/chrome_syncable_prefs_database.cc",
     "prefs/chrome_syncable_prefs_database.h",
+    "prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.cc",
+    "prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.h",
     "prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.cc",
     "prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h",
     "send_tab_to_self_sync_service_factory.cc",
