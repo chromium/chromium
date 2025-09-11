@@ -207,6 +207,12 @@ GWSPageLoadMetricsObserver::NavigationSourceType GetBackgroundedState(
       return type;
   }
 }
+
+std::string GetProtocolSuffix(
+    const net::HttpConnectionInfoCoarse http_connection_info) {
+  return base::StrCat(
+      {".", net::HttpConnectionInfoCoarseToString(http_connection_info)});
+}
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -635,7 +641,7 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
         timing.first_request_start_time - *timing.first_fetch_start_time);
   }
 
-  auto protocol = net::HttpConnectionInfoCoarseToString(http_connection_info_);
+  auto protocol = GetProtocolSuffix(http_connection_info_);
   auto record_histogram_with_suffix =
       [&protocol](const std::string& histogram_name, base::TimeDelta timing) {
         auto histogram_with_suffix = base::StrCat({histogram_name, protocol});
@@ -747,7 +753,7 @@ void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
   base::UmaHistogramEnumeration(internal::kHistogramGWSConnectionReuseStatus,
                                 status);
 
-  auto protocol = net::HttpConnectionInfoCoarseToString(http_connection_info_);
+  auto protocol = GetProtocolSuffix(http_connection_info_);
   auto total_histogram_name =
       base::StrCat({internal::kHistogramGWSConnectionReuseStatus, protocol});
   base::UmaHistogramEnumeration(total_histogram_name, status);
