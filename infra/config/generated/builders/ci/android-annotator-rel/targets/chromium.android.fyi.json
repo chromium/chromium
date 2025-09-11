@@ -2,6 +2,7 @@
   "android-annotator-rel": {
     "scripts": [
       {
+        "module_name": "test_traffic_annotation_auditor",
         "name": "test_traffic_annotation_auditor",
         "precommit_args": [
           "--no-update-sheet"

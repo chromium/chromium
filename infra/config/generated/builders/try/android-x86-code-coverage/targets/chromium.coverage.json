@@ -4339,6 +4339,7 @@
     ],
     "scripts": [
       {
+        "module_name": "check_network_annotations",
         "name": "check_network_annotations",
         "resultdb": {
           "enable": true,

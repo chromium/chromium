@@ -5,6 +5,7 @@
     ],
     "scripts": [
       {
+        "module_name": "checkbins",
         "name": "checkbins",
         "script": "checkbins.py"
       }

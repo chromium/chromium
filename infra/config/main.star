@@ -165,6 +165,7 @@ chromium_luci.configure_project(
     platforms = settings.platforms,
     experiments = [
         "targets.module_name_without_slash",
+        "targets.module_scheme_script_tests",
     ],
 )
 

@@ -1807,6 +1807,7 @@
     ],
     "scripts": [
       {
+        "module_name": "check_network_annotations",
         "name": "check_network_annotations",
         "script": "check_network_annotations.py"
       }

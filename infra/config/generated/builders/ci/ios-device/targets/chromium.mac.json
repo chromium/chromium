@@ -58,6 +58,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest"
         ],
+        "module_name": "check_static_initializers",
         "name": "check_static_initializers",
         "resultdb": {
           "enable": true,

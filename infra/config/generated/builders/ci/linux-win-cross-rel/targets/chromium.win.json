@@ -2139,10 +2139,12 @@
     ],
     "scripts": [
       {
+        "module_name": "check_network_annotations",
         "name": "check_network_annotations",
         "script": "check_network_annotations.py"
       },
       {
+        "module_name": "webkit_lint",
         "name": "webkit_lint",
         "script": "blink_lint_expectations.py"
       }
