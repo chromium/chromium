@@ -191,7 +191,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   gpu::GpuChannelEstablishFactory* gpu_channel_establish_factory() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  void SynchronouslyFlushStartupTasks(bool was_posted);
+  void SynchronouslyFlushStartupTasks();
 
   // |enabled| Whether or not CreateStartupTasks() posts any tasks. This is
   // useful because some javatests want to test native task posting without the

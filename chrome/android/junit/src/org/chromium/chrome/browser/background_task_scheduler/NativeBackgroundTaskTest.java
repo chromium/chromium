@@ -119,6 +119,16 @@ public class NativeBackgroundTaskTest {
             return 0 /*ServicificationStartupUma.ServicificationStartup.CHROME_COLD*/;
         }
 
+        @Override
+        public long getContentStartDuration() {
+            return 0L;
+        }
+
+        @Override
+        public long getStartupTasksLongestBlockingDuration() {
+            return 0L;
+        }
+
         public void setIsStartupSuccessfullyCompleted(boolean flag) {
             mStartupSucceeded = flag;
         }

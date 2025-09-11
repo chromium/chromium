@@ -69,8 +69,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
-import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
@@ -612,8 +612,7 @@ public class WebViewChromiumAwInit {
         StartupCallback callback =
                 new StartupCallback() {
                     @Override
-                    public void onSuccess(@Nullable StartupMetrics metrics) {
-                        mStartupTasksRunner.recordContentMetrics(metrics);
+                    public void onSuccess() {
                         mStartupTasksRunner.finishAsyncRun();
                     }
 
@@ -680,6 +679,14 @@ public class WebViewChromiumAwInit {
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
                 longestUiBlockingTaskTimeMs);
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
+
+        BrowserStartupController browserController = BrowserStartupController.getInstance();
+        longestUiBlockingTaskTimeMs =
+                Math.max(
+                        longestUiBlockingTaskTimeMs,
+                        Math.max(
+                                browserController.getContentStartDuration(),
+                                browserController.getStartupTasksLongestBlockingDuration()));
 
         // Record histograms
         String startupModeString =
@@ -1341,17 +1348,6 @@ public class WebViewChromiumAwInit {
                 }
                 throw e;
             }
-        }
-
-        // Record metrics for tasks that were posted by the BrowserStartupController since the
-        // StartupTaskRunner cannot account for them directly.
-        void recordContentMetrics(@Nullable StartupMetrics metrics) {
-            assert metrics != null;
-            mLongestUiBlockingTaskTimeMs =
-                    Math.max(
-                            mLongestUiBlockingTaskTimeMs,
-                            metrics.getLongestDurationOfPostedTasksMs());
-            mTotalTimeTakenMs += metrics.getTotalDurationOfPostedTasksMs();
         }
 
         // To determine the startup mode, we track:

@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,7 +229,7 @@ public class IncognitoDataTestUtils {
                             .addStartupCompletedObserver(
                                     new BrowserStartupController.StartupCallback() {
                                         @Override
-                                        public void onSuccess(@Nullable StartupMetrics metrics) {
+                                        public void onSuccess() {
                                             startUpCallback.notifyCalled();
                                         }
 

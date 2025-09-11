@@ -144,6 +144,12 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
   return -1;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void BrowserMainRunnerImpl::SynchronouslyFlushStartupTasks() {
+  main_loop_->SynchronouslyFlushStartupTasks();
+}
+#endif
+
 int BrowserMainRunnerImpl::Run() {
   DCHECK(initialization_started_);
   DCHECK(!is_shutdown_);
