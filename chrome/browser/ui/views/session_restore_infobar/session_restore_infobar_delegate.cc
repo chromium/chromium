@@ -23,17 +23,14 @@
 namespace session_restore_infobar {
 
 // static
-void SessionRestoreInfoBarDelegate::Show(
-    content::WebContents* contents,
+infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
+    infobars::ContentInfoBarManager* infobar_manager,
     base::OnceCallback<void()> close_cb,
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(contents);
-
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
       std::make_unique<SessionRestoreInfoBarDelegate>(std::move(close_cb),
                                                       message_type);
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 }
 
 SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
@@ -89,8 +86,10 @@ bool SessionRestoreInfoBarDelegate::ShouldShowLinkBeforeButton() const {
 }
 
 void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
-  CHECK(close_cb_);
-  std::move(close_cb_).Run();
+  if (close_cb_) {
+    std::move(close_cb_).Run();
+  }
+  ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 
 }  // namespace session_restore_infobar
