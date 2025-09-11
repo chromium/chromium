@@ -3315,6 +3315,24 @@
             ]
         }
     ],
+    "AvoidTrustedParamsCopies": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvoidTrustedParamsCopies"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidUnnecessaryBeforeUnloadCheckSync": [
         {
             "platforms": [
