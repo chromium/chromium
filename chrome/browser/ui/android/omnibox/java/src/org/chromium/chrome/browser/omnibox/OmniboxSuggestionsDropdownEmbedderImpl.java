@@ -284,6 +284,23 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                             - systemBars.top
                             - systemBars.bottom;
         } else {
+            // Compute the exact keyboard height to ensure the suggestions are always fully
+            // visible, including the bottom toolbar case.
+            var rootInsets = contentView.getRootWindowInsets();
+            var rootView = contentView.getRootView();
+
+            if (rootView != null && rootInsets != null) {
+                WindowInsetsCompat windowInsetsCompat =
+                        WindowInsetsCompat.toWindowInsetsCompat(rootInsets, rootView);
+                keyboardHeight =
+                        Math.max(
+                                0,
+                                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                                        - windowInsetsCompat.getInsets(
+                                                        WindowInsetsCompat.Type.tappableElement())
+                                                .bottom);
+            }
+
             windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
         }
 
