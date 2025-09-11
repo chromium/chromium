@@ -3216,7 +3216,6 @@
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "ApplyClientsideModelPredictionsForPasswordTypes",
                         "CheckLoginStateBeforePasswordChange",
                         "ImprovedPasswordChangeService",
                         "PasswordChangeSubmissionMqlsLogging"
