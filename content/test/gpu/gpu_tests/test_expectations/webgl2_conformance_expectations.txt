@@ -766,6 +766,9 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/w
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 
+# WebGL: INVALID_ENUM: getShaderParameter
+crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+
 ## Mac / Apple Silicon ##
 
 
