@@ -39,6 +39,9 @@ DWORD g_init_error = ERROR_SUCCESS;
 // here.
 DWORD g_status_info_length_mismatch = 0xC0000004;
 
+// Are symbolized in-process stack dumps enabled?
+bool g_in_process_stack_dumps_enabled = false;
+
 // Prints the exception call stack.
 // This is the unit tests exception filter.
 long WINAPI StackDumpExceptionFilter(EXCEPTION_POINTERS* info) {
@@ -318,7 +321,12 @@ bool EnableInProcessStackDumping() {
   // Need to initialize symbols early in the process or else this fails on
   // swarming (since symbols are in different directory than in the exes) and
   // also release x64.
-  return InitializeSymbols();
+  g_in_process_stack_dumps_enabled = InitializeSymbols();
+  return g_in_process_stack_dumps_enabled;
+}
+
+bool InProcessStackDumpingEnabled() {
+  return g_in_process_stack_dumps_enabled;
 }
 
 NOINLINE size_t CollectStackTrace(span<const void*> trace) {

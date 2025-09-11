@@ -41,6 +41,12 @@ namespace base::debug {
 // done in official builds because it has security implications).
 BASE_EXPORT bool EnableInProcessStackDumping();
 
+#if BUILDFLAG(IS_WIN)
+// Returns `true` if EnableInProcessStackDumping() was called and succeeded.
+// Only supported on Windows.
+BASE_EXPORT bool InProcessStackDumpingEnabled();
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_POSIX)
 // Sets a first-chance callback for the stack dump signal handler. This callback
 // is called at the beginning of the signal handler to handle special kinds of

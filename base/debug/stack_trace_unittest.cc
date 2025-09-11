@@ -458,4 +458,13 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+TEST(StackTraceTest, EnabledStackTraces) {
+  // This is slightly pointless as this is also enabled by the test harness, but
+  // it ensures we are exercising the InProcessStackDumpingEnabled() path.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
+  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace base::debug

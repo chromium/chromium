@@ -330,6 +330,12 @@ v8::TracingController* V8Platform::GetTracingController() {
 }
 
 v8::Platform::StackTracePrinter V8Platform::GetStackTracePrinter() {
+#if BUILDFLAG(IS_WIN)
+  // Sandboxed processes in release builds cannot symbolize stacks.
+  if (!base::debug::InProcessStackDumpingEnabled()) {
+    return nullptr;
+  }
+#endif
   return PrintStackTrace;
 }
 
