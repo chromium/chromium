@@ -16,25 +16,6 @@ source_set("features") {
   ]
 }
 
-source_set("field_trial") {
-  sources = [
-    "ios_first_run_field_trials.cc",
-    "ios_first_run_field_trials.h",
-  ]
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//components/signin/ios/browser:features",
-    "//components/variations",
-    "//components/version_info",
-    "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
-    "//ios/chrome/common",
-  ]
-}
-
 source_set("ui_bundled") {
   sources = [
     "first_run_coordinator.h",
@@ -43,7 +24,6 @@ source_set("ui_bundled") {
   deps = [
     ":constants",
     ":features",
-    ":field_trial",
     ":first_run_provider",
     ":screen_delegate",
     ":utils",
@@ -102,7 +82,6 @@ source_set("first_run_provider") {
   ]
   deps = [
     ":features",
-    ":field_trial",
     "//base",
     "//components/regional_capabilities",
     "//components/search_engines",

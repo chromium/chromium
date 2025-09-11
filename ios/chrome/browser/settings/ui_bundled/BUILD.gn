@@ -138,7 +138,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/keyboard/ui_bundled",

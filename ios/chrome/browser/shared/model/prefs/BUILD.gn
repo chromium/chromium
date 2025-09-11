@@ -119,7 +119,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/download/model/auto_deletion",
     "//ios/chrome/browser/drive/model:policy",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",

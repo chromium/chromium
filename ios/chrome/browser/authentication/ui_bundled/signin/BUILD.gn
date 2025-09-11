@@ -105,7 +105,6 @@ source_set("signin_screen_provider") {
   deps = [
     "//base",
     "//components/sync/base:features",
-    "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider_protected",
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
