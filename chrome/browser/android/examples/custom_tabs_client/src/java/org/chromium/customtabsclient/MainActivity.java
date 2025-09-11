@@ -390,6 +390,13 @@ public class MainActivity extends AppCompatActivity
                         args.getInt("right"),
                         args.getInt("bottom"),
                         args.getInt("state"));
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("extra-callback: ").append(callbackName).append(" args: ");
+                for (String key : args.keySet()) {
+                    sb.append(" [").append(key).append("]: [").append(args.get(key)).append("]");
+                }
+                Log.w(TAG, sb.toString());
             }
         }
 
