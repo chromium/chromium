@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -38,6 +39,19 @@ void RunLater(base::OnceClosure task) {
 }  // namespace
 
 namespace actor {
+
+std::optional<page_content_annotations::PaintPreviewOptions>
+CreateOptionalPaintPreviewOptions() {
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotPaintPreviewBackend)) {
+    return std::nullopt;
+  }
+  page_content_annotations::PaintPreviewOptions paint_preview_options;
+  paint_preview_options.max_per_capture_bytes =
+      kScreenshotMaxPerCaptureBytes.Get();
+  paint_preview_options.iframe_redaction_scope =
+      kScreenshotIframeRedaction.Get();
+  return paint_preview_options;
+}
 
 using ui::ActorUiStateManagerInterface;
 
@@ -188,21 +202,15 @@ void ActorKeyedService::RequestTabObservation(
       "RequestTabObservation", {});
   page_content_annotations::FetchPageContextOptions options;
 
-  // Enable screenshot capture.
-  options.screenshot_options = page_content_annotations::ScreenshotOptions();
-  if (base::FeatureList::IsEnabled(
-          actor::kGlicTabScreenshotPaintPreviewBackend)) {
-    page_content_annotations::PaintPreviewScreenshotOptions
-        paint_preview_options;
-    paint_preview_options.capture_full_page_screenshot =
-        actor::kFullPageScreenshot.Get();
-    paint_preview_options.max_per_capture_bytes =
-        actor::kScreenshotMaxPerCaptureBytes.Get();
-    paint_preview_options.iframe_redaction_scope =
-        actor::kScreenshotIframeRedaction.Get();
-    options.screenshot_options->paint_preview_screenshot_options =
-        std::move(paint_preview_options);
-  }
+  options.screenshot_options =
+      kFullPageScreenshot.Get()
+          // It's safe to dereference the optional here because
+          // kFullPageScreenshot being true implies
+          // kGlicTabScreenshotPaintPreviewBackend is enabled.
+          ? page_content_annotations::ScreenshotOptions::FullPage(
+                CreateOptionalPaintPreviewOptions().value())
+          : page_content_annotations::ScreenshotOptions::ViewportOnly(
+                CreateOptionalPaintPreviewOptions());
 
   options.annotated_page_content_options =
       optimization_guide::ActionableAIPageContentOptions(

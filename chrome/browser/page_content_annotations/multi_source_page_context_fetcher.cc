@@ -19,7 +19,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/types/optional_ref.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -183,9 +182,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     callback_ = std::move(callback);
 
     if (options.screenshot_options) {
-      GetTabScreenshot(
-          *web_contents(),
-          options.screenshot_options->paint_preview_screenshot_options);
+      GetTabScreenshot(*web_contents(), options.screenshot_options.value());
     } else {
       screenshot_done_ = true;
     }
@@ -270,8 +267,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   }
 
   void GetTabScreenshot(content::WebContents& web_contents,
-                        base::optional_ref<const PaintPreviewScreenshotOptions>
-                            paint_preview_screenshot_options) {
+                        const ScreenshotOptions& screenshot_options) {
     auto* view = web_contents.GetRenderWidgetHostView();
     if (progress_listener_) {
       progress_listener_->BeginScreenshot();
@@ -285,7 +281,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
     gfx::Size view_size = view->GetViewBounds().size();
 
-    if (paint_preview_screenshot_options) {
+    if (screenshot_options.use_paint_preview()) {
       PageContentScreenshotService* service =
           PageContentScreenshotServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents.GetBrowserContext()));
@@ -297,9 +293,9 @@ class PageContextFetcher : public content::WebContentsObserver {
 
       ASSIGN_OR_RETURN(
           paint_preview::RedactionParams redaction_params,
-          GetRedactionParams(
-              web_contents,
-              paint_preview_screenshot_options->iframe_redaction_scope),
+          GetRedactionParams(web_contents,
+                             screenshot_options.paint_preview_options()
+                                 ->iframe_redaction_scope),
           [&](std::string error) {
             ReceivedJpegScreenshot(base::unexpected(std::move(error)));
             return;
@@ -312,7 +308,7 @@ class PageContextFetcher : public content::WebContentsObserver {
       paint_preview::mojom::ClipCoordOverride clip_coord_override =
           paint_preview::mojom::ClipCoordOverride::kScrollOffset;
 
-      if (paint_preview_screenshot_options->capture_full_page_screenshot) {
+      if (screenshot_options.capture_full_page()) {
         clip_rect = gfx::Rect();
         clip_coord_override = paint_preview::mojom::ClipCoordOverride::kNone;
         view_size = web_contents.GetPrimaryMainFrame()->GetFrameSize().value_or(
@@ -326,7 +322,7 @@ class PageContextFetcher : public content::WebContentsObserver {
           .clip_y_coord_override = clip_coord_override,
           .redaction_params = std::move(redaction_params),
           .max_per_capture_bytes =
-              paint_preview_screenshot_options->max_per_capture_bytes,
+              screenshot_options.paint_preview_options()->max_per_capture_bytes,
       };
       service->RequestScreenshot(
           &web_contents, std::move(request_params),

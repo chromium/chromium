@@ -130,11 +130,9 @@ class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
                                             disabled_features);
   }
 
-  bool use_paint_preview_screenshot_backend() const {
-    return GetParam().has_value();
-  }
+  bool use_paint_preview_backend() const { return GetParam().has_value(); }
 
-  // Only use if `use_paint_preview_screenshot_backend()` is true.
+  // Only use if `use_paint_preview_backend()` is true.
   bool capture_full_page_screenshot() const { return GetParam().value(); }
 
  private:
@@ -163,12 +161,14 @@ IN_PROC_BROWSER_TEST_P(
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
   FetchPageContextOptions options;
-  options.screenshot_options = ScreenshotOptions();
-  if (use_paint_preview_screenshot_backend()) {
-    options.screenshot_options->paint_preview_screenshot_options =
-        PaintPreviewScreenshotOptions();
-    options.screenshot_options->paint_preview_screenshot_options
-        ->capture_full_page_screenshot = capture_full_page_screenshot();
+  if (use_paint_preview_backend()) {
+    options.screenshot_options =
+        capture_full_page_screenshot()
+            ? ScreenshotOptions::FullPage(PaintPreviewOptions())
+            : ScreenshotOptions::ViewportOnly(PaintPreviewOptions());
+  } else {
+    options.screenshot_options =
+        ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
   }
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(
   // Sampling a pixel from the screenshot should give us red, within some error
   // bounds (due to lossy jpeg encoding/decoding).
   EXPECT_THAT(bitmap.getColor(10, 10),
-              Conditional(use_paint_preview_screenshot_backend(),
+              Conditional(use_paint_preview_backend(),
                           IsColorWithinTolerance(SK_ColorRED, 0x10),
                           // TODO(b/438825957): add test coverage for the output
                           // of the CopyFromSurface screenshot.
@@ -220,10 +220,11 @@ class RedactingMultiSourcePageContextFetcherBrowserTest
   ~RedactingMultiSourcePageContextFetcherBrowserTest() override = default;
 
   ScreenshotOptions GetScreenshotOptionsWithCrossSiteIframeRedaction() const {
-    ScreenshotOptions options;
-    options.paint_preview_screenshot_options = PaintPreviewScreenshotOptions();
-    options.paint_preview_screenshot_options->iframe_redaction_scope =
+    PaintPreviewOptions paint_preview_options;
+    paint_preview_options.iframe_redaction_scope =
         page_content_annotations::ScreenshotIframeRedactionScope::kCrossSite;
+    ScreenshotOptions options =
+        ScreenshotOptions::ViewportOnly(paint_preview_options);
     return options;
   }
 

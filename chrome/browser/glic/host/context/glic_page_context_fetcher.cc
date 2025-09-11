@@ -176,12 +176,10 @@ void FetchPageContext(
   }
 
   if (tab_context_options.include_viewport_screenshot) {
-    options.screenshot_options = page_content_annotations::ScreenshotOptions();
-    // Disable paint preview backend, which also disables full page screenshot
-    // capture.
-    // TODO(crbug.com/443996647): Make screenshot size configuration explicit.
-    options.screenshot_options->paint_preview_screenshot_options =
-        std::nullopt;
+    // Disable paint preview backend for glic, and capture the viewport only.
+    options.screenshot_options =
+        page_content_annotations::ScreenshotOptions::ViewportOnly(
+            /*paint_preview_options=*/std::nullopt);
   }
 
   const bool on_critical_path = true;
