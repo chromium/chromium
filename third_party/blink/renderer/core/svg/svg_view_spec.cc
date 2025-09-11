@@ -89,30 +89,30 @@ enum ViewSpecFunctionType {
 };
 
 template <typename CharType>
-static ViewSpecFunctionType ScanViewSpecFunction(const CharType*& ptr,
-                                                 const CharType* end) {
-  DCHECK_LT(ptr, end);
-  switch (*ptr) {
+static ViewSpecFunctionType ScanViewSpecFunction(
+    const base::span<const CharType> chars,
+    size_t& position) {
+  switch (chars[position]) {
     case 'v':
-      if (UNSAFE_TODO(SkipToken(ptr, end, "viewBox"))) {
+      if (SkipToken(chars, "viewBox", position)) {
         return kViewBox;
       }
-      if (UNSAFE_TODO(SkipToken(ptr, end, "viewTarget"))) {
+      if (SkipToken(chars, "viewTarget", position)) {
         return kViewTarget;
       }
       break;
     case 'z':
-      if (UNSAFE_TODO(SkipToken(ptr, end, "zoomAndPan"))) {
+      if (SkipToken(chars, "zoomAndPan", position)) {
         return kZoomAndPan;
       }
       break;
     case 'p':
-      if (UNSAFE_TODO(SkipToken(ptr, end, "preserveAspectRatio"))) {
+      if (SkipToken(chars, "preserveAspectRatio", position)) {
         return kPreserveAspectRatio;
       }
       break;
     case 't':
-      if (UNSAFE_TODO(SkipToken(ptr, end, "transform"))) {
+      if (SkipToken(chars, "transform", position)) {
         return kTransform;
       }
       break;
@@ -136,16 +136,14 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
   // TODO(crbug.com/351564777): Remove `end` and `ptr`.
   const CharType* end = UNSAFE_TODO(chars.data() + chars.size());
   while (position < chars.size() && chars[position] != ')') {
-    const CharType* ptr = UNSAFE_TODO(chars.data() + position);
-    ViewSpecFunctionType function_type = ScanViewSpecFunction(ptr, end);
+    ViewSpecFunctionType function_type = ScanViewSpecFunction(chars, position);
     if (function_type == kUnknown)
       return false;
 
-    position = ptr - chars.data();
     if (!SkipExactly<CharType>(chars, '(', position)) {
       return false;
     }
-    ptr = UNSAFE_TODO(chars.data() + position);
+    const CharType* ptr = UNSAFE_TODO(chars.data() + position);
 
     switch (function_type) {
       case kViewBox: {

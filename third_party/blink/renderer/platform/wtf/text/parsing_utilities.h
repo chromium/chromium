@@ -35,6 +35,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -75,6 +77,22 @@ UNSAFE_BUFFER_USAGE bool SkipToken(const CharType*& position,
 
   position = current;
   return true;
+}
+
+template <typename CharType>
+bool SkipToken(const base::span<const CharType> chars,
+               StringView token,
+               size_t& position) {
+  if (position + token.length() > chars.size()) {
+    return false;
+  }
+  auto subspan = chars.subspan(position, token.length());
+  bool matched = VisitCharacters(
+      token, [&subspan](auto token_chars) { return subspan == token_chars; });
+  if (matched) {
+    position += token.length();
+  }
+  return matched;
 }
 
 template <typename CharType>
