@@ -402,6 +402,16 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   };
   using ApplyMixinsStack = HeapVector<ApplyingMixin, 4>;
 
+  void ApplyMixin(StyleRule* parent_rule,
+                  StyleRuleApplyMixin* apply_mixin_rule,
+                  const MediaQueryEvaluator& medium,
+                  const MixinMap& mixins,
+                  AddRuleFlags add_rule_flags,
+                  const ContainerQuery* container_query,
+                  CascadeLayer* cascade_layer,
+                  const StyleScope* style_scope,
+                  ApplyMixinsStack& apply_mixins_stack);
+
   // Nonempty “apply_mixins_stack” means that we are currently adding this rule
   // as part of @apply in a mixin, and all rules we add must be
   // duplicated and reparented (to the uppermost one9. This is also propagated

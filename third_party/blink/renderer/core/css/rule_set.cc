@@ -1052,40 +1052,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                     container_query, cascade_layer, style_scope,
                     apply_mixins_stack);
     } else if (auto* apply_mixin_rule = DynamicTo<StyleRuleApplyMixin>(rule)) {
-      auto it = mixins.mixins.find(apply_mixin_rule->GetName());
-      if (it != mixins.mixins.end()) {
-        if (std::ranges::find_if(apply_mixins_stack,
-                                 [&](const ApplyingMixin& entry) {
-                                   return entry.mixin == it->value;
-                                 }) != apply_mixins_stack.end()) {
-          // Cycle, so ignore this @apply.
-          // NOTE: The exact behavior during cycles is not yet
-          // specified. See https://github.com/w3c/csswg-drafts/issues/12595
-          continue;
-        }
-        apply_mixins_stack.push_back(ApplyingMixin{
-            .mixin = it->value.Get(), .invoking_apply_rule = apply_mixin_rule});
-        AddChildRules(parent_rule, it->value->ChildRules(), medium, mixins,
-                      add_rule_flags, container_query, cascade_layer,
-                      style_scope, apply_mixins_stack);
-        apply_mixins_stack.pop_back();
-
-        // If the @mixin we are applying (or currently: any @mixin) was defined
-        // inside a media query, we now need to take on the same dependency.
-        // This makes sure that if this media query changes, we will also
-        // re-evaluate this RuleSet.
-        features_.MutableMediaQueryResultFlags().Add(
-            mixins.media_query_result_flags);
-        media_query_set_results_.AppendVector(mixins.media_query_set_results);
-
-        // Mark that we are using some mixin, and which generation of mixin map
-        // it came from, so that we can invalidate if anything should change.
-        if (based_on_mixin_generation_ !=
-            std::numeric_limits<uint64_t>::max()) {
-          CHECK_EQ(based_on_mixin_generation_, mixins.generation);
-        }
-        based_on_mixin_generation_ = mixins.generation;
-      }
+      ApplyMixin(parent_rule, apply_mixin_rule, medium, mixins, add_rule_flags,
+                 container_query, cascade_layer, style_scope,
+                 apply_mixins_stack);
     } else if (auto* contents_rule =
                    DynamicTo<StyleRuleContentsStatement>(rule)) {
       const StyleRuleMixin* mixin = apply_mixins_stack.back().mixin;
@@ -1123,6 +1092,50 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    mixins, add_rule_flags, apply_mixins_stack, container_query,
                    cascade_layer, style_scope);
     }
+  }
+}
+
+void RuleSet::ApplyMixin(StyleRule* parent_rule,
+                         StyleRuleApplyMixin* apply_mixin_rule,
+                         const MediaQueryEvaluator& medium,
+                         const MixinMap& mixins,
+                         AddRuleFlags add_rule_flags,
+                         const ContainerQuery* container_query,
+                         CascadeLayer* cascade_layer,
+                         const StyleScope* style_scope,
+                         ApplyMixinsStack& apply_mixins_stack) {
+  auto it = mixins.mixins.find(apply_mixin_rule->GetName());
+  if (it != mixins.mixins.end()) {
+    if (std::ranges::find_if(apply_mixins_stack,
+                             [&](const ApplyingMixin& entry) {
+                               return entry.mixin == it->value;
+                             }) != apply_mixins_stack.end()) {
+      // Cycle, so ignore this @apply.
+      // NOTE: The exact behavior during cycles is not yet
+      // specified. See https://github.com/w3c/csswg-drafts/issues/12595
+      return;
+    }
+    apply_mixins_stack.push_back(ApplyingMixin{
+        .mixin = it->value.Get(), .invoking_apply_rule = apply_mixin_rule});
+    AddChildRules(parent_rule, it->value->ChildRules(), medium, mixins,
+                  add_rule_flags, container_query, cascade_layer, style_scope,
+                  apply_mixins_stack);
+    apply_mixins_stack.pop_back();
+
+    // If the @mixin we are applying (or currently: any @mixin) was defined
+    // inside a media query, we now need to take on the same dependency.
+    // This makes sure that if this media query changes, we will also
+    // re-evaluate this RuleSet.
+    features_.MutableMediaQueryResultFlags().Add(
+        mixins.media_query_result_flags);
+    media_query_set_results_.AppendVector(mixins.media_query_set_results);
+
+    // Mark that we are using some mixin, and which generation of mixin map
+    // it came from, so that we can invalidate if anything should change.
+    if (based_on_mixin_generation_ != std::numeric_limits<uint64_t>::max()) {
+      CHECK_EQ(based_on_mixin_generation_, mixins.generation);
+    }
+    based_on_mixin_generation_ = mixins.generation;
   }
 }
 
