@@ -143,18 +143,20 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto app_launch_source = apps::LaunchSource::kUnknown;
   switch (source) {
-    case HELP_SOURCE_KEYBOARD:
+    case HelpSource::kKeyboard:
       app_launch_source = apps::LaunchSource::kFromKeyboard;
       break;
-    case HELP_SOURCE_MENU:
+    case HelpSource::kMenu:
       app_launch_source = apps::LaunchSource::kFromMenu;
       break;
-    case HELP_SOURCE_WEBUI:
-    case HELP_SOURCE_WEBUI_CHROME_OS:
+    case HelpSource::kWebUI:
+    case HelpSource::kWebUIChromeOS:
       app_launch_source = apps::LaunchSource::kFromOtherApp;
       break;
     default:
-      NOTREACHED() << "Unhandled help source" << source;
+      NOTREACHED() << "Unhandled help source "
+                   << static_cast<std::underlying_type<HelpSource>::type>(
+                          source);
   }
 
   ash::SystemAppLaunchParams params;
@@ -163,32 +165,34 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
 #else
   GURL url;
   switch (source) {
-    case HELP_SOURCE_KEYBOARD:
+    case HelpSource::kKeyboard:
       url = GURL(kChromeHelpViaKeyboardURL);
       break;
-    case HELP_SOURCE_MENU:
+    case HelpSource::kMenu:
       url = GURL(kChromeHelpViaMenuURL);
       break;
-    case HELP_SOURCE_WEBHID:
+    case HelpSource::kWebHID:
       url = GURL(kChooserHidOverviewUrl);
       break;
 #if BUILDFLAG(IS_CHROMEOS)
-    case HELP_SOURCE_WEBUI:
+    case HelpSource::kWebUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
-    case HELP_SOURCE_WEBUI_CHROME_OS:
+    case HelpSource::kWebUIChromeOS:
       url = GURL(kChromeOsHelpViaWebUIURL);
       break;
 #else
-    case HELP_SOURCE_WEBUI:
+    case HelpSource::kWebUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    case HELP_SOURCE_WEBUSB:
+    case HelpSource::kWebUSD:
       url = GURL(kChooserUsbOverviewURL);
       break;
     default:
-      NOTREACHED() << "Unhandled help source " << source;
+      NOTREACHED() << "Unhandled help source "
+                   << static_cast<std::underlying_type<HelpSource>::type>(
+                          source);
   }
   if (browser) {
     ShowSingletonTab(browser, url);

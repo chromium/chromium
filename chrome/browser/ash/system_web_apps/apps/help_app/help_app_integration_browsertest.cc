@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
+  chrome::ShowHelp(browser(), chrome::HelpSource::kKeyboard);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());

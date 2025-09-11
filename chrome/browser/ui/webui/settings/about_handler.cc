@@ -518,7 +518,7 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
 void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
+  chrome::ShowHelp(browser, chrome::HelpSource::kWebUI);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -555,7 +555,7 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::Value::List& args) {
 void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
+  chrome::ShowHelp(browser, chrome::HelpSource::kWebUIChromeOS);
 }
 
 void AboutHandler::HandleSetChannel(const base::Value::List& args) {

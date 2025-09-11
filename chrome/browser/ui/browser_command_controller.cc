@@ -1050,10 +1050,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
                           chrome::kSafetyHubSubPage);
       break;
     case IDC_HELP_PAGE_VIA_KEYBOARD:
-      ShowHelp(browser_, HELP_SOURCE_KEYBOARD);
+      ShowHelp(browser_, chrome::HelpSource::kKeyboard);
       break;
     case IDC_HELP_PAGE_VIA_MENU:
-      ShowHelp(browser_, HELP_SOURCE_MENU);
+      ShowHelp(browser_, chrome::HelpSource::kMenu);
       break;
     case IDC_CHROME_TIPS:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

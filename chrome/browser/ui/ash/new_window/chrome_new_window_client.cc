@@ -466,7 +466,7 @@ void ChromeNewWindowClient::OpenCrosh() {
 
 void ChromeNewWindowClient::OpenGetHelp() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  chrome::ShowHelpForProfile(profile, chrome::HELP_SOURCE_KEYBOARD);
+  chrome::ShowHelpForProfile(profile, chrome::HelpSource::kKeyboard);
 }
 
 void ChromeNewWindowClient::RestoreTab() {

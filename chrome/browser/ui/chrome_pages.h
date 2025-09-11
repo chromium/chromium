@@ -52,26 +52,26 @@ class Profile;
 namespace chrome {
 
 // Sources of requests to show the help tab.
-enum HelpSource {
+enum class HelpSource {
   // Keyboard accelerators.
-  HELP_SOURCE_KEYBOARD,
+  kKeyboard,
 
   // Menus (e.g. app menu or Chrome OS system menu).
-  HELP_SOURCE_MENU,
+  kMenu,
 
   // WebHID help center article.
-  HELP_SOURCE_WEBHID,
+  kWebHID,
 
   // WebUI (the "About" page).
-  HELP_SOURCE_WEBUI,
+  kWebUI,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // WebUI (the OS "About" page).
-  HELP_SOURCE_WEBUI_CHROME_OS,
+  kWebUIChromeOS,
 #endif
 
   // WebUSB help center article.
-  HELP_SOURCE_WEBUSB,
+  kWebUSD,
 };
 
 void ShowBookmarkManager(Browser* browser);

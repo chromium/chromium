@@ -10,7 +10,7 @@
 UsbStatusIcon::UsbStatusIcon()
     : UsbSystemTrayIcon(std::make_unique<DeviceStatusIconRenderer>(
           this,
-          chrome::HELP_SOURCE_WEBUSB,
+          chrome::HelpSource::kWebUSD,
           IDS_WEBUSB_SYSTEM_TRAY_ICON_ABOUT_USB_DEVICE)) {}
 
 UsbStatusIcon::~UsbStatusIcon() = default;
