@@ -1,5 +1,5 @@
 Name: libusbx
-URL: https://libusb.info/
+URL: https://github.com/libusb/libusb
 Version: 1.0.17
 Revision: 0c3d17c9b1c96afe6889ae4595abb22072fc1c0d
 Update Mechanism: Manual
