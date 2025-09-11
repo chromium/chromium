@@ -1905,11 +1905,13 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
     int count = char_index - last_char_index;
     if (count >= 0) {
       // Selecting forward.
-      ++count;
+      selection_.back().SetCharCount(++count);
     } else {
-      --count;
+      // CreateBackwards() expects a positive count, so flip the negative value.
+      count = -count;
+      selection_.back() = PDFiumRange::CreateBackwards(pages_[page_index].get(),
+                                                       char_index, ++count);
     }
-    selection_.back().SetCharCount(count);
   } else if (last_page_index < page_index) {
     // Selecting into the next page.
 
@@ -1946,9 +1948,9 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
       }
     }
 
-    int count = pages_[page_index]->GetCharCount();
-    selection_.emplace_back(pages_[page_index].get(), count - 1,
-                            char_index - count);
+    int char_count = pages_[page_index]->GetCharCount() - char_index;
+    selection_.push_back(PDFiumRange::CreateBackwards(pages_[page_index].get(),
+                                                      char_index, char_count));
   }
 
   return true;

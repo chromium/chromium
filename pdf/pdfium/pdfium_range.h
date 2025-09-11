@@ -36,7 +36,7 @@ class PDFiumRange {
   // direction. The returned object is constructed backwards with an adjusted
   // `char_index` and a negative `char_count`. e.g.
   // (char_index=0, char_count=3) in the forward direction becomes
-  // (char_index=2, char_count=-3) in the backward direction.
+  // (char_index=3, char_count=-3) in the backward direction.
   static PDFiumRange CreateBackwards(PDFiumPage* page,
                                      int char_index,
                                      int char_count);
@@ -76,7 +76,10 @@ class PDFiumRange {
 
   // The page containing the range. Must outlive `this`.
   raw_ptr<PDFiumPage> page_;
-  // Index of first character. Must be a positive value.
+  // Index of first character. Must be a positive value. Examples:
+  // - 0 is to the left of the first character.
+  // - 1 is between the first character and the second character.
+  // - N, for a page with N characters, is to the right of the last character.
   int char_index_;
   // How many characters are part of this range (negative if backwards).
   int char_count_;
