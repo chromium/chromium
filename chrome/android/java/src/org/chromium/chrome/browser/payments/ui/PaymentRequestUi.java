@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSepa
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
@@ -432,7 +433,8 @@ public class PaymentRequestUi
      */
     public void show(boolean waitForUpdatedDetails) {
         mInputProtector.markShowTime();
-        mDialog.addBottomSheetView(mRequestView);
+        mDialog.addBottomSheetView(
+                mRequestView, ChromeSemanticColorUtils.getPaymentRequestBg(mContext));
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
         mClient.getDefaultPaymentInformation(
                 waitForUpdatedDetails,
