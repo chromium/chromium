@@ -5671,18 +5671,19 @@ crbug.com/922951 [ Release Win ] media/controls/overflow-menu-hide-on-click-outs
 
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
 
-# The following tests have expectations that seem incorrect on MacOS.
-crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-both.html [ Failure ]
-crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-vertical.html [ Failure ]
-crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-horizontal.html [ Failure ]
-crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure ]
-crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-vertical.html [ Failure ]
-crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-horizontal.html [ Failure ]
-crbug.com/359279545 [ Mac ] compositing/video/video-subpixel.html [ Failure ]
-
-# Failures need to be investigated.
-crbug.com/359279545 [ Linux ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
-crbug.com/359279545 [ Linux ] compositing/video/video-subpixel.html [ Failure ]
+# The following tests are expected to pass when the feature kAlignCrossProcessFramesToPixelGrid
+# is enabled, and fail otherwise. Note: the fuzzy limits for these tests were set
+# based on testing on Linux, and may need adjustment before turning this feature on for all
+# platforms.
+crbug.com/359279545 http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
+crbug.com/359279545 http/tests/html/scaled-oopif-scrollbar-both.html [ Failure ]
+crbug.com/359279545 http/tests/html/scaled-oopif-scrollbar-vertical.html [ Failure ]
+crbug.com/359279545 http/tests/html/scaled-oopif-scrollbar-horizontal.html [ Failure ]
+crbug.com/359279545 http/tests/html/translated-oopif-text-not-blurry.html [ Failure ]
+crbug.com/359279545 http/tests/html/translated-oopif-scrollbar-both.html [ Failure ]
+crbug.com/359279545 http/tests/html/translated-oopif-scrollbar-vertical.html [ Failure ]
+crbug.com/359279545 http/tests/html/translated-oopif-scrollbar-horizontal.html [ Failure ]
+crbug.com/359279545 compositing/video/video-subpixel.html [ Failure ]
 
 # Sheriff 2019-02-01, 2019-02-19
 # These are crashy on Win10, and seem to leave processes lying around, causing the swarming

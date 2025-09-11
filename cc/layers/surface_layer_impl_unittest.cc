@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "cc/base/features.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_tree_impl_test_base.h"
@@ -385,7 +387,18 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
   EXPECT_TRUE(updated);
 }
 
-TEST(SurfaceLayerImplTest, FractionalOffsetSnapsToPixelGrid) {
+class SurfaceLayerImplAlignToPixelGridTest : public testing::Test {
+ public:
+  SurfaceLayerImplAlignToPixelGridTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAlignSurfaceLayerImplToPixelGrid}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SurfaceLayerImplAlignToPixelGridTest, FractionalOffsetSnapsToPixelGrid) {
   gfx::Size layer_size(200, 200);
   gfx::Size viewport_size(1000, 1000);
   LayerTreeImplTestBase impl;

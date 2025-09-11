@@ -28,6 +28,33 @@
   "content_shell.filter so that they can be run in blink_wpt_tests step.",
   "TODO(crbug.com/380755410): Find a way to do this systematically.",
 
+  {
+    "prefix": "align-surface-layer",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "compositing/video/video-subpixel.html",
+      "http/tests/html/scaled-oopif-text-not-blurry.html",
+      "http/tests/html/scaled-oopif-scrollbar-both.html",
+      "http/tests/html/scaled-oopif-scrollbar-vertical.html",
+      "http/tests/html/scaled-oopif-scrollbar-horizontal.html",
+      "http/tests/html/translated-oopif-text-not-blurry.html",
+      "http/tests/html/translated-oopif-scrollbar-both.html",
+      "http/tests/html/translated-oopif-scrollbar-vertical.html",
+      "http/tests/html/translated-oopif-scrollbar-horizontal.html"
+    ],
+    "args": [
+      "--enable-features=AlignSurfaceLayerImplToPixelGrid"
+    ],
+    "owners": [
+      "wjmaclean@chromium.org",
+      "pdr@chromium.org"
+    ],
+    "expires": "Sep 1, 2025"
+  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
