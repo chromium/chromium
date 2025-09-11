@@ -207,6 +207,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(
       autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp);
+  // TODO(crbug.com/444486763): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(chrome::android::kAndroidTabHighlighting);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
