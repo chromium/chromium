@@ -54,6 +54,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
                            VideoEncodeAccelerator::Client* client,
                            std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const VideoEncoder::EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
@@ -61,6 +63,10 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
       const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   bool IsFlushSupported() override;
+  void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
 
   // MediaCodecWrapper::Client implementation.
   void OnInputAvailable() override;
@@ -68,6 +74,26 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void OnError(media_status_t error) override;
 
  private:
+  enum class SyncState {
+    kReadyForEncoding,
+    kNeedsSync,
+    kSyncInProgress,
+  };
+
+  struct PendingEncode {
+    PendingEncode(scoped_refptr<VideoFrame> frame,
+                  const VideoEncoder::EncodeOptions& options);
+    ~PendingEncode();
+    PendingEncode(PendingEncode&&);
+    PendingEncode& operator=(PendingEncode&&);
+
+    scoped_refptr<VideoFrame> frame;
+    VideoEncoder::EncodeOptions options;
+
+    // The synchronization state of this frame.
+    SyncState sync_state = SyncState::kReadyForEncoding;
+  };
+
   // Ask MediaCodec what input buffer layout it prefers and set values of
   // |input_buffer_stride_| and |input_buffer_yplane_height_|. If the codec
   // does not provide these values, sets up |aligned_size_| such that encoded
@@ -77,6 +103,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // Reads a frame from `pending_frames_` (if it has any) does some checks and
   // and prep work and calls either `FeedInputBuffer()` or `FeedGLSurface()`
   void FeedInput();
+
+  // Called when the sync token for a shared image frame has been waited on.
+  void OnSyncDone(VideoFrame::ID frame_id);
 
   // Renders the `frame` onto the encoder's input surface using the
   // `gl_renderer_` and passes the `timestamp` to the encoder.
@@ -112,9 +141,12 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   void NotifyEncoderInfo();
 
+  void OnCommandBufferHelperAvailable(
+      scoped_refptr<CommandBufferHelper> command_buffer_helper);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
+  // VideoEncodeAccelerator::Client callbacks go here.  Invalidated once any
   // error triggers.
   std::unique_ptr<base::WeakPtrFactory<VideoEncodeAccelerator::Client>>
       client_ptr_factory_;
@@ -137,9 +169,12 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // A runner all for callbacks and externals calls to public methods.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Frames waiting to be passed to the codec, queued until an input buffer is
-  // available.
-  base::circular_deque<VideoEncoder::PendingEncode> pending_frames_;
+  // Frames waiting to be passed to the codec, queued until these conditions are
+  // met:
+  // - input buffer is available (if we use buffers)
+  // - pending color space change is applied
+  // - shared image sync is done
+  base::circular_deque<PendingEncode> pending_frames_;
 
   // Bitstream buffers waiting to be populated & returned to the client.
   std::vector<BitstreamBuffer> available_bitstream_buffers_;
@@ -185,6 +220,11 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   gl::ScopedANativeWindow input_surface_;
 
   media::VideoEncoderInfo encoder_info_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  scoped_refptr<CommandBufferHelper> command_buffer_helper_;
+
+  base::WeakPtrFactory<NdkVideoEncodeAccelerator> weak_ptr_factory_{this};
 };
 
 }  // namespace media
