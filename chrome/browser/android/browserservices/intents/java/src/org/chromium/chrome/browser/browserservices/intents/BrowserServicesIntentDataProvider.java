@@ -820,4 +820,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public @Nullable WindowFeatures getRequestedWindowFeatures() {
         return null;
     }
+
+    /**
+     * @return the reason the CCT was launched with an off-the-record profile.
+     */
+    public /*@IncognitoCctCallerId*/ int getFeatureIdForMetricsCollection() {
+        return /*IncognitoCctCallerId.OTHER_APPS*/ 0;
+    }
 }

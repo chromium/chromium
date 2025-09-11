@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -64,16 +63,8 @@ public class CustomTabActivityLifecycleUmaTracker
 
     private void recordIncognitoLaunchReason() {
         // TODO(crbug.com/352525607): Separate Ephemeral and Incognito CCT metrics.
-        @IntentHandler.IncognitoCctCallerId int incognitoCctCallerId;
-        if (mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
-            incognitoCctCallerId =
-                    ((IncognitoCustomTabIntentDataProvider) mIntentDataProvider)
-                            .getFeatureIdForMetricsCollection();
-        } else {
-            incognitoCctCallerId =
-                    ((EphemeralCustomTabIntentDataProvider) mIntentDataProvider)
-                            .getFeatureIdForMetricsCollection();
-        }
+        /*@IncognitoCctCallerId*/ int incognitoCctCallerId =
+                mIntentDataProvider.getFeatureIdForMetricsCollection();
 
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.IncognitoCctCallerId",
