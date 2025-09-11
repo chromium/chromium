@@ -19,9 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#htmlfontelement
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLFontElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString color;
     [CEReactions, Reflect] attribute DOMString face;
     [CEReactions, Reflect] attribute DOMString size;

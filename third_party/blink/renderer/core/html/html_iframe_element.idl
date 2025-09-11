@@ -21,9 +21,9 @@
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#htmliframeelement
 
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLIFrameElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, RaisesException=Setter] attribute (DOMString or TrustedHTML) srcdoc;
     [CEReactions, Reflect] attribute DOMString name;

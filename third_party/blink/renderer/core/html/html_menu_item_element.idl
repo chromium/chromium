@@ -4,9 +4,9 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
     RuntimeEnabled=MenuElements
 ] interface HTMLMenuItemElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute boolean disabled;
     [CEReactions] attribute boolean checked;
 

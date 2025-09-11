@@ -24,9 +24,9 @@
 [
     Exposed=Window,
     LegacyOverrideBuiltIns,
-    ActiveScriptWrappable,
-    HTMLConstructor
+    ActiveScriptWrappable
 ] interface HTMLEmbedElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString width;
