@@ -541,7 +541,7 @@ extra_kv = { allow_unsafe = false }
 license_files = ["LICENSE-MIT", "LICENSE-Apache"]
 
 [crate.temporal_rs]
-extra_kv = { allow_unsafe = true }
+extra_kv = { allow_unsafe = false }
 license_files = ["LICENSE-MIT", "LICENSE-Apache"]
 
 [crate.termcolor.extra_kv]

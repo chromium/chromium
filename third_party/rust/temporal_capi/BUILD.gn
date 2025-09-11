@@ -13,7 +13,7 @@
 # It is not mandatory to update the `defines` list every time temporal_capi
 # updates; it is just a convenient tool to use as needed.
 config("temporal_capi_versioning_defines") {
-  defines = [ "TEMPORAL_CAPI_VERSION_0_0_13" ]
+  defines = [ "TEMPORAL_CAPI_VERSION_0_0_16" ]
 }
 
 # v8 includes headers and targets from paths that include a specific crate
@@ -30,8 +30,8 @@ group("temporal_capi") {
     ":temporal_capi_include_dirs",
     ":temporal_capi_versioning_defines",
   ]
-  public_deps = [ "//third_party/rust/temporal_capi/v0_0_13:lib" ]
+  public_deps = [ "//third_party/rust/temporal_capi/v0_0_16:lib" ]
 }
 config("temporal_capi_include_dirs") {
-  include_dirs = [ "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_13/bindings/cpp" ]
+  include_dirs = [ "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_16/bindings/cpp" ]
 }

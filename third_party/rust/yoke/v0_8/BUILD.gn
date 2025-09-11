@@ -44,6 +44,7 @@ cargo_crate("lib") {
   ]
   features = [
     "alloc",
+    "default",
     "derive",
     "zerofrom",
   ]

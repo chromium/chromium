@@ -138,7 +138,6 @@ dependencies = [
  "syn",
  "temporal_capi",
  "zip",
- "zoneinfo64",
 ]
 
 [[package]]
@@ -1074,7 +1073,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.0.13"
+version = "0.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",
@@ -1083,24 +1082,24 @@ dependencies = [
  "icu_locale",
  "num-traits",
  "temporal_rs",
+ "timezone_provider",
  "writeable",
+ "yoke",
+ "zoneinfo64",
 ]
 
 [[package]]
 name = "temporal_rs"
-version = "0.0.13"
+version = "0.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "combine",
  "core_maths",
  "icu_calendar",
  "icu_locale",
  "ixdtf",
- "jiff-tzdb",
  "num-traits",
  "timezone_provider",
  "tinystr",
- "tzif",
  "writeable",
 ]
 
@@ -1114,12 +1113,16 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.0.13"
+version = "0.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "combine",
+ "jiff-tzdb",
  "tinystr",
+ "tzif",
  "zerotrie",
  "zerovec",
+ "zoneinfo64",
 ]
 
 [[package]]
