@@ -681,7 +681,7 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key,
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectLiveResources)));
-  statement.BindInt64(0, key.hash());
+  statement.BindInt64(0, key.hash().value());
   statement.BindString(1, key.string());
   if (!statement.Step()) {
     // `Step()` returned false, which means either the query completed with no
@@ -780,7 +780,7 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     statement.BindTime(2, entry_info.last_used);
     statement.BindInt64(3, entry_info.body_end);
     statement.BindInt64(4, bytes_usage);
-    statement.BindInt64(5, key.hash());
+    statement.BindInt64(5, key.hash().value());
     statement.BindString(6, key.string());
     if (!statement.Run()) {
       return base::unexpected(Error::kFailedToExecute);
@@ -1066,7 +1066,7 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
-    statement.BindInt64(0, key.hash());
+    statement.BindInt64(0, key.hash().value());
     statement.BindString(1, key.string());
     while (statement.Step()) {
       ++deleted_count;
@@ -1291,7 +1291,7 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
         SQL_FROM_HERE,
         GetQuery(Query::kUpdateEntryLastUsed_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
-    statement.BindInt64(1, key.hash());
+    statement.BindInt64(1, key.hash().value());
     statement.BindString(2, key.string());
     if (!statement.Run()) {
       return Error::kFailedToExecute;
