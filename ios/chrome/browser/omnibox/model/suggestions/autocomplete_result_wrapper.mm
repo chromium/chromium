@@ -197,8 +197,10 @@
   BOOL tileNavSuggestHandled = NO;
   for (size_t i = 0; i < autocompleteResult.size(); i++) {
     const AutocompleteMatch& match = autocompleteResult.match_at((NSUInteger)i);
-    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST &&
-        !tileNavSuggestHandled) {
+    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+      if (tileNavSuggestHandled) {
+        continue;
+      }
       tileNavSuggestHandled = YES;
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
       for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
