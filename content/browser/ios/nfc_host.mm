@@ -349,8 +349,10 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     // this object is destroyed.
     subscription_id_ =
         permission_controller_->SubscribeToPermissionResultChange(
-            blink::PermissionType::NFC, /*render_process_host=*/nullptr,
-            render_frame_host,
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::NFC),
+            /*render_process_host=*/nullptr, render_frame_host,
             render_frame_host->GetMainFrame()
                 ->GetLastCommittedOrigin()
                 .GetURL(),
@@ -396,7 +398,7 @@ void NFCHost::OnPermissionResultChange(PermissionResult permission_result) {
 }
 
 void NFCHost::Close() {
-  permission_controller_->UnsubscribeFromPermissionStatusChange(
+  permission_controller_->UnsubscribeFromPermissionResultChange(
       subscription_id_);
   subscription_id_ = PermissionController::SubscriptionId();
   ClearState();
