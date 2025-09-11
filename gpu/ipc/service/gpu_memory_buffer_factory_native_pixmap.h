@@ -33,8 +33,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
 
  private:
   scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
-
-  base::WeakPtrFactory<GpuMemoryBufferFactoryNativePixmap> weak_factory_{this};
 };
 
 }  // namespace gpu
