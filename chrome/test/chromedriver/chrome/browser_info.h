@@ -33,6 +33,7 @@ struct BrowserInfo {
   int major_version = 0;
   int build_no = kToTBuildNo;
   int blink_revision = kToTBlinkRevision;
+  int process_id = 0;
   bool is_android = false;
   bool is_headless_shell = false;
 

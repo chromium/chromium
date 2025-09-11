@@ -231,6 +231,23 @@ base::Value::Dict CreateCapabilities(Session* session,
                                                    ->debugger_endpoint.Address()
                                                    .ToString());
   }
+
+  // If the request to initialize a browser process came from localhost, and
+  // not an intermediary node, send the main browser PID back in the custom
+  // capabilities. The process_id should only be set in BrowserInfo in this
+  // scenario.
+  // This is done specifically for the purpose of testing accessibility APIs
+  // after starting and interacting with a browser using chromedriver --
+  // accessibility APIs are found via the browser PID. If we are starting a
+  // process remotely, we cannot access the accessibility API and the PID is
+  // not useful.
+  if (!capabilities.IsRemoteBrowser()) {
+    int desktop_process_id = session->chrome->GetBrowserInfo()->process_id;
+    if (desktop_process_id) {
+      caps.Set("goog:processID", desktop_process_id);
+    }
+  }
+
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
   if (status.IsOk()) {

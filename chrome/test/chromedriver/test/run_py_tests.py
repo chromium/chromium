@@ -7524,6 +7524,12 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
 class LaunchDesktopTest(ChromeDriverBaseTest):
   """Tests that launching desktop Chrome works."""
 
+  def testBrowserPIDReturnedInCapabilities(self):
+    """Browser PID should be returned for desktop clients in the chrome-specific
+    capability 'goog:processID'."""
+    driver = self.CreateDriver()
+    self.assertTrue(driver.capabilities['goog:processID'] > 0)
+
   def testExistingDevToolsPortFile(self):
     """If a DevTools port file already exists before startup, then we should
     ignore it and get our debug port number from the new file."""
