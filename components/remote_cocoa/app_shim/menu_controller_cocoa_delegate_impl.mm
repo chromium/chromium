@@ -21,7 +21,8 @@ namespace {
 
 constexpr CGFloat kIPHDotSize = 6;
 
-NSImage* NewTagImage(const remote_cocoa::mojom::MenuControllerParams& params) {
+NSImage* NewBadgeImage(
+    const remote_cocoa::mojom::MenuControllerParams& params) {
   // 1. Make the attributed string.
 
   NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
@@ -149,7 +150,7 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
   if (model->IsNewFeatureAt(index)) {
     NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithData:nil
                                                                    ofType:nil];
-    attachment.image = NewTagImage(*_params);
+    attachment.image = NewBadgeImage(*_params);
     NSSize newTagSize = attachment.image.size;
 
     // The baseline offset of the badge image to the menu text baseline.
@@ -162,8 +163,14 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
     [attrTitle
         appendAttributedString:[NSAttributedString
                                    attributedStringWithAttachment:attachment]];
-
     menuItem.attributedTitle = attrTitle;
+
+    // VoiceOver will read the non-attributed string version of the title, so
+    // modify the non-attributed string version appropriately.
+    menuItem.title = [menuItem.title
+        stringByAppendingFormat:@" %@",
+                                l10n_util::GetNSString(
+                                    IDS_NEW_BADGE_SCREEN_READER_MESSAGE)];
   }
 
   if (model->IsAlertedAt(index)) {
