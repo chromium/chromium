@@ -17,9 +17,16 @@ default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 # Platforms not in this list *may* work with clang modules, but we don't
 # guarantee it, and we don't test them on CI/CQ with modules, so breakages may
 # occur.
-clang_modules_platform_supported = (is_linux && current_cpu == "x64") ||
-                                   (is_android && current_cpu == "x64") ||
-                                   (is_android && current_cpu == "arm64")
+linux_supported_cpus = [
+  "arm",
+  "arm64",
+  "x64",
+  "x86",
+]
+clang_modules_platform_supported =
+    (is_linux && filter_include(linux_supported_cpus, [ current_cpu ]) != []) ||
+    (is_android && current_cpu == "x64") ||
+    (is_android && current_cpu == "arm64")
 
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
