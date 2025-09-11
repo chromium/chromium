@@ -228,7 +228,10 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
     return profile;
   }
 
-  FormGlobalId form_id() const { return form_id_; }
+  FormGlobalId form_id() {
+    return {LocalFrameToken(*main_frame()->GetFrameToken()),
+            FormRendererId(123)};
+  }
 
   base::Value::Dict GetFilledOutForm(const std::string& unique_context_id) {
     return GetFilledOutForm(unique_context_id, "");
@@ -261,7 +264,6 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  FormGlobalId form_id_ = test::MakeFormGlobalId();
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
 };
@@ -443,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
 
   // TODO(crbug.com/40227496): Get rid of FormFieldData.
   FormData form;
-  form.set_host_frame(LocalFrameToken(*main_frame()->GetFrameToken()));
+  form.set_host_frame(form_id().frame_token);
   form.set_renderer_id(form_id().renderer_id);
   std::vector<FormFieldData> fields;
   fields.push_back(test::CreateTestFormField(
@@ -472,8 +474,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   const std::vector<FormFieldData> filled_fields_by_autofill = {
       {form.fields()[0], form.fields()[1]}};
 
-  (*test_api(main_autofill_manager()).mutable_form_structures())[form_id()] =
-      std::move(form_structure);
+  test_api(main_autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
 
   // Enable events and emit event about form being filled.
   SendCommandSync("Autofill.enable");

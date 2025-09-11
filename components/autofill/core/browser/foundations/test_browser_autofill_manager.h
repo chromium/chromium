@@ -25,7 +25,6 @@ namespace autofill {
 
 class MockBnplManager;
 class AutofillDriver;
-class FormStructure;
 class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
@@ -99,10 +98,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
           heuristic_types,
       const std::vector<FieldType>& server_types,
       bool preserve_values_in_form_structure = false);
-
-  void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
-
-  void ClearFormStructures();
 
   const std::string& GetSubmittedFormSignature();
 

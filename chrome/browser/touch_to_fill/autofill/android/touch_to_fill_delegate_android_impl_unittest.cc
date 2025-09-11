@@ -389,7 +389,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForInvalidForm) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
-  browser_autofill_manager_->ClearFormStructures();
+  test_api(*browser_autofill_manager_).ClearFormStructures();
 
   EXPECT_EQ(false, touch_to_fill_delegate_->TryToShowTouchToFill(
                        form_, form_.fields()[0]));

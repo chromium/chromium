@@ -169,7 +169,7 @@ void TestBrowserAutofillManager::AddSeenForm(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   test_api(*form_structure).AssignSections();
-  AddSeenFormStructure(std::move(form_structure));
+  test_api(*this).AddSeenFormStructure(std::move(form_structure));
   test_api(*this).OnFormsParsed({form});
   // Awaits the CrowdsourcingManager's response if OnFormsParsed() started a
   // request. This is necessary because TestAutofillManagerWaiter fails if there
@@ -178,16 +178,6 @@ void TestBrowserAutofillManager::AddSeenForm(
   // This response, i.e., AutofillManager::OnLoadedServerPredictions(), is
   // asynchronous even if crowdsourcing is disabled.
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-void TestBrowserAutofillManager::AddSeenFormStructure(
-    std::unique_ptr<FormStructure> form_structure) {
-  const auto id = form_structure->global_id();
-  (*mutable_form_structures())[id] = std::move(form_structure);
-}
-
-void TestBrowserAutofillManager::ClearFormStructures() {
-  mutable_form_structures()->clear();
 }
 
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(

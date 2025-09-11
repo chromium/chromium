@@ -546,11 +546,7 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   regex_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
-  ASSERT_TRUE(
-      test_api(autofill_manager())
-          .mutable_form_structures()
-          ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
-          .second);
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
