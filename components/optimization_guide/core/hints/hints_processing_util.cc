@@ -143,6 +143,12 @@ std::string GetStringNameForOptimizationType(
       return "BuyNowPayLaterAllowlistZip";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA:
       return "BuyNowPayLaterAllowlistKlarna";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM:
+      return "BuyNowPayLaterBlocklistAffirm";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP:
+      return "BuyNowPayLaterBlocklistZip";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA:
+      return "BuyNowPayLaterBlocklistKlarna";
     case proto::OptimizationType::SAVED_TAB_GROUP:
       return "SavedTabGroup";
     case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:

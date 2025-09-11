@@ -778,6 +778,9 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="99" label="WALLETABLE_PASS_DETECTION_ALLOWLIST"/>
   <int value="100" label="SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST"/>
   <int value="102" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA"/>
+  <int value="103" label="BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM"/>
+  <int value="104" label="BUY_NOW_PAY_LATER_BLOCKLIST_ZIP"/>
+  <int value="105" label="BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

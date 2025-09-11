@@ -318,6 +318,15 @@ chromium-metrics-reviews@google.com.
   <variant name="BuyNowPayLaterAllowlistZip"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Zip."/>
+  <variant name="BuyNowPayLaterBlocklistAffirm"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Affirm."/>
+  <variant name="BuyNowPayLaterBlocklistKlarna"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Klarna."/>
+  <variant name="BuyNowPayLaterBlocklistZip"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Zip."/>
   <variant name="CapitalOneCreditCardBenefitsBlocked"
       summary="This optimization provides information about whether a
                merchant url is eligible to display Capital One credit card
