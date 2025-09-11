@@ -204,7 +204,7 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
       0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrernder",
+      "NavigationToFirstContentfulPaint.WithPrerender",
       0);
 }
 
@@ -404,7 +404,7 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
       base::Milliseconds(334), 1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrernder",
+      "NavigationToFirstContentfulPaint.WithPrerender",
       0);
 }
 
@@ -887,7 +887,7 @@ TEST(PreloadServingMetricsTest,
       0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrernder",
+      "NavigationToFirstContentfulPaint.WithPrerender",
       0);
 }
 
