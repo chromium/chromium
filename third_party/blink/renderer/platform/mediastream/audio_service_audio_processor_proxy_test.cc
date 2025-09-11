@@ -29,7 +29,6 @@ void VerifyStats(const media::AudioProcessingStats& expected,
             expected.echo_return_loss);
   EXPECT_EQ(received.apm_statistics.echo_return_loss_enhancement,
             expected.echo_return_loss_enhancement);
-  EXPECT_FALSE(received.apm_statistics.voice_detected);
   EXPECT_FALSE(received.apm_statistics.divergent_filter_fraction);
   EXPECT_FALSE(received.apm_statistics.delay_median_ms);
   EXPECT_FALSE(received.apm_statistics.delay_standard_deviation_ms);
