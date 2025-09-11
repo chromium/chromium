@@ -923,102 +923,6 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         ]
         self.assertEqual(set(copy_specs), set(['/$W/App Product.app:/']))
 
-    def test_package_installer_tools(self, **kwargs):
-        manager = mock.Mock()
-        for attr in kwargs:
-            manager.attach_mock(kwargs[attr], attr)
-
-        config = test_config.TestConfig()
-        pipeline._package_installer_tools(self.paths, config)
-
-        # Start and end with the work dir.
-        self.assertEqual(
-            mock.call.make_dir('/$W_1/diff_tools'), manager.mock_calls[0])
-        self.assertEqual(
-            mock.call.shutil.rmtree('/$W_1'), manager.mock_calls[-1])
-
-        self.assertEqual(
-            mock.call.run_command(
-                ['zip', '-9ry', '/$O/diff_tools.zip', 'diff_tools'],
-                cwd='/$W_1'), manager.mock_calls[-2])
-
-        files_to_copy = set([
-            'goobspatch',
-            'liblzma_decompress.dylib',
-            'goobsdiff',
-            'xz',
-            'xzdec',
-            'dirdiffer.sh',
-            'dirpatcher.sh',
-            'dmgdiffer.sh',
-            'keystone_install.sh',
-            'pkg-dmg',
-        ])
-        copied_files = []
-        for call in manager.mock_calls:
-            if call[0] == 'copy_files':
-                args = call[1]
-                self.assertTrue(args[0].startswith('/$I/Product Packaging/'))
-                self.assertEqual('/$W_1/diff_tools', args[1])
-                copied_files.append(os.path.basename(args[0]))
-
-        self.assertEqual(len(copied_files), len(files_to_copy))
-        self.assertEqual(set(copied_files), files_to_copy)
-
-        files_to_sign = set([
-            'goobspatch',
-            'liblzma_decompress.dylib',
-            'goobsdiff',
-            'xz',
-            'xzdec',
-        ])
-        signed_files = []
-        verified_files = []
-
-        for call in manager.mock_calls:
-            args = call[1]
-            if call[0] == 'sign_part':
-                signed_files.append(os.path.basename(args[2].path))
-            elif call[0] == 'verify_part':
-                path = os.path.basename(args[1].path)
-                self.assertTrue(path in signed_files)
-                verified_files.append(path)
-
-        self.assertEqual(len(signed_files), len(files_to_sign))
-        self.assertEqual(len(verified_files), len(files_to_sign))
-        self.assertEqual(set(signed_files), files_to_sign)
-        self.assertEqual(set(verified_files), files_to_sign)
-
-    def test_package_installer_tools_not_chrome(self, **kwargs):
-        manager = mock.Mock()
-        for attr in kwargs:
-            manager.attach_mock(kwargs[attr], attr)
-
-        config = test_config.TestConfigNonChromeBranded()
-        pipeline._package_installer_tools(self.paths, config)
-
-        files_to_copy = set([
-            'goobspatch',
-            'liblzma_decompress.dylib',
-            'goobsdiff',
-            'xz',
-            'xzdec',
-            'dirdiffer.sh',
-            'dirpatcher.sh',
-            'dmgdiffer.sh',
-            'pkg-dmg',
-        ])
-        copied_files = []
-        for call in manager.mock_calls:
-            if call[0] == 'copy_files':
-                args = call[1]
-                self.assertTrue(args[0].startswith('/$I/Product Packaging/'))
-                self.assertEqual('/$W_1/diff_tools', args[1])
-                copied_files.append(os.path.basename(args[0]))
-
-        self.assertEqual(len(copied_files), len(files_to_copy))
-        self.assertEqual(set(copied_files), files_to_copy)
-
     def test_filter_distributions(self, **kwargs):
         dist1 = model.Distribution()
         dist2 = model.Distribution(branding_code='MOO', channel='beta')
@@ -1121,7 +1025,7 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         m: mock.DEFAULT
         for m in ('_customize_and_sign_chrome', '_staple_chrome',
                   '_package_and_sign_dmg', '_package_and_sign_pkg',
-                  '_package_zip', '_package_installer_tools')
+                  '_package_zip')
     })
 @mock.patch('signing.commands.tempfile.mkdtemp', _get_work_dir)
 class TestSignAll(unittest.TestCase):
@@ -1153,8 +1057,6 @@ class TestSignAll(unittest.TestCase):
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-
         manager.assert_has_calls([
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
@@ -1178,9 +1080,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_zip(self, **kwargs):
@@ -1205,8 +1104,6 @@ class TestSignAll(unittest.TestCase):
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-
         manager.assert_has_calls([
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
@@ -1228,9 +1125,6 @@ class TestSignAll(unittest.TestCase):
 
             # Notarize the DMG.
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_inflated_distribution_dmg(self, **kwargs):
@@ -1257,8 +1151,6 @@ class TestSignAll(unittest.TestCase):
         config = Config()
 
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1288,9 +1180,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_pkg(self, **kwargs):
@@ -1316,8 +1205,6 @@ class TestSignAll(unittest.TestCase):
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-
         manager.assert_has_calls([
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
@@ -1341,9 +1228,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.submit('/$O/AppProduct-99.0.9999.99.pkg', mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_dmg_zip(self, **kwargs):
@@ -1369,8 +1253,6 @@ class TestSignAll(unittest.TestCase):
 
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1398,9 +1280,6 @@ class TestSignAll(unittest.TestCase):
             # Notarize the DMG.
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_dmg_pkg(self, **kwargs):
@@ -1427,8 +1306,6 @@ class TestSignAll(unittest.TestCase):
 
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1458,9 +1335,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_pkg_zip(self, **kwargs):
@@ -1486,8 +1360,6 @@ class TestSignAll(unittest.TestCase):
 
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1515,9 +1387,6 @@ class TestSignAll(unittest.TestCase):
             # Notarize the PKG.
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_basic_distribution_dmg_pkg_zip(self, **kwargs):
@@ -1545,8 +1414,6 @@ class TestSignAll(unittest.TestCase):
 
         config = Config()
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1579,9 +1446,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_no_packaging(self, **kwargs):
@@ -1610,12 +1474,8 @@ class TestSignAll(unittest.TestCase):
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(1, kwargs['run_command_all_output_async'].call_count)
 
     def test_sign_notarize_wait_no_staple(self, **kwargs):
@@ -1631,7 +1491,6 @@ class TestSignAll(unittest.TestCase):
             notarize=model.NotarizeAndStapleLevel.WAIT_NOSTAPLE)
         asyncio.run(pipeline.sign_all(self.paths, config))
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1655,9 +1514,6 @@ class TestSignAll(unittest.TestCase):
 
             # Cleanup.
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_no_notarization(self, **kwargs):
@@ -1668,8 +1524,6 @@ class TestSignAll(unittest.TestCase):
         config = test_config.TestConfig(
             notarize=model.NotarizeAndStapleLevel.NONE)
         asyncio.run(pipeline.sign_all(self.paths, config))
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1682,9 +1536,6 @@ class TestSignAll(unittest.TestCase):
 
             # Cleanup.
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     def test_sign_no_packaging_no_notarization(self, **kwargs):
@@ -1703,12 +1554,8 @@ class TestSignAll(unittest.TestCase):
                                                  '/$O/stable', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(0, kwargs['run_command'].call_count)
 
     def test_sign_branded_distribution(self, **kwargs):
@@ -1769,7 +1616,6 @@ class TestSignAll(unittest.TestCase):
         config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
         asyncio.run(pipeline.sign_all(self.paths, config))
 
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(6, kwargs['_customize_and_sign_chrome'].call_count)
 
         manager.assert_has_calls([
@@ -1825,9 +1671,6 @@ class TestSignAll(unittest.TestCase):
             mock.call._package_zip(
                 self.paths.replace_work('/$W_1/stable-AHHHH'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
-
-            # Finally the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
 
     @mock.patch('signing.pipeline._filter_distributions', _filter_distributions)

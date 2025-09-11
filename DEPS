@@ -1213,11 +1213,6 @@ deps = {
     'condition': 'checkout_src_internal',
   },
 
-  'src/chrome/installer/mac/third_party/xz/xz': {
-      'url': Var('chromium_git') + '/chromium/deps/xz.git' + '@' + '10d236393a338a55830db628356f022a91978b61',
-      'condition': 'checkout_mac',
-  },
-
   'src/third_party/compiler-rt/src':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/compiler-rt.git' + '@' +

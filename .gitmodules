@@ -5,10 +5,6 @@
 	path = chrome/browser/resources/preinstalled_web_apps/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/default_apps
 	gclient-condition = checkout_src_internal
-[submodule "chrome/installer/mac/third_party/xz/xz"]
-	path = chrome/installer/mac/third_party/xz/xz
-	url = https://chromium.googlesource.com/chromium/deps/xz
-	gclient-condition = checkout_mac
 [submodule "third_party/compiler-rt/src"]
 	path = third_party/compiler-rt/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt
