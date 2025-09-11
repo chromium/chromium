@@ -2272,27 +2272,11 @@ const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
 
 // static
 const ComputedGridTrackList& ComputedStyle::ComputedGridTemplate(
-    const Member<ComputedGridTrackList>& track_list,
-    const bool use_masonry_default) {
+    const Member<ComputedGridTrackList>& track_list) {
   if (track_list) {
     return *track_list;
   }
-  // If `track_list` is null, that means it is the initial value. The default
-  // value for 'grid-template-*' in masonry layout is 'repeat(auto-fill,
-  // auto)'.
-  //
-  // TODO(almaher): Update this depending on the resolution to
-  // https://github.com/w3c/csswg-drafts/issues/10869.
-  if (use_masonry_default) {
-    DEFINE_STATIC_LOCAL(
-        Persistent<ComputedGridTrackList>, auto_fill_auto_list,
-        (MakeGarbageCollected<ComputedGridTrackList>(
-            ComputedGridTrackList(GridTrackList(GridTrackSize(Length::Auto()),
-                                                GridTrackRepeater::kAutoFill),
-                                  AutoRepeatType::kAutoFill))));
-    return *auto_fill_auto_list;
-  }
-
+  // If `track_list` is null, that means it is the initial value.
   DEFINE_STATIC_LOCAL(
       Persistent<ComputedGridTrackList>, default_track_list,
       (MakeGarbageCollected<ComputedGridTrackList>(ComputedGridTrackList())));

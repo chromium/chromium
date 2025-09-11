@@ -5,34 +5,33 @@
 .grid {
     display: grid;
     background: gray;
-    item-tolerance: 0;
     width: 300px;
     height: 300px;
     font: 15px/1 Ahem;
 }
 
 .grid > div {
-    height: 100px;
+    width: 100px;
 }
 </style>
 <body>
   <div class="grid">
-    <div style="background: lightskyblue;">
+    <div style="background: lightskyblue; grid-row: 1;">
       Number 1
     </div>
-    <div style="background: lightcoral;">
+    <div style="background: lightcoral; grid-row: 2;">
       Number 2
     </div>
-    <div style="background: lightgreen;">
+    <div style="background: lightgreen; grid-row: 1;">
       Number 3
     </div>
-    <div style="background: lightpink;">
+    <div style="background: lightpink; grid-row: 2;">
       Number 4
     </div>
-    <div style="background: orange;">
+    <div style="background: orange; grid-row: 1;">
       Number 5
     </div>
-    <div style="grid-column: span 2; background: brown;">
+    <div style="grid-row: 1 / span 2; background: brown;">
       Number 6
     </div>
   </div>

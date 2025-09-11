@@ -4,9 +4,6 @@
 .grid {
     display: grid;
     background: gray;
-    item-tolerance: 0;
-    grid-template-columns: 100px 100px 100px 100px 100px;
-    grid-template-rows: none;
     width: 300px;
     height: 300px;
 }
@@ -33,7 +30,7 @@
     <div style="background: orange; grid-row: 1;">
       Number 5
     </div>
-    <div style="grid-row: span 2; background: brown; height: 200px;">
+    <div style="grid-row: 1 / span 2; background: brown; height: 200px;">
       Number 6
     </div>
   </div>

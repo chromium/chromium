@@ -1151,16 +1151,11 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // grid-template-*
   const ComputedGridTrackList& GridTemplateColumns() const {
-    return ComputedGridTemplate(
-        SpecifiedGridTemplateColumns(),
-        /*use_masonry_default=*/IsDisplayMasonryBox() &&
-            MasonryTrackSizingDirection() == kForColumns);
+    return ComputedGridTemplate(SpecifiedGridTemplateColumns());
   }
 
   const ComputedGridTrackList& GridTemplateRows() const {
-    return ComputedGridTemplate(SpecifiedGridTemplateRows(),
-                                /*use_masonry_default=*/IsDisplayMasonryBox() &&
-                                    MasonryTrackSizingDirection() == kForRows);
+    return ComputedGridTemplate(SpecifiedGridTemplateRows());
   }
 
   // Masonry utility functions.
@@ -2692,8 +2687,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   static CORE_EXPORT const ComputedGridTrackList& ComputedGridTemplate(
-      const Member<ComputedGridTrackList>& track_list,
-      const bool use_masonry_default);
+      const Member<ComputedGridTrackList>& track_list);
 
   [[nodiscard]] bool HasPropertyDependingOnCurrentColor() const;
 
@@ -3205,9 +3199,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
            Display() == EDisplay::kTableColumn ||
            Display() == EDisplay::kTableColumnGroup;
   }
-  bool IsDisplayMasonryBox() const {
-    return ComputedStyle::IsDisplayMasonryBox(Display());
-  }
   DisplayStyle GetDisplayStyle() const {
     return DisplayStyle(Display(), StyleType(), GetContentData());
   }
@@ -3245,17 +3236,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // grid-template-*
   const ComputedGridTrackList& GridTemplateColumns() const {
-    return ComputedStyle::ComputedGridTemplate(
-        SpecifiedGridTemplateColumns(),
-        /*use_masonry_default=*/IsDisplayMasonryBox() &&
-            MasonryTrackSizingDirection() == kForColumns);
+    return ComputedStyle::ComputedGridTemplate(SpecifiedGridTemplateColumns());
   }
 
   const ComputedGridTrackList& GridTemplateRows() const {
-    return ComputedStyle::ComputedGridTemplate(
-        SpecifiedGridTemplateRows(),
-        /*use_masonry_default=*/IsDisplayMasonryBox() &&
-            MasonryTrackSizingDirection() == kForRows);
+    return ComputedStyle::ComputedGridTemplate(SpecifiedGridTemplateRows());
   }
 
   // letter-spacing
@@ -3335,11 +3320,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
   StyleImage* MaskBoxImageSource() const {
     return MaskBoxImageInternal().GetImage();
-  }
-
-  // masonry
-  GridTrackSizingDirection MasonryTrackSizingDirection() const {
-    return ComputedStyle::MasonryTrackSizingDirection(MasonryDirection());
   }
 
   // opacity

@@ -1132,9 +1132,6 @@ crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-006.html [ F
 crbug.com/1076027 external/wpt/css/css-grid/parsing/grid-template-rows-intrinsic-auto-repeat-computed-implicit-track.tentative.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Failure ]
-# Failing because of the divergence in default track definition
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-002.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-003.html [ Failure ]
 # Tests failing in wpt runner that match expectations in the browser rendering
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-fit-content-001.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-fit-content-004.html [ Failure ]
