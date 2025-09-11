@@ -109,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
   drop_target_view()->Show(MultiContentsDropTargetView::DropSide::END,
-                           MultiContentsDropTargetView::DropTargetState::kFull);
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
   auto drop_cb = drop_target_view()->GetDropCallback(event);
   EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
@@ -145,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
   drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
-                           MultiContentsDropTargetView::DropTargetState::kFull);
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
   auto drop_cb = drop_target_view()->GetDropCallback(event);
   EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
@@ -181,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
   drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
-                           MultiContentsDropTargetView::DropTargetState::kFull);
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
   auto drop_cb = drop_target_view()->GetDropCallback(event);
   EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
@@ -217,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // Show the drop target on the end side.
   drop_target_view()->Show(MultiContentsDropTargetView::DropSide::END,
-                           MultiContentsDropTargetView::DropTargetState::kFull);
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -262,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // Show the drop target on the start side.
   drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
-                           MultiContentsDropTargetView::DropTargetState::kFull);
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -603,7 +608,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
     std::vector<views::ChildLayout> actual_child_layouts;
     view->drop_target_view_->Show(
         MultiContentsDropTargetView::DropSide::START,
-        MultiContentsDropTargetView::DropTargetState::kFull);
+        MultiContentsDropTargetView::DropTargetState::kFull,
+        MultiContentsDropTargetView::DragType::kLink);
     view->drop_target_view_->animation_for_testing().End();
     gfx::Rect remaining_space =
         view->CalculateDropTargetLayout(initial_bounds, actual_child_layouts);
@@ -629,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
     std::vector<views::ChildLayout> actual_child_layouts;
     view->drop_target_view_->Show(
         MultiContentsDropTargetView::DropSide::END,
-        MultiContentsDropTargetView::DropTargetState::kFull);
+        MultiContentsDropTargetView::DropTargetState::kFull,
+        MultiContentsDropTargetView::DragType::kLink);
     view->drop_target_view_->animation_for_testing().End();
     gfx::Rect remaining_space =
         view->CalculateDropTargetLayout(initial_bounds, actual_child_layouts);

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,12 +87,14 @@ class MockTabSlotView : public TabSlotView {
   MOCK_METHOD(TabSizeInfo, GetTabSizeInfo, (), (const, override));
 };
 
-class MultiContentsViewDropTargetControllerTestBase : public testing::Test {
+class MultiContentsViewDropTargetControllerTestBase
+    : public ChromeViewsTestBase {
  public:
   MultiContentsViewDropTargetControllerTestBase() = default;
   ~MultiContentsViewDropTargetControllerTestBase() override = default;
 
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
     SetRTL(false);
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ = multi_contents_view_->AddChildView(
@@ -105,7 +108,12 @@ class MultiContentsViewDropTargetControllerTestBase : public testing::Test {
   void TearDown() override {
     controller_.reset();
     drop_target_view_ = nullptr;
-    multi_contents_view_.reset();
+    multi_contents_view_ = nullptr;
+    ChromeViewsTestBase::TearDown();
+  }
+
+  void ResetController() {
+    controller_.reset();
   }
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
@@ -113,7 +121,7 @@ class MultiContentsViewDropTargetControllerTestBase : public testing::Test {
 
   // Fast forwards by an arbitrary time to ensure timed events are executed.
   void FastForward(double progress = 1.0) {
-    task_environment_.FastForwardBy(kShowTargetDelay * progress);
+    task_environment()->FastForwardBy(kShowTargetDelay * progress);
   }
 
   void DragURLTo(const gfx::Point& point) {
@@ -130,8 +138,6 @@ class MultiContentsViewDropTargetControllerTestBase : public testing::Test {
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests link-dragging behaviour while the "nudge" feature is disabled.
@@ -470,7 +476,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
   EXPECT_FALSE(callback_fired);
 
   // Resetting the controller unique_ptr will destroy it.
-  TearDown();
+  ResetController();
   EXPECT_TRUE(callback_fired);
 }
 
@@ -625,7 +631,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
   // OnDragExited
   drop_target_view().animation_for_testing().SetSlideDuration(base::Seconds(0));
   drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
+                          MultiContentsDropTargetView::DropTargetState::kFull,
+                          MultiContentsDropTargetView::DragType::kLink);
   ASSERT_TRUE(drop_target_view().GetVisible());
   controller().OnDragExited();
   EXPECT_FALSE(drop_target_view().GetVisible());
@@ -633,7 +640,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
 
   // OnDragDone
   drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
+                          MultiContentsDropTargetView::DropTargetState::kFull,
+                          MultiContentsDropTargetView::DragType::kLink);
   ASSERT_TRUE(drop_target_view().GetVisible());
   controller().OnDragDone();
   EXPECT_FALSE(drop_target_view().GetVisible());
@@ -641,7 +649,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
 
   // GetDropCallback and DoDrop
   drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
+                          MultiContentsDropTargetView::DropTargetState::kFull,
+                          MultiContentsDropTargetView::DragType::kLink);
   ASSERT_TRUE(drop_target_view().GetVisible());
   const GURL url("https://www.google.com");
   ui::OSExchangeData drop_data;
@@ -697,6 +706,44 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+}
+
+// Tests that the drag type is correctly set to `DragType::kLink` when
+// dragging a link.
+TEST_F(MultiContentsViewDropTargetControllerDragTest,
+       OnWebContentsDragUpdate_SetsDragTypeToLink) {
+  DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
+  EXPECT_TRUE(drop_target_view().GetVisible());
+  ASSERT_TRUE(drop_target_view().drag_type().has_value());
+  EXPECT_EQ(drop_target_view().drag_type().value(),
+            MultiContentsDropTargetView::DragType::kLink);
+}
+
+// Tests that the drag type is correctly set to `DragType::kTab` when
+// dragging a tab.
+TEST_F(MultiContentsViewDropTargetControllerDragTest,
+       OnTabDragUpdated_SetsDragTypeToTab) {
+  MockTabDragController mock_tab_drag_controller;
+  DragSessionData session_data;
+  MockTabSlotView tab1;
+  MockTabDragContext tab_drag_context;
+  session_data.tab_drag_data_ = {
+      TabDragData(&tab_drag_context, &tab1),
+  };
+  session_data.tab_drag_data_[0].attached_view = &tab1;
+  EXPECT_CALL(tab1, GetTabSlotViewType)
+      .WillRepeatedly(testing::Return(TabSlotView::ViewType::kTab));
+  EXPECT_CALL(mock_tab_drag_controller, GetSessionData)
+      .WillRepeatedly(testing::ReturnRef(session_data));
+
+  controller().OnTabDragUpdated(mock_tab_drag_controller,
+                                kDragPointForStartDropTargetShow);
+  FastForward();
+  EXPECT_TRUE(drop_target_view().GetVisible());
+  ASSERT_TRUE(drop_target_view().drag_type().has_value());
+  EXPECT_EQ(drop_target_view().drag_type().value(),
+            MultiContentsDropTargetView::DragType::kTab);
 }
 
 }  // namespace

@@ -88,20 +88,25 @@ class MultiContentsViewDropTargetController final
 
   // Represents a timer for delaying when a specific drop target view is shown.
   struct DropTargetShowTimer {
-    explicit DropTargetShowTimer(
-        MultiContentsDropTargetView::DropSide drop_side);
+    DropTargetShowTimer(MultiContentsDropTargetView::DropSide drop_side,
+                        MultiContentsDropTargetView::DragType drag_type);
     base::OneShotTimer timer;
     MultiContentsDropTargetView::DropSide drop_side;
+    MultiContentsDropTargetView::DragType drag_type;
   };
 
   // Updates the timers for a drag at the given point.
   // Assumes the dragged data is droppable (e.g. tab or link).
-  void HandleDragUpdate(const gfx::Point& point_in_view);
-  void HandleDragUpdateForNudge(const gfx::Point& point_in_view);
+  void HandleDragUpdate(const gfx::Point& point_in_view,
+                        MultiContentsDropTargetView::DragType drag_type);
+  void HandleDragUpdateForNudge(
+      const gfx::Point& point_in_view,
+      MultiContentsDropTargetView::DragType drag_type);
 
   // Starts or updates a running timer to show `target_to_show`.
   void StartOrUpdateDropTargetTimer(
-      MultiContentsDropTargetView::DropSide drop_side);
+      MultiContentsDropTargetView::DropSide drop_side,
+      MultiContentsDropTargetView::DragType drag_type);
   void ResetDropTargetTimer();
 
   // Shows the drop target that should be displayed at the end of the delay.
