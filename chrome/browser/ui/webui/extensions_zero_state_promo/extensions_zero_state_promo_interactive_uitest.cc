@@ -102,9 +102,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
       InAnyContext(WaitForPromo(
           feature_engagement::kIPHExtensionsZeroStatePromoFeature)),
       PressDefaultPromoButton(),
-      WaitForTabOpenedTo(
-          1, GURL("https://chrome.google.com/"
-                  "webstore?utm_source=ext_zero_state_promo_generic_iph")));
+      WaitForTabOpenedTo(1,
+                         GURL("https://chromewebstore.google.com"
+                              "?utm_source=ext_zero_state_promo_generic_iph")));
 }
 
 // Test that IPH does not show when the user does not have the PromotionEnabled

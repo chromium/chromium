@@ -586,7 +586,7 @@ void MaybeRegisterChromeFeaturePromos(
               IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_DESCRIPTION,
               IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT,
               CreateNavigationAction(extension_urls::AppendUtmSource(
-                  extension_urls::GetWebstoreLaunchURL(),
+                  extension_urls::GetNewWebstoreLaunchURL(),
                   extension_urls::kCustomActionIphUtmSource)))
               .SetCustomActionIsDefault(true)
               .SetBubbleTitleText(IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE)
