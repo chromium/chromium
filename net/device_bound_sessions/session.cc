@@ -279,10 +279,6 @@ proto::Session Session::ToProto() const {
 bool Session::ShouldDeferRequest(
     URLRequest* request,
     const net::FirstPartySetMetadata& first_party_set_metadata) const {
-  if (request->device_bound_session_usage() < SessionUsage::kNoUsage) {
-    request->set_device_bound_session_usage(SessionUsage::kNoUsage);
-  }
-
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;

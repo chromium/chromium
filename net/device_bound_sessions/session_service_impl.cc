@@ -297,6 +297,11 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
   if (pending_initialization_) {
     return DeferralParams();
   }
+
+  if (request->device_bound_session_usage() < SessionUsage::kNoUsage) {
+    request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  }
+
   SchemefulSite site(request->url());
   DebugHeaderBuilder debug_header_builder;
   const base::flat_map<SessionKey, RefreshResult>& previous_deferrals =

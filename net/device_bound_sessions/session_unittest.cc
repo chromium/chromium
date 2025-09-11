@@ -385,6 +385,9 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  // The SessionService typically sets this once it starts looking for a
+  // session on the same site as `request`.
+  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
@@ -404,6 +407,9 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
+  // The SessionService typically sets this once it starts looking for a
+  // session on the same site as `request`.
+  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
@@ -478,6 +484,9 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       test_insecure_url, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  // The SessionService typically sets this once it starts looking for a
+  // session on the same site as `request`.
+  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
@@ -538,6 +547,9 @@ TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  // The SessionService typically sets this once it starts looking for a
+  // session on the same site as `request`.
+  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());

@@ -994,7 +994,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
     base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RequestDeferralDecision",
+        "Net.DeviceBoundSessions.RequestDeferralDecision2",
         request_->device_bound_session_usage());
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(

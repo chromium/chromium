@@ -1268,6 +1268,25 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
 }
 
+TEST_F(SessionServiceImplTest, SessionUsage) {
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
+
+  HttpRequestHeaders extra_headers;
+  service().ShouldDefer(request.get(), &extra_headers, FirstPartySetMetadata());
+
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  service().ShouldDefer(request.get(), &extra_headers, FirstPartySetMetadata());
+
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
+}
+
 }  // namespace
 
 class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
@@ -1465,6 +1484,20 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
                                    future.GetCallback());
 
   EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  HttpRequestHeaders extra_headers;
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
+
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
 }
 
 }  // namespace net::device_bound_sessions

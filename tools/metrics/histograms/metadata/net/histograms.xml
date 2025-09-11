@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DeviceBoundSessions.RequestDeferralDecision"
+<histogram name="Net.DeviceBoundSessions.RequestDeferralDecision2"
     enum="DeviceBoundSessionUsage" expires_after="2026-01-18">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
