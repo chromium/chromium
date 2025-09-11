@@ -47,7 +47,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_mojo_unittest.test-mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
