@@ -1219,6 +1219,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetScreenOrientationOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetTimezoneOverrideSchema,
+    Emulation.SetUserAgentOverrideSchema,
   ]),
 );
 export namespace Emulation {
@@ -1358,6 +1359,26 @@ export namespace Emulation {
   export const SetScreenOrientationOverrideParametersSchema = z.lazy(() =>
     z.object({
       screenOrientation: z.union([Emulation.ScreenOrientationSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetUserAgentOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setUserAgentOverride'),
+      params: Emulation.SetUserAgentOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetUserAgentOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      userAgent: z.union([z.string(), z.null()]),
       contexts: z
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)

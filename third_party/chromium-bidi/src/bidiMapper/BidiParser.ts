@@ -137,6 +137,9 @@ export interface BidiCommandParameterParser {
   parseSetTimezoneOverrideParams(
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters;
+  parseSetUserAgentOverrideParams(
+    params: unknown,
+  ): Emulation.SetUserAgentOverrideParameters;
   // keep-sorted end
 
   // Input module

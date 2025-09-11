@@ -382,6 +382,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetTimezoneOverrideParametersSchema,
     ) as Protocol.Emulation.SetTimezoneOverrideParameters;
   }
+  export function parseSetUserAgentOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetUserAgentOverrideParametersSchema,
+    ) as Protocol.Emulation.SetUserAgentOverrideParameters;
+  }
   // keep-sorted end
 }
 

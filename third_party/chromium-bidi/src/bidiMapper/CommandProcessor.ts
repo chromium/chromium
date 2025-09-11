@@ -345,6 +345,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setTimezoneOverride(
           this.#parser.parseSetTimezoneOverrideParams(command.params),
         );
+      case 'emulation.setUserAgentOverride':
+        this.#parser.parseSetUserAgentOverrideParams(command.params);
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       // keep-sorted end
 
       // Input module
