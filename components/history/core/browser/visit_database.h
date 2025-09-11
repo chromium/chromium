@@ -103,6 +103,7 @@ class VisitDatabase {
   // results was restricted by `options.max_count`.
   bool GetVisibleVisitsForURL(URLID url_id,
                               const QueryOptions& options,
+                              const VisitQuery404sPolicy policy_for_404s,
                               VisitVector* visits);
 
   // Fills the vector with all visits with times in the given list.

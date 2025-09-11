@@ -2784,7 +2784,11 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   for (const auto& text_match : text_matches) {
     // Get all visits for given URL match.
     VisitVector visits;
-    db_->GetVisibleVisitsForURL(text_match.id(), options, &visits);
+    // TODO: crbug.com/441271808 - Take a `policy_for_404s` param and pass its
+    //   value to `GetVisibleVisitsForURL()`, instead of hardcoding
+    //   `kExclude404s`.
+    db_->GetVisibleVisitsForURL(text_match.id(), options,
+                                VisitQuery404sPolicy::kExclude404s, &visits);
 
     VisitSourceMap sources;
     GetVisitsSource(visits, &sources);
