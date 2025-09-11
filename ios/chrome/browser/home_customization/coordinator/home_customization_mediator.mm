@@ -38,6 +38,40 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Key for Image Fetcher UMA metrics.
+constexpr char kImageFetcherUmaClient[] = "HomeCustomization";
+
+// NetworkTrafficAnnotationTag for fetching background gallery image from Google
+// server.
+const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "home_customization_background_gallery_image",
+        R"(
+        semantics {
+        sender: "HomeCustomization"
+        description:
+            "Sends a request to a Google server to load a background gallery "
+            "image."
+        trigger:
+            "A request will be sent when the user opens the customization menu "
+            " and sees their recently chosen backgrounds."
+        data: "Only image url, no user data"
+        destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+        cookies_allowed: NO
+        setting: "This feature cannot be disabled by settings."
+        chrome_policy: {
+          NTPCustomBackgroundEnabled {
+            NTPCustomBackgroundEnabled: false
+          }
+        }
+        }
+        )");
+}  // namespace
+
 @implementation HomeCustomizationMediator {
   // Pref service to handle preference changes.
   raw_ptr<PrefService> _prefService;
@@ -543,8 +577,8 @@
           }
         }
       }),
-      // TODO (crbug.com/417234848): Add annotation.
-      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
+      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+                                        kImageFetcherUmaClient));
 }
 
 - (void)fetchBackgroundCustomizationUserUploadedImage:(NSString*)imagePath

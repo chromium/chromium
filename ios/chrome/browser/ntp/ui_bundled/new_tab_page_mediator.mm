@@ -120,6 +120,38 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   base::UmaHistogramEnumeration(kNTPLensButtonNewBadgeShownHistogram, result);
 }
 
+// Key for Image Fetcher UMA metrics.
+constexpr char kImageFetcherUmaClient[] = "NtpBackground";
+
+// NetworkTrafficAnnotationTag for fetching ntp background image from Google
+// server.
+const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("ntp_background_custom_image",
+                                        R"(
+        semantics {
+        sender: "NtpBackground"
+        description:
+            "Sends a request to a Google server to load the ntp's custom "
+            "background."
+        trigger:
+            "A request will be sent when the user opens a new NTP and has a "
+            "custom background."
+        data: "Only image url, no user data"
+        destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+        cookies_allowed: NO
+        setting:
+            "This feature cannot be disabled by settings. However, the "
+            "request will only be made if the user has a custom NTP background."
+        chrome_policy: {
+          NTPCustomBackgroundEnabled {
+            NTPCustomBackgroundEnabled: false
+          }
+        }
+        }
+        )");
+
 }  // namespace
 
 @interface NewTabPageMediator () <BrowserViewVisibilityObserving,
@@ -439,8 +471,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
               [weakSelf handleBackgroundImageFetch:image];
             }
           }),
-          // TODO (crbug.com/417234848): Add annotation.
-          image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
+          image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+                                            kImageFetcherUmaClient));
     } else {
       HomeUserUploadedBackground userBackground =
           std::get<HomeUserUploadedBackground>(customBackground.value());
