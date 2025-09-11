@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/modules/webgpu/wgsl_language_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -205,6 +207,12 @@ void GPU::OnRequestAdapterCallback(
     wgpu::Adapter adapter,
     wgpu::StringView error_message) {
   GPUAdapter* gpu_adapter = nullptr;
+
+  // wgpu::RequestAdapterStatus is part of the stable API, so is safe to log to histograms.
+  // The macro + `to_underlying` converts the enum to an int to calculate the max range.
+  UMA_HISTOGRAM_ENUMERATION("GPU.RequestAdapterStatus.WebGPU", status,
+                            base::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
+
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
       gpu_adapter = MakeGarbageCollected<GPUAdapter>(

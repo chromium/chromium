@@ -1439,6 +1439,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Occluding and Non-Occluding Damages"/>
 </enum>
 
+<enum name="WebGPURequestAdapterStatus">
+  <int value="1" label="Success"/>
+  <int value="2" label="CallbackCancelled"/>
+  <int value="3" label="Unavailable"/>
+  <int value="4" label="Error"/>
+</enum>
+
 <enum name="WebGPUSupport">
   <int value="0" label="None"/>
   <int value="1" label="Core None, Compat Blocklisted"/>
