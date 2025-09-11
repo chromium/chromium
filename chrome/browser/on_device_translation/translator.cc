@@ -58,11 +58,6 @@ void Translator::Translate(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   CHECK(browser_context_);
-  // TODO(crbug.com/325332284): Implement TranslateStreaming feature flag.
-  VLOG(1) << "kTranslateStreamingBySentence is "
-          << (base::FeatureList::IsEnabled(kTranslateStreamingBySentence)
-                  ? "enabled"
-                  : "disabled");
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
   if (!Profile::FromBrowserContext(browser_context_.get())
@@ -114,6 +109,18 @@ void Translator::Translate(
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
         /*quota_error_info=*/nullptr);
   }
+}
+
+void Translator::TranslateStreaming(
+    const std::string& input,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  // TODO(crbug.com/429260073): Implement custom sentence split streaming.
+  if (base::FeatureList::IsEnabled(kTranslateStreamingBySentence)) {
+    VLOG(1) << "Need to implement translate streaming";
+    return;
+  }
+  Translate(input, std::move(pending_responder));
 }
 
 }  // namespace on_device_translation

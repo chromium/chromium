@@ -251,7 +251,7 @@ ReadableStream* Translator::translateStreaming(
 
   // TODO(crbug.com/335374928): Implement the error handling for the translation
   // service crash.
-  translator_remote_->Translate(input, std::move(pending_remote));
+  translator_remote_->TranslateStreaming(input, std::move(pending_remote));
 
   return readable_stream;
 }

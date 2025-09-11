@@ -37,6 +37,10 @@ class Translator : public blink::mojom::Translator {
   void Translate(const std::string& input,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
+  void TranslateStreaming(
+      const std::string& input,
+      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+          pending_responder) override;
 
  private:
   base::WeakPtr<content::BrowserContext> browser_context_;
