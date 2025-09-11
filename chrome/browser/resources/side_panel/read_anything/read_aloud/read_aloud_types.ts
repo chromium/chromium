@@ -153,3 +153,10 @@ export interface OffsetByNode {
   node: DomReadAloudNode;
   startOffset: number;
 }
+
+// For reading aloud the DOM is adjusted to highlight along with speech. When
+// that text is then selected, the offset text with the new DOM is needed.
+export interface AncestorNode {
+  node: Node;
+  offset: number;
+}

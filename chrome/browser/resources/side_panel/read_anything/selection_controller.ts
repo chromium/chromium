@@ -3,10 +3,46 @@
 // found in the LICENSE file.
 import {NodeStore} from './node_store.js';
 
+export interface SelectionWithIds {
+  anchorNodeId?: number;
+  anchorOffset: number;
+  focusNodeId?: number;
+  focusOffset: number;
+}
+
 // Handles the business logic for selection in the Reading mode panel.
 export class SelectionController {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private scrollingOnSelection_: boolean = false;
+
+  getSelectionAdjustedForHighlights(
+      anchorNode: Node, anchorOffset: number, focusNode: Node,
+      focusOffset: number): SelectionWithIds {
+    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
+    let focusNodeId = this.nodeStore_.getAxId(focusNode);
+    let adjustedAnchorOffset = anchorOffset;
+    let adjustedFocusOffset = focusOffset;
+    if (!anchorNodeId) {
+      const ancestor = this.nodeStore_.getAncestor(anchorNode);
+      if (ancestor) {
+        anchorNodeId = this.nodeStore_.getAxId(ancestor.node);
+        adjustedAnchorOffset += ancestor.offset;
+      }
+    }
+    if (!focusNodeId) {
+      const ancestor = this.nodeStore_.getAncestor(focusNode);
+      if (ancestor) {
+        focusNodeId = this.nodeStore_.getAxId(ancestor.node);
+        adjustedFocusOffset += ancestor.offset;
+      }
+    }
+    return {
+      anchorNodeId: anchorNodeId,
+      anchorOffset: adjustedAnchorOffset,
+      focusNodeId: focusNodeId,
+      focusOffset: adjustedFocusOffset,
+    };
+  }
 
   onScroll() {
     chrome.readingMode.onScroll(this.scrollingOnSelection_);

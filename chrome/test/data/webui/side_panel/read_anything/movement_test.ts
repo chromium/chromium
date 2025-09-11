@@ -628,30 +628,50 @@ suite('Movement', () => {
     assertHtmlExcludes(currentReadHighlightClass, id);
   });
 
-  test('getOffsets returns correct character offsets', () => {
+  test('sets correct character offsets', () => {
     const id = 1;
     const p = document.createElement('p');
-    const sentence1 = 'I see the kids in the street.';
-    const sentence2 = ' Without enough to eat.';
-    p.innerText = sentence1 + sentence2;
+    const prefix = ' I see the ';
+    const word = 'kids ';
+    const phrase = 'in the street.';
+    p.innerText = prefix + word + phrase;
     nodeStore.setDomNode(p, id);
-    const segments =
-        [{node: ReadAloudNode.create(p)!, start: 0, length: sentence1.length}];
+    const readAloudNode = ReadAloudNode.create(p);
+    assertTrue(!!readAloudNode);
 
-    const highlight = new SentenceHighlight(segments);
-    const offsets = highlight.getOffsets();
-    const nodes = Array.from(offsets.keys());
-    const values = Array.from(offsets.values());
+    let segments =
+        [{node: readAloudNode, start: prefix.length, length: word.length}];
+    new WordHighlight(segments, word.length);
+    let node = nodeStore.getDomNode(id) as HTMLElement;
+    let highlights =
+        node.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass);
+    assertEquals(1, highlights.length);
 
-    // The highlight will create two new text nodes inside the spans.
-    // One for the highlighted text, one for the suffix.
-    assertEquals(2, offsets.size);
-    assertEquals(sentence1, nodes[0]!.textContent);
-    assertEquals(0, values[0]);
-    assertEquals(sentence2, nodes[1]!.textContent);
-    assertEquals(sentence1.length, values[1]);
+    let textNode = highlights.item(0).firstChild;
+    assertTrue(!!textNode);
+    let ancestor = nodeStore.getAncestor(textNode);
+    assertTrue(!!ancestor);
+    assertEquals(p.textContent, ancestor.node.textContent);
+    assertEquals(prefix.length, ancestor.offset);
+
+    segments = [{
+      node: readAloudNode,
+      start: prefix.length + word.length,
+      length: phrase.length,
+    }];
+    new SentenceHighlight(segments);
+    node = nodeStore.getDomNode(id) as HTMLElement;
+    highlights =
+        node.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass);
+    assertEquals(1, highlights.length);
+
+    textNode = highlights.item(0).firstChild;
+    assertTrue(!!textNode);
+    ancestor = nodeStore.getAncestor(textNode);
+    assertTrue(!!ancestor);
+    assertEquals(p.textContent, ancestor.node.textContent);
+    assertEquals(prefix.length + word.length, ancestor.offset);
   });
-
 
   test('new highlight updates ReadAloudNode.domNode()', () => {
     const id = 1;

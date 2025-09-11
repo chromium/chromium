@@ -4,9 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {NodeStore} from '../node_store.js';
-
-import {MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, SentenceHighlight, WordHighlight} from './movement.js';
+import {MovementGranularity, PhraseHighlight, SentenceHighlight, WordHighlight} from './movement.js';
 import type {Highlight} from './movement.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
@@ -20,14 +18,7 @@ import {WordBoundaries} from './word_boundaries.js';
 export class ReadAloudHighlighter {
   private previousGranularities_: MovementGranularity[] = [];
   private currentGranularity_: MovementGranularity|null = null;
-  // Key: a DOM node that's already been read aloud
-  // Value: the index offset at which this node's text begins within its parent
-  // text. For reading aloud we sometimes split up nodes so the speech sounds
-  // more natural. When that text is then selected we need to pass the correct
-  // index down the pipeline, so we store that info here.
-  private highlightedNodeToOffsetInParent_: Map<Node, number> = new Map();
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
-  private nodeStore_: NodeStore = NodeStore.getInstance();
   private allowAutoScroll_ = true;
   private voiceLanguageController_ = VoiceLanguageController.getInstance();
   private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
@@ -39,19 +30,6 @@ export class ReadAloudHighlighter {
   updateAutoScroll(): void {
     this.allowAutoScroll_ =
         !!this.currentGranularity_ && this.currentGranularity_.isVisible();
-  }
-
-  getOffsetInAncestor(node: Node): number {
-    if (this.highlightedNodeToOffsetInParent_.has(node)) {
-      return this.highlightedNodeToOffsetInParent_.get(node)!;
-    }
-
-    return 0;
-  }
-
-  getAncestorId(node: Node): number|undefined {
-    const ancestor = this.getAncestor_(node);
-    return ancestor ? this.nodeStore_.getAxId(ancestor) : undefined;
   }
 
   highlightCurrentGranularity(
@@ -136,22 +114,6 @@ export class ReadAloudHighlighter {
     this.previousGranularities_ = [];
   }
 
-  private getAncestor_(node: Node): Node|null {
-    if (!node.parentElement || !node.parentNode) {
-      return null;
-    }
-
-    let ancestor = null;
-    if (node.parentElement.classList.contains(PARENT_OF_HIGHLIGHT_CLASS)) {
-      ancestor = node.parentNode;
-    } else if (node.parentElement.parentElement?.classList.contains(
-                   PARENT_OF_HIGHLIGHT_CLASS)) {
-      ancestor = node.parentNode.parentNode;
-    }
-
-    return ancestor;
-  }
-
   private getEffectiveHighlightingGranularity_(): number {
     // Parse all of the conditions that control highlighting and return the
     // effective highlighting granularity.
@@ -222,9 +184,6 @@ export class ReadAloudHighlighter {
         new PhraseHighlight(highlightSegments) :
         new WordHighlight(highlightSegments, speechUtteranceLength);
     if (!highlight.isEmpty()) {
-      highlight.getOffsets().forEach((value, key) => {
-        this.highlightedNodeToOffsetInParent_.set(key, value);
-      });
       this.addHighlightToCurrentGranularity_(highlight);
       this.scrollHighlightIntoView_();
     }
@@ -241,9 +200,6 @@ export class ReadAloudHighlighter {
     if (previousHighlightOnly) {
       highlight.setPrevious();
     }
-    highlight.getOffsets().forEach((value, key) => {
-      this.highlightedNodeToOffsetInParent_.set(key, value);
-    });
     this.addHighlightToCurrentGranularity_(highlight);
     if (scrollIntoView) {
       this.scrollHighlightIntoView_();

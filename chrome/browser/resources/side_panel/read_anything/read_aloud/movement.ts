@@ -128,13 +128,6 @@ export abstract class Highlight {
 
   private readonly segments_: Segment[];
 
-  // Key: a DOM node that's already been read aloud
-  // Value: the index offset at which this node's text begins within its parent
-  // text. For reading aloud we sometimes split up nodes so the speech sounds
-  // more natural. When that text is then selected we need to pass the correct
-  // index down the pipeline, so we store that info here.
-  protected readonly offsets_: Map<Node, number> = new Map();
-
   protected nodeStore_: NodeStore = NodeStore.getInstance();
 
   constructor(segments: Segment[]) {
@@ -190,11 +183,13 @@ export abstract class Highlight {
     const highlightPrefix =
         currentNode.textContent!.substring(0, highlightStart);
     if (highlightPrefix.length > 0) {
-      const prefixNode = document.createElement('span');
-      prefixNode.classList.add(previousReadHighlightClass);
-      prefixNode.textContent = highlightPrefix;
-      parentOfHighlight.appendChild(prefixNode);
-      this.highlightSpans_.push(prefixNode);
+      const previousHighlight = document.createElement('span');
+      previousHighlight.classList.add(previousReadHighlightClass);
+      const prefixTextNode = document.createTextNode(highlightPrefix);
+      previousHighlight.appendChild(prefixTextNode);
+      this.nodeStore_.setAncestor(prefixTextNode, parentOfHighlight, 0);
+      parentOfHighlight.appendChild(previousHighlight);
+      this.highlightSpans_.push(previousHighlight);
     }
 
     // Then get the section of text to highlight and mark it for
@@ -211,7 +206,7 @@ export abstract class Highlight {
     const textNode = document.createTextNode(
         currentNode.textContent!.substring(highlightStart, highlightEnd));
     readingHighlight.appendChild(textNode);
-    this.offsets_.set(textNode, highlightStart);
+    this.nodeStore_.setAncestor(textNode, parentOfHighlight, highlightStart);
     parentOfHighlight.appendChild(readingHighlight);
     this.highlightSpans_.push(readingHighlight);
 
@@ -220,7 +215,7 @@ export abstract class Highlight {
     const highlightSuffix = currentNode.textContent!.substring(highlightEnd);
     if (highlightSuffix.length > 0) {
       const suffixNode = document.createTextNode(highlightSuffix);
-      this.offsets_.set(suffixNode, highlightEnd);
+      this.nodeStore_.setAncestor(suffixNode, parentOfHighlight, highlightEnd);
       parentOfHighlight.appendChild(suffixNode);
     }
 
@@ -257,10 +252,6 @@ export abstract class Highlight {
 
   getElements(): HTMLElement[] {
     return this.highlightSpans_;
-  }
-
-  getOffsets(): Map<Node, number> {
-    return this.offsets_;
   }
 
   getSegments(): Segment[] {

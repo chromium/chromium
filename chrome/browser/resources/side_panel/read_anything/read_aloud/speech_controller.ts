@@ -137,34 +137,6 @@ export class SpeechController {
         (source === PauseActionSource.VOICE_SETTINGS_CHANGE);
   }
 
-  getSelectionAdjustedForHighlights(
-      anchorNode: Node, anchorOffset: number, focusNode: Node,
-      focusOffset: number): {
-    anchorNodeId: number|undefined,
-    anchorOffset: number,
-    focusNodeId: number|undefined,
-    focusOffset: number,
-  } {
-    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
-    let focusNodeId = this.nodeStore_.getAxId(focusNode);
-    let adjustedAnchorOffset = anchorOffset;
-    let adjustedFocusOffset = focusOffset;
-    if (!anchorNodeId) {
-      anchorNodeId = this.highlighter_.getAncestorId(anchorNode);
-      adjustedAnchorOffset += this.highlighter_.getOffsetInAncestor(anchorNode);
-    }
-    if (!focusNodeId) {
-      focusNodeId = this.highlighter_.getAncestorId(focusNode);
-      adjustedFocusOffset += this.highlighter_.getOffsetInAncestor(focusNode);
-    }
-    return {
-      anchorNodeId: anchorNodeId,
-      anchorOffset: adjustedAnchorOffset,
-      focusNodeId: focusNodeId,
-      focusOffset: adjustedFocusOffset,
-    };
-  }
-
   initializeSpeechTree(context?: Node) {
     if (context && !this.model_.getContextNode()) {
       this.model_.setContextNode(context);

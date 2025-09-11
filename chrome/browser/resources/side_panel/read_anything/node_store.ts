@@ -5,7 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 
 import {getWordCount, isRectMostlyVisible} from './common.js';
-import type {ReadAloudNode} from './read_aloud/read_aloud_types.js';
+import type {AncestorNode, ReadAloudNode} from './read_aloud/read_aloud_types.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -71,6 +71,13 @@ export class NodeStore {
   private textNodesSeen_: Set<Text> = new Set();
   private countWordsTimer_?: number;
   private wordsSeenLastSavedTime_: number = Date.now();
+
+  // Key: a DOM node that's already been read aloud
+  // Value: the index offset at which this node's text begins within its parent
+  // text. For reading aloud we sometimes split up nodes so the speech sounds
+  // more natural. When that text is then selected we need to pass the correct
+  // index down the pipeline, so we store that info here.
+  private textNodeToAncestor_: Map<Node, AncestorNode> = new Map();
 
   clear() {
     this.hiddenImageNodesIds_.clear();
@@ -239,6 +246,21 @@ export class NodeStore {
     }
 
     this.imageNodeIdsToFetch_.clear();
+  }
+
+  setAncestor(node: ChildNode, ancestor: ParentNode, offsetInAncestor: number) {
+    this.textNodeToAncestor_.set(node, {
+      node: ancestor,
+      offset: offsetInAncestor,
+    });
+  }
+
+  getAncestor(node: Node): AncestorNode|undefined {
+    if (this.textNodeToAncestor_.has(node)) {
+      return this.textNodeToAncestor_.get(node);
+    }
+
+    return undefined;
   }
 
   static getInstance(): NodeStore {

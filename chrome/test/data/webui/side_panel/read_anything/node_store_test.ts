@@ -398,4 +398,30 @@ suite('NodeStore', () => {
         assertEquals(text1WordCount + text2WordCount, readingMode.wordsSeen);
         mockTimer.uninstall();
       });
+
+  test('setAncestor', () => {
+    const child = document.createTextNode('How does a ragtag volunteer army');
+    const parent = document.createElement('span');
+    const offset = 10;
+    const id = 21;
+    nodeStore.setDomNode(parent, id);
+
+    nodeStore.setAncestor(child, parent, offset);
+    const ancestor = nodeStore.getAncestor(child);
+
+    assertTrue(!!ancestor);
+    assertEquals(parent, ancestor.node);
+    assertEquals(offset, ancestor.offset);
+  });
+
+  test('getAncestor of parent', () => {
+    const child = document.createTextNode('in need of a shower');
+    const parent = document.createElement('span');
+    const offset = 10;
+    const id = 21;
+    nodeStore.setDomNode(parent, id);
+    nodeStore.setAncestor(child, parent, offset);
+
+    assertFalse(!!nodeStore.getAncestor(parent));
+  });
 });

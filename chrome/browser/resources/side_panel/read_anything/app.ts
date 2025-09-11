@@ -215,7 +215,7 @@ export class AppElement extends AppElementBase implements
 
       const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
           this.isReadAloudEnabled_ ?
-          this.speechController_.getSelectionAdjustedForHighlights(
+          this.selectionController_.getSelectionAdjustedForHighlights(
               selection.anchorNode, selection.anchorOffset, selection.focusNode,
               selection.focusOffset) :
           this.getSelection();
