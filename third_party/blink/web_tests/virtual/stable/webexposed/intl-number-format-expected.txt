@@ -1,0 +1,220 @@
+This test dumps the output of Intl.NumberFormat.prototype.format() for
+some common locales.
+
+[en]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+[en-GB]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [GBP] £12,345.00
+[en-US]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [USD] $12,345.00
+[zh-CN]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [CNY] ¥12,345.00
+[zh-TW]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [TWD] $12,345.00
+[hi]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+[es]
+  [default] 123
+  [default] 1234
+  [default] 12.345
+[es-ES]
+  [default] 123
+  [default] 1234
+  [default] 12.345
+  [EUR] 12.345,00 €
+[es-MX]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [MXN] $12,345.00
+[es-419]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+[ar]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+[fr]
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [EUR] 12 345,00 €
+[bn]
+  [default] ১২৩
+  [default] ১,২৩৪
+  [default] ১২,৩৪৫
+  [BDT] ১২,৩৪৫.০০৳
+[pt-PT]
+  [default] 123
+  [default] 1234
+  [default] 12 345
+  [EUR] 12 345,00 €
+[pt-BR]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [BRL] R$ 12.345,00
+[ru]
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [RUB] 12 345,00 ₽
+[id]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [IDR] Rp 12.345,00
+[ur]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PKR] Rs 12,345.00
+[de]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [EUR] 12.345,00 €
+[ja]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [JPY] ￥12,345
+[ar-EG]
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [EGP] ‏١٢٬٣٤٥٫٠٠ ج.م.‏
+[mr]
+  [default] १२३
+  [default] १,२३४
+  [default] १२,३४५
+  [INR] ₹१२,३४५.००
+[vi]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [VND] 12.345 ₫
+[te]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+[tr]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [TRY] ₺12.345,00
+[pa]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PKR] PKR 12,345.00
+[sw]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [TZS] TSh 12,345.00
+[tl]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PHP] ₱12,345.00
+[fil]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [PHP] ₱12,345.00
+[ta]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+[zh-HK]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [HKD] HK$12,345.00
+[fa]
+  [default] ۱۲۳
+  [default] ۱٬۲۳۴
+  [default] ۱۲٬۳۴۵
+  [IRR] ‎ریال ۱۲٬۳۴۵
+[ko]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [KRW] ₩12,345
+[th]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [THB] ฿12,345.00
+[jv]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [IDR] IDR 12,345.00
+[it]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [EUR] 12.345,00 €
+[gu]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+[ar-SY]
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [SYP] ‏١٢٬٣٤٥ ل.س.‏
+[am]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [ETB] ብር 12,345.00
+[kn]
+  [default] 123
+  [default] 1,234
+  [default] 12,345
+  [INR] ₹12,345.00
+[ar-SD]
+  [default] ١٢٣
+  [default] ١٬٢٣٤
+  [default] ١٢٬٣٤٥
+  [SDG] ‏١٢٬٣٤٥٫٠٠ ج.س.
+[nl]
+  [default] 123
+  [default] 1.234
+  [default] 12.345
+  [EUR] € 12.345,00
+[pl]
+  [default] 123
+  [default] 1234
+  [default] 12 345
+  [PLN] 12 345,00 zł
+[sv-SE]
+  [default] 123
+  [default] 1 234
+  [default] 12 345
+  [SEK] 12 345,00 kr
+
