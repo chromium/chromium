@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -280,6 +281,62 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithCvc) {
       IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY);
   EXPECT_TRUE([item.leadingDetailText containsString:cvc_indicator])
       << "Expected to find CVC indicator in text: " << item.leadingDetailText;
+}
+
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestOneCreditCardWithCvcItemDeleted) {
+  base::test::ScopedFeatureList feature_list(
+      {autofill::features::kAutofillEnableCvcStorageAndFilling});
+  // Add a credit card with a CVC.
+  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005",
+                "123");
+  CreateController();
+  CheckController();
+
+  base::UserActionTester user_action_tester;
+
+  // Expect four sections: the credit card Autofill switch, the CVC storage
+  // switch, the mandatory reauth switch, and the credit card section.
+  ASSERT_EQ(4, NumberOfSections());
+  // Expect the credit card section to contain one row for the card itself.
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
+  // The action should not have been recorded yet.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
+
+  // Delete the credit card item and check that the section is removed.
+  EXPECT_TRUE(DeleteItemAndWait(3, 0, ^{
+    return NumberOfSections() == 3;
+  }));
+
+  // Verify that the user action was recorded exactly once.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
+}
+
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestOneCreditCardWithoutCvcItemDeleted_MetricNotLogged) {
+  // Add a credit card without a CVC.
+  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005");
+  CreateController();
+  CheckController();
+
+  base::UserActionTester user_action_tester;
+
+  // Expect four sections initially.
+  ASSERT_EQ(4, NumberOfSections());
+  // The action should not have been recorded yet.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
+
+  // Delete the credit card item and check that the section is removed.
+  EXPECT_TRUE(DeleteItemAndWait(3, 0, ^{
+    return NumberOfSections() == 3;
+  }));
+
+  // Verify that the user action was NOT recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
 }
 
 }  // namespace

@@ -811,6 +811,13 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   for (NSIndexPath* indexPath in indexPaths) {
     AutofillCardItem* item = base::apple::ObjCCastStrict<AutofillCardItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
+    const autofill::CreditCard* credit_card =
+        _personalDataManager->payments_data_manager().GetCreditCardByGUID(
+            item.GUID);
+    if (credit_card && !credit_card->cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardDeletedAndHadCvc"));
+    }
     _personalDataManager->payments_data_manager().RemoveByGUID(item.GUID);
   }
 
