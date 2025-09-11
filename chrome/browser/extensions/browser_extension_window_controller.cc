@@ -261,7 +261,21 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
 
   for (int i = 0; i < tab_count; ++i) {
     content::WebContents* web_contents = tab_list_->GetTab(i)->GetContents();
+
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(http://crbug.com/444022301): Also CHECK(web_contents) on Android.
+    //
+    // This is a temporary workaround to avoid crashes on Android, where
+    // restored tabs may have null WebContents. The workaround introduces a bug:
+    // restored tabs are visible on the tab strip, but not all of them can be
+    // seen by extensions.
+    if (web_contents == nullptr) {
+      continue;
+    }
+#else
     CHECK(web_contents);
+#endif
+
     const ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
     tab_list.Append(
