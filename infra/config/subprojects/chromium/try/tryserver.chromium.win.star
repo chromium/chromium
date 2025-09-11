@@ -554,6 +554,7 @@ gpu.try_.optional_tests_builder(
         os_type = targets.os_type.WINDOWS,
     ),
     os = os.WINDOWS_DEFAULT,
+    alerts_enabled = False,
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",

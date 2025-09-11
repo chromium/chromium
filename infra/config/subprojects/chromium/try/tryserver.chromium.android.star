@@ -1564,6 +1564,7 @@ gpu.try_.optional_tests_builder(
         os_type = targets.os_type.ANDROID,
         use_android_merge_script_by_default = False,
     ),
+    alerts_enabled = False,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -1611,6 +1612,8 @@ gpu.try_.optional_tests_builder(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    # Exclude gpu fyi builders.
+    alerts_enabled = False,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

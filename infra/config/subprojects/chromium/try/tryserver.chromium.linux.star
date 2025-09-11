@@ -969,6 +969,7 @@ gpu.try_.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.LINUX,
     ),
+    alerts_enabled = False,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

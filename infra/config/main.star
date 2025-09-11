@@ -36,6 +36,7 @@ lucicfg.config(
     tracked_files = [
         "builders/*/*/*",
         "builders/*/*/*/*",
+        "builders/alerting-builders.txt",
         "builders/gn_args_locations.json",
         "builder-owners/*.txt",
         "cq-builders.md",
@@ -189,6 +190,7 @@ chromium_luci.configure_builder_health_indicators(
 )
 
 chromium_luci.configure_builders(
+    enable_alerts_configuration = True,
     os_dimension_overrides = {
         os.LINUX_DEFAULT: chromium_luci.os_dimension_overrides(
             default = os.LINUX_JAMMY,

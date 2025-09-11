@@ -796,7 +796,7 @@ gpu.try_.optional_tests_builder(
     ),
     cpu = cpu.ARM64,
     ssd = None,
-    main_list_view = "try",
+    alerts_enabled = False,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.

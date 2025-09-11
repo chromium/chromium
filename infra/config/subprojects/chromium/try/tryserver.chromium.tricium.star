@@ -46,6 +46,10 @@ try_.builder(
     builderless = False,
     cores = try_.defaults.orchestrator_cores.get(),
     os = os.LINUX_DEFAULT,
+    # We do not have sufficient capacity for tricium-clang-tidy presently, so
+    # this results in expiration and causes InfraFailure alerts that troopers
+    # have no sustainable mitigation path for
+    alerts_enabled = False,
     # src checkouts are only required by bots spawned by this builder.
     caches = [SOURCELESS_BUILDER_CACHE],
 )
