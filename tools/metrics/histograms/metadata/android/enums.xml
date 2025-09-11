@@ -1275,6 +1275,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="OsAdvancedProtectionSettingChangedMessage"/>
   <int value="61" label="MultiInstanceRestorationOnDowngradedLimit"/>
   <int value="62" label="UpdateChromeForTabGroupShare"/>
+  <int value="63" label="ModeBRollbackMessage"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->
