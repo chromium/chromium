@@ -797,8 +797,10 @@ bool GetCompileUnitName(int fd,
                                       debug_abbrev.sh_offset + abbrev_offset);
     uint64_t tag;
     bool has_children;
-    AdvancedReaderToAttributeList(abbrev_reader, debug_abbrev_end,
-                                  abbreviation_code, tag, has_children);
+    if (!AdvancedReaderToAttributeList(abbrev_reader, debug_abbrev_end,
+                                       abbreviation_code, tag, has_children)) {
+      return false;
+    }
 
     // Ignore if it has children.
     static constexpr int kDW_TAG_compile_unit = 0x11;

@@ -715,10 +715,6 @@ TracedValue::ValueHolder::ValueHolder(TracedValue::Array& value) {
 }
 
 TracedValue::ValueHolder::ValueHolder(TracedValue::ValueHolder&& other) {
-  // Remember to call a destructor if necessary.
-  if (kept_value_type_ == KeptValueType::kStdStringType) {
-    delete (&kept_value_.std_string_value);
-  }
   switch (other.kept_value_type_) {
     case KeptValueType::kIntType: {
       kept_value_.int_value = other.kept_value_.int_value;

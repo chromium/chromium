@@ -82,7 +82,7 @@ int GetLogSeverityInt(const PolicyLogger::Log::Severity log_severity) {
 
 // Constructs the URL for Chromium Code Search that points to the line of code
 // that generated the log and the Chromium git revision hash.
-std::string GetLineURL(const char* file, int line) {
+std::string GetLineURL(std::string_view file, int line) {
   std::string last_change(version_info::GetLastChange());
 
   // The substring separates the last change commit hash from the branch name on
@@ -168,7 +168,7 @@ base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   log_dict.Set("message", base::EscapeForHTML(message_));
   log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
   log_dict.Set("logSource", GetLogSourceValue(log_source_));
-  log_dict.Set("location", GetLineURL(file_.data(), line_));
+  log_dict.Set("location", GetLineURL(file_, line_));
   log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
   return log_dict;
 }

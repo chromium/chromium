@@ -231,7 +231,7 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   parsed.pop_back();
 
   const size_t total_reserved_slots =
-      std::accumulate(parsed.begin(), parsed.end(), 0u);
+      std::accumulate(parsed.begin(), parsed.end(), size_t{0});
 
   // There must be some unreserved slots available for the all priorities.
   if (total_reserved_slots > total_jobs ||
