@@ -23,10 +23,10 @@
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/base_window.h"
 #endif  // defined(USE_AURA)
 
 using content::WebContents;
@@ -99,11 +99,9 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
     // necessary to find a new parent.
     if (content_window_->GetRootWindow())
       return;
-    BrowserList* const browsers = BrowserList::GetInstance();
-    Browser* const active_browser =
-        browsers ? browsers->GetLastActive() : nullptr;
-    BrowserWindow* const active_window =
-        active_browser ? active_browser->window() : nullptr;
+    BrowserWindowInterface* const bwi =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+    ui::BaseWindow* const active_window = bwi ? bwi->GetWindow() : nullptr;
     aura::Window* const native_window =
         active_window ? active_window->GetNativeWindow() : nullptr;
     aura::Window* const root_window =

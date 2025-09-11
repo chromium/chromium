@@ -11,9 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,12 +55,12 @@ std::unique_ptr<views::Label> CreateLabel() {
 
 // static
 base::WeakPtr<views::Widget> IdleDialog::Show(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
     base::OnceClosure on_close_by_user) {
-  return policy::IdleDialogView::Show(browser, dialog_duration, idle_threshold,
+  return policy::IdleDialogView::Show(bwi, dialog_duration, idle_threshold,
                                       actions, std::move(on_close_by_user));
 }
 
@@ -68,7 +68,7 @@ namespace policy {
 
 // static
 base::WeakPtr<views::Widget> IdleDialogView::Show(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
@@ -76,7 +76,7 @@ base::WeakPtr<views::Widget> IdleDialogView::Show(
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       std::make_unique<IdleDialogView>(dialog_duration, idle_threshold, actions,
                                        std::move(on_close_by_user)),
-      browser->window()->GetNativeWindow());
+      bwi->GetWindow()->GetNativeWindow());
   widget->Show();
   return widget->GetWeakPtr();
 }

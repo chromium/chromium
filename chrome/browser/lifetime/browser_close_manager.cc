@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -144,16 +145,19 @@ void BrowserCloseManager::CheckForDownloadsInProgress() {
 void BrowserCloseManager::ConfirmCloseWithPendingDownloads(
     int download_count,
     base::OnceCallback<void(bool)> callback) {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser == nullptr) {
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     // Background may call CloseAllBrowsers() with no Browsers. In this
     // case immediately continue with shutting down.
     std::move(callback).Run(/* proceed= */ true);
     return;
   }
-  browser->window()->ConfirmBrowserCloseWithPendingDownloads(
-      download_count, Browser::DownloadCloseType::kBrowserShutdown,
-      std::move(callback));
+  bwi->GetBrowserForMigrationOnly()
+      ->window()
+      ->ConfirmBrowserCloseWithPendingDownloads(
+          download_count, Browser::DownloadCloseType::kBrowserShutdown,
+          std::move(callback));
 }
 
 void BrowserCloseManager::OnReportDownloadsCancellable(bool proceed) {

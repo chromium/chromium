@@ -46,6 +46,7 @@ source_set("util") {
     "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chromeos/constants",

@@ -54,7 +54,7 @@ class InstallerDownloaderActiveBrowserWindowTracker final
 
   // Helps to update `last_active_window_` when the active browser changes or
   // when a browser removed.
-  void MaybeUpdateLastActiveWindow(Browser* browser);
+  void MaybeUpdateLastActiveWindow(BrowserWindowInterface* bwi);
 
   // Track the last active window. It can be null if all the browser window type
   // are not normal.

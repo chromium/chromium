@@ -56,9 +56,9 @@ BOOL CALLBACK IsBrowserWindowTopmostWindowEnumerator(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
-bool IsBrowserWindowTopmostWindow(Browser* browser) {
+bool IsBrowserWindowTopmostWindow(BrowserWindowInterface* bwi) {
   HWND browser_hwnd =
-      browser->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+      bwi->GetWindow()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
 
   struct IsBrowserTopmostWindowState state{browser_hwnd, false};
   EnumWindows(&IsBrowserWindowTopmostWindowEnumerator,
@@ -105,8 +105,8 @@ BrowserWindowInterface* FindBrowserForAttachment(Profile* profile) {
   return browser_for_attachment;
 }
 
-bool IsBrowserInForeground(Browser* browser) {
-  if (browser->IsActive()) {
+bool IsBrowserInForeground(BrowserWindowInterface* bwi) {
+  if (bwi->IsActive()) {
     return true;
   }
 #if BUILDFLAG(IS_WIN)
@@ -114,7 +114,7 @@ bool IsBrowserInForeground(Browser* browser) {
   // inactive, but it will still be the last active browser. Attach to the
   // last active browser if it's the foremost visible window, other than the
   // system tray.
-  return IsBrowserWindowTopmostWindow(browser);
+  return IsBrowserWindowTopmostWindow(bwi);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN)

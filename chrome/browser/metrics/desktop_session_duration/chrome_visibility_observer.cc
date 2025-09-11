@@ -12,6 +12,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace metrics {
 
@@ -44,8 +45,9 @@ void ChromeVisibilityObserver::OnBrowserSetLastActive(Browser* browser) {
 void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
   // Check if there is an active browser instead of assuming ordering of the
   // observation calls when we are switching between browsers.
-  const auto* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  bool is_active = last_active_browser && last_active_browser->IsActive();
+  const auto* const last_active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  bool is_active = last_active_bwi && last_active_bwi->IsActive();
 
   if (!is_active) {
     if (visibility_gap_timeout_.InMicroseconds() == 0) {

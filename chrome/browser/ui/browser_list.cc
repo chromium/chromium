@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/browser_list_enumerator.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -301,7 +303,8 @@ void BrowserList::MoveBrowsersInWorkspaceToFront(
 
   BrowserList* instance = GetInstance();
 
-  Browser* old_last_active = instance->GetLastActive();
+  BrowserWindowInterface* const old_last_active =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   BrowserVector& last_active_browsers =
       instance->browsers_ordered_by_activation_;
 
@@ -319,10 +322,13 @@ void BrowserList::MoveBrowsersInWorkspaceToFront(
                browser->window()->GetWorkspace() != new_workspace;
       });
 
-  Browser* new_last_active = instance->GetLastActive();
+  BrowserWindowInterface* const new_last_active =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  Browser* const new_last_active_browser =
+      new_last_active->GetBrowserForMigrationOnly();
   if (old_last_active != new_last_active) {
     for (BrowserListObserver& observer : observers_.Get()) {
-      observer.OnBrowserSetLastActive(new_last_active);
+      observer.OnBrowserSetLastActive(new_last_active_browser);
     }
   }
 }

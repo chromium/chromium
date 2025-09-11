@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -276,20 +275,20 @@ int MoveTabToWindow(ExtensionFunction* function,
 
 class ScopedPinBrowserAtFront {
  public:
-  explicit ScopedPinBrowserAtFront(Browser* browser)
-      : browser_(browser->AsWeakPtr()) {
-    old_z_order_level_ = browser_->window()->GetZOrderLevel();
-    browser_->window()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  explicit ScopedPinBrowserAtFront(BrowserWindowInterface* bwi)
+      : bwi_(bwi->GetWeakPtr()) {
+    old_z_order_level_ = bwi->GetWindow()->GetZOrderLevel();
+    bwi->GetWindow()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   }
 
   ~ScopedPinBrowserAtFront() {
-    if (browser_) {
-      browser_->window()->SetZOrderLevel(old_z_order_level_);
+    if (bwi_) {
+      bwi_->GetWindow()->SetZOrderLevel(old_z_order_level_);
     }
   }
 
  private:
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> bwi_;
   ui::ZOrderLevel old_z_order_level_;
 };
 
@@ -645,14 +644,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     new_window->window()->Show();
   } else {
     // Show an unfocused new window.
-    BrowserList* const browser_list = BrowserList::GetInstance();
-    Browser* last_active_browser = browser_list->GetLastActive();
+    BrowserWindowInterface* const last_active_bwi =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
     // On some OSes the new unfocused window is shown on top by default.
     // ScopedPinBrowserAtFront prevents the new browser from being shown above
     // the old active browser.
-    if (last_active_browser && last_active_browser->IsActive()) {
-      ScopedPinBrowserAtFront scoper(last_active_browser);
+    if (last_active_bwi && last_active_bwi->IsActive()) {
+      ScopedPinBrowserAtFront scoper(last_active_bwi);
       new_window->window()->ShowInactive();
     } else {
       new_window->window()->ShowInactive();

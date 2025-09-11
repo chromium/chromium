@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "ui/views/widget/widget.h"
 
@@ -224,14 +225,15 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
   }
 #endif
 
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (!active_browser) {
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     return nullptr;
   }
-  if (!window_controller_->IsActive() && !active_browser->IsActive()) {
+  if (!window_controller_->IsActive() && !bwi->IsActive()) {
     return nullptr;
   }
-  return active_browser;
+  return bwi;
 }
 
 bool GlicFocusedBrowserManager::IsBrowserStateValid(

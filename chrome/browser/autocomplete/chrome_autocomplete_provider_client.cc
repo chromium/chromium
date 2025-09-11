@@ -105,9 +105,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -673,9 +674,9 @@ ChromeAutocompleteProviderClient::GetWeakPtr() {
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    browser->command_controller()->ExecuteCommand(IDC_SHARING_HUB);
+  if (BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+    chrome::ExecuteCommand(bwi, IDC_SHARING_HUB);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -688,9 +689,9 @@ void ChromeAutocompleteProviderClient::NewIncognitoWindow() {
 
 void ChromeAutocompleteProviderClient::OpenIncognitoClearBrowsingDataDialog() {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    chrome::ShowIncognitoClearBrowsingDataDialog(browser);
+  if (BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+    chrome::ShowIncognitoClearBrowsingDataDialog(bwi);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -706,13 +707,14 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 
 bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser) {
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     return false;
   }
 
   auto* const history_clusters_side_panel_coordinator =
-      browser->GetFeatures().history_clusters_side_panel_coordinator();
+      bwi->GetFeatures().history_clusters_side_panel_coordinator();
   if (history_clusters_side_panel_coordinator &&
       history_clusters_side_panel_coordinator->Show(query)) {
     return true;
@@ -757,10 +759,11 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
 
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   content::WebContents* contents = nullptr;
-  if (browser) {
-    contents = browser->tab_strip_model()->GetActiveWebContents();
+  if (bwi) {
+    contents = bwi->GetTabStripModel()->GetActiveWebContents();
   }
   if (contents) {
     ChromeTranslateClient* translate_client =

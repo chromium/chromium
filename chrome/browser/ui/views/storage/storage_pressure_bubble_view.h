@@ -11,7 +11,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "url/origin.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(StoragePressureBubbleView, views::BubbleDialogDelegateView)
@@ -21,7 +21,7 @@ class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   StoragePressureBubbleView(views::View* anchor_view,
-                            Browser* browser,
+                            BrowserWindowInterface* browser,
                             const url::Origin& origin);
   ~StoragePressureBubbleView() override;
 
@@ -31,7 +31,7 @@ class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
   void Init() override;
   bool ShouldShowCloseButton() const override;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> bwi_;
   const url::Origin origin_;
   // Whether or not the user opened the all sites page from the notification
   // positive button.

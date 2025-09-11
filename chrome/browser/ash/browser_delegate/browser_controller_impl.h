@@ -15,6 +15,7 @@
 
 class Browser;
 class BrowserList;
+class BrowserWindowInterface;
 
 namespace ash {
 
@@ -28,7 +29,7 @@ class BrowserControllerImpl : public BrowserController,
   ~BrowserControllerImpl() override;
 
   // BrowserController:
-  BrowserDelegate* GetDelegate(Browser* browser) override;
+  BrowserDelegate* GetDelegate(BrowserWindowInterface* bwi) override;
   BrowserDelegate* GetLastUsedBrowser() override;
   BrowserDelegate* GetLastUsedVisibleBrowser() override;
   BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() override;
@@ -62,9 +63,9 @@ class BrowserControllerImpl : public BrowserController,
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  BrowserDelegate* GetBrowserDelegate(Browser* browser);
-
-  absl::flat_hash_map<Browser*, std::unique_ptr<BrowserDelegateImpl>> browsers_;
+  absl::flat_hash_map<BrowserWindowInterface*,
+                      std::unique_ptr<BrowserDelegateImpl>>
+      browsers_;
   base::ObserverList<Observer> observers_;
   base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
 };

@@ -23,7 +23,7 @@ bool IsBrowserGlicAttachable(Profile* profile, BrowserWindowInterface* browser);
 
 // Returns whether 'browser' is in the foreground. This is based on active
 // state and on windows includes a occlusion check.
-bool IsBrowserInForeground(Browser* browser);
+bool IsBrowserInForeground(BrowserWindowInterface* bwi);
 
 // Returns whether 'browser' is visible with a valid widget and window.
 bool IsBrowserVisible(Browser* browser);

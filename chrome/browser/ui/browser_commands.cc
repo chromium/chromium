@@ -2523,8 +2523,10 @@ std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
 }
 #endif
 
-void ShowIncognitoClearBrowsingDataDialog(Browser* browser) {
-  browser->window()->ShowIncognitoClearBrowsingDataDialog();
+void ShowIncognitoClearBrowsingDataDialog(BrowserWindowInterface* bwi) {
+  bwi->GetBrowserForMigrationOnly()
+      ->window()
+      ->ShowIncognitoClearBrowsingDataDialog();
 }
 
 void ShowIncognitoHistoryDisclaimerDialog(Browser* browser) {

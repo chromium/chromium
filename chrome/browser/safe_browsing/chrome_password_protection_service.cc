@@ -119,7 +119,7 @@
 #include "components/password_manager/core/browser/password_check_referrer_android.h"
 #include "ui/android/window_android.h"
 #else
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #endif
@@ -2003,7 +2003,7 @@ int ChromePasswordProtectionService::GetStoredVerdictCount(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 gfx::Size ChromePasswordProtectionService::GetCurrentContentAreaSize() const {
   return BrowserView::GetBrowserViewForBrowser(
-             BrowserList::GetInstance()->GetLastActive())
+             GetLastActiveBrowserWindowInterfaceWithAnyProfile())
       ->GetContentsSize();
 }
 #endif  // FULL_SAFE_BROWSING

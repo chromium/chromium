@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
@@ -248,8 +249,9 @@ protocol::Response BrowserHandler::ExecuteBrowserCommand(
   if (command_id_map.count(command_id) == 0) {
     return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
   }
-  if (!chrome::ExecuteCommand(BrowserList::GetInstance()->GetLastActive(),
-                              command_id_map[command_id])) {
+  if (!chrome::ExecuteCommand(
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+          command_id_map[command_id])) {
     return Response::InvalidRequest(
         "Browser command not supported. BrowserCommandId: " + command_id);
   }

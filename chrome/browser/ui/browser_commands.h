@@ -316,7 +316,7 @@ void ExecuteUIDebugCommand(int id, const Browser* browser);
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
-void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
+void ShowIncognitoClearBrowsingDataDialog(BrowserWindowInterface* bwi);
 void ShowIncognitoHistoryDisclaimerDialog(Browser* browser);
 bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
                                                    const GURL& url);

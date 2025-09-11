@@ -19,8 +19,8 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -85,9 +85,8 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // window if it is null. https://crbug.com/1301898
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (!owning_window || !owning_window->GetHost()) {
-    owning_window = BrowserList::GetInstance()
-                        ->GetLastActive()
-                        ->window()
+    owning_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                        ->GetWindow()
                         ->GetNativeWindow();
   }
 #endif

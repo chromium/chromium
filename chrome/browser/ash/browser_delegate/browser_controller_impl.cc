@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -55,22 +56,24 @@ BrowserControllerImpl::BrowserControllerImpl() {
 
 BrowserControllerImpl::~BrowserControllerImpl() = default;
 
-BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
-  if (browser == nullptr) {
+BrowserDelegate* BrowserControllerImpl::GetDelegate(
+    BrowserWindowInterface* bwi) {
+  if (!bwi) {
     return nullptr;
   }
 
-  auto it = browsers_.find(browser);
+  auto it = browsers_.find(bwi);
   if (it == browsers_.end()) {
     it = browsers_
-             .insert({browser, std::make_unique<BrowserDelegateImpl>(browser)})
+             .emplace(bwi, std::make_unique<BrowserDelegateImpl>(
+                               bwi->GetBrowserForMigrationOnly()))
              .first;
   }
   return it->second.get();
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
-  return GetDelegate(BrowserList::GetInstance()->GetLastActive());
+  return GetDelegate(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {

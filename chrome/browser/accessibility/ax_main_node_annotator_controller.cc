@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,12 +22,13 @@ namespace {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
-  const Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser) {
+  const BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     VLOG(2) << "Browser is not ready to announce";
     return;
   }
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* const browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   if (!browser_view) {
     VLOG(2) << "Browser is not ready to announce";
     return;
