@@ -610,10 +610,8 @@ class RTCPeerConnectionHandler::Observer
 
   void OnIceCandidate(const IceCandidate* candidate) override {
     DCHECK(native_peer_connection_);
-    std::string sdp;
-    if (!candidate->ToString(&sdp)) {
-      NOTREACHED() << "OnIceCandidate: Could not get SDP string.";
-    }
+    std::string sdp = candidate->ToString();
+   DCHECK(!sdp.empty());
     // The generated candidate may have been added to the pending or current
     // local description, take a snapshot and surface them to the main thread.
     // Remote descriptions are also surfaced because

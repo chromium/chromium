@@ -63,6 +63,9 @@ class FakeRtpSender : public webrtc::RtpSenderInterface {
   void SetEncoderToPacketizerFrameTransformer(
       webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
           frame_transformer) override {}
+  void SetFrameTransformer(
+      webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
+          frame_transformer) override {}
   void SetEncoderSelector(
       std::unique_ptr<webrtc::VideoEncoderFactory::EncoderSelectorInterface>
           encoder_selector) override {}

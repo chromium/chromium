@@ -27,7 +27,12 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   void RegisterObserver(webrtc::DataChannelObserver* observer) override;
   void UnregisterObserver() override;
   std::string label() const override;
-  bool reliable() const override;
+  // Deprecated method.
+  // Reliability is controlled by maxPacketLifetime and maxRetransmits.
+  bool reliable() const override {
+    RTC_DCHECK_NOTREACHED();
+    return false;  // Not all compilers know this is unreachable.
+  }
   bool ordered() const override;
   std::string protocol() const override;
   bool negotiated() const override;
@@ -52,7 +57,6 @@ class MockDataChannel : public webrtc::DataChannelInterface {
 
  private:
   std::string label_;
-  bool reliable_;
   webrtc::DataChannelInterface::DataState state_;
   webrtc::DataChannelInit config_;
   raw_ptr<webrtc::DataChannelObserver> observer_;

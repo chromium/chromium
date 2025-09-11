@@ -566,7 +566,8 @@ webrtc::RTCError MockPeerConnectionImpl::SetConfiguration(
 bool MockPeerConnectionImpl::AddIceCandidate(const IceCandidate* candidate) {
   sdp_mid_ = candidate->sdp_mid();
   sdp_mline_index_ = candidate->sdp_mline_index();
-  return candidate->ToString(&ice_sdp_);
+  ice_sdp_ = candidate->ToString();
+  return !ice_sdp_.empty();
 }
 
 void MockPeerConnectionImpl::AddIceCandidate(

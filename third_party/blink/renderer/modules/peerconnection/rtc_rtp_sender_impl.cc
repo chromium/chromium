@@ -198,14 +198,14 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     if (webrtc_sender_->media_type() == webrtc::MediaType::AUDIO) {
       encoded_audio_transformer_ =
           std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
-      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+      webrtc_sender_->SetFrameTransformer(
           encoded_audio_transformer_->Delegate());
     } else {
       CHECK(webrtc_sender_->media_type() == webrtc::MediaType::VIDEO);
       encoded_video_transformer_ =
           std::make_unique<RTCEncodedVideoStreamTransformer>(
               main_task_runner_, /*metronome=*/nullptr);
-      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+      webrtc_sender_->SetFrameTransformer(
           encoded_video_transformer_->Delegate());
     }
   }

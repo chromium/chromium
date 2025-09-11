@@ -1991,9 +1991,6 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
     return nullptr;
 
   webrtc::DataChannelInit init;
-  // TODO(jiayl): remove the deprecated reliable field once Libjingle is updated
-  // to handle that.
-  init.reliable = false;
   init.ordered = data_channel_dict->ordered();
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (data_channel_dict->hasMaxPacketLifeTime()) {
