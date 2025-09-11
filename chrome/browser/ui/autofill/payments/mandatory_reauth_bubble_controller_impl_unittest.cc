@@ -125,12 +125,6 @@ TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
 
 TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
        Metrics_OptInConfirmationBubble_Shown) {
-  if (GetParam()) {
-    // TODO(crbug.com/432429605): OnBubbleClosed should inform bubble manager
-    // that the bubble has been hidden.
-    GTEST_SKIP() << "The test fails.";
-  }
-
   base::HistogramTester histogram_tester;
   ShowBubble();
   ClickAcceptButton();
