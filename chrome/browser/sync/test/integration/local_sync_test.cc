@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -173,6 +174,30 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldSupportCustomPassphrase) {
   service->GetUserSettings()->SetEncryptionPassphrase(kTestPassphrase);
 
   EXPECT_TRUE(PassphraseAcceptedChecker(service).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldReportNoLocalOnlyData) {
+  SyncServiceImpl* service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser()->profile());
+
+  // Wait until the first sync cycle is completed.
+  ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
+  ASSERT_TRUE(service->IsLocalSyncEnabled());
+  ASSERT_FALSE(service->HasSyncConsent());
+
+  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
+      types_with_unsynced_data;
+  service->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
+                                    types_with_unsynced_data.GetCallback());
+  EXPECT_TRUE(types_with_unsynced_data.Get().empty());
+
+  base::test::TestFuture<
+      std::map<syncer::DataType, syncer::LocalDataDescription>>
+      descriptions;
+  service->GetLocalDataDescriptions({syncer::BOOKMARKS},
+                                    descriptions.GetCallback());
+  EXPECT_TRUE(descriptions.Get().empty());
 }
 
 }  // namespace

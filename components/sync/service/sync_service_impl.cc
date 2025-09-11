@@ -2264,11 +2264,14 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
     base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This should only be called in transport-only mode.
-  CHECK(!IsSyncFeatureEnabled(), base::NotFatalUntil::M138);
-  // TODO(crbug.com/40901755): Consider changing this to always guarantee an
-  // asynchronous behavior, rather than invoking the callback synchronously in
-  // rare cases.
+
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data. The same is true for local sync users.
+  if (HasSyncConsent() || IsLocalSyncEnabled()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   data_type_manager_->GetTypesWithUnsyncedData(requested_types,
                                                std::move(callback));
 }
@@ -2294,8 +2297,8 @@ void SyncServiceImpl::GetLocalDataDescriptionsImpl(
     base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
         callback) {
   // Syncing users do not use separate local and account storages. Thus, there's
-  // no local-only data.
-  if (HasSyncConsent()) {
+  // no local-only data. The same is true for local sync users.
+  if (HasSyncConsent() || IsLocalSyncEnabled()) {
     std::move(callback).Run({});
     return;
   }
@@ -2310,8 +2313,8 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
   }
 
   // Syncing users do not use separate local and account storages. Thus, there's
-  // no local-only data to migrate.
-  if (HasSyncConsent()) {
+  // no local-only data to migrate. The same is true for local sync users.
+  if (HasSyncConsent() || IsLocalSyncEnabled()) {
     return;
   }
 
@@ -2326,8 +2329,8 @@ void SyncServiceImpl::TriggerLocalDataMigrationForItems(
   }
 
   // Syncing users do not use separate local and account storages. Thus, there's
-  // no local-only data to migrate.
-  if (HasSyncConsent()) {
+  // no local-only data to migrate. The same is true for local sync users.
+  if (HasSyncConsent() || IsLocalSyncEnabled()) {
     return;
   }
 
@@ -2338,6 +2341,13 @@ void SyncServiceImpl::TriggerLocalDataMigrationForItems(
 void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
     std::vector<LocalDataItemModel::DataId> items) {
+  if (IsLocalSyncEnabled()) {
+    // This function should not have been called for local sync (i.e. enterprise
+    // roaming profiles). However, as additional safeguard, the call is ignored
+    // to avoid any unexpected side-effects.
+    return;
+  }
+
   CHECK(local_data_migration_item_queue_);
   CHECK(IsSignedIn());
   // Syncing users do not use separate local and account storages. Thus, there's

@@ -449,9 +449,7 @@ class SyncService : public KeyedService {
   // synced with the server.
   // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
-  // Note: This must only be called in transport-only mode.
-  // TODO(crbug.com/401470426): Rename this to better reflect that it's only
-  // called in transport-only mode.
+  // Note: This returns an empty result unless invoked in transport-only mode.
   virtual void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
