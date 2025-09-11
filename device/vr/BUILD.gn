@@ -152,6 +152,7 @@ if (enable_vr) {
 
     if (enable_openxr) {
       sources += [
+        "openxr/anchor_id.h",
         "openxr/context_provider_callbacks.h",
         "openxr/exit_xr_present_reason.h",
         "openxr/fb/openxr_hand_tracker_fb.cc",
@@ -250,6 +251,7 @@ if (enable_vr) {
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
+        "openxr/plane_id.h",
         "openxr/scoped_openxr_object.h",
       ]
 

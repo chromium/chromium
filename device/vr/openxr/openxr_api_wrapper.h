@@ -119,6 +119,7 @@ class OpenXrApiWrapper {
       device::mojom::XRSessionMode session_mode);
 
   // Various manager getters if they exist.
+  OpenXrPlaneManager* GetPlaneManager();
   OpenXrAnchorManager* GetAnchorManager();
   OpenXrHitTestManager* GetHitTestManager();
   OpenXrLightEstimator* GetLightEstimator();

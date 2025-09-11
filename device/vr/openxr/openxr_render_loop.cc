@@ -724,6 +724,11 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
       frame_data->light_estimation_data =
           light_estimator->GetLightEstimate(frame_time);
     }
+
+    OpenXrPlaneManager* plane_manager = openxr_->GetPlaneManager();
+    if (plane_manager) {
+      frame_data->detected_planes_data = plane_manager->GetDetectedPlanesData();
+    }
   }
 
   // Get results for hit test subscriptions.
@@ -1024,6 +1029,7 @@ void OpenXrRenderLoop::CreateAnchor(
     CreateAnchorCallback callback) {
   OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
+    std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
     return;
   }
   anchor_manager->AddCreateAnchorRequest(*native_origin_information,
@@ -1036,8 +1042,8 @@ void OpenXrRenderLoop::CreatePlaneAnchor(
     const device::Pose& native_origin_from_anchor,
     uint64_t plane_id,
     CreatePlaneAnchorCallback callback) {
-  environment_receiver_.ReportBadMessage(
-      "OpenXrRenderLoop::CreatePlaneAnchor not yet implemented");
+  CreateAnchor(std::move(native_origin_information), native_origin_from_anchor,
+               std::move(callback));
 }
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {

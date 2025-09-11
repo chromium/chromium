@@ -419,6 +419,13 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
   return GetMojoBlendMode(blend_mode_);
 }
 
+OpenXrPlaneManager* OpenXrApiWrapper::GetPlaneManager() {
+  return scene_understanding_manager_ &&
+                 IsFeatureEnabled(mojom::XRSessionFeature::PLANE_DETECTION)
+             ? scene_understanding_manager_->GetPlaneManager()
+             : nullptr;
+}
+
 OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
   return scene_understanding_manager_
              ? scene_understanding_manager_->GetAnchorManager()
@@ -517,6 +524,17 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         is_enabled = unbounded_space_ != XR_NULL_HANDLE;
         break;
 
+      case mojom::XRSessionFeature::PLANE_DETECTION:
+        if (scene_understanding_manager_ == nullptr) {
+          scene_understanding_manager_ =
+              extension_helper.CreateSceneUnderstandingManager(
+                  this, local_space_, session_options_->required_features,
+                  session_options_->optional_features);
+        }
+        is_enabled = scene_understanding_manager_ != nullptr &&
+                     scene_understanding_manager_->GetPlaneManager() != nullptr;
+        break;
+
       case mojom::XRSessionFeature::HIT_TEST:
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
@@ -573,7 +591,6 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         is_enabled = true;
         break;
 
-      case mojom::XRSessionFeature::PLANE_DETECTION:
       case mojom::XRSessionFeature::LAYERS:
       case mojom::XRSessionFeature::FRONT_FACING:
       case mojom::XRSessionFeature::IMAGE_TRACKING:

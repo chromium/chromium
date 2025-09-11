@@ -32,6 +32,10 @@ class OpenXrSpaceBasedAnchorManager : public OpenXrAnchorManager {
       XrTime predicted_display_time) override;
 
  protected:
+  AnchorId CreatePlaneAnchor(PlaneId plane_id,
+                             XrPosef pose,
+                             XrTime predicted_display_time) override;
+
   virtual XrSpace CreateAnchorInternal(XrPosef pose,
                                        XrSpace space,
                                        XrTime predicted_display_time) = 0;

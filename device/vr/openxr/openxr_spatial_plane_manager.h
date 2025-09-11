@@ -7,13 +7,18 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_plane_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
+class OpenXrSpatialFrameworkManager;
 
 // Delegate class for OpenXrSpatialFrameworkManager responsible for integration
 // with the XR_EXT_SPATIAL_PLANE_TRACKING extension (aka the "Plane detection"
@@ -26,7 +31,9 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   static bool IsSupported(
       const std::vector<XrSpatialCapabilityEXT>& capabilities);
 
-  OpenXrSpatialPlaneManager();
+  OpenXrSpatialPlaneManager(
+      const OpenXrExtensionHelper& extension_helper,
+      const OpenXrSpatialFrameworkManager& framework_manager);
   ~OpenXrSpatialPlaneManager() override;
 
   // Mutates the provided map to fill in the necessary capabilities and
@@ -37,6 +44,29 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
       absl::flat_hash_map<XrSpatialCapabilityEXT,
                           absl::flat_hash_set<XrSpatialComponentTypeEXT>>&
           capability_configuration) const;
+
+  void OnSnapshotChanged();
+  mojom::XRPlaneDetectionDataPtr GetDetectedPlanesData() override;
+  std::optional<device::Pose> TryGetMojoFromPlane(PlaneId plane_id) const;
+
+  // Return the `PlaneId` of the corresponding |entity_id|. Will return
+  // |kInvalidPlaneId| if the entity is not currently tracked.
+  PlaneId GetPlaneId(XrSpatialEntityIdEXT entity_id) const;
+
+ private:
+  // Return the `XrSpatialEntityIdEXT` of the corresponding |plane_id|. Will
+  // return XR_NULL_SPATIAL_ENTITY_ID_EXT if the |plane_id| is not currently
+  // tracked or otherwise invalid.
+  XrSpatialEntityIdEXT GetEntityId(PlaneId plane_id) const;
+
+  const raw_ref<const OpenXrExtensionHelper> extension_helper_;
+  const raw_ref<const OpenXrSpatialFrameworkManager> framework_manager_;
+
+  absl::flat_hash_map<XrSpatialEntityIdEXT, mojom::XRPlaneDataPtr>
+      entity_id_to_data_;
+  absl::flat_hash_set<XrSpatialEntityIdEXT> updated_entity_ids_;
+
+  base::WeakPtrFactory<OpenXrSpatialPlaneManager> weak_ptr_factory_{this};
 };
 
 }  // namespace device

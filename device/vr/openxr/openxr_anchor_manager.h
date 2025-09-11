@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "base/types/expected.h"
-#include "base/types/id_type.h"
 #include "device/vr/create_anchor_request.h"
+#include "device/vr/openxr/anchor_id.h"
+#include "device/vr/openxr/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -21,9 +22,6 @@ class Transform;
 namespace device {
 
 class OpenXrApiWrapper;
-
-using AnchorId = base::IdTypeU64<class AnchorTag>;
-constexpr AnchorId kInvalidAnchorId;
 
 class OpenXrAnchorManager {
  public:
@@ -62,6 +60,13 @@ class OpenXrAnchorManager {
   virtual AnchorId CreateAnchor(XrPosef pose,
                                 XrSpace space,
                                 XrTime predicted_display_time) = 0;
+
+  // Create a new Anchor at |pose| relative to the center of the plane
+  // represented by |plane_id| at |predicted_display_time|. Can return an
+  // Invalid AnchorId on failure.
+  virtual AnchorId CreatePlaneAnchor(PlaneId plane_id,
+                                     XrPosef pose,
+                                     XrTime predicted_display_time) = 0;
 
   // Used to get the space and pose of the new anchor given it's intended offset
   // from the provided anchor_id. On some platforms this is just an XrLocation

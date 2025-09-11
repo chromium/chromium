@@ -44,21 +44,22 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
       capability_configuration;
   if (supported_features.contains(
           device::mojom::XRSessionFeature::PLANE_DETECTION)) {
-    plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>();
+    plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>(
+        extension_helper_.get(), *this);
     plane_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
   if (supported_features.contains(device::mojom::XRSessionFeature::HIT_TEST)) {
     hit_test_manager_ = std::make_unique<OpenXrSpatialHitTestManager>(
-        extension_helper_.get(), *this, base_space_, openxr_->instance(),
-        openxr_->system());
+        extension_helper_.get(), *this, plane_manager_.get(), base_space_,
+        openxr_->instance(), openxr_->system());
     hit_test_manager_->PopulateCapabilityConfiguration(
         capability_configuration);
   }
 
   if (supported_features.contains(device::mojom::XRSessionFeature::ANCHORS)) {
     anchor_manager_ = std::make_unique<OpenXrSpatialAnchorManager>(
-        extension_helper_.get(), *this, base_space_);
+        extension_helper_.get(), *this, plane_manager_.get(), base_space_);
     anchor_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
@@ -224,6 +225,10 @@ void OpenXrSpatialFrameworkManager::OnCreateSpatialDiscoverySnapshotComplete(
   }
 
   discovery_snapshot_ = completion.snapshot;
+
+  if (plane_manager_) {
+    plane_manager_->OnSnapshotChanged();
+  }
 }
 
 OpenXrSpatialFrameworkManagerFactory::OpenXrSpatialFrameworkManagerFactory() =

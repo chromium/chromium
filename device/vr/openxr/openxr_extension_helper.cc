@@ -180,6 +180,7 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
+    case device::mojom::XRSessionFeature::PLANE_DETECTION:
     case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
       return std::ranges::any_of(
           GetExtensionHandlerFactories(),

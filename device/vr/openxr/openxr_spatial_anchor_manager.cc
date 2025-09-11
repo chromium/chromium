@@ -13,9 +13,11 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_spatial_framework_manager.h"
+#include "device/vr/openxr/openxr_spatial_plane_manager.h"
 #include "device/vr/openxr/openxr_spatial_utils.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/scoped_openxr_object.h"
@@ -38,9 +40,11 @@ bool OpenXrSpatialAnchorManager::IsSupported(
 OpenXrSpatialAnchorManager::OpenXrSpatialAnchorManager(
     const OpenXrExtensionHelper& extension_helper,
     const OpenXrSpatialFrameworkManager& spatial_framework_manager,
+    OpenXrSpatialPlaneManager* plane_manager,
     XrSpace mojo_space)
     : extension_helper_(extension_helper),
       spatial_framework_manager_(spatial_framework_manager),
+      plane_manager_(plane_manager),
       mojo_space_(mojo_space) {}
 
 OpenXrSpatialAnchorManager::~OpenXrSpatialAnchorManager() {
@@ -57,6 +61,32 @@ void OpenXrSpatialAnchorManager::PopulateCapabilityConfiguration(
   // Operator[] creates an empty entry if it does not exist.
   capability_configuration[XR_SPATIAL_CAPABILITY_ANCHOR_EXT].insert(
       XR_SPATIAL_COMPONENT_TYPE_ANCHOR_EXT);
+}
+
+AnchorId OpenXrSpatialAnchorManager::CreatePlaneAnchor(
+    PlaneId plane_id,
+    XrPosef plane_from_anchor,
+    XrTime predicted_display_time) {
+  // It should actually be impossible to *not* have a Plane Manager, since the
+  // PlaneId had to come from somewhere, but it could have been spoofed.
+  if (!plane_manager_) {
+    return kInvalidAnchorId;
+  }
+
+  // We don't have any way to actually tie the pose to the plane. For now, just
+  // locate the pose in mojo space and make a mojo-based anchor. Even if we do
+  // eventually have a way to make the pose attached to the plane, it would be
+  // extension based and this is a reasonable fallback.
+  std::optional<device::Pose> mojo_from_plane =
+      plane_manager_->TryGetMojoFromPlane(plane_id);
+  if (!mojo_from_plane) {
+    return kInvalidAnchorId;
+  }
+
+  gfx::Transform mojo_from_anchor =
+      mojo_from_plane->ToTransform() * XrPoseToGfxTransform(plane_from_anchor);
+  return CreateAnchor(GfxTransformToXrPose(mojo_from_anchor), mojo_space_,
+                      predicted_display_time);
 }
 
 AnchorId OpenXrSpatialAnchorManager::CreateAnchor(

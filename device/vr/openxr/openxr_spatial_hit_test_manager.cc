@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_spatial_capability_configuration_base.h"
 #include "device/vr/openxr/openxr_spatial_framework_manager.h"
+#include "device/vr/openxr/openxr_spatial_plane_manager.h"
 #include "device/vr/openxr/openxr_spatial_utils.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/scoped_openxr_object.h"
@@ -68,11 +69,13 @@ bool OpenXrSpatialHitTestManager::IsSupported(
 OpenXrSpatialHitTestManager::OpenXrSpatialHitTestManager(
     const OpenXrExtensionHelper& extension_helper,
     const OpenXrSpatialFrameworkManager& spatial_framework_manager,
+    OpenXrSpatialPlaneManager* plane_manager,
     XrSpace mojo_space,
     XrInstance instance,
     XrSystemId system)
     : extension_helper_(extension_helper),
       spatial_framework_manager_(spatial_framework_manager),
+      plane_manager_(plane_manager),
       mojo_space_(mojo_space),
       instance_(instance),
       system_(system) {}
@@ -292,6 +295,14 @@ std::vector<mojom::XRHitResultPtr> OpenXrSpatialHitTestManager::RequestHitTest(
              << " pose=" << raycast_result.pose.ToString();
     mojom::XRHitResultPtr hit_result = mojom::XRHitResult::New();
     hit_result->mojo_from_result = raycast_result.pose;
+    // If the ID can't be found, we'll get an invalid plane_id to send up, which
+    // is what we should be sending up for the other hit tests/the default value
+    // anyways.
+    if (plane_manager_ && raycast_result.id != XR_NULL_SPATIAL_ENTITY_ID_EXT) {
+      hit_result->plane_id =
+          plane_manager_->GetPlaneId(raycast_result.id).GetUnsafeValue();
+    }
+
     hit_results.push_back(std::move(hit_result));
   }
 

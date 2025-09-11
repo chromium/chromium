@@ -54,8 +54,13 @@ bool AreAllRequiredFeaturesSupported(
         // features and things that could theoretically be supported depending
         // on enabled extensions (which we're now checking if they're actually
         // supported,since we need to create an instance to confirm that).
-        return IsFeatureSupportedForMode(feature, mode) &&
-               extension_helper.IsFeatureSupported(feature);
+        const bool supported = IsFeatureSupportedForMode(feature, mode) &&
+                               extension_helper.IsFeatureSupported(feature);
+        if (!supported) {
+          DVLOG(1) << __func__ << " " << feature << " not supported";
+        }
+
+        return supported;
       });
 }
 }  // namespace
@@ -93,6 +98,8 @@ OpenXrDevice::OpenXrDevice(
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LIGHT_ESTIMATION);
     device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::PLANE_DETECTION);
   }
 
   SetDeviceData(std::move(device_data));

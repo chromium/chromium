@@ -16,6 +16,7 @@
 namespace device {
 
 class OpenXrSpatialFrameworkManager;
+class OpenXrSpatialPlaneManager;
 
 // Delegate class for OpenXrSpatialFrameworkManager responsible for integration
 // with the XR_ANDROID_SPATIAL_DISCOVERY_RAYCAST extension (aka the "hit test"
@@ -41,6 +42,7 @@ class OpenXrSpatialHitTestManager : public OpenXrHitTestManager {
   OpenXrSpatialHitTestManager(
       const OpenXrExtensionHelper& extension_helper,
       const OpenXrSpatialFrameworkManager& spatial_framework_manager,
+      OpenXrSpatialPlaneManager* plane_manager,
       XrSpace mojo_space,
       XrInstance instance,
       XrSystemId system);
@@ -68,6 +70,7 @@ class OpenXrSpatialHitTestManager : public OpenXrHitTestManager {
 
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   const raw_ref<const OpenXrSpatialFrameworkManager> spatial_framework_manager_;
+  const raw_ptr<OpenXrSpatialPlaneManager> plane_manager_;
   XrSpace mojo_space_;
   XrInstance instance_;
   XrSystemId system_;

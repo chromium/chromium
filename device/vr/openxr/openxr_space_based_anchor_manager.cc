@@ -39,6 +39,15 @@ AnchorId OpenXrSpaceBasedAnchorManager::CreateAnchor(
   return anchor_id;
 }
 
+AnchorId OpenXrSpaceBasedAnchorManager::CreatePlaneAnchor(
+    PlaneId plane_id,
+    XrPosef pose,
+    XrTime predicted_display_time) {
+  // None of the corresponding infrastructure supports plane detection at this
+  // moment, so realistically this shouldn't be called.
+  return kInvalidAnchorId;
+}
+
 void OpenXrSpaceBasedAnchorManager::DetachAnchor(AnchorId anchor_id) {
   DCHECK(anchor_id);
   auto it = openxr_anchors_.find(anchor_id);

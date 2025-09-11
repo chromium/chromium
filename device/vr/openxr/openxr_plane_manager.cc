@@ -8,4 +8,8 @@ namespace device {
 
 OpenXrPlaneManager::~OpenXrPlaneManager() = default;
 
+mojom::XRPlaneDetectionDataPtr OpenXrPlaneManager::GetDetectedPlanesData() {
+  return nullptr;
+}
+
 }  // namespace device
