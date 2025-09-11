@@ -169,7 +169,8 @@ void SpeechSynthesis::speak(ScriptState* script_state,
     Deprecation::CountDeprecation(
         GetSupplementable(),
         WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay);
-    FireErrorEvent(utterance, 0 /* char_index */, "not-allowed");
+    FireErrorEvent(utterance, 0 /* char_index */,
+                   V8SpeechSynthesisErrorCode::Enum::kNotAllowed);
     return;
   }
 
@@ -290,9 +291,6 @@ void SpeechSynthesis::HandleSpeakingCompleted(
 
   // https://wicg.github.io/speech-api/#speechsynthesiserrorevent-attributes
   // The below errors are matched with SpeechSynthesisErrorCode values.
-  static constexpr char kErrorCanceled[] = "canceled";
-  static constexpr char kErrorInterrupted[] = "interrupted";
-  static constexpr char kErrorSynthesisFailed[] = "synthesis-failed";
 
   // Always fire the event, because the platform may have asynchronously
   // sent an event on an utterance before it got the message that we
@@ -300,15 +298,17 @@ void SpeechSynthesis::HandleSpeakingCompleted(
   // happened.
   switch (error_code) {
     case mojom::blink::SpeechSynthesisErrorCode::kInterrupted:
-      FireErrorEvent(utterance, 0, kErrorInterrupted);
+      FireErrorEvent(utterance, 0,
+                     V8SpeechSynthesisErrorCode::Enum::kInterrupted);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kCancelled:
-      FireErrorEvent(utterance, 0, kErrorCanceled);
+      FireErrorEvent(utterance, 0, V8SpeechSynthesisErrorCode::Enum::kCanceled);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kErrorOccurred:
       // TODO(csharrison): Actually pass the correct message. For now just use a
       // generic error.
-      FireErrorEvent(utterance, 0, kErrorSynthesisFailed);
+      FireErrorEvent(utterance, 0,
+                     V8SpeechSynthesisErrorCode::Enum::kSynthesisFailed);
       break;
     case mojom::blink::SpeechSynthesisErrorCode::kNoError:
       FireEvent(event_type_names::kEnd, utterance, 0, 0, String());
@@ -340,7 +340,7 @@ void SpeechSynthesis::FireEvent(const AtomicString& type,
 
 void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
                                      uint32_t char_index,
-                                     const String& error) {
+                                     V8SpeechSynthesisErrorCode::Enum error) {
   double millis;
   if (!GetElapsedTimeMillis(&millis))
     return;
