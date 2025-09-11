@@ -343,7 +343,8 @@ TEST_F(BubbleManagerImplTest,
 TEST_F(BubbleManagerImplTest, HasPendingBubble_NoBubble_ReturnsFalse) {
   std::unique_ptr<MockBubbleController> address_controller =
       CreateController(BubbleType::kSaveUpdateAddress);
-  EXPECT_FALSE(bubble_manager_.HasPendingBubble(*address_controller));
+  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+      address_controller->GetBubbleType()));
 }
 
 // Test that HasPendingBubble returns true for a valid, non-expired pending
@@ -366,15 +367,16 @@ TEST_F(BubbleManagerImplTest, HasPendingBubble_BubblePending_ReturnsTrue) {
                                         /*force_show=*/false);
 
   // Check that the address bubble is correctly reported as pending.
-  EXPECT_TRUE(bubble_manager_.HasPendingBubble(*address_controller));
+  EXPECT_TRUE(bubble_manager_.HasPendingBubbleOfSameType(
+      address_controller->GetBubbleType()));
   // Check that a bubble type not in the queue returns false.
-  EXPECT_FALSE(bubble_manager_.HasPendingBubble(*card_controller));
+  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+      card_controller->GetBubbleType()));
 }
 
-// Test that HasPendingBubble returns false for a timed-out bubble and that
-// the bubble is removed from the queue.
+// Test that HasPendingBubble returns false for a timed-out bubble.
 TEST_F(BubbleManagerImplTest,
-       HasPendingBubble_BubblePending_TimedOut_ReturnsFalseAndRemoves) {
+       HasPendingBubble_BubblePending_TimedOut_ReturnsFalse) {
   std::unique_ptr<MockBubbleController> password_controller =
       CreateController(BubbleType::kPassword);
   std::unique_ptr<MockBubbleController> address_controller =
@@ -388,18 +390,15 @@ TEST_F(BubbleManagerImplTest,
   // Queue the address bubble and confirm it's pending.
   bubble_manager_.RequestShowController(*address_controller,
                                         /*force_show=*/false);
-  ASSERT_TRUE(bubble_manager_.HasPendingBubble(*address_controller));
+  ASSERT_TRUE(bubble_manager_.HasPendingBubbleOfSameType(
+      address_controller->GetBubbleType()));
 
   // Fast forward time past the timeout.
   task_environment_.FastForwardBy(base::Seconds(3601));
 
   // Now, checking for the bubble should return false because it has timed out.
-  EXPECT_FALSE(bubble_manager_.HasPendingBubble(*address_controller));
-
-  // To verify it was actually removed, hide the active bubble. The timed-out
-  // address bubble should NOT be shown.
-  EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
-  bubble_manager_.OnBubbleHiddenByController(*password_controller);
+  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+      address_controller->GetBubbleType()));
 }
 
 // Test that a force_show request preempts a higher-priority active bubble.

@@ -155,9 +155,9 @@ void BubbleManagerImpl::AddToPendingQueue(
   const base::TimeTicks now = base::TimeTicks::Now();
   int priority = GetPriorityForBubbleType(new_bubble_type);
 
-  auto it = std::find_if(
-      pending_bubbles_queue_.begin(), pending_bubbles_queue_.end(),
-      [&new_bubble_type](const auto& request) {
+  auto it = std::ranges::find_if(
+      pending_bubbles_queue_,
+      [&new_bubble_type](const PendingRequest& request) {
         return request.controller &&
                request.controller->GetBubbleType() == new_bubble_type;
       });
@@ -185,9 +185,12 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
     return;
   }
 
-  // Clean up any stale pointers.
-  std::erase_if(pending_bubbles_queue_,
-                [](const auto& request) { return !request.controller; });
+  // Clean up any stale pointers and timed out bubbles.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  std::erase_if(pending_bubbles_queue_, [&now](const auto& request) {
+    return !request.controller ||
+           (now - request.time_added) > kPendingRequestTimeout;
+  });
 
   if (pending_bubbles_queue_.empty()) {
     active_bubble_controller_ = nullptr;
@@ -220,9 +223,8 @@ void BubbleManagerImpl::OnBubbleHiddenByController(
   }
 }
 
-bool BubbleManagerImpl::HasPendingBubble(
-    const BubbleControllerBase& controller) {
-  const BubbleType bubble_type = controller.GetBubbleType();
+bool BubbleManagerImpl::HasPendingBubbleOfSameType(
+    const BubbleType bubble_type) const {
   const base::TimeTicks now = base::TimeTicks::Now();
 
   auto it = std::ranges::find_if(
@@ -238,13 +240,8 @@ bool BubbleManagerImpl::HasPendingBubble(
     return false;
   }
 
-  if (ShouldAlwaysPreemptSameType(bubble_type) ||
-      (now - it->time_added) > kPendingRequestTimeout) {
-    pending_bubbles_queue_.erase(it);
-    return false;
-  }
-
-  return true;
+  return !ShouldAlwaysPreemptSameType(bubble_type) &&
+         (now - it->time_added) < kPendingRequestTimeout;
 }
 
 bool BubbleManagerImpl::ShouldReplaceExistingBubble(

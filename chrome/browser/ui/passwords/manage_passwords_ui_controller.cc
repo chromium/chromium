@@ -1534,9 +1534,7 @@ void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager =
             autofill::BubbleManager::GetForWebContents(web_contents())) {
-      if (manager->HasPendingBubble(*this)) {
-        NOTREACHED();
-      }
+      CHECK(!manager->HasPendingBubbleOfSameType(GetBubbleType()));
       manager->RequestShowController(*this, user_action);
     }
     return;

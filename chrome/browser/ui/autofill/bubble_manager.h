@@ -8,15 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
 
 namespace content {
 class WebContents;
 }
 
 namespace autofill {
-
-class BubbleControllerBase;
-
 // BubbleManager is responsible for coordinating showing and hiding bubble
 // dialogs for Autofill and Password Manager.
 // Multiple bubbles might want to show at the same time (e.g., saving a card,
@@ -85,11 +83,11 @@ class BubbleManager {
   virtual void OnBubbleHiddenByController(
       BubbleControllerBase& controller_to_hide) = 0;
 
-  // Returns true if there is a pending bubble in the queue for this
-  // `controller`. If the bubble has timed out, it will remove the bubble
-  // from the queue and return false.
-  [[nodiscard]] virtual bool HasPendingBubble(
-      const BubbleControllerBase& controller) = 0;
+  // Returns true if there is a pending bubble that has not timed out, of the
+  // specified `bubble_type` in the queue. Always returns false for the bubble
+  // types that preempt themselves (eg. Password manager bubbles).
+  [[nodiscard]] virtual bool HasPendingBubbleOfSameType(
+      const BubbleType bubble_type) const = 0;
 };
 
 }  // namespace autofill
