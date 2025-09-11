@@ -171,8 +171,10 @@ void CanvasHibernationHandler::SaveForHibernation(
   // the renderer is idle. In other words, a delayed idle task would not execute
   // as long as the renderer is in background, which completely defeats the
   // purpose.
+  auto task_runner =
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
   base::PostDelayedMemoryReductionTask(
-      GetMainThreadTaskRunner(), FROM_HERE,
+      task_runner, FROM_HERE,
       base::BindOnce(&CanvasHibernationHandler::OnAfterHibernation,
                      weak_ptr_factory_.GetWeakPtr(), epoch_),
       before_compression_delay_);
@@ -186,7 +188,8 @@ void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
   if (epoch_ != epoch || !image_) {
     return;
   }
-  auto task_runner = GetMainThreadTaskRunner();
+  auto task_runner =
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
   algorithm_ = CompressionAlgorithm::kZlib;
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
   if (base::FeatureList::IsEnabled(kCanvasHibernationSnapshotZstd)) {
@@ -221,14 +224,6 @@ void CanvasHibernationHandler::OnEncoded(
   if (on_encoded_callback_for_testing_) {
     on_encoded_callback_for_testing_.Run();
   }
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-CanvasHibernationHandler::GetMainThreadTaskRunner() const {
-  return main_thread_task_runner_for_testing_
-             ? main_thread_task_runner_for_testing_
-             : Thread::MainThread()->GetTaskRunner(
-                   MainThreadTaskRunnerRestricted());
 }
 
 void CanvasHibernationHandler::Encode(

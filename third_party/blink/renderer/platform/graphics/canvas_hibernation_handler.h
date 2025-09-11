@@ -100,12 +100,9 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int width() const { return width_; }
   int height() const { return height_; }
 
-  void SetTaskRunnersForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner>
-          background_thread_task_runner) {
-    main_thread_task_runner_for_testing_ = main_thread_task_runner;
-    background_thread_task_runner_for_testing_ = background_thread_task_runner;
+  void SetBackgroundTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    background_thread_task_runner_for_testing_ = task_runner;
   }
 
   // Sets a callback that will be invoked on each completion of OnEncoded().
@@ -170,8 +167,6 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   sk_sp<SkData> encoded_ = nullptr;
   CompressionAlgorithm algorithm_ = CompressionAlgorithm::kZlib;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
-  scoped_refptr<base::SingleThreadTaskRunner>
-      main_thread_task_runner_for_testing_;
   scoped_refptr<base::SingleThreadTaskRunner>
       background_thread_task_runner_for_testing_;
   base::RepeatingClosure on_encoded_callback_for_testing_;
