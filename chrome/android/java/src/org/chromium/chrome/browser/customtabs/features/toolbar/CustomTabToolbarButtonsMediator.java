@@ -238,7 +238,7 @@ class CustomTabToolbarButtonsMediator
                     // As CPA chip does the expansion animation, the custom action button on
                     // the left of it needs animating too. Adjusting its margin makes it
                     // animate together with the chip.
-                    var view = assumeNonNull(mView.getCustomActionButtonsParent()).getChildAt(0);
+                    var view = mView.getCustomActionButtonsParent().getChildAt(0);
                     var viewLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
                     if (type == TransitionType.EXPANDING_ACTION_CHIP
                             || type == TransitionType.COLLAPSING_ACTION_CHIP) {

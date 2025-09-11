@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -23,9 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -67,7 +64,6 @@ import java.util.function.Supplier;
  * appear. <br>
  * 3. Refactor to MVC.
  */
-@NullMarked
 public class CustomTabToolbarCoordinator {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
@@ -199,7 +195,7 @@ public class CustomTabToolbarCoordinator {
         updateTitleBarVisibility();
 
         if (CustomTabsConnection.getInstance()
-                .shouldHideDomainForSession(assumeNonNull(mIntentDataProvider.getSession()))) {
+                .shouldHideDomainForSession(mIntentDataProvider.getSession())) {
             manager.setUrlBarHidden(true);
         }
         if (mIntentDataProvider.isMediaViewer()) {
@@ -216,7 +212,6 @@ public class CustomTabToolbarCoordinator {
     /**
      * Configures the custom button on toolbar. Does nothing if invalid data is provided by clients.
      */
-    @RequiresNonNull("mToolbarManager")
     private void showCustomButtonsOnToolbar() {
         for (CustomButtonParams params : mIntentDataProvider.getCustomButtonsOnToolbar()) {
             View.OnClickListener onClickListener = v -> onCustomButtonClick(params);
@@ -251,7 +246,7 @@ public class CustomTabToolbarCoordinator {
             // Need to notify *before* opening in browser, to ensure engagement signal will be fired
             // correctly.
             CustomTabsConnection.getInstance()
-                    .notifyOpenInBrowser(assumeNonNull(mIntentDataProvider.getSession()), tab);
+                    .notifyOpenInBrowser(mIntentDataProvider.getSession(), tab);
             mNavigationController.openCurrentUrlInBrowser();
         } else {
             sendButtonPendingIntentWithUrlAndTitle(params, tab.getOriginalUrl(), tab.getTitle());
@@ -282,7 +277,7 @@ public class CustomTabToolbarCoordinator {
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
-            assumeNonNull(params.getPendingIntent())
+            params.getPendingIntent()
                     .send(
                             ContextUtils.getApplicationContext(),
                             0,
@@ -297,17 +292,16 @@ public class CustomTabToolbarCoordinator {
     }
 
     private void onCompositorContentInitialized(LayoutManagerImpl layoutDriver) {
-        assumeNonNull(mToolbarManager)
-                .initializeWithNative(
-                        layoutDriver,
-                        /* stripLayoutHelperManager= */ null,
-                        /* openGridTabSwitcherHandler= */ null,
-                        /* bookmarkClickHandler= */ null,
-                        /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
-                        /* archivedTabCountSupplier= */ null,
-                        /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<>(
-                                TabModelDotInfo.HIDE),
-                        /* undoBarThrottle= */ null);
+        mToolbarManager.initializeWithNative(
+                layoutDriver,
+                /* stripLayoutHelperManager= */ null,
+                /* openGridTabSwitcherHandler= */ null,
+                /* bookmarkClickHandler= */ null,
+                /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
+                /* archivedTabCountSupplier= */ null,
+                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<>(
+                        TabModelDotInfo.HIDE),
+                /* undoBarThrottle= */ null);
         mInitializedToolbarWithNative = true;
     }
 
