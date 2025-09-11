@@ -1952,5 +1952,21 @@ TEST(PNGTests, InterlacedMultiframeWitBlending) {
   }
 }
 
+// Regression test for https://crbug.com/443661806.
+TEST(PNGTests, PlteAfterInitialImageData) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kDecodersTestingDir, "plte-weirdness.png");
+  EXPECT_FALSE(data->empty());
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+
+  auto frame_count = decoder->FrameCount();
+  EXPECT_EQ(frame_count, 1u);
+
+  // Not crashing when decoding the 1st frame is the main verification in this
+  // test.
+  std::ignore = decoder->DecodeFrameBufferAtIndex(0);
+}
+
 }  // namespace
 }  // namespace blink

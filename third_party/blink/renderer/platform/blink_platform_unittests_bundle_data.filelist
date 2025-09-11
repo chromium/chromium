@@ -660,6 +660,7 @@ image-decoders/testing/incomplete-prev-frame-reusing-clusterfuzz-repro.gif
 image-decoders/testing/interlaced-multiframe-with-blending.png
 image-decoders/testing/invalid-disposal-method.gif
 image-decoders/testing/many-progressive-scans.jpg
+image-decoders/testing/plte-weirdness.png
 image-decoders/testing/private-critical-chunk-before-ihdr.png
 image-decoders/testing/radient-bad-terminator.gif
 image-decoders/testing/radient.gif
