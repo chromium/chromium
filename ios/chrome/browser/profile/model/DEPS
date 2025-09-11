@@ -28,6 +28,7 @@ specific_include_rules = {
     "+ios/chrome/browser/contextual_panel/sample/model",
     "+ios/chrome/browser/crash_report/model",
     "+ios/chrome/browser/credential_provider/model",
+    "+ios/chrome/browser/cross_platform_promos/model",
     "+ios/chrome/browser/data_sharing/model",
     "+ios/chrome/browser/device_reauth/model",
     "+ios/chrome/browser/device_sharing/model",

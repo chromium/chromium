@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
@@ -653,6 +654,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   collaboration::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
+  CrossPlatformPromosService::RegisterProfilePrefs(registry);
   data_controls::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);

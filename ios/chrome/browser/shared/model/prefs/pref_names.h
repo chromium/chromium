@@ -848,6 +848,19 @@ inline constexpr char kIOSGMOSKOPlacementIDNextLogDate[] =
 inline constexpr char kIOSGMOSKOLastAttributionWindowType[] =
     "ios.gmosko_last_attribution_window_type";
 
+// A profile pref for storing a list of timestamps of days the user was active.
+inline constexpr char kCrossPlatformPromosActiveDays[] =
+    "cross_platform_promos.active_days";
+
+// A profile pref for storing the 16th most recent day the user was active.
+// This is calculating by starting at the current day, and iterating back
+// through the days that the user was active, and counting until the 16th
+// active day is reached. This can be used to determine if the user has been
+// active at least 16 out of the last 28 days, by checking if this is more
+// recent than 28 days ago.
+inline constexpr char kCrossPlatformPromosIOS16thActiveDay[] =
+    "cross_platform_promos.ios_16th_active_day";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

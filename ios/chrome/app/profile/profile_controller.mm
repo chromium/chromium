@@ -31,6 +31,7 @@
 #import "components/language/core/browser/language_usage_metrics.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/sharing_message/features.h"
 #import "components/translate/core/browser/translate_metrics_logger_impl.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
@@ -53,6 +54,8 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
@@ -539,6 +542,11 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   enterprise_idle::IdleServiceFactory::GetForProfile(profile)
       ->OnApplicationWillEnterForeground();
 
+  if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+    CrossPlatformPromosServiceFactory::GetForProfile(profile)
+        ->OnApplicationWillEnterForeground();
+  }
+
   // Send the "Chrome opened" event to the feature engagement tracker on a
   // warm start.
   [self sendChromeOpenedEvent];
@@ -775,6 +783,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   DCHECK(_state.profile);
   enterprise_idle::IdleServiceFactory::GetForProfile(_state.profile)
       ->OnApplicationWillEnterForeground();
+  if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+    CrossPlatformPromosServiceFactory::GetForProfile(_state.profile)
+        ->OnApplicationWillEnterForeground();
+  }
 }
 
 - (void)sendChromeOpenedEvent {

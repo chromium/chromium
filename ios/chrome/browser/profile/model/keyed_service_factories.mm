@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
@@ -285,6 +286,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ContextualPanelModelServiceFactory::GetInstance();
   CredentialsCleanerRunnerFactory::GetInstance();
   CrossDevicePrefTrackerFactory::GetInstance();
+  CrossPlatformPromosServiceFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();
   DeviceAuthenticatorProxyFactory::GetInstance();
   DeviceInfoSyncServiceFactory::GetInstance();

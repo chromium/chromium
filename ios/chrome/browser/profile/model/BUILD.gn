@@ -157,6 +157,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/contextual_panel/sample/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/cross_platform_promos/model",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/device_sharing/model",
