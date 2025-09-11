@@ -14,6 +14,7 @@ import 'chrome://resources/cr_components/searchbox/searchbox.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
@@ -206,6 +207,14 @@ export class WebuiBrowserAppElement extends CrLitElement implements
       } else {
         this.$.contentRegion.activeWebview.stopLoading();
       }
+    }
+  }
+
+  protected reloadOrStopTooltip_(): string {
+    if (this.reloadOrStopIcon_ === 'icon-refresh') {
+      return loadTimeData.getString('tooltipReload');
+    } else {
+      return loadTimeData.getString('tooltipStop');
     }
   }
 

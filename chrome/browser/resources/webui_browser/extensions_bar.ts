@@ -6,6 +6,7 @@ import './extension_element.js';
 
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -37,6 +38,8 @@ export class ExtensionsBar extends CrLitElement {
     this.extensionsMenuButton.id = 'extensionsMenuButton';
     this.extensionsMenuButton.ironIcon =
         'webui-browser:ExtensionChromeRefreshIcon';
+    this.extensionsMenuButton.title =
+        loadTimeData.getString('tooltipExtensionsButton');
     this.extensionsMenuButton.addEventListener(
         'click', this.extensionMenuButtonClicked.bind(this));
     this.trackedElementManager.startTracking(

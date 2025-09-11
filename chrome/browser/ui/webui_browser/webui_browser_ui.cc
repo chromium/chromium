@@ -91,6 +91,16 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
                               IDR_WEBUI_BROWSER_WEBUI_BROWSER_HTML);
   source->AddResourcePaths(kTabStripApiResources);
 
+  static constexpr webui::LocalizedString kStrings[] = {
+      // Localized strings (alphabetical order).
+      {"appMenuTooltip", IDS_APPMENU_TOOLTIP},
+      {"tooltipExtensionsButton", IDS_TOOLTIP_EXTENSIONS_BUTTON},
+      {"tooltipNewTab", IDS_TOOLTIP_NEW_TAB},
+      {"tooltipReload", IDS_TOOLTIP_RELOAD},
+      {"tooltipStop", IDS_TOOLTIP_STOP},
+  };
+  source->AddLocalizedStrings(kStrings);
+
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 }
 

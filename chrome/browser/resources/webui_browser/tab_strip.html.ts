@@ -12,6 +12,7 @@ export function getHtml(this: TabStrip) {
 <div id="tabstrip">
     ${this.tabs_}
   <cr-icon-button id="newTabButton" iron-icon="cr:add"
+    title="$i18n{tooltipNewTab}"
     @click="${this.onAddTab_}"></cr-icon-button>
 </div>
 <!--_html_template_end_-->`;
