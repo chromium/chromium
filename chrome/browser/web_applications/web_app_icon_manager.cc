@@ -591,13 +591,14 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
-    base::flat_map<IconPurpose, SortedSizesPx> purpose_to_sizes) {
+    base::flat_map<IconPurpose, SortedSizesPx> manifest_icon_purpose_to_sizes,
+    base::flat_map<IconPurpose, SortedSizesPx> trusted_icon_purpose_to_sizes) {
   TRACE_EVENT0("ui",
                "web_app_icon_manager::CheckForEmptyOrMissingIconFilesBlocking");
   WebAppIconManager::IconFilesCheck result;
-  for (const auto& it : purpose_to_sizes) {
-    const IconPurpose& purpose = it.first;
-    const SortedSizesPx& square_sizes = it.second;
+
+  // First, parse all the manifest icon files.
+  for (const auto& [purpose, square_sizes] : manifest_icon_purpose_to_sizes) {
     for (SquareSizePx size : square_sizes) {
       base::FilePath icon_path =
           GetIconFileName(web_apps_directory, IconId(app_id, purpose, size));
@@ -605,6 +606,22 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
       if (utils->GetFileInfo(icon_path, &file_info)) {
         if (file_info.size == 0)
           ++result.empty;
+      } else {
+        ++result.missing;
+      }
+    }
+  }
+
+  // Second, parse all the trusted icon files.
+  for (const auto& [purpose, square_sizes] : trusted_icon_purpose_to_sizes) {
+    for (SquareSizePx size : square_sizes) {
+      base::FilePath icon_path = GetTrustedIconsFileName(
+          web_apps_directory, IconId(app_id, purpose, size));
+      base::File::Info file_info;
+      if (utils->GetFileInfo(icon_path, &file_info)) {
+        if (file_info.size == 0) {
+          ++result.empty;
+        }
       } else {
         ++result.missing;
       }
@@ -1567,15 +1584,24 @@ void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
     return;
   }
 
-  base::flat_map<IconPurpose, SortedSizesPx> purpose_to_sizes;
-  for (IconPurpose purpose : kIconPurposes)
-    purpose_to_sizes[purpose] = web_app->downloaded_icon_sizes(purpose);
+  base::flat_map<IconPurpose, SortedSizesPx> manifest_icon_purpose_to_sizes;
+  base::flat_map<IconPurpose, SortedSizesPx> trusted_icon_purpose_to_sizes;
+  for (const IconPurpose& purpose : kIconPurposes) {
+    manifest_icon_purpose_to_sizes[purpose] =
+        web_app->downloaded_icon_sizes(purpose);
+    if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
+        purpose != IconPurpose::MONOCHROME) {
+      trusted_icon_purpose_to_sizes[purpose] =
+          web_app->stored_trusted_icon_sizes(purpose);
+    }
+  }
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(CheckForEmptyOrMissingIconFilesBlocking,
                      provider_->file_utils(), web_apps_directory_, app_id,
-                     std::move(purpose_to_sizes)),
+                     std::move(manifest_icon_purpose_to_sizes),
+                     std::move(trusted_icon_purpose_to_sizes)),
       std::move(callback));
 }
 
@@ -1593,7 +1619,22 @@ base::FilePath WebAppIconManager::GetIconFilePathForTesting(
     const webapps::AppId& app_id,
     IconPurpose purpose,
     SquareSizePx size) {
-  return GetIconFileName(web_apps_directory_, IconId(app_id, purpose, size));
+  std::optional<IconSizeAndPurpose> best_icon =
+      FindIconMatchBigger(app_id, {purpose}, size);
+  if (!best_icon) {
+    best_icon = FindIconMatchSmaller(app_id, {purpose}, size);
+  }
+
+  if (!best_icon) {
+    return base::FilePath();
+  }
+
+  IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
+  if (best_icon->is_trusted) {
+    return GetTrustedIconsFileName(web_apps_directory_, icon_id);
+  }
+
+  return GetIconFileName(web_apps_directory_, icon_id);
 }
 
 base::WeakPtr<const WebAppIconManager> WebAppIconManager::GetWeakPtr() const {

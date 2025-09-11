@@ -1863,6 +1863,10 @@ class SystemWebAppIconHealthMetricsTest
         .Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      ::features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, ReportsMetrics) {
@@ -1890,7 +1894,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
       SystemWebAppManager::GetWebAppProvider(browser()->profile())
           ->icon_manager()
           .GetIconFilePathForTesting(app_id, web_app::IconPurpose::ANY, 32);
-
+  CHECK(!icon_path.empty());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::WriteFile(icon_path, "Not a PNG file");

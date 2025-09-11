@@ -258,6 +258,8 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
   void SetFaviconMonochromeReadCallbackForTesting(FaviconReadCallback callback);
 
+  // Returns the correct icon file path that exists on the disk for testing.
+  // Falls back to using manifest icons if trusted icons are not found.
   base::FilePath GetIconFilePathForTesting(const webapps::AppId& app_id,
                                            IconPurpose purpose,
                                            SquareSizePx size);
