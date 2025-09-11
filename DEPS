@@ -4216,10 +4216,7 @@ hooks = [
     'action': ['vpython3', 'src/tools/rust/build_rust.py',
                '--rust-force-head-revision',
                '--llvm-force-head-revision',
-               '--build-bindgen',
-               '--build-vet',
-               '--build-crubit',
-               '--gnrt-stdlib',
+               '--entire-toolchain',
                '--skip-test'],
   },
   {
