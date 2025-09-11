@@ -64,7 +64,7 @@ class JavacOutputProcessor:
     self._import_re = re.compile(r'\s*import (?P<imported_class>[\w\.]+);$')
     # Example: import static org.chromium.url.GURL.method;
     self._import_static_re = re.compile(
-        r'\s*import static (?P<imported_class>[\w\.]+)\.\s+;$')
+        r'\s*import static (?P<imported_class>[\w\.]+)\.\S+;$')
 
     self._warning_color = [
         'full_message', colorama.Fore.YELLOW + colorama.Style.DIM
