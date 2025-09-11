@@ -3,6 +3,8 @@
 # Anyone can apply to join //chrome/OWNERS. We expect:
 #  * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome
 #  * Be an OWNER of at least 3 subdirectories of //chrome.
+# You can check your current status by running this script:
+# chrome/tools/check_ownership.py your_email@chromium.org
 # Please email current OWNERS.
 
 set noparent
