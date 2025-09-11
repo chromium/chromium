@@ -829,6 +829,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.content_based_fingerprinting_protection_enabled;
   }
 
+  static bool ai_prompt_api_enabled(const blink::web_pref::WebPreferences& r) {
+    return r.ai_prompt_api_enabled;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

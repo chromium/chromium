@@ -1936,6 +1936,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
     RuntimeEnabledFeatures::SetReduceHardwareConcurrencyEnabled(true);
     RuntimeEnabledFeatures::SetReduceScreenSizeEnabled(true);
   }
+
+  if (prefs.ai_prompt_api_enabled) {
+    RuntimeEnabledFeatures::SetAIPromptAPIEnabled(true);
+  }
 }
 
 void WebViewImpl::ThemeChanged() {

@@ -456,6 +456,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Whether fingerprinting protection based on page content is enabled.
   bool content_based_fingerprinting_protection_enabled = false;
 
+  bool ai_prompt_api_enabled = false;
+
 #if BUILDFLAG(IS_ANDROID)
   // Whether every traversable mainframe same-doc navigation will increment the
   // `viz::LocalSurfaceId` from the impl thread.

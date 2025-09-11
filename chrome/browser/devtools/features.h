@@ -107,6 +107,8 @@ BASE_DECLARE_FEATURE(kDevToolsLiveEdit);
 
 BASE_DECLARE_FEATURE(kDevToolsIndividualRequestThrottling);
 
+BASE_DECLARE_FEATURE(kDevToolsAiPromptApi);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

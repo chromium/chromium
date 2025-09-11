@@ -201,4 +201,11 @@ BASE_FEATURE(kDevToolsLiveEdit,
 BASE_FEATURE(kDevToolsIndividualRequestThrottling,
              "DevToolsIndividualRequestThrottling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the AI Prompt API (https://developer.chrome.com/docs/ai/prompt-api)
+// is available in DevTools.
+BASE_FEATURE(kDevToolsAiPromptApi,
+             "DevToolsAiPromptApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -80,6 +80,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -4895,6 +4896,11 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
           IsFingerprintingProtectionEnabledForIncognitoState(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())
                   ->IsIncognitoProfile());
+
+  if (base::FeatureList::IsEnabled(::features::kDevToolsAiPromptApi) &&
+      web_contents->GetVisibleURL().SchemeIs(content::kChromeDevToolsScheme)) {
+    web_prefs->ai_prompt_api_enabled = true;
+  }
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
