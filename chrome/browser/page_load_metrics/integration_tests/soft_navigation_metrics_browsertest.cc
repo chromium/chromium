@@ -8,11 +8,13 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/values.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -25,8 +27,26 @@
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using page_load_metrics::PageLoadMetricsTestWaiter;
+using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
 
 namespace {
+std::map<int64_t, double> GetSoftNavigationMetrics(
+    const ukm::TestUkmRecorder& ukm_recorder,
+    std::string_view metric_name) {
+  std::map<int64_t, double> source_id_to_metric_name;
+  for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
+           ukm::builders::SoftNavigation::kEntryName)) {
+    if (auto* rs = ukm_recorder.GetEntryMetric(entry, metric_name)) {
+      source_id_to_metric_name[entry->source_id] = *rs;
+    }
+  }
+  return source_id_to_metric_name;
+}
+
 class SoftNavigationTest : public MetricIntegrationTest,
                            public testing::WithParamInterface<bool> {
  public:
@@ -45,6 +65,16 @@ class SoftNavigationTest : public MetricIntegrationTest,
           blink::features::kSoftNavigationHeuristics);
     }
     feature_list_.InitWithFeatures(enabled_feature_list, {} /*disabled*/);
+  }
+
+  std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter(
+      const char* observer_name,
+      content::WebContents* web_contents = nullptr) {
+    if (!web_contents) {
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    }
+    return std::make_unique<PageLoadMetricsTestWaiter>(web_contents,
+                                                       observer_name);
   }
 
   void SimulateMouseDownElementWithId(const std::string& id) {
@@ -68,19 +98,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
         ->GetRenderViewHost()
         ->GetWidget()
         ->ForwardMouseEvent(click_event);
-  }
-
-  std::map<int64_t, double> GetSoftNavigationMetrics(
-      const ukm::TestUkmRecorder& ukm_recorder,
-      std::string_view metric_name) {
-    std::map<int64_t, double> source_id_to_metric_name;
-    for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
-             ukm::builders::SoftNavigation::kEntryName)) {
-      if (auto* rs = ukm_recorder.GetEntryMetric(entry, metric_name)) {
-        source_id_to_metric_name[entry->source_id] = *rs;
-      }
-    }
-    return source_id_to_metric_name;
   }
 
   void WaitForFrameReady() {
@@ -333,129 +350,132 @@ class SoftNavigationTest : public MetricIntegrationTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/40924160): Investigate timeout issue on linux-wayland when
-// retrieving web exposed soft nav lcp entries using the EvalJs method.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
-#else
-#define MAYBE_LargestContentfulPaint LargestContentfulPaint
-#endif
+std::string JsSnippetGetSoftLcpStartTimes() {
+  return R"(
+      (() => {
+        const observer = new PerformanceObserver(() => {});
+        observer.observe({type: 'interaction-contentful-paint', buffered: true,
+                           includeSoftNavigationObservations: true});
+        const lcpCandidates = observer.takeRecords();
+        // For each soft navigation, report the last LCP candidate's start time.
+        const startTimeByNavigationId = new Map();
+        for (c of lcpCandidates) {
+          startTimeByNavigationId.set(c.navigationId, c.startTime);
+        }
+        return Array.from(startTimeByNavigationId.values());
+      })();
+    )";
+}
 
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
+void VerifySoftNavIdsAndSoftLcpStartTimes(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    bool soft_nav_heuristics_enabled,
+    const base::Value::List& soft_nav_lcp_list,
+    uint32_t expected_soft_nav_count) {
 
-  // Expect 1st soft navigation update.
-  waiter->AddSoftNavigationCountExpectation(1);
-  waiter->AddSoftNavigationImageLCPExpectation(1);
+  // Soft navigation start times.
+  auto source_id_to_start_time = GetSoftNavigationMetrics(
+      ukm_recorder, ukm::builders::SoftNavigation::kStartTimeName);
+  EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
 
-  Start();
-  Load("/soft_navigation.html");
+  // Soft navigation ids.
+  auto source_id_to_navigation_id = GetSoftNavigationMetrics(
+      ukm_recorder, ukm::builders::SoftNavigation::kNavigationIdName);
+  EXPECT_EQ(source_id_to_navigation_id.size(), expected_soft_nav_count);
 
-  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()")
-                  .is_ok());
 
-  SimulateMouseDownElementWithId("link");
+  // Soft navigation LCP.
+  auto source_id_to_lcp = GetSoftNavigationMetrics(
+      ukm_recorder,
+      ukm::builders::SoftNavigation::kPaintTiming_LargestContentfulPaintName);
+  EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
 
-  if (GetParam()) {
-    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                       "waitForSoftNavigationEntry()")
-                    .is_ok());
+  std::vector<ukm::SourceId> source_ids;
+  std::vector<double> soft_nav_start_times;
+  for (const auto& [source_id, start_time] : source_id_to_start_time) {
+    source_ids.push_back(source_id);
+    soft_nav_start_times.push_back(start_time);
   }
 
-  waiter->Wait();
+  // Verify that the soft navigation start times are sorted and unique.
+  EXPECT_EQ(source_ids.size(), expected_soft_nav_count);
 
-  // Expect 2nd soft navigation update.
-  waiter->AddSoftNavigationCountExpectation(2);
-  waiter->AddSoftNavigationImageLCPExpectation(2);
-
-  SimulateMouseDownElementWithId("link");
-
-  if (GetParam()) {
-    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                       "waitForSoftNavigationEntry2()")
-                    .is_ok());
+  EXPECT_EQ(soft_nav_start_times.size(), expected_soft_nav_count);
+  EXPECT_TRUE(
+      std::is_sorted(soft_nav_start_times.begin(), soft_nav_start_times.end()));
+  auto it = std::adjacent_find(soft_nav_start_times.begin(),
+                               soft_nav_start_times.end());
+  if (it != soft_nav_start_times.end()) {
+    FAIL() << "start times are not unique: " << *it << " at index "
+           << std::distance(soft_nav_start_times.begin(), it);
   }
+  EXPECT_EQ(it, soft_nav_start_times.end());
+  auto last =
+      std::unique(soft_nav_start_times.begin(), soft_nav_start_times.end());
+  EXPECT_EQ(last, soft_nav_start_times.end());
 
-  waiter->Wait();
+
+  EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
+  std::vector<double> soft_nav_lcp;
+  for (const auto& [source_id, lcp] : source_id_to_lcp) {
+    soft_nav_lcp.push_back(lcp);
+  }
 
   // If the SoftNavigationHeuristics flag is enabled, we verify exact values
-  // in Ukm against the web exposed values. Otherwise, we only verify that
-  // there are 2 soft nav lcp reported to Ukm.
+  // in UKM against the web exposed values.
+  if (soft_nav_heuristics_enabled) {
+    EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
+    for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
+      SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
+      double expected_lcp = soft_nav_lcp[i] + soft_nav_start_times[i];
+      EXPECT_NEAR(soft_nav_lcp_list[i].GetDouble(), expected_lcp, 6);
+    }
+  }
+}
+
+// This test focuses on measuring the image LCP of a soft navigation in UKM.
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
+  // Start the test, load soft_navigation_basics.html and wait for
+  // load, fcp, and lcp to be observed.
+  Start();
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  Load("/soft_navigation_basics.html#image");
+  waiter->Wait();
+
+  // 1st soft navigation: click on the next page button and wait for soft
+  // navigation count and image lcp.
+  waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationImageLCPExpectation(1);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
+  // 2nd soft navigation: click on the next page button and wait for soft
+  // navigation count and image lcp.
+  waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationImageLCPExpectation(2);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
   base::Value::List soft_nav_lcp_list;
   if (GetParam()) {
     soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
-                               "GetSoftNavigationLCPEntries()")
+                               JsSnippetGetSoftLcpStartTimes())
                             .TakeValue()
                             .TakeList();
     EXPECT_EQ(soft_nav_lcp_list.size(), 2ul);
   }
 
+  // Navigate to about:blank (untracked) to ensure all UKM are recorded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // Verify start time.
-  auto source_id_to_start_time = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
-
-  // Assert there are 2 soft navigation start times.
-  EXPECT_EQ(source_id_to_start_time.size(), 2ul);
-
-  // Each soft navigation has a different source id;
-  EXPECT_NE(std::next(source_id_to_start_time.cbegin())->first,
-            source_id_to_start_time.cbegin()->first);
-
-  // Assert second soft navigation start time is larger than first one.
-  EXPECT_GT(std::next(source_id_to_start_time.cbegin())->second,
-            source_id_to_start_time.cbegin()->second);
-
-  // Verify there are 2 soft navigation navigation ids.
-  auto source_id_to_navigation_id = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::kNavigationIdName);
-
-  EXPECT_EQ(source_id_to_navigation_id.size(), 2ul);
-
-  // Each soft navigation id has a different source id;
-  EXPECT_NE(std::next(source_id_to_navigation_id.cbegin())->first,
-            source_id_to_navigation_id.cbegin()->first);
-
-  // Verify 2 soft navigation lcp are reported.
-  auto source_id_to_lcp = GetSoftNavigationMetrics(
-      ukm_recorder(),
-      ukm::builders::SoftNavigation::kPaintTiming_LargestContentfulPaintName);
-
-  EXPECT_EQ(source_id_to_lcp.size(), 2u);
-
-  // If the SoftNavigationHeuristics flag is enabled, we verify exact values
-  // in Ukm against the web exposed values.
-  if (GetParam()) {
-    auto json_soft_nav_lcp1 =
-        base::JSONReader::Read(soft_nav_lcp_list[0].GetString());
-
-    auto json_soft_nav_lcp2 =
-        base::JSONReader::Read(soft_nav_lcp_list[1].GetString());
-
-    const base::Value::Dict& soft_nav_lcp1 = json_soft_nav_lcp1->GetDict();
-
-    const base::Value::Dict& soft_nav_lcp2 = json_soft_nav_lcp2->GetDict();
-
-    double soft_nav_1_web_exposed_lcp =
-        soft_nav_lcp1.FindDouble("startTime").value();
-    double soft_nav_2_web_exposed_lcp =
-        soft_nav_lcp2.FindDouble("startTime").value();
-
-    double soft_nav_1_start_time = source_id_to_start_time.cbegin()->second;
-    double soft_nav_2_start_time =
-        std::next(source_id_to_start_time.cbegin())->second;
-
-    double soft_nav_1_lcp = source_id_to_lcp.cbegin()->second;
-    double soft_nav_2_lcp = std::next(source_id_to_lcp.cbegin())->second;
-
-    EXPECT_NEAR(soft_nav_1_start_time + soft_nav_1_lcp,
-                soft_nav_1_web_exposed_lcp, 6);
-
-    EXPECT_NEAR(soft_nav_2_start_time + soft_nav_2_lcp,
-                soft_nav_2_web_exposed_lcp, 6);
-  }
+  VerifySoftNavIdsAndSoftLcpStartTimes(
+      ukm_recorder(), /*soft_nav_heuristics_enabled=*/GetParam(),
+      soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
 
   // Verify 2 LCP discovery time timings are reported.
   auto source_id_to_lcp_discovery_time = GetSoftNavigationMetrics(
@@ -485,23 +505,19 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
       ukm_recorder(), ukm::builders::SoftNavigation::
                           kPaintTiming_LargestContentfulPaintTypeName);
 
-  auto flag_set = blink::LargestContentfulPaintType::kImage |
-                  blink::LargestContentfulPaintType::kPNG;
+  EXPECT_EQ(source_id_to_lcp_type.size(), 2u);
 
-  // Whether the LCP image is after mouseover is flaky.
-  EXPECT_TRUE(
-      source_id_to_lcp_type.cbegin()->second ==
-          static_cast<int64_t>(flag_set) ||
-      source_id_to_lcp_type.cbegin()->second ==
-          static_cast<int64_t>(
-              flag_set | blink::LargestContentfulPaintType::kAfterMouseover));
+  auto flag_set =
+      static_cast<int64_t>(blink::LargestContentfulPaintType::kImage |
+                           blink::LargestContentfulPaintType::kPNG);
+  auto flag_set_with_mouseover =  // Allow mouseover to avoid flakiness.
+      flag_set |
+      static_cast<int64_t>(blink::LargestContentfulPaintType::kAfterMouseover);
+  auto lcp_type_1 = source_id_to_lcp_type.cbegin()->second;
+  auto lcp_type_2 = std::next(source_id_to_lcp_type.cbegin())->second;
 
-  EXPECT_TRUE(
-      source_id_to_lcp_type.cbegin()->second ==
-          static_cast<int64_t>(flag_set) ||
-      source_id_to_lcp_type.cbegin()->second ==
-          static_cast<int64_t>(
-              flag_set | blink::LargestContentfulPaintType::kAfterMouseover));
+  EXPECT_TRUE(lcp_type_1 == flag_set || lcp_type_1 == flag_set_with_mouseover);
+  EXPECT_TRUE(lcp_type_2 == flag_set || lcp_type_2 == flag_set_with_mouseover);
 
   // Verify LCP BPP.
   auto source_id_to_lcp_bpp = GetSoftNavigationMetrics(
@@ -518,10 +534,74 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
       ukm::builders::SoftNavigation::
           kPaintTiming_LargestContentfulPaintRequestPriorityName);
 
-  // 2 is medium priority.
-  EXPECT_EQ(source_id_to_lcp_request_priority.cbegin()->second, 2u);
+  // https://source.chromium.org/chromium/chromium/src/+/main:net/base/request_priority.h
+  // 4 is MEDIUM request priority.
+  EXPECT_EQ(source_id_to_lcp_request_priority.cbegin()->second, 4u);
 
-  EXPECT_EQ(std::next(source_id_to_lcp_request_priority.cbegin())->second, 2u);
+  EXPECT_EQ(std::next(source_id_to_lcp_request_priority.cbegin())->second, 4u);
+}
+
+// This test focuses on measuring the text LCP of a soft navigation in UKM.
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
+  // Start the test, load soft_navigation_basics.html and wait for
+  // load, fcp, and lcp to be observed.
+  Start();
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  Load("/soft_navigation_basics.html#text");
+  waiter->Wait();
+
+  // 1st soft navigation: click on the next page button and wait for soft
+  // navigation count and text lcp.
+  waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationTextLCPExpectation(1);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
+  // 2nd soft navigation: click on the next page button and wait for soft
+  // navigation count and text lcp.
+  waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationTextLCPExpectation(2);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
+  base::Value::List soft_nav_lcp_list;
+  if (GetParam()) {
+    soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                               JsSnippetGetSoftLcpStartTimes())
+                            .TakeValue()
+                            .TakeList();
+    EXPECT_EQ(soft_nav_lcp_list.size(), 2ul);
+  }
+
+  // Navigate to about:blank (untracked) to ensure all UKM are recorded.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  VerifySoftNavIdsAndSoftLcpStartTimes(
+      ukm_recorder(), /*soft_nav_heuristics_enabled=*/GetParam(),
+      soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
+
+  // Verify LCP types.
+  auto source_id_to_lcp_type = GetSoftNavigationMetrics(
+      ukm_recorder(), ukm::builders::SoftNavigation::
+                          kPaintTiming_LargestContentfulPaintTypeName);
+
+  EXPECT_EQ(source_id_to_lcp_type.size(), 2u);
+
+  auto flag_set =
+      static_cast<int64_t>(blink::LargestContentfulPaintType::kText);
+  auto flag_set_with_mouseover =  // Allow mouseover to avoid flakiness.
+      flag_set |
+      static_cast<int64_t>(blink::LargestContentfulPaintType::kAfterMouseover);
+  auto lcp_type_1 = source_id_to_lcp_type.cbegin()->second;
+  auto lcp_type_2 = std::next(source_id_to_lcp_type.cbegin())->second;
+
+  EXPECT_TRUE(lcp_type_1 == flag_set || lcp_type_1 == flag_set_with_mouseover);
+  EXPECT_TRUE(lcp_type_2 == flag_set || lcp_type_2 == flag_set_with_mouseover);
 }
 
 // TODO(crbug.com/334416161): Re-enable this test.
