@@ -17,20 +17,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
-#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -51,12 +39,29 @@
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#endif
+
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// Used in tests for apps, which are not supported on Android.
 constexpr char kManifest[] =
     R"({
           "name": "Management API Test",
@@ -87,6 +92,7 @@ bool ExpectChromeAppsDefaultEnabled() {
   return true;
 #endif
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -96,11 +102,11 @@ class ExtensionManagementApiTest
     : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionManagementApiTest()
-      : ExtensionApiTest(GetParam()),
-        enable_chrome_apps_(
-            &extensions::testing::g_enable_chrome_apps_for_testing,
-            true) {
+  ExtensionManagementApiTest() : ExtensionApiTest(GetParam()) {
+#if !BUILDFLAG(IS_ANDROID)
+    enable_chrome_apps_ = std::make_unique<base::AutoReset<bool>>(
+        &extensions::testing::g_enable_chrome_apps_for_testing, true);
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitAndEnableFeature(
         apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
@@ -165,23 +171,32 @@ class ExtensionManagementApiTest
   std::map<std::string, std::string> extension_ids_;
 
  protected:
-  base::AutoReset<bool> enable_chrome_apps_;
+  std::unique_ptr<base::AutoReset<bool>> enable_chrome_apps_;
+#if !BUILDFLAG(IS_ANDROID)
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support persistent background pages.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionManagementApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionManagementApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does not provide the XmlUnitTestResultPrinter this method needs.
   base::AddFeatureIdTagToTestResult(
       "screenplay-7a245632-83b2-4dc8-a1db-283ef595e2df");
+#endif
 
   LoadExtensions();
 
@@ -197,7 +212,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
   ASSERT_TRUE(RunExtensionTest("management/basics"));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoPermission) {
+// TODO(crbug.com/371332103): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NoPermission DISABLED_NoPermission
+#else
+#define MAYBE_NoPermission NoPermission
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, MAYBE_NoPermission) {
   LoadExtensions();
   ASSERT_TRUE(RunExtensionTest("management/no_permission"));
 }
@@ -210,6 +231,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Uninstall) {
   ASSERT_TRUE(RunExtensionTest("management/uninstall"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, CreateAppShortcut) {
   LoadExtensions();
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
@@ -219,11 +242,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, CreateAppShortcut) {
   ASSERT_TRUE(RunExtensionTest("management/create_app_shortcut"));
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, GenerateAppForLink) {
   web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
 
+// Skipped on Android because it does not support Chrome apps.
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
   InstallReplacementWebAppApiTest()
@@ -393,6 +418,7 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
   RunInstallableWebAppTest(kAppManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
@@ -438,6 +464,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
                                {.custom_arg = "runProhibitedTests"}));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
@@ -489,6 +517,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   ASSERT_TRUE(app_browser->is_type_app());
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
@@ -540,6 +569,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   ASSERT_TRUE(app_browser->is_type_app());
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
                        NoLaunchPanelAppsDeprecated) {
   extensions::testing::g_enable_chrome_apps_for_testing = false;
@@ -569,6 +599,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
   }
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
   extensions::testing::g_enable_chrome_apps_for_testing = false;
   // Load an extension that calls launchApp() on any app that gets
@@ -601,6 +632,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
     EXPECT_FALSE(launched_app.was_satisfied());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Flaky on MacOS: crbug.com/915339
 #if BUILDFLAG(IS_MAC)
