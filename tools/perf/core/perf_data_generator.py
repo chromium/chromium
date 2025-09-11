@@ -327,21 +327,6 @@ FYI_BUILDERS = {
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
     },
-    'win-dell-pro-16-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [ '--assert-gpu-compositing' ],
-            },
-        ],
-        'platform': 'win',
-        'target_bits': 64,
-        'dimension': {
-            'pool': 'chrome.tests.perf-fyi',
-            'os': 'Windows',
-            'synthetic_product_name': 'Dell Pro 16 PC16250 (Dell Inc.)',
-        },
-    },
     'win-arm64-snapdragon-plus-perf': {
         'tests': [
             {

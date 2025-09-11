@@ -89,5 +89,4 @@
 
  * [win-10_laptop_low_end-perf_HP-Candidate](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf_HP-Candidate): HP 15-BS121NR Laptop Candidate.
  * [win-arm64-snapdragon-plus-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-plus-perf): Windows Dell Snapdragon Plus.
- * [win-dell-pro-16-perf](https://ci.chromium.org/p/chrome/builders/ci/win-dell-pro-16-perf): Windows Dell Pro 16 Laptop with Intel Core Ultra 7 255U.
 
