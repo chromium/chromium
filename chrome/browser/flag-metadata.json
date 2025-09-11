@@ -7719,6 +7719,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "openxr-spatial-entities",
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
     // This flag is used by regular debugging by developers and internal users

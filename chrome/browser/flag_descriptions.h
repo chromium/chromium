@@ -2623,12 +2623,6 @@ extern const char kWebXrHandAnonymizationChoiceNone[];
 extern const char kWebXrHandAnonymizationChoiceRuntime[];
 extern const char kWebXrHandAnonymizationChoiceFallback[];
 
-extern const char kWebXrProjectionLayersName[];
-extern const char kWebXrProjectionLayersDescription[];
-
-extern const char kWebXrWebGpuBindingName[];
-extern const char kWebXrWebGpuBindingDescription[];
-
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 
@@ -4760,7 +4754,20 @@ extern const char kPdfUseSkiaRendererDescription[];
 #if BUILDFLAG(ENABLE_VR)
 extern const char kWebXrInternalsName[];
 extern const char kWebXrInternalsDescription[];
-#endif  // #if defined(ENABLE_VR)
+
+extern const char kWebXrProjectionLayersName[];
+extern const char kWebXrProjectionLayersDescription[];
+
+extern const char kWebXrWebGpuBindingName[];
+extern const char kWebXrWebGpuBindingDescription[];
+
+#if BUILDFLAG(ENABLE_OPENXR)
+
+extern const char kOpenXrSpatialEntitiesName[];
+extern const char kOpenXrSpatialEntitiesDescription[];
+
+#endif  // BUILDFLAG(ENABLE_OPENXR)
+#endif  // BUILDFLAG(ENABLE_VR)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripFlagId[];

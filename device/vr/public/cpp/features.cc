@@ -72,9 +72,7 @@ BASE_FEATURE(kAllowOpenXrOnXrDevices, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the OpenXr runtime is allowed to try to use the spatial
 // entities framework.
-BASE_FEATURE(kOpenXrSpatialEntities,
-             "OpenXrSpatialEntities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOpenXrSpatialEntities, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOpenXrAndroidSmoothDepth, base::FEATURE_DISABLED_BY_DEFAULT);

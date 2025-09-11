@@ -6011,6 +6011,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(ENABLE_OPENXR)
+    {"openxr-spatial-entities", flag_descriptions::kOpenXrSpatialEntitiesName,
+     flag_descriptions::kOpenXrSpatialEntitiesDescription, kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(device::features::kOpenXrSpatialEntities)},
+#endif  // BUILDFLAG(ENABLE_OPENXR)
     {"webxr-projection-layers", flag_descriptions::kWebXrProjectionLayersName,
      flag_descriptions::kWebXrProjectionLayersDescription, kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kWebXrLayers)},
@@ -6045,7 +6050,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-openxr-extended", flag_descriptions::kOpenXRExtendedFeaturesName,
      flag_descriptions::kOpenXRExtendedFeaturesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kOpenXrExtendedFeatureSupport)},
-#endif
+#endif  // BUILDFLAG(ENABLE_OPENXR)
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS)

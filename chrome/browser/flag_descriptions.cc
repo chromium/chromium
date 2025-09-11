@@ -8273,7 +8273,16 @@ const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "
     "debug issues with the WebXR Device API.";
-#endif  // #if defined(ENABLE_VR)
+
+#if BUILDFLAG(ENABLE_OPENXR)
+
+const char kOpenXrSpatialEntitiesName[] = "OpenXR Spatial Entities";
+const char kOpenXrSpatialEntitiesDescription[] =
+    "Allows the OpenXR runtime to use the spatial entities set of extensions "
+    "to understand the environment.";
+
+#endif  // BUILDFLAG(ENABLE_OPENXR)
+#endif  // BUILDFLAG(ENABLE_VR)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 const char kWebUITabStripFlagId[] = "webui-tab-strip";

@@ -9059,6 +9059,7 @@ from previous Chrome versions.
   <int value="-1872989945" label="enable-webview-based-signin"/>
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
+  <int value="-1871987704" label="OpenXrSpatialEntities:disabled"/>
   <int value="-1871552967" label="DesktopPWAsTabStrip:disabled"/>
   <int value="-1871540097" label="CaptionsOnBrailleDisplay:enabled"/>
   <int value="-1871472551" label="PwaRestoreUi:enabled"/>
@@ -17948,6 +17949,7 @@ from previous Chrome versions.
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>
   <int value="1321935981" label="CrosSafetyService:disabled"/>
   <int value="1322013438" label="CrOSLateBootGravedigger:enabled"/>
+  <int value="1323010045" label="OpenXrSpatialEntities:enabled"/>
   <int value="1323808967" label="PlaybackSpeedButton:disabled"/>
   <int value="1324043544" label="SyncSettingsCategorization:enabled"/>
   <int value="1324080668" label="VcControlsUi:disabled"/>
