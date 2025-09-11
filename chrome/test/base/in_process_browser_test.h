@@ -16,10 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-// TODO(crbug.com/421758609): Remove this and forward declare
-// BrowserWindowInterface only once all clients are converted to passing
-// BrowserWindowInterface rather than Browser.
-#include "chrome/browser/ui/browser.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +62,7 @@ class ScopedLaunchBrowserForTesting;
 }  // namespace ash::full_restore
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class BrowserWindowInterface;
+class Browser;
 class PrefService;
 class Profile;
 #if BUILDFLAG(IS_MAC)
@@ -205,12 +201,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
  protected:
   // Closes the given browser and waits for it to release all its resources.
-  void CloseBrowserSynchronously(BrowserWindowInterface* browser);
+  void CloseBrowserSynchronously(Browser* browser);
 
   // Closes the browser without waiting for it to release all its resources.
   // WARNING: This may leave tasks posted, but not yet run, in the message
   // loops. Prefer CloseBrowserSynchronously() over this method.
-  void CloseBrowserAsynchronously(BrowserWindowInterface* browser);
+  void CloseBrowserAsynchronously(Browser* browser);
 
   // Closes all browsers. No guarantees are made about the destruction of
   // outstanding resources.
