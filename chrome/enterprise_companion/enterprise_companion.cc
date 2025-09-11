@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
@@ -34,6 +35,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/windows_version.h"
 #include "chrome/enterprise_companion/installer.h"
+#include "chrome/updater/util/win_util.h"
+#include "partition_alloc/page_allocator.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_companion {
@@ -142,6 +145,19 @@ std::string OperatingSystemVersion() {
 }  // namespace
 
 int EnterpriseCompanionMain(int argc, const char* const* argv) {
+#if BUILDFLAG(IS_WIN)
+  CHECK(updater::EnableSecureDllLoading());
+#endif
+
+  // Make the process more resilient to memory allocation issues.
+#if BUILDFLAG(IS_WIN)
+  updater::EnableProcessHeapMetadataProtection();
+  partition_alloc::SetRetryOnCommitFailure(true);
+#endif
+  base::EnableTerminationOnHeapCorruption();
+  base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
+
   base::CommandLine::Init(argc, argv);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   InitLogging();
