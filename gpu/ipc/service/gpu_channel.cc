@@ -765,12 +765,12 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
 
 void GpuChannel::Init(IPC::ChannelHandle channel_handle,
                       base::WaitableEvent* shutdown_event) {
-  channel_proxy_ = std::make_unique<IPC::ChannelProxy>(
-      this, io_task_runner_.get(), task_runner_.get());
-  channel_proxy_->AddAssociatedInterfaceForIOThread(
+  sync_channel_ = IPC::SyncChannel::Create(this, io_task_runner_.get(),
+                                           task_runner_.get(), shutdown_event);
+  sync_channel_->AddAssociatedInterfaceForIOThread(
       base::BindRepeating(&GpuChannelMessageFilter::BindGpuChannel, filter_));
-  channel_proxy_->Init(channel_handle, IPC::Channel::MODE_SERVER,
-                       /*create_pipe_now=*/false);
+  sync_channel_->Init(channel_handle, IPC::Channel::MODE_SERVER,
+                      /*create_pipe_now=*/false);
 }
 
 base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
