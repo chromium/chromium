@@ -912,23 +912,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.LookupTime{Variant}"
+<histogram name="HttpCache.NoVarySearch.LookupTime{HitOrMiss}{MainFrameOrNot}"
     units="microseconds" expires_after="2026-02-02">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The time spent executing net::NoVarySearchCache::Lookup(). This is recorded
-    once for every call to the function {Variant}.
+    once for every call to the function {HitOrMiss}. {MainFrameOrNot}
 
     This will be used to evaluate the need for optimization.
 
     The histogram is not reported on Windows machines without high resolution
     clocks.
   </summary>
-  <token key="Variant">
+  <token key="HitOrMiss">
     <variant name="" summary="so approximately once for every HTTP(S) request"/>
     <variant name=".Hit" summary="that finds a match"/>
     <variant name=".Miss" summary="that doesn't find a match"/>
+  </token>
+  <token key="MainFrameOrNot">
+    <variant name="" summary=""/>
+    <variant name=".MainFrame"
+        summary="Only logged for main frame navigations."/>
   </token>
 </histogram>
 

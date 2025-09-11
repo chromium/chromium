@@ -4177,18 +4177,32 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   std::optional<NoVarySearchCache::LookupResult> maybe_result =
       cache_->no_vary_search_cache_->Lookup(*request_);
   const auto elapsed = base::Time::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("HttpCache.NoVarySearch.LookupTime",
-                                          elapsed, base::Microseconds(1),
-                                          base::Seconds(1), 50);
+
+  // There are six similar histograms, so use macros to minimise copy-and-paste
+  // errors.
+
+#define UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(full_suffix)           \
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                      \
+      "HttpCache.NoVarySearch.LookupTime" full_suffix, elapsed, \
+      base::Microseconds(1), base::Seconds(1), 50)
+
+#define UMA_HISTOGRAM_LOOKUP_TIME(suffix)                   \
+  if (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED) { \
+    UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(suffix ".MainFrame");  \
+  }                                                         \
+  UMA_HISTOGRAM_LOOKUP_TIME_SINGLE(suffix)
+
+  UMA_HISTOGRAM_LOOKUP_TIME("");
+
   if (!maybe_result) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "HttpCache.NoVarySearch.LookupTime.Miss", elapsed,
-        base::Microseconds(1), base::Seconds(1), 50);
+    UMA_HISTOGRAM_LOOKUP_TIME(".Miss");
     return NoVarySearchUseResult::kNoMatch;
   }
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "HttpCache.NoVarySearch.LookupTime.Hit", elapsed, base::Microseconds(1),
-      base::Seconds(1), 50);
+  UMA_HISTOGRAM_LOOKUP_TIME(".Hit");
+
+#undef UMA_HISTOGRAM_LOOKUP_TIME
+#undef UMA_HISTOGRAM_LOOKUP_TIME_SINGLE
+
   if (maybe_result->original_url == request_->url) {
     return NoVarySearchUseResult::kURLUnchanged;
   }
