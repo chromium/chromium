@@ -968,7 +968,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD" desc="In Title Case: The name of the open a link in Incognito window command">
             Open Link in Inco&amp;gnito Window
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="The name of the open a link in split view command">
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="In Title Case: The name of the open a link in split view command">
             Open Link in Split View
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKINPROFILES" desc="In Title Case: The name of the open a link as a different user context menu">
