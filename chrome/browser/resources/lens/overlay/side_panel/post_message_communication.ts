@@ -90,10 +90,6 @@ export class PostMessageReceiver {
   }
 
   private onMessageReceived(event: MessageEvent) {
-    // Only handle messages if the AIM searchbox is enabled.
-    if (!this.isAimSearchboxEnabled) {
-      return;
-    }
     // Only handle messages from the results frame.
     if (event.origin !== this.resultsSearchUrl.origin) {
       return;
@@ -116,6 +112,10 @@ export class PostMessageReceiver {
   }
 
   private onAimMessage(message: Uint8Array) {
+    // Only handle messages if the AIM searchbox is enabled.
+    if (!this.isAimSearchboxEnabled) {
+      return;
+    }
     // Pass the message to the browser to handle. Array.from is used to convert
     // the Uint8Array to a normal number JS array which mojo expects.
     this.sidePanelProxy.handler.onAimMessage(Array.from(message));
