@@ -11,4 +11,5 @@ found in the LICENSE file.
   <dimen name="bookmarks_bar_popup_max_width">400dp</dimen>
   <dimen name="bookmarks_bar_popup_margin">48dp</dimen>
   <dimen name="bookmarks_bar_popup_min_height">182dp</dimen>
+  <dimen name="bookmarks_bar_item_ripple_radius">16dp</dimen>
 </resources>
