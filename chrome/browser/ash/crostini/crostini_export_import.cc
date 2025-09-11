@@ -429,7 +429,9 @@ void CrostiniExportImport::AfterDiskImageOperation(
     CrostiniResult result) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to update";
+    LOG(WARNING) << container_id << " has no status_tracker to update";
+    std::move(callback).Run(result);
+    return;
   }
 
   if (result == CrostiniResult::SUCCESS) {
