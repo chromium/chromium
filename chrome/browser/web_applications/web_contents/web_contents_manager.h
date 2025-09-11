@@ -31,10 +31,14 @@ class WebContentsManager {
   WebContentsManager();
   virtual ~WebContentsManager();
 
+  // Creates a `WebAppUrlLoader` to load URLs in a `WebContents`.
   virtual std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader();
 
+  // Creates a `WebAppDataRetriever` to retrieve information about a web app
+  // from a `WebContents`.
   virtual std::unique_ptr<WebAppDataRetriever> CreateDataRetriever();
 
+  // Creates a `WebAppIconDownloader` to download icons for a web app.
   virtual std::unique_ptr<WebAppIconDownloader> CreateIconDownloader();
 
   base::WeakPtr<WebContentsManager> GetWeakPtr();

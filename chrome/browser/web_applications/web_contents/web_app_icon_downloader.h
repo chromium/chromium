@@ -34,8 +34,9 @@ struct IconDownloaderOptions {
   bool fail_all_if_any_fail = false;
 };
 
-// Class to help download all icons (including favicons and web app manifest
-// icons) for a tab.
+// Downloads icons from a `WebContents`. This can download any icons specified
+// in the `Start()` method, and can also be configured to download the page's
+// favicons.
 class WebAppIconDownloader : public content::WebContentsObserver {
  public:
   using WebAppIconDownloaderCallback =
@@ -52,11 +53,13 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
   ~WebAppIconDownloader() override;
 
-  // |extra_icon_urls_with_sizes| allows callers to provide icon urls that
-  // aren't provided by the renderer (e.g touch icons on non-android
-  // environments).
+  // Starts the icon downloads.
+  // `extra_icon_urls` allows callers to provide icon URLs that aren't icons on
+  // the web contents (e.g. this allows adding icons from the web app manifest).
+  // If `options.download_page_favicons` is true, the page's favicons will also
+  // be downloaded.
   virtual void Start(content::WebContents* web_contents,
-                     const IconUrlSizeSet& extra_icon_urls_with_sizes,
+                     const IconUrlSizeSet& extra_icon_urls,
                      WebAppIconDownloaderCallback callback,
                      IconDownloaderOptions options = IconDownloaderOptions());
 

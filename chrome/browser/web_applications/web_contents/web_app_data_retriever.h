@@ -81,10 +81,12 @@ class WebAppDataRetriever : content::WebContentsObserver {
       CheckInstallabilityCallback callback,
       std::optional<webapps::InstallableParams> params = std::nullopt);
 
-  // Downloads icons from |icon_urls|. Runs |callback| with a map of
-  // the retrieved icons.
+  // Downloads icons specified in `icon_urls` and, if `download_page_favicons`
+  // is true, the page's favicons. Runs `callback` with the icon data,
+  // which includes the url for each icon and http results for each url
+  // fetched.
   virtual void GetIcons(content::WebContents* web_contents,
-                        const IconUrlSizeSet& extra_favicon_urls,
+                        const IconUrlSizeSet& icon_urls,
                         bool download_page_favicons,
                         bool fail_all_if_any_fail,
                         GetIconsCallback callback);

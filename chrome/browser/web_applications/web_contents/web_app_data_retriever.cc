@@ -185,7 +185,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
-                                   const IconUrlSizeSet& extra_icon_urls,
+                                   const IconUrlSizeSet& icon_urls,
                                    bool download_page_favicons,
                                    bool fail_all_if_any_fail,
                                    GetIconsCallback callback) {
@@ -210,7 +210,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
       .fail_all_if_any_fail = fail_all_if_any_fail};
   icon_downloader_ = std::make_unique<WebAppIconDownloader>();
   icon_downloader_->Start(
-      web_contents, extra_icon_urls,
+      web_contents, icon_urls,
       base::BindOnce(&WebAppDataRetriever::OnIconsDownloaded,
                      weak_ptr_factory_.GetWeakPtr()),
       options);

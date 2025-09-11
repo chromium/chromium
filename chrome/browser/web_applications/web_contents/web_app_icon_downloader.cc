@@ -51,11 +51,10 @@ bool WebContentsShuttingDown(content::WebContents* web_contents) {
 WebAppIconDownloader::WebAppIconDownloader() = default;
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
-void WebAppIconDownloader::Start(
-    content::WebContents* web_contents,
-    const IconUrlSizeSet& extra_icon_urls_with_sizes,
-    WebAppIconDownloaderCallback callback,
-    IconDownloaderOptions options) {
+void WebAppIconDownloader::Start(content::WebContents* web_contents,
+                                 const IconUrlSizeSet& extra_icon_urls,
+                                 WebAppIconDownloaderCallback callback,
+                                 IconDownloaderOptions options) {
   // Cannot call start more than once.
   CHECK_EQ(pending_requests(), 0ul);
   CHECK(web_contents);
@@ -92,8 +91,8 @@ void WebAppIconDownloader::Start(
   const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
   if (options_.download_page_favicons && !favicon_urls.empty()) {
-    std::vector<IconUrlWithSize> combined_icon_infos(
-        extra_icon_urls_with_sizes.begin(), extra_icon_urls_with_sizes.end());
+    std::vector<IconUrlWithSize> combined_icon_infos(extra_icon_urls.begin(),
+                                                     extra_icon_urls.end());
     combined_icon_infos.reserve(combined_icon_infos.size() +
                                 favicon_urls.size());
     for (const auto& favicon_url : favicon_urls) {
@@ -104,7 +103,7 @@ void WebAppIconDownloader::Start(
     }
     FetchIcons(IconUrlSizeSet(combined_icon_infos));
   } else {
-    FetchIcons(extra_icon_urls_with_sizes);
+    FetchIcons(extra_icon_urls);
   }
 }
 
