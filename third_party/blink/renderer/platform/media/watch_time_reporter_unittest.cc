@@ -183,36 +183,43 @@ class WatchTimeReporterTest
             case WatchTimeKey::kAudioMse:
             case WatchTimeKey::kAudioEme:
             case WatchTimeKey::kAudioSrc:
+            case WatchTimeKey::kAudioHls:
             case WatchTimeKey::kAudioEmbeddedExperience:
             case WatchTimeKey::kAudioBackgroundAll:
             case WatchTimeKey::kAudioBackgroundMse:
             case WatchTimeKey::kAudioBackgroundEme:
             case WatchTimeKey::kAudioBackgroundSrc:
+            case WatchTimeKey::kAudioBackgroundHls:
             case WatchTimeKey::kAudioBackgroundEmbeddedExperience:
             case WatchTimeKey::kAudioVideoAll:
             case WatchTimeKey::kAudioVideoMse:
             case WatchTimeKey::kAudioVideoEme:
             case WatchTimeKey::kAudioVideoSrc:
+            case WatchTimeKey::kAudioVideoHls:
             case WatchTimeKey::kAudioVideoEmbeddedExperience:
             case WatchTimeKey::kAudioVideoMutedAll:
             case WatchTimeKey::kAudioVideoMutedMse:
             case WatchTimeKey::kAudioVideoMutedEme:
             case WatchTimeKey::kAudioVideoMutedSrc:
+            case WatchTimeKey::kAudioVideoMutedHls:
             case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:
             case WatchTimeKey::kAudioVideoBackgroundAll:
             case WatchTimeKey::kAudioVideoBackgroundMse:
             case WatchTimeKey::kAudioVideoBackgroundEme:
             case WatchTimeKey::kAudioVideoBackgroundSrc:
+            case WatchTimeKey::kAudioVideoBackgroundHls:
             case WatchTimeKey::kAudioVideoBackgroundEmbeddedExperience:
             case WatchTimeKey::kVideoAll:
             case WatchTimeKey::kVideoMse:
             case WatchTimeKey::kVideoEme:
             case WatchTimeKey::kVideoSrc:
+            case WatchTimeKey::kVideoHls:
             case WatchTimeKey::kVideoEmbeddedExperience:
             case WatchTimeKey::kVideoBackgroundAll:
             case WatchTimeKey::kVideoBackgroundMse:
             case WatchTimeKey::kVideoBackgroundEme:
             case WatchTimeKey::kVideoBackgroundSrc:
+            case WatchTimeKey::kVideoBackgroundHls:
             case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
             case WatchTimeKey::kAudioVideoMediaFoundationAll:
             case WatchTimeKey::kAudioVideoMediaFoundationEme:
@@ -350,8 +357,10 @@ class WatchTimeReporterTest
 
     wtr_ = std::make_unique<WatchTimeReporter>(
         media::mojom::blink::PlaybackProperties::New(
-            has_audio_, has_video_, false, false, is_mse, is_encrypted, false,
-            media::mojom::blink::MediaStreamType::kNone, renderer_type),
+            has_audio_, has_video_, false, false, is_encrypted, false,
+            media::mojom::blink::MediaStreamType::kNone, renderer_type,
+            is_mse ? media::DemuxerType::kChunkDemuxer
+                   : media::DemuxerType::kFFmpegDemuxer),
         initial_video_size,
         blink::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
                              Unretained(this)),

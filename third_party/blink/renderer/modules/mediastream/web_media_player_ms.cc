@@ -1532,9 +1532,9 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::blink::PlaybackProperties::New(
           HasAudio(), HasVideo(), false /*is_background*/, false /*is_muted*/,
-          false /*is_mse*/, false /*is_eme*/,
-          false /*is_embedded_media_experience*/, *media_stream_type,
-          media::RendererType::kRendererImpl),
+          false /*is_eme*/, false /*is_embedded_media_experience*/,
+          *media_stream_type, media::RendererType::kRendererImpl,
+          media::DemuxerType::kUnknownDemuxer),
       NaturalSize(),
       blink::BindRepeating(&WebMediaPlayerMS::GetCurrentTimeInterval,
                            Unretained(this)),

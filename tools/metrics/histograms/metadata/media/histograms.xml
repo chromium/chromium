@@ -109,12 +109,16 @@ chromium-metrics-reviews@google.com.
 <variants name="MediaRebufferingCategories">
   <variant name=".Audio.EME"
       summary="Metric for EME media with an audio track."/>
+  <variant name=".Audio.HLS"
+      summary="Metric for HLS media with an audio track."/>
   <variant name=".Audio.MSE"
       summary="Metric for MSE media with an audio track."/>
   <variant name=".Audio.SRC"
       summary="Metric for SRC media with an audio track."/>
   <variant name=".AudioVideo.EME"
       summary="Metric for EME media with both an audio and video track."/>
+  <variant name=".AudioVideo.HLS"
+      summary="Metric for HLS media with both an audio and video track."/>
   <variant name=".AudioVideo.MSE"
       summary="Metric for MSE media with both an audio and video track."/>
   <variant name=".AudioVideo.SRC"
@@ -7607,6 +7611,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".Audio.Background.EME"
         summary="Background watch time for EME media with only an audio
                  track."/>
+    <variant name=".Audio.Background.HLS"
+        summary="Background watch time for HLS media with only an audio
+                 track."/>
     <variant name=".Audio.Background.MSE"
         summary="Background watch time for MSE media with only an audio
                  track."/>
@@ -7619,6 +7626,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".Audio.Discarded.EME"
         summary="Watch time less than 7 seconds for EME media with only an
                  audio track."/>
+    <variant name=".Audio.Discarded.HLS"
+        summary="Watch time less than 7 seconds for HLS media with only an
+                 audio track."/>
     <variant name=".Audio.Discarded.MSE"
         summary="Watch time less than 7 seconds for MSE media with only an
                  audio track."/>
@@ -7630,6 +7640,8 @@ chromium-metrics-reviews@google.com.
                  audio track."/>
     <variant name=".Audio.EME"
         summary="Watch time for EME media with only an audio track."/>
+    <variant name=".Audio.HLS"
+        summary="Watch time for HLS media with only an audio track."/>
     <variant name=".Audio.MSE"
         summary="Watch time for MSE media with only an audio track."/>
     <variant name=".Audio.NativeControlsOff"
@@ -7664,6 +7676,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".AudioVideo.Background.EME"
         summary="Background watch time for EME media with both an audio and
                  video track."/>
+    <variant name=".AudioVideo.Background.HLS"
+        summary="Background watch time for HLS media with both an audio and
+                 video track."/>
     <variant name=".AudioVideo.Background.MSE"
         summary="Background watch time for MSE media with both an audio and
                  video track."/>
@@ -7676,6 +7691,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".AudioVideo.Discarded.EME"
         summary="Watch time less than 7 seconds for EME media with only with
                  both an audio and video track."/>
+    <variant name=".AudioVideo.Discarded.HLS"
+        summary="Watch time less than 7 seconds for HLS media with with both
+                 an audio and video track."/>
     <variant name=".AudioVideo.Discarded.MSE"
         summary="Watch time less than 7 seconds for MSE media with only with
                  both an audio and video track."/>
@@ -7696,6 +7714,8 @@ chromium-metrics-reviews@google.com.
                  audio and video track."/>
     <variant name=".AudioVideo.EME"
         summary="Watch time for EME media with both an audio and video track."/>
+    <variant name=".AudioVideo.HLS"
+        summary="Watch time for HLS media with both an audio and video track."/>
     <variant name=".AudioVideo.MediaFoundation.All"
         summary="MediaFoundations renderer watch time for all media with both
                  an audio and video track."/>
@@ -7709,6 +7729,9 @@ chromium-metrics-reviews@google.com.
                  track."/>
     <variant name=".AudioVideo.Muted.EME"
         summary="Muted watch time for EME media with both an audio and video
+                 track."/>
+    <variant name=".AudioVideo.Muted.HLS"
+        summary="Muted watch time for HLS media with both an audio and video
                  track."/>
     <variant name=".AudioVideo.Muted.MSE"
         summary="Muted watch time for MSE media with both an audio and video

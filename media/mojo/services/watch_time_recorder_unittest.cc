@@ -42,23 +42,28 @@ class WatchTimeRecorderTest : public testing::Test {
   WatchTimeRecorderTest()
       : computation_keys_(
             {WatchTimeKey::kAudioSrc, WatchTimeKey::kAudioMse,
-             WatchTimeKey::kAudioEme, WatchTimeKey::kAudioVideoSrc,
-             WatchTimeKey::kAudioVideoMse, WatchTimeKey::kAudioVideoEme}),
+             WatchTimeKey::kAudioEme, WatchTimeKey::kAudioHls,
+             WatchTimeKey::kAudioVideoSrc, WatchTimeKey::kAudioVideoMse,
+             WatchTimeKey::kAudioVideoEme, WatchTimeKey::kAudioVideoHls}),
         mtbr_keys_({kMeanTimeBetweenRebuffersAudioSrc,
                     kMeanTimeBetweenRebuffersAudioMse,
                     kMeanTimeBetweenRebuffersAudioEme,
+                    kMeanTimeBetweenRebuffersAudioHls,
                     kMeanTimeBetweenRebuffersAudioVideoSrc,
                     kMeanTimeBetweenRebuffersAudioVideoMse,
-                    kMeanTimeBetweenRebuffersAudioVideoEme}),
-        smooth_keys_({kRebuffersCountAudioSrc, kRebuffersCountAudioMse,
-                      kRebuffersCountAudioEme, kRebuffersCountAudioVideoSrc,
-                      kRebuffersCountAudioVideoMse,
-                      kRebuffersCountAudioVideoEme}),
+                    kMeanTimeBetweenRebuffersAudioVideoEme,
+                    kMeanTimeBetweenRebuffersAudioVideoHls}),
+        smooth_keys_(
+            {kRebuffersCountAudioSrc, kRebuffersCountAudioMse,
+             kRebuffersCountAudioEme, kRebuffersCountAudioHls,
+             kRebuffersCountAudioVideoSrc, kRebuffersCountAudioVideoMse,
+             kRebuffersCountAudioVideoEme, kRebuffersCountAudioVideoHls}),
         discard_keys_({kDiscardedWatchTimeAudioSrc, kDiscardedWatchTimeAudioMse,
-                       kDiscardedWatchTimeAudioEme,
+                       kDiscardedWatchTimeAudioEme, kDiscardedWatchTimeAudioHls,
                        kDiscardedWatchTimeAudioVideoSrc,
                        kDiscardedWatchTimeAudioVideoMse,
-                       kDiscardedWatchTimeAudioVideoEme}) {
+                       kDiscardedWatchTimeAudioVideoEme,
+                       kDiscardedWatchTimeAudioVideoHls}) {
     source_id_ = test_recorder_->GetNewSourceID();
     ResetMetricRecorders();
     MediaMetricsProvider::Create(
@@ -78,9 +83,10 @@ class WatchTimeRecorderTest : public testing::Test {
   ~WatchTimeRecorderTest() override { base::RunLoop().RunUntilIdle(); }
 
   void Initialize(mojom::PlaybackPropertiesPtr properties) {
-    provider_->Initialize(properties->is_mse,
-                          properties->is_mse ? mojom::MediaURLScheme::kUnknown
-                                             : mojom::MediaURLScheme::kHttp,
+    provider_->Initialize(IsMsePlayback(properties),
+                          IsMsePlayback(properties)
+                              ? mojom::MediaURLScheme::kUnknown
+                              : mojom::MediaURLScheme::kHttp,
                           properties->media_stream_type);
     provider_->AcquireWatchTimeRecorder(std::move(properties),
                                         wtr_.BindNewPipeAndPassReceiver());
@@ -89,17 +95,18 @@ class WatchTimeRecorderTest : public testing::Test {
   void Initialize(
       bool has_audio,
       bool has_video,
-      bool is_mse,
       bool is_encrypted,
+      DemuxerType demuxer_type,
       mojom::MediaStreamType media_stream_type = mojom::MediaStreamType::kNone,
       RendererType renderer_type = RendererType::kRendererImpl) {
     Initialize(mojom::PlaybackProperties::New(
-        has_audio, has_video, false, false, is_mse, is_encrypted, false,
-        media_stream_type, renderer_type));
+        has_audio, has_video, false, false, is_encrypted, false,
+        media_stream_type, renderer_type, demuxer_type));
   }
 
   void ExpectWatchTime(const std::vector<std::string_view>& keys,
-                       base::TimeDelta value) {
+                       base::TimeDelta value,
+                       const base::Location& location = FROM_HERE) {
     for (int i = 0; i <= static_cast<int>(WatchTimeKey::kWatchTimeKeyMax);
          ++i) {
       const std::string_view test_key =
@@ -110,7 +117,7 @@ class WatchTimeRecorderTest : public testing::Test {
         histogram_tester_->ExpectUniqueSample(test_key, value.InMilliseconds(),
                                               1);
       } else {
-        histogram_tester_->ExpectTotalCount(test_key, 0);
+        histogram_tester_->ExpectTotalCount(test_key, 0, location);
       }
     }
   }
@@ -144,6 +151,10 @@ class WatchTimeRecorderTest : public testing::Test {
         "Media.AudioCodecProfile.AAC";
     histogram_tester_->ExpectUniqueSample(kAudioCodecProfileHistogram,
                                           static_cast<int64_t>(profile), 1);
+  }
+
+  bool IsMsePlayback(const mojom::PlaybackPropertiesPtr& properties) {
+    return properties->demuxer_type == DemuxerType::kChunkDemuxer;
   }
 
   void ExpectNoUkmWatchTime() {
@@ -214,7 +225,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
 
     // Values for |is_background| and |is_muted| don't matter in this test since
     // they don't prevent the muted or background keys from being recorded.
-    Initialize(true, false, true, true);
+    Initialize(true, false, true, DemuxerType::kChunkDemuxer);
     wtr_->UpdateSecondaryProperties(CreateSecondaryProperties());
 
     wtr_->RecordWatchTime(WatchTimeKey::kWatchTimeKeyMax, kWatchTime1);
@@ -263,30 +274,37 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
       case WatchTimeKey::kAudioMse:
       case WatchTimeKey::kAudioEme:
       case WatchTimeKey::kAudioSrc:
+      case WatchTimeKey::kAudioHls:
       case WatchTimeKey::kAudioEmbeddedExperience:
       case WatchTimeKey::kAudioBackgroundMse:
       case WatchTimeKey::kAudioBackgroundEme:
       case WatchTimeKey::kAudioBackgroundSrc:
+      case WatchTimeKey::kAudioBackgroundHls:
       case WatchTimeKey::kAudioBackgroundEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMse:
       case WatchTimeKey::kAudioVideoEme:
       case WatchTimeKey::kAudioVideoSrc:
+      case WatchTimeKey::kAudioVideoHls:
       case WatchTimeKey::kAudioVideoEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMutedMse:
       case WatchTimeKey::kAudioVideoMutedEme:
       case WatchTimeKey::kAudioVideoMutedSrc:
+      case WatchTimeKey::kAudioVideoMutedHls:
       case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:
       case WatchTimeKey::kAudioVideoBackgroundMse:
       case WatchTimeKey::kAudioVideoBackgroundEme:
       case WatchTimeKey::kAudioVideoBackgroundSrc:
+      case WatchTimeKey::kAudioVideoBackgroundHls:
       case WatchTimeKey::kAudioVideoBackgroundEmbeddedExperience:
       case WatchTimeKey::kVideoMse:
       case WatchTimeKey::kVideoEme:
       case WatchTimeKey::kVideoSrc:
+      case WatchTimeKey::kVideoHls:
       case WatchTimeKey::kVideoEmbeddedExperience:
       case WatchTimeKey::kVideoBackgroundMse:
       case WatchTimeKey::kVideoBackgroundEme:
       case WatchTimeKey::kVideoBackgroundSrc:
+      case WatchTimeKey::kVideoBackgroundHls:
       case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMediaFoundationAll:
       case WatchTimeKey::kAudioVideoMediaFoundationEme:
@@ -375,7 +393,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
 
     // Values for |is_background| and |is_muted| don't matter in this test since
     // they don't prevent the muted or background keys from being recorded.
-    Initialize(true, false, true, true,
+    Initialize(true, false, true, DemuxerType::kChunkDemuxer,
                mojom::MediaStreamType::kLocalDeviceCapture);
     wtr_->UpdateSecondaryProperties(CreateSecondaryProperties());
 
@@ -424,30 +442,37 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
       case WatchTimeKey::kAudioMse:
       case WatchTimeKey::kAudioEme:
       case WatchTimeKey::kAudioSrc:
+      case WatchTimeKey::kAudioHls:
       case WatchTimeKey::kAudioEmbeddedExperience:
       case WatchTimeKey::kAudioBackgroundMse:
       case WatchTimeKey::kAudioBackgroundEme:
       case WatchTimeKey::kAudioBackgroundSrc:
+      case WatchTimeKey::kAudioBackgroundHls:
       case WatchTimeKey::kAudioBackgroundEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMse:
       case WatchTimeKey::kAudioVideoEme:
       case WatchTimeKey::kAudioVideoSrc:
+      case WatchTimeKey::kAudioVideoHls:
       case WatchTimeKey::kAudioVideoEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMutedMse:
       case WatchTimeKey::kAudioVideoMutedEme:
       case WatchTimeKey::kAudioVideoMutedSrc:
+      case WatchTimeKey::kAudioVideoMutedHls:
       case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:
       case WatchTimeKey::kAudioVideoBackgroundMse:
       case WatchTimeKey::kAudioVideoBackgroundEme:
       case WatchTimeKey::kAudioVideoBackgroundSrc:
+      case WatchTimeKey::kAudioVideoBackgroundHls:
       case WatchTimeKey::kAudioVideoBackgroundEmbeddedExperience:
       case WatchTimeKey::kVideoMse:
       case WatchTimeKey::kVideoEme:
       case WatchTimeKey::kVideoSrc:
+      case WatchTimeKey::kVideoHls:
       case WatchTimeKey::kVideoEmbeddedExperience:
       case WatchTimeKey::kVideoBackgroundMse:
       case WatchTimeKey::kVideoBackgroundEme:
       case WatchTimeKey::kVideoBackgroundSrc:
+      case WatchTimeKey::kVideoBackgroundHls:
       case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
       case WatchTimeKey::kAudioVideoMediaFoundationAll:
       case WatchTimeKey::kAudioVideoMediaFoundationEme:
@@ -524,7 +549,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
 }
 
 TEST_F(WatchTimeRecorderTest, TestRebufferingMetrics) {
-  Initialize(true, false, true, true);
+  Initialize(true, false, true, DemuxerType::kChunkDemuxer);
 
   constexpr base::TimeDelta kWatchTime = base::Seconds(50);
   for (auto key : computation_keys_)
@@ -567,7 +592,7 @@ TEST_F(WatchTimeRecorderTest, TestRebufferingMetrics) {
 }
 
 TEST_F(WatchTimeRecorderTest, TestRebufferingMetricsMediaStream) {
-  Initialize(true, false, true, true,
+  Initialize(true, false, true, DemuxerType::kChunkDemuxer,
              mojom::MediaStreamType::kLocalDeviceCapture);
 
   constexpr base::TimeDelta kWatchTime = base::Seconds(50);
@@ -595,7 +620,7 @@ TEST_F(WatchTimeRecorderTest, TestRebufferingMetricsMediaStream) {
 }
 
 TEST_F(WatchTimeRecorderTest, TestDiscardMetrics) {
-  Initialize(true, false, true, true);
+  Initialize(true, false, true, DemuxerType::kChunkDemuxer);
   wtr_->UpdateSecondaryProperties(CreateSecondaryProperties());
 
   constexpr base::TimeDelta kWatchTime = base::Seconds(5);
@@ -620,7 +645,7 @@ TEST_F(WatchTimeRecorderTest, TestDiscardMetrics) {
 }
 
 TEST_F(WatchTimeRecorderTest, TestDiscardMetricsMediaStream) {
-  Initialize(true, false, true, true,
+  Initialize(true, false, true, DemuxerType::kChunkDemuxer,
              mojom::MediaStreamType::kLocalDeviceCapture);
   wtr_->UpdateSecondaryProperties(CreateSecondaryProperties());
 
@@ -651,8 +676,8 @@ TEST_F(WatchTimeRecorderTest, TestDiscardMetricsMediaStream) {
 
 TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -706,7 +731,7 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -737,8 +762,8 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
 
 TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -789,7 +814,7 @@ TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -820,8 +845,8 @@ TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
 
 TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kAAC, VideoCodec::kH264, AudioCodecProfile::kXHE_AAC,
@@ -864,7 +889,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -894,8 +919,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
 
 TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kOpus, VideoCodec::kVP9, AudioCodecProfile::kUnknown,
@@ -993,7 +1018,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_ERROR_DECODE);
@@ -1013,8 +1038,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
 
 TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, true, true, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, true, true, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1055,7 +1080,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -1086,8 +1111,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
 
 TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1126,7 +1151,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -1159,8 +1184,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
 
 TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDurationInfinite) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1199,7 +1224,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDurationInfinite) {
         UkmEntry::kVideoEncryptionSchemeName,
         static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -1243,8 +1268,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmMediaStreamType) {
 
   for (const auto& media_stream_type : media_stream_types) {
     mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-        true, true, false, false, false, false, false, media_stream_type,
-        RendererType::kRendererImpl);
+        true, true, false, false, false, false, media_stream_type,
+        RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
     Initialize(properties.Clone());
     wtr_->UpdateSecondaryProperties(CreateSecondaryProperties());
 
@@ -1269,8 +1294,8 @@ TEST_F(WatchTimeRecorderTest, BasicUkmMediaStreamType) {
 // Might happen due to timing issues, so ensure no crashes.
 TEST_F(WatchTimeRecorderTest, NoSecondaryProperties) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   Initialize(properties.Clone());
 
   constexpr base::TimeDelta kWatchTime = base::Seconds(54);
@@ -1283,8 +1308,8 @@ TEST_F(WatchTimeRecorderTest, NoSecondaryProperties) {
 
 TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kUnknown, VideoCodec::kUnknown,
@@ -1320,7 +1345,7 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kAutoplayInitiatedName, false);
@@ -1357,8 +1382,8 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
 
 TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kOpus, VideoCodec::kVP9, AudioCodecProfile::kUnknown,
@@ -1416,7 +1441,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kAutoplayInitiatedName, false);
@@ -1494,8 +1519,8 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
 
 TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kOpus, VideoCodec::kVP9, AudioCodecProfile::kUnknown,
@@ -1540,7 +1565,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kAutoplayInitiatedName, false);
@@ -1613,8 +1638,8 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
 
 TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kOpus, VideoCodec::kVP9, AudioCodecProfile::kUnknown,
@@ -1667,7 +1692,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kAutoplayInitiatedName, false);
@@ -1744,8 +1769,8 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
 
 TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesRebufferCarryover) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, true, true, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, true, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kChunkDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           AudioCodec::kOpus, VideoCodec::kVP9, AudioCodecProfile::kUnknown,
@@ -1802,7 +1827,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesRebufferCarryover) {
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
-    EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
+    EXPECT_UKM(UkmEntry::kIsMSEName, IsMsePlayback(properties));
     EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                static_cast<int64_t>(properties->media_stream_type));
     EXPECT_UKM(UkmEntry::kAutoplayInitiatedName, false);
@@ -1876,8 +1901,8 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesRebufferCarryover) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudioAndVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1916,8 +1941,8 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudioAndVideo) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedkAudioAndVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1956,8 +1981,8 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedkAudioAndVideo) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudio) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, false, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, false, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -1992,8 +2017,8 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudio) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedAudio) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, false, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, false, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -2028,8 +2053,8 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedAudio) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonUnknownAudioAndVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -2065,8 +2090,9 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonUnknownAudioAndVideo) {
 
 TEST_F(WatchTimeRecorderTest, AutoPipReasonVideoConferencingAudioAndVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kLocalDeviceCapture, RendererType::kRendererImpl);
+      true, true, false, false, false, false,
+      mojom::MediaStreamType::kLocalDeviceCapture, RendererType::kRendererImpl,
+      DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -2100,8 +2126,8 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonVideoConferencingAudioAndVideo) {
 TEST_F(WatchTimeRecorderTest,
        AutoPipReasonMediaPlaybackAudioAndVideoSingleFinalize) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());
@@ -2159,8 +2185,8 @@ TEST_F(WatchTimeRecorderTest,
 TEST_F(WatchTimeRecorderTest,
        AutoPipReasonMediaPlaybackAudioAndVideoMultipleFinalize) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
-      true, true, false, false, false, false, false,
-      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+      true, true, false, false, false, false, mojom::MediaStreamType::kNone,
+      RendererType::kRendererImpl, DemuxerType::kFFmpegDemuxer);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
       CreateSecondaryProperties();
   Initialize(properties.Clone());

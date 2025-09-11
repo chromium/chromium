@@ -3487,13 +3487,23 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   if (!HasVideo() && !HasAudio())
     return;
 
+  // Only the unit tests don't set a demuxer.
+  media::DemuxerType demuxer_type =
+      GetDemuxerType().value_or(media::DemuxerType::kMockDemuxer);
+
   // Create the watch time reporter and synchronize its initial state.
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::blink::PlaybackProperties::New(
-          pipeline_metadata_.has_audio, pipeline_metadata_.has_video, false,
-          false, GetDemuxerType() == media::DemuxerType::kChunkDemuxer,
-          is_encrypted_, embedded_media_experience_enabled_,
-          media::mojom::blink::MediaStreamType::kNone, renderer_type_),
+          /*has_audio=*/pipeline_metadata_.has_audio,
+          /*has_video=*/pipeline_metadata_.has_video,
+          /*is_background=*/false,
+          /*is_muted=*/false,
+          /*is_eme=*/is_encrypted_,
+          /*is_embedded_media_experience=*/
+          embedded_media_experience_enabled_,
+          /*media_stream_type=*/media::mojom::blink::MediaStreamType::kNone,
+          /*renderer_type=*/renderer_type_,
+          /*demuxer_type=*/demuxer_type),
       pipeline_metadata_.natural_size,
       blink::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                            Unretained(this)),

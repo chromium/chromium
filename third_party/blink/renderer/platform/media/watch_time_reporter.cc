@@ -612,10 +612,23 @@ WatchTimeReporter::CreateBaseComponent() {
     }
   }
 
-  if (properties_->is_mse)
-    keys_to_finalize.emplace_back(NORMAL_KEY(Mse));
-  else
-    keys_to_finalize.emplace_back(NORMAL_KEY(Src));
+  switch (properties_->demuxer_type) {
+    case media::DemuxerType::kMockDemuxer:
+    case media::DemuxerType::kUnknownDemuxer:
+      // Testing demuxers, do nothing.
+      break;
+    case media::DemuxerType::kChunkDemuxer:
+      keys_to_finalize.emplace_back(NORMAL_KEY(Mse));
+      break;
+    case media::DemuxerType::kFFmpegDemuxer:
+    case media::DemuxerType::kFrameInjectingDemuxer:
+    case media::DemuxerType::kStreamProviderDemuxer:
+      keys_to_finalize.emplace_back(NORMAL_KEY(Src));
+      break;
+    case media::DemuxerType::kManifestDemuxer:
+      keys_to_finalize.emplace_back(NORMAL_KEY(Hls));
+      break;
+  }
 
   if (properties_->is_eme)
     keys_to_finalize.emplace_back(NORMAL_KEY(Eme));

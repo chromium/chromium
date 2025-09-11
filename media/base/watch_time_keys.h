@@ -17,6 +17,7 @@ enum class WatchTimeKey : int {
   kAudioMse,
   kAudioEme,
   kAudioSrc,
+  kAudioHls,
   kAudioBattery,
   kAudioAc,
   kAudioEmbeddedExperience,
@@ -26,6 +27,7 @@ enum class WatchTimeKey : int {
   kAudioBackgroundMse,
   kAudioBackgroundEme,
   kAudioBackgroundSrc,
+  kAudioBackgroundHls,
   kAudioBackgroundBattery,
   kAudioBackgroundAc,
   kAudioBackgroundEmbeddedExperience,
@@ -37,6 +39,7 @@ enum class WatchTimeKey : int {
   kAudioVideoMse,
   kAudioVideoEme,
   kAudioVideoSrc,
+  kAudioVideoHls,
   kAudioVideoBattery,
   kAudioVideoAc,
   kAudioVideoDisplayFullscreen,
@@ -49,6 +52,7 @@ enum class WatchTimeKey : int {
   kAudioVideoBackgroundMse,
   kAudioVideoBackgroundEme,
   kAudioVideoBackgroundSrc,
+  kAudioVideoBackgroundHls,
   kAudioVideoBackgroundBattery,
   kAudioVideoBackgroundAc,
   kAudioVideoBackgroundEmbeddedExperience,
@@ -56,6 +60,7 @@ enum class WatchTimeKey : int {
   kAudioVideoMutedMse,
   kAudioVideoMutedEme,
   kAudioVideoMutedSrc,
+  kAudioVideoMutedHls,
   kAudioVideoMutedBattery,
   kAudioVideoMutedAc,
   kAudioVideoMutedEmbeddedExperience,
@@ -70,6 +75,7 @@ enum class WatchTimeKey : int {
   kVideoMse,
   kVideoEme,
   kVideoSrc,
+  kVideoHls,
   kVideoBattery,
   kVideoAc,
   kVideoDisplayFullscreen,
@@ -82,6 +88,7 @@ enum class WatchTimeKey : int {
   kVideoBackgroundMse,
   kVideoBackgroundEme,
   kVideoBackgroundSrc,
+  kVideoBackgroundHls,
   kVideoBackgroundBattery,
   kVideoBackgroundAc,
   kVideoBackgroundEmbeddedExperience,
@@ -95,17 +102,21 @@ MEDIA_EXPORT extern const char kWatchTimeUnderflowCount[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioSrc[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioMse[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioEme[];
+MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioHls[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioVideoSrc[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioVideoMse[];
 MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioVideoEme[];
+MEDIA_EXPORT extern const char kMeanTimeBetweenRebuffersAudioVideoHls[];
 
 // Whether there were any rebuffers within a given watch time report.
 MEDIA_EXPORT extern const char kRebuffersCountAudioSrc[];
 MEDIA_EXPORT extern const char kRebuffersCountAudioMse[];
 MEDIA_EXPORT extern const char kRebuffersCountAudioEme[];
+MEDIA_EXPORT extern const char kRebuffersCountAudioHls[];
 MEDIA_EXPORT extern const char kRebuffersCountAudioVideoSrc[];
 MEDIA_EXPORT extern const char kRebuffersCountAudioVideoMse[];
 MEDIA_EXPORT extern const char kRebuffersCountAudioVideoEme[];
+MEDIA_EXPORT extern const char kRebuffersCountAudioVideoHls[];
 
 // Amount of watch time less than minimum required, which ends up not being
 // reported as part of the standard WatchTime keys. Allows estimation of an
@@ -113,9 +124,11 @@ MEDIA_EXPORT extern const char kRebuffersCountAudioVideoEme[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioSrc[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioMse[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioEme[];
+MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioHls[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioVideoSrc[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioVideoMse[];
 MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioVideoEme[];
+MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioVideoHls[];
 
 // Returns the UMA key name associated with a given WatchTimeKey or an empty
 // string if they key should not be logged to UMA.
