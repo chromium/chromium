@@ -111,6 +111,32 @@ TEST_P(PDFiumRangeTest, Backward) {
   }
 }
 
+TEST_P(PDFiumRangeTest, CreateBackwards) {
+  PDFiumPage page(engine(), 0);
+  page.MarkAvailable();
+  {
+    auto range =
+        PDFiumRange::CreateBackwards(&page, /*char_index=*/1, /*char_count=*/0);
+    EXPECT_EQ(1, range.char_index());
+    EXPECT_EQ(0, range.char_count());
+    EXPECT_EQ(u"", range.GetText());
+  }
+  {
+    auto range =
+        PDFiumRange::CreateBackwards(&page, /*char_index=*/0, /*char_count=*/2);
+    EXPECT_EQ(1, range.char_index());
+    EXPECT_EQ(-2, range.char_count());
+    EXPECT_EQ(u"He", range.GetText());
+  }
+  {
+    auto range = PDFiumRange::CreateBackwards(&page, /*char_index=*/15,
+                                              /*char_count=*/3);
+    EXPECT_EQ(17, range.char_index());
+    EXPECT_EQ(-3, range.char_count());
+    EXPECT_EQ(u"Goo", range.GetText());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumRangeTest, testing::Bool());
 
 }  // namespace chrome_pdf

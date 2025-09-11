@@ -117,6 +117,19 @@ PDFiumRange PDFiumRange::AllTextOnPage(PDFiumPage* page) {
   return PDFiumRange(page, 0, page->GetCharCount());
 }
 
+// static
+PDFiumRange PDFiumRange::CreateBackwards(PDFiumPage* page,
+                                         int char_index,
+                                         int char_count) {
+  CHECK_GE(char_count, 0);
+  PDFiumRange range(page, char_index, char_count);
+  if (char_count > 0) {
+    range.char_index_ += (char_count - 1);
+    range.char_count_ *= -1;
+  }
+  return range;
+}
+
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
     : page_unload_preventer_(page),
       page_(page),
