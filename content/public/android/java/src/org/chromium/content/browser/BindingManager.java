@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 
 import androidx.collection.ArraySet;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
@@ -205,15 +206,14 @@ class BindingManager implements ComponentCallbacks2 {
 
     private boolean isExclusiveNotPerceptibleBinding(ChildProcessConnection connection) {
         return connection != mWaivedConnection
-                && !connection.isStrongBindingBound()
-                && !connection.isVisibleBindingBound()
+                && connection.bindingStateCurrent() < ChildBindingState.VISIBLE
                 && connection.getNotPerceptibleBindingCount() == 1;
     }
 
     private boolean isExclusiveVisibleBinding(ChildProcessConnection connection) {
+        assert !ChildProcessConnection.supportNotPerceptibleBinding();
         return connection != mWaivedConnection
-                && !connection.isStrongBindingBound()
-                && !connection.isNotPerceptibleBindingBound()
+                && connection.bindingStateCurrent() <= ChildBindingState.VISIBLE
                 && connection.getVisibleBindingCount() == 1;
     }
 

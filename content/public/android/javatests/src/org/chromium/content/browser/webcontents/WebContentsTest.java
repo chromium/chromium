@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
@@ -427,7 +428,7 @@ public class WebContentsTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                            () -> !connection.isVisibleBindingBound());
+                            () -> connection.bindingStateCurrent() < ChildBindingState.VISIBLE);
                 },
                 "Failed to remove moderate binding");
 
@@ -436,7 +437,9 @@ public class WebContentsTest {
                         webContents.setPrimaryPageImportance(
                                 ChildProcessImportance.MODERATE, ChildProcessImportance.NORMAL));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isVisibleBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.VISIBLE, connection.bindingStateCurrent()));
     }
 
     @Test
@@ -456,20 +459,24 @@ public class WebContentsTest {
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isStrongBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.STRONG, connection.bindingStateCurrent()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.updateWebContentsVisibility(Visibility.HIDDEN));
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                                () -> !connection.isStrongBindingBound()),
+                                () -> connection.bindingStateCurrent() < ChildBindingState.STRONG),
                 "Failed to remove strong binding");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.updateWebContentsVisibility(Visibility.VISIBLE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isStrongBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.STRONG, connection.bindingStateCurrent()));
     }
 
     private boolean isWebContentsDestroyed(final WebContents webContents) {

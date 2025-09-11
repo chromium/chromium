@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.IChildProcessArgs;
@@ -111,7 +112,8 @@ public class ChildProcessLauncherIntegrationTest {
         @Override
         public void removeVisibleBinding() {
             super.removeVisibleBinding();
-            if (mRemovedBothVisibleAndStrongBinding == null && !isStrongBindingBound()) {
+            if (mRemovedBothVisibleAndStrongBinding == null
+                    && bindingStateCurrent() < ChildBindingState.STRONG) {
                 mRemovedBothVisibleAndStrongBinding = new RuntimeException("removeVisibleBinding");
             }
         }
@@ -119,7 +121,8 @@ public class ChildProcessLauncherIntegrationTest {
         @Override
         public void removeStrongBinding() {
             super.removeStrongBinding();
-            if (mRemovedBothVisibleAndStrongBinding == null && !isVisibleBindingBound()) {
+            if (mRemovedBothVisibleAndStrongBinding == null
+                    && bindingStateCurrent() < ChildBindingState.VISIBLE) {
                 mRemovedBothVisibleAndStrongBinding = new RuntimeException("removeStrongBinding");
             }
         }

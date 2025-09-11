@@ -9,6 +9,7 @@ import androidx.collection.ArraySet;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.BindService;
@@ -193,21 +194,31 @@ public class ChildProcessConnectionMetrics {
         }
 
         for (ChildProcessConnection connection : mConnections) {
-            if (connection.isStrongBindingBound()) {
-                strongBindingCount++;
-            } else if (connection.isVisibleBindingBound()) {
-                visibleBindingCount++;
-                if (bindingManagerHasExclusiveVisibleBinding(connection)) {
+            @ChildBindingState int bindingState = connection.bindingStateCurrent();
+            switch (bindingState) {
+                case ChildBindingState.STRONG:
+                    strongBindingCount++;
+                    break;
+                case ChildBindingState.VISIBLE:
+                    visibleBindingCount++;
+                    if (bindingManagerHasExclusiveVisibleBinding(connection)) {
+                        contentWaivedBindingCount++;
+                    } else {
+                        contentVisibleBindingCount++;
+                    }
+                    break;
+                case ChildBindingState.NOT_PERCEPTIBLE:
+                    notPerceptibleBindingCount++;
                     contentWaivedBindingCount++;
-                } else {
-                    contentVisibleBindingCount++;
-                }
-            } else if (connection.isNotPerceptibleBindingBound()) {
-                notPerceptibleBindingCount++;
-                contentWaivedBindingCount++;
-            } else {
-                waivedBindingCount++;
-                contentWaivedBindingCount++;
+                    break;
+                case ChildBindingState.WAIVED:
+                case ChildBindingState.UNBOUND:
+                    // UNBOUND shouldn't be counted as waived, but we count them for the backward
+                    // compatibility. But in practice it should happen rarely and does not matter
+                    // much even if it does.
+                    waivedBindingCount++;
+                    contentWaivedBindingCount++;
+                    break;
             }
         }
 

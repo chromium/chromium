@@ -242,8 +242,8 @@ public class ChildProcessConnectionMetricsUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.ChildProcessBinding.WaivableConnections", 0));
 
-        updateContentBinding(lowestRankingConnection, ChildBindingState.WAIVED);
-        updateContentBinding(highestRankingConnection, ChildBindingState.WAIVED);
+        removeHighPriorityBindings(lowestRankingConnection);
+        removeHighPriorityBindings(highestRankingConnection);
         mConnectionMetrics.emitMetrics();
 
         Assert.assertEquals(
@@ -306,29 +306,15 @@ public class ChildProcessConnectionMetricsUnitTest {
     }
 
     /**
-     * Change the current binding state of a mock {@code connection} to {@code contentBindingState}.
+     * Remove all strong and visible bindings from the given connection.
+     *
+     * @param connection The connection to remove bindings from.
      */
-    private void updateContentBinding(
-            ChildProcessConnection connection, @ChildBindingState int contentBindingState) {
-        final boolean needsStrongBinding = contentBindingState == ChildBindingState.STRONG;
-        final boolean hasContentStrongBinding = connection.isStrongBindingBound();
-
-        final boolean lowestRank = mRanking.size() == 1 && mRanking.get(0) == connection;
-        final boolean needsVisibleBinding = contentBindingState == ChildBindingState.VISIBLE;
-        final boolean hasContentVisibleBinding =
-                ((lowestRank || ChildProcessConnection.supportNotPerceptibleBinding())
-                                && connection.isVisibleBindingBound())
-                        || connection.getVisibleBindingCount() == 2;
-
-        if (needsStrongBinding && !hasContentStrongBinding) {
-            connection.addStrongBinding();
-        } else if (!needsStrongBinding && hasContentStrongBinding) {
+    private void removeHighPriorityBindings(ChildProcessConnection connection) {
+        if (connection.bindingStateCurrent() == ChildBindingState.STRONG) {
             connection.removeStrongBinding();
         }
-
-        if (needsVisibleBinding && !hasContentVisibleBinding) {
-            connection.addVisibleBinding();
-        } else if (!needsVisibleBinding && hasContentVisibleBinding) {
+        if (connection.bindingStateCurrent() == ChildBindingState.VISIBLE) {
             connection.removeVisibleBinding();
         }
     }

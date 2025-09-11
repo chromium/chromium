@@ -1156,11 +1156,6 @@ public class ChildProcessConnection {
         return mImportanceInGroup;
     }
 
-    public boolean isStrongBindingBound() {
-        assert isRunningOnLauncherThread();
-        return mStrongBinding.isBound();
-    }
-
     public void addStrongBinding() {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {
@@ -1189,11 +1184,6 @@ public class ChildProcessConnection {
                 updateBindingState();
             }
         }
-    }
-
-    public boolean isVisibleBindingBound() {
-        assert isRunningOnLauncherThread();
-        return mVisibleBinding.isBound();
     }
 
     public int getVisibleBindingCount() {
@@ -1229,11 +1219,6 @@ public class ChildProcessConnection {
                 updateBindingState();
             }
         }
-    }
-
-    public boolean isNotPerceptibleBindingBound() {
-        assert isRunningOnLauncherThread();
-        return mNotPerceptibleBinding != null && mNotPerceptibleBinding.isBound();
     }
 
     public int getNotPerceptibleBindingCount() {

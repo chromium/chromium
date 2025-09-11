@@ -550,7 +550,7 @@ public final class ChildProcessLauncherHelperImpl {
         if (mDroppedStrongBingingDueToBackgrounding) return;
         ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
         if (!connection.isConnected()) return;
-        if (connection.isStrongBindingBound()) {
+        if (connection.bindingStateCurrent() == ChildBindingState.STRONG) {
             connection.removeStrongBinding();
             mDroppedStrongBingingDueToBackgrounding = true;
         }

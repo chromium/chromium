@@ -227,11 +227,11 @@ public class ChildProcessConnectionTest {
     public void testStrongBinding() {
         ChildProcessConnection connection = createDefaultTestConnection();
         connection.start(/* useStrongBinding= */ true, /* serviceCallback= */ null);
-        assertTrue(connection.isStrongBindingBound());
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
 
         connection = createDefaultTestConnection();
         connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
-        assertFalse(connection.isStrongBindingBound());
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
     }
 
     @Test
@@ -265,7 +265,7 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(/* useStrongBinding= */ false, mServiceCallback);
-        Assert.assertTrue(connection.isVisibleBindingBound());
+        Assert.assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -288,7 +288,7 @@ public class ChildProcessConnectionTest {
         doReturn(false).when(mFirstServiceConnection).bindServiceConnection();
         connection.start(/* useStrongBinding= */ false, mServiceCallback);
 
-        Assert.assertFalse(connection.isVisibleBindingBound());
+        Assert.assertEquals(ChildBindingState.UNBOUND, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -848,7 +848,7 @@ public class ChildProcessConnectionTest {
         }
 
         Assert.assertTrue(boundConnectionCount >= 2);
-        Assert.assertTrue(connection.isVisibleBindingBound());
+        Assert.assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
 
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);

@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -382,16 +383,18 @@ public class ChildProcessLauncherHelperTest {
         final ChildProcessConnection connection =
                 ChildProcessLauncherTestUtils.getConnection(launcher);
 
-        Assert.assertTrue(
-                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isStrongBindingBound()));
+        Assert.assertEquals(
+                ChildBindingState.STRONG,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.bindingStateCurrent()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
         Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
-        Assert.assertFalse(
+        Assert.assertTrue(
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isStrongBindingBound()));
+                        () -> connection.bindingStateCurrent() < ChildBindingState.STRONG));
     }
 
     @Test
@@ -417,9 +420,9 @@ public class ChildProcessLauncherHelperTest {
         final ChildProcessConnection connection =
                 ChildProcessLauncherTestUtils.getConnection(launcher);
 
-        Assert.assertFalse(
+        Assert.assertTrue(
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isStrongBindingBound()));
+                        () -> connection.bindingStateCurrent() < ChildBindingState.STRONG));
     }
 
     @Test
@@ -457,17 +460,23 @@ public class ChildProcessLauncherHelperTest {
         // of a created renderer in the unittests.
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> connection.addVisibleBinding());
-        Assert.assertFalse(
-                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isNotPerceptibleBindingBound()));
+        Assert.assertEquals(
+                0,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.getNotPerceptibleBindingCount()));
         setPriorityForSpareRenderer(launcher, true);
-        Assert.assertTrue(
-                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isNotPerceptibleBindingBound()));
+        Assert.assertEquals(
+                1,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.getNotPerceptibleBindingCount()));
         setPriorityForSpareRenderer(launcher, false);
-        Assert.assertFalse(
-                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                        () -> connection.isNotPerceptibleBindingBound()));
+        Assert.assertEquals(
+                0,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.getNotPerceptibleBindingCount()));
     }
 
     private static ChildProcessLauncherHelperImpl startSandboxedChildProcess(
