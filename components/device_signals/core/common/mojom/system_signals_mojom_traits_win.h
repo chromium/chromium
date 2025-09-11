@@ -29,10 +29,6 @@ struct StructTraits<device_signals::mojom::AntiVirusSignalDataView,
     return input.display_name;
   }
 
-  static const std::string& product_id(const device_signals::AvProduct& input) {
-    return input.product_id;
-  }
-
   static device_signals::AvProductState state(
       const device_signals::AvProduct& input) {
     return input.state;

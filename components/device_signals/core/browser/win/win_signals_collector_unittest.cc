@@ -184,7 +184,7 @@ TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {
 
   std::vector<AvProduct> av_products;
   for (const auto& state : test_case.av_product_states) {
-    av_products.push_back({"AV Product Name", state, "some product id"});
+    av_products.push_back({"AV Product Name", state});
   }
 
   EXPECT_CALL(service_host_, GetService()).Times(1);

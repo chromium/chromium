@@ -1621,7 +1621,6 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   device_signals::AvProduct fake_av_product;
   fake_av_product.display_name = "Fake display name";
   fake_av_product.state = device_signals::AvProductState::kOff;
-  fake_av_product.product_id = "fake product id";
 
   device_signals::AntiVirusSignalResponse av_response;
   av_response.av_products.push_back(fake_av_product);
@@ -1650,7 +1649,6 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   EXPECT_EQ(parsed_av_signal->display_name, fake_av_product.display_name);
   EXPECT_EQ(parsed_av_signal->state,
             enterprise_reporting_private::AntiVirusProductState::kOff);
-  EXPECT_EQ(parsed_av_signal->product_id, fake_av_product.product_id);
 
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);

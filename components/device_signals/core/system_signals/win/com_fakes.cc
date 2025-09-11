@@ -249,21 +249,18 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeWbemClassObject)
 FakeWscProduct::FakeWscProduct() = default;
 
 FakeWscProduct::FakeWscProduct(const wchar_t* name,
-                               const wchar_t* id,
                                WSC_SECURITY_PRODUCT_STATE state)
-    : name_(name), id_(id), state_(state) {}
+    : name_(name), state_(state) {}
 
 FakeWscProduct::FakeWscProduct(FakeWscProduct&& other)
     : failed_step_(other.failed_step_), state_(other.state_) {
   name_.Reset(other.name_.Release());
-  id_.Reset(other.id_.Release());
 }
 
 FakeWscProduct& FakeWscProduct::operator=(FakeWscProduct&& other) {
   failed_step_ = other.failed_step_;
   state_ = other.state_;
   name_.Reset(other.name_.Release());
-  id_.Reset(other.id_.Release());
   return *this;
 }
 
@@ -279,12 +276,9 @@ HRESULT FakeWscProduct::get_ProductName(BSTR* pVal) {
 }
 
 HRESULT FakeWscProduct::get_ProductGuid(BSTR* pVal) {
-  if (ShouldFail(FailureStep::kProductId)) {
-    return E_FAIL;
-  }
-
-  *pVal = id_.Get();
-  return S_OK;
+  // This function's real implementation is not officially documented and will
+  // cause crashes if called in the wild (see crbug.com/443662326).
+  return E_NOTIMPL;
 }
 
 HRESULT FakeWscProduct::get_ProductState(WSC_SECURITY_PRODUCT_STATE* pVal) {
