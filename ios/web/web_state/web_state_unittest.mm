@@ -244,6 +244,7 @@ TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
                           @"text/html", url);
 
     NavigationManager::WebLoadParams load_params(url);
+    load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
     web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
     ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForPageLoadTimeout, ^bool {
@@ -585,6 +586,7 @@ TEST_F(WebStateTest, LoadChromeThenHTML) {
   GURL app_specific_url(
       base::StringPrintf("%s://app_specific_url", kTestAppSpecificScheme));
   web::NavigationManager::WebLoadParams load_params(app_specific_url);
+  load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return !web_state()->IsLoading();
@@ -621,6 +623,7 @@ TEST_F(WebStateTest, LoadChromeThenWaitThenHTMLThenReload) {
   GURL app_specific_url(
       base::StringPrintf("%s://app_specific_url", kTestAppSpecificScheme));
   web::NavigationManager::WebLoadParams load_params(app_specific_url);
+  load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
   // Wait for the error loading.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{

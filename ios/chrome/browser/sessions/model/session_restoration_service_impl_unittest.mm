@@ -1797,11 +1797,14 @@ TEST_F(SessionRestorationServiceImplTest, MoveWebStateWithoutMetadata) {
     ScopedTestWebStateObserver web_state_observer(run_loop.QuitClosure());
     web_state_observer.Observe(web_state.get());
 
+    // The URL needs to be typed for the navigation to succeed.
+    auto params = web::NavigationManager::WebLoadParams(GURL(kURLs[0]));
+    params.transition_type = ui::PAGE_TRANSITION_TYPED;
+
     // The view of the WebState needs to be created before the navigation
     // is really executed.
     std::ignore = web_state->GetView();
-    web_state->GetNavigationManager()->LoadURLWithParams(
-        web::NavigationManager::WebLoadParams(GURL(kURLs[0])));
+    web_state->GetNavigationManager()->LoadURLWithParams(params);
 
     run_loop.Run();
   }
