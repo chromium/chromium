@@ -3024,6 +3024,45 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Win11 FYI x64 Experimental Release (AMD 780M)",
+    description_html = "Runs release GPU tests on experimental Win/AMD 780M configs",
+    parent = "GPU FYI Win x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+        ],
+        mixins = [
+            "very_limited_capacity_bot",
+            "win11_amd_780m_experimental",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|11|x64|AMD",
+        short_name = "780m",
+    ),
+)
+
+ci.thin_tester(
     name = "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
     description_html = "Runs release GPU tests on experimental Windows 11/NVIDIA RTX 4070 configs",
     parent = "GPU FYI Win x64 Builder",
