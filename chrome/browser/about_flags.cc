@@ -11820,6 +11820,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarkBarPrefetchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kBookmarkTriggerForPrefetch)},
 
+    {"prefetch-new-tab-page-trigger",
+     flag_descriptions::kNewTabPagePrefetchName,
+     flag_descriptions::kNewTabPagePrefetchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kNewTabPageTriggerForPrefetch)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"use-ahardwarebuffer-usage-flags-from-vulkan",
      flag_descriptions::kUseHardwareBufferUsageFlagsFromVulkanName,

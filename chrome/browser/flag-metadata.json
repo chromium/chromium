@@ -8113,7 +8113,15 @@
   {
     "name": "prefetch-bookmarkbar-trigger",
     "owners": [
-      "robertling@google.com",
+      "robertlin@google.com",
+      "//content/browser/preloading/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "prefetch-new-tab-page-trigger",
+    "owners": [
+      "robertlin@google.com",
       "//content/browser/preloading/OWNERS"
     ],
     "expiry_milestone": 150

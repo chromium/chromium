@@ -616,6 +616,10 @@ const char kBookmarkBarPrefetchName[] = "BookmarkBarPrefetch";
 const char kBookmarkBarPrefetchDescription[] =
     "If enabled, bookmarkbar can trigger prefetch";
 
+const char kNewTabPagePrefetchName[] = "NewTabPagePrefetch";
+const char kNewTabPagePrefetchDescription[] =
+    "If enabled, NewTabPage can trigger prefetch";
+
 const char kEnableDrDcName[] =
     "Enables Display Compositor to use a new gpu thread.";
 const char kEnableDrDcDescription[] =
