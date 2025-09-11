@@ -13,8 +13,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.home.DownloadHelpPageLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,7 +42,7 @@ class DownloadHelpPageLauncherImpl implements DownloadHelpPageLauncher {
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         if (mIsOffTheRecord) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    intent, IntentHandler.IncognitoCctCallerId.DOWNLOAD_HOME);
+                    intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.DOWNLOAD_HOME);
         }
         IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(context, intent);

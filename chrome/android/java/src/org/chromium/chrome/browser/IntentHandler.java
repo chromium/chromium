@@ -381,46 +381,6 @@ public class IntentHandler {
         int NUM_ENTRIES = 20;
     }
 
-    /**
-     * Represents apps that launch Incognito CCT. DO NOT reorder items in this interface, because
-     * it's mirrored to UMA (as {@link IncognitoCctCallerId}). Values should be enumerated from 0.
-     * When removing items, comment them out and keep existing numeric values stable.
-     */
-    @IntDef({
-        IncognitoCctCallerId.OTHER_APPS,
-        IncognitoCctCallerId.GOOGLE_APPS,
-        IncognitoCctCallerId.OTHER_CHROME_FEATURES,
-        IncognitoCctCallerId.READER_MODE,
-        IncognitoCctCallerId.READ_LATER,
-        IncognitoCctCallerId.EPHEMERAL_TAB,
-        IncognitoCctCallerId.DOWNLOAD_HOME,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface IncognitoCctCallerId {
-        int OTHER_APPS = 0;
-        int GOOGLE_APPS = 1;
-        // This should not be used, it's a fallback for Chrome features that didn't identify
-        // themselves. Please see {@link
-        // IncognitoCustomTabIntentDataProvider#addIncognitoExtrasForChromeFeatures}
-        int OTHER_CHROME_FEATURES = 2;
-
-        // Chrome Features
-        int READER_MODE = 3;
-        int READ_LATER = 4;
-
-        // An ephemeral custom tab without incognito branding.
-        int EPHEMERAL_TAB = 5;
-
-        // Chrome feature.
-        // The Download Home UI may launch a CCT to display a help page for a download.
-        // If the file was downloaded in an Incognito profile, the CCT for the help page should
-        // likewise be an Incognito tab.
-        int DOWNLOAD_HOME = 6;
-
-        // Update {@link IncognitoCctCallerId} in enums.xml when adding new items.
-        int NUM_ENTRIES = 7;
-    }
-
     /** Intent extra to open an incognito tab. */
     public static final String EXTRA_OPEN_NEW_INCOGNITO_TAB =
             "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB";

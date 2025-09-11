@@ -53,6 +53,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -383,7 +384,8 @@ public class CustomTabActivityEphemeralTest {
     public void recordsHistogramEphemeral() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_NAME, IntentHandler.IncognitoCctCallerId.EPHEMERAL_TAB);
+                        HISTOGRAM_NAME,
+                        BrowserServicesIntentDataProvider.IncognitoCctCallerId.EPHEMERAL_TAB);
         launchEphemeralCustomTabActivity();
         histogramWatcher.assertExpected();
     }

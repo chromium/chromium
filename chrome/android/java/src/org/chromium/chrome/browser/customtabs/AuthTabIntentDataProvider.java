@@ -191,7 +191,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public int getFeatureIdForMetricsCollection() {
         if (mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
-            return IntentHandler.IncognitoCctCallerId.EPHEMERAL_TAB;
+            return IncognitoCctCallerId.EPHEMERAL_TAB;
         }
 
         return super.getFeatureIdForMetricsCollection();
