@@ -126,7 +126,7 @@ TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context =
       SharedGpuContext::ContextProviderWrapper();
   test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
-  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoringForTesting());
   EXPECT_TRUE(!!context);
 
   // Context recreation results in old provider being discarded.
@@ -136,11 +136,11 @@ TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
 
 TEST_F(SharedGpuContextTest, IsValidWithoutRestoring) {
   EXPECT_NE(SharedGpuContext::ContextProviderWrapper(), nullptr);
-  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoringForTesting());
 }
 
 TEST_F(BadSharedGpuContextTest, IsValidWithoutRestoring) {
-  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoringForTesting());
 }
 
 TEST_F(BadSharedGpuContextTest, AllowSoftwareToAcceleratedCanvasUpgrade) {
@@ -176,7 +176,7 @@ TEST_F(SharedGpuContextTest, AccelerateImageBufferSurfaceAutoRecovery) {
   // Verifies that after a context loss, attempting to allocate an
   // AcceleratedImageBufferSurface will restore the context and succeed
   test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
-  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoringForTesting());
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
           gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
@@ -186,7 +186,7 @@ TEST_F(SharedGpuContextTest, AccelerateImageBufferSurfaceAutoRecovery) {
           gpu::SharedImageUsageSet());
   EXPECT_TRUE(resource_provider && resource_provider->IsValid());
   EXPECT_TRUE(resource_provider->IsAccelerated());
-  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoringForTesting());
 }
 
 }  // unnamed namespace

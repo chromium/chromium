@@ -233,7 +233,7 @@ void SharedGpuContext::Reset() {
   this_ptr->context_provider_factory_.Reset();
 }
 
-bool SharedGpuContext::IsValidWithoutRestoring() {
+bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   if (!this_ptr->context_provider_wrapper_)
     return false;

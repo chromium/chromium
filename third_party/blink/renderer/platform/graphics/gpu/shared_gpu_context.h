@@ -44,7 +44,7 @@ class PLATFORM_EXPORT SharedGpuContext {
   GetExistingContextProviderWrapper();
 
   static bool AllowSoftwareToAcceleratedCanvasUpgrade();
-  static bool IsValidWithoutRestoring();
+  static bool IsValidWithoutRestoringForTesting();
 
   static WebGraphicsSharedImageInterfaceProvider*
   SharedImageInterfaceProvider();

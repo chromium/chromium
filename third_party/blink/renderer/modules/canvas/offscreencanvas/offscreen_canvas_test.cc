@@ -258,10 +258,10 @@ TEST_P(OffscreenCanvasTest, GetRasterModeAutoRecovery) {
   // Verifies that after a context loss, getting the raster mode from the
   // canvas will restore the context and succeed.
   GetGLInterface()->SetIsContextLost(true);
-  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoringForTesting());
   offscreen_canvas().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   EXPECT_EQ(offscreen_canvas().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
+  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoringForTesting());
 }
 
 const TestParams kTestCases[] = {
