@@ -23,10 +23,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseFeatureList;
-import org.chromium.base.BaseFeatureMap;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.ChildBindingState;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
@@ -222,21 +219,6 @@ public class ChildProcessConnection {
         ResettersForTesting.register(() -> sSupportNotPerceptibleBindingForTesting = null);
     }
 
-    private static boolean useBackgroundNotPerceptibleBinding() {
-        if (sUseBackgroundNotPerceptibleBinding == null) {
-            if (!FeatureList.isNativeInitialized()) {
-                // The pre-launched process before native is initialized ends up using obsolete
-                // binding. But there is no workaround.
-                return false;
-            }
-            sUseBackgroundNotPerceptibleBinding =
-                    ChildProcessConnection.supportNotPerceptibleBinding()
-                            && BaseFeatureMap.isEnabled(
-                                    BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING);
-        }
-        return sUseBackgroundNotPerceptibleBinding;
-    }
-
     // The last zygote PID for which the zygote startup metrics were recorded. Lives on the
     // launcher thread.
     private static int sLastRecordedZygotePid;
@@ -246,9 +228,6 @@ public class ChildProcessConnection {
     // it's assumed the zygote code path is not functional. Make all future
     // launches directly fallback without timeout to minimize user impact.
     private static boolean sAlwaysFallback;
-
-    // Cache BackgroundNotPerceptibleBinding feature flag value.
-    private static @Nullable Boolean sUseBackgroundNotPerceptibleBinding;
 
     private static @Nullable RebindServiceConnection sRebindServiceConnection;
     // Lock to protect all the fields that can be accessed outside launcher thread.
@@ -519,7 +498,7 @@ public class ChildProcessConnection {
                         mBindIntent, mDefaultBindFlags, mConnectionDelegate, mInstanceName);
         if (supportNotPerceptibleBinding()) {
             int flags = mDefaultBindFlags | Context.BIND_NOT_PERCEPTIBLE;
-            if (useBackgroundNotPerceptibleBinding()) {
+            if (BaseFeatureList.sBackgroundNotPerceptibleBinding.isEnabled()) {
                 flags |= Context.BIND_NOT_FOREGROUND;
             }
             mNotPerceptibleBinding =

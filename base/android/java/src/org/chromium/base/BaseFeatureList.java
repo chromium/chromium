@@ -11,6 +11,12 @@ import org.chromium.build.annotations.NullMarked;
 public class BaseFeatureList {
     private BaseFeatureList() {}
 
+    public static final MutableFlagWithSafeDefault sBackgroundNotPerceptibleBinding =
+            new MutableFlagWithSafeDefault(
+                    BaseFeatureMap.getInstance(),
+                    BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
+                    false);
+
     public static final MutableFlagWithSafeDefault sUpdateStateBeforeUnbinding =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),
