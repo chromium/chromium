@@ -22,6 +22,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 /** Test of BrowserStartupController */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -36,6 +37,8 @@ public class BrowserStartupControllerTest {
         private int mFullBrowserLaunchCounter;
         private boolean mMinimalBrowserStarted;
         private boolean mFlushStartupTasksCalled;
+        private boolean mContentStartInClientCall;
+        private boolean mStartupTasksInClientCall;
 
         @Override
         void prepareToStartBrowserProcess(boolean singleProcess, final Runnable deferrableTask) {
@@ -55,6 +58,7 @@ public class BrowserStartupControllerTest {
 
         @Override
         int contentMainStart(boolean startMinimalBrowser) {
+            mContentStartInClientCall = mIsInClientCall;
             if (startMinimalBrowser) {
                 mMinimalBrowserLaunchCounter++;
             } else {
@@ -65,10 +69,13 @@ public class BrowserStartupControllerTest {
 
         @Override
         void flushStartupTasks() {
+            mStartupTasksInClientCall = mIsInClientCall;
             assert mFullBrowserLaunchCounter > 0;
             mFlushStartupTasksCalled = true;
             BrowserStartupControllerImpl.browserStartupComplete(
-                    mStartupResult, /* longestBlockingDuration= */ 0);
+                    mStartupResult,
+                    /* longestDurationOfPostedStartupTasksMs= */ 0,
+                    /* totalDurationOfPostedStartupTasksMs= */ 0);
         }
 
         private int kickOffStartup(boolean startMinimalBrowser) {
@@ -78,7 +85,9 @@ public class BrowserStartupControllerTest {
             }
             if (!startMinimalBrowser) {
                 BrowserStartupControllerImpl.browserStartupComplete(
-                        mStartupResult, /* longestBlockingDuration= */ 0);
+                        mStartupResult,
+                        /* longestDurationOfPostedStartupTasksMs= */ 0,
+                        /* totalDurationOfPostedStartupTasksMs= */ 0);
             }
             return mStartupResult;
         }
@@ -98,7 +107,7 @@ public class BrowserStartupControllerTest {
         private boolean mHasStartupResult;
 
         @Override
-        public void onSuccess() {
+        public void onSuccess(StartupMetrics metrics) {
             assert !mHasStartupResult;
             mWasSuccess = true;
             mHasStartupResult = true;
@@ -151,7 +160,12 @@ public class BrowserStartupControllerTest {
                 "The browser process should have been launched once.",
                 1,
                 mController.fullBrowserLaunchCounter());
+        Assert.assertFalse(
+                "contentStart should have been posted.", mController.mContentStartInClientCall);
 
+        Assert.assertFalse(
+                "flushStartupTasks should not have been called.",
+                mController.mFlushStartupTasksCalled);
         Assert.assertTrue("Callback should have been executed.", callback.mHasStartupResult);
         Assert.assertTrue("Callback should have been a success.", callback.mWasSuccess);
     }
@@ -206,6 +220,12 @@ public class BrowserStartupControllerTest {
                 "The browser process should have been launched once.",
                 1,
                 mController.fullBrowserLaunchCounter());
+
+        Assert.assertFalse(
+                "contentStart should have been posted.", mController.mContentStartInClientCall);
+        Assert.assertFalse(
+                "flushStartupTasks should not have been called.",
+                mController.mFlushStartupTasksCalled);
 
         Assert.assertTrue("Callback 1 should have been executed.", callback1.mHasStartupResult);
         Assert.assertTrue("Callback 1 should have been a success.", callback1.mWasSuccess);
@@ -281,6 +301,12 @@ public class BrowserStartupControllerTest {
 
         // Wait for posted tasks to complete.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        Assert.assertFalse(
+                "contentStart should have been posted.", mController.mContentStartInClientCall);
+        Assert.assertFalse(
+                "flushStartupTasks should not have been called.",
+                mController.mFlushStartupTasksCalled);
 
         Assert.assertTrue("Callback 3 should have been executed.", callback3.mHasStartupResult);
         Assert.assertTrue("Callback 3 should have been a success.", callback3.mWasSuccess);
@@ -416,6 +442,13 @@ public class BrowserStartupControllerTest {
                 "The browser process should have been launched once.",
                 1,
                 mController.fullBrowserLaunchCounter());
+
+        Assert.assertTrue(
+                "contentStart should have been run synchronously.",
+                mController.mContentStartInClientCall);
+        Assert.assertTrue(
+                "flushStartupTasks should have been run synchronously.",
+                mController.mStartupTasksInClientCall);
     }
 
     @Test
@@ -457,6 +490,13 @@ public class BrowserStartupControllerTest {
                 "The browser process should have been launched once.",
                 1,
                 mController.fullBrowserLaunchCounter());
+
+        Assert.assertTrue(
+                "contentStart should have been run synchronously.",
+                mController.mContentStartInClientCall);
+        Assert.assertTrue(
+                "flushStartupTasks should have been run synchronously.",
+                mController.mStartupTasksInClientCall);
 
         Assert.assertTrue("Callback should have been executed.", callback.mHasStartupResult);
         Assert.assertTrue("Callback should have been a success.", callback.mWasSuccess);
@@ -508,6 +548,13 @@ public class BrowserStartupControllerTest {
                 "The browser process should not have been launched a second time.",
                 1,
                 mController.fullBrowserLaunchCounter());
+
+        Assert.assertTrue(
+                "contentStart should have been run synchronously.",
+                mController.mContentStartInClientCall);
+        Assert.assertTrue(
+                "flushStartupTasks should have been run synchronously.",
+                mController.mStartupTasksInClientCall);
 
         Assert.assertTrue("Callback should have been executed.", callback.mHasStartupResult);
         Assert.assertTrue("Callback should have been a success.", callback.mWasSuccess);
@@ -1015,9 +1062,15 @@ public class BrowserStartupControllerTest {
                 1,
                 mController.fullBrowserLaunchCounter());
 
-        Assert.assertTrue("Callback should have been executed.", callback.mHasStartupResult);
-        Assert.assertTrue("Callback should have been a success.", callback.mWasSuccess);
+        Assert.assertFalse(
+                "contentStart should have been posted", mController.mContentStartInClientCall);
         Assert.assertTrue(
                 "flushStartupTasks should have been called.", mController.mFlushStartupTasksCalled);
+        Assert.assertFalse(
+                "flushStartupTasks should have been posted.",
+                mController.mStartupTasksInClientCall);
+
+        Assert.assertTrue("Callback should have been executed.", callback.mHasStartupResult);
+        Assert.assertTrue("Callback should have been a success.", callback.mWasSuccess);
     }
 }

@@ -16,7 +16,9 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -92,7 +94,7 @@ public class ContentShellActivity extends Activity {
                             false,
                             new BrowserStartupController.StartupCallback() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(@Nullable StartupMetrics metrics) {
                                     finishInitialization(savedInstanceState);
                                 }
 

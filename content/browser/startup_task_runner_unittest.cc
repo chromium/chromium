@@ -28,7 +28,9 @@ int observer_calls = 0;
 int task_count = 0;
 int observer_result;
 
-void Observer(int result, base::TimeDelta max_task_duration) {
+void Observer(int result,
+              base::TimeDelta async_longest_blocking_duration,
+              base::TimeDelta async_total_duration) {
   observer_calls++;
   observer_result = result;
 }
@@ -108,7 +110,12 @@ class TaskRunnerProxy : public base::SingleThreadTaskRunner {
   base::OnceClosure last_task_;
 };
 
-TEST_F(StartupTaskRunnerTest, SynchronousExecution) {
+class StartupTaskRunnerSynchronousTest
+    : public StartupTaskRunnerTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(StartupTaskRunnerSynchronousTest, RunAllTasksNow) {
+  const bool was_posted = GetParam();
   MockTaskRunner mock_runner;
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
 
@@ -127,7 +134,7 @@ TEST_F(StartupTaskRunnerTest, SynchronousExecution) {
 
   // Nothing should run until we tell them to.
   EXPECT_EQ(GetLastTask(), 0);
-  runner.RunAllTasksNow();
+  runner.RunAllTasksNow(was_posted);
 
   // On an immediate StartupTaskRunner the tasks should now all have run.
   EXPECT_EQ(GetLastTask(), 2);
@@ -146,6 +153,10 @@ TEST_F(StartupTaskRunnerTest, SynchronousExecution) {
   EXPECT_EQ(observer_calls, 1);
 }
 
+INSTANTIATE_TEST_SUITE_P(StartupTaskRunnerTest,
+                         StartupTaskRunnerSynchronousTest,
+                         testing::Bool());
+
 TEST_F(StartupTaskRunnerTest, NullObserver) {
   MockTaskRunner mock_runner;
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
@@ -153,8 +164,8 @@ TEST_F(StartupTaskRunnerTest, NullObserver) {
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
   EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, _)).Times(0);
 
-  StartupTaskRunner runner(base::OnceCallback<void(int, base::TimeDelta)>(),
-                           proxy);
+  StartupTaskRunner runner(
+      base::OnceCallback<void(int, base::TimeDelta, base::TimeDelta)>(), proxy);
 
   StartupTask task1 =
       base::BindOnce(&StartupTaskRunnerTest::Task1, base::Unretained(this));
@@ -166,7 +177,7 @@ TEST_F(StartupTaskRunnerTest, NullObserver) {
 
   // Nothing should run until we tell them to.
   EXPECT_EQ(GetLastTask(), 0);
-  runner.RunAllTasksNow();
+  runner.RunAllTasksNow(/*was_posted=*/false);
 
   // On an immediate StartupTaskRunner the tasks should now all have run.
   EXPECT_EQ(GetLastTask(), 2);
@@ -201,7 +212,7 @@ TEST_F(StartupTaskRunnerTest, SynchronousExecutionFailedTask) {
 
   // Nothing should run until we tell them to.
   EXPECT_EQ(GetLastTask(), 0);
-  runner.RunAllTasksNow();
+  runner.RunAllTasksNow(/*was_posted=*/false);
 
   // Only the first task should have run, since it failed
   EXPECT_EQ(GetLastTask(), 3);
@@ -259,7 +270,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecution) {
 
   // Check that running synchronously now doesn't do anything
 
-  runner.RunAllTasksNow();
+  runner.RunAllTasksNow(/*was_posted=*/false);
   EXPECT_EQ(task_count, 2);
   EXPECT_EQ(observer_calls, 1);
 }
@@ -303,7 +314,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecutionFailedTask) {
   EXPECT_EQ(observer_result, 1);
 
   // Check that running synchronously now doesn't do anything
-  runner.RunAllTasksNow();
+  runner.RunAllTasksNow(/*was_posted=*/false);
   EXPECT_EQ(observer_calls, 1);
   EXPECT_EQ(task_count, 1);
 }

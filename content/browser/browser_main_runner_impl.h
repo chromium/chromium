@@ -34,9 +34,6 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
 
   // BrowserMainRunner:
   int Initialize(MainFunctionParams parameters) override;
-#if BUILDFLAG(IS_ANDROID)
-  void SynchronouslyFlushStartupTasks() override;
-#endif
   int Run() override;
   void Shutdown() override;
 
