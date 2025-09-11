@@ -433,7 +433,8 @@ void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
 
   // Blink state was set to focused as part of invocation. Reset Blink focus
   // back to match the Views focus state.
-  if (GetFrame() && !GetFrame()->GetRenderWidgetHost()->GetView()->HasFocus()) {
+  if (GetFrame() && GetFrame()->GetRenderWidgetHost()->GetView() &&
+      !GetFrame()->GetRenderWidgetHost()->GetView()->HasFocus()) {
     GetFrame()->GetRenderWidgetHost()->Blur();
   }
 
