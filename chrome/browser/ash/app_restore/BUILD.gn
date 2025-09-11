@@ -284,6 +284,7 @@ source_set("unit_tests") {
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/constants",
     "//chromeos/ui/base",
     "//components/account_id",
     "//components/app_constants",

@@ -465,6 +465,7 @@
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/constants/pref_names.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/onc/onc_pref_names.h"  // nogncheck
@@ -2225,7 +2226,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::cloud_upload::RegisterProfilePrefs(registry);
   policy::NetworkAnnotationBlocklistHandler::RegisterPrefs(registry);
   quickoffice::RegisterProfilePrefs(registry);
-  registry->RegisterBooleanPref(prefs::kAutoSignOutEnabled, false);
+  registry->RegisterBooleanPref(chromeos::prefs::kAutoSignOutEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeskAPIThirdPartyAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeskAPIDeskSaveAndShareEnabled, false);
   registry->RegisterListPref(prefs::kDeskAPIThirdPartyAllowlist);
@@ -2240,7 +2241,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(policy::policy_prefs::kFloatingWorkspaceEnabled,
                                 false);
   ::reporting::RegisterProfilePrefs(registry);
-  registry->RegisterBooleanPref(prefs::kFloatingSsoEnabled, false);
+  registry->RegisterBooleanPref(chromeos::prefs::kFloatingSsoEnabled, false);
   registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklist);
   registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklistExceptions);
   registry->RegisterBooleanPref(prefs::kFloatingSsoSessionCookiesIncluded,

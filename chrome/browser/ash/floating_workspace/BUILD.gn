@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/device_sync/public/cpp/",
+    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/app_restore",

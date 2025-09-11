@@ -267,6 +267,7 @@ source_set("impl") {
       "//chromeos/ash/services/device_sync/public/cpp:prefs",
       "//chromeos/ash/services/multidevice_setup",
       "//chromeos/components/quick_answers/public/cpp:prefs",
+      "//chromeos/constants",
       "//chromeos/ui/wm",
       "//components/onc",
       "//components/quirks",

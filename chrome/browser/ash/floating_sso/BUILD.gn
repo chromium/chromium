@@ -29,6 +29,7 @@ static_library("floating_sso") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
+    "//chromeos/constants",
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",

@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -485,7 +486,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 // Full restore is disabled if Floating Workspace is enabled.
 TEST_F(FullRestoreServiceTest, NoServiceWithFloatingWorkspace) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      ash::prefs::kFloatingWorkspaceV2Enabled,
+      chromeos::prefs::kFloatingWorkspaceV2Enabled,
       std::make_unique<base::Value>(true));
   ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled());
   FullRestoreService* service =

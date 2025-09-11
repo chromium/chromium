@@ -83,6 +83,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "chromeos/constants/pref_names.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1255,8 +1256,9 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
                   service && service->HasUnrecoverableError());
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsFloatingSsoAllowed()) {
-    sync_status.Set("syncCookiesSupported", profile_->GetPrefs()->GetBoolean(
-                                                prefs::kFloatingSsoEnabled));
+    sync_status.Set(
+        "syncCookiesSupported",
+        profile_->GetPrefs()->GetBoolean(chromeos::prefs::kFloatingSsoEnabled));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return sync_status;

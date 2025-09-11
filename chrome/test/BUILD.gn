@@ -10016,6 +10016,7 @@ test("unit_tests") {
       deps += [
         "//chrome/browser/ash/net",
         "//chromeos/components/mgs",
+        "//chromeos/constants",
       ]
     }
   }

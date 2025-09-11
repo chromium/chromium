@@ -307,6 +307,7 @@ source_set("sync_integration_tests_impl") {
         "//chromeos/ash/components/dbus/shill",
         "//chromeos/ash/components/sync_wifi",
         "//chromeos/ash/components/sync_wifi:test_support",
+        "//chromeos/constants",
         "//chromeos/printing",
         "//chromeos/services/network_config/public/cpp",
         "//components/desks_storage",

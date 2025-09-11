@@ -99,6 +99,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/constants/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/onc/onc_pref_names.h"
@@ -665,11 +666,11 @@ class ManagementUIHandlerTests :
 #if BUILDFLAG(IS_CHROMEOS)
     // Set Floating Workspace (responsible for syncing windows) pref.
     profile_->GetTestingPrefService()->SetManagedPref(
-        ash::prefs::kFloatingWorkspaceV2Enabled,
+        chromeos::prefs::kFloatingWorkspaceV2Enabled,
         std::make_unique<base::Value>(GetTestConfig().sync_windows));
     // Set Floating SSO (responsible for syncing cookies) pref.
     profile_->GetTestingPrefService()->SetManagedPref(
-        prefs::kFloatingSsoEnabled,
+        chromeos::prefs::kFloatingSsoEnabled,
         std::make_unique<base::Value>(GetTestConfig().sync_cookies));
     fake_user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS)

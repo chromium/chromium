@@ -51,6 +51,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/constants/pref_names.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -2087,7 +2088,8 @@ class FloatingWorkspaceServiceV2WithCookiesTest
         {});
     FloatingWorkspaceServiceTest::SetUp();
     // Set prefs needed for Floating SSO feature (which syncs cookies).
-    profile()->GetPrefs()->SetBoolean(::prefs::kFloatingSsoEnabled, true);
+    profile()->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                      true);
     profile()->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
                                       false);
     profile()->GetPrefs()->SetBoolean(

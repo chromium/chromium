@@ -31,7 +31,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 // To control Floating SSO (= sync of cookies) on ChromeOS.
-#include "chrome/common/pref_names.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -160,7 +160,8 @@ class EnableDisableSingleClientTest : public SyncTest {
     // DataTypeController, so we have to enable the pref for them to pass.
     // TODO(crbug.com/378091718): think if we can also make the tests pass with
     // this preference disabled.
-    GetProfile(0)->GetPrefs()->SetBoolean(::prefs::kFloatingSsoEnabled, true);
+    GetProfile(0)->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                          true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     ASSERT_TRUE(

@@ -77,6 +77,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chromeos/constants/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -1971,7 +1972,8 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
 
   // Feature flag enabled, policy set to false.
   {
-    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, false);
+    profile()->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                      false);
 
     const base::Value::Dict& sync_status_values =
         handler_->GetSyncStatusDictionary();
@@ -1983,7 +1985,8 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
 
   // Feature flag enabled, policy set to true.
   {
-    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, true);
+    profile()->GetPrefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                                      true);
 
     const base::Value::Dict& sync_status_values =
         handler_->GetSyncStatusDictionary();

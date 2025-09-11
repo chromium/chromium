@@ -1997,10 +1997,6 @@ inline constexpr char kFilesAppTrashEnabled[] = "ash.filesapp.trash_enabled";
 inline constexpr char kLoginScreenWebUILazyLoading[] =
     "ash.login.LoginScreenWebUILazyLoading";
 
-// Boolean value for the FloatingWorkspaceV2Enabled policy
-inline constexpr char kFloatingWorkspaceV2Enabled[] =
-    "ash.floating_workspace_v2_enabled";
-
 // Boolean value indicating that post reboot notification should be shown to the
 // user.
 inline constexpr char kShowPostRebootNotification[] =
