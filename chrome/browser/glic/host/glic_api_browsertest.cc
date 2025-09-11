@@ -633,19 +633,27 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
 
-  auto main_request = std::ranges::find_if(
-      embedded_test_server_requests_, [&](const auto& request) {
-        return request.GetURL().path() == GetGuestURL().path();
-      });
-  ASSERT_NE(main_request, embedded_test_server_requests_.end());
-  ASSERT_THAT(
-      main_request->headers,
+  auto request_header_matcher =
       testing::AllOf(Contains(Pair("x-glic", "1")),
                      Contains(Pair("x-glic-chrome-channel",
                                    testing::AnyOf("unknown", "canary", "dev",
                                                   "beta", "stable"))),
                      Contains(Pair("x-glic-chrome-version",
-                                   version_info::GetVersionNumber()))));
+                                   version_info::GetVersionNumber())));
+
+  auto main_request = std::ranges::find_if(
+      embedded_test_server_requests_, [&](const auto& request) {
+        return request.GetURL().path() == GetGuestURL().path();
+      });
+  ASSERT_NE(main_request, embedded_test_server_requests_.end());
+  EXPECT_THAT(main_request->headers, request_header_matcher);
+
+  auto rpc_request = std::ranges::find_if(
+      embedded_test_server_requests_, [&](const auto& request) {
+        return request.GetURL().path() == "/fake-rpc";
+      });
+  ASSERT_NE(rpc_request, embedded_test_server_requests_.end());
+  EXPECT_THAT(rpc_request->headers, request_header_matcher);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {

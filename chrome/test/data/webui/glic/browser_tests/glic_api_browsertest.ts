@@ -28,7 +28,9 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testRequestHeader() {}
+  async testRequestHeader() {
+    await fetch('/fake-rpc');
+  }
 
   async testCreateTab() {
     assertDefined(this.host.createTab);

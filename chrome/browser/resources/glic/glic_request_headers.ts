@@ -9,14 +9,18 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 // X-Glic-Chrome-Channel: stable
 // X-Glic-Chrome-Version: 137.0.1234.0
 export class GlicRequestHeaderInjector {
-  private onDestroy: () => void;
+  private onDestroy: () => void = () => {};
   constructor(
       webview: chrome.webviewTag.WebView, private chromeVersion: string,
-      private chromeChannel: string) {
+      private chromeChannel: string, requestTypes: string) {
+    if (requestTypes === '') {
+      return;
+    }
     const onBeforeSendHeaders = this.onBeforeSendHeaders.bind(this);
     webview.request.onBeforeSendHeaders.addListener(
         onBeforeSendHeaders, {
-          types: [ResourceType.MAIN_FRAME],
+          // These should be valid values from web_request.d.ts.
+          types: requestTypes.split(',') as chrome.webRequest.ResourceType[],
           urls: ['<all_urls>'],
         },
         ['blocking', 'requestHeaders']);
@@ -53,14 +57,6 @@ export class GlicRequestHeaderInjector {
             return {requestHeaders};
           };
 }
-
-
-// To match needed pieces of tools/typescript/definitions/web_request.d.ts,
-// because this enum isn't actually available in this context.
-enum ResourceType {
-  MAIN_FRAME = 'main_frame',
-}
-
 
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;

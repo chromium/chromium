@@ -357,7 +357,8 @@ export class FreAppController {
 
     this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
         webview, loadTimeData.getString('chromeVersion'),
-        loadTimeData.getString('chromeChannel'));
+        loadTimeData.getString('chromeChannel'),
+        loadTimeData.getString('glicHeaderRequestTypes'));
 
     $.webviewContainer.appendChild(webview);
 

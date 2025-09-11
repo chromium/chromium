@@ -1,3 +1,7 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "chrome/browser/glic/shared/webui_shared.h"
 
 #include "base/command_line.h"
@@ -28,6 +32,11 @@ void ConfigureSharedWebUISource(content::WebUIDataSource& source) {
     max_loading_time_ms *= 100;
   }
   source.AddInteger("maxLoadingTimeMs", max_loading_time_ms);
+
+  source.AddString("glicHeaderRequestTypes",
+                   base::FeatureList::IsEnabled(features::kGlicHeader)
+                       ? features::kGlicHeaderRequestTypes.Get()
+                       : "");
 }
 
 }  // namespace glic

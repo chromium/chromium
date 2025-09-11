@@ -666,7 +666,20 @@ BASE_FEATURE(kGlicExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicMultitabUnderlines, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWindowDragRegions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the X-Glic headers will be attached to requests as specified by
+// the kGlicHeaderRequestTypes param.
+BASE_FEATURE(kGlicHeader, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Comma-separated list of request types to attach the X-Glic headers to.
+// These must be valid values for the webRequest extensions API.
+// Previously only "main_frame" was used.
+const base::FeatureParam<std::string> kGlicHeaderRequestTypes{
+    &kGlicHeader, "glic-header-request-types",
+    "main_frame,xmlhttprequest,websocket"};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
 BASE_FEATURE(kPrivacyGuideForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);

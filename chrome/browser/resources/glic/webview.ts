@@ -129,7 +129,8 @@ export class WebviewController {
 
     this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
         this.webview, loadTimeData.getString('chromeVersion'),
-        loadTimeData.getString('chromeChannel'));
+        loadTimeData.getString('chromeChannel'),
+        loadTimeData.getString('glicHeaderRequestTypes'));
 
     // Intercept all main frame requests, and block them if they are not allowed
     // origins.
