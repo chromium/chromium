@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_H_
 
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -14,7 +14,7 @@ namespace blink {
 class Document;
 class URLPattern;
 
-class Route : public ScriptWrappable {
+class Route : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -26,11 +26,16 @@ class Route : public ScriptWrappable {
 
   void AddPattern(URLPattern*);
 
-  // Check if this route matches or not, and store the current state. Return
-  // true if match status changed.
+  // Check if this route matches or not, and store the current state. Fire
+  // "activate" or "deactivate" events if the match status changes. Return true
+  // if match status changed.
   bool UpdateMatchStatus();
 
  private:
+  // EventTarget:
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
   Member<Document> document_;
   HeapVector<Member<URLPattern>> patterns_;
   bool matches_ = false;

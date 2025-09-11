@@ -580,6 +580,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/resize_observer/resize_observer_options.idl",
   "//third_party/blink/renderer/core/resize_observer/resize_observer_size.idl",
   "//third_party/blink/renderer/core/route_matching/route.idl",
+  "//third_party/blink/renderer/core/route_matching/route_event.idl",
   "//third_party/blink/renderer/core/route_matching/route_map.idl",
   "//third_party/blink/renderer/core/sanitizer/sanitizer_api.idl",
   "//third_party/blink/renderer/core/scheduler/idle_deadline.idl",

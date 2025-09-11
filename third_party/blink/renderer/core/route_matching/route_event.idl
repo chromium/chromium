@@ -7,7 +7,6 @@
 // TODO(crbug.com/436805487): Link to spec when it starts to exist.
 
 [Exposed=Window, RuntimeEnabled=RouteMatching]
-interface Route : EventTarget {
-  readonly attribute URLPattern pattern;
-  readonly attribute boolean matches;
+interface RouteEvent : Event {
+  constructor(DOMString type);
 };

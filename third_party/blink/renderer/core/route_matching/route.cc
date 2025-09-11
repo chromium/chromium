@@ -7,7 +7,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/route_matching/route_event.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -16,7 +18,7 @@ namespace blink {
 void Route::Trace(Visitor* v) const {
   v->Trace(document_);
   v->Trace(patterns_);
-  ScriptWrappable::Trace(v);
+  EventTarget::Trace(v);
 }
 
 URLPattern* Route::pattern() const {
@@ -49,7 +51,19 @@ bool Route::UpdateMatchStatus() {
   }
 
   matches_ = matches_now;
+  AtomicString type(matches_ ? "activate" : "deactivate");
+  auto* event = MakeGarbageCollected<RouteEvent>(type);
+  event->SetTarget(this);
+  DispatchEvent(*event);
   return true;
+}
+
+const AtomicString& Route::InterfaceName() const {
+  return event_target_names::kRoute;
+}
+
+ExecutionContext* Route::GetExecutionContext() const {
+  return document_->GetExecutionContext();
 }
 
 }  // namespace blink

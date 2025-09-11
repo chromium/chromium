@@ -8332,10 +8332,13 @@ interface Rewriter
     method measureInputUsage
     method rewrite
     method rewriteStreaming
-interface Route
+interface Route : EventTarget
     attribute @@toStringTag
     getter matches
     getter pattern
+    method constructor
+interface RouteEvent : Event
+    attribute @@toStringTag
     method constructor
 interface RouteMap
     attribute @@toStringTag
