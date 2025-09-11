@@ -313,9 +313,12 @@ class AudioDecoderTest
   void Reset() {
     ASSERT_FALSE(pending_reset_);
     pending_reset_ = true;
-    decoder_->Reset(base::BindOnce(&AudioDecoderTest::ResetFinished,
-                                   base::Unretained(this)));
-    base::RunLoop().RunUntilIdle();
+
+    base::RunLoop run_loop;
+    decoder_->Reset(
+        base::BindOnce(&AudioDecoderTest::ResetFinished, base::Unretained(this))
+            .Then(run_loop.QuitClosure()));
+    run_loop.Run();
     ASSERT_FALSE(pending_reset_);
   }
 

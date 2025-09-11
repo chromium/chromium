@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
+#include "media/base/decoder_buffer_side_data.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
@@ -189,6 +190,18 @@ MEDIA_EXPORT int32_t HashCodecName(const char* codec_name);
 
 // Returns the list of allowed decoders for audio.
 MEDIA_EXPORT const char* GetAllowedAudioDecoders();
+
+// Converts an FFmpeg timestamp in the given `time_base` to a `base::TimeDelta`.
+// This function is a convenience wrapper around `ConvertFromTimeBase`.
+base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
+                                       int64_t timestamp);
+
+// Parses discard padding information from the side data of an `AVPacket`.
+// Discard padding is used to specify the number of samples to discard from the
+// beginning and end of a decoded audio frame. `samples_per_second` is used to
+// convert the discard padding from samples to a `base::TimeDelta`.
+std::optional<DecoderBufferSideData::DiscardPadding>
+GetDiscardPaddingFromAVPacket(const AVPacket* packet, int samples_per_second);
 
 }  // namespace media
 

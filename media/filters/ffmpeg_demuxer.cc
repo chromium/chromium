@@ -112,11 +112,6 @@ static base::Time ExtractTimelineOffset(
   return base::Time();
 }
 
-static base::TimeDelta FramesToTimeDelta(int frames, double sample_rate) {
-  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
-                            sample_rate);
-}
-
 static base::TimeDelta ExtractStartTime(AVStream* stream) {
   // The default start time is zero.
   base::TimeDelta start_time;
@@ -468,20 +463,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     buffer->set_decrypt_config(std::move(decrypt_config));
   }
 
-  if (packet->duration >= 0) {
-    // Treat durations under 1ms as not having duration, later stages of the
-    // pipeline will then use the timestamps to estimate duration. Incorrect
-    // duration information can lead to stuttering effects during seeking. See
-    // https://crbug.com/397343886.
-    auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
-    buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
-  } else {
-    // TODO(wolenetz): Remove when FFmpeg stops returning negative durations.
-    // https://crbug.com/394418
-    DVLOG(1) << "FFmpeg returned a buffer with a negative duration! "
-             << packet->duration;
-    buffer->set_duration(kNoTimestamp);
-  }
+  // Treat durations under 1ms as not having duration, later stages of the
+  // pipeline will then use the timestamps to estimate duration. Incorrect
+  // duration information can lead to stuttering effects during seeking. See
+  // https://crbug.com/397343886.
+  auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
+  buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
 
   // Note: If pts is kNoFFmpegTimestamp, stream_timestamp will be kNoTimestamp.
   const base::TimeDelta stream_timestamp =
@@ -494,61 +481,6 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
-  size_t skip_samples_size = 0;
-  const uint32_t* skip_samples_ptr =
-      reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
-          packet.get(), AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
-  const int kSkipSamplesValidSize = 10;
-  const int kSkipEndSamplesOffset = 1;
-  if (skip_samples_size >= kSkipSamplesValidSize) {
-    // Because FFmpeg rolls codec delay and skip samples into one we can only
-    // allow front discard padding on the first buffer.  Otherwise the discard
-    // helper can't figure out which data to discard.  See AudioDiscardHelper.
-    //
-    // NOTE: Large values may end up as negative here, but negatives are
-    // discarded below.
-    auto discard_front_samples = static_cast<int>(*skip_samples_ptr);
-    if (last_packet_timestamp_ != kNoTimestamp && discard_front_samples) {
-      DLOG(ERROR) << "Skip samples are only allowed for the first packet.";
-      discard_front_samples = 0;
-    }
-
-    if (discard_front_samples < 0) {
-      // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
-      DLOG(ERROR) << "Negative skip samples are not allowed.";
-      discard_front_samples = 0;
-    }
-
-    // NOTE: Large values may end up as negative here, which could lead to
-    // a negative timestamp. It's not clear if this is intentional.
-    const auto discard_end_samples =
-        static_cast<int>(*(skip_samples_ptr + kSkipEndSamplesOffset));
-
-    if (discard_front_samples || discard_end_samples) {
-      DCHECK(is_audio);
-      const int samples_per_second =
-          audio_decoder_config().samples_per_second();
-      auto front_discard =
-          FramesToTimeDelta(discard_front_samples, samples_per_second);
-      buffer->set_discard_padding(std::make_pair(
-          front_discard,
-          FramesToTimeDelta(discard_end_samples, samples_per_second)));
-
-      // In cases where the first buffer has a discard which spans multiple
-      // packets (or we just can't tell), treat negative timestamps as being
-      // dropped. Duration may be inaccurate, so instead of tracking a total
-      // amount discarded (like AudioDiscardHelper does post-decode), just flag
-      // that any negative timestamps should be treated as partially discarded.
-      if (front_discard > buffer->duration() ||
-          buffer->duration() == kNoTimestamp) {
-        // We add one millisecond of padding to adjust for inaccurate durations
-        // and rounding errors which might occur with FramesToTimeDelta().
-        fixup_negative_timestamps_until_ =
-            stream_timestamp + front_discard + base::Milliseconds(1);
-      }
-    }
-  }
-
   // If this file has negative timestamps don't rebase any other stream types
   // against the negative starting time.
   base::TimeDelta start_time = demuxer_->start_time();
@@ -559,39 +491,53 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // Don't rebase timestamps for positive start times, the HTML Media Spec
   // details this in section "4.8.10.6 Offsets into the media resource." We
   // will still need to rebase timestamps before seeking with FFmpeg though.
-  if (start_time.is_positive())
+  if (start_time.is_positive()) {
     start_time = base::TimeDelta();
+  }
 
   buffer->set_timestamp(stream_timestamp - start_time);
 
-  // If the packet is marked for complete discard and it doesn't already have
-  // any discard padding set, mark the DecoderBuffer for complete discard. We
-  // don't want to overwrite any existing discard padding since the discard
-  // padding may refer to frames beyond this packet.
-  if (packet->flags & AV_PKT_FLAG_DISCARD &&
-      !buffer->discard_padding().has_value()) {
-    buffer->set_discard_padding(
-        std::make_pair(kInfiniteDuration, base::TimeDelta()));
-  }
+  auto discard_padding = GetDiscardPaddingFromAVPacket(
+      packet.get(), is_audio ? audio_decoder_config().samples_per_second() : 0);
 
   if (is_audio) {
-    // Fixup negative timestamps where the before-zero portion is completely
-    // discarded after decoding.
-    if (buffer->timestamp().is_negative() && buffer->discard_padding() &&
-        buffer->discard_padding()->first != kInfiniteDuration) {
-      // Discard padding may also remove samples after zero.
-      auto discard_padding = buffer->discard_padding();
-      auto fixed_ts = (discard_padding.has_value() ? discard_padding->first
-                                                   : base::TimeDelta()) +
-                      buffer->timestamp();
-
-      // Allow for rounding error in the discard padding calculations.
-      if (fixed_ts == base::Microseconds(-1)) {
-        fixed_ts = base::TimeDelta();
+    const bool has_finite_front_padding =
+        discard_padding && discard_padding->first != kInfiniteDuration;
+    if (has_finite_front_padding) {
+      // We only allow front discard padding on the first packet. Note that
+      // discarding the entire packet is still allowed on later packets.
+      if (last_packet_duration_ != kNoTimestamp) {
+        discard_padding->first = base::TimeDelta();
       }
 
-      if (fixed_ts >= base::TimeDelta()) {
-        buffer->set_timestamp(fixed_ts);
+      // In cases where the first buffer has a discrete and finite discard which
+      // spans multiple packets (or we just can't tell), treat negative
+      // timestamps as being dropped. Duration may be inaccurate, so instead of
+      // tracking a total amount discarded (like AudioDiscardHelper does
+      // post-decode), just flag that any negative timestamps should be treated
+      // as partially discarded.
+      if (buffer->duration() == kNoTimestamp ||
+          discard_padding->first > buffer->duration()) {
+        // We add one millisecond of padding to adjust for inaccurate durations
+        // and rounding errors which might occur in converting the timestamp.
+        fixup_negative_timestamps_until_ =
+            stream_timestamp + discard_padding->first + base::Milliseconds(1);
+      }
+
+      // Fixup negative timestamps where the before-zero portion is completely
+      // discarded after decoding.
+      if (buffer->timestamp().is_negative()) {
+        // Discard padding may also remove samples after zero.
+        auto fixed_ts = discard_padding->first + buffer->timestamp();
+
+        // Allow for rounding error in the discard padding calculations.
+        if (fixed_ts == base::Microseconds(-1)) {
+          fixed_ts = base::TimeDelta();
+        }
+
+        if (fixed_ts >= base::TimeDelta()) {
+          buffer->set_timestamp(fixed_ts);
+        }
       }
     }
 
@@ -621,29 +567,28 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
         buffer->duration() != kNoTimestamp &&
         !audio_decoder_config().codec_delay()) {
       if ((stream_timestamp + buffer->duration()).is_negative()) {
-        auto discard_padding = buffer->discard_padding();
-        DCHECK(!discard_padding.has_value() ||
-               discard_padding->second == base::TimeDelta());
+        CHECK(!discard_padding.has_value() ||
+              discard_padding->second == base::TimeDelta());
 
         // Discard the entire packet if it's entirely before zero, but don't
         // override the discard padding if it refers to frames beyond this
         // packet.
-        if (!discard_padding.has_value() ||
-            discard_padding->first <= buffer->duration()) {
-          buffer->set_discard_padding(
-              std::make_pair(kInfiniteDuration, base::TimeDelta()));
+        if (!discard_padding || discard_padding->first <= buffer->duration()) {
+          discard_padding =
+              std::make_pair(kInfiniteDuration, base::TimeDelta());
         }
       } else {
         // Only discard part of the frame if it overlaps zero.
-        auto discard_padding = buffer->discard_padding();
-        buffer->set_discard_padding(std::make_pair(
-            std::max(-stream_timestamp, discard_padding.has_value()
-                                            ? discard_padding->first
-                                            : base::TimeDelta()),
-            discard_padding.has_value() ? discard_padding->second
-                                        : base::TimeDelta()));
+        discard_padding = std::make_pair(
+            std::max(-stream_timestamp, discard_padding ? discard_padding->first
+                                                        : base::TimeDelta()),
+            discard_padding ? discard_padding->second : base::TimeDelta());
       }
     }
+  }
+
+  if (discard_padding) {
+    buffer->set_discard_padding(*discard_padding);
   }
 
   if (last_packet_timestamp_ != kNoTimestamp) {
@@ -692,11 +637,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
-  auto discard_padding = buffer->discard_padding();
-  auto start_padding =
-      discard_padding.has_value() ? discard_padding->first : base::TimeDelta();
-  auto end_padding =
-      discard_padding.has_value() ? discard_padding->second : base::TimeDelta();
+  const auto start_padding =
+      discard_padding ? buffer->discard_padding()->first : base::TimeDelta();
+  const auto end_padding =
+      discard_padding ? buffer->discard_padding()->second : base::TimeDelta();
 
   // Save the timestamp of the first non-discarded frame, to calculate duration
   // below. Only the first buffer should have discard padding.
@@ -960,16 +904,6 @@ std::string FFmpegDemuxerStream::GetMetadata(const char* key) const {
   const AVDictionaryEntry* entry =
       av_dict_get(stream_->metadata, key, nullptr, 0);
   return (entry == nullptr || entry->value == nullptr) ? "" : entry->value;
-}
-
-// static
-base::TimeDelta FFmpegDemuxerStream::ConvertStreamTimestamp(
-    const AVRational& time_base,
-    int64_t timestamp) {
-  if (timestamp == kNoFFmpegTimestamp)
-    return kNoTimestamp;
-
-  return ConvertFromTimeBase(time_base, timestamp);
 }
 
 //
@@ -1664,13 +1598,6 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   // If no start time could be determined, default to zero.
   if (start_time_ == kInfiniteDuration)
     start_time_ = base::TimeDelta();
-
-  // MPEG-4 B-frames cause grief for a simple container like AVI. Enable PTS
-  // generation so we always get timestamps, see http://crbug.com/169570
-  if (glue_->container() ==
-      container_names::MediaContainerName::kContainerAVI) {
-    format_context->flags |= AVFMT_FLAG_GENPTS;
-  }
 
   // FFmpeg will incorrectly adjust the start time of MP3 files into the future
   // based on discard samples. We were unable to fix this upstream without

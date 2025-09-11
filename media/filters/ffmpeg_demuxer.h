@@ -49,7 +49,6 @@
 
 // FFmpeg forward declarations.
 struct AVFormatContext;
-struct AVRational;
 struct AVStream;
 
 namespace media {
@@ -157,10 +156,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Runs |read_cb_| if present with the front of |buffer_queue_|, calling
   // NotifyCapacityAvailable() if capacity is still available.
   void SatisfyPendingRead();
-
-  // Converts an FFmpeg stream timestamp into a base::TimeDelta.
-  static base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
-                                                int64_t timestamp);
 
   // Resets any currently active bitstream converter.
   void ResetBitstreamConverter();

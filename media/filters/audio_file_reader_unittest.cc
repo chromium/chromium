@@ -7,15 +7,19 @@
 #include <memory>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/scoped_av_packet.h"
+#include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +28,7 @@ namespace media {
 
 class AudioFileReaderTest : public testing::Test {
  public:
-  AudioFileReaderTest() : packet_verification_disabled_(false) {}
+  AudioFileReaderTest() = default;
 
   AudioFileReaderTest(const AudioFileReaderTest&) = delete;
   AudioFileReaderTest& operator=(const AudioFileReaderTest&) = delete;
@@ -37,63 +41,64 @@ class AudioFileReaderTest : public testing::Test {
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
   }
 
-  // Reads and the entire file provided to Initialize().
+  // Reads and validates the entire file provided to Initialize().
   void ReadAndVerify(const char* expected_audio_hash, int expected_frames) {
     std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
-    int actual_frames = reader_->Read(&decoded_audio_packets);
+    const int actual_frames = reader_->Read(&decoded_audio_packets);
+    ASSERT_GT(actual_frames, 0);
+
     std::unique_ptr<AudioBus> decoded_audio_data =
         AudioBus::Create(reader_->channels(), actual_frames);
     int dest_start_frame = 0;
     for (size_t k = 0; k < decoded_audio_packets.size(); ++k) {
       const AudioBus* packet = decoded_audio_packets[k].get();
-      int frame_count = packet->frames();
+      const int frame_count = packet->frames();
       packet->CopyPartialFramesTo(0, frame_count, dest_start_frame,
                                   decoded_audio_data.get());
       dest_start_frame += frame_count;
     }
-    ASSERT_LE(actual_frames, decoded_audio_data->frames());
-    ASSERT_EQ(expected_frames, actual_frames);
+    EXPECT_LE(actual_frames, decoded_audio_data->frames());
+    EXPECT_EQ(expected_frames, actual_frames);
 
     AudioHash audio_hash;
     audio_hash.Update(decoded_audio_data.get(), actual_frames);
-    EXPECT_EQ(expected_audio_hash, audio_hash.ToString());
+    EXPECT_STREQ(expected_audio_hash, audio_hash.ToString().c_str());
   }
 
   // Verify packets are consistent across demuxer runs.  Reads the first few
   // packets and then seeks back to the start timestamp and verifies that the
   // hashes match on the packets just read.
   void VerifyPackets(int packet_reads) {
-    const int kTestPasses = 2;
-
     auto packet = ScopedAVPacket::Allocate();
-    base::TimeDelta start_timestamp;
     std::vector<std::array<uint8_t, crypto::hash::kSha256Size>> packet_hashes;
-    for (int i = 0; i < kTestPasses; ++i) {
-      for (int j = 0; j < packet_reads; ++j) {
-        ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
 
-        // On the first pass save the SHA-256 hash of each packet, on subsequent
-        // passes ensure it matches.
-        // SAFETY: libavcodec guarantees us that packet->data points to at least
-        // packet->size bytes of memory.
-        UNSAFE_BUFFERS(
-            const base::span data(packet->data,
-                                  base::checked_cast<size_t>(packet->size));)
-        const auto hash = crypto::hash::Sha256(data);
-        if (i == 0) {
-          packet_hashes.push_back(hash);
-          if (j == 0) {
-            start_timestamp = ConvertFromTimeBase(
-                reader_->codec_context_for_testing()->time_base, packet->pts);
-          }
-        } else {
-          EXPECT_EQ(packet_hashes[j], hash) << "j = " << j;
-        }
-
-        av_packet_unref(packet.get());
+    // First, populate the packet hashes.
+    std::optional<base::TimeDelta> start_timestamp;
+    for (int i = 0; i < packet_reads; ++i) {
+      ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get())) << "i = " << i;
+      if (!start_timestamp) {
+        start_timestamp = ConvertFromTimeBase(
+            reader_->GetAVStreamForTesting()->time_base, packet->pts);
       }
-      ASSERT_TRUE(reader_->SeekForTesting(start_timestamp));
+      packet_hashes.push_back(crypto::hash::Sha256(AVPacketData(*packet)));
+      av_packet_unref(packet.get());
     }
+
+    // Then seek to the beginning.
+    ASSERT_TRUE(start_timestamp);
+    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp.value()));
+
+    // Then validate the hashes.
+    for (int i = 0; i < packet_reads; ++i) {
+      ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get())) << "i = " << i;
+      EXPECT_EQ(base::HexEncode(packet_hashes[i]),
+                base::HexEncode(crypto::hash::Sha256(AVPacketData(*packet))));
+      av_packet_unref(packet.get());
+    }
+
+    // Finally, seek to the beginning again.
+    ASSERT_TRUE(start_timestamp);
+    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp.value()));
   }
 
   void RunTest(const char* fn,
@@ -126,11 +131,11 @@ class AudioFileReaderTest : public testing::Test {
     EXPECT_FALSE(reader_->Open());
   }
 
-  void RunTestFailingDecode(const char* fn, int expect_read = 0) {
+  void RunTestFailingDecode(const char* fn) {
     Initialize(fn);
     EXPECT_TRUE(reader_->Open());
     std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
-    EXPECT_EQ(reader_->Read(&decoded_audio_packets), expect_read);
+    EXPECT_EQ(reader_->Read(&decoded_audio_packets), 0u);
   }
 
   void RunTestPartialDecode(const char* fn) {
@@ -145,10 +150,11 @@ class AudioFileReaderTest : public testing::Test {
   void disable_packet_verification() { packet_verification_disabled_ = true; }
 
  protected:
+  NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
-  bool packet_verification_disabled_;
+  bool packet_verification_disabled_ = false;
 };
 
 TEST_F(AudioFileReaderTest, WithoutOpen) {
@@ -224,7 +230,7 @@ TEST_F(AudioFileReaderTest, AAC_ADTS) {
 }
 
 TEST_F(AudioFileReaderTest, MidStreamConfigChangesFail) {
-  RunTestFailingDecode("midstream_config_change.mp3", 0);
+  RunTestFailingDecode("midstream_config_change.mp3");
 }
 #endif
 

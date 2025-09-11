@@ -55,13 +55,14 @@ class Reader {
   Reader& operator=(const Reader&) = delete;
   Reader& operator=(Reader&&) = delete;
 
-  int Read(std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets) {
+  size_t Read(std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets) {
     if (std::holds_alternative<media::AudioFileReader>(*reader_)) {
       return std::get<media::AudioFileReader>(*reader_).Read(
           decoded_audio_packets);
     }
-    return std::get<media::LegacyAudioFileReader>(*reader_).Read(
-        decoded_audio_packets);
+    return base::checked_cast<size_t>(
+        std::get<media::LegacyAudioFileReader>(*reader_).Read(
+            decoded_audio_packets));
   }
 
   size_t estimated_frames() const {
@@ -143,8 +144,8 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
   }
 
   std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
-  const int number_of_frames = reader->Read(&decoded_audio_packets);
-  if (number_of_frames <= 0) {
+  const size_t number_of_frames = reader->Read(&decoded_audio_packets);
+  if (number_of_frames == 0) {
     return false;
   }
 
