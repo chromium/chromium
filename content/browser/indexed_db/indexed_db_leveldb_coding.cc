@@ -383,7 +383,7 @@ bool DecodeSortableDouble(std::string_view& data, double* output) {
   base::byte_span_from_ref(base::allow_nonunique_obj, *output)
       .copy_from_nonoverlapping(base::byte_span_from_ref(host_bits));
 
-  if (std::isnan(*output)) {
+  if (std::isnan(*output) || (std::signbit(*output) && *output == -0.0)) {
     return false;
   }
   return true;

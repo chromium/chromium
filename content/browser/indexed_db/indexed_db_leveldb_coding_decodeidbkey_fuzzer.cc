@@ -37,7 +37,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // than just a prefix being decodeable).
     if (key.IsValid()) {
       CHECK_EQ(std::string_view(content::indexed_db::EncodeSortableIDBKey(key)),
-               input);
+               input)
+          << " with " << key.DebugString();
     }
   }
 
