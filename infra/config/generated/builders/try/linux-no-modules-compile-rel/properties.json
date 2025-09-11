@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-modules-compile-fyi-rel/gn-args.json"
+        "infra/config/generated/builders/try/linux-no-modules-compile-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-modules-compile-fyi-rel",
+              "builder": "linux-no-modules-compile-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -34,18 +34,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-modules-compile-fyi-rel",
+          "builder": "linux-no-modules-compile-rel",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-modules-compile-fyi-rel",
-          "group": "tryserver.chromium.linux"
-        }
-      ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-modules-compile-fyi-rel/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-no-modules-compile-rel/targets"
     }
   },
   "$build/siso": {
@@ -60,8 +53,7 @@
     "keep_going": true,
     "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 500
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -70,6 +62,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.linux",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
 }

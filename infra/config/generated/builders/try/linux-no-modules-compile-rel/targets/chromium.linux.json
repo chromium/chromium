@@ -1,5 +1,5 @@
 {
-  "linux-modules-compile-fyi-rel": {
+  "linux-no-modules-compile-rel": {
     "additional_compile_targets": [
       "all"
     ]

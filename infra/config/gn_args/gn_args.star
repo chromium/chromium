@@ -886,11 +886,10 @@ gn_args.config(
     ],
 )
 
-# Do not use this for non-FYI builders.
 gn_args.config(
-    name = "clang_modules",
+    name = "no_clang_modules",
     args = {
-        "use_clang_modules": True,
+        "use_clang_modules": False,
     },
 )
 

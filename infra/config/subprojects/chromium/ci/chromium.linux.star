@@ -1124,9 +1124,9 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-modules-compile-fyi-rel",
+    name = "linux-no-modules-compile-rel",
     branch_selector = branches.selector.MAIN,
-    description_html = "Experimental compile with use_clang_modules=true.",
+    description_html = "Experimental compile with use_clang_modules=false.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -1140,7 +1140,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Linux Builder",
-            "clang_modules",
+            "no_clang_modules",
         ],
     ),
     targets = targets.bundle(

@@ -10160,8 +10160,8 @@
           }
         ]
       },
-      "linux-modules-compile-fyi-rel": {
-        "contact_team_email": "chrome-build-team@google.com",
+      "linux-multiscreen-fyi-rel": {
+        "contact_team_email": "web-windowing-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -10181,8 +10181,8 @@
           }
         ]
       },
-      "linux-multiscreen-fyi-rel": {
-        "contact_team_email": "web-windowing-team@google.com",
+      "linux-no-modules-compile-rel": {
+        "contact_team_email": "chrome-build-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

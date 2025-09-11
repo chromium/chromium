@@ -927,11 +927,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-modules-compile-fyi-rel",
+    name = "linux-no-modules-compile-rel",
     mirrors = [
-        "ci/linux-modules-compile-fyi-rel",
+        "ci/linux-no-modules-compile-rel",
     ],
-    gn_args = "ci/linux-modules-compile-fyi-rel",
+    gn_args = "ci/linux-no-modules-compile-rel",
     cores = 32,
     ssd = True,
     contact_team_email = "chrome-build-team@google.com",
