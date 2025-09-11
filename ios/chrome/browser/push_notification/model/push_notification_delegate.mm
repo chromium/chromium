@@ -585,29 +585,11 @@ void ProcessIncomingNotification(
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
-  [self.metricsRecorder recordReceived:notification];
-  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
-                                 kNotificationForegroundPresentation];
-
-  NSDictionary* userInfo = notification.request.content.userInfo;
-
   __weak __typeof(self) weakSelf = self;
-
-  void (^presentationCompletionBlock)(UIBackgroundFetchResult result) =
-      ^(UIBackgroundFetchResult /* result */) {
-        [weakSelf handlePresentationCompletionWithUserInfo:userInfo
-                                         completionHandler:completionHandler];
-      };
-
-  if (IsMultiProfilePushNotificationHandlingEnabled()) {
-    ProcessIncomingNotification(
-        userInfo,
-        PushNotificationClientManagerFailurePoint::kWillPresentNotification,
-        presentationCompletionBlock);
-  } else {
-    HandleNotificationReceptionWithAppWideManager(userInfo,
-                                                  presentationCompletionBlock);
-  }
+  [self executeWhenForeground:^{
+    [weakSelf handleWillPresentNotification:notification
+                      withCompletionHandler:completionHandler];
+  }];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -860,6 +842,34 @@ void ProcessIncomingNotification(
 }
 
 #pragma mark - Private
+
+// Handles a notification that is about to be presented.
+- (void)handleWillPresentNotification:(UNNotification*)notification
+                withCompletionHandler:
+                    (void (^)(UNNotificationPresentationOptions options))
+                        completionHandler {
+  [self.metricsRecorder recordReceived:notification];
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationForegroundPresentation];
+
+  NSDictionary* userInfo = notification.request.content.userInfo;
+  __weak __typeof(self) weakSelf = self;
+  void (^presentationCompletionBlock)(UIBackgroundFetchResult result) =
+      ^(UIBackgroundFetchResult /* result */) {
+        [weakSelf handlePresentationCompletionWithUserInfo:userInfo
+                                         completionHandler:completionHandler];
+      };
+
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
+    ProcessIncomingNotification(
+        userInfo,
+        PushNotificationClientManagerFailurePoint::kWillPresentNotification,
+        presentationCompletionBlock);
+  } else {
+    HandleNotificationReceptionWithAppWideManager(userInfo,
+                                                  presentationCompletionBlock);
+  }
+}
 
 // Determines how a notification should be presented when received while the app
 // is in the foreground and invokes the system completion handler with the
