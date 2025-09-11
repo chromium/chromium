@@ -15,13 +15,13 @@ namespace base {
 inline constexpr size_t kValue = VariantIndexOfType<std::variant<int, int>, int>();  // expected-error {{constexpr variable 'kValue' must be initialized by a constant expression}}
                                                                                      // expected-error@base/types/variant_util.h:* {{Variant is not constructible from T}}
                                                                                      // expected-error@base/types/variant_util.h:* {{no matching conversion for functional-style cast}}
-                                                                                     // expected-error@base/types/variant_util.h:* 0-1 {{no matching constructor for initialization}}
+                                                                                     // expected-error@base/types/variant_util.h:* {{no matching constructor for initialization}}
 
 // Should fail if the type is not mentioned in the variant instantiation at
 // all.
 inline constexpr size_t kValue2 = VariantIndexOfType<std::variant<int>, bool>();  // expected-error {{constexpr variable 'kValue2' must be initialized by a constant expression}}
                                                                                   // expected-error@base/types/variant_util.h:* {{Variant is not constructible from T}}
                                                                                   // expected-error@base/types/variant_util.h:* {{no matching conversion for functional-style cast}}
-                                                                                  // expected-error@base/types/variant_util.h:* 0-1 {{no matching constructor for initialization}}
+                                                                                  // expected-error@base/types/variant_util.h:* {{no matching constructor for initialization}}
 
 }  // namespace base
