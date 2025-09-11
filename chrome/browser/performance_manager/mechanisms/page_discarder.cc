@@ -53,9 +53,9 @@ std::optional<uint64_t> PageDiscarder::DiscardPageNode(
   auto* lifecycle_unit =
       resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
           contents.get());
-  // This function is only called with `PageNode`s of type `kTab`, so there
-  // should be a LifecycleUnit.
-  CHECK(lifecycle_unit, base::NotFatalUntil::M140);
+  if (!lifecycle_unit) {
+    return std::nullopt;
+  }
 
   uint64_t memory_footprint_estimate =
       user_tuning::GetDiscardedMemoryEstimateForPage(page_node);
