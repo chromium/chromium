@@ -16,6 +16,14 @@ void PictureInPictureWidgetFadeAnimator::AnimateShowWindow(
     PictureInPictureWidgetFadeAnimator::WidgetShowType show_type) {
   CancelAndReset();
 
+  // Prevent re-animating the widget if it is already visible. This is done
+  // because on some platforms (e.g. Linux), changing the theme can cause the
+  // widget to be re-added.
+  if (widget->IsVisible()) {
+    widget->SetOpacity(1.0f);
+    return;
+  }
+
   widget->SetVisibilityChangedAnimationsEnabled(false);
 
   fade_animator_ = std::make_unique<views::WidgetFadeAnimator>(widget);
