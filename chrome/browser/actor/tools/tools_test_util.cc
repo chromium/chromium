@@ -38,7 +38,6 @@ actor_login::Credential MakeTestCredential(
     const GURL& url,
     bool immediately_available_to_login) {
   actor_login::Credential credential;
-  credential.id = actor_login::Credential::GenerateCredentialId();
   credential.username = username;
   // TODO(crbug.com/441231531): Clarify the format.
   credential.source_site_or_app =
@@ -81,8 +80,8 @@ void MockActorLoginService::SetLoginStatus(
   login_status_ = login_status;
 }
 
-const actor_login::Credential& MockActorLoginService::last_credential_used()
-    const {
+const std::optional<actor_login::Credential>&
+MockActorLoginService::last_credential_used() const {
   return last_credential_used_;
 }
 

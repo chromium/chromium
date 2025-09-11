@@ -139,7 +139,11 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  EXPECT_EQ(u"username", mock_login_service().last_credential_used().username);
+
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
@@ -172,7 +176,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
@@ -202,7 +209,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
@@ -242,7 +252,11 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
+
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
@@ -404,7 +418,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService, NoService) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
@@ -432,7 +449,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
@@ -474,7 +494,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
@@ -533,7 +556,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
 }  // namespace

@@ -21,6 +21,9 @@ enum CredentialType {
 };
 
 struct Credential {
+  Credential();
+  ~Credential();
+
   // A unique identifier for this credential. Used for internal tracking.
   // Should not be displayed to the user.
   using Id = base::IdType32<Credential>;
@@ -50,9 +53,6 @@ struct Credential {
   // on the provided Tab.
   bool immediatelyAvailableToLogin = false;
 
-  // Generates a unique ID for this `Credential`.
-  static Id GenerateCredentialId();
-
 #if defined(UNIT_TEST)
   // An exact equality comparison of all the fields is only useful for tests.
   friend bool operator==(const Credential&, const Credential&) = default;
@@ -77,7 +77,7 @@ enum class LoginStatusResult {
   // Either there was only a username field in the form, or only
   // the username field was filled successfully.
   kSuccessUsernameFilled,
-  // Either there was only a password ield in the form, or only
+  // Either there was only a password field in the form, or only
   // the password field was filled successfully.
   kSuccessPasswordFilled,
   // Both username and password fields were filled successfully.

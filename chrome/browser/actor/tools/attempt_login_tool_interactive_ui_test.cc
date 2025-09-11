@@ -261,7 +261,10 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
       })));
 
   // We selected the second credential in the dialog.
-  EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
 }  // namespace actor

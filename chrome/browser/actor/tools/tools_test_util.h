@@ -53,12 +53,12 @@ class MockActorLoginService : public actor_login::ActorLoginService {
 
   void SetLoginStatus(actor_login::LoginStatusResultOrError login_status);
 
-  const actor_login::Credential& last_credential_used() const;
+  const std::optional<actor_login::Credential>& last_credential_used() const;
 
  private:
   actor_login::CredentialsOrError credentials_;
   actor_login::LoginStatusResultOrError login_status_;
-  actor_login::Credential last_credential_used_;
+  std::optional<actor_login::Credential> last_credential_used_;
 };
 
 inline constexpr int32_t kNonExistentContentNodeId =
