@@ -100,6 +100,54 @@ TEST_F(TileDisplayLayerImplTest,
 }
 
 TEST_F(TileDisplayLayerImplTest,
+       AppendQuadsDoesNotAppendQuadsForOccludedTiles) {
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr float kOpacity = 1.0;
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = kOpacity;
+
+  // Create a tiling with one tile.
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents =
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/false);
+
+  // Set up occlusion that covers the entire layer. Occlusion is specified in
+  // screen space, so we provide an identity transform to make content space
+  // the same as screen space.
+  gfx::Transform identity_transform;
+  SimpleEnclosedRegion screen_occlusion(kLayerRect);
+  raw_layer->draw_properties().occlusion_in_content_space =
+      Occlusion(identity_transform, screen_occlusion, screen_occlusion);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  EXPECT_EQ(render_pass->quad_list.size(), 0u);
+}
+
+TEST_F(TileDisplayLayerImplTest,
        NonEmptyTilingWithResourceResultsInPictureQuad) {
   constexpr gfx::Size kLayerBounds(1300, 1900);
   constexpr gfx::Rect kLayerRect(kLayerBounds);
