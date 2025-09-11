@@ -584,6 +584,16 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       GetFeatureRequestStatus(XRSessionFeature::PLANE_DETECTION, session);
   auto feature_request_image_tracking =
       GetFeatureRequestStatus(XRSessionFeature::IMAGE_TRACKING, session);
+  auto feature_request_hand_input =
+      GetFeatureRequestStatus(XRSessionFeature::HAND_INPUT, session);
+  auto feature_request_light_estimation =
+      GetFeatureRequestStatus(XRSessionFeature::LIGHT_ESTIMATION, session);
+  auto feature_request_camera_access =
+      GetFeatureRequestStatus(XRSessionFeature::CAMERA_ACCESS, session);
+  auto feature_request_anchors =
+      GetFeatureRequestStatus(XRSessionFeature::ANCHORS, session);
+  auto feature_request_hit_test =
+      GetFeatureRequestStatus(XRSessionFeature::HIT_TEST, session);
 
   ukm::builders::XR_WebXR_SessionRequest(ukm_source_id_)
       .SetMode(static_cast<int64_t>(mode_))
@@ -596,39 +606,68 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       .SetFeature_Unbounded(static_cast<int64_t>(feature_request_unbounded))
       .Record(execution_context->UkmRecorder());
 
-  // If the session was successfully created and DOM overlay was requested,
-  // count this as a use of the DOM overlay feature.
-  if (session && status == SessionRequestStatus::kSuccess &&
-      IsFeatureRequested(feature_request_dom_overlay)) {
-    DVLOG(2) << __func__ << ": DOM overlay was requested, logging a UseCounter";
-    UseCounter::Count(session->GetExecutionContext(),
-                      WebFeature::kXRDOMOverlay);
-  }
+  // If the session was successfully created record use counters.
+  if (session && status == SessionRequestStatus::kSuccess) {
+    if (IsFeatureRequested(feature_request_dom_overlay)) {
+      DVLOG(2) << __func__
+               << ": DOM overlay was requested, logging a UseCounter";
+      UseCounter::Count(session->GetExecutionContext(),
+                        WebFeature::kXRDOMOverlay);
+    }
 
-  // If the session was successfully created and depth-sensing was requested,
-  // count this as a use of depth sensing feature.
-  if (session && status == SessionRequestStatus::kSuccess &&
-      IsFeatureRequested(feature_request_depth_sensing)) {
-    DVLOG(2) << __func__
-             << ": depth sensing was requested, logging a UseCounter";
-    UseCounter::Count(session->GetExecutionContext(),
-                      WebFeature::kXRDepthSensing);
-  }
+    if (IsFeatureRequested(feature_request_depth_sensing)) {
+      DVLOG(2) << __func__
+               << ": depth sensing was requested, logging a UseCounter";
+      UseCounter::Count(session->GetExecutionContext(),
+                        WebFeature::kXRDepthSensing);
+    }
 
-  if (session && status == SessionRequestStatus::kSuccess &&
-      IsFeatureRequested(feature_request_plane_detection)) {
-    DVLOG(2) << __func__
-             << ": plane detection was requested, logging a UseCounter";
-    UseCounter::Count(session->GetExecutionContext(),
-                      WebFeature::kXRPlaneDetection);
-  }
+    if (IsFeatureRequested(feature_request_plane_detection)) {
+      DVLOG(2) << __func__
+               << ": plane detection was requested, logging a UseCounter";
+      UseCounter::Count(session->GetExecutionContext(),
+                        WebFeature::kXRPlaneDetection);
+    }
 
-  if (session && status == SessionRequestStatus::kSuccess &&
-      IsFeatureRequested(feature_request_image_tracking)) {
-    DVLOG(2) << __func__
-             << ": image tracking was requested, logging a UseCounter";
-    UseCounter::Count(session->GetExecutionContext(),
-                      WebFeature::kXRImageTracking);
+    if (IsFeatureRequested(feature_request_image_tracking)) {
+      DVLOG(2) << __func__
+               << ": image tracking was requested, logging a UseCounter";
+      UseCounter::Count(session->GetExecutionContext(),
+                        WebFeature::kXRImageTracking);
+    }
+
+    if (IsFeatureRequested(feature_request_hand_input)) {
+      DVLOG(2) << __func__
+               << ": hand input was requested, logging a UseCounter";
+      UseCounter::CountWebDXFeature(session->GetExecutionContext(),
+                                    WebDXFeature::kWebxrHandInput);
+    }
+
+    if (IsFeatureRequested(feature_request_light_estimation)) {
+      DVLOG(2) << __func__
+               << ": lighting estimation was requested, logging a UseCounter";
+      UseCounter::CountWebDXFeature(session->GetExecutionContext(),
+                                    WebDXFeature::kWebxrLightingEstimation);
+    }
+
+    if (IsFeatureRequested(feature_request_camera_access)) {
+      DVLOG(2) << __func__
+               << ": camera access was requested, logging a UseCounter";
+      UseCounter::CountWebDXFeature(session->GetExecutionContext(),
+                                    WebDXFeature::kWebxrCamera);
+    }
+
+    if (IsFeatureRequested(feature_request_anchors)) {
+      DVLOG(2) << __func__ << ": anchors were requested, logging a UseCounter";
+      UseCounter::CountWebDXFeature(session->GetExecutionContext(),
+                                    WebDXFeature::kWebxrAnchors);
+    }
+
+    if (IsFeatureRequested(feature_request_hit_test)) {
+      DVLOG(2) << __func__ << ": hit test was requested, logging a UseCounter";
+      UseCounter::CountWebDXFeature(session->GetExecutionContext(),
+                                    WebDXFeature::kWebxrHitTest);
+    }
   }
 
   if (session && metrics_recorder) {
@@ -1591,6 +1630,12 @@ void XRSystem::FinishSessionCreation(
 
   UseCounter::Count(ExecutionContext::From(query->GetScriptState()),
                     WebFeature::kWebXrSessionCreated);
+
+  if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
+    UseCounter::CountWebDXFeature(
+        ExecutionContext::From(query->GetScriptState()),
+        WebDXFeature::kWebxrAr);
+  }
 
   query->Resolve(session, std::move(metrics_recorder));
 }

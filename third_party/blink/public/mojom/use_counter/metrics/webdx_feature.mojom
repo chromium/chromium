@@ -461,6 +461,14 @@ enum WebDXFeature {
   kTransferableStreams = 399,
   kReadableByteStreams = 400,
   kDevicePosture = 401,
+  kWebxrAnchors = 402,
+  kWebxrAr = 403,
+  kWebxrCamera = 404,
+  kWebxrDepthSensing = 405,
+  kWebxrDomOverlays = 406,
+  kWebxrHandInput = 407,
+  kWebxrHitTest = 408,
+  kWebxrLightingEstimation = 409,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

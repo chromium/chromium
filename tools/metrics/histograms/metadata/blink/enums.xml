@@ -8571,6 +8571,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="399" label="TransferableStreams"/>
   <int value="400" label="ReadableByteStreams"/>
   <int value="401" label="DevicePosture"/>
+  <int value="402" label="WebxrAnchors"/>
+  <int value="403" label="WebxrAr"/>
+  <int value="404" label="WebxrCamera"/>
+  <int value="405" label="WebxrDepthSensing"/>
+  <int value="406" label="WebxrDomOverlays"/>
+  <int value="407" label="WebxrHandInput"/>
+  <int value="408" label="WebxrHitTest"/>
+  <int value="409" label="WebxrLightingEstimation"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
