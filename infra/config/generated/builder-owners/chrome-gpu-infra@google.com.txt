@@ -90,6 +90,7 @@ ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
 ci/Linux Debug (NVIDIA)
 ci/Linux FYI Debug (NVIDIA)
+ci/Linux FYI Experimental Release (AMD 780M)
 ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (Intel Arc 140V)
 ci/Linux FYI Experimental Release (Intel UHD 630)
@@ -192,6 +193,7 @@ try/gpu-fyi-try-android-q-pixel-2-32
 try/gpu-fyi-try-android-r-pixel-4-32
 try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
+try/gpu-fyi-try-linux-amd-780m-exp
 try/gpu-fyi-try-linux-amd-890m-exp
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
