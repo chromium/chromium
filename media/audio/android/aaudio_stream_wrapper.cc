@@ -24,6 +24,7 @@
 
 // AAudioStreamBuilder_setChannelMask was not introduced until API version 32.
 #define AAUDIO_CHANNEL_MASK_MIN_API 32
+#define AAUDIO_LOW_LATENCY_INPUT_MIN_API 30
 
 BASE_FEATURE(kAAudioInputLowLatencyModeByDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -188,12 +189,16 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
   CHECK(params.IsValid());
   CHECK(callback_);
 
-  if (stream_type_ == StreamType::kInput &&
-      base::FeatureList::IsEnabled(kAAudioInputLowLatencyModeByDefault)) {
-    // Default to low latency for input streams.
-    performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
-  } else {
-    performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+  performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+
+  // There is a bug on Android 10 and below preventing us from using both low
+  // latency mode and a data callback at the same time.
+  if (__builtin_available(android AAUDIO_LOW_LATENCY_INPUT_MIN_API, *)) {
+    if (stream_type_ == StreamType::kInput &&
+        base::FeatureList::IsEnabled(kAAudioInputLowLatencyModeByDefault)) {
+      // Default to low latency for input streams.
+      performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
+    }
   }
 
   switch (params.latency_tag()) {
