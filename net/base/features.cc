@@ -587,12 +587,6 @@ BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCompressionDictionaryTransportOverHttp1,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCompressionDictionaryTransportOverHttp2,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

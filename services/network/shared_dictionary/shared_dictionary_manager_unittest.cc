@@ -87,6 +87,8 @@ const size_t kCacheMaxCount = 100;
 const std::string kDefaultCacheControlHeader =
     "cache-control: max-age=2592000\n";
 
+const base::TimeDelta kDefaultExpiration(base::Seconds(2592000));
+
 std::string ToString(TestManagerType type) {
   switch (type) {
     case TestManagerType::kInMemory:
@@ -156,12 +158,6 @@ void WriteDictionary(
     (*writer)->Append(base::as_byte_span(data));
   }
   (*writer)->Finish();
-}
-
-base::TimeDelta GetDefaultExpiration() {
-  return base::FeatureList::IsEnabled(features::kCompressionDictionaryTransport)
-             ? base::Seconds(2592000)
-             : shared_dictionary::kMaxExpirationForOriginTrial;
 }
 
 }  // namespace
@@ -1163,7 +1159,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
           dictionary_map.begin()->second.begin()->second;
       EXPECT_EQ(GURL("https://origin1.test/dict"), dictionary_info.url());
       EXPECT_EQ(now_time, dictionary_info.response_time());
-      EXPECT_EQ(GetDefaultExpiration(), dictionary_info.expiration());
+      EXPECT_EQ(kDefaultExpiration, dictionary_info.expiration());
       EXPECT_EQ("/testfile*", dictionary_info.match());
       EXPECT_EQ(data1.size() + data2.size(), dictionary_info.size());
       EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(
@@ -1189,7 +1185,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
           dictionary_map.begin()->second.begin()->second;
       EXPECT_EQ(GURL("https://origin1.test/dict"), dictionary_info.url());
       EXPECT_EQ(now_time, dictionary_info.response_time());
-      EXPECT_EQ(GetDefaultExpiration(), dictionary_info.expiration());
+      EXPECT_EQ(kDefaultExpiration, dictionary_info.expiration());
       EXPECT_EQ("/testfile*", dictionary_info.match());
       EXPECT_EQ(data1.size() + data2.size(), dictionary_info.size());
       CheckDiskCacheEntryDataEquals(
@@ -2141,7 +2137,7 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
   EXPECT_EQ("/p1*", result1[0]->match);
   EXPECT_EQ(GURL("https://origin1.test/1"), result1[0]->dictionary_url);
   EXPECT_EQ(start_time, result1[0]->response_time);
-  EXPECT_EQ(GetDefaultExpiration(), result1[0]->expiration);
+  EXPECT_EQ(kDefaultExpiration, result1[0]->expiration);
   EXPECT_EQ(start_time, result1[0]->last_used_time);
   EXPECT_EQ(kTestData1.size(), result1[0]->size);
   EXPECT_EQ(kTestData1Hash, result1[0]->hash);
@@ -2149,7 +2145,7 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
   EXPECT_EQ("/p2*", result1[1]->match);
   EXPECT_EQ(GURL("https://origin1.test/2"), result1[1]->dictionary_url);
   EXPECT_EQ(start_time + base::Seconds(1), result1[1]->response_time);
-  EXPECT_EQ(GetDefaultExpiration(), result1[1]->expiration);
+  EXPECT_EQ(kDefaultExpiration, result1[1]->expiration);
   EXPECT_EQ(start_time + base::Seconds(3), result1[1]->last_used_time);
   EXPECT_EQ(kTestData2.size(), result1[1]->size);
   EXPECT_EQ(kTestData2Hash, result1[1]->hash);

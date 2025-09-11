@@ -495,11 +495,7 @@ class BrowsingDataModelBrowserTest
         {blink::features::kFencedFrames, {}},
         {network::features::kBrowsingTopics, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
-        {network::features::kCompressionDictionaryTransportBackend, {}},
         {network::features::kCompressionDictionaryTransport, {}},
-        // Need to enable CompressionDictionaryTransportOverHttp1 because
-        // EmbeddedTestServer uses HTTP/1.1 by default.
-        {net::features::kCompressionDictionaryTransportOverHttp1, {}},
     };
 
     std::vector<FeatureRef> disabled_features = {

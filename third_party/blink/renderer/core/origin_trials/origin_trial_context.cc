@@ -533,11 +533,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kBackForwardCacheSendNotRestoredReasons);
   }
 
-  if (trial_name == "CompressionDictionaryTransport") {
-    return base::FeatureList::IsEnabled(
-        network::features::kCompressionDictionaryTransportBackend);
-  }
-
   if (trial_name == "SoftNavigationHeuristics") {
     return base::FeatureList::IsEnabled(features::kSoftNavigationDetection);
   }

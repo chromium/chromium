@@ -4381,8 +4381,7 @@ void Document::CheckCompleted() {
 }
 
 void Document::FetchDictionaryFromLinkHeader() {
-  if (!CompressionDictionaryTransportFullyEnabled(GetExecutionContext()) ||
-      !Loader()) {
+  if (!Loader()) {
     return;
   }
   Loader()->DispatchLinkHeaderPreloads(

@@ -731,13 +731,7 @@ class SharedDictionaryBrowserTest
     : public SharedDictionaryBrowserTestBase,
       public ::testing::WithParamInterface<BrowserType> {
  public:
-  SharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport},
-        /*disabled_features=*/{});
-  }
+  SharedDictionaryBrowserTest() {}
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;
   SharedDictionaryBrowserTest& operator=(const SharedDictionaryBrowserTest&) =
       delete;
@@ -997,7 +991,6 @@ class SharedDictionaryBrowserTest
 
   raw_ptr<Shell> off_the_record_shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

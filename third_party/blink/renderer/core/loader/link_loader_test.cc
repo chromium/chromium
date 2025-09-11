@@ -728,12 +728,9 @@ TEST_F(LinkLoaderTest, PreloadAndPrefetch) {
   EXPECT_TRUE(resource->IsLinkPreload());
 }
 
-class DictionaryLinkTest : public testing::Test,
-                           public testing::WithParamInterface<bool> {
+class DictionaryLinkTest : public testing::Test {
  public:
-  DictionaryLinkTest()
-      : dictionary_scoped_feature_(GetParam()),
-        backend_scoped_feature_(GetParam()) {}
+  DictionaryLinkTest() {}
 
   void SetUp() override {
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -750,18 +747,9 @@ class DictionaryLinkTest : public testing::Test,
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-
- private:
-  ScopedCompressionDictionaryTransportForTest dictionary_scoped_feature_;
-  ScopedCompressionDictionaryTransportBackendForTest backend_scoped_feature_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DictionaryLinkTest,
-                         DictionaryLinkTest,
-                         testing::Bool());
-
-TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
-  bool is_dictionary_load_enabled = GetParam();
+TEST_F(DictionaryLinkTest, LoadDictionaryFromLink) {
   static constexpr char href[] = "http://example.test/test.dict";
 
   // Test the cases with a single header
@@ -769,7 +757,7 @@ TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
       std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   dummy_page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
   Persistent<MockLinkLoaderClient> loader_client =
-      MakeGarbageCollected<MockLinkLoaderClient>(is_dictionary_load_enabled);
+      MakeGarbageCollected<MockLinkLoaderClient>(true);
   auto* loader = MakeGarbageCollected<LinkLoader>(loader_client.Get());
   KURL href_url = KURL(NullURL(), href);
   // TODO(crbug.com/751425): We should use the mock functionality
@@ -786,11 +774,7 @@ TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
   loader->LoadLink(params, dummy_page_holder->GetDocument());
   RunIdleTasks();
   Resource* resource = loader->GetResourceForTesting();
-  if (is_dictionary_load_enabled) {
-    EXPECT_TRUE(resource);
-  } else {
-    EXPECT_FALSE(resource);
-  }
+  EXPECT_TRUE(resource);
   URLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
 }
@@ -798,12 +782,9 @@ TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
 }  // namespace
 
 // Required to be outside the anomymous namespace for testing
-class DictionaryLoadFromHeaderTest : public SimTest,
-                                     public testing::WithParamInterface<bool> {
+class DictionaryLoadFromHeaderTest : public SimTest {
  public:
-  DictionaryLoadFromHeaderTest()
-      : dictionary_scoped_feature_(GetParam()),
-        backend_scoped_feature_(GetParam()) {}
+  DictionaryLoadFromHeaderTest() {}
 
   void SetUp() override {
     SimTest::SetUp();
@@ -828,19 +809,9 @@ class DictionaryLoadFromHeaderTest : public SimTest,
   static constexpr char dict_href_[] = "http://example.test/test.dict";
 
   std::unique_ptr<SimRequest> main_resource_;
-
- private:
-  ScopedCompressionDictionaryTransportForTest dictionary_scoped_feature_;
-  ScopedCompressionDictionaryTransportBackendForTest backend_scoped_feature_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DictionaryLoadFromHeaderTest,
-                         DictionaryLoadFromHeaderTest,
-                         testing::Bool());
-
-TEST_P(DictionaryLoadFromHeaderTest, LoadDictionaryFromHeader) {
-  bool is_dictionary_load_enabled = GetParam();
-
+TEST_F(DictionaryLoadFromHeaderTest, LoadDictionaryFromHeader) {
   KURL dict_url = KURL(NullURL(), dict_href_);
   ResourceResponse dict_response(dict_url);
   dict_response.SetHttpStatusCode(200);
@@ -853,12 +824,10 @@ TEST_P(DictionaryLoadFromHeaderTest, LoadDictionaryFromHeader) {
   RunIdleTasks();
   Resource* dictionary_resource =
       GetDocument().GetPendingLinkPreloadForTesting(dict_url);
-  ASSERT_EQ(dictionary_resource != nullptr, is_dictionary_load_enabled);
-  if (is_dictionary_load_enabled) {
-    ASSERT_TRUE(dictionary_resource->IsLoading());
-    URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
-    ASSERT_TRUE(dictionary_resource->IsLoaded());
-  }
+  ASSERT_TRUE(dictionary_resource != nullptr);
+  ASSERT_TRUE(dictionary_resource->IsLoading());
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  ASSERT_TRUE(dictionary_resource->IsLoaded());
   URLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
 }

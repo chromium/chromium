@@ -139,11 +139,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     const auto& dictionary_info =
         dictionary_map.begin()->second.begin()->second;
     EXPECT_EQ(dictionary_url, dictionary_info.url());
-    EXPECT_EQ(base::FeatureList::IsEnabled(
-                  network::features::kCompressionDictionaryTransport)
-                  ? base::Seconds(2592000)
-                  : shared_dictionary::kMaxExpirationForOriginTrial,
-              dictionary_info.expiration());
+    EXPECT_EQ(base::Seconds(2592000), dictionary_info.expiration());
     EXPECT_EQ("/path*", dictionary_info.match());
     EXPECT_EQ(kTestData.size(), dictionary_info.size());
     EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(

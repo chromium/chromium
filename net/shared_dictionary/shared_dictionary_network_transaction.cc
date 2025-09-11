@@ -191,21 +191,6 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     return;
   }
 
-  if (!IsLocalhost(request_url)) {
-    if (!base::FeatureList::IsEnabled(
-            features::kCompressionDictionaryTransportOverHttp1) &&
-        negotiated_protocol_ != NextProto::kProtoHTTP2 &&
-        negotiated_protocol_ != NextProto::kProtoQUIC) {
-      shared_dictionary_.reset();
-      return;
-    }
-    if (!base::FeatureList::IsEnabled(
-            features::kCompressionDictionaryTransportOverHttp2) &&
-        negotiated_protocol_ == NextProto::kProtoHTTP2) {
-      shared_dictionary_.reset();
-      return;
-    }
-  }
   if (base::FeatureList::IsEnabled(
           features::kCompressionDictionaryTransportRequireKnownRootCert) &&
       !cert_is_issued_by_known_root_ && !IsLocalhost(request_url)) {

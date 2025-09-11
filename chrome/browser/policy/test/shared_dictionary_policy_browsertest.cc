@@ -28,13 +28,7 @@ namespace policy {
 
 class SharedDictionaryPolicyTest : public PolicyTest {
  public:
-  SharedDictionaryPolicyTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport},
-        /*disabled_features=*/{});
-  }
+  SharedDictionaryPolicyTest() {}
   ~SharedDictionaryPolicyTest() override = default;
 
   void SetUp() override {
@@ -89,8 +83,6 @@ class SharedDictionaryPolicyTest : public PolicyTest {
         ->GetSharedDictionaryUsageInfo(result.GetCallback());
     return result.Get();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryPolicyTest,

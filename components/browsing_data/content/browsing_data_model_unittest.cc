@@ -213,15 +213,10 @@ TEST_F(BrowsingDataModelTest, ConcurrentDeletions) {
           [&](network::TestNetworkContext::GetStoredTrustTokenCountsCallback
                   callback) { std::move(callback).Run(std::move(tokens)); });
 
-  if (base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransportBackend)) {
-    EXPECT_CALL(*mock_network_context(),
-                GetSharedDictionaryUsageInfo(testing::_))
-        .WillOnce([&](network::TestNetworkContext::
-                          GetSharedDictionaryUsageInfoCallback callback) {
-          std::move(callback).Run({});
-        });
-  }
+  EXPECT_CALL(*mock_network_context(), GetSharedDictionaryUsageInfo(testing::_))
+      .WillOnce(
+          [&](network::TestNetworkContext::GetSharedDictionaryUsageInfoCallback
+                  callback) { std::move(callback).Run({}); });
 
   base::RunLoop run_loop;
   BuildModel(run_loop.QuitWhenIdleClosure());
@@ -331,15 +326,10 @@ TEST_F(BrowsingDataModelTest, DelegateDataDeleted) {
           [&](network::TestNetworkContext::GetStoredTrustTokenCountsCallback
                   callback) { std::move(callback).Run({}); });
 
-  if (base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransportBackend)) {
-    EXPECT_CALL(*mock_network_context(),
-                GetSharedDictionaryUsageInfo(testing::_))
-        .WillOnce([&](network::TestNetworkContext::
-                          GetSharedDictionaryUsageInfoCallback callback) {
-          std::move(callback).Run({});
-        });
-  }
+  EXPECT_CALL(*mock_network_context(), GetSharedDictionaryUsageInfo(testing::_))
+      .WillOnce(
+          [&](network::TestNetworkContext::GetSharedDictionaryUsageInfoCallback
+                  callback) { std::move(callback).Run({}); });
 
   base::RunLoop run_loop;
   BuildModel(run_loop.QuitWhenIdleClosure());
@@ -756,16 +746,8 @@ TEST_F(BrowsingDataModelTest, HasThirdPartyPartitioningSite_False) {
 
 class BrowsingDataModelSharedDictionaryTest : public BrowsingDataModelTest {
  public:
-  BrowsingDataModelSharedDictionaryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::
-                                  kCompressionDictionaryTransportBackend},
-        /*disabled_features=*/{});
-  }
+  BrowsingDataModelSharedDictionaryTest() {}
   ~BrowsingDataModelSharedDictionaryTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BrowsingDataModelSharedDictionaryTest, GetUsageInfo) {

@@ -760,19 +760,6 @@ extern const char kCollaborationSharedTabGroupAccountDataDescription[];
 extern const char kCompressionDictionaryTransportName[];
 extern const char kCompressionDictionaryTransportDescription[];
 
-extern const char kCompressionDictionaryTransportBackendName[];
-extern const char kCompressionDictionaryTransportBackendDescription[];
-
-extern const char kCompressionDictionaryTransportOverHttp1Name[];
-extern const char kCompressionDictionaryTransportOverHttp1Description[];
-
-extern const char kCompressionDictionaryTransportOverHttp2Name[];
-extern const char kCompressionDictionaryTransportOverHttp2Description[];
-
-extern const char kCompressionDictionaryTransportRequireKnownRootCertName[];
-extern const char
-    kCompressionDictionaryTransportRequireKnownRootCertDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kContextualSearchWithCredentialsForDebugName[];
 extern const char kContextualSearchWithCredentialsForDebugDescription[];

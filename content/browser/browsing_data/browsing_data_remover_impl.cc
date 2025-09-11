@@ -720,7 +720,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Shared Dictionaries.
   if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {
     if (base::FeatureList::IsEnabled(
-            network::features::kCompressionDictionaryTransportBackend)) {
+            network::features::kCompressionDictionaryTransport)) {
       network::mojom::NetworkContext* network_context =
           storage_partition->GetNetworkContext();
       network_context->ClearSharedDictionaryCache(

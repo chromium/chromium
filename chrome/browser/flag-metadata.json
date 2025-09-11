@@ -3127,28 +3127,8 @@
   },
   {
     "name": "enable-compression-dictionary-transport",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "enable-compression-dictionary-transport-allow-http1",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "enable-compression-dictionary-transport-allow-http2",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "enable-compression-dictionary-transport-backend",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "enable-compression-dictionary-transport-require-known-root-cert",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 133
+    "owners": [ "pmeenan@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-container-type-no-layout-containment",

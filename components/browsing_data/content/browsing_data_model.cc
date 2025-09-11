@@ -990,7 +990,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   bool is_shared_storage_enabled =
       base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
-      network::features::kCompressionDictionaryTransportBackend);
+      network::features::kCompressionDictionaryTransport);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
   bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(

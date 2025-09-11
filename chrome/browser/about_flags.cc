@@ -10432,35 +10432,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kCompressionDictionaryTransport)},
 
-    {"enable-compression-dictionary-transport-backend",
-     flag_descriptions::kCompressionDictionaryTransportBackendName,
-     flag_descriptions::kCompressionDictionaryTransportBackendDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         network::features::kCompressionDictionaryTransportBackend)},
-
-    {"enable-compression-dictionary-transport-allow-http1",
-     flag_descriptions::kCompressionDictionaryTransportOverHttp1Name,
-     flag_descriptions::kCompressionDictionaryTransportOverHttp1Description,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         net::features::kCompressionDictionaryTransportOverHttp1)},
-
-    {"enable-compression-dictionary-transport-allow-http2",
-     flag_descriptions::kCompressionDictionaryTransportOverHttp2Name,
-     flag_descriptions::kCompressionDictionaryTransportOverHttp2Description,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         net::features::kCompressionDictionaryTransportOverHttp2)},
-
-    {"enable-compression-dictionary-transport-require-known-root-cert",
-     flag_descriptions::kCompressionDictionaryTransportRequireKnownRootCertName,
-     flag_descriptions::
-         kCompressionDictionaryTransportRequireKnownRootCertDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         net::features::kCompressionDictionaryTransportRequireKnownRootCert)},
-
     {"enable-container-type-no-layout-containment",
      flag_descriptions::kContainerTypeNoLayoutContainmentName,
      flag_descriptions::kContainerTypeNoLayoutContainmentDescription, kOsAll,

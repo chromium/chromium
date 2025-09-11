@@ -115,7 +115,7 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   }
 
   if (base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransportBackend)) {
+          network::features::kCompressionDictionaryTransport)) {
     tasks_ += 1;
     partition->GetNetworkContext()->GetSharedDictionaryOriginsBetween(
         begin_, end_,

@@ -356,8 +356,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {"CompressionDictionaryTransport",
            raw_ref(network::features::kCompressionDictionaryTransport)},
-          {"CompressionDictionaryTransportBackend",
-           raw_ref(network::features::kCompressionDictionaryTransportBackend)},
           {"CookieDeprecationFacilitatedTesting",
            raw_ref(features::kCookieDeprecationFacilitatedTesting)},
           {"DocumentPolicyIncludeJSCallStacksInCrashReports",

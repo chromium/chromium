@@ -964,11 +964,6 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
     const LinkLoadParameters& params,
     Document& document,
     PendingLinkPreload* pending_preload) {
-  if (!CompressionDictionaryTransportFullyEnabled(
-          document.GetExecutionContext())) {
-    return;
-  }
-
   if (!document.Loader() || document.Loader()->Archive()) {
     return;
   }

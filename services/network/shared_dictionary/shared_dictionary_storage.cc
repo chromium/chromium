@@ -182,11 +182,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
     case mojom::RequestMode::kCorsWithForcedPreflight:
       break;
     case mojom::RequestMode::kNavigate:
-      if (!base::FeatureList::IsEnabled(
-              features::kSharedDictionaryRegisterNavigationRequests)) {
-        return base::unexpected(
-            mojom::SharedDictionaryError::kWriteErrorNavigationRequest);
-      }
+      break;
   }
   if (!shared_dictionary_writer_enabled) {
     return base::unexpected(

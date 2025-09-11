@@ -1304,35 +1304,7 @@ const char kCollaborationSharedTabGroupAccountDataDescription[] =
 const char kCompressionDictionaryTransportName[] =
     "Compression dictionary transport";
 const char kCompressionDictionaryTransportDescription[] =
-    "Enables compression dictionary transport features. Requires "
-    "chrome://flags/#enable-compression-dictionary-transport-backend to be "
-    "enabled.";
-
-const char kCompressionDictionaryTransportBackendName[] =
-    "Compression dictionary transport backend";
-const char kCompressionDictionaryTransportBackendDescription[] =
-    "Enables the backend of compression dictionary transport features. "
-    "Requires chrome://flags/#enable-compression-dictionary-transport to be "
-    "enabled for testing the feature.";
-
-const char kCompressionDictionaryTransportOverHttp1Name[] =
-    "Compression dictionary transport over HTTP/1";
-const char kCompressionDictionaryTransportOverHttp1Description[] =
-    "When this is enabled, Chromium can use stored shared dictionaries even "
-    "when the connection is using HTTP/1 for non-localhost requests.";
-
-const char kCompressionDictionaryTransportOverHttp2Name[] =
-    "Compression dictionary transport over HTTP/2";
-const char kCompressionDictionaryTransportOverHttp2Description[] =
-    "When this is enabled, Chromium can use stored shared dictionaries even "
-    "when the connection is using HTTP/2 for non-localhost requests.";
-
-const char kCompressionDictionaryTransportRequireKnownRootCertName[] =
-    "Compression dictionary transport require known root cert";
-const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
-    "When this is enabled, Chromium can use stored shared dictionaries only "
-    "when the connection is using a well known root cert or when the server is "
-    "a localhost.";
+    "Enables compression dictionary transport.";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kContextMenuEmptySpaceName[] = "Context menu at empty space";

@@ -747,8 +747,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool prefetch_maybe_for_top_level_navigation_ : 1;
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
-  // TODO(crbug.com/1413922): Remove this flag when we launch
-  // CompressionDictionaryTransport feature.
+  // TODO(crbug.com/40255884): Remove this flag when the
+  // CompressionDictionaryTransport feature can no longer be disabled by
+  // feature flag or enterprise policy.
   bool shared_dictionary_writer_enabled_ : 1;
   bool requires_upgrade_for_loader_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
