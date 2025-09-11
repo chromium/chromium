@@ -1237,9 +1237,8 @@ TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
 // with a real browser the browser here has a transient child window
 // (corresponds to the status bubble).
 TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
-  std::unique_ptr<Window> browser = aura::test::CreateTestWindow(
-      {.bounds = {5, 6, 7, 8},
-       .window_type = aura::client::WINDOW_TYPE_NORMAL});
+  std::unique_ptr<Window> browser =
+      aura::test::CreateTestWindow({.bounds = {5, 6, 7, 8}});
   browser->SetName("browser");
   ParentWindowInPrimaryRootWindow(browser.get());
   browser->Show();
@@ -1259,9 +1258,8 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   ParentWindowInPrimaryRootWindow(status_bubble);
   status_bubble->SetName("status_bubble");
 
-  std::unique_ptr<Window> app = aura::test::CreateTestWindow(
-      {.bounds = {5, 6, 7, 8},
-       .window_type = aura::client::WINDOW_TYPE_NORMAL});
+  std::unique_ptr<Window> app =
+      aura::test::CreateTestWindow({.bounds = {5, 6, 7, 8}});
   app->SetName("app");
   ParentWindowInPrimaryRootWindow(app.get());
 
@@ -1364,9 +1362,7 @@ TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
   aura::test::TestWindowDelegate delegate;
   delegate.set_window_component(HTCAPTION);
   std::unique_ptr<Window> window = aura::test::CreateTestWindow(
-      {.delegate = &delegate,
-       .bounds = {5, 5, 100, 50},
-       .window_type = aura::client::WINDOW_TYPE_NORMAL});
+      {.delegate = &delegate, .bounds = {5, 5, 100, 50}});
   ParentWindowInPrimaryRootWindow(window.get());
 
   Shelf* shelf = GetPrimaryShelf();

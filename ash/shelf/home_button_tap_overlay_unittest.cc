@@ -160,7 +160,7 @@ class HomeButtonTapOverlayTest
 
  private:
   void CreateTestWindow() {
-    window_ = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+    window_ = AshTestBase::CreateTestWindow({400, 400});
   }
 
   std::unique_ptr<aura::Window> window_;

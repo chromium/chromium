@@ -22,7 +22,7 @@ using WindowUtilTest = aura::test::AuraTestBase;
 // already been acquired.
 TEST_F(WindowUtilTest, RecreateLayers) {
   std::unique_ptr<aura::Window> window1 =
-      aura::test::CreateTestWindow({.parent = nullptr, .window_id = 0});
+      aura::test::CreateTestWindow({.window_id = 0});
   std::unique_ptr<aura::Window> window11 =
       aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 1});
   std::unique_ptr<aura::Window> window12 =
@@ -55,7 +55,7 @@ TEST_F(WindowUtilTest, RecreateLayers) {
 // Test if map_func is correctly executed in RecreateLayerWithClosure.
 TEST_F(WindowUtilTest, RecreateLayersWithClosure) {
   std::unique_ptr<aura::Window> window1 =
-      aura::test::CreateTestWindow({.parent = nullptr, .window_id = 0});
+      aura::test::CreateTestWindow({.window_id = 0});
   std::unique_ptr<aura::Window> window11 =
       aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 1});
   std::unique_ptr<aura::Window> window12 =

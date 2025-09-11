@@ -405,14 +405,14 @@ void OffsetBounds(Window* window, int horizontal, int vertical) {
 }
 
 TEST_F(WindowTest, GetChildById) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
-  std::unique_ptr<Window> w11(
-      CreateTestWindow({.parent = w1.get(), .window_id = 11}));
-  std::unique_ptr<Window> w111(
-      CreateTestWindow({.parent = w11.get(), .window_id = 111}));
-  std::unique_ptr<Window> w12(
-      CreateTestWindow({.parent = w1.get(), .window_id = 12}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
+  std::unique_ptr<Window> w11 =
+      CreateTestWindow({.parent = w1.get(), .window_id = 11});
+  std::unique_ptr<Window> w111 =
+      CreateTestWindow({.parent = w11.get(), .window_id = 111});
+  std::unique_ptr<Window> w12 =
+      CreateTestWindow({.parent = w1.get(), .window_id = 12});
 
   EXPECT_FALSE(w1->GetChildById(57));
   EXPECT_EQ(w12.get(), w1->GetChildById(12));
@@ -442,10 +442,9 @@ TEST_F(WindowTest, Contains) {
 }
 
 TEST_F(WindowTest, ContainsPointInRoot) {
-  std::unique_ptr<Window> w(CreateTestWindow({.parent = root_window(),
-                                              .bounds = gfx::Rect(10, 10, 5, 5),
-                                              .window_id = 1},
-                                             SK_ColorWHITE));
+  std::unique_ptr<Window> w = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 5, 5}, .window_id = 1},
+      SK_ColorWHITE);
   EXPECT_FALSE(w->ContainsPointInRoot(gfx::Point(9, 9)));
   EXPECT_TRUE(w->ContainsPointInRoot(gfx::Point(10, 10)));
   EXPECT_TRUE(w->ContainsPointInRoot(gfx::Point(14, 14)));
@@ -454,10 +453,9 @@ TEST_F(WindowTest, ContainsPointInRoot) {
 }
 
 TEST_F(WindowTest, ContainsPoint) {
-  std::unique_ptr<Window> w(CreateTestWindow({.parent = root_window(),
-                                              .bounds = gfx::Rect(10, 10, 5, 5),
-                                              .window_id = 1},
-                                             SK_ColorWHITE));
+  std::unique_ptr<Window> w = CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 10, 5, 5}, .window_id = 1},
+      SK_ColorWHITE);
   EXPECT_TRUE(w->ContainsPoint(gfx::Point(0, 0)));
   EXPECT_TRUE(w->ContainsPoint(gfx::Point(4, 4)));
   EXPECT_FALSE(w->ContainsPoint(gfx::Point(5, 5)));
@@ -465,8 +463,8 @@ TEST_F(WindowTest, ContainsPoint) {
 }
 
 TEST_F(WindowTest, MakeWindowCapturable) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   // Initially the window is not capturable.
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
 
@@ -514,8 +512,8 @@ TEST_F(WindowTest, MakeWindowCapturable) {
 }
 
 TEST_F(WindowTest, DeletingCapturableWindows) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   // Initially the window is not capturable.
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
 
@@ -530,8 +528,8 @@ TEST_F(WindowTest, DeletingCapturableWindows) {
 }
 
 TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
   ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
   EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
@@ -554,8 +552,8 @@ TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
 }
 
 TEST_F(WindowTest, RecreateLayerOfCapturableWindow) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
   ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
   EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
@@ -573,8 +571,8 @@ TEST_F(WindowTest, ConvertPointToWindow) {
   // Window::ConvertPointToWindow is mostly identical to
   // Layer::ConvertPointToLayer, except NULL values for |source| are permitted,
   // in which case the function just returns.
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   gfx::Point reference_point(100, 100);
   gfx::Point test_point = reference_point;
   Window::ConvertPointToTarget(nullptr, w1.get(), &test_point);
@@ -740,11 +738,11 @@ TEST_F(WindowTest, MoveCursorToWithComplexTransform) {
 // scope (as opposed to being explicitly deleted by its WindowDelegate).
 TEST_F(WindowTest, NoCrashOnWindowDelete) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(
+  std::unique_ptr<Window> window =
       aura::test::CreateTestWindow({.delegate = &delegate,
                                     .parent = root_window(),
                                     .bounds = {20, 20},
-                                    .window_id = 0}));
+                                    .window_id = 0});
 }
 
 TEST_F(WindowTest, GetEventHandlerForPoint) {
@@ -818,18 +816,18 @@ TEST_F(WindowTest, GetToplevelWindow) {
   const gfx::Rect kBounds(0, 0, 10, 10);
   TestWindowDelegate delegate;
 
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
-  std::unique_ptr<Window> w11(CreateTestWindow({.delegate = &delegate,
-                                                .parent = w1.get(),
-                                                .bounds = kBounds,
-                                                .window_id = 11}));
-  std::unique_ptr<Window> w111(
-      CreateTestWindow({.parent = w11.get(), .window_id = 111}));
-  std::unique_ptr<Window> w1111(CreateTestWindow({.delegate = &delegate,
-                                                  .parent = w111.get(),
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
+  std::unique_ptr<Window> w11 = CreateTestWindow({.delegate = &delegate,
+                                                  .parent = w1.get(),
                                                   .bounds = kBounds,
-                                                  .window_id = 1111}));
+                                                  .window_id = 11});
+  std::unique_ptr<Window> w111 =
+      CreateTestWindow({.parent = w11.get(), .window_id = 111});
+  std::unique_ptr<Window> w1111 = CreateTestWindow({.delegate = &delegate,
+                                                    .parent = w111.get(),
+                                                    .bounds = kBounds,
+                                                    .window_id = 1111});
 
   EXPECT_TRUE(root_window()->GetToplevelWindow() == nullptr);
   EXPECT_TRUE(w1->GetToplevelWindow() == nullptr);
@@ -857,8 +855,8 @@ class AddedToRootWindowObserver : public WindowObserver {
 TEST_F(WindowTest, WindowAddedToRootWindowShouldNotifyChildAndNotParent) {
   AddedToRootWindowObserver parent_observer;
   AddedToRootWindowObserver child_observer;
-  std::unique_ptr<Window> parent_window(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> parent_window =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   std::unique_ptr<Window> child_window(new Window(nullptr));
   child_window->Init(ui::LAYER_TEXTURED);
   child_window->Show();
@@ -903,10 +901,10 @@ TEST_F(WindowTest, OrphanedBeforeOnDestroyed) {
   TestWindowDelegate parent_delegate;
   DestroyOrphanDelegate child_delegate;
   {
-    std::unique_ptr<Window> parent(aura::test::CreateTestWindow(
-        {.delegate = &parent_delegate, .parent = root_window()}));
-    std::unique_ptr<Window> child(aura::test::CreateTestWindow(
-        {.delegate = &child_delegate, .parent = parent.get()}));
+    std::unique_ptr<Window> parent = aura::test::CreateTestWindow(
+        {.delegate = &parent_delegate, .parent = root_window()});
+    std::unique_ptr<Window> child = aura::test::CreateTestWindow(
+        {.delegate = &child_delegate, .parent = parent.get()});
     child_delegate.set_window(child.get());
   }
 }
@@ -1032,11 +1030,11 @@ TEST_F(WindowTest, StackChildAbove) {
 // Various capture assertions.
 TEST_F(WindowTest, CaptureTests) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(
+  std::unique_ptr<Window> window =
       aura::test::CreateTestWindow({.delegate = &delegate,
                                     .parent = root_window(),
                                     .bounds = {20, 20},
-                                    .window_id = 0}));
+                                    .window_id = 0});
   EXPECT_FALSE(window->HasCapture());
 
   delegate.ResetCounts();
@@ -1088,13 +1086,13 @@ TEST_F(WindowTest, CaptureTests) {
 
 TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
   CaptureWindowDelegateImpl delegate1;
-  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
-      {.delegate = &delegate1, .parent = root_window(), .bounds = {50, 50}}));
+  std::unique_ptr<Window> w1 = aura::test::CreateTestWindow(
+      {.delegate = &delegate1, .parent = root_window(), .bounds = {50, 50}});
   CaptureWindowDelegateImpl delegate2;
-  std::unique_ptr<Window> w2(
+  std::unique_ptr<Window> w2 =
       aura::test::CreateTestWindow({.delegate = &delegate2,
                                     .parent = root_window(),
-                                    .bounds = {50, 50, 50, 50}}));
+                                    .bounds = {50, 50, 50, 50}});
 
   // Press on w1.
   ui::TouchEvent press1(ui::EventType::kTouchPressed, gfx::Point(10, 10),
@@ -1149,8 +1147,8 @@ TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
 
 TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
-      {.delegate = &delegate, .parent = root_window(), .bounds = {50, 50}}));
+  std::unique_ptr<Window> window = aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = root_window(), .bounds = {50, 50}});
   base::TimeTicks time = getTime();
   const int kTimeDelta = 100;
 
@@ -1207,8 +1205,8 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
 TEST_F(WindowTest, TransferCaptureTouchEvents) {
   // Touch on |w1|.
   CaptureWindowDelegateImpl d1;
-  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
-      {.delegate = &d1, .parent = root_window(), .bounds = {20, 20}}));
+  std::unique_ptr<Window> w1 = aura::test::CreateTestWindow(
+      {.delegate = &d1, .parent = root_window(), .bounds = {20, 20}});
   ui::TouchEvent p1(ui::EventType::kTouchPressed, gfx::Point(10, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&p1);
@@ -1219,8 +1217,8 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
 
   // Touch on |w2| with a different id.
   CaptureWindowDelegateImpl d2;
-  std::unique_ptr<Window> w2(aura::test::CreateTestWindow(
-      {.delegate = &d2, .parent = root_window(), .bounds = {40, 0, 40, 20}}));
+  std::unique_ptr<Window> w2 = aura::test::CreateTestWindow(
+      {.delegate = &d2, .parent = root_window(), .bounds = {40, 0, 40, 20}});
   ui::TouchEvent p2(ui::EventType::kTouchPressed, gfx::Point(41, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&p2);
@@ -1243,8 +1241,8 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
   d2.ResetCounts();
 
   CaptureWindowDelegateImpl d3;
-  std::unique_ptr<Window> w3(aura::test::CreateTestWindow(
-      {.delegate = &d3, .parent = root_window(), .bounds = {100, 101}}));
+  std::unique_ptr<Window> w3 = aura::test::CreateTestWindow(
+      {.delegate = &d3, .parent = root_window(), .bounds = {100, 101}});
   // Set capture on |w3|. All touches have already been cancelled.
   w3->SetCapture();
   EXPECT_EQ(0, d1.touch_event_count());

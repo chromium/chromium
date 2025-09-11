@@ -786,7 +786,6 @@ TEST_F(WindowEventDispatcherTest, MouseMovesHeld) {
   std::unique_ptr<aura::Window> window(
       test::CreateTestWindow({.delegate = &delegate,
                               .parent = root_window(),
-                              .bounds = {100, 100},
                               .window_id = 1}));
 
   ui::MouseEvent mouse_move_event(ui::EventType::kMouseMoved, gfx::Point(0, 0),
@@ -916,7 +915,7 @@ TEST_F(WindowEventDispatcherTest, TouchMovesHeld) {
   std::unique_ptr<aura::Window> window =
       test::CreateTestWindow({.delegate = &delegate,
                               .parent = root_window(),
-                              .bounds = gfx::Rect(50, 50, 100, 100),
+                              .bounds = {50, 50, 100, 100},
                               .window_id = 1});
 
   // Starting the touch and throwing out the first few events, since the system
@@ -983,7 +982,7 @@ TEST_F(WindowEventDispatcherTest, MouseEventWithoutTargetWindow) {
   std::unique_ptr<aura::Window> window_first =
       test::CreateTestWindow({.delegate = &delegate,
                               .parent = root_window(),
-                              .bounds = gfx::Rect(20, 10, 10, 20),
+                              .bounds = {20, 10, 10, 20},
                               .window_id = 1});
   window_first->Show();
   window_first->AddPreTargetHandler(&recorder_first);
@@ -991,7 +990,7 @@ TEST_F(WindowEventDispatcherTest, MouseEventWithoutTargetWindow) {
   std::unique_ptr<aura::Window> window_second =
       test::CreateTestWindow({.delegate = &delegate,
                               .parent = root_window(),
-                              .bounds = gfx::Rect(20, 30, 10, 20),
+                              .bounds = {20, 30, 10, 20},
                               .window_id = 2});
   window_second->Show();
   window_second->AddPreTargetHandler(&recorder_second);

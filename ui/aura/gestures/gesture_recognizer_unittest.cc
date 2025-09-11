@@ -796,11 +796,10 @@ TEST_F(GestureRecognizerTest, GestureEventTapRegion) {
   const int kWindowWidth = 800;
   const int kWindowHeight = 600;
   const int kTouchId = 2;
-  gfx::Rect bounds(0, 0, kWindowWidth, kWindowHeight);
   std::unique_ptr<aura::Window> window =
       aura::test::CreateTestWindow({.delegate = delegate.get(),
                                     .parent = root_window(),
-                                    .bounds = bounds,
+                                    .bounds = {kWindowWidth, kWindowHeight},
                                     .window_id = -1234});
 
   // Test with no EventType::kTouchMoved events.
@@ -1243,11 +1242,10 @@ TEST_F(GestureRecognizerTest, GestureEventHorizontalRailFling) {
       new GestureEventConsumeDelegate());
   TimedEvents tes;
   const int kTouchId = 7;
-  gfx::Rect bounds(0, 0, 1000, 1000);
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindow({.delegate = delegate.get(),
                                     .parent = root_window(),
-                                    .bounds = bounds,
+                                    .bounds = {1000, 1000},
                                     .window_id = -1234}));
 
   ui::TouchEvent press(
@@ -1293,11 +1291,10 @@ TEST_F(GestureRecognizerTest, GestureEventVerticalRailFling) {
       new GestureEventConsumeDelegate());
   TimedEvents tes;
   const int kTouchId = 7;
-  gfx::Rect bounds(0, 0, 1000, 1000);
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindow({.delegate = delegate.get(),
                                     .parent = root_window(),
-                                    .bounds = bounds,
+                                    .bounds = {1000, 1000},
                                     .window_id = -1234}));
 
   ui::TouchEvent press(
@@ -1346,11 +1343,10 @@ TEST_F(GestureRecognizerTest, GestureEventNonRailFling) {
       new GestureEventConsumeDelegate());
   TimedEvents tes;
   const int kTouchId = 7;
-  gfx::Rect bounds(0, 0, 1000, 1000);
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindow({.delegate = delegate.get(),
                                     .parent = root_window(),
-                                    .bounds = bounds,
+                                    .bounds = {1000, 1000},
                                     .window_id = -1234}));
 
   ui::TouchEvent press(
