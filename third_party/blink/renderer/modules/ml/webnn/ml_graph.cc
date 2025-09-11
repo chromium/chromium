@@ -198,6 +198,12 @@ void MLGraph::Dispatch(webnn::ScopedTrace scoped_trace,
       return;
     }
 
+    if (input_tensor->is_exported_to_webgpu()) {
+      exception_state.ThrowTypeError(
+          "Input tensor has been exported to WebGPU");
+      return;
+    }
+
     mojo_inputs.insert(name, input_tensor->handle());
   }
 
@@ -211,6 +217,12 @@ void MLGraph::Dispatch(webnn::ScopedTrace scoped_trace,
 
     if (output_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
       exception_state.ThrowTypeError("Invalid output tensor usage");
+      return;
+    }
+
+    if (output_tensor->is_exported_to_webgpu()) {
+      exception_state.ThrowTypeError(
+          "Output tensor has been exported to WebGPU");
       return;
     }
 

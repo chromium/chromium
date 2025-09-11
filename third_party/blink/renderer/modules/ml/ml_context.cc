@@ -1490,10 +1490,9 @@ ScriptPromise<GPUBuffer> MLContext::exportToGPU(
     exception_state.ThrowTypeError(kContextWebGPUInteropUnsupportedError);
     return EmptyPromise();
   }
-  // TODO(crbug.com/345352987): Implement MLTensor's exportToGPU.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "MLContext::exportToGPU is not supported.");
-  return EmptyPromise();
+
+  return tensor->ExportToGPUImpl(std::move(scoped_trace), script_state,
+                                 gpu_device_, exception_state);
 }
 
 }  // namespace blink

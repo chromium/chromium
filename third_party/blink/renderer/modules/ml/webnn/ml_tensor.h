@@ -9,6 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -34,6 +35,8 @@ namespace blink {
 
 class MLTensorDescriptor;
 class MLContext;
+class GPUBuffer;
+class GPUDevice;
 
 class MODULES_EXPORT MLTensor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -85,6 +88,17 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   bool IsValid() const { return remote_tensor_.is_bound(); }
 
+  bool is_exported_to_webgpu() const { return gpu_buffer_; }
+
+  // Export a GPUBuffer from the MLTensor. After export, the MLTensor can no
+  // longer be used in WebNN operations. The promise should be resolved
+  // with a GPUBuffer which references the same tensor data once all WebNN
+  // operations have completed.
+  ScriptPromise<GPUBuffer> ExportToGPUImpl(webnn::ScopedTrace scoped_trace,
+                                           ScriptState* script_state,
+                                           GPUDevice* device,
+                                           ExceptionState& exception_state);
+
   // Read data from the MLTensor. The resolver should be resolved with a copy of
   // the tensor data. Otherwise, the resolver should be rejected accordingly.
   ScriptPromise<DOMArrayBuffer> ReadTensorImpl(webnn::ScopedTrace scoped_trace,
@@ -114,6 +128,13 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
                            base::ElapsedTimer read_tensor_timer,
                            webnn::mojom::blink::ReadTensorResultPtr result);
 
+  // The callback of exporting a `WebNNTensor` to WebGPU.
+  void OnDidExportTensor(
+      webnn::ScopedTrace scoped_trace,
+      ScriptPromiseResolver<GPUBuffer>* resolver,
+      GPUDevice* device,
+      base::expected<gpu::SyncToken, webnn::mojom::blink::ErrorPtr> result);
+
   void OnConnectionError();
 
   Member<MLContext> ml_context_;
@@ -136,9 +157,13 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> pending_resolvers_;
   HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_byob_resolvers_;
+  Member<ScriptPromiseResolver<GPUBuffer>> pending_gpu_buffer_resolver_;
 
   // Exists when `WebNNTensor` is a tensor created for WebGPUInterop.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
+
+  // Exists when this `WebNNTensor` has been exported to WebGPU.
+  WeakMember<GPUBuffer> gpu_buffer_;
 };
 
 }  // namespace blink

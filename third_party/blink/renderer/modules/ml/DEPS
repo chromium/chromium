@@ -4,6 +4,7 @@ include_rules = [
   "+base/types/fixed_array.h",
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
+  "+gpu/command_buffer/common/sync_token.h",
   "+services/webnn/public/cpp",
   "+services/webnn/public/mojom",
 ]

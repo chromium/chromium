@@ -1,26 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] interop / export tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / export big tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / export then destroy buffer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / export then destroy tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / write tensor after export
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / export twice
-  promise_rejects_js: function "function() { throw e; }" threw object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[FAIL] interop / dispatch gpu twice
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / webnn dispatch only
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / dispatch from webgpu then webnn
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
-[FAIL] interop / destroy context after export
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'exportToGPU' on 'MLContext': MLContext::exportToGPU is not supported."
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] interop / destroy device after export
   promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'requestDevice' on 'GPUAdapter': adapter is "consumed": it has already been used to create a device\n    at CreateDeviceInternal (..\\..\\third_party\\dawn\\src\\dawn\\native\\Adapter.cpp:313)\n"
 [FAIL] interop / destroy device before export
