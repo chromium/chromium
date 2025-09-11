@@ -4,16 +4,12 @@
 
 package com.android.webview.chromium;
 
-import android.Manifest;
 import android.app.compat.CompatChanges;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Looper;
-import android.os.Process;
 import android.os.SystemClock;
-import android.os.storage.StorageManager;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -35,7 +31,6 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwLocaleConfig;
-import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwTracingController;
@@ -43,42 +38,32 @@ import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
-import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.ApkInfo;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
-import org.chromium.base.FieldTrialList;
 import org.chromium.base.PathService;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
-import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
 import java.util.ArrayDeque;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -255,6 +240,12 @@ public class WebViewChromiumAwInit {
 
     private volatile boolean mShouldInitializeDefaultProfile = true;
 
+    // TODO: DIR_RESOURCE_PAKS_ANDROID needs to live somewhere sensible,
+    // inlined here for simplicity setting up the HTMLViewer demo. Unfortunately
+    // it can't go into base.PathService, as the native constant it refers to
+    // lives in the ui/ layer. See ui/base/ui_base_paths.h
+    private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
+
     // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
     // WebViewStartupCallSite in enums.xml.
     @IntDef({
@@ -293,26 +284,6 @@ public class WebViewChromiumAwInit {
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
     }
 
-    public AwTracingController getAwTracingController() {
-        triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
-        return mChromiumStartedGlobals.mAwTracingController;
-    }
-
-    public AwProxyController getAwProxyController() {
-        triggerAndWaitForChromiumStarted(CallSite.GET_AW_PROXY_CONTROLLER);
-        return mChromiumStartedGlobals.mAwProxyController;
-    }
-
-    public void setProviderInitOnMainLooperLocation(Throwable t) {
-        mWebViewStartUpDiagnostics.setProviderInitOnMainLooperLocation(t);
-    }
-
-    // TODO: DIR_RESOURCE_PAKS_ANDROID needs to live somewhere sensible,
-    // inlined here for simplicity setting up the HTMLViewer demo. Unfortunately
-    // it can't go into base.PathService, as the native constant it refers to
-    // lives in the ui/ layer. See ui/base/ui_base_paths.h
-    private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
-
     private void startChromium(@CallSite int callSite, boolean triggeredFromUIThread) {
         assert ThreadUtils.runningOnUiThread();
 
@@ -339,6 +310,10 @@ public class WebViewChromiumAwInit {
         mStartupTasksRunner.run(callSite, triggeredFromUIThread);
     }
 
+    void setProviderInitOnMainLooperLocation(Throwable t) {
+        mWebViewStartUpDiagnostics.setProviderInitOnMainLooperLocation(t);
+    }
+
     // Called once during the WebViewChromiumFactoryProvider initialization
     void setStartupTaskExperimentEnabled(boolean enabled) {
         assert mInitState.get() == INIT_NOT_STARTED;
@@ -360,6 +335,8 @@ public class WebViewChromiumAwInit {
     // Initializes a new StartupTaskRunner with a list of tasks to run for chromium startup.
     // Postcondition of calling `.run` on the returned StartupTasksRunner is that Chromium startup
     // is finished.
+    // Note: You should abstract any logic that is not strictly dependent on glue layer code into
+    // a static method in AwBrowserProcess so they can be unit-tested.
     private StartupTasksRunner initializeStartupTasksRunner() {
         ArrayDeque<Runnable> preBrowserProcessStartTasks = new ArrayDeque<>();
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
@@ -493,98 +470,9 @@ public class WebViewChromiumAwInit {
                         AwDarkMode.enableSimplifiedDarkMode();
                     }
 
-                    if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
-                        logCommandLineAndActiveTrials();
-                    }
+                    AwBrowserProcess.postBackgroundTasks(
+                            mFactory.isSafeModeEnabled(), mFactory.getWebViewPrefs());
 
-                    PostTask.postTask(
-                            TaskTraits.BEST_EFFORT,
-                            () -> {
-                                WebViewCachedFlags.get()
-                                        .onStartupCompleted(mFactory.getWebViewPrefs());
-                            });
-
-                    if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
-                            && !AwFeatureMap.getInstance()
-                                    .getFieldTrialParamByFeatureAsBoolean(
-                                            AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
-                                            "WebViewPrefetchFromRenderer",
-                                            true)) {
-                        PostTask.postTask(
-                                TaskTraits.BEST_EFFORT,
-                                () -> {
-                                    LibraryPrefetcher.prefetchNativeLibraryForWebView();
-                                });
-                    }
-
-                    if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS)) {
-                        PostTask.postDelayedTask(
-                                TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                                () -> {
-                                    StorageManager storageManager =
-                                            (StorageManager)
-                                                    ContextUtils.getApplicationContext()
-                                                            .getSystemService(
-                                                                    Context.STORAGE_SERVICE);
-                                    UUID storageUuid =
-                                            ContextUtils.getApplicationContext()
-                                                    .getApplicationInfo()
-                                                    .storageUuid;
-                                    long startTimeGetCacheQuotaMs = SystemClock.uptimeMillis();
-                                    long cacheQuotaKiloBytes = -1;
-                                    try {
-                                        // This can throw `SecurityException` if the app doesn't
-                                        // have sufficient privileges.
-                                        // See crbug.com/422174715
-                                        cacheQuotaKiloBytes =
-                                                storageManager.getCacheQuotaBytes(storageUuid)
-                                                        / 1024;
-                                        RecordHistogram.recordCount1MHistogram(
-                                                "Android.WebView.CacheQuotaSize",
-                                                (int) cacheQuotaKiloBytes);
-                                    } catch (Exception e) {
-                                    } finally {
-                                        RecordHistogram.recordTimesHistogram(
-                                                "Android.WebView.GetCacheQuotaSizeTime",
-                                                SystemClock.uptimeMillis()
-                                                        - startTimeGetCacheQuotaMs);
-                                    }
-
-                                    long startTimeGetCacheSizeMs = SystemClock.uptimeMillis();
-                                    long cacheSizeKiloBytes = -1;
-                                    try {
-                                        // This can throw `SecurityException` if the app doesn't
-                                        // have sufficient privileges.
-                                        // See crbug.com/422174715
-                                        cacheSizeKiloBytes =
-                                                storageManager.getCacheSizeBytes(storageUuid)
-                                                        / 1024;
-                                        RecordHistogram.recordCount1MHistogram(
-                                                "Android.WebView.CacheSize",
-                                                (int) cacheSizeKiloBytes);
-                                    } catch (Exception e) {
-                                    } finally {
-                                        RecordHistogram.recordTimesHistogram(
-                                                "Android.WebView.GetCacheSizeTime",
-                                                SystemClock.uptimeMillis()
-                                                        - startTimeGetCacheSizeMs);
-                                    }
-                                    if (cacheQuotaKiloBytes != -1 && cacheSizeKiloBytes != -1) {
-                                        long quotaRemainingKiloBytes =
-                                                cacheQuotaKiloBytes - cacheSizeKiloBytes;
-                                        if (quotaRemainingKiloBytes >= 0) {
-                                            RecordHistogram.recordCount1MHistogram(
-                                                    "Android.WebView.CacheSizeWithinQuota",
-                                                    (int) quotaRemainingKiloBytes);
-                                        } else {
-                                            RecordHistogram.recordCount1MHistogram(
-                                                    "Android.WebView.CacheSizeExceedsQuota",
-                                                    -1 * (int) quotaRemainingKiloBytes);
-                                        }
-                                    }
-                                },
-                                5000);
-                    }
                     AwCrashyClassUtils.maybeCrashIfEnabled();
                     // Must happen right after Chromium initialization is complete.
                     mInitState.set(INIT_FINISHED);
@@ -663,7 +551,7 @@ public class WebViewChromiumAwInit {
         AwClassPreloader.preloadClasses();
 
         AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
-        doNetworkInitializations(ContextUtils.getApplicationContext());
+        AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
     private void recordStartupMetrics(
@@ -751,9 +639,9 @@ public class WebViewChromiumAwInit {
     }
 
     /**
-     * Set up resources on a background thread. This method is called once during
-     * WebViewChromiumFactoryProvider initialization which is guaranteed to finish before this field
-     * is accessed by waitUntilSetUpResources.
+     * Set up resources on a background thread, in parallel with chromium initialization as it takes
+     * some time. This method is called once during WebViewChromiumFactoryProvider initialization
+     * which is guaranteed to finish before this field is accessed by waitUntilSetUpResources.
      *
      * @param context The context.
      */
@@ -762,16 +650,23 @@ public class WebViewChromiumAwInit {
                 DualTraceEvent.scoped("WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
             assert mSetUpResourcesThread == null : "This method shouldn't be called twice.";
 
+            Runnable setUpResourcesRunnable =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            try (DualTraceEvent e =
+                                    DualTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
+                                R.onResourcesLoaded(packageId);
+
+                                AwResource.setResources(context.getResources());
+                                AwResource.setConfigKeySystemUuidMapping(
+                                        android.R.array.config_keySystemUuidMapping);
+                            }
+                        }
+                    };
+
             // Make sure that ResourceProvider is initialized before starting the browser process.
-            mSetUpResourcesThread =
-                    new Thread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Run this in parallel as it takes some time.
-                                    setUpResources(packageId, context);
-                                }
-                            });
+            mSetUpResourcesThread = new Thread(setUpResourcesRunnable);
             mSetUpResourcesThread.start();
         }
     }
@@ -782,15 +677,6 @@ public class WebViewChromiumAwInit {
             mSetUpResourcesThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void setUpResources(int packageId, Context context) {
-        try (DualTraceEvent e = DualTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
-            R.onResourcesLoaded(packageId);
-
-            AwResource.setResources(context.getResources());
-            AwResource.setConfigKeySystemUuidMapping(android.R.array.config_keySystemUuidMapping);
         }
     }
 
@@ -842,9 +728,7 @@ public class WebViewChromiumAwInit {
      * <p>Postcondition: Chromium startup will be finished in the near future.
      */
     void postChromiumStartupIfNeeded(@CallSite int callSite) {
-        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, true)) {
-            return;
-        }
+        triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, true);
     }
 
     /**
@@ -930,22 +814,14 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    private void doNetworkInitializations(Context applicationContext) {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
-            boolean forceUpdateNetworkState =
-                    !AwFeatureMap.isEnabled(
-                            AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
-            if (applicationContext.checkPermission(
-                            Manifest.permission.ACCESS_NETWORK_STATE,
-                            Process.myPid(),
-                            Process.myUid())
-                    == PackageManager.PERMISSION_GRANTED) {
-                NetworkChangeNotifier.init();
-                NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
-            }
-        }
+    public AwTracingController getAwTracingController() {
+        triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
+        return mChromiumStartedGlobals.mAwTracingController;
+    }
+
+    public AwProxyController getAwProxyController() {
+        triggerAndWaitForChromiumStarted(CallSite.GET_AW_PROXY_CONTROLLER);
+        return mChromiumStartedGlobals.mAwProxyController;
     }
 
     public SharedStatics getStatics() {
@@ -1011,25 +887,6 @@ public class WebViewChromiumAwInit {
                 mSeedLoader = null; // Allow this to be GC'd after its background thread finishes.
             }
         }
-    }
-
-    // Log extra information, for debugging purposes. Do the work asynchronously to avoid blocking
-    // startup.
-    private void logCommandLineAndActiveTrials() {
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT,
-                () -> {
-                    // TODO(ntfschr): CommandLine can change at any time. For simplicity, only log
-                    // it once during startup.
-                    AwContentsStatics.logCommandLineForDebugging();
-                    // Field trials can be activated at any time. We'll continue logging them as
-                    // they're activated.
-                    FieldTrialList.logActiveTrials();
-                    // SafeMode was already determined earlier during the startup sequence, this
-                    // just fetches the cached boolean state. If SafeMode was enabled, we already
-                    // logged detailed information about the SafeMode config.
-                    Log.i(TAG, "SafeMode enabled: " + mFactory.isSafeModeEnabled());
-                });
     }
 
     public WebViewChromiumRunQueue getRunQueue() {

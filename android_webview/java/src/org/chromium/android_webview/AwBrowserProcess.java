@@ -4,15 +4,21 @@
 
 package org.chromium.android_webview;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
+import android.os.Process;
 import android.os.StrictMode;
+import android.os.SystemClock;
+import android.os.storage.StorageManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -29,6 +35,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
 import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
@@ -48,6 +55,7 @@ import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifie
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FieldTrialList;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.PowerMonitor;
@@ -55,6 +63,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -68,6 +77,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.io.File;
@@ -77,6 +87,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /** Wrapper for the steps needed to initialize the java and native sides of webview chromium. */
@@ -571,9 +582,8 @@ public final class AwBrowserProcess {
     }
 
     /**
-     * Connect to {@link org.chromium.android_webview.services.MetricsBridgeService} to retrieve
-     * any recorded UMA metrics from nonembedded WebView services and transmit them back using
-     * UMA APIs.
+     * Connect to {@link org.chromium.android_webview.services.MetricsBridgeService} to retrieve any
+     * recorded UMA metrics from nonembedded WebView services and transmit them back using UMA APIs.
      */
     public static void collectNonembeddedMetrics() {
         if (ManifestMetadataUtil.isAppOptedOutFromMetricsCollection()) {
@@ -698,8 +708,133 @@ public final class AwBrowserProcess {
         }
     }
 
-    // Notify the native code that the embedder is done with startup. In WebView's case, this is
-    // when we are done running the startup tasks.
+    public static void doNetworkInitializations(Context applicationContext) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("AwBrowserProcess.doNetworkInitializations")) {
+            boolean forceUpdateNetworkState =
+                    !AwFeatureMap.isEnabled(
+                            AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
+            if (applicationContext.checkPermission(
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Process.myPid(),
+                            Process.myUid())
+                    == PackageManager.PERMISSION_GRANTED) {
+                NetworkChangeNotifier.init();
+                NetworkChangeNotifier.setAutoDetectConnectivityState(
+                        new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
+            }
+        }
+    }
+
+    /**
+     * Post tasks that need to run in the background thread after the browser process has started.
+     */
+    public static void postBackgroundTasks(boolean isSafeModeEnabled, SharedPreferences prefs) {
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
+            // Log extra information, for debugging purposes.
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT,
+                    () -> {
+                        // TODO(ntfschr): CommandLine can change at any time. For simplicity, only
+                        // log
+                        // it once during startup.
+                        AwContentsStatics.logCommandLineForDebugging();
+                        // Field trials can be activated at any time. We'll continue logging them as
+                        // they're activated.
+                        FieldTrialList.logActiveTrials();
+                        // SafeMode was already determined earlier during the startup sequence, this
+                        // just fetches the cached boolean state. If SafeMode was enabled, we
+                        // already
+                        // logged detailed information about the SafeMode config.
+                        Log.i(TAG, "SafeMode enabled: " + isSafeModeEnabled);
+                    });
+        }
+
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    WebViewCachedFlags.get().onStartupCompleted(prefs);
+                });
+
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
+                && !AwFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsBoolean(
+                                AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
+                                "WebViewPrefetchFromRenderer",
+                                true)) {
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT,
+                    () -> {
+                        LibraryPrefetcher.prefetchNativeLibraryForWebView();
+                    });
+        }
+
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS)) {
+            PostTask.postDelayedTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        StorageManager storageManager =
+                                (StorageManager)
+                                        ContextUtils.getApplicationContext()
+                                                .getSystemService(Context.STORAGE_SERVICE);
+                        UUID storageUuid =
+                                ContextUtils.getApplicationContext()
+                                        .getApplicationInfo()
+                                        .storageUuid;
+                        long startTimeGetCacheQuotaMs = SystemClock.uptimeMillis();
+                        long cacheQuotaKiloBytes = -1;
+                        try {
+                            // This can throw `SecurityException` if the app doesn't
+                            // have sufficient privileges.
+                            // See crbug.com/422174715
+                            cacheQuotaKiloBytes =
+                                    storageManager.getCacheQuotaBytes(storageUuid) / 1024;
+                            RecordHistogram.recordCount1MHistogram(
+                                    "Android.WebView.CacheQuotaSize", (int) cacheQuotaKiloBytes);
+                        } catch (Exception e) {
+                        } finally {
+                            RecordHistogram.recordTimesHistogram(
+                                    "Android.WebView.GetCacheQuotaSizeTime",
+                                    SystemClock.uptimeMillis() - startTimeGetCacheQuotaMs);
+                        }
+
+                        long startTimeGetCacheSizeMs = SystemClock.uptimeMillis();
+                        long cacheSizeKiloBytes = -1;
+                        try {
+                            // This can throw `SecurityException` if the app doesn't
+                            // have sufficient privileges.
+                            // See crbug.com/422174715
+                            cacheSizeKiloBytes =
+                                    storageManager.getCacheSizeBytes(storageUuid) / 1024;
+                            RecordHistogram.recordCount1MHistogram(
+                                    "Android.WebView.CacheSize", (int) cacheSizeKiloBytes);
+                        } catch (Exception e) {
+                        } finally {
+                            RecordHistogram.recordTimesHistogram(
+                                    "Android.WebView.GetCacheSizeTime",
+                                    SystemClock.uptimeMillis() - startTimeGetCacheSizeMs);
+                        }
+                        if (cacheQuotaKiloBytes != -1 && cacheSizeKiloBytes != -1) {
+                            long quotaRemainingKiloBytes = cacheQuotaKiloBytes - cacheSizeKiloBytes;
+                            if (quotaRemainingKiloBytes >= 0) {
+                                RecordHistogram.recordCount1MHistogram(
+                                        "Android.WebView.CacheSizeWithinQuota",
+                                        (int) quotaRemainingKiloBytes);
+                            } else {
+                                RecordHistogram.recordCount1MHistogram(
+                                        "Android.WebView.CacheSizeExceedsQuota",
+                                        -1 * (int) quotaRemainingKiloBytes);
+                            }
+                        }
+                    },
+                    5000);
+        }
+    }
+
+    /**
+     * Notify the native code that the embedder is done with startup. In WebView's case, this is
+     * when we are done running the startup tasks.
+     */
     public static void onStartupComplete() {
         AwBrowserProcessJni.get().onStartupComplete();
     }
