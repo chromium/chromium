@@ -612,14 +612,6 @@ external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change.ht
 external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html
 external/wpt/html/semantics/forms/the-input-element/range-intrinsic-size.html
 external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
-external/wpt/html/semantics/forms/the-select-element/customizable-select/appearance-base-select-other-elements.html
-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.optional.html
-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html
-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.optional.html
-external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.html
-external/wpt/html/semantics/forms/the-select-element/select-pseudo-light-dismiss-invalidation.tentative.html
-external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
-external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation*
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby.tentative.html

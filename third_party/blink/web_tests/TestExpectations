@@ -6808,9 +6808,6 @@ crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/ht
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-mouse-behavior.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/select-in-page-typeahead.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-pseudo-light-dismiss-invalidation.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html [ Failure ]
 
 # The height of the appearance:auto <select> button on mac is different from the reference.
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]

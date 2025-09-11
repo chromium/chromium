@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
 <select id=select>
@@ -27,23 +28,31 @@ select, ::picker(select) {
 <button id=button>option</button>
 
 <script>
+function click(element) {
+  return (new test_driver.Actions()
+    .pointerMove(0, 0, {origin: element})
+    .pointerDown()
+    .pointerUp())
+    .send();
+}
+
 promise_test(async () => {
   assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
     'The select should match :not(:open) at the start of the test.');
 
-  await test_driver.click(select);
+  await click(select);
   assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
     'The select should match :open when opened.');
 
-  await test_driver.click(opttwo);
+  await click(opttwo);
   assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
     'The select should match :not(:open) after clicking an option.');
 
-  await test_driver.click(select);
+  await click(select);
   assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
     'The select should match :open when reopened.');
 
-  await test_driver.click(button);
+  await click(button);
   assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
     'The select should match :not(:open) after light dismiss.');
 }, 'select should not match :open when light dismissed.');
