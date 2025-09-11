@@ -350,6 +350,12 @@ enum EffectState {
   kEnabled = 2
 };
 
+// See media/base/capture_version.h for a description of fields.
+struct CaptureVersion {
+  // TODO(crbug.com/394794490): Add `source` here.
+  uint32 sub_capture;
+};
+
 // See media/base/video_frame_metadata.h for a description of fields.
 // TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
@@ -366,6 +372,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Size? source_size;
 
   gfx.mojom.Rect? region_capture_rect;
+  // TODO(crbug.com/394794490): Use CaptureVersion.
   uint32 sub_capture_target_version;
 
   bool copy_required;
