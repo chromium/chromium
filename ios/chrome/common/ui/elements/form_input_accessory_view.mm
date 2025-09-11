@@ -76,8 +76,6 @@ UIImage* SymbolNamed(NSString* imageName) {
   return [UIImage systemImageNamed:imageName withConfiguration:configuration];
 }
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-
 // Padding around the keyboard accessory on iOS 26.0+.
 constexpr CGFloat kSurroundingPadding = 12;
 
@@ -96,9 +94,6 @@ constexpr CGFloat kGlassTintAlpha = 1.0;
 constexpr CGFloat kShadowRadius = 16.0;
 constexpr CGFloat kShadowVerticalOffset = 4.0;
 constexpr CGFloat kShadowOpacity = 0.12;
-
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
 }  // namespace
 
@@ -254,27 +249,21 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 // Whether the liquid glass effect is enabled. Restricted to iOS 26+.
 - (BOOL)isLiquidGlassEffectEnabled {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if (_largeAccessoryViewEnabled || _smallWidthAccessoryViewEnabled) {
       return YES;
     }
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
   return NO;
 }
 
 // Sets the small width mode. This mode is always disabled on iOS < 26.
 - (void)setSmallWidthAccessoryViewEnabled:(BOOL)enabled {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     _smallWidthAccessoryViewEnabled = enabled;
     return;
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
   _smallWidthAccessoryViewEnabled = NO;
 }
@@ -476,7 +465,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // If the liquid glass effect is enabled, clip the contents of the leading view
 // to the liquid glass effect's bounds.
 - (void)clipToLiquidGlassEffectBounds:(UIView*)leadingViewContainer {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if ([self isLiquidGlassEffectEnabled]) {
       // Set leading view container bounds to match the glass effect.
@@ -489,8 +477,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
           kCALayerMinXMaxYCorner | kCALayerMinXMinYCorner;
     }
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 }
 
 // Adds the trailing view in the accessory's view hierarchy.
@@ -813,7 +799,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Sets up the liquid glass effect for the accessory. Returns whether liquid
 // glass is enabled.
 - (BOOL)setupLiquidGlassEffect {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if ([self isLiquidGlassEffectEnabled]) {
     if (@available(iOS 26, *)) {
       // Create glass effect
@@ -870,8 +855,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       return YES;
     }
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-  // __IPHONE_26_0
 
   return NO;
 }

@@ -520,7 +520,6 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Sets the corner radius. Can be dymamic if the liquid glass effect is enabled.
 - (void)setCornerRadius:(CGFloat)cornerRadius {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (IsLiquidGlassEffectEnabled()) {
     if (@available(iOS 26, *)) {
       self.cornerConfiguration = [UICornerConfiguration
@@ -530,8 +529,6 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
       return;
     }
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
   self.layer.cornerRadius = [self cornerRadius];
 }
 

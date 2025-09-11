@@ -189,9 +189,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
   [super viewIsAppearing:animated];
-#endif
 
   [self updateHeight];
 }
