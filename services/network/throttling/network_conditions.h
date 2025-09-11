@@ -16,6 +16,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
 
   NetworkConditions(const NetworkConditions&);
   NetworkConditions& operator=(const NetworkConditions&);
+  bool operator==(const NetworkConditions&) const = default;
 
   ~NetworkConditions();
 

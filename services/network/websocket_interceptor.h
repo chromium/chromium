@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -29,6 +30,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
 
   WebSocketInterceptor(
       uint32_t net_log_source_id,
+      const GURL& url,
       const std::optional<base::UnguessableToken>& throttling_profile_id);
 
   virtual ~WebSocketInterceptor();
@@ -57,6 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
   std::array<ThrottlingNetworkInterceptor::ThrottleCallback, 2>
       throttle_callbacks_;
   const uint32_t net_log_source_id_;
+  const GURL url_;
   const std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
   std::array<base::OnceClosure, 2> pending_callbacks_;

@@ -1741,13 +1741,15 @@ void NetworkContext::CloseIdleConnections(
 void NetworkContext::SetNetworkConditions(
     const base::UnguessableToken& throttling_profile_id,
     mojom::NetworkConditionsPtr conditions) {
-  std::unique_ptr<NetworkConditions> network_conditions;
+  std::vector<MatchedNetworkConditions> network_conditions;
   if (conditions) {
-    network_conditions = std::make_unique<NetworkConditions>(
-        conditions->offline, conditions->latency.InMillisecondsF(),
-        conditions->download_throughput, conditions->upload_throughput,
-        conditions->packet_loss, conditions->packet_queue_length,
-        conditions->packet_reordering);
+    network_conditions.emplace_back(
+        std::string{},
+        NetworkConditions{
+            conditions->offline, conditions->latency.InMillisecondsF(),
+            conditions->download_throughput, conditions->upload_throughput,
+            conditions->packet_loss, conditions->packet_queue_length,
+            conditions->packet_reordering});
   }
   ThrottlingController::SetConditions(throttling_profile_id,
                                       std::move(network_conditions));

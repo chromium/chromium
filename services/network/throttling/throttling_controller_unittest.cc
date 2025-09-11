@@ -74,17 +74,26 @@ class ThrottlingControllerTestHelper {
     transaction_ = std::make_unique<ThrottlingNetworkTransaction>(
         std::move(network_transaction));
   }
-
-  void SetNetworkState(bool offline, double download, double upload) {
-    std::unique_ptr<NetworkConditions> conditions(
-        new NetworkConditions(offline, 0, download, upload));
+  void SetNetworkState(std::vector<MatchedNetworkConditions> conditions) {
     ThrottlingController::SetConditions(profile_id_, std::move(conditions));
   }
 
+  void SetNetworkState(bool offline, double download, double upload) {
+    ThrottlingController::SetConditions(
+        profile_id_, {{{}, NetworkConditions{offline, 0, download, upload}}});
+  }
+
   void SetNetworkState(const base::UnguessableToken& id, bool offline) {
-    std::unique_ptr<NetworkConditions> conditions(
-        new NetworkConditions(offline));
-    ThrottlingController::SetConditions(id, std::move(conditions));
+    ThrottlingController::SetConditions(id, {{{}, NetworkConditions{offline}}});
+  }
+
+  ThrottlingController::ThrottlingProfile* GetThrottlingProfile() {
+    auto interceptors =
+        ThrottlingController::instance().interceptors_.find(profile_id_);
+    if (interceptors == ThrottlingController::instance().interceptors_.end()) {
+      return nullptr;
+    }
+    return &interceptors->second;
   }
 
   int Start(bool with_upload) {
@@ -113,10 +122,12 @@ class ThrottlingControllerTestHelper {
   int Read() { return Read(buffer_.get(), 64); }
 
   bool ShouldFail() {
-    if (transaction_->interceptor_)
+    if (transaction_->interceptor_) {
       return transaction_->interceptor_->IsOffline();
+    }
     ThrottlingNetworkInterceptor* interceptor =
-        ThrottlingController::GetInterceptor(net_log_with_source_.source().id);
+        ThrottlingController::GetInterceptor(net_log_with_source_.source().id,
+                                             GURL());
     EXPECT_TRUE(!!interceptor);
     return interceptor->IsOffline();
   }
@@ -378,6 +389,163 @@ TEST(ThrottlingControllerTest, DownloadIsStreamed) {
   EXPECT_EQ(callback->run_count(), 2);
   EXPECT_GT(callback->value(), net::OK);
   EXPECT_LT(callback->value(), kLargeDataSize);
+}
+
+TEST(ThrottlingControllerTest, SetConditions) {
+  ThrottlingControllerTestHelper helper;
+  // Set global conditions
+  helper.SetNetworkState({{std::string{}, NetworkConditions{true}}});
+
+  // Test that only global conditions are set
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
+  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+
+  // Set matched conditions
+  helper.SetNetworkState({{"http://*/*", NetworkConditions{true}}});
+
+  // Test that only one matched condition is set
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_FALSE(helper.GetThrottlingProfile()->has_global_conditions());
+
+  // Set both global and local conditions
+  helper.SetNetworkState({
+      {"http://*/*", NetworkConditions{true}},
+      {std::string{}, NetworkConditions{true}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+
+  // Set them the other way around
+  helper.SetNetworkState({
+      {std::string{}, NetworkConditions{true}},
+      {"http://*/*", NetworkConditions{true}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+
+  // Try to set an invalid pattern. The parser accepts a lot of weird inputs,
+  // but in some cases fails to parse:
+  helper.SetNetworkState({
+      {"ht tp://", NetworkConditions{false}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
+  EXPECT_FALSE(helper.GetThrottlingProfile()->has_global_conditions());
+}
+
+TEST(ThrottlingControllerTest, MultipleGlobalConditions) {
+  ThrottlingControllerTestHelper helper;
+
+  // Set multiple global conditions. The last one wins.
+  helper.SetNetworkState({
+      {std::string{}, NetworkConditions{true}},
+      {std::string{}, NetworkConditions{false, 0.0, 1.0, 0.5}},
+  });
+
+  auto* interceptor = helper.GetThrottlingProfile()->FindInterceptor(
+      GURL("http://example.com"));
+  EXPECT_TRUE(interceptor);
+  EXPECT_EQ(interceptor->conditions().upload_throughput(), 0.5);
+}
+
+TEST(ThrottlingControllerTest, UpdateConditions) {
+  ThrottlingControllerTestHelper helper;
+
+  helper.SetNetworkState({
+      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
+      {"http://*", NetworkConditions{false, 0.0, 1.0, 0.5}},
+  });
+
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            0.5);
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("https://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            1.0);
+
+  // Update conditions for the same patterns.
+  helper.SetNetworkState({
+      {std::string{}, NetworkConditions{false, 0.0, 1.0, 0.5}},
+      {"http://*", NetworkConditions{false, 0.0, 0.5, 1.0}},
+  });
+
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            1.0);
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("https://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            0.5);
+}
+
+TEST(ThrottlingControllerTest, GroupingMatchedConditions) {
+  ThrottlingControllerTestHelper helper;
+
+  // Multiple patterns with the same conditions get grouped into a single pipe.
+  helper.SetNetworkState({
+      {"http://*", NetworkConditions{true}},
+      {"https://*", NetworkConditions{true}},
+  });
+
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_TRUE(helper.GetThrottlingProfile()->FindInterceptor(
+      GURL("http://example.com")));
+  EXPECT_TRUE(helper.GetThrottlingProfile()->FindInterceptor(
+      GURL("https://example.com")));
+}
+
+TEST(ThrottlingControllerTest, MultipleMatchedConditions) {
+  ThrottlingControllerTestHelper helper;
+
+  // If multiple conditions match a URL, the first one wins.
+  helper.SetNetworkState({
+      {"http://*", NetworkConditions{false, 0.0, 0.5, 1.0}},
+      {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            1.0);
+
+  // Flip the order.
+  helper.SetNetworkState({
+      {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
+      {"http://*", NetworkConditions{false, 0.0, 0.5, 1.0}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            0.5);
+
+  // Matching patterns take precedence over global conditions.
+  helper.SetNetworkState({
+      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
+      {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            0.5);
+
+  // No matter the order.
+  helper.SetNetworkState({
+      {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
+      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
+  });
+  EXPECT_EQ(helper.GetThrottlingProfile()
+                ->FindInterceptor(GURL("http://example.com"))
+                ->conditions()
+                .upload_throughput(),
+            0.5);
 }
 
 }  // namespace network

@@ -240,7 +240,8 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
                            std::make_unique<UnownedPointer>(impl_));
   if (impl_->throttling_profile_id_) {
     impl_->frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
-        url_request->net_log().source().id, impl_->throttling_profile_id_);
+        url_request->net_log().source().id, url_request->url(),
+        impl_->throttling_profile_id_);
   }
 }
 

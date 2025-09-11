@@ -1034,16 +1034,16 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
   };
 
   void SetNetworkState(NetworkState state) {
-    std::unique_ptr<NetworkConditions> conditions(new NetworkConditions(
-        state.offline, state.latency.InMillisecondsF(), 0.0, 0.0,
-        state.packet_loss, state.packet_queue_length, false));
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::move(conditions));
+    ThrottlingController::SetConditions(
+        *devtools_token_,
+        {{{},
+          NetworkConditions{state.offline, state.latency.InMillisecondsF(), 0.0,
+                            0.0, state.packet_loss, state.packet_queue_length,
+                            false}}});
   }
 
   void RemoveThrottling() {
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::unique_ptr<NetworkConditions>());
+    ThrottlingController::SetConditions(*devtools_token_, {});
   }
 
   void AdvanceClock(base::TimeDelta delta) {
