@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"

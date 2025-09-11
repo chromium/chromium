@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
