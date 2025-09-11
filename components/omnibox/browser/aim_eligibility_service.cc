@@ -58,8 +58,12 @@ static constexpr char kEligibilityResponseChangeHistogramPrefix[] =
 static constexpr char kRequestPath[] = "/async/folae";
 static constexpr char kRequestQuery[] = "async=_fmt:pb";
 
-// The default value for the AIM policy pref; 0 = allowed, 1 = disallowed.
-constexpr int kAIModeAllowedDefault = 0;
+// Reflects the default value for the `kAIModeSettings` pref; 0 = allowed, 1 =
+// disallowed. Pref value is determined by: `AIModeSettings` policy,
+// `GenAiDefaultSettings` policy if `AIModeSettings` isn't set, or the default
+// pref value (0) if neither policy is set. Do not change this value without
+// migrating the existing prefs and the policy's prefs mapping.
+constexpr int kAiModeAllowedDefault = 0;
 
 // The pref name used for storing the eligibility response proto.
 constexpr char kResponsePrefName[] =
@@ -152,11 +156,11 @@ bool GetResponseFromPrefs(const PrefService* prefs,
 void AimEligibilityService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kResponsePrefName, "");
   registry->RegisterIntegerPref(omnibox::kAIModeSettings,
-                                kAIModeAllowedDefault);
+                                kAiModeAllowedDefault);
 }
 
 bool AimEligibilityService::IsAimAllowedByPolicy(const PrefService* prefs) {
-  return prefs->GetInteger(omnibox::kAIModeSettings) == kAIModeAllowedDefault;
+  return prefs->GetInteger(omnibox::kAIModeSettings) == kAiModeAllowedDefault;
 }
 
 AimEligibilityService::AimEligibilityService(

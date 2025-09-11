@@ -116,7 +116,9 @@ class AimEligibilityService : public KeyedService,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
 
-  // Initializes the service.
+  // Initializes the service. This isn't inlined in the constructor because
+  // initialization may have to be delayed until after `template_url_service_`
+  // has loaded.
   void Initialize();
 
   // signin::IdentityManager::Observer:
