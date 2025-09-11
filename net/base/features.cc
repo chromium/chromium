@@ -663,14 +663,6 @@ BASE_FEATURE_PARAM(size_t,
                    "max_entries",
                    1000);
 
-// TODO(crbug.com/433551601): Change the default to `true` once it has been
-// verified working.
-BASE_FEATURE_PARAM(bool,
-                   kHttpCacheNoVarySearchApplyToExternalHits,
-                   &kHttpCacheNoVarySearch,
-                   "apply_to_external_hits",
-                   false);
-
 BASE_FEATURE_PARAM(bool,
                    kHttpCacheNoVarySearchPersistenceEnabled,
                    &kHttpCacheNoVarySearch,

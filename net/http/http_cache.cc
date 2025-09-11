@@ -574,8 +574,7 @@ void HttpCache::OnExternalCacheHit(
 
   OnExternalCacheHitForRequest(request_info);
 
-  if (no_vary_search_cache_ &&
-      features::kHttpCacheNoVarySearchApplyToExternalHits.Get()) {
+  if (no_vary_search_cache_) {
     auto result = no_vary_search_cache_->Lookup(request_info);
     if (result) {
       // Do this in addition to, rather than instead of, the URL passed to the

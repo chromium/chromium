@@ -14384,38 +14384,8 @@ TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
   expect_fresh_response(*transaction2);
 }
 
-TEST_P(HttpCacheNoVarySearchTest, ExternalHitWithFeatureParamFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kHttpCacheNoVarySearch,
-      base::FieldTrialParams{
-          {features::kHttpCacheNoVarySearchApplyToExternalHits.name, "false"}});
-
-  FetchIntoCache("q=john&a=10", "params=(\"a\")");
-
-  MockTransaction& transaction =
-      CreateMockTransaction("q=john", "params=(\"a\")");
-
-  MockHttpRequest request(transaction);
-
-  cache()->OnExternalCacheHit(request.url, request.method,
-                              request.network_isolation_key,
-                              (request.load_flags & LOAD_DO_NOT_SAVE_COOKIES));
-
-  ASSERT_OK_AND_ASSIGN(const std::string expected_cache_key,
-                       HttpCache::GenerateCacheKeyForRequest(&request));
-
-  EXPECT_THAT(mock_disk_cache()->GetExternalCacheHits(),
-              ElementsAre(expected_cache_key));
-}
-
-TEST_P(HttpCacheNoVarySearchTest, ExternalHitWithFeatureParamTrue) {
+TEST_P(HttpCacheNoVarySearchTest, ExternalHit) {
   static constexpr std::string_view kNvsQuery = "q=john&a=10";
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kHttpCacheNoVarySearch,
-      {{features::kHttpCacheNoVarySearchApplyToExternalHits.name, "true"}});
 
   FetchIntoCache(kNvsQuery, "params=(\"a\")");
 

@@ -795,12 +795,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                       kHttpCacheNoVarySearchCacheMaxEntries);
 
-// Whether the NoVarySearchCache should be consulted in
-// HttpCache::OnExternalCacheHit().
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kHttpCacheNoVarySearchApplyToExternalHits);
-
 // Whether persistence is enabled in on-the-record profiles. True by default.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kHttpCacheNoVarySearchPersistenceEnabled);
