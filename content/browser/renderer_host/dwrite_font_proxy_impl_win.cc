@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 
+#include <windows.h>
+
 #include <shlobj.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -334,6 +336,9 @@ void DWriteFontProxyImpl::GetFontFileHandles(
                         base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     if (file.IsValid()) {
       file_handles.push_back(std::move(file));
+    } else {
+      base::UmaHistogramSparse("Chrome.DWriteFontProxy.WinLastError",
+                               ::GetLastError());
     }
   }
   std::move(callback).Run(std::move(file_handles));
