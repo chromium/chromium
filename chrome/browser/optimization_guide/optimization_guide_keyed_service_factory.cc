@@ -58,8 +58,8 @@ OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
 OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
     default;
 
-std::unique_ptr<KeyedService> 
-  OptimizationGuideKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
+std::unique_ptr<KeyedService>
+OptimizationGuideKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<OptimizationGuideKeyedService>(context);
 }

@@ -228,10 +228,6 @@ class OptimizationGuideService
 
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  // Manages the storing, loading, and evaluating of optimization target
-  // prediction models.
-  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
-
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>
       model_execution_manager_;

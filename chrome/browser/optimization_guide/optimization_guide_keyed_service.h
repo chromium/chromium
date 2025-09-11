@@ -43,10 +43,6 @@ namespace contextual_cueing {
 class ZeroStateSuggestionsPageData;
 }  // namespace contextual_cueing
 
-namespace download {
-class BackgroundDownloadService;
-}  // namespace download
-
 namespace glic {
 class GlicPageContextEligibilityObserver;
 }  // namespace glic
@@ -68,7 +64,6 @@ class OnDeviceModelAvailabilityObserver;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class OptimizationGuideKeyedServiceBrowserTest;
-class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
 class PredictionModelStoreBrowserTestBase;
@@ -315,7 +310,7 @@ class OptimizationGuideKeyedService
   }
 
   optimization_guide::PredictionManager* GetPredictionManager() {
-    return prediction_manager_.get();
+    return &optimization_guide_global_state_->prediction_manager();
   }
 
   optimization_guide::OptimizationGuideGlobalState& GetGlobalState() {
@@ -360,8 +355,6 @@ class OptimizationGuideKeyedService
           callback,
       std::optional<optimization_guide::proto::RequestContextMetadata>
           request_context_metadata = std::nullopt) override;
-
-  download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 
   bool ComponentUpdatesEnabledProvider() const;
 
@@ -410,10 +403,6 @@ class OptimizationGuideKeyedService
 
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
-
-  // Manages the storing, loading, and evaluating of optimization target
-  // prediction models.
-  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // Provides assets to optimization_guide_global_state_ from
   // prediction_manager_. This *MUST* be destroyed before
