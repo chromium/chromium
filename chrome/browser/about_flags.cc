@@ -9874,6 +9874,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDocumentPatchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDocumentPatching)},
 
+    {"route-matching", flag_descriptions::kRouteMatchingName,
+     flag_descriptions::kRouteMatchingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kRouteMatching)},
+
     {"dse-preload2", flag_descriptions::kDsePreload2Name,
      flag_descriptions::kDsePreload2Description, kOsAll,
      FEATURE_VALUE_TYPE(features::kDsePreload2)},

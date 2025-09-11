@@ -8242,6 +8242,13 @@ const char kDocumentPatchingDescription[] =
     "and node.patchSelf(). "
     "See https://github.com/WICG/declarative-partial-updates";
 
+const char kRouteMatchingName[] = "Route matching";
+const char kRouteMatchingDescription[] =
+    "Allow definition of routes as e.g. URLPattern. Special CSS rules can be "
+    "used to match active routes. See "
+    "https://github.com/WICG/declarative-partial-updates/blob/main/"
+    "route-matching-explainer.md";
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 const char kEnableOopPrintDriversName[] =
     "Enables Out-of-Process Printer Drivers";

@@ -884,6 +884,9 @@ extern const char kDevicePostureDescription[];
 extern const char kDocumentPatchingName[];
 extern const char kDocumentPatchingDescription[];
 
+extern const char kRouteMatchingName[];
+extern const char kRouteMatchingDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kDocumentPictureInPictureAnimateResizeName[];
