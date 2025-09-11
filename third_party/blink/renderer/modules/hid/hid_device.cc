@@ -106,26 +106,26 @@ uint32_t ConvertHidUsageAndPageToUint32(
   return (usage.usage_page) << 16 | usage.usage;
 }
 
-String UnitSystemToString(uint8_t unit) {
+V8HIDUnitSystem::Enum UnitSystemToV8Enum(uint8_t unit) {
   DCHECK_LE(unit, 0x0f);
   switch (unit) {
     case kUnitSystemNone:
-      return "none";
+      return V8HIDUnitSystem::Enum::kNone;
     case kUnitSystemSILinear:
-      return "si-linear";
+      return V8HIDUnitSystem::Enum::kSiLinear;
     case kUnitSystemSIRotation:
-      return "si-rotation";
+      return V8HIDUnitSystem::Enum::kSiRotation;
     case kUnitSystemEnglishLinear:
-      return "english-linear";
+      return V8HIDUnitSystem::Enum::kEnglishLinear;
     case kUnitSystemEnglishRotation:
-      return "english-rotation";
+      return V8HIDUnitSystem::Enum::kEnglishRotation;
     case kUnitSystemVendorDefined:
-      return "vendor-defined";
+      return V8HIDUnitSystem::Enum::kVendorDefined;
     default:
       break;
   }
   // Values other than those defined in HidUnitSystem are reserved by the spec.
-  return "reserved";
+  return V8HIDUnitSystem::Enum::kReserved;
 }
 
 // Convert |unit_factor_exponent| from its coded representation to a signed
@@ -142,14 +142,14 @@ int8_t UnitFactorExponentToInt(uint8_t unit_factor_exponent) {
 // The unit definition value includes the unit system as well as unit factor
 // exponents for each of the 6 units defined by the unit system.
 void UnpackUnitValues(uint32_t unit,
-                      String& unit_system,
+                      V8HIDUnitSystem::Enum& unit_system,
                       int8_t& length_exponent,
                       int8_t& mass_exponent,
                       int8_t& time_exponent,
                       int8_t& temperature_exponent,
                       int8_t& current_exponent,
                       int8_t& luminous_intensity_exponent) {
-  unit_system = UnitSystemToString(unit & 0x0f);
+  unit_system = UnitSystemToV8Enum(unit & 0x0f);
   length_exponent = UnitFactorExponentToInt((unit >> 4) & 0x0f);
   mass_exponent = UnitFactorExponentToInt((unit >> 8) & 0x0f);
   time_exponent = UnitFactorExponentToInt((unit >> 12) & 0x0f);
@@ -597,7 +597,7 @@ HIDReportItem* HIDDevice::ToHIDReportItem(
     result->setUsages(usages);
   }
 
-  String unit_system;
+  V8HIDUnitSystem::Enum unit_system;
   int8_t unit_factor_length_exponent;
   int8_t unit_factor_mass_exponent;
   int8_t unit_factor_time_exponent;
