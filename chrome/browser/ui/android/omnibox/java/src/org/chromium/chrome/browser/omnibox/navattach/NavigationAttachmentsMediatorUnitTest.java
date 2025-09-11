@@ -85,18 +85,18 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void onUrlFocusChange_toolbarVisibleWhenFocused() {
-        mMediator.onUrlFocusChange(true);
+        mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
     }
 
     @Test
     public void onUrlFocusChange_toolbarHiddenWhenNotFocused() {
         // Show it first
-        mMediator.onUrlFocusChange(true);
+        mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
 
         // Then hide it
-        mMediator.onUrlFocusChange(false);
+        mMediator.setToolbarVisible(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
     }
 

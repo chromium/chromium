@@ -259,7 +259,11 @@ public class LocationBarCoordinator
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         mNavigationAttachmentsCoordinator =
                 new NavigationAttachmentsCoordinator(
-                        context, windowAndroid, mLocationBarLayout, profileObservableSupplier);
+                        context,
+                        windowAndroid,
+                        mLocationBarLayout,
+                        profileObservableSupplier,
+                        locationBarDataProvider);
         mUrlCoordinator =
                 new UrlBarCoordinator(
                         context,

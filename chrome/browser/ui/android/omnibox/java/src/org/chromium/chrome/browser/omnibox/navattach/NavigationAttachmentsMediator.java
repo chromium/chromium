@@ -108,12 +108,14 @@ class NavigationAttachmentsMediator {
     }
 
     /** Called when the URL focus changes. */
-    void onUrlFocusChange(boolean hasFocus) {
-        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, hasFocus);
-        if (hasFocus) {
+    void setToolbarVisible(boolean visible) {
+        // Don't toggle visibility until we have a bridge to talk to.
+        if (mComposeBoxQueryControllerBridge == null) return;
+
+        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, visible);
+        if (visible) {
             mComposeBoxQueryControllerBridge.notifySessionStarted();
-        }
-        if (!hasFocus) {
+        } else {
             mComposeBoxQueryControllerBridge.notifySessionAbandoned();
             mModelList.clear();
             mPopup.dismiss();

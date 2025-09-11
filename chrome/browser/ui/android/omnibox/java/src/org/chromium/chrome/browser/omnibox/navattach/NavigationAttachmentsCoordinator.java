@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -25,18 +27,23 @@ import org.chromium.url.GURL;
 public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
     private final @Nullable NavigationAttachmentsMediator mMediator;
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
+    private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
 
     public NavigationAttachmentsCoordinator(
             Context context,
             WindowAndroid windowAndroid,
             ViewGroup parent,
-            ObservableSupplier<Profile> profileObservableSupplier) {
+            ObservableSupplier<Profile> profileObservableSupplier,
+            LocationBarDataProvider locationBarDataProvider) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_navigation_toolbar) == null) {
             mMediator = null;
             mViewHolder = null;
+            mLocationBarDataProvider = null;
             return;
         }
+
+        mLocationBarDataProvider = locationBarDataProvider;
 
         var popup =
                 new NavigationAttachmentsPopup(
@@ -73,9 +80,18 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     /** Called when the URL focus changes. */
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
-        if (mMediator != null) {
-            mMediator.onUrlFocusChange(hasFocus);
-        }
+        if (mMediator == null || mLocationBarDataProvider == null) return;
+
+        int pageClass = mLocationBarDataProvider.getPageClassification(false);
+
+        boolean shouldShowToolbar =
+                hasFocus
+                        && (pageClass
+                                        == PageClassification
+                                                .INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE
+                                || pageClass == PageClassification.OTHER_VALUE);
+
+        mMediator.setToolbarVisible(shouldShowToolbar);
     }
 
     @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
