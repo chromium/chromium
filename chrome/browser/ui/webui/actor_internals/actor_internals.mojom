@@ -26,6 +26,9 @@ struct JournalEntry {
 
   // The task id of the event.
   int32 task_id;
+
+  // The track of the event.
+  string track;
 };
 
 // Interface for browser-to-page events

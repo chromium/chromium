@@ -23,14 +23,24 @@ namespace {
 std::string ToString(actor::mojom::JournalEntryType type) {
   switch (type) {
     case actor::mojom::JournalEntryType::kBegin:
-      return "B";
+      return "Begin";
     case actor::mojom::JournalEntryType::kEnd:
-      return "E";
+      return "End";
     case actor::mojom::JournalEntryType::kInstant:
-      return "I";
+      return "Instant";
   }
   NOTREACHED();
 }
+std::string ToString(actor::mojom::JournalTrack type) {
+  switch (type) {
+    case actor::mojom::JournalTrack::kFrontEnd:
+      return "FrontEnd";
+    case actor::mojom::JournalTrack::kActor:
+      return "Actor";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 ActorInternalsUIHandler::ActorInternalsUIHandler(
@@ -64,7 +74,7 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
 
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
       entry.url, entry.data->event, ToString(entry.data->type), ss.str(),
-      entry.data->timestamp, entry.data->task_id));
+      entry.data->timestamp, entry.data->task_id, ToString(entry.data->track)));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

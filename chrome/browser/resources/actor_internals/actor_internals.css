@@ -2,26 +2,53 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-thead {
-  white-space: nowrap;
-}
-
-th {
-  background-color: #C0C0C0;
+th, td {
   border: 1px solid #ccc;
-}
-
-td {
-  background-color: #F0F0F0;
-  border: 1px solid #ccc;
-}
-
-th,
-td {
   max-width: 300px;
   word-wrap: break-word;
 }
 
+th {
+  background-color: #C0C0C0;
+}
+
+td {
+  background-color: #F0F0F0;
+    --initial-background-color: #F0F0F0;
+}
+
 #stop-logging {
   display: none;
+}
+
+.type-b {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+.type-e {
+  color: darkred;
+  font-weight: bold;
+}
+
+.frontend-track {
+  background-color: #cacaca;
+  --initial-background-color: #cacaca;
+}
+
+.whitespace-pre {
+  white-space: pre;
+}
+
+@keyframes newly-uncollapsed-fade-out {
+  from {
+    background-color: lightblue;
+  }
+  to {
+    background-color: var(--initial-background-color);
+  }
+}
+
+.newly-uncollapsed td {
+  animation: newly-uncollapsed-fade-out 2s;
 }
