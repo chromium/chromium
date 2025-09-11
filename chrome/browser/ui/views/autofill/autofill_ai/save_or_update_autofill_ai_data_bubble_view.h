@@ -58,7 +58,7 @@ class SaveOrUpdateAutofillAiDataBubbleView : public AutofillLocationBarBubble {
       const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
           detail);
 
-  void OnDialogAccepted();
+  void OnDialogAccepted() const;
 
   std::unique_ptr<views::StyledLabel> GetWalletableEntitySubtitle() const;
 

@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // TODO(crbug.com/441742849): Refactor this class implementation and possibly
@@ -301,11 +302,25 @@ bool SaveOrUpdateAutofillAiDataControllerImpl::IsWalletableEntity() const {
          EntityInstance::RecordType::kServerWallet;
 }
 
-void SaveOrUpdateAutofillAiDataControllerImpl::OnGoToWalletLinkClicked() const {
+void SaveOrUpdateAutofillAiDataControllerImpl::OnGoToWalletLinkClicked() {
   if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+    reopen_bubble_when_web_contents_becomes_visible_ = true;
     static constexpr std::string_view kWalletPassesUrl =
         "https://wallet.google.com/wallet/passes";
     ShowSingletonTab(browser, GURL(kWalletPassesUrl));
+  }
+}
+
+void SaveOrUpdateAutofillAiDataControllerImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+  // TODO(crbug.com/441742849): Consider moving this logic to
+  // `AutofillBubbleControllerBase`, for now keep it specific to this class to
+  // avoid interfeering with other bubbles in transactions.
+  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
+  if (visibility == content::Visibility::VISIBLE &&
+      reopen_bubble_when_web_contents_becomes_visible_) {
+    reopen_bubble_when_web_contents_becomes_visible_ = false;
+    QueueOrShowBubble();
   }
 }
 

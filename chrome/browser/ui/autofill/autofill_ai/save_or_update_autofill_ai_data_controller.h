@@ -97,7 +97,7 @@ class SaveOrUpdateAutofillAiDataController {
 
   // Whether the user clicked the link the dialog subtitle which navigates them
   // to wallet.
-  virtual void OnGoToWalletLinkClicked() const = 0;
+  virtual void OnGoToWalletLinkClicked() = 0;
 
   // Returns an image resource id to be used in the dialog header.
   virtual int GetTitleImagesResourceId() const = 0;

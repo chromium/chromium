@@ -404,7 +404,7 @@ void SaveOrUpdateAutofillAiDataBubbleView::WindowClosing() {
   controller_ = nullptr;
 }
 
-void SaveOrUpdateAutofillAiDataBubbleView::OnDialogAccepted() {
+void SaveOrUpdateAutofillAiDataBubbleView::OnDialogAccepted() const {
   if (controller_) {
     controller_->OnSaveButtonClicked();
   }

@@ -52,7 +52,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   std::u16string GetDialogTitle() const override;
   std::u16string GetPrimaryAccountEmail() const override;
   bool IsWalletableEntity() const override;
-  void OnGoToWalletLinkClicked() const override;
+  void OnGoToWalletLinkClicked() override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;
   bool IsSavePrompt() const override;
@@ -61,6 +61,11 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
+  // content::WebContentsObserver:
+  // Used to re-show the bubble when it was previously closed due to the user
+  // clicking on a link in the bubble.
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  protected:
   explicit SaveOrUpdateAutofillAiDataControllerImpl(
@@ -100,6 +105,12 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   // or update prompt.
   AutofillClient::EntitySaveOrUpdatePromptResultCallback
       save_prompt_acceptance_callback_;
+
+  // Whether the bubble should be re-shown when the current web_contents becomes
+  // visible. This is true when the user has clicked a link in the bubble that
+  // leads to a navigation. In situations like this the bubble is closed,
+  // focusing back on the tab should re-open it.
+  bool reopen_bubble_when_web_contents_becomes_visible_ = false;
 
   base::WeakPtrFactory<SaveOrUpdateAutofillAiDataControllerImpl>
       weak_ptr_factory_{this};

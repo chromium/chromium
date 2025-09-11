@@ -37,7 +37,7 @@ class MockSaveOrUpdateAutofillAiDataController
               (const override));
   MOCK_METHOD(bool, IsWalletableEntity, (), (const override));
   MOCK_METHOD(bool, IsSavePrompt, (), (const override));
-  MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (const override));
+  MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (override));
   MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));
   MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override {

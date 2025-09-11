@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -156,6 +157,37 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
       SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
           kAccepted,
       1);
+}
+
+// When clicking a link in the bubble the user is navigated to a new tab, which
+// leads to the bubble to be closed. This test checks that when the user
+// navigates back to the tab where the bubble was first shown, the bubble
+// reapears.
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
+                       LinkClicked_WebContentsBecomesVisible_ReshowBubble) {
+  ShowUi("SaveNewEntity");
+
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  controller()->OnGoToWalletLinkClicked();
+  ASSERT_FALSE(controller()->IsShowingBubble());
+
+  controller()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(controller()->IsShowingBubble());
+}
+
+// Differently from when clicking on a link in the bubble, which leads to the
+// bubble being closed. Other reasons for closing it should not lead to the
+// bubble being re-shown when the webcontents becomes visible again.
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
+                       BubbleDeclined_WebContentsBecomesVisible_DoNotReshowWh) {
+  ShowUi("SaveNewEntity");
+
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  controller()->OnSaveButtonClicked();
+  ASSERT_FALSE(controller()->IsShowingBubble());
+
+  controller()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_FALSE(controller()->IsShowingBubble());
 }
 
 IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
