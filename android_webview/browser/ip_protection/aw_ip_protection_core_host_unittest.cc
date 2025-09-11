@@ -32,15 +32,6 @@
 
 namespace android_webview {
 
-namespace {
-
-constexpr char kTryGetAuthTokensResultHistogram[] =
-    "NetworkService.AwIpProtection.TryGetAuthTokensResult";
-constexpr char kTokenBatchHistogram[] =
-    "NetworkService.AwIpProtection.TokenBatchRequestTime";
-
-}  // namespace
-
 class AwIpProtectionCoreHostTest : public testing::Test {
  protected:
   AwIpProtectionCoreHostTest()
@@ -120,8 +111,6 @@ class AwIpProtectionCoreHostTest : public testing::Test {
   // A convenient geo hint for fake tokens.
   ip_protection::GeoHint geo_hint_;
 
-  base::HistogramTester histogram_tester_;
-
   std::unique_ptr<AwIpProtectionCoreHost> core_host_;
 
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
@@ -164,10 +153,6 @@ TEST_F(AwIpProtectionCoreHostTest, Success) {
                              .value());
 
   ExpectTryGetAuthTokensResult(std::move(expected));
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
 // BSA returns no tokens.
@@ -182,10 +167,6 @@ TEST_F(AwIpProtectionCoreHostTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // BSA returns malformed tokens.
@@ -210,10 +191,6 @@ TEST_F(AwIpProtectionCoreHostTest, MalformedTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // BSA gets tokens.
@@ -248,10 +225,6 @@ TEST_F(AwIpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
                              .value());
 
   ExpectTryGetAuthTokensResult(std::move(expected));
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
 // BSA returns no tokens.
@@ -270,10 +243,6 @@ TEST_F(AwIpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // BSA returns a transient error.
@@ -290,10 +259,6 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthTransientError) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSATransient, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // BSA returns a persistent error.
@@ -310,10 +275,6 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthPersistentError) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAPersistent, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // BSA returns some other error.
@@ -330,10 +291,6 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 // TryGetAuthTokens() fails because IP Protection is disabled.
@@ -345,7 +302,6 @@ TEST_F(AwIpProtectionCoreHostTest, TryGetAuthTokens_IpProtectionDisabled) {
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
 TEST_F(AwIpProtectionCoreHostTest, ProxyOverrideFlagsAll) {

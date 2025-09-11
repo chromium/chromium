@@ -97,17 +97,6 @@ void IpProtectionTelemetryUma::TokenBatchFetchComplete(
   }
 }
 
-void IpProtectionTelemetryUma::AndroidTokenBatchFetchComplete(
-    TryGetAuthTokensAndroidResult result,
-    std::optional<base::TimeDelta> duration) {
-  base::UmaHistogramEnumeration(
-      "NetworkService.AwIpProtection.TryGetAuthTokensResult", result);
-  if (duration.has_value()) {
-    base::UmaHistogramTimes(
-        "NetworkService.AwIpProtection.TokenBatchRequestTime", *duration);
-  }
-}
-
 void IpProtectionTelemetryUma::ProxyChainFallback(int proxy_chain_id) {
   base::UmaHistogramEnumeration(
       "NetworkService.IpProtection.ProxyChainFallback",

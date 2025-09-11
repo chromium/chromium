@@ -135,8 +135,6 @@ void IpProtectionTokenIpcFetcher::TryGetAuthTokensComplete(
     CHECK(bsa_tokens.has_value() && !bsa_tokens->empty());
   }
 
-  ip_protection::Telemetry().AndroidTokenBatchFetchComplete(result, duration);
-
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   std::optional<base::Time> try_again_after;
   if (backoff) {

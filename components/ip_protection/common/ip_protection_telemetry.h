@@ -14,7 +14,6 @@
 namespace ip_protection {
 
 enum class TryGetAuthTokensResult;
-enum class TryGetAuthTokensAndroidResult;
 enum class TryGetProbabilisticRevealTokensStatus;
 enum class ProxyLayer;
 
@@ -121,12 +120,6 @@ class IpProtectionTelemetry {
   // `IpProtectionConfigGetter` for blind-signed tokens from BSA.
   virtual void TokenBatchFetchComplete(
       TryGetAuthTokensResult result,
-      std::optional<base::TimeDelta> duration) = 0;
-
-  // Completed an attempt to fetch tokens via the system-provided auth service
-  // on Android.
-  virtual void AndroidTokenBatchFetchComplete(
-      TryGetAuthTokensAndroidResult result,
       std::optional<base::TimeDelta> duration) = 0;
 
   // Chrome has determined that a proxy chain with the given chain ID has failed
