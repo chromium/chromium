@@ -1539,6 +1539,7 @@ gpu.try_.optional_tests_builder(
     builderless = True,
     ssd = None,
     free_space = None,
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     max_concurrent_builds = 10,
@@ -1593,6 +1594,8 @@ gpu.try_.optional_tests_builder(
     builderless = True,
     ssd = None,
     free_space = None,
+    # Exclude gpu fyi builders.
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     max_concurrent_builds = 10,
