@@ -125,11 +125,38 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   } {
     let fullText = '';
     const nodeOffsets: OffsetByNode[] = [];
-    for (const textNode of textNodes) {
+    for (let i = 0; i < textNodes.length; i++) {
+      const textNode = textNodes[i];
+      if (!textNode) {
+        continue;
+      }
       nodeOffsets.push({node: textNode, startOffset: fullText.length});
       fullText += textNode.getText();
+
+      // If there's a node after this one, check to see if there should be
+      // a line break between this node and the next. If there is, add a
+      // newline character to ensure both nodes aren't read as part of the same
+      // sentence.
+      if (i < textNodes.length - 1) {
+        const nextNode = textNodes[i + 1];
+        if (nextNode && this.isLineBreakingItem(textNode, nextNode)) {
+          fullText += '\n';
+        }
+      }
     }
     return {fullText, nodeOffsets};
+  }
+
+  private isLineBreakingItem(node1: DomReadAloudNode, node2: DomReadAloudNode):
+      boolean {
+    const blockAncestor1 = node1.getBlockAncestor();
+    const blockAncestor2 = node2.getBlockAncestor();
+
+    if (blockAncestor1 && blockAncestor2 && blockAncestor1 !== blockAncestor2) {
+      return true;
+    }
+
+    return false;
   }
 
   // Maps sentence boundaries from the concatenated text back to their

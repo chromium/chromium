@@ -389,3 +389,15 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
   RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
                    "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
+                       DomReadAloudNode) {
+  RunSidePanelTest("side_panel/read_anything/dom_read_aloud_node_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
+                       ReadAloudModel) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_model_test.js",
+                   "mocha.run()");
+}

@@ -11,6 +11,10 @@ import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 // representing text nodes and segments, allowing the core logic to work
 // with different text segmentation strategies.
 
+// Display types that should signal a line break.
+const LINE_BREAKING_DISPLAY_TYPES =
+    ['block', 'list-item', 'flex', 'grid', 'table'];
+
 // Wrapper class to represent a node used by read aloud. The type of node
 // could be either a DOM node or an AXNode depending on what type of text
 // segmentation method is used.
@@ -91,9 +95,13 @@ class AxReadAloudNodeImpl extends AxReadAloudNode {
 
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
+  nearestBlockAncestor: Node|undefined = undefined;
+
   protected constructor(protected node: Node) {
     super();
     ReadAloudNodeStore.getInstance().register(this);
+    // lineBreakingItem_ only needs to be set once.
+    this.nearestBlockAncestor = this.getNearestBlockAncestor_();
   }
 
   equals(other: ReadAloudNode|undefined|null): boolean {
@@ -115,6 +123,28 @@ export class DomReadAloudNode extends ReadAloudNode {
   // node has been changed, such as from highlighting.
   refresh(newNode: Node) {
     this.node = newNode;
+    this.nearestBlockAncestor = this.getNearestBlockAncestor_();
+  }
+
+  // The nearest ancestor to the DOM node associated with this ReadAloudNode
+  // that is of a "block" style such that it would constitute a line break.
+  getBlockAncestor(): Node|undefined {
+    return this.nearestBlockAncestor;
+  }
+
+  private getNearestBlockAncestor_(): Node|undefined {
+    let currentAncestor = this.node.parentElement;
+
+    while (currentAncestor) {
+      const displayStyle = window.getComputedStyle(currentAncestor).display;
+      // Check for common block-level display values
+      if (LINE_BREAKING_DISPLAY_TYPES.includes(displayStyle)) {
+        return currentAncestor;
+      }
+      currentAncestor = currentAncestor.parentElement;
+    }
+
+    return undefined;
   }
 }
 
