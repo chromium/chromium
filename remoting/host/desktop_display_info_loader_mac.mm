@@ -25,6 +25,7 @@ class DesktopDisplayInfoLoaderMac : public DesktopDisplayInfoLoader {
 
 DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
+  result.set_pixel_type(DesktopDisplayInfo::PixelType::LOGICAL);
 
   NSArray* screens = NSScreen.screens;
   DCHECK(screens);

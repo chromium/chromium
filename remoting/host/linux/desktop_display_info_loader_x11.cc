@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
@@ -64,6 +65,7 @@ void DesktopDisplayInfoLoaderX11::Init() {
 DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
 
+  result.set_pixel_type(DesktopDisplayInfo::PixelType::PHYSICAL);
   for (const auto& monitor : monitors_) {
     std::string display_name;
     auto reply = connection_->GetAtomName({monitor.name}).Sync();
