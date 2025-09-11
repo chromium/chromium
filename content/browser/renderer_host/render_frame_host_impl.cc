@@ -12988,7 +12988,10 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
             if (!frame) {
               return false;
             }
-            return frame->IsFullCookieAccessAllowed();
+            return frame->GetCookieSettingOverrides().Has(
+                       net::CookieSettingOverride::
+                           kStorageAccessGrantEligible) &&
+                   frame->IsFullCookieAccessAllowed();
           },
           weak_ptr_factory_.GetWeakPtr()),
       std::move(top_level_blob_document_url),

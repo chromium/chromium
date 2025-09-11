@@ -33,8 +33,6 @@ external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html
-external/wpt/FileAPI/BlobURL/*
-virtual/cross-partition-blob-url/external/wpt/*
 virtual/force-allow-storage-access/*
 virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
 virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
