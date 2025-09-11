@@ -235,7 +235,6 @@ build_webui("build") {
     "site_settings/site_entry.ts",
     "site_settings/site_list_entry.ts",
     "site_settings/site_list.ts",
-    "site_settings/smart_card_readers_page.ts",
     "site_settings/sound_page.ts",
     "site_settings/storage_access_page.ts",
     "site_settings/storage_access_site_list_entry.ts",
@@ -279,7 +278,10 @@ build_webui("build") {
       "system_page/system_page.ts",
     ]
   } else {
-    web_component_files += [ "languages_page/languages_page_index_cros.ts" ]
+    web_component_files += [
+      "languages_page/languages_page_index_cros.ts",
+      "site_settings/smart_card_readers_page.ts",
+    ]
   }
 
   if (!is_chromeos && !is_mac) {

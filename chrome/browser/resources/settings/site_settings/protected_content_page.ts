@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_icons.html.js';
 import '../privacy_page/collapse_radio_button.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
@@ -17,11 +18,13 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './protected_content_page.html.js';
 
-const ProtectedContentPageElementBase = PrefsMixin(PolymerElement);
+const ProtectedContentPageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class ProtectedContentPageElement extends
     ProtectedContentPageElementBase {
@@ -58,6 +61,11 @@ export class ProtectedContentPageElement extends
 
   declare searchTerm: string;
   declare private isGuest_: boolean;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

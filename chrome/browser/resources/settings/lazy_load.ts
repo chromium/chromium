@@ -78,6 +78,9 @@ import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/site_details_permission_device_entry.js';
 import './site_settings/sound_page.js';
+// <if expr="is_chromeos">
+import './site_settings/smart_card_readers_page.js';
+// </if>
 import './site_settings/storage_access_page.js';
 import './site_settings/v8_page.js';
 import './site_settings/vr_page.js';
@@ -285,7 +288,9 @@ export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
 export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+// <if expr="is_chromeos">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
+// </if>
 export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
 export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
 export {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from './site_settings/storage_access_static_site_list_entry.js';

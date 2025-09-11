@@ -5,15 +5,19 @@
 import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './ads_page.html.js';
 
-export class AdsPageElement extends PolymerElement {
+const AdsPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class AdsPageElement extends AdsPageElementBase {
   static get is() {
     return 'settings-ads-page';
   }
@@ -35,6 +39,11 @@ export class AdsPageElement extends PolymerElement {
   }
 
   declare searchTerm: string;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

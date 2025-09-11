@@ -21,9 +21,7 @@ import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import '../site_settings/protected_content_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
-import '../site_settings/smart_card_readers_page.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -83,13 +81,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       showClearBrowsingDataDialog_: Boolean,
       showPrivacyGuideDialog_: Boolean,
 
-      enableSafeBrowsingSubresourceFilter_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
-        },
-      },
-
       enableDeleteBrowsingDataRevamp_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
@@ -110,16 +101,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
               'enableExperimentalWebPlatformFeatures');
         },
       },
-
-      // <if expr="is_chromeos">
-      enableSmartCardReadersContentSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableSmartCardReadersContentSetting');
-        },
-      },
-      // </if>
 
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
@@ -222,13 +203,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showPersistentPermissions_: boolean;
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
-  declare private enableSafeBrowsingSubresourceFilter_: boolean;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
-  // <if expr="is_chromeos">
-  declare private enableSmartCardReadersContentSetting_: boolean;
-  // </if>
   declare private enableWebBluetoothNewPermissionsBackend_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
@@ -393,6 +370,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         triggerId = 'securityLinkRow';
         break;
       case 'siteSettings':
+      case 'siteSettingsAds':
       case 'siteSettingsAll':
       case 'siteSettingsAr':
       case 'siteSettingsAutomaticDownloads':
@@ -409,6 +387,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsIdleDetection':
       case 'siteSettingsImages':
       case 'siteSettingsJavascript':
+      case 'siteSettingsJavascriptOptimizer':
       case 'siteSettingsKeyboardLock':
       case 'siteSettingsLocalFonts':
       case 'siteSettingsLocalNetworkAccess':
@@ -420,8 +399,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsPaymentHandler':
       case 'siteSettingsPdfDocuments':
       case 'siteSettingsPopups':
+      case 'siteSettingsProtectedContent':
       case 'siteSettingsSensors':
       case 'siteSettingsSiteData':
+      case 'siteSettingsSiteDetails':
+      // <if expr="is_chromeos">
+      case 'siteSettingsSmartCardReaders':
+      // </if>
       case 'siteSettingsSound':
       case 'siteSettingsStorageAccess':
       case 'siteSettingsVr':

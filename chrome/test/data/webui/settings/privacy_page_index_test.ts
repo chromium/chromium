@@ -35,7 +35,11 @@ suite('PrivacyPageIndex', function() {
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
           enablePaymentHandlerContentSetting: false,
+          enableSafeBrowsingSubresourceFilter: false,
           enableSecurityKeysSubpage: false,
+          // <if expr="is_chromeos">
+          enableSmartCardReadersContentSetting: false,
+          // </if>
           enableWebAppInstallation: false,
           enableWebPrintingContentSetting: false,
           isGuest: false,
@@ -304,6 +308,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
+          viewId: 'siteSettingsJavascriptOptimizer',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_HANDLERS,
           viewId: 'siteSettingsHandlers',
           parentViewId: 'old',
@@ -354,6 +363,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_PROTECTED_CONTENT,
+          viewId: 'siteSettingsProtectedContent',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_SENSORS,
           viewId: 'siteSettingsSensors',
           parentViewId: 'old',
@@ -394,6 +408,15 @@ suite('PrivacyPageIndex', function() {
         await testViewsForRoute(
             routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
       }
+    });
+
+    test('RoutingAds', async function() {
+      assertFalse(
+          loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'));
+      await createPrivacyPageIndex({enableSafeBrowsingSubresourceFilter: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_ADS, ['siteSettingsAds'], 'old');
     });
 
     test('RoutingAutoPictureInPicture', async function() {
@@ -461,6 +484,19 @@ suite('PrivacyPageIndex', function() {
           routes.SITE_SETTINGS_PAYMENT_HANDLER, ['siteSettingsPaymentHandler'],
           'old');
     });
+
+    // <if expr="is_chromeos">
+    test('RoutingSmartCardReaders', async function() {
+      assertFalse(
+          loadTimeData.getBoolean('enableSmartCardReadersContentSetting'));
+      await createPrivacyPageIndex(
+          {enableSmartCardReadersContentSetting: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_SMART_CARD_READERS,
+          ['siteSettingsSmartCardReaders'], 'old');
+    });
+    // </if>
 
     test('RoutingWebAppInstallation', async function() {
       assertFalse(loadTimeData.getBoolean('enableWebAppInstallation'));

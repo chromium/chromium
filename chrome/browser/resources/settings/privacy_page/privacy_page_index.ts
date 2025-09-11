@@ -123,6 +123,23 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('enableSecurityKeysSubpage'),
       },
 
+      // <if expr="is_chromeos">
+      enableSmartCardReadersContentSetting_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
+        },
+      },
+      // </if>
+
+      enableSafeBrowsingSubresourceFilter_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
+        },
+      },
+
       enableKeyboardLockPrompt_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
@@ -176,6 +193,10 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
   declare private enableIncognitoTrackingProtections_: boolean;
+  // <if expr="is_chromeos">
+  declare private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
+  declare private enableSafeBrowsingSubresourceFilter_: boolean;
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
   declare private enablePaymentHandlerContentSetting_: boolean;

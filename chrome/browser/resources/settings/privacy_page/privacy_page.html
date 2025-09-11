@@ -97,16 +97,6 @@
         </cr-toast>
       </div>
 
-      <template is="dom-if" route-path="/content/v8" no-search>
-        <settings-subpage
-            page-title="$i18n{siteSettingsCategoryJavascriptOptimizer}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-v8-page prefs="{{prefs}}" search-term="[[searchFilter_]]">
-          </settings-v8-page>
-        </settings-subpage>
-      </template>
-
       <template is="dom-if" route-path="/security">
         <settings-subpage id="security" page-title="$i18n{securityPageTitle}"
             associated-control="[[$$('#securityLinkRow')]]"
@@ -153,17 +143,6 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]"
-          no-search>
-        <template is="dom-if" route-path="/content/ads" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsAds}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-ads-page search-term="[[searchFilter_]]">
-            </settings-ads-page>
-          </settings-subpage>
-       </template>
-     </template>
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}"
           learn-more-url="$i18n{chooserUsbOverviewURL}">
@@ -281,40 +260,4 @@
           </chooser-exception-list>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/content/siteDetails" no-search>
-        <settings-subpage page-title="[[pageTitle]]">
-          <site-details
-            page-title="{{pageTitle}}"
-            block-autoplay-enabled="[[blockAutoplayStatus_.pref.value]]">
-          </site-details>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/protectedContent" no-search>
-<if expr="not is_chromeos and not is_win">
-        <settings-subpage page-title="$i18n{siteSettingsProtectedContent}">
-</if>
-<if expr="is_chromeos or is_win">
-        <settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-</if>
-          <settings-protected-content-page prefs="{{prefs}}"
-              search-term="[[searchFilter_]]">
-          </settings-protected-content-page>
-        </settings-subpage>
-      </template>
-
-      <if expr="is_chromeos">
-        <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
-          <template is="dom-if"
-                route-path="/content/smartCardReaders" no-search>
-            <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
-                search-label="$i18n{siteSettingsAllSitesSearch}"
-                search-term="{{searchFilter_}}">
-              <settings-smart-card-readers-page filter="[[searchFilter_]]">
-              </settings-smart-card-readers-page>
-            </settings-subpage>
-          </template>
-        </template>
-      </if>
     </settings-animated-pages>

@@ -74,6 +74,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_ALL.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_SITE_DETAILS =
       r.SITE_SETTINGS_ALL.createChild('/content/siteDetails');
+  r.SITE_SETTINGS_SITE_DETAILS.hasMigratedToPlugin = true;
 
   r.SITE_SETTINGS_HANDLERS = r.SITE_SETTINGS.createChild('/handlers');
   r.SITE_SETTINGS_HANDLERS.hasMigratedToPlugin = true;
@@ -81,6 +82,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   // TODO(tommycli): Find a way to refactor these repetitive category
   // routes.
   r.SITE_SETTINGS_ADS = r.SITE_SETTINGS.createChild('ads');
+  r.SITE_SETTINGS_ADS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_AR = r.SITE_SETTINGS.createChild('ar');
   r.SITE_SETTINGS_AR.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_AUTOMATIC_DOWNLOADS =
@@ -100,6 +102,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
     r.SITE_SETTINGS_SMART_CARD_READERS =
         r.SITE_SETTINGS.createChild('smartCardReaders');
+    r.SITE_SETTINGS_SMART_CARD_READERS.hasMigratedToPlugin = true;
   }
   // </if>
   r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
@@ -124,6 +127,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
   r.SITE_SETTINGS_JAVASCRIPT.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
+  r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
     r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
     r.SITE_SETTINGS_KEYBOARD_LOCK.hasMigratedToPlugin = true;
@@ -159,6 +163,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_PDF_DOCUMENTS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_PROTECTED_CONTENT =
       r.SITE_SETTINGS.createChild('protectedContent');
+  r.SITE_SETTINGS_PROTECTED_CONTENT.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enablePaymentHandlerContentSetting')) {
     r.SITE_SETTINGS_PAYMENT_HANDLER =
         r.SITE_SETTINGS.createChild('paymentHandler');

@@ -132,6 +132,16 @@
     </settings-site-settings-page>
   </template>
 
+  <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_ADS, currentRoute, inSearchMode)]]">
+      <settings-ads-page slot="view" id="siteSettingsAds"
+          data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_ADS.path]]">
+      </settings-ads-page>
+    </template>
+  </template>
+
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_ALL, currentRoute, inSearchMode)]]">
     <all-sites slot="view" id="siteSettingsAll" data-parent-view-id="old"
@@ -367,12 +377,33 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_PROTECTED_CONTENT, currentRoute, inSearchMode)]]">
+    <settings-protected-content-page slot="view"
+        id="siteSettingsProtectedContent" data-parent-view-id="old"
+        prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_PROTECTED_CONTENT.path]]">
+    </settings-protected-content-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_SENSORS, currentRoute, inSearchMode)]]">
     <settings-sensors-page slot="view"
         id="siteSettingsSensors" data-parent-view-id="old"
         route-path$="[[routes_.SITE_SETTINGS_SENSORS.path]]">
     </settings-sensors-page>
   </template>
+
+<if expr="is_chromeos">
+  <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_SMART_CARD_READERS, currentRoute, inSearchMode)]]">
+      <settings-smart-card-readers-page slot="view"
+          id="siteSettingsSmartCardReaders" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_SMART_CARD_READERS.path]]">
+      </settings-smart-card-readers-page>
+    </template>
+  </template>
+</if>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_SOUND, currentRoute, inSearchMode)]]">
@@ -391,11 +422,27 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SITE_DETAILS, currentRoute, inSearchMode)]]">
+    <site-details slot="view" id="siteSettingsSiteDetails"
+        data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_SITE_DETAILS.path]]">
+    </site-details>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_STORAGE_ACCESS, currentRoute, inSearchMode)]]">
     <settings-storage-access-page slot="view" id="siteSettingsStorageAccess"
         data-parent-view-id="old"
         route-path$="[[routes_.SITE_SETTINGS_STORAGE_ACCESS.path]]">
     </settings-storage-access-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER, currentRoute, inSearchMode)]]">
+    <settings-v8-page slot="view" id="siteSettingsJavascriptOptimizer"
+      data-parent-view-id="old" prefs="{{prefs}}"
+      route-path$="[[routes_.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path]]">
+    </settings-v8-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
