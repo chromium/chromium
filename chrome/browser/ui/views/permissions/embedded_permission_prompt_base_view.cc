@@ -45,6 +45,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kLabelViewId2);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kTitleViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kOkButtonId);
 
 using permissions::feature_params::PermissionElementPromptPosition;
 

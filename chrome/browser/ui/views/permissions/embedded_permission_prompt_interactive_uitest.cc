@@ -11,10 +11,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
@@ -30,6 +33,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1388,10 +1393,173 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
   }
 }
 
+// A test suite for running policy-related interactive tests. This test suite
+// is parameterized to match its base class, but the parameter is not used in
+// the tests.
+class EmbeddedPermissionPromptPolicyInteractiveTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  EmbeddedPermissionPromptPolicyInteractiveTest() = default;
+  ~EmbeddedPermissionPromptPolicyInteractiveTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    EmbeddedPermissionPromptInteractiveTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
+  }
+
+  void UpdateProviderPolicy(const policy::PolicyMap& policies) {
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  void TestPolicy(const policy::PolicyMap& policies,
+                  const std::string& element_id,
+                  const ui::ElementIdentifier& expected_view_id,
+                  const std::u16string& expected_title) {
+    UpdateProviderPolicy(policies);
+
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(WaitForShow(expected_view_id)),
+        InAnyContext(
+            CheckViewProperty(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                              &views::Label::GetText, expected_title)),
+        PushPEPCPromptButton(EmbeddedPermissionPromptBaseView::kOkButtonId));
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(
+      policies, "camera-microphone",
+      EmbeddedPermissionPromptPolicyView::kMainViewId,
+      u"Your administrator doesn't allow camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_BLOCK),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow location for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(urls.Clone()), nullptr);
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera-microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_ALLOW),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows location for this site");
+}
+
 // Setting up to run all tests with two screen scale factors.
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptInteractiveTest,
                          testing::Values(1.0, 2.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptPolicyInteractiveTest,
+                         testing::Values(1.0));
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptPositioningInteractiveTest,
                          testing::Values(1.0, 2.0));
