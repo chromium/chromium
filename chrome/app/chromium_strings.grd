@@ -1690,6 +1690,11 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Side panel strings -->
+      <message name="IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE" desc="The name of the Customize Chrome feature in the side panel combo box.">
+        Customize Chromium
+      </message>
+
       <!-- Lens Overlay Strings -->
       <if expr="not is_android">
         <!-- Side Panel Pinnable Entrypoint Strings -->

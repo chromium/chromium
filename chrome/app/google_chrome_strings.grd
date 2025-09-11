@@ -1698,8 +1698,13 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_DESC" desc="Text shown in the macOS permission dialog, describing why Chrome needs the permission to access local network.">
           This will allow you to select from available devices and display content on them.
-    </message>
+        </message>
       </if>
+
+      <!-- Side panel strings -->
+      <message name="IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE" desc="The name of the Customize Chrome feature in the side panel combo box.">
+        Customize Chrome
+      </message>
 
       <!-- Lens Overlay Strings -->
       <if expr="not is_android">

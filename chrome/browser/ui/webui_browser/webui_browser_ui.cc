@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/webui_browser_resources.h"
