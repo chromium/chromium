@@ -118,7 +118,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
-  bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
 
   // Returns true if this node should pass its percentage resolution block-size
   // to its children. Typically only quirks-mode, auto block-size, block nodes.

@@ -74,7 +74,7 @@ bool TableNode::AllowColumnPercentages(bool is_layout_pass) const {
   const LayoutBlock* block = box_->ContainingBlock();
   while (!block->IsLayoutView()) {
     if (block->IsTableCell() || block->IsFlexibleBox() ||
-        block->IsLayoutGrid()) {
+        block->IsLayoutGridOrMasonry()) {
       return false;
     }
 

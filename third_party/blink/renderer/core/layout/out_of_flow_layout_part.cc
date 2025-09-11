@@ -909,8 +909,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       container_builder_->GetConstraintSpace().IsHiddenForPaint();
 
   auto IsPlacedWithinGridOrMasonryArea = [&](const auto* containing_block) {
-    if (!containing_block->IsLayoutGrid() &&
-        !containing_block->IsLayoutMasonry()) {
+    if (!containing_block->IsLayoutGridOrMasonry()) {
       return false;
     }
 

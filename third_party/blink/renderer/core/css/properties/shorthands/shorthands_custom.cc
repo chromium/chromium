@@ -2469,8 +2469,7 @@ bool Grid::ParseShorthand(bool important,
 
 bool Grid::IsLayoutDependent(const ComputedStyle* style,
                              LayoutObject* layout_object) const {
-  return layout_object &&
-         (layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry());
+  return layout_object && layout_object->IsLayoutGridOrMasonry();
 }
 
 const CSSValue* Grid::CSSValueFromComputedStyleInternal(
@@ -2558,8 +2557,7 @@ bool GridTemplate::ParseShorthand(
 
 bool GridTemplate::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object &&
-         (layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry());
+  return layout_object && layout_object->IsLayoutGridOrMasonry();
 }
 
 const CSSValue* GridTemplate::CSSValueFromComputedStyleInternal(

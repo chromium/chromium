@@ -623,7 +623,7 @@ LayoutUnit TranslateRTLCoordinate(const LayoutObject* layout_object,
                                   LayoutUnit position,
                                   const Vector<LayoutUnit>& column_positions) {
   // This should only be called on grid or masonry layout objects.
-  DCHECK(layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry());
+  DCHECK(layout_object->IsLayoutGridOrMasonry());
   DCHECK(!layout_object->StyleRef().IsLeftToRightDirection());
 
   LayoutUnit alignment_offset = column_positions.front();
@@ -2360,7 +2360,7 @@ void InspectorHighlight::AppendNodeHighlight(
   if (highlight_config.css_grid != Color::kTransparent ||
       highlight_config.grid_highlight_config) {
     grid_info_ = protocol::ListValue::create();
-    if (layout_object->IsLayoutGrid() || layout_object->IsLayoutMasonry()) {
+    if (layout_object->IsLayoutGridOrMasonry()) {
       grid_info_->pushValue(
           BuildGridInfo(To<Element>(node), highlight_config, scale_, true));
     }
@@ -2584,8 +2584,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
 
   float scale = DeviceScaleFromFrameView(frame_view);
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object ||
-      (!layout_object->IsLayoutGrid() && !layout_object->IsLayoutMasonry())) {
+  if (!layout_object || !layout_object->IsLayoutGridOrMasonry()) {
     return nullptr;
   }
 

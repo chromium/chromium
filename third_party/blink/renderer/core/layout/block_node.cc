@@ -1290,7 +1290,7 @@ bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
   }
 
   return !block->IsLayoutReplaced() && !block->IsTableCell() &&
-         !block->IsOutOfFlowPositioned() && !block->IsLayoutGrid() &&
+         !block->IsOutOfFlowPositioned() && !block->IsLayoutGridOrMasonry() &&
          !block->IsFlexibleBox() && !block->IsLayoutCustom();
 }
 
@@ -1521,7 +1521,8 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     // is able to return the correct value. This isn't ideal, but eventually
     // we'll answer these queries from the fragment.
     const auto* containing_block = box_->ContainingBlock();
-    if (containing_block && containing_block->IsLayoutGrid()) [[unlikely]] {
+    if (containing_block && containing_block->IsLayoutGridOrMasonry())
+        [[unlikely]] {
       box_->SetOverrideContainingBlockContentLogicalWidth(
           space.MarginPaddingPercentageResolutionSize().inline_size);
     }

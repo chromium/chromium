@@ -1366,11 +1366,11 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  // Similarly to flex items, we can't relayout a grid item independently of
-  // its container. This also applies to out of flow items of the grid, as we
-  // need the cached information of the grid to recompute the out of flow
-  // item's containing block rect.
-  if (box->ContainingBlock()->IsLayoutGrid()) {
+  // Similarly to flex items, we can't relayout a grid/masonry item
+  // independently of its container. This also applies to out of flow items of
+  // the grid, as we need the cached information of the grid to recompute the
+  // out of flow item's containing block rect.
+  if (box->ContainingBlock()->IsLayoutGridOrMasonry()) {
     return false;
   }
 
@@ -1700,8 +1700,10 @@ static inline bool ShouldInvalidateBeyond(LayoutObject* o) {
 
   // Invalidate past any subgrids. NOTE: we do this in both axes as we don't
   // know what writing-mode the root grid is in.
-  if (o->IsLayoutGrid()) {
+  if (o->IsLayoutGridOrMasonry()) {
     const auto& style = o->StyleRef();
+    // TODO(almaher): Masonry can only be subgridded in the grid axis, so we
+    // will only need to check in the grid/track sizing axis for masonry.
     if (style.GridTemplateColumns().IsSubgriddedAxis() ||
         style.GridTemplateRows().IsSubgriddedAxis()) {
       return true;

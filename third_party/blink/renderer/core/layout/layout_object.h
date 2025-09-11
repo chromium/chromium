@@ -912,15 +912,19 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
+  virtual bool IsLayoutMasonry() const {
+    NOT_DESTROYED();
+    return false;
+  }
+  bool IsLayoutGridOrMasonry() const {
+    NOT_DESTROYED();
+    return IsLayoutGrid() || IsLayoutMasonry();
+  }
   virtual bool IsLayoutIFrame() const {
     NOT_DESTROYED();
     return false;
   }
   virtual bool IsLayoutImage() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool IsLayoutMasonry() const {
     NOT_DESTROYED();
     return false;
   }
