@@ -134,13 +134,6 @@ def fix_graph(graph: dict[str, Header],
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
 
-    # On chromeos, x86_64-linux-gnu/foo.h will be either moved to foo.h or to
-    # x86_64-cros-gnu.
-    # So we just mark them all as textual so they don't appear in the modulemap.
-    for hdr in graph.values():
-      if '-linux-gnu' in str(hdr.abs):
-        hdr.textual = True
-
   # Windows has multiple include directories contained with the sysroot.
   if compiler.os == Os.Win:
     return {
