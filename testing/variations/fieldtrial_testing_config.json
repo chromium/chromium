@@ -20223,21 +20223,19 @@
             ]
         }
     ],
-    "ReadAloudClankStudy": [
+    "ReadAloudReadabilityDelay": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240623",
+                    "name": "Enabled",
                     "params": {
-                        "voices_override": "CiMKA3ZmehIQzqHOv8+FzrzPgM6vzr3OuRoCZWwiAkdSKAIwCQoXCgNpdGISBEFyaWEaAml0IgJJVCgCMAoKGAoDaXRjEgVDb3N0YRoCaXQiAklUKAEwCAoaCgNpdGQSB0NvcmFsbG8aAml0IgJJVCgBMAsKGQoDa2RhEgZPY2Vhbm8aAml0IgJJVCgCMAYKGQoDaGViEgbXoNeU16gaAml3IgJJTCgBMAwKHwoDaGVjEgzXkNeV1rnXk9a2150aAml3IgJJTCgCMAsKGQoDaGVkEgbXkNeS150aAml3IgJJTCgBMAkKHwoDaGVlEgzXkNa115bXlda515EaAml3IgJJTCgCMAcKIgoDbWxjEg/gtKHgtYbgtK/gtY3gtb0aAm1sIgJJTigCMAkKIgoDbWxlEg/gtKTgtJ/gtL7gtJXgtIIaAm1sIgJJTigBMAIKHwoDbWxmEgzgtLXgtL7gtK/gtYEaAm1sIgJJTigCMAwKHwoDbWxtEgzgtKTgtYDgtLDgtIIaAm1sIgJJTigBMAsKHwoDbXJhEgzgpJXgpYvgpLDgpLIaAm1yIgJJTigCMAoKKAoDbXJjEhXgpK7gpLngpL7gpLjgpL7gpJfgpLAaAm1yIgJJTigBMAUKHAoDbXJkEgngpKjgpKbgpYAaAm1yIgJJTigCMAsKHwoDbXJmEgzgpLDgpYHgpKzgpYAaAm1yIgJJTigCMAwKGQoDYWZiEgbFgcSFa2EaAnBsIgJQTCgCMAIKFwoDYm1nEgRNZWNoGgJwbCICUEwoATAMChkKA2ptaxIGQ2htdXJhGgJwbCICUEwoATAKChgKA29kYRIFT2NlYW4aAnBsIgJQTCgCMAgKGgoDemZnEgdKZXppb3JvGgJwbCICUEwoAjAJChYKA3ZmdhIDQWVyGgJybyICUk8oAjAHCigKA3RhYxIV4K6V4K6f4K6x4K+N4K6V4K6w4K+IGgJ0YSICSU4oAjAFCiIKA3RhZBIP4K6q4K614K6z4K6u4K+NGgJ0YSICSU4oATAMCjEKA3RhZhIe4K6q4K+G4K6w4K+B4K6Z4K+N4K6V4K6f4K6y4K+NGgJ0YSICSU4oAjALChwKA3RhZxIJ4K6o4K6k4K6/GgJ0YSICSU4oATAJCh8KA3RlZhIM4LCw4LGC4LCs4LGAGgJ0ZSICSU4oAjAKCiUKA3RlbRIS4LCr4LGA4LCy4LGN4LCh4LGNGgJ0ZSICSU4oATABCisKA21vbBIY4Lih4Lir4Liy4Liq4Lih4Li44LiX4LijGgJ0aCICVEgoAjAFChgKA2FtYRIFQnVsdXQaAnRyIgJUUigBMAwKFwoDY2ZzEgRWYWRpGgJ0ciICVFIoAjAHChcKA2VmdRIER8O2bBoCdHIiAlRSKAIwCQoXCgNtZm0SBEhhdmEaAnRyIgJUUigCMAUKGAoDdG1jEgVTYWhpbBoCdHIiAlRSKAEwBgodCgNoZmQSCtCe0LrQtdCw0L0aAnVrIgJVQSgCMAkKIAoDdmljEg1I4buTbmcgbmfhu41jGgJ2aSICVk4oAjAHCiAKA3ZpZBINQ8OhbmggxJHhu5NuZxoCdmkiAlZOKAEwBgoXCgN2aWUSBFLDqnUaAnZpIgJWTigCMAEKHQoDdmlmEgrEkMOhbSBtw6J5GgJ2aSICVk4oATAF"
+                        "read_aloud_readability_delay_ms_after_page_load": "1500"
                     },
                     "enable_features": [
-                        "ReadAloud",
-                        "ReadAloudInOverflowMenuInCCT",
-                        "ReadAloudPlayback"
+                        "ReadAloud"
                     ]
                 }
             ]
