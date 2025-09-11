@@ -291,6 +291,11 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     // The reporter in activate state can be submitted
     main_reporter = std::move(reporters_[PipelineStage::kActivate]);
     last_submitted_frame_id_ = last_activated_frame_id;
+  } else if (current_frame_id.source_id ==
+                 viz::BeginFrameArgs::kManualSourceId &&
+             reporters_[PipelineStage::kActivate]) {
+    main_reporter = std::move(reporters_[PipelineStage::kActivate]);
+    last_submitted_frame_id_ = last_activated_frame_id;
   } else {
     DCHECK(!reporters_[PipelineStage::kActivate]);
   }

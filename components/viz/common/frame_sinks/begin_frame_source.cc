@@ -59,7 +59,8 @@ bool CheckBeginFrameContinuity(BeginFrameObserver* observer,
                                const BeginFrameArgs& args) {
   const BeginFrameArgs& last_args = observer->LastUsedBeginFrameArgs();
   if (!last_args.IsValid() || (args.frame_time > last_args.frame_time)) {
-    DCHECK(!last_args.frame_id.IsNextInSequenceTo(args.frame_id))
+    DCHECK(args.frame_id.source_id == BeginFrameArgs::kManualSourceId ||
+           !last_args.frame_id.IsNextInSequenceTo(args.frame_id))
         << "current " << args.ToString() << ", last " << last_args.ToString();
     return true;
   }
@@ -88,7 +89,8 @@ bool BeginFrameObserverBase::WantsAnimateOnlyBeginFrames() const {
 void BeginFrameObserverBase::OnBeginFrame(const BeginFrameArgs& args) {
   DCHECK(args.IsValid());
   DCHECK_GE(args.frame_time, last_begin_frame_args_.frame_time);
-  DCHECK(!last_begin_frame_args_.frame_id.IsNextInSequenceTo(args.frame_id))
+  DCHECK((args.frame_id.source_id == BeginFrameArgs::kManualSourceId) ||
+         !last_begin_frame_args_.frame_id.IsNextInSequenceTo(args.frame_id))
       << "current " << args.ToString() << ", last "
       << last_begin_frame_args_.ToString();
   bool used = OnBeginFrameDerivedImpl(args);

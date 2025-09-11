@@ -788,6 +788,12 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
     params->auto_needs_begin_frame = true;
   }
 
+  if (base::FeatureList::IsEnabled(::features::kManualBeginFrame) &&
+      !command_line.HasSwitch(switches::kAllowPreCommitInput)) {
+    params->auto_needs_begin_frame = true;
+    params->manual_begin_frame = true;
+  }
+
   mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
       compositor_frame_sink_receiver = CrossVariantMojoReceiver<
           viz::mojom::blink::CompositorFrameSinkInterfaceBase>(

@@ -792,7 +792,8 @@ void WindowPerformance::OnPresentationPromiseResolved(
       !expected_frame_source_id || !actual_frame_source_id ||
       expected_frame_source_id == actual_frame_source_id;
   if (base::FeatureList::IsEnabled(
-          ::features::kInternalBeginFrameSourceOnManyDidNotProduceFrame)) {
+          ::features::kInternalBeginFrameSourceOnManyDidNotProduceFrame) ||
+      base::FeatureList::IsEnabled(::features::kManualBeginFrame)) {
     // Switch to cc BeginFrameSource will generate kNotRestartable(0) begin
     // frame and submit compositor frame with kManualSourceId.
     if ((expected_frame_source_id >> 32) == 0 ||

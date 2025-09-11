@@ -103,6 +103,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // should not wait for it before submitting another CompositorFrame.
     bool no_compositor_frame_acks = false;
 
+    // If true, when `OnNeedsBeginFrames` is called a `ManualSourceId` will be
+    // used to generate the first `OnBeginFrame`. Rather than waiting for
+    // feedback from the `CompositorFrameSink`. To be used with
+    // `auto_needs_begin_frame`.
+    bool manual_begin_frame = false;
+
     // If it has value(n), internal begin frame source will be used when n
     // consecutive "did not produce frame" are observed. It will stop using
     // internal begin frame source when there's a submitted compositor frame.
@@ -186,6 +192,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   void UpdateInternalBeginFrameSource(bool use_internal_source);
 
+  void SendManualBeginFrame();
+
   const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
@@ -224,6 +232,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   // Please see comment of `InitParams::no_compositor_frame_acks`.
   const bool no_compositor_frame_acks_;
 
+  // Please see comment of `InitParams::manual_begin_frame`.
+  const bool manual_begin_frame_;
+
   viz::HitTestRegionList last_hit_test_data_;
 
   viz::LocalSurfaceId last_submitted_local_surface_id_;
@@ -240,6 +251,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   uint64_t num_did_not_produce_frame_since_last_submit_ = 0;
   bool use_internal_begin_frame_source_ = false;
   std::unique_ptr<viz::DelayBasedBeginFrameSource> internal_begin_frame_source_;
+
+  uint64_t manual_sequence_number_ = 0;
 
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };

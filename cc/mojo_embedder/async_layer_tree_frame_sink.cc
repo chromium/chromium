@@ -84,12 +84,14 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
       auto_needs_begin_frame_(params->auto_needs_begin_frame),
       no_compositor_frame_acks_(params->no_compositor_frame_acks),
+      manual_begin_frame_(params->manual_begin_frame),
       use_begin_frame_presentation_feedback_(
           params->use_begin_frame_presentation_feedback),
       num_did_not_produce_frame_before_internal_begin_frame_source_(
           params
               ->num_did_not_produce_frame_before_internal_begin_frame_source) {
   DETACH_FROM_THREAD(thread_checker_);
+  CHECK(manual_begin_frame_ && auto_needs_begin_frame_ || !manual_begin_frame_);
 }
 
 AsyncLayerTreeFrameSink::~AsyncLayerTreeFrameSink() {}
@@ -200,7 +202,8 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   // needs_begin_frames_ when
   // num_did_not_produce_frame_before_internal_begin_frame_source_ is set.
   if (auto_needs_begin_frame_ && !needs_begin_frames_ &&
-      !num_did_not_produce_frame_before_internal_begin_frame_source_) {
+      !num_did_not_produce_frame_before_internal_begin_frame_source_ &&
+      !manual_begin_frame_) {
     UpdateNeedsBeginFramesInternal(/*needs_begin_frames=*/true);
   }
 
@@ -317,6 +320,16 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
       });
 
   ExportFrameTiming();
+
+  // TODO(crbug.com/40900977): Once we validate
+  // `features::kInternalBeginFrameSourceOnManyDidNotProduceFrame` we can use
+  // the `internal_begin_frame_source_` for all begin frames until we actually
+  // produce damage.
+  if (auto_needs_begin_frame_ &&
+      ack.frame_id.source_id == viz::BeginFrameArgs::kManualSourceId) {
+    compositor_frame_sink_ptr_->SetNeedsBeginFrame(needs_begin_frames_);
+    return;
+  }
 
   if (use_internal_begin_frame_source_) {
     return;
@@ -480,16 +493,44 @@ void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
                        weak_factory_.GetWeakPtr(), true));
   }
 
-  // If `auto_needs_begin_frame_` is set to true, rely on unsolicited frames
+  //  If `auto_needs_begin_frame_` is set to true, rely on unsolicited frames
   // instead of SetNeedsBeginFrame(true) to indicate that the client needs
   // BeginFrame requests.
   if (auto_needs_begin_frame_ && needs_begin_frames) {
+    if (manual_begin_frame_) {
+      UpdateNeedsBeginFramesInternal(needs_begin_frames);
+      // This needs to be a `PostTask`. `OnNeedsBeginFrames` is called by the
+      // `ExternalBeginFrameSource` for which we are a client. This is called
+      // when a new `BeginFrameObserver` is being added, but before it is
+      // actually added. Due to this calling `OnBeginFrame` here would fail to
+      // notify the new observer.
+      compositor_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AsyncLayerTreeFrameSink::SendManualBeginFrame,
+                         weak_factory_.GetWeakPtr()));
+    }
     return;
   }
 
   UpdateNeedsBeginFramesInternal(needs_begin_frames);
 
   compositor_frame_sink_ptr_->SetNeedsBeginFrame(needs_begin_frames);
+}
+
+void AsyncLayerTreeFrameSink::SendManualBeginFrame() {
+  // It is possible that we were disconnected from `compositor_frame_sink_ptr_`
+  // by the time this task was posted. Or that a subsequent update turns off
+  // `needs_begin_frames_`. In these cases do not send the `OnBeginFrame`.
+  if (!compositor_frame_sink_ptr_ || !needs_begin_frames_) {
+    return;
+  }
+  base::TimeTicks frame_time = base::TimeTicks::Now();
+  base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
+      ++manual_sequence_number_, frame_time, frame_time + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  OnBeginFrame(args, {}, {});
 }
 
 void AsyncLayerTreeFrameSink::OnMojoConnectionError(
