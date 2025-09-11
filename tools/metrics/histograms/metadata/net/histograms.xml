@@ -3225,22 +3225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached2.{Chain}"
-    units="ms" expires_after="2026-06-21">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Similar to Net.HttpJob.IpProtection.TotalTimeNotCached2, but only chains
-    with the given chain_id, as provided in the GetProxyInfo RPC response.
-  </summary>
-  <token key="Chain">
-    <variant name="Chain0"/>
-    <variant name="Chain1"/>
-    <variant name="Chain2"/>
-    <variant name="Chain3"/>
-  </token>
-</histogram>
-
 <histogram name="Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession"
     units="ms" expires_after="2026-02-22">
   <owner>fayang@chromium.org</owner>
