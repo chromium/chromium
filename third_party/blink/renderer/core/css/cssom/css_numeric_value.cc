@@ -255,6 +255,29 @@ CSSUnitValue* CSSNumericSumValueEntryToUnitValue(
   return nullptr;
 }
 
+V8CSSNumericBaseType::Enum BaseTypeToV8Enum(
+    CSSNumericValueType::BaseType base_type) {
+  using BaseType = CSSNumericValueType::BaseType;
+  switch (base_type) {
+    case BaseType::kLength:
+      return V8CSSNumericBaseType::Enum::kLength;
+    case BaseType::kAngle:
+      return V8CSSNumericBaseType::Enum::kAngle;
+    case BaseType::kTime:
+      return V8CSSNumericBaseType::Enum::kTime;
+    case BaseType::kFrequency:
+      return V8CSSNumericBaseType::Enum::kFrequency;
+    case BaseType::kResolution:
+      return V8CSSNumericBaseType::Enum::kResolution;
+    case BaseType::kFlex:
+      return V8CSSNumericBaseType::Enum::kFlex;
+    case BaseType::kPercent:
+      return V8CSSNumericBaseType::Enum::kPercent;
+    case BaseType::kNumBaseTypes:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 bool CSSNumericValue::IsValidUnit(CSSPrimitiveValue::UnitType unit) {
@@ -505,8 +528,7 @@ CSSNumericType* CSSNumericValue::type() const {
     type->setPercent(exponent);
   }
   if (type_.HasPercentHint()) {
-    type->setPercentHint(
-        CSSNumericValueType::BaseTypeToString(type_.PercentHint()));
+    type->setPercentHint(BaseTypeToV8Enum(type_.PercentHint()));
   }
   return type;
 }
