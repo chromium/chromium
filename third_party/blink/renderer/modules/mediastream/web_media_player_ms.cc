@@ -408,7 +408,7 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
       String::Format("%s() [delegate_id=%d]", __func__, delegate_id_));
 
   if (!web_stream_.IsNull()) {
-    web_stream_.RemoveObserver(this);
+    web_stream_.RemoveObserver(weak_this_);
   }
 
   // Destruct compositor resources in the proper order.
@@ -483,7 +483,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   DCHECK_NE(load_type, kLoadTypeMediaSource);
   web_stream_ = source.GetAsMediaStream();
   if (!web_stream_.IsNull())
-    web_stream_.AddObserver(this);
+    web_stream_.AddObserver(weak_this_);
 
   watch_time_reporter_.reset();
 
