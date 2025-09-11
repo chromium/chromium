@@ -46,7 +46,7 @@ suite('ContextMenuEntrypoint', () => {
   });
 
   test('clicking entrypoint shows context menu', async () => {
-    handler.setResultFor('getTabs', Promise.resolve([]));
+    handler.setResultFor('getRecentTabs', Promise.resolve([]));
 
     // Act.
     entrypoint.$.entrypoint.click();
@@ -60,7 +60,7 @@ suite('ContextMenuEntrypoint', () => {
       'tab header is not displayed when there are no tab suggestions',
       async () => {
         // Arrange & Act.
-        handler.setResultFor('getTabs', Promise.resolve([]));
+        handler.setResultFor('getRecentTabs', Promise.resolve([]));
         entrypoint.$.entrypoint.click();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
@@ -77,7 +77,7 @@ suite('ContextMenuEntrypoint', () => {
   test(
       'clicking entrypoint shows context menu with correct items', async () => {
         // Arrange.
-        handler.setResultFor('getTabs', Promise.resolve({
+        handler.setResultFor('getRecentTabs', Promise.resolve({
           tabs: [
             {
               title: 'Tab 1',
@@ -115,7 +115,7 @@ suite('ContextMenuEntrypoint', () => {
             `clicking ${selector} propagates ${eventName} before closing menu`,
             async () => {
               // Arrange.
-              handler.setResultFor('getTabs', Promise.resolve([]));
+              handler.setResultFor('getRecentTabs', Promise.resolve([]));
               entrypoint.$.entrypoint.click();
               await microtasksFinished();
               assertTrue(entrypoint.$.menu.open);
