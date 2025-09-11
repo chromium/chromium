@@ -6,10 +6,15 @@ static_library("browser") {
   sources = [
     "content_walletable_pass_ingestion_controller.cc",
     "content_walletable_pass_ingestion_controller.h",
+    "walletable_pass_barcode_detector.h",
+    "walletable_pass_barcode_detector_impl.cc",
+    "walletable_pass_barcode_detector_impl.h",
   ]
   deps = [
+    "//base",
     "//components/optimization_guide/content/browser",
     "//components/wallet/core/browser",
     "//content/public/browser",
+    "//services/shape_detection/public/mojom",
   ]
 }
