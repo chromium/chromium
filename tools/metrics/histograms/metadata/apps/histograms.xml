@@ -2335,6 +2335,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.CreateShortcuts.Mac.CopyShortcutResult"
+    enum="CopyShortcutResult" expires_after="2025-12-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of copying the app shortcut. This is recorded once for
+    every shim that is attempted to be created when ad-hoc signing is used for
+    web app shims.
+  </summary>
+</histogram>
+
 <histogram name="Apps.CreateShortcuts.Mac.Result2"
     enum="WebAppCreateShortcutMacResult" expires_after="2026-01-18">
   <owner>mek@chromium.org</owner>
