@@ -9,7 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info.h"
@@ -28,7 +30,15 @@ AutoSignOutService::AutoSignOutService(
       session_manager_(CHECK_DEREF(session_manager)),
       initialization_time_(base::Time::Now()) {
   sync_service_observation_.Observe(sync_service);
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
+  UpdateLocalDeviceInfoWhenReady();
+}
 
+AutoSignOutService::~AutoSignOutService() = default;
+
+void AutoSignOutService::UpdateLocalDeviceInfoWhenReady() {
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service_->GetLocalDeviceInfoProvider();
 
@@ -44,8 +54,6 @@ AutoSignOutService::AutoSignOutService(
                                 weak_pointer_factory_.GetWeakPtr()));
   }
 }
-
-AutoSignOutService::~AutoSignOutService() = default;
 
 void AutoSignOutService::UpdateLocalDeviceInfo() {
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
@@ -83,6 +91,24 @@ void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
       return;
     }
   }
+}
+
+void AutoSignOutService::OnUnlockScreenAttempt(
+    const bool success,
+    const session_manager::UnlockType unlock_type) {
+  // If device is unlocked, update the device info timestamp. This is important
+  // if the device was asleep, in which case we want to make sure that any other
+  // devices used during sleep will sign out automatically.
+  if (success) {
+    UpdateLocalDeviceInfoWhenReady();
+  }
+}
+
+void AutoSignOutService::SuspendDone(base::TimeDelta sleep_duration) {
+  // Reset initialization time when device wakes up on the lock screen to avoid
+  // unintended automatic sign-out as device might start immediately receiving
+  // sync updates.
+  initialization_time_ = base::Time::Now();
 }
 
 }  // namespace ash

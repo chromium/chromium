@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace session_manager {
@@ -29,7 +31,9 @@ namespace ash {
 // When a new sign-in is detected, an automatic sign-out is triggered which
 // ensures that only one active session exists for a user at any given time.
 class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
-    : public syncer::SyncServiceObserver {
+    : public syncer::SyncServiceObserver,
+      public session_manager::SessionManagerObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   // DeviceInfoSyncService and SyncService are KeyedServices whose lifetime
   // is managed by the user's Profile. The owner of AutoSignOutService instance
@@ -47,7 +51,18 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
   // syncer::SyncServiceObserver override:
   void OnStateChanged(syncer::SyncService* sync) override;
 
+  // session_manager::SessionManagerObserver override:
+  void OnUnlockScreenAttempt(
+      const bool success,
+      const session_manager::UnlockType unlock_type) override;
+
+  // chromeos::PowerManagerClient::Observer override:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+
  private:
+  // Checks if local device info is ready before updating device.
+  void UpdateLocalDeviceInfoWhenReady();
+
   // Updates the local device info with the new sign-in time.
   void UpdateLocalDeviceInfo();
 
@@ -61,6 +76,14 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   base::CallbackListSubscription local_device_info_ready_subscription_;
 

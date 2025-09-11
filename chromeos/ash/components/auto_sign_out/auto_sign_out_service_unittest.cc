@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -68,11 +71,21 @@ class AutoSignOutTest : public testing::Test {
     return fake_session_manager_delegate_.get();
   }
 
+  chromeos::FakePowerManagerClient* fake_power_manager_client() {
+    return chromeos::FakePowerManagerClient::Get();
+  }
+
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   const syncer::DeviceInfo* local_device_info() const {
     return local_device_info_;
   }
 
   void SetUp() override {
+    chromeos::PowerManagerClient::InitializeFake();
+
     fake_device_info_sync_service_ =
         std::make_unique<syncer::FakeDeviceInfoSyncService>();
 
@@ -100,9 +113,13 @@ class AutoSignOutTest : public testing::Test {
     session_manager_.reset();
     local_device_info_ = nullptr;
     fake_device_info_sync_service_.reset();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   syncer::TestSyncService test_sync_service_;
 
   std::unique_ptr<syncer::FakeDeviceInfoSyncService>
@@ -116,7 +133,7 @@ class AutoSignOutTest : public testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 };
 
-// Verifies that local device timestamp is updated when service is created.
+// Verifies that local device info timestamp is updated when service is created.
 TEST_F(AutoSignOutTest, TimestampUpdatedAfterServiceCreation) {
   EXPECT_FALSE(local_device_info()
                    ->floating_workspace_last_signin_timestamp()
@@ -187,6 +204,94 @@ TEST_F(AutoSignOutTest, SignOutNotTriggeredWithSameDeviceInfoGuid) {
 
   test_sync_service()->FireStateChanged();
 
+  EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 0);
+}
+
+// Verifies that device info timestamp is updated on unlock after wake-up from
+// sleep.
+TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
+  AutoSignOutService auto_sign_out_service(
+      fake_device_info_sync_service(), test_sync_service(), session_manager());
+
+  const base::Time timestamp_before_sleep =
+      local_device_info()->floating_workspace_last_signin_timestamp().value();
+
+  // Simulate sleep.
+  fake_power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  task_environment().FastForwardBy(base::Seconds(10));
+
+  // Simulate waking up.
+  fake_power_manager_client()->SendSuspendDone();
+
+  const base::Time timestamp_after_wakeup =
+      local_device_info()->floating_workspace_last_signin_timestamp().value();
+
+  EXPECT_EQ(timestamp_after_wakeup, timestamp_before_sleep);
+
+  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
+      /*success=*/true, /*UnlockType=*/session_manager::UnlockType::PASSWORD);
+
+  const base::Time timestamp_after_unlock =
+      local_device_info()->floating_workspace_last_signin_timestamp().value();
+
+  EXPECT_GT(timestamp_after_unlock, timestamp_after_wakeup);
+}
+
+// Verifies that device info timestamp is not updated on unlock if device wasn't
+// previously asleep.
+TEST_F(AutoSignOutTest, TimestampNotUpdatedOnUnlockWithoutPreviousSleep) {
+  AutoSignOutService auto_sign_out_service(
+      fake_device_info_sync_service(), test_sync_service(), session_manager());
+
+  const base::Time timestamp_before_unlock =
+      local_device_info()->floating_workspace_last_signin_timestamp().value();
+
+  task_environment().FastForwardBy(base::Seconds(10));
+
+  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
+      /*success=*/true, /*UnlockType=*/session_manager::UnlockType::PASSWORD);
+
+  const base::Time timestamp_after_unlock =
+      local_device_info()->floating_workspace_last_signin_timestamp().value();
+
+  EXPECT_EQ(timestamp_after_unlock, timestamp_before_unlock);
+}
+
+// Verify that receiving new device info immediately after waking up doesn't
+// trigger sign-out.
+TEST_F(AutoSignOutTest, SignOutNotTriggeredOnWakeUp) {
+  AutoSignOutService auto_sign_out_service(
+      fake_device_info_sync_service(), test_sync_service(), session_manager());
+
+  // Simulate sleep.
+  fake_power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  // Simulate another device being active while the first device is asleep.
+  constexpr base::TimeDelta new_device_timestamp_delta = base::Seconds(10);
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + new_device_timestamp_delta));
+
+  constexpr base::TimeDelta sleep_duration =
+      new_device_timestamp_delta + base::Seconds(5);
+
+  // Sleep past the activity timestamp of the other device.
+  task_environment().FastForwardBy(sleep_duration);
+
+  // Simulate waking up.
+  fake_power_manager_client()->SendSuspendDone();
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+
+  test_sync_service()->FireStateChanged();
+
+  // Verify sign-out is not requested since our device has woken up after the
+  // sign-in timestamp of the other device.
   EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 0);
 }
 
