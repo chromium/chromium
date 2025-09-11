@@ -64,15 +64,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  bool ShouldUseDarkColors() const override;
-
-  // On Windows, we look at the high contrast setting to calculate the color
-  // scheme. If high contrast is enabled, the preferred color scheme calculation
-  // will ignore the state of dark mode. Instead, preferred color scheme will be
-  // light or dark depending on the OS high contrast theme. If high contrast is
-  // off, the preferred color scheme calculation will be based of the state of
-  // dark mode.
-  PreferredColorScheme CalculatePreferredColorScheme() const override;
 
   PreferredContrast CalculatePreferredContrast() const override;
 
@@ -86,6 +77,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
 
   NativeThemeWin();
   ~NativeThemeWin() override;
+
+  PreferredColorScheme CalculatePreferredColorScheme() const;
+  void set_in_dark_mode_for_testing(bool in_dark_mode) {
+    in_dark_mode_ = in_dark_mode;
+  }
 
  private:
   bool IsUsingHighContrastThemeInternal() const;
@@ -220,6 +216,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
+
+  bool in_dark_mode_ = false;
 };
 
 }  // namespace ui

@@ -84,7 +84,8 @@ class LabelButtonTest : public test::WidgetTest {
     test_widget_ = CreateTopLevelPlatformWidget();
 
     // The test code below is not prepared to handle dark mode.
-    test_widget_->GetNativeTheme()->set_use_dark_colors(false);
+    test_widget_->GetNativeTheme()->set_preferred_color_scheme(
+        ui::NativeTheme::PreferredColorScheme::kLight);
 
     // Ensure the Widget is active, since LabelButton appearance in inactive
     // Windows is platform-dependent.
@@ -124,7 +125,8 @@ class LabelButtonTest : public test::WidgetTest {
 
   void UseDarkColors() {
     ui::NativeTheme* native_theme = test_widget_->GetNativeTheme();
-    native_theme->set_use_dark_colors(true);
+    native_theme->set_preferred_color_scheme(
+        ui::NativeTheme::PreferredColorScheme::kDark);
     native_theme->NotifyOnNativeThemeUpdated();
   }
 

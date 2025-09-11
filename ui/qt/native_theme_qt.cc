@@ -28,9 +28,10 @@ NativeThemeQt::NativeThemeQt(QtInterface* shim)
 NativeThemeQt::~NativeThemeQt() = default;
 
 void NativeThemeQt::ThemeChanged(bool prefer_dark_theme) {
-  set_use_dark_colors(IsForcedDarkMode() || prefer_dark_theme);
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
-
+  set_preferred_color_scheme(
+      (IsForcedDarkMode() || prefer_dark_theme)
+          ? ui::NativeTheme::PreferredColorScheme::kDark
+          : ui::NativeTheme::PreferredColorScheme::kLight);
   NotifyOnNativeThemeUpdated();
 }
 

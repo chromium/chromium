@@ -455,8 +455,11 @@ TEST_F(NotificationViewTest, DISABLED_TestAccentColor) {
   notification->set_buttons(CreateButtons(2));
 
   // The code below is not prepared to deal with dark mode.
-  notification_view()->GetWidget()->GetNativeTheme()->set_use_dark_colors(
-      false);
+  notification_view()
+      ->GetWidget()
+      ->GetNativeTheme()
+      ->set_preferred_color_scheme(
+          ui::NativeTheme::PreferredColorScheme::kLight);
   UpdateNotificationViews(*notification);
 
   notification_view()->GetWidget()->Show();

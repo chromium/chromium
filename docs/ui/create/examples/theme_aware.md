@@ -106,12 +106,14 @@ class ThemeTrackingCheckbox : public views::Checkbox {
 
     // Without this, the checkbox would not update for external (e.g. OS-driven)
     // theme changes.
-    SetChecked(GetNativeTheme()->ShouldUseDarkColors());
+    SetChecked(GetNativeTheme()->preferred_color_scheme() ==
+               ui::NativeTheme::PreferredColorScheme::kDark);
   }
 
   void ButtonPressed() {
-    GetNativeTheme()->set_use_dark_colors(GetChecked());
-
+    GetNativeTheme()->set_preferred_color_scheme(
+        GetChecked() ? ui::NativeTheme::PreferredColorScheme::kDark
+                     : ui::NativeTheme::PreferredColorScheme::kLight);
     // An OS or Chrome theme change would do this automatically.
     GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }

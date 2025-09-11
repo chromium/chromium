@@ -601,7 +601,8 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
 
   // TODO(pkasting): This should use a `ColorProvider` instead.
   const bool dark_mode =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark;
   const SkColor bg_color = dark_mode ? SK_ColorBLACK : SK_ColorWHITE;
   PlaceholderAvatarIconParams icon_params =
       GetPlaceholderAvatarIconParamsVisibleAgainstColor(bg_color);

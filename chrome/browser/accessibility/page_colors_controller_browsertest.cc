@@ -22,9 +22,8 @@
 class PageColorsControllerBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    ui_native_theme().set_use_dark_colors(false);
     ui_native_theme().set_preferred_color_scheme(
-        ui_native_theme().CalculatePreferredColorScheme());
+        ui::NativeTheme::PreferredColorScheme::kLight);
     ui_native_theme().NotifyOnNativeThemeUpdated();
   }
 

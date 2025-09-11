@@ -189,7 +189,9 @@ class ProfileColorsUtilTestDarkModeParam
       public testing::WithParamInterface<bool> {
  public:
   ProfileColorsUtilTestDarkModeParam() {
-    ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(GetParam());
+    ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+        GetParam() ? ui::NativeTheme::PreferredColorScheme::kDark
+                   : ui::NativeTheme::PreferredColorScheme::kLight);
   }
 
   void ExpectAllSaturatedColorsMatchingColorSchemeAvailable() {

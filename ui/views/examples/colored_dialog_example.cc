@@ -48,11 +48,14 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   // views::Checkbox
   void OnThemeChanged() override {
     views::Checkbox::OnThemeChanged();
-    SetChecked(GetNativeTheme()->ShouldUseDarkColors());
+    SetChecked(GetNativeTheme()->preferred_color_scheme() ==
+               ui::NativeTheme::PreferredColorScheme::kDark);
   }
 
   void ButtonPressed() {
-    GetNativeTheme()->set_use_dark_colors(GetChecked());
+    GetNativeTheme()->set_preferred_color_scheme(
+        GetChecked() ? ui::NativeTheme::PreferredColorScheme::kDark
+                     : ui::NativeTheme::PreferredColorScheme::kLight);
     GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }
 };

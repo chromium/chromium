@@ -39,9 +39,11 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   DarkModeStatus status = DarkModeStatus::kUnavailable;
   if (ui::NativeTheme::SystemDarkModeSupported()) {
-    status = ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-                 ? DarkModeStatus::kDark
-                 : DarkModeStatus::kLight;
+    status =
+        (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark)
+            ? DarkModeStatus::kDark
+            : DarkModeStatus::kLight;
   }
   UMA_HISTOGRAM_ENUMERATION("Browser.DarkModeStatus", status);
 

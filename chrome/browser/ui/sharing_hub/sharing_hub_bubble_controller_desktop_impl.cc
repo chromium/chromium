@@ -167,7 +167,8 @@ ui::ImageModel SharingHubBubbleControllerDesktopImpl::GetPreviewImage() {
   content::NavigationEntry* entry = controller.GetLastCommittedEntry();
   // Select chrome URLs show themified icons in dark mode.
   if (favicon::ShouldThemifyFaviconForEntry(entry) &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+          ui::NativeTheme::PreferredColorScheme::kDark) {
     const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
     favicon = gfx::Image(favicon::ThemeFavicon(
         *favicon.ToImageSkia(),

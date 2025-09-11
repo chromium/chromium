@@ -83,7 +83,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMetricsRecordedEvent);
 struct NtpPromoUiTestParams {
   NtpBrowserPromoType promo_type = NtpBrowserPromoType::kNone;
   std::optional<int> individual_promos = std::nullopt;
-  bool dark_mode = false;
+  ui::NativeTheme::PreferredColorScheme color_scheme =
+      ui::NativeTheme::PreferredColorScheme::kLight;
   bool wide_screen = false;
   bool rtl = false;
 
@@ -93,7 +94,7 @@ struct NtpPromoUiTestParams {
     if (individual_promos.has_value()) {
       oss << "_" << individual_promos.value();
     }
-    if (dark_mode) {
+    if (color_scheme == ui::NativeTheme::PreferredColorScheme::kDark) {
       oss << "_dark";
     }
     if (wide_screen) {
@@ -460,7 +461,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .promo_type = NtpBrowserPromoType::kSimple,
-            .dark_mode = true,
+            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
         },
         {
             .promo_type = NtpBrowserPromoType::kSimple,
@@ -481,7 +482,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .promo_type = NtpBrowserPromoType::kSetupList,
-            .dark_mode = true,
+            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
         },
         {
             .promo_type = NtpBrowserPromoType::kSetupList,
@@ -502,11 +503,9 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetSize(
       screen_size);
 
-  if (GetParam().dark_mode) {
-    BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetNativeTheme()
-        ->set_use_dark_colors(true);
-  }
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      GetParam().color_scheme);
+
   if (GetParam().rtl) {
     base::i18n::SetRTLForTesting(true);
   }

@@ -70,10 +70,11 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
         ->GetColor(kColorOmniboxResultsBackground);
   }
 
-  void SetUseDarkColor(bool use_dark) {
+  void SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme color_scheme) {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    browser_view->GetNativeTheme()->set_use_dark_colors(use_dark);
+    browser_view->GetNativeTheme()->set_preferred_color_scheme(color_scheme);
   }
 
   void SetIsGrayscale(bool is_grayscale) {

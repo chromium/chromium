@@ -336,7 +336,6 @@ void NativeThemeWin::ConfigureWebInstance() {
 
   // Initialize the native theme web instance with the system color info.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
-  web_instance->set_use_dark_colors(ShouldUseDarkColors());
   web_instance->set_forced_colors(forced_colors());
   web_instance->set_preferred_color_scheme(preferred_color_scheme());
   web_instance->SetPreferredContrast(preferred_contrast());
@@ -675,33 +674,28 @@ gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
   NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
 }
 
-bool NativeThemeWin::ShouldUseDarkColors() const {
-  // Windows high contrast modes are entirely different themes,
-  // so let them take priority over dark mode.
-  // ...unless --force-dark-mode was specified in which case caveat emptor.
-  if (forced_colors() && !IsForcedDarkMode()) {
-    return false;
-  }
-  return NativeTheme::ShouldUseDarkColors();
-}
-
 NativeTheme::PreferredColorScheme
 NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (!forced_colors()) {
-    return NativeTheme::CalculatePreferredColorScheme();
-  }
-
-  // According to the spec, the preferred color scheme for web content is 'dark'
-  // if 'Canvas' has L<33% and 'light' if L>67%. On Windows, the 'Canvas'
-  // keyword is mapped to the 'Window' system color. As such, we use the
-  // luminance of 'Window' to calculate the corresponding luminance of 'Canvas'.
-  // https://www.w3.org/TR/css-color-adjust-1/#forced
-  SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
-  float luminance = color_utils::GetRelativeLuminance(bg_color);
-  if (luminance < 0.33) {
+  if (IsForcedDarkMode()) {
     return NativeTheme::PreferredColorScheme::kDark;
   }
-  return NativeTheme::PreferredColorScheme::kLight;
+
+  if (forced_colors()) {
+    // According to the spec, the preferred color scheme for web content is
+    // 'dark' if 'Canvas' has L<33% and 'light' if L>67%. On Windows, the
+    // 'Canvas' keyword is mapped to the 'Window' system color. As such, we use
+    // the luminance of 'Window' to calculate the corresponding luminance of
+    // 'Canvas'. https://www.w3.org/TR/css-color-adjust-1/#forced
+    SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
+    float luminance = color_utils::GetRelativeLuminance(bg_color);
+    if (luminance < 0.33) {
+      return NativeTheme::PreferredColorScheme::kDark;
+    }
+    return NativeTheme::PreferredColorScheme::kLight;
+  }
+
+  return in_dark_mode_ ? NativeTheme::PreferredColorScheme::kDark
+                       : NativeTheme::PreferredColorScheme::kLight;
 }
 
 NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
@@ -1668,14 +1662,13 @@ void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
 }
 
 void NativeThemeWin::UpdateDarkModeStatus() {
-  bool dark_mode_enabled = false;
+  in_dark_mode_ = false;
   if (hkcu_themes_regkey_.Valid()) {
     DWORD apps_use_light_theme = 1;
     hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme",
                                     &apps_use_light_theme);
-    dark_mode_enabled = (apps_use_light_theme == 0);
+    in_dark_mode_ = (apps_use_light_theme == 0);
   }
-  set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();

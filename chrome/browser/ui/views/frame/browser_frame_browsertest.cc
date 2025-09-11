@@ -174,7 +174,8 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest {
   void SetUpOnMainThread() override {
     BrowserFrameTest::SetUpOnMainThread();
 
-    test_native_theme_.SetDarkMode(false);
+    test_native_theme_.SetPreferredColorScheme(
+        ui::NativeTheme::PreferredColorScheme::kLight);
     // TODO(tluk): BrowserFrame may update the NativeTheme when a theme update
     // event is received, which may unset the test NativeTheme. There should be
     // a way to prevent updates resetting the test NativeTheme when set.
@@ -240,23 +241,27 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
   // Assert the browser follows the system color scheme (i.e. the color scheme
   // set on the associated native theme)
   views::Widget* browser_frame = GetBrowserFrame(browser());
-  test_native_theme_.SetDarkMode(false);
+  test_native_theme_.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
             GetColorProviderKey(browser()).color_mode);
 
-  test_native_theme_.SetDarkMode(true);
+  test_native_theme_.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
   // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
   // color scheme.
-  test_native_theme_.SetDarkMode(false);
+  test_native_theme_.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
   browser_frame->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
-  test_native_theme_.SetDarkMode(true);
+  test_native_theme_.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
   browser_frame->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,

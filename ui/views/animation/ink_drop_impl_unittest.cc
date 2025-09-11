@@ -297,7 +297,8 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnHostThemeChange) {
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_highlights_created());
 
   ui::TestNativeTheme native_theme;
-  native_theme.SetDarkMode(true);
+  native_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   widget()->SetNativeThemeForTest(&native_theme);
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());

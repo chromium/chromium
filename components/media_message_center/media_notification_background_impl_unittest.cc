@@ -213,11 +213,13 @@ TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* theme = widget->GetNativeTheme();
-  theme->set_use_dark_colors(false);
+  theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   auto* owner = widget->SetContentsView(std::make_unique<views::View>());
   SkColor light_background_color = background()->GetBackgroundColor(*owner);
 
-  theme->set_use_dark_colors(true);
+  theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_NE(light_background_color, background()->GetBackgroundColor(*owner));
 }
 

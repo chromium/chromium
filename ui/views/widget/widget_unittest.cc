@@ -392,7 +392,8 @@ TEST_F(WidgetColorModeTest, ColorModeOverride_NoOverride) {
   ui::TestNativeTheme test_theme;
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  test_theme.SetDarkMode(true);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   widget->SetNativeThemeForTest(&test_theme);
 
   widget->SetColorModeOverride(std::nullopt);
@@ -405,7 +406,8 @@ TEST_F(WidgetColorModeTest, ColorModeOverride_DarkOverride) {
   ui::TestNativeTheme test_theme;
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  test_theme.SetDarkMode(false);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   widget->SetNativeThemeForTest(&test_theme);
 
   widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
@@ -418,7 +420,8 @@ TEST_F(WidgetColorModeTest, ColorModeOverride_LightOverride) {
   ui::TestNativeTheme test_theme;
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  test_theme.SetDarkMode(true);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   widget->SetNativeThemeForTest(&test_theme);
 
   widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
@@ -432,7 +435,8 @@ TEST_F(WidgetColorModeTest, ChildInheritsColorMode_NoOverrides) {
   ui::TestNativeTheme test_theme;
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  test_theme.SetDarkMode(true);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   widget->SetNativeThemeForTest(&test_theme);
 
   // Create the child widget.
@@ -451,7 +455,8 @@ TEST_F(WidgetColorModeTest, ChildInheritsColorMode_NoOverrides) {
 
   // Set the parent's native theme to light. The child should inherit the color
   // mode of the parent.
-  test_theme.SetDarkMode(false);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(kLightColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
   EXPECT_EQ(kLightColor,
@@ -463,7 +468,8 @@ TEST_F(WidgetColorModeTest, ChildInheritsColorMode_Overrides) {
   ui::TestNativeTheme test_theme;
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  test_theme.SetDarkMode(true);
+  test_theme.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   widget->SetNativeThemeForTest(&test_theme);
 
   // Create the child widget.

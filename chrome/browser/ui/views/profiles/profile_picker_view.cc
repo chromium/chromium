@@ -421,7 +421,8 @@ void ProfilePickerView::Clear() {
 }
 
 bool ProfilePickerView::ShouldUseDarkColors() const {
-  return GetNativeTheme()->ShouldUseDarkColors();
+  return GetNativeTheme()->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark;
 }
 
 content::WebContents* ProfilePickerView::GetPickerContents() const {

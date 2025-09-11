@@ -377,7 +377,8 @@ TEST_F(StyledLabelInWidgetTest, Color) {
 
   // The code below is not prepared to deal with dark mode.
   auto* const native_theme = widget()->GetNativeTheme();
-  native_theme->set_use_dark_colors(false);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* container = widget()->GetContentsView();
@@ -439,12 +440,14 @@ TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
 
   ASSERT_THAT(styled->children(), SizeIs(1u));
   auto* const native_theme = widget()->GetNativeTheme();
-  native_theme->set_use_dark_colors(true);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
             LabelAt(styled, 0)->GetBackgroundColor());
 
-  native_theme->set_use_dark_colors(false);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
             LabelAt(styled, 0)->GetBackgroundColor());
@@ -453,7 +456,8 @@ TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
             LabelAt(styled, 0)->GetBackgroundColor());
 
-  native_theme->set_use_dark_colors(true);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
             LabelAt(styled, 0)->GetBackgroundColor());

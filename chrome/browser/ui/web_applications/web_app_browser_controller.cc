@@ -431,7 +431,8 @@ std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
     if (std::optional<SkColor> dark_mode_color =
             registrar().GetAppDarkModeThemeColor(app_id())) {
       return dark_mode_color;
@@ -721,7 +722,8 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 
 std::optional<SkColor>
 WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
     if (std::optional<SkColor> dark_mode_color =
             registrar().GetAppDarkModeBackgroundColor(app_id())) {
       return dark_mode_color;

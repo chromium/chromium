@@ -208,7 +208,8 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
 #if BUILDFLAG(IS_WIN)
 void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   CHECK(!hkcu_themes_regkey_.Valid());
-  in_dark_mode_ = observed_theme->ShouldUseDarkColors();
+  in_dark_mode_ = observed_theme->preferred_color_scheme() ==
+                  ui::NativeTheme::PreferredColorScheme::kDark;
   status_icon_->SetImage(GetIcon());
 }
 #endif

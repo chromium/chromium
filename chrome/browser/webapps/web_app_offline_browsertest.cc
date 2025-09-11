@@ -408,7 +408,8 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeNoServiceWorker) {
 #if BUILDFLAG(IS_WIN)
   if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+          ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -469,7 +470,8 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
 #if BUILDFLAG(IS_WIN)
   if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+          ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
   }
 #endif  // BUILDFLAG(IS_WIN)

@@ -31,7 +31,8 @@ namespace {
 
 int GetResourceID(int size_in_pixels) {
   const bool is_dark =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark;
   if (size_in_pixels >= 64) {
     return is_dark ? IDR_DEFAULT_FAVICON_DARK_64 : IDR_DEFAULT_FAVICON_64;
   }

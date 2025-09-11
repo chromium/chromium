@@ -32,7 +32,8 @@ ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
     const std::string& screenshot_name,
     const views::Widget* widget) const {
   // If host is in dark mode skip the pixel comparison.
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
     return ExamplesExitCode::kNone;
   }
 

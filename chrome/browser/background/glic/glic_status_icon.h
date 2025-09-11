@@ -97,7 +97,8 @@ class GlicStatusIcon : public StatusIconObserver,
   // Whether the system is in dark mode. The registry key takes precedence, if
   // available.
   bool in_dark_mode_ =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark;
 #endif
 
   raw_ptr<GlicController> controller_;

@@ -36,12 +36,14 @@
 
 namespace {
 
-bool IsDarkMode() {
+ui::NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
   NSAppearanceName appearance =
       [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
         NSAppearanceNameAqua, NSAppearanceNameDarkAqua
       ]];
-  return [appearance isEqual:NSAppearanceNameDarkAqua];
+  return [appearance isEqual:NSAppearanceNameDarkAqua]
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
 }
 
 bool PrefersReducedTransparency() {
@@ -132,9 +134,10 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            bool in_forced_colors,
                            const std::optional<SkColor>& accent_color) const {
   // For `color_scheme`, `kNoPreference` means "use current".
-  const bool dark_mode = color_scheme == PreferredColorScheme::kDark ||
-                         (color_scheme == PreferredColorScheme::kNoPreference &&
-                          ShouldUseDarkColors());
+  const bool dark_mode =
+      color_scheme == PreferredColorScheme::kDark ||
+      (color_scheme == PreferredColorScheme::kNoPreference &&
+       preferred_color_scheme() == PreferredColorScheme::kDark);
 
   if (rect.IsEmpty()) {
     return;
@@ -607,12 +610,10 @@ void NativeThemeMac::PaintSelectedMenuItem(
 
 void NativeThemeMac::InitializeDarkModeStateAndObserver() {
   __block auto theme = this;
-  set_use_dark_colors(IsDarkMode());
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
+  set_preferred_color_scheme(GetPreferredColorScheme());
   objc_members_->appearance_observer =
       [[EffectiveAppearanceObserver alloc] initWithHandler:^{
-        theme->set_use_dark_colors(IsDarkMode());
-        theme->set_preferred_color_scheme(CalculatePreferredColorScheme());
+        theme->set_preferred_color_scheme(GetPreferredColorScheme());
         theme->NotifyOnNativeThemeUpdated();
       }];
 }
@@ -620,8 +621,7 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
 void NativeThemeMac::ConfigureWebInstance() {
   // NativeThemeAura is used as web instance so we need to initialize its state.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
-  web_instance->set_use_dark_colors(IsDarkMode());
-  web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
+  web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
   web_instance->SetPreferredContrast(CalculatePreferredContrast());
   web_instance->set_prefers_reduced_transparency(PrefersReducedTransparency());
   web_instance->set_inverted_colors(InvertedColors());

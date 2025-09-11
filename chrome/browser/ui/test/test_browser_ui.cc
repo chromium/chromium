@@ -202,7 +202,8 @@ void TestBrowserUi::ShowAndVerifyUi() {
   if (!IsInteractiveUi() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode) &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+          ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
   }
 #endif  // BUILDFLAG(IS_WIN)

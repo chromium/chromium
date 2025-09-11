@@ -31,11 +31,8 @@ class MockNativeTheme : public NativeTheme {
   MockNativeTheme() = default;
   ~MockNativeTheme() override = default;
 
-  void SetUseDarkColors(bool use_dark_colors) {
-    set_use_dark_colors(use_dark_colors);
-    set_preferred_color_scheme(use_dark_colors
-                                   ? NativeTheme::PreferredColorScheme::kDark
-                                   : NativeTheme::PreferredColorScheme::kLight);
+  void SetPreferredColorScheme(NativeTheme::PreferredColorScheme color_scheme) {
+    set_preferred_color_scheme(color_scheme);
     NotifyOnNativeThemeUpdated();
   }
 
@@ -193,7 +190,6 @@ class DarkModeManagerLinuxTest : public testing::Test {
             mock_native_theme_.get()});
 
     EXPECT_FALSE(manager_->prefer_dark_theme());
-    EXPECT_FALSE(mock_native_theme_->ShouldUseDarkColors());
     EXPECT_EQ(mock_native_theme_->preferred_color_scheme(),
               NativeTheme::PreferredColorScheme::kLight);
     EXPECT_FALSE(mock_native_theme_->user_color().has_value());
@@ -224,9 +220,11 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
 TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
   // Set the native theme preference before the async DBus calls complete.
-  mock_native_theme()->SetUseDarkColors(true);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kDark);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetUseDarkColors(false);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 
   // Let the manager know the DBus method call and signal connection failed.
@@ -242,9 +240,11 @@ TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
            DarkModeManagerLinux::kSettingChangedSignal, false);
 
   // The native theme preference should still toggle the manager preference.
-  mock_native_theme()->SetUseDarkColors(true);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kDark);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetUseDarkColors(false);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 }
 
@@ -264,7 +264,6 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  EXPECT_TRUE(mock_native_theme()->ShouldUseDarkColors());
   EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kDark);
 
@@ -279,15 +278,16 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
   std::move(setting_changed_callback()).Run(&signal);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
-  EXPECT_FALSE(mock_native_theme()->ShouldUseDarkColors());
   EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kLight);
 
   // The native theme preference should have no effect when the portal
   // preference is being used.
-  mock_native_theme()->SetUseDarkColors(true);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kDark);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetUseDarkColors(false);
+  mock_native_theme()->SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 }
 

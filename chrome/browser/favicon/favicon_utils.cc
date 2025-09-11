@@ -133,7 +133,8 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 
 gfx::Image GetDefaultFavicon() {
   return GetDefaultFaviconForColorScheme(
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark);
 }
 
 ui::ImageModel GetDefaultFaviconModel(ui::ColorId bg_color) {

@@ -92,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, ThemeDataPackInvalid) {
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, IncognitoTest) {
   // This test relies on incognito being meaningfully different than default,
   // which is not currently true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
 
   // Should get a different ColorProvider for incognito and original windows.
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -152,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
   // This test relies on toolbar buttons having no tint, which is not currently
   // true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
 #if BUILDFLAG(IS_LINUX)
   // This test relies on toolbar buttons having no tint, which is not currently
   // true when using the system theme.

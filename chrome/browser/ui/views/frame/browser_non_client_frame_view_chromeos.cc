@@ -406,9 +406,10 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
 
   if (GetWidget()) {
     // TODO(skau): Migrate to ColorProvider.
-    fallback_color =
-        cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
-                                  GetNativeTheme()->ShouldUseDarkColors());
+    fallback_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor,
+        GetNativeTheme()->preferred_color_scheme() ==
+            ui::NativeTheme::PreferredColorScheme::kDark);
   }
 
   return color.value_or(fallback_color);

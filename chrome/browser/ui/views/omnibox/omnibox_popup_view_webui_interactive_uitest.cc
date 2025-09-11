@@ -25,7 +25,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
   // makes this test fail; see comments below.
   BrowserView::GetBrowserViewForBrowser(browser())
       ->GetNativeTheme()
-      ->set_use_dark_colors(false);
+      ->set_preferred_color_scheme(
+          ui::NativeTheme::PreferredColorScheme::kLight);
 
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();

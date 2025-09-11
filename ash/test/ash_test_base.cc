@@ -730,7 +730,8 @@ void AshTestBase::PrepareForPixelDiffTest() {
 
   // Use dark mode by default, which is what many gold images expect.
   auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(true);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   native_theme->NotifyOnNativeThemeUpdated();
 
   DCHECK(!pixel_differ_);

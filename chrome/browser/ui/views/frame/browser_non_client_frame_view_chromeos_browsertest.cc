@@ -1062,7 +1062,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
 
   const auto* const native_theme =
       BrowserView::GetBrowserViewForBrowser(browser())->GetNativeTheme();
-  const bool dark_mode = native_theme->ShouldUseDarkColors();
+  const bool dark_mode = native_theme->preferred_color_scheme() ==
+                         ui::NativeTheme::PreferredColorScheme::kDark;
   EXPECT_EQ(active_frame_color,
             dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xFF, 0xFF, 0xFF))
       << "RGB: " << SkColorGetR(active_frame_color) << ", "
@@ -1829,11 +1830,11 @@ class BrowserNonClientFrameViewAshThemeChangeTest
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
     auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
-    native_theme->set_use_dark_colors(!native_theme->ShouldUseDarkColors());
     native_theme->set_preferred_color_scheme(
-        native_theme->CalculatePreferredColorScheme());
-
+        (native_theme->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark)
+            ? ui::NativeTheme::PreferredColorScheme::kLight
+            : ui::NativeTheme::PreferredColorScheme::kDark);
     native_theme->NotifyOnNativeThemeUpdated();
   }
 

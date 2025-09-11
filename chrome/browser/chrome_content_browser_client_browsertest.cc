@@ -475,7 +475,9 @@ class PrefersColorSchemeTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     original_client_ = SetBrowserClientForTesting(&theme_client_);
-    test_theme_.SetDarkMode(DarkOs());
+    test_theme_.SetPreferredColorScheme(
+        DarkOs() ? ui::NativeTheme::PreferredColorScheme::kDark
+                 : ui::NativeTheme::PreferredColorScheme::kLight);
 
 #if BUILDFLAG(ENABLE_GLIC)
     embedded_test_server()->ServeFilesFromDirectory(
@@ -669,8 +671,12 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&theme_client_);
-    test_theme_.SetDarkMode(DarkMode());
-    ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(DarkMode());
+    const auto color_scheme =
+        DarkMode() ? ui::NativeTheme::PreferredColorScheme::kDark
+                   : ui::NativeTheme::PreferredColorScheme::kLight;
+    test_theme_.SetPreferredColorScheme(color_scheme);
+    ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+        color_scheme);
     ThemeService* const theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
     if (UsesCustomTheme()) {

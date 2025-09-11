@@ -932,7 +932,8 @@ void AppBrowserController::UpdateThemePack() {
     theme_color = GetAltColor(*background_color);
   } else if (!background_color) {
     background_color =
-        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+        (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark)
             ? gfx::kGoogleGrey900
             : SK_ColorWHITE;
   }

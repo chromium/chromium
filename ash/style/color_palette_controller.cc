@@ -138,19 +138,18 @@ void SortSampleColorSchemes(
 // wallpaper.
 void RefreshNativeTheme(const ColorPaletteSeed& seed) {
   const SkColor themed_color = seed.seed_color;
-  bool is_dark_mode_enabled = seed.color_mode == ColorMode::kDark;
+  auto color_scheme = (seed.color_mode == ColorMode::kDark)
+                          ? ui::NativeTheme::PreferredColorScheme::kDark
+                          : ui::NativeTheme::PreferredColorScheme::kLight;
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(is_dark_mode_enabled);
+  native_theme->set_preferred_color_scheme(color_scheme);
   native_theme->set_user_color(themed_color);
   native_theme->set_scheme_variant(ToVariant(seed.scheme));
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   if (!native_theme_web->IsForcedDarkMode()) {
-    native_theme_web->set_use_dark_colors(is_dark_mode_enabled);
-    native_theme_web->set_preferred_color_scheme(
-        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
-                             : ui::NativeTheme::PreferredColorScheme::kLight);
+    native_theme_web->set_preferred_color_scheme(color_scheme);
   }
   native_theme_web->set_scheme_variant(ToVariant(seed.scheme));
   native_theme_web->set_user_color(themed_color);

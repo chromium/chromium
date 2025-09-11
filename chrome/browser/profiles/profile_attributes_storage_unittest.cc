@@ -1690,7 +1690,9 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
@@ -1704,8 +1706,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileThemeColors light_colors = GetDefaultProfileThemeColors();
   EXPECT_EQ(entry->GetProfileThemeColors(), light_colors);
 
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(true);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   EXPECT_NE(entry->GetProfileThemeColors(), light_colors);
 
@@ -1718,7 +1720,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   // Colors shouldn't change after switching back to the light mode.
-  native_theme->set_use_dark_colors(false);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
   // std::nullopt resets the colors to default.

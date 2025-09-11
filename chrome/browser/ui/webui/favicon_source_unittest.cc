@@ -136,7 +136,10 @@ class FaviconSourceTestBase : public testing::Test {
         .WillByDefault(Return(dummy_icon_bytes_.get()));
   }
 
-  void SetDarkMode(bool dark_mode) { theme_.SetDarkMode(dark_mode); }
+  void SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme color_scheme) {
+    theme_.SetPreferredColorScheme(color_scheme);
+  }
 
  protected:
   content::WebContents* test_web_contents() { return test_web_contents_.get(); }
@@ -177,14 +180,14 @@ class FaviconSourceTestWithLegacyFormat : public FaviconSourceTestBase {
 };
 
 TEST_F(FaviconSourceTestWithLegacyFormat, DarkDefault) {
-  SetDarkMode(true);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_F(FaviconSourceTestWithLegacyFormat, LightDefault) {
-  SetDarkMode(false);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
@@ -258,21 +261,21 @@ TEST_P(FaviconSourceTestWithFavicon2Format,
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, DarkDefault) {
-  SetDarkMode(true);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, LightDefault) {
-  SetDarkMode(false);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, LightOverride) {
-  SetDarkMode(true);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(
       GURL(base::StrCat({kDummyPrefix,

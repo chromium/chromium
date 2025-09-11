@@ -257,10 +257,11 @@ void FaviconSource::SendDefaultResponse(
     const chrome::ParsedFaviconPath& parsed,
     const content::WebContents::Getter& wc_getter) {
   if (!parsed.show_fallback_monogram) {
-    SendDefaultResponse(std::move(callback), parsed.size_in_dip,
-                        parsed.device_scale_factor,
-                        !parsed.force_light_mode &&
-                            GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+    SendDefaultResponse(
+        std::move(callback), parsed.size_in_dip, parsed.device_scale_factor,
+        !parsed.force_light_mode &&
+            GetNativeTheme(wc_getter)->preferred_color_scheme() ==
+                ui::NativeTheme::PreferredColorScheme::kDark);
     return;
   }
   int icon_size = std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
@@ -277,9 +278,10 @@ void FaviconSource::SendDefaultResponse(
     content::URLDataSource::GotDataCallback callback,
     const content::WebContents::Getter& wc_getter,
     bool force_light_mode) {
-  SendDefaultResponse(
-      std::move(callback), 16, 1.0f,
-      !force_light_mode && GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+  SendDefaultResponse(std::move(callback), 16, 1.0f,
+                      !force_light_mode &&
+                          GetNativeTheme(wc_getter)->preferred_color_scheme() ==
+                              ui::NativeTheme::PreferredColorScheme::kDark);
 }
 
 void FaviconSource::SendDefaultResponse(

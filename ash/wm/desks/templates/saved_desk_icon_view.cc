@@ -266,7 +266,8 @@ void SavedDeskRegularIconView::LoadDefaultIcon() {
 
   // Use a higher resolution image as it will look better after resizing.
   const int resource_id =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+      (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+       ui::NativeTheme::PreferredColorScheme::kDark)
           ? IDR_DEFAULT_FAVICON_DARK_64
           : IDR_DEFAULT_FAVICON_64;
 

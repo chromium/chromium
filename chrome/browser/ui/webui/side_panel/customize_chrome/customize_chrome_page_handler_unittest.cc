@@ -550,7 +550,8 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   ON_CALL(mock_ntp_custom_background_service_,
           IsCustomBackgroundDisabledByPolicy())
       .WillByDefault(Return(true));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);

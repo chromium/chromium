@@ -684,13 +684,15 @@ TEST_F(NetworkIconTest, GetImageModelForWiFiEnabledState) {
   widget->SetContentsView(image_view);
 
   auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(true);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   native_theme->NotifyOnNativeThemeUpdated();
 
   gfx::Image dark_mode_image = gfx::Image(image_view->GetImage());
 
   // Change the color scheme.
-  native_theme->set_use_dark_colors(false);
+  native_theme->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   native_theme->NotifyOnNativeThemeUpdated();
 
   gfx::Image light_mode_image = gfx::Image(image_view->GetImage());

@@ -197,10 +197,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Unthemed, non-incognito always has a white background. Exceptions: Inverted
@@ -246,12 +246,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   SetIsGrayscale(true);
 
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   SetIsGrayscale(false);
 
   // Install a theme (in both browsers, since it's the same profile).

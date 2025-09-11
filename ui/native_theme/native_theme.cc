@@ -150,9 +150,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   };
 
   const bool dark_mode =
-      forced_colors()
-          ? (preferred_color_scheme() == PreferredColorScheme::kDark)
-          : ShouldUseDarkColors();
+      preferred_color_scheme() == PreferredColorScheme::kDark;
   ui::ColorProviderKey key;
   key.color_mode = dark_mode ? ColorProviderKey::ColorMode::kDark
                              : ColorProviderKey::ColorMode::kLight;
@@ -258,10 +256,11 @@ base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {
 }
 
 NativeTheme::NativeTheme(ui::SystemTheme system_theme)
-    : should_use_dark_colors_(IsForcedDarkMode()),
-      system_theme_(system_theme),
+    : system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
-      preferred_color_scheme_(CalculatePreferredColorScheme()),
+      preferred_color_scheme_(IsForcedDarkMode()
+                                  ? PreferredColorScheme::kDark
+                                  : PreferredColorScheme::kLight),
       preferred_contrast_(CalculatePreferredContrast()) {}
 
 NativeTheme::~NativeTheme() = default;
@@ -301,16 +300,6 @@ void NativeTheme::PaintMenuItemBackground(
     return;
   }
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
-}
-
-bool NativeTheme::ShouldUseDarkColors() const {
-  return should_use_dark_colors_;
-}
-
-NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
-    const {
-  return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
-                               : NativeTheme::PreferredColorScheme::kLight;
 }
 
 std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()
@@ -410,7 +399,6 @@ bool NativeTheme::UpdateContrastRelatedStates(
   PageColors new_page_colors = observed_theme.page_colors();
   PreferredContrast new_preferred_contrast =
       observed_theme.preferred_contrast();
-  bool new_should_use_dark_colors = observed_theme.ShouldUseDarkColors();
   PreferredColorScheme new_preferred_color_scheme =
       observed_theme.preferred_color_scheme();
   bool new_prefers_reduced_transparency =
@@ -446,16 +434,11 @@ bool NativeTheme::UpdateContrastRelatedStates(
   // Only update the color scheme if page colors is a selected theme.
   if (new_page_colors != PageColors::kOff &&
       new_page_colors != PageColors::kHighContrast) {
-    new_should_use_dark_colors = new_page_colors == PageColors::kNightSky ||
-                                 new_page_colors == PageColors::kDusk ||
-                                 new_page_colors == PageColors::kAquatic;
-    new_preferred_color_scheme = new_should_use_dark_colors
-                                     ? PreferredColorScheme::kDark
-                                     : PreferredColorScheme::kLight;
-  }
-  if (ShouldUseDarkColors() != new_should_use_dark_colors) {
-    set_use_dark_colors(new_should_use_dark_colors);
-    states_updated = true;
+    const bool is_dark_theme = new_page_colors == PageColors::kNightSky ||
+                               new_page_colors == PageColors::kDusk ||
+                               new_page_colors == PageColors::kAquatic;
+    new_preferred_color_scheme = is_dark_theme ? PreferredColorScheme::kDark
+                                               : PreferredColorScheme::kLight;
   }
   if (preferred_color_scheme() != new_preferred_color_scheme) {
     set_preferred_color_scheme(new_preferred_color_scheme);

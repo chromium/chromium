@@ -465,22 +465,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // setting that triggers forced colors mode.
   bool forced_colors() const { return forced_colors_; }
 
-  // Returns true when the NativeTheme uses a light-on-dark color scheme. If
-  // you're considering using this function to choose between two hard-coded
-  // colors, you probably shouldn't. Instead, use ColorProvider::GetColor().
-  virtual bool ShouldUseDarkColors() const;
-
   // Returns the user's current page colors.
   PageColors page_colors() const { return page_colors_; }
 
-  // Calculates and returns the current user preferred color scheme. The
-  // base behavior is to set preferred color scheme to light or dark depending
-  // on the state of dark mode.
-  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
-
-  // Returns the OS-level user preferred color scheme. See the comment for
-  // CalculatePreferredColorScheme() for details on how preferred color scheme
-  // is calculated.
+  // Returns OS-level preferred color scheme, or `kNoPreference` if not
+  // set/applicable.
   PreferredColorScheme preferred_color_scheme() const {
     return preferred_color_scheme_;
   }
@@ -513,9 +502,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   bool HasDifferentSystemColors(
       const std::map<SystemThemeColor, SkColor>& colors) const;
 
-  void set_use_dark_colors(bool should_use_dark_colors) {
-    should_use_dark_colors_ = should_use_dark_colors;
-  }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
@@ -650,8 +636,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Determines whether generated colors should express the system's accent
   // color if present.
   bool should_use_system_accent_color_ = true;
-
-  bool should_use_dark_colors_ = false;
 
   const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;

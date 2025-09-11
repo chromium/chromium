@@ -37,13 +37,9 @@ gfx::Rect TestNativeTheme::GetNinePatchAperture(Part part) const {
   return gfx::Rect();
 }
 
-bool TestNativeTheme::ShouldUseDarkColors() const {
-  return dark_mode_;
-}
-
-void TestNativeTheme::SetDarkMode(bool dark_mode) {
-  dark_mode_ = dark_mode;
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
+void TestNativeTheme::SetPreferredColorScheme(
+    PreferredColorScheme color_scheme) {
+  set_preferred_color_scheme(color_scheme);
 }
 
 void TestNativeTheme::AddColorSchemeNativeThemeObserver(

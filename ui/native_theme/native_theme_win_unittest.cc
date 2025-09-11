@@ -27,37 +27,53 @@ class TestNativeThemeWin : public NativeThemeWin {
     return GetColorProviderKey(/*custom_theme=*/nullptr).color_mode;
   }
 
-  // NativeTheme:
+  void SetForcedColors(bool forced_colors) {
+    set_forced_colors(forced_colors);
+    UpdateColorSchemeAndContrast();
+  }
+
+  void SetInDarkMode(bool in_dark_mode) {
+    set_in_dark_mode_for_testing(in_dark_mode);
+    UpdateColorSchemeAndContrast();
+  }
+
   void SetSystemColor(SystemThemeColor system_color, SkColor color) {
     system_colors_[system_color] = color;
+    UpdateColorSchemeAndContrast();
+  }
+
+ private:
+  void UpdateColorSchemeAndContrast() {
+    set_preferred_color_scheme(CalculatePreferredColorScheme());
+    SetPreferredContrast(CalculatePreferredContrast());
   }
 };
 
 TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
   TestNativeThemeWin theme;
 
-  theme.set_forced_colors(false);
-  theme.set_use_dark_colors(true);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kDark);
+  theme.SetForcedColors(false);
+  theme.SetInDarkMode(true);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
-  theme.set_use_dark_colors(false);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kLight);
+  theme.SetInDarkMode(false);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
-  theme.set_forced_colors(true);
+  theme.SetForcedColors(true);
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kDark);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kLight);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLUE);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kDark);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorYELLOW);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kLight);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
-  theme.set_forced_colors(false);
-  EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kLight);
+  theme.SetForcedColors(false);
+  EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 }
 
 TEST(NativeThemeWinTest, CalculatePreferredContrast) {
@@ -65,39 +81,39 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
 
   TestNativeThemeWin theme;
 
-  theme.set_forced_colors(false);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+  theme.SetForcedColors(false);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kNoPreference);
 
-  theme.set_forced_colors(true);
+  theme.SetForcedColors(true);
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorWHITE);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kMore);
 
   theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorBLACK);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kMore);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorRED);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kCustom);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kCustom);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorYELLOW);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kLess);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kLess);
 
-  theme.set_forced_colors(false);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+  theme.SetForcedColors(false);
+  EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kNoPreference);
 }
 
 TEST(NativeThemeWinTest, TestColorProviderKeyColorMode) {
   TestNativeThemeWin theme;
 
-  theme.set_forced_colors(false);
-  theme.set_use_dark_colors(true);
+  theme.SetForcedColors(false);
+  theme.SetInDarkMode(true);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
 
-  theme.set_use_dark_colors(false);
+  theme.SetInDarkMode(false);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kLight);
 
-  theme.set_forced_colors(true);
+  theme.SetForcedColors(true);
   theme.set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
 

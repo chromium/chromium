@@ -264,20 +264,19 @@ class ColorProviderTest : public ThemeServiceTest,
 #endif
     original_forced_colors_ = native_theme_->forced_colors();
     original_preferred_contrast_ = native_theme_->preferred_contrast();
-    original_should_use_dark_colors_ = native_theme_->ShouldUseDarkColors();
+    original_preferred_color_scheme_ = native_theme_->preferred_color_scheme();
 
-    bool use_dark_colors = GetPreferredColorScheme() ==
-                           ui::NativeTheme::PreferredColorScheme::kDark;
+    auto preferred_color_scheme = GetPreferredColorScheme();
 #if BUILDFLAG(IS_WIN)
     const bool high_contrast =
         preferred_contrast() == ui::NativeTheme::PreferredContrast::kMore;
     if (high_contrast) {
-      use_dark_colors = false;
+      preferred_color_scheme = ui::NativeTheme::PreferredColorScheme::kLight;
     }
     native_theme_->set_forced_colors(high_contrast);
 #endif  // BUILDFLAG(IS_WIN)
     native_theme_->SetPreferredContrast(preferred_contrast());
-    native_theme_->set_use_dark_colors(use_dark_colors);
+    native_theme_->set_preferred_color_scheme(preferred_color_scheme);
 
     // If native_theme_ has changed, call
     // NativeTheme::NotifyOnNativeThemeUpdated to notify observers that the
@@ -286,8 +285,8 @@ class ColorProviderTest : public ThemeServiceTest,
     // also be reset.
     if (original_forced_colors_ != native_theme_->forced_colors() ||
         original_preferred_contrast_ != native_theme_->preferred_contrast() ||
-        original_should_use_dark_colors_ !=
-            native_theme_->ShouldUseDarkColors()) {
+        original_preferred_color_scheme_ !=
+            native_theme_->preferred_color_scheme()) {
       native_theme_->NotifyOnNativeThemeUpdated();
     }
 
@@ -303,7 +302,7 @@ class ColorProviderTest : public ThemeServiceTest,
     // Restore the original NativeTheme parameters.
     native_theme_->set_forced_colors(original_forced_colors_);
     native_theme_->SetPreferredContrast(original_preferred_contrast_);
-    native_theme_->set_use_dark_colors(original_should_use_dark_colors_);
+    native_theme_->set_preferred_color_scheme(original_preferred_color_scheme_);
     native_theme_->NotifyOnNativeThemeUpdated();
     ThemeServiceTest::TearDown();
   }
@@ -342,7 +341,8 @@ class ColorProviderTest : public ThemeServiceTest,
   bool original_forced_colors_ = false;
   ui::NativeTheme::PreferredContrast original_preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
-  bool original_should_use_dark_colors_ = false;
+  ui::NativeTheme::PreferredColorScheme original_preferred_color_scheme_ =
+      ui::NativeTheme::PreferredColorScheme::kLight;
   raw_ptr<ui::NativeTheme> native_theme_;
 #if BUILDFLAG(IS_LINUX)
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;

@@ -929,7 +929,8 @@ void GtkUi::LoadGtkValues() {
   // to the theme bits associated with the NativeThemeGtk instance to ensure
   // we do not regress existing behavior during the transition.
   ui::ColorProviderKey key;
-  if (native_theme_->ShouldUseDarkColors()) {
+  if (native_theme_->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark) {
     key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
   }
   // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color provider

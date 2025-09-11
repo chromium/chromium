@@ -37,11 +37,13 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   controller = app_browser->app_controller()->AsWebAppBrowserController();
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(controller->GetThemeColor().value(), SK_ColorBLUE);
   EXPECT_EQ(controller->GetBackgroundColor().value(), SK_ColorBLUE);
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(controller->GetThemeColor().value(), SK_ColorRED);
   EXPECT_EQ(controller->GetBackgroundColor().value(), SK_ColorRED);
 }

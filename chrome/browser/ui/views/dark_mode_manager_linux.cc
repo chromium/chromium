@@ -49,7 +49,9 @@ DarkModeManagerLinux::DarkModeManagerLinux(
   if (default_linux_ui_theme) {
     auto* native_theme = default_linux_ui_theme->GetNativeTheme();
     native_theme_observer_.Observe(native_theme);
-    SetColorScheme(native_theme->ShouldUseDarkColors(), true);
+    SetColorScheme(native_theme->preferred_color_scheme() ==
+                       NativeTheme::PreferredColorScheme::kDark,
+                   true);
   }
 }
 
@@ -57,7 +59,9 @@ DarkModeManagerLinux::~DarkModeManagerLinux() = default;
 
 void DarkModeManagerLinux::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  SetColorScheme(observed_theme->ShouldUseDarkColors(), true);
+  SetColorScheme(observed_theme->preferred_color_scheme() ==
+                     NativeTheme::PreferredColorScheme::kDark,
+                 true);
 }
 
 void DarkModeManagerLinux::OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
@@ -202,7 +206,6 @@ void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme,
   prefer_dark_theme_ = prefer_dark_theme;
 
   for (NativeTheme* theme : native_themes_) {
-    theme->set_use_dark_colors(prefer_dark_theme_);
     theme->set_preferred_color_scheme(
         prefer_dark_theme_ ? NativeTheme::PreferredColorScheme::kDark
                            : NativeTheme::PreferredColorScheme::kLight);

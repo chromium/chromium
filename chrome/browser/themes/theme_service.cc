@@ -588,7 +588,8 @@ bool ThemeService::BrowserUsesDarkColors() const {
   const BrowserColorScheme color_scheme = GetBrowserColorScheme();
   return color_scheme == BrowserColorScheme::kDark ||
          (color_scheme == BrowserColorScheme::kSystem &&
-          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+          ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+              ui::NativeTheme::PreferredColorScheme::kDark);
 }
 
 void ThemeService::SetUserColor(std::optional<SkColor> user_color) {

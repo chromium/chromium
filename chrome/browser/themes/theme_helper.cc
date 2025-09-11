@@ -173,7 +173,8 @@ bool ThemeHelper::UseDarkModeColors(const CustomThemeSupplier* theme_supplier) {
   // Dark mode is disabled for custom themes so they apply atop a predictable
   // state.
   return !IsCustomTheme(theme_supplier) &&
-         theme_supplier->GetNativeTheme()->ShouldUseDarkColors();
+         theme_supplier->GetNativeTheme()->preferred_color_scheme() ==
+             ui::NativeTheme::PreferredColorScheme::kDark;
 }
 
 gfx::Image ThemeHelper::GetImageNamed(

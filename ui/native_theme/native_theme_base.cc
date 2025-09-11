@@ -210,9 +210,10 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
   }
 
   // For `color_scheme`, `kNoPreference` means "use current".
-  const bool dark_mode = color_scheme == PreferredColorScheme::kDark ||
-                         (color_scheme == PreferredColorScheme::kNoPreference &&
-                          ShouldUseDarkColors());
+  const bool dark_mode =
+      color_scheme == PreferredColorScheme::kDark ||
+      (color_scheme == PreferredColorScheme::kNoPreference &&
+       preferred_color_scheme() == PreferredColorScheme::kDark);
 
   canvas->save();
   canvas->clipRect(gfx::RectToSkRect(rect));
