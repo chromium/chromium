@@ -100,6 +100,10 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.sReadAloudAudioOverviewsSpeedAdditionPercentage.getValue();
     }
 
+    public static boolean shouldConsiderLanguageInOverviewReadability() {
+      return ChromeFeatureList.sShouldConsiderLanguageInOverviewReadability.getValue();
+    }
+
     public static int getReadabilityDelayMsAfterPageLoad() {
       return ChromeFeatureList.sReadAloudReadabilityDelayMsAfterPageLoad.getValue();
     }
