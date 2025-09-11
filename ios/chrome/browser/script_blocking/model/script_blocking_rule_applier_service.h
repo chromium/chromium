@@ -88,9 +88,6 @@ class ScriptBlockingRuleApplierService
   // should be removed).
   std::optional<std::string> BuildRules();
 
-  // Handles the completion of the rule update operation.
-  void OnRuleUpdateCompleted(NSError* error);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The ContentRuleListManager used by this service to apply rules.
