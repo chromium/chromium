@@ -95,8 +95,6 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   return buffer;
 }
 
-struct TrivialMessage;
-
 // The type of message always used by a Channel which backs an ipcz transport.
 // Most of the inherited Message interface is unused since it's only called by
 // the original Mojo Core implementation.
@@ -170,7 +168,6 @@ struct ComplexMessage : public Channel::Message {
 
  private:
   friend struct Channel::Message;
-  friend struct TrivialMessage;
 
   // The message data buffer.
   Channel::AlignedBuffer data_;
@@ -193,40 +190,51 @@ struct ComplexMessage : public Channel::Message {
 #endif
 };
 
+// A Message with fixed capacity for payload and no support for carrying
+// handles. Allocated instead of IpczMessage for small messages to reduce the
+// number of memory allocations.
 struct TrivialMessage : public Channel::Message {
   TrivialMessage(const TrivialMessage&) = delete;
   TrivialMessage& operator=(const TrivialMessage&) = delete;
 
   ~TrivialMessage() override = default;
 
-  // TryConstruct should be used to build a TrivialMessage.
-  static Channel::MessagePtr TryConstruct(size_t payload_size,
-                                          MessageType message_type);
+  // TryConstruct should be used to build a TrivialMessage. Returns nullptr
+  // if |data| is too large to fit.
+  static Channel::MessagePtr TryConstruct(base::span<const uint8_t> data);
 
   // Message impl:
   base::span<const char> data_span() const override {
-    return base::as_chars(base::span(data_));
+    return base::as_chars(base::span(trivial_data_));
   }
   base::span<char> mutable_data_span() override {
-    return base::as_writable_chars(base::span(data_));
+    return base::as_writable_chars(base::span(trivial_data_));
   }
+
+  bool is_legacy_message() const override { return false; }
 
   size_t capacity() const override;
 
-  bool ExtendPayload(size_t new_payload_size) override;
+  // ExtendPayload is not used with ipcz. NOTREACHED allows not worrying about
+  // zero-fill for the hypothetical extended part.
+  bool ExtendPayload(size_t new_payload_size) override { NOTREACHED(); }
 
-  // The following interface methods are NOT supported on a Trivial message.
-  void SetHandles(std::vector<PlatformHandle> new_handles) override;
-  void SetHandles(std::vector<PlatformHandleInTransit> new_handles) override;
+  // Not supported by this class. Not used with ipcz. Implemented as NOTREACHED
+  // to match IpczMessage.
+  void SetHandles(std::vector<PlatformHandle> new_handles) override {
+    NOTREACHED();
+  }
+  void SetHandles(std::vector<PlatformHandleInTransit> new_handles) override {
+    NOTREACHED();
+  }
   std::vector<PlatformHandleInTransit> TakeHandles() override;
 
  private:
-  friend struct Channel::Message;
   TrivialMessage() = default;
 
-  alignas(sizeof(void*)) uint8_t data_[256 - sizeof(Channel::Message)];
+  alignas(sizeof(void*)) uint8_t trivial_data_[256 - sizeof(Channel::Message)];
 
-  static constexpr size_t kInternalCapacity = sizeof(data_);
+  static constexpr size_t kInternalCapacity = sizeof(trivial_data_);
 };
 
 static_assert(sizeof(TrivialMessage) == 256,
@@ -269,18 +277,6 @@ Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
                                                     size_t payload_size,
                                                     size_t max_handles,
                                                     MessageType message_type) {
-  if (g_use_trivial_messages &&
-      (capacity + std::max(sizeof(Header), sizeof(LegacyHeader))) <=
-          TrivialMessage::kInternalCapacity &&
-      max_handles == 0) {
-    // The TrivialMessage has a fixed capacity so if the requested capacity
-    // plus a header can fit then we can try to construct a TrivialMessage.
-    auto msg = TrivialMessage::TryConstruct(payload_size, message_type);
-    if (msg) {
-      return msg;
-    }
-  }
-
   return base::WrapUnique<Channel::Message>(
       new ComplexMessage(capacity, payload_size, max_handles, message_type));
 }
@@ -289,6 +285,13 @@ Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
 Channel::MessagePtr Channel::Message::CreateIpczMessage(
     base::span<const uint8_t> data,
     std::vector<PlatformHandle> handles) {
+  if (g_use_trivial_messages && handles.size() == 0) {
+    auto msg = TrivialMessage::TryConstruct(data);
+    if (msg) {
+      return msg;
+    }
+  }
+
   return std::make_unique<IpczMessage>(data, std::move(handles));
 }
 
@@ -710,62 +713,34 @@ std::vector<PlatformHandleInTransit> ComplexMessage::TakeHandles() {
 }
 
 // static
-Channel::MessagePtr TrivialMessage::TryConstruct(size_t payload_size,
-                                                 MessageType message_type) {
-  const bool is_legacy_message = (message_type == MessageType::NORMAL_LEGACY);
-  const size_t header_size =
-      is_legacy_message ? sizeof(LegacyHeader) : sizeof(Header);
+Channel::MessagePtr TrivialMessage::TryConstruct(
+    base::span<const uint8_t> data) {
+  const size_t header_size = sizeof(IpczHeader);
 
-  size_t size = header_size + payload_size;
+  size_t size = header_size + data.size();
+  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(size));
   if (size > kInternalCapacity) {
     return nullptr;
   }
 
   auto message = base::WrapUnique(new TrivialMessage);
-  std::ranges::fill(
-      message->mutable_data_span().first(sizeof(TrivialMessage::data_)), 0);
+  std::ranges::fill(message->mutable_data_span().first(sizeof(IpczHeader)), 0);
 
-  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(size));
+  IpczHeader& header = *reinterpret_cast<IpczHeader*>(message->trivial_data_);
+  header.size = sizeof(IpczHeader);
+  header.num_handles = 0;
+  header.num_bytes = size;
+  header.v2.creation_timeticks_us =
+      (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
   message->size_ = size;
-  message->legacy_header()->num_bytes = static_cast<uint32_t>(size);
-  message->legacy_header()->message_type = message_type;
-
-  if (!is_legacy_message) {
-    DCHECK(base::IsValueInRangeForNumericType<uint16_t>(header_size));
-    message->header()->num_header_bytes = static_cast<uint16_t>(header_size);
-  }
-
-  return base::WrapUnique<Channel::Message>(message.release());
+  base::span(message->trivial_data_)
+      .subspan(sizeof(IpczHeader))
+      .copy_prefix_from(data);
+  return message;
 }
 
 size_t TrivialMessage::capacity() const {
-  if (is_legacy_message())
-    return kInternalCapacity - sizeof(LegacyHeader);
-  return kInternalCapacity - header()->num_header_bytes;
-}
-
-bool TrivialMessage::ExtendPayload(size_t new_payload_size) {
-  size_t capacity_without_header = capacity();
-  size_t header_size = kInternalCapacity - capacity_without_header;
-  size_t required_size = new_payload_size + header_size;
-  if (required_size > kInternalCapacity) {
-    return false;
-  }
-
-  // We can just bump up the internal size as it's less than the capacity.
-  size_ = required_size;
-  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(size_));
-  legacy_header()->num_bytes = static_cast<uint32_t>(size_);
-  return true;
-}
-
-void TrivialMessage::SetHandles(std::vector<PlatformHandle> new_handles) {
-  CHECK(new_handles.empty());
-}
-
-void TrivialMessage::SetHandles(
-    std::vector<PlatformHandleInTransit> new_handles) {
-  CHECK(new_handles.empty());
+  return kInternalCapacity - sizeof(IpczHeader);
 }
 
 std::vector<PlatformHandleInTransit> TrivialMessage::TakeHandles() {

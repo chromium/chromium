@@ -264,7 +264,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     size_t num_handles() const;
     bool has_handles() const;
 
-    bool is_legacy_message() const;
+    // Returns true iff the LegacyHeader is in use for this message.
+    virtual bool is_legacy_message() const;
+
     LegacyHeader* legacy_header();
     const LegacyHeader* legacy_header() const;
     Header* header();
