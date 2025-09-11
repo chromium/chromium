@@ -2697,7 +2697,11 @@ QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
   if (db_) {
     if (text_query.empty()) {
       // Basic history query for the main database.
-      QueryHistoryBasic(options, &query_results);
+      // TODO: crbug.com/441271799 - Take `policy_for_404s` as a param and pass
+      //   the value to `QueryHistoryBasic()`, instead of hardcoding
+      //   `kExclude404s`.
+      QueryHistoryBasic(options, VisitQuery404sPolicy::kExclude404s,
+                        &query_results);
     } else {
       // Text history query.
       QueryHistoryText(text_query, options, &query_results);
@@ -2710,14 +2714,12 @@ QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
 
 // Basic time-based querying of history.
 void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
+                                       VisitQuery404sPolicy policy_for_404s,
                                        QueryResults* result) {
   // First get all visits.
   VisitVector visits;
-  // TODO: crbug.com/441157318 - Take `policy_for_404s` as a param and pass its
-  //   value to `GetVisibleVisitsInRange()`, instead of hardcoding
-  //   `kExclude404s`.
-  bool has_more_results = db_->GetVisibleVisitsInRange(
-      options, VisitQuery404sPolicy::kExclude404s, &visits);
+  bool has_more_results =
+      db_->GetVisibleVisitsInRange(options, policy_for_404s, &visits);
   DCHECK_LE(static_cast<int>(visits.size()), options.EffectiveMaxCount());
 
   VisitSourceMap sources;
@@ -3469,7 +3471,7 @@ void HistoryBackend::ExpireHistoryForTimes(const std::set<base::Time>& times,
   options.end_time = end_time;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   QueryResults results;
-  QueryHistoryBasic(options, &results);
+  QueryHistoryBasic(options, VisitQuery404sPolicy::kInclude404s, &results);
 
   // 1st pass: find URLs that are visited at one of `times`.
   std::set<GURL> urls;

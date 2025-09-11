@@ -3266,13 +3266,20 @@ TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
 }
 
 TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
+  // Allow 404s to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVisitedLinksOn404);
+
   ASSERT_TRUE(backend_.get());
 
+  // Make 10 visits, each 1µs apart. All visits have a response code of 200,
+  // except for the one at index 5, which has a response code of 404.
   std::array<HistoryAddPageArgs, 10> args;
   for (size_t i = 0; i < std::size(args); ++i) {
     args[i].url =
         GURL("http://example" + std::string((i % 2 == 0 ? ".com" : ".net")));
     args[i].time = base::Time() + base::Microseconds(i);
+    args[i].context_annotations = {.response_code = (i == 5 ? 404 : 200)};
     backend_->AddPage(args[i]);
   }
   EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
@@ -3302,7 +3309,8 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   EXPECT_EQ(base::Time() + base::Microseconds(2), visit_vector[3].visit_time);
   EXPECT_EQ(base::Time(), visit_vector[4].visit_time);
 
-  // Visits to http://example.net between [2,8] are removed.
+  // Visits to http://example.net between [2,8] are removed, including the 404
+  // visit at index 5.
   visit_vector.clear();
   EXPECT_TRUE(backend_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.net"), nullptr),

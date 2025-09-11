@@ -918,7 +918,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // The *Text() version performs a brute force query of the history DB to
   // search for results which match the given text query.
   // Both functions assume QueryHistory already checked the DB for validity.
-  void QueryHistoryBasic(const QueryOptions& options, QueryResults* result);
+  void QueryHistoryBasic(const QueryOptions& options,
+                         const VisitQuery404sPolicy policy_for_404s,
+                         QueryResults* result);
   void QueryHistoryText(const std::u16string& text_query,
                         const QueryOptions& options,
                         QueryResults* result);
