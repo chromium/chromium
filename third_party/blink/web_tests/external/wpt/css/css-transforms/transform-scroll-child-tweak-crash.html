@@ -42,14 +42,12 @@ function finish() {
 }
 
 function tweak2() {
-	dump("removeing scrllframe\n");
 	document.getElementById("container").style.height = "100px";
 	document.getElementById("scrollcontainer").style.overflow = "visible";
 	requestAnimationFrame(finish);
 }
 
 function tweak() {
-	dump("changing to red\n");
 	document.getElementById("thediv1").style.background = "red";
 	requestAnimationFrame(tweak2);
 }
