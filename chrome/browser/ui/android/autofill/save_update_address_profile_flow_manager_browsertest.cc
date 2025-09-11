@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -25,7 +26,8 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
   // Explicitly avoiding the migration logic because the user must be logged in.
   // TODO(crbug.com/40259080): figure out if the user can be logged in from an
   // Android browser test.
-  static constexpr bool kNotMigrationToAccount = false;
+  static constexpr SaveUpdateAddressProfilePromptMode kNotMigrationToAccount =
+      SaveUpdateAddressProfilePromptMode::kSaveNewProfile;
 
   SaveUpdateAddressProfileFlowManagerBrowserTest() = default;
   ~SaveUpdateAddressProfileFlowManagerBrowserTest() override = default;

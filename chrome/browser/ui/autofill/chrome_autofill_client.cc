@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
@@ -783,7 +784,9 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #if BUILDFLAG(IS_ANDROID)
   save_update_address_profile_flow_manager_->OfferSave(
       web_contents(), profile, original_profile,
-      save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
+      save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount
+          ? SaveUpdateAddressProfilePromptMode::kMigrateProfile
+          : SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
       std::move(callback));
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(

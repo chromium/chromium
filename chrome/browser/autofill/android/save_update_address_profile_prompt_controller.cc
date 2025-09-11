@@ -14,6 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -39,14 +41,14 @@ SaveUpdateAddressProfilePromptController::
         autofill::PersonalDataManager* personal_data,
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
-        bool is_migration_to_account,
+        SaveUpdateAddressProfilePromptMode prompt_mode,
         AutofillClient::AddressProfileSavePromptCallback decision_callback,
         base::OnceCallback<void()> dismissal_callback)
     : prompt_view_(std::move(prompt_view)),
       personal_data_(personal_data),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
-      is_migration_to_account_(is_migration_to_account),
+      prompt_mode_(prompt_mode),
       decision_callback_(std::move(decision_callback)),
       dismissal_callback_(std::move(dismissal_callback)) {
   if (original_profile_) {
@@ -73,9 +75,10 @@ SaveUpdateAddressProfilePromptController::
 }
 
 void SaveUpdateAddressProfilePromptController::DisplayPrompt() {
-  bool success =
-      prompt_view_->Show(this, profile_, /*is_update=*/!!original_profile_,
-                         is_migration_to_account_);
+  bool success = prompt_view_->Show(
+      this, profile_,
+      original_profile_ ? SaveUpdateAddressProfilePromptMode::kUpdateProfile
+                        : prompt_mode_);
   if (!success)
     std::move(dismissal_callback_).Run();
 }
@@ -83,7 +86,7 @@ void SaveUpdateAddressProfilePromptController::DisplayPrompt() {
 std::u16string SaveUpdateAddressProfilePromptController::GetTitle() const {
   if (!original_profile_) {
     return l10n_util::GetStringUTF16(
-        is_migration_to_account_
+        IsMigrationToAccount()
             ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
@@ -110,7 +113,8 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() const {
 
 std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
     signin::IdentityManager* identity_manager) const {
-  if (!is_migration_to_account_ && !profile_.IsAccountProfile()) {
+  if (prompt_mode_ != SaveUpdateAddressProfilePromptMode::kMigrateProfile &&
+      !profile_.IsAccountProfile()) {
     return std::u16string();
   }
   std::optional<AccountInfo> account =
@@ -123,9 +127,9 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
 
   // Notify user that their address is saved only in Chrome and can be migrated
   // to their Google account.
-  if (is_migration_to_account_) {
-    // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync is not used
-    // anymore, and thus IsSyncFeatureEnabledForAutofill() will always be false.
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync is not used
+  // anymore, and thus IsSyncFeatureEnabledForAutofill() will always be false.
+  if (IsMigrationToAccount()) {
     return l10n_util::GetStringFUTF16(
         personal_data_->address_data_manager().IsSyncFeatureEnabledForAutofill()
             ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
@@ -173,7 +177,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetPositiveButtonText()
     const {
   if (!original_profile_) {
     return l10n_util::GetStringUTF16(
-        is_migration_to_account_
+        IsMigrationToAccount()
             ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL
             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
@@ -196,7 +200,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetPositiveButtonText()
 
 std::u16string SaveUpdateAddressProfilePromptController::GetNegativeButtonText()
     const {
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
   }
@@ -206,7 +210,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetNegativeButtonText()
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetAddress() const {
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     const std::u16string name =
         profile_.GetInfo(NAME_FULL, g_browser_process->GetApplicationLocale());
     const std::u16string address = profile_.GetInfo(
@@ -295,7 +299,7 @@ void SaveUpdateAddressProfilePromptController::OnUserAccepted(JNIEnv* env) {
 void SaveUpdateAddressProfilePromptController::OnUserDeclined(JNIEnv* env) {
   had_user_interaction_ = true;
   RunSaveAddressProfileCallback(
-      is_migration_to_account_
+      IsMigrationToAccount()
           ? AutofillClient::AddressPromptUserDecision::kNever
           : AutofillClient::AddressPromptUserDecision::kDeclined);
 }
@@ -329,6 +333,17 @@ void SaveUpdateAddressProfilePromptController::RunSaveAddressProfileCallback(
            decision == AutofillClient::AddressPromptUserDecision::kEditAccepted
                ? base::optional_ref(profile_)
                : std::nullopt);
+}
+
+bool SaveUpdateAddressProfilePromptController::IsMigrationToAccount() const {
+  switch (prompt_mode_) {
+    case SaveUpdateAddressProfilePromptMode::kMigrateProfile:
+      return true;
+    case SaveUpdateAddressProfilePromptMode::kCreateNewProfile:
+    case SaveUpdateAddressProfilePromptMode::kSaveNewProfile:
+    case SaveUpdateAddressProfilePromptMode::kUpdateProfile:
+      return false;
+  }
 }
 
 }  // namespace autofill

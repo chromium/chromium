@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -44,8 +45,7 @@ SaveUpdateAddressProfilePromptViewAndroid::
 bool SaveUpdateAddressProfilePromptViewAndroid::Show(
     SaveUpdateAddressProfilePromptController* controller,
     const AutofillProfile& autofill_profile,
-    bool is_update,
-    bool is_migration_to_account) {
+    SaveUpdateAddressProfilePromptMode prompt_mode) {
   DCHECK(controller);
   if (!web_contents_->GetTopLevelNativeWindow()) {
     return false;  // No window attached (yet or anymore).
@@ -60,12 +60,6 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   Profile* browser_profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-  SaveUpdateAddressProfilePromptMode prompt_mode =
-      is_update ? SaveUpdateAddressProfilePromptMode::kUpdateProfile
-      : is_migration_to_account
-          ? SaveUpdateAddressProfilePromptMode::kMigrateProfile
-          : SaveUpdateAddressProfilePromptMode::kSaveNewProfile;
-
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_autofill_profile =
       autofill_profile.CreateJavaObject(
@@ -79,7 +73,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   }
 
   SetContent(controller, IdentityManagerFactory::GetForProfile(browser_profile),
-             is_update);
+             prompt_mode);
   Java_SaveUpdateAddressProfilePrompt_show(env, java_object_);
   return true;
 }
@@ -87,7 +81,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
 void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
     SaveUpdateAddressProfilePromptController* controller,
     signin::IdentityManager* identity_manager,
-    bool is_update) {
+    SaveUpdateAddressProfilePromptMode prompt_mode) {
   DCHECK(controller);
   DCHECK(java_object_);
 
@@ -108,7 +102,7 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
   Java_SaveUpdateAddressProfilePrompt_setRecordTypeNotice(env, java_object_,
                                                           record_type_notice);
 
-  if (is_update) {
+  if (prompt_mode == SaveUpdateAddressProfilePromptMode::kUpdateProfile) {
     ScopedJavaLocalRef<jstring> subtitle =
         base::android::ConvertUTF16ToJavaString(env, controller->GetSubtitle());
     ScopedJavaLocalRef<jstring> old_details =

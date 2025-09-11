@@ -92,6 +92,7 @@ static_library("autofill") {
       "android/save_update_address_profile_message_controller.h",
       "android/save_update_address_profile_prompt_controller.cc",
       "android/save_update_address_profile_prompt_controller.h",
+      "android/save_update_address_profile_prompt_mode.h",
       "android/save_update_address_profile_prompt_view.h",
       "manual_filling_view_interface.h",
     ]

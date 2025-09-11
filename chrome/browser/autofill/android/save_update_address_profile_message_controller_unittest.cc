@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -49,12 +50,12 @@ class SaveUpdateAddressProfileMessageControllerTest
   void SigninUser(const std::string& email, signin::ConsentLevel consent_level);
   void EnqueueSaveMessage(
       const AutofillProfile& profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback) {
-    EnqueueMessage(profile, nullptr, is_migration_to_account,
-                   std::move(save_callback), std::move(action_callback));
+    EnqueueMessage(profile, nullptr, prompt_mode, std::move(save_callback),
+                   std::move(action_callback));
   }
   void EnqueueUpdateMessage(
       const AutofillProfile& profile,
@@ -62,7 +63,8 @@ class SaveUpdateAddressProfileMessageControllerTest
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback) {
-    EnqueueMessage(profile, original_profile, /*is_migration_to_account=*/false,
+    EnqueueMessage(profile, original_profile,
+                   SaveUpdateAddressProfilePromptMode::kUpdateProfile,
                    std::move(save_callback), std::move(action_callback));
   }
   void ExpectDismissMessageCall();
@@ -84,7 +86,7 @@ class SaveUpdateAddressProfileMessageControllerTest
   void EnqueueMessage(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback);
@@ -129,13 +131,13 @@ void SaveUpdateAddressProfileMessageControllerTest::SigninUser(
 void SaveUpdateAddressProfileMessageControllerTest::EnqueueMessage(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback save_callback,
     SaveUpdateAddressProfileMessageController::PrimaryActionCallback
         action_callback) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   controller_.DisplayMessage(web_contents(), profile, original_profile,
-                             is_migration_to_account, std::move(save_callback),
+                             prompt_mode, std::move(save_callback),
                              std::move(action_callback));
   EXPECT_TRUE(controller_.IsMessageDisplayed());
 }
@@ -171,7 +173,8 @@ SaveUpdateAddressProfileMessageControllerTest::GetMessageWrapper() {
 // address profile saving process.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        SaveMessageContent_LocalOrSyncAddressProfile) {
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
@@ -201,7 +204,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
       .set_record_type(AutofillProfile::RecordType::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/true,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kMigrateProfile,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -235,7 +239,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
       .set_record_type(AutofillProfile::RecordType::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
@@ -309,10 +314,13 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // primary action button of the save message.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        ProceedOnActionClickWhenSave) {
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
                      save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_CALL(action_callback_, Run(_, *profile_, nullptr, false, _));
+  EXPECT_CALL(action_callback_,
+              Run(_, *profile_, nullptr,
+                  SaveUpdateAddressProfilePromptMode::kSaveNewProfile, _));
   TriggerActionClick();
 
   EXPECT_CALL(save_callback_, Run(_, Property(&profile_ref::has_value, false)))
@@ -328,7 +336,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
                        action_callback_.Get());
 
   EXPECT_CALL(action_callback_,
-              Run(_, *profile_, original_profile_.get(), _, _));
+              Run(_, *profile_, original_profile_.get(),
+                  SaveUpdateAddressProfilePromptMode::kUpdateProfile, _));
   TriggerActionClick();
 
   EXPECT_CALL(save_callback_, Run(_, Property(&profile_ref::has_value, false)))
@@ -341,7 +350,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // dismisses the message via gesture.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageDeclinedOnGestureDismiss) {
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_CALL(save_callback_,
@@ -355,7 +365,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // auto-dismissed after a timeout.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageTimeoutOnTimerAutodismiss) {
-  EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
+  EnqueueSaveMessage(*profile_,
+                     SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_CALL(save_callback_,
@@ -379,9 +390,9 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
               Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
   ExpectDismissMessageCall();
-  EnqueueSaveMessage(another_profile, /*is_migration_to_account=*/false,
-                     another_save_callback.Get(),
-                     another_action_callback.Get());
+  EnqueueSaveMessage(
+      another_profile, SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
+      another_save_callback.Get(), another_action_callback.Get());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }

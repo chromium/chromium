@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -38,7 +39,7 @@ class SaveUpdateAddressProfilePromptController {
       autofill::PersonalDataManager* personal_data,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback decision_callback,
       base::OnceCallback<void()> dismissal_callback);
   SaveUpdateAddressProfilePromptController(
@@ -76,6 +77,8 @@ class SaveUpdateAddressProfilePromptController {
   void RunSaveAddressProfileCallback(
       AutofillClient::AddressPromptUserDecision decision);
 
+  bool IsMigrationToAccount() const;
+
   // Returns two strings listing formatted profile data that will change when
   // the `original_profile_` is updated to `profile_`. The old values, which
   // will be replaced, are the first value, and the new values, which will be
@@ -95,9 +98,8 @@ class SaveUpdateAddressProfilePromptController {
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
   std::optional<AutofillProfile> original_profile_;
-  // The option which specifies whether the autofill profile is going to be
-  // migrated to user's Google Account.
-  bool is_migration_to_account_;
+  // The mode the prompt is displayed in.
+  SaveUpdateAddressProfilePromptMode prompt_mode_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.

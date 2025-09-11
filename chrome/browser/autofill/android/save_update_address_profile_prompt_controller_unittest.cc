@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -53,8 +54,7 @@ class MockSaveUpdateAddressProfilePromptView
               Show,
               (SaveUpdateAddressProfilePromptController * controller,
                const AutofillProfile& autofill_profile,
-               bool is_update,
-               bool is_migration_to_account),
+               SaveUpdateAddressProfilePromptMode prompt_mode),
               (override));
 };
 
@@ -95,7 +95,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
  protected:
   void SigninUser();
-  void SetUpController(bool is_update, bool is_migration_to_account);
+  void SetUpController(SaveUpdateAddressProfilePromptMode prompt_mode);
 
   std::string GetLocale() { return "en-US"; }
 
@@ -107,7 +107,6 @@ class SaveUpdateAddressProfilePromptControllerTest
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   AutofillProfile original_profile_{
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
-  bool is_update_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
@@ -126,55 +125,54 @@ void SaveUpdateAddressProfilePromptControllerTest::SigninUser() {
 }
 
 void SaveUpdateAddressProfilePromptControllerTest::SetUpController(
-    bool is_update,
-    bool is_migration_to_account) {
-  is_update_ = is_update;
+    SaveUpdateAddressProfilePromptMode prompt_mode) {
   auto prompt_view = std::make_unique<MockSaveUpdateAddressProfilePromptView>();
   prompt_view_ = prompt_view.get();
   controller_ = std::make_unique<SaveUpdateAddressProfilePromptController>(
       std::move(prompt_view), &test_personal_data_, profile_,
-      is_update ? &original_profile_ : nullptr, is_migration_to_account,
-      decision_callback_.Get(), dismissal_callback_.Get());
-  ON_CALL(*prompt_view_,
-          Show(controller_.get(), profile_, is_update, is_migration_to_account))
+      prompt_mode == SaveUpdateAddressProfilePromptMode::kUpdateProfile
+          ? &original_profile_
+          : nullptr,
+      prompt_mode, decision_callback_.Get(), dismissal_callback_.Get());
+  ON_CALL(*prompt_view_, Show(controller_.get(), profile_, prompt_mode))
       .WillByDefault(testing::Return(true));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenSave) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   EXPECT_CALL(*prompt_view_,
-              Show(controller_.get(), profile_, /*is_update=*/false,
-                   /*is_migration_to_account=*/false));
+              Show(controller_.get(), profile_,
+                   SaveUpdateAddressProfilePromptMode::kSaveNewProfile));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenMigrate) {
   SigninUser();
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kMigrateProfile);
 
   EXPECT_CALL(*prompt_view_,
-              Show(controller_.get(), profile_, /*is_update=*/false,
-                   /*is_migration_to_account=*/true));
+              Show(controller_.get(), profile_,
+                   SaveUpdateAddressProfilePromptMode::kMigrateProfile));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenUpdate) {
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
   EXPECT_CALL(*prompt_view_,
-              Show(controller_.get(), profile_, /*is_update=*/true,
-                   /*is_migration_to_account=*/false));
+              Show(controller_.get(), profile_,
+                   SaveUpdateAddressProfilePromptMode::kUpdateProfile));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenShowReturnsFalse) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   EXPECT_CALL(*prompt_view_,
-              Show(controller_.get(), profile_, /*is_update=*/false,
-                   /*is_migration_to_account=*/false))
+              Show(controller_.get(), profile_,
+                   SaveUpdateAddressProfilePromptMode::kSaveNewProfile))
       .WillOnce(testing::Return(false));
 
   EXPECT_CALL(dismissal_callback_, Run());
@@ -183,7 +181,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserAccepts) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
@@ -194,7 +192,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserDeclines) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
@@ -206,7 +204,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserDeclinesMigration) {
   SigninUser();
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kMigrateProfile);
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
@@ -217,7 +215,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserEditsProfile) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   controller_->DisplayPrompt();
 
   AutofillProfile edited_profile = GetFullProfileWithVerifiedData();
@@ -234,7 +232,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenPromptIsDismissed) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   controller_->DisplayPrompt();
 
   EXPECT_CALL(dismissal_callback_, Run());
@@ -243,7 +241,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenControllerDiesWithoutInteraction) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
@@ -254,7 +252,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenSaveLocalOrSyncAddress) {
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -283,7 +281,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
   SigninUser();
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kMigrateProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
@@ -314,7 +312,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill});
   SigninUser();
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kMigrateProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
@@ -343,7 +341,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenSaveAccountAddress) {
   SigninUser();
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
-  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kSaveNewProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
@@ -372,7 +370,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenUpdateLocalOrSyncAddress) {
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
@@ -396,7 +394,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       .set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
 
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
@@ -421,7 +419,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   original_profile_ = test::GetFullProfile();
   original_profile_.SetInfo(ADDRESS_HOME_ZIP, u"", GetLocale());
   original_profile_.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"", GetLocale());
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
 
   // Subtitle should contain the full name only.
   EXPECT_EQ(u"John H. Doe", controller_->GetSubtitle());
@@ -449,7 +447,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
   profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
 
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
 
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE),
@@ -480,7 +478,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
   profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
 
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE),
@@ -509,7 +507,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
   profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
 
-  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+  SetUpController(SaveUpdateAddressProfilePromptMode::kUpdateProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE),

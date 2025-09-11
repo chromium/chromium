@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 
 namespace content {
@@ -38,8 +39,7 @@ class SaveUpdateAddressProfilePromptViewAndroid
   // SaveUpdateAddressProfilePromptView:
   bool Show(SaveUpdateAddressProfilePromptController* controller,
             const AutofillProfile& profile,
-            bool is_update,
-            bool is_migration_to_account) override;
+            SaveUpdateAddressProfilePromptMode prompt_mode) override;
 
  private:
   // Populates the content of the existing `java_object_` as a save or update
@@ -47,7 +47,7 @@ class SaveUpdateAddressProfilePromptViewAndroid
   // `controller`.
   void SetContent(SaveUpdateAddressProfilePromptController* controller,
                   signin::IdentityManager* identity_manager,
-                  bool is_update);
+                  SaveUpdateAddressProfilePromptMode prompt_mode);
 
   // The corresponding Java SaveUpdateAddressProfilePrompt owned by this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
