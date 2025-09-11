@@ -20,11 +20,28 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
-#include "third_party/blink/renderer/modules/shapedetection/shape_detection_type_converter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+namespace {
+
+V8LandmarkType::Enum ToV8LandmarkType(
+    shape_detection::mojom::blink::LandmarkType landmark_type) {
+  using shape_detection::mojom::blink::LandmarkType;
+  switch (landmark_type) {
+    case LandmarkType::MOUTH:
+      return V8LandmarkType::Enum::kMouth;
+    case LandmarkType::EYE:
+      return V8LandmarkType::Enum::kEye;
+    case LandmarkType::NOSE:
+      return V8LandmarkType::Enum::kNose;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 FaceDetector* FaceDetector::Create(ExecutionContext* context,
                                    const FaceDetectorOptions* options) {
@@ -106,7 +123,7 @@ void FaceDetector::OnDetectFaces(
 
       Landmark* web_landmark = Landmark::Create();
       web_landmark->setLocations(locations);
-      web_landmark->setType(mojo::ConvertTo<String>(landmark->type));
+      web_landmark->setType(ToV8LandmarkType(landmark->type));
       landmarks.push_back(web_landmark);
     }
 
