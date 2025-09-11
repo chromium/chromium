@@ -4,6 +4,7 @@
 
 #include "cc/metrics/events_metrics_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -84,6 +85,22 @@ EventMetrics::List EventsMetricsManager::TakeSavedEventsMetrics() {
   EventMetrics::List result;
   result.swap(saved_events_);
   return result;
+}
+
+void EventsMetricsManager::DropSavedEventMetricsExceptScrollEnds() {
+  // First re-arrange `saved_events_` so that:
+  //   1. [`saved_events_.begin()`, `first_to_erase`) only contains metrics
+  //      corresponding to the end of a scroll (regular or inertial).
+  //   2. [`first_to_erase`, `saved_events_.end()`) contains all other metrics.
+  auto first_to_erase = std::remove_if(
+      saved_events_.begin(), saved_events_.end(),
+      [](const std::unique_ptr<EventMetrics>& metrics) {
+        const auto type = metrics->type();
+        return type != EventMetrics::EventType::kGestureScrollEnd &&
+               type != EventMetrics::EventType::kInertialGestureScrollEnd;
+      });
+  // Then delete the other metrics.
+  saved_events_.erase(first_to_erase, saved_events_.end());
 }
 
 void EventsMetricsManager::OnScopedMonitorEnded(

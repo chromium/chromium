@@ -69,6 +69,10 @@ class CC_EXPORT EventsMetricsManager {
   // caller.
   EventMetrics::List TakeSavedEventsMetrics();
 
+  // Removes all saved `EventMetrics` objects except those corresponding to the
+  // end of a scroll (regular or inertial).
+  void DropSavedEventMetricsExceptScrollEnds();
+
   size_t saved_events_metrics_count_for_testing() const {
     return saved_events_.size();
   }

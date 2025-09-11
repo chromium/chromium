@@ -5,11 +5,15 @@
 #include "cc/metrics/events_metrics_manager.h"
 
 #include <array>
+#include <memory>
+#include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,15 +40,9 @@ EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
 
 }  // namespace
 
-#define EXPECT_SCOPED(statements) \
-  {                               \
-    SCOPED_TRACE("");             \
-    statements;                   \
-  }
-
 using ::testing::IsEmpty;
 using ::testing::Message;
-using ::testing::UnorderedPointwise;
+using ::testing::Pointwise;
 
 class EventsMetricsManagerTest : public testing::Test {
  public:
@@ -53,15 +51,45 @@ class EventsMetricsManagerTest : public testing::Test {
 
  protected:
   std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return EventMetrics::CreateForTesting(type, event_time,
+                                          arrived_in_browser_main_timestamp,
+                                          &test_tick_clock_, std::nullopt);
+  }
+
+  std::unique_ptr<ScrollEventMetrics> CreateScrollEventMetrics(
+      ui::EventType type,
+      bool is_inertial) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return ScrollEventMetrics::CreateForTesting(
+        type, ui::ScrollInputType::kTouchscreen, is_inertial, event_time,
+        arrived_in_browser_main_timestamp, &test_tick_clock_);
+  }
+
+  std::unique_ptr<ScrollEventMetrics> CreateScrollUpdateEventMetrics(
+      ui::EventType type,
+      bool is_inertial,
+      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
+    auto [event_time, arrived_in_browser_main_timestamp] =
+        NextEventTimestamps();
+    return ScrollUpdateEventMetrics::CreateForTesting(
+        type, ui::ScrollInputType::kTouchscreen, is_inertial,
+        scroll_update_type,
+        /* delta= */ 4.2f, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_,
+        /* trace_id= */ std::nullopt);
+  }
+
+  std::tuple<base::TimeTicks, base::TimeTicks> NextEventTimestamps() {
     test_tick_clock_.Advance(base::Microseconds(10));
     base::TimeTicks event_time = test_tick_clock_.NowTicks();
     test_tick_clock_.Advance(base::Microseconds(5));
     base::TimeTicks arrived_in_browser_main_timestamp =
         test_tick_clock_.NowTicks();
     test_tick_clock_.Advance(base::Microseconds(10));
-    return EventMetrics::CreateForTesting(type, event_time,
-                                          arrived_in_browser_main_timestamp,
-                                          &test_tick_clock_, std::nullopt);
+    return {event_time, arrived_in_browser_main_timestamp};
   }
 
   EventsMetricsManager manager_;
@@ -125,7 +153,7 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   // Check saved event metrics are as expected.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-              UnorderedPointwise(UniquePtrMatches(), expected_saved_events));
+              Pointwise(UniquePtrMatches(), expected_saved_events));
 
   // The first call to TakeSavedEventsMetrics() should remove events metrics
   // from the manager, so the second call should return empty list.
@@ -206,10 +234,11 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
     {  // Start outer scope.
       std::unique_ptr<EventMetrics> outer_metrics;
+      std::optional<const EventMetrics*> expected_saved_outer_metrics;
       if (config.outer_event_type != ui::EventType::kUnknown) {
         outer_metrics = CreateEventMetrics(config.outer_event_type);
         DCHECK_NE(outer_metrics, nullptr);
-        expected_saved_metrics.push_back(outer_metrics.get());
+        expected_saved_outer_metrics = outer_metrics.get();
       }
       auto outer_monitor = manager_.GetScopedMonitor(
           CreateSimpleDoneCallback(std::move(outer_metrics)));
@@ -229,14 +258,84 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
           manager_.SaveActiveEventMetrics();
       }  // End inner scope
 
+      if (expected_saved_outer_metrics) {
+        expected_saved_metrics.push_back(*expected_saved_outer_metrics);
+      }
+
       if (config.save_outer_metrics_after_inner)
         manager_.SaveActiveEventMetrics();
     }  // End outer scope.
 
     SCOPED_TRACE(Message() << "Config #" << i);
     EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-                UnorderedPointwise(UniquePtrMatches(), expected_saved_metrics));
+                Pointwise(UniquePtrMatches(), expected_saved_metrics));
   }
+}
+
+TEST_F(EventsMetricsManagerTest,
+       DropSavedEventMetricsExceptScrollEndsPreservesRegularScrollEnd) {
+  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
+      {CreateScrollUpdateEventMetrics(
+           ui::EventType::kGestureScrollUpdate,
+           /* is_inertial= */ false,
+           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
+                                /* is_inertial= */ false)});
+  EXPECT_EQ(events[0]->type(), EventMetrics::EventType::kGestureScrollUpdate);
+  EXPECT_EQ(events[1]->type(), EventMetrics::EventType::kGestureScrollEnd);
+
+  // Out of the above events, only `kGestureScrollEnd` should be preserved. This
+  // is to ensure that Chrome emits per-scroll metrics.
+  const EventMetrics* scroll_end_ptr = events[1].get();
+
+  for (auto& event : events) {
+    auto monitor =
+        manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(event)));
+    manager_.SaveActiveEventMetrics();
+  }
+
+  manager_.DropSavedEventMetricsExceptScrollEnds();
+
+  // Check that only `kGestureScrollEnd` was preserved.
+  auto preserved_metrics = manager_.TakeSavedEventsMetrics();
+  EXPECT_THAT(preserved_metrics, testing::SizeIs(1));
+  EXPECT_EQ(preserved_metrics[0].get(), scroll_end_ptr);
+  EXPECT_EQ(preserved_metrics[0]->type(),
+            EventMetrics::EventType::kGestureScrollEnd);
+}
+
+TEST_F(EventsMetricsManagerTest,
+       DropSavedEventMetricsExceptScrollEndsPreservesInertialScrollEnd) {
+  auto events = std::to_array<std::unique_ptr<EventMetrics>>(
+      {CreateScrollUpdateEventMetrics(
+           ui::EventType::kGestureScrollUpdate,
+           /* is_inertial= */ true,
+           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+       CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
+                                /* is_inertial= */ true)});
+  EXPECT_EQ(events[0]->type(),
+            EventMetrics::EventType::kInertialGestureScrollUpdate);
+  EXPECT_EQ(events[1]->type(),
+            EventMetrics::EventType::kInertialGestureScrollEnd);
+
+  // Out of the above events, only `kInertialGestureScrollEnd` should be
+  // preserved. This is to ensure that Chrome emits per-scroll metrics.
+  const EventMetrics* scroll_end_ptr = events[1].get();
+
+  for (auto& event : events) {
+    auto monitor =
+        manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(event)));
+    manager_.SaveActiveEventMetrics();
+  }
+
+  manager_.DropSavedEventMetricsExceptScrollEnds();
+
+  // Check that only `kInertialGestureScrollEnd` was preserved.
+  auto preserved_metrics = manager_.TakeSavedEventsMetrics();
+  EXPECT_THAT(preserved_metrics, testing::SizeIs(1));
+  EXPECT_EQ(preserved_metrics[0].get(), scroll_end_ptr);
+  EXPECT_EQ(preserved_metrics[0]->type(),
+            EventMetrics::EventType::kInertialGestureScrollEnd);
 }
 
 }  // namespace cc
