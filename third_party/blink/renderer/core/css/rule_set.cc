@@ -1088,22 +1088,34 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       }
     } else if (auto* contents_rule =
                    DynamicTo<StyleRuleContentsStatement>(rule)) {
-      // Try first the parameter from @apply, then the fallback block given in
-      // @contents, and if neither exists, nothing happens.
-      if (apply_mixins_stack.back()
-              .invoking_apply_rule->FakeParentRuleForDeclarations()) {
-        AddChildRules(parent_rule,
-                      *apply_mixins_stack.back()
-                           .invoking_apply_rule->FakeParentRuleForDeclarations()
-                           ->ChildRules(),
-                      medium, mixins, add_rule_flags, container_query,
-                      cascade_layer, style_scope, apply_mixins_stack);
-      } else if (contents_rule->FakeParentRuleForFallback() &&
-                 contents_rule->FakeParentRuleForFallback()->ChildRules()) {
-        AddChildRules(parent_rule,
-                      *contents_rule->FakeParentRuleForFallback()->ChildRules(),
-                      medium, mixins, add_rule_flags, container_query,
-                      cascade_layer, style_scope, apply_mixins_stack);
+      const StyleRuleMixin* mixin = apply_mixins_stack.back().mixin;
+      const StyleRuleApplyMixin* apply =
+          apply_mixins_stack.back().invoking_apply_rule;
+
+      // Verify that the mixin actually has a @contents parameter.
+      // Otherwise, @contents is illegal and ignored.
+      const bool has_contents_parameter = std::ranges::any_of(
+          mixin->GetParameters(),
+          [](const StyleRuleFunction::Parameter& parameter) {
+            return parameter.name == "@contents";
+          });
+
+      if (has_contents_parameter) {
+        // Try first the parameter from @apply, then the fallback block given in
+        // @contents, and if neither exists, nothing happens.
+        if (apply->FakeParentRuleForDeclarations()) {
+          AddChildRules(parent_rule,
+                        *apply->FakeParentRuleForDeclarations()->ChildRules(),
+                        medium, mixins, add_rule_flags, container_query,
+                        cascade_layer, style_scope, apply_mixins_stack);
+        } else if (contents_rule->FakeParentRuleForFallback() &&
+                   contents_rule->FakeParentRuleForFallback()->ChildRules()) {
+          AddChildRules(
+              parent_rule,
+              *contents_rule->FakeParentRuleForFallback()->ChildRules(), medium,
+              mixins, add_rule_flags, container_query, cascade_layer,
+              style_scope, apply_mixins_stack);
+        }
       }
     } else if (auto* nested_declarations =
                    DynamicTo<StyleRuleNestedDeclarations>(rule)) {

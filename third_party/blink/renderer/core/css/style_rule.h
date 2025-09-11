@@ -717,15 +717,20 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
 class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
  public:
   StyleRuleMixin(AtomicString name,
+                 HeapVector<StyleRuleFunction::Parameter> parameters,
                  HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleMixin(const StyleRuleMixin&) = delete;
 
   const AtomicString& GetName() const { return name_; }
+  const HeapVector<StyleRuleFunction::Parameter>& GetParameters() const {
+    return parameters_;
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
+  HeapVector<StyleRuleFunction::Parameter> parameters_;
 };
 
 // An @apply rule, representing applying a mixin.

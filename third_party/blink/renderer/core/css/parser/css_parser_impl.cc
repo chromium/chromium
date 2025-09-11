@@ -2321,7 +2321,8 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    parameters = ConsumeFunctionParameters(stream);
+    parameters =
+        ConsumeFunctionParameters(stream, /*accept_contents_parameter=*/false);
   }
   if (!parameters.has_value()) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
@@ -2394,13 +2395,22 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     return nullptr;
   }
 
-  // We don't parse argument lists yet, but we accept that they are there;
-  // we just skip them.
+  // Parse the argument list (which may be empty).
+  std::optional<HeapVector<StyleRuleFunction::Parameter>> parameters;
   {
     CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    parameters =
+        ConsumeFunctionParameters(stream, /*accept_contents_parameter=*/true);
   }
+  if (!parameters.has_value()) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleMixin);
+    return nullptr;
+  }
+  stream.ConsumeWhitespace();
 
-  // After the argument list, there should be nothing.
+  // After the argument list, there should be nothing (there's no return value,
+  // unlike with functions).
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleMixin)) {
     return nullptr;
@@ -2424,7 +2434,8 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   // Renest(), which changes all the parent references to @apply's parent.
   fake_parent_rule->EnsureChildRules();
   return MakeGarbageCollected<StyleRuleMixin>(
-      name, HeapVector{std::move(*fake_parent_rule->ChildRules())});
+      name, std::move(*parameters),
+      HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
 StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
@@ -2532,7 +2543,8 @@ StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
 // instances of [ <name> <type>? [ : <default-value> ]? ].
 // Returns the empty value on parse error.
 std::optional<HeapVector<StyleRuleFunction::Parameter>>
-CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
+CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream,
+                                         bool accept_contents_parameter) {
   HeapVector<StyleRuleFunction::Parameter> parameters;
   bool first_parameter = true;
   for (;;) {
@@ -2542,49 +2554,59 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
       // No arguments.
       break;
     }
-    if (stream.Peek().GetType() != kIdentToken) {
-      return {};  // Parse error.
-    }
-    String parameter_name = stream.Peek().Value().ToString();
-    if (!CSSVariableParser::IsValidVariableName(parameter_name)) {
-      return {};
-    }
-    stream.ConsumeIncludingWhitespace();
-
-    std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
-
-    CSSVariableData* default_value = nullptr;
-    if (stream.Peek().GetType() == kColonToken) {
+    if (accept_contents_parameter &&
+        stream.Peek().GetType() == kAtKeywordToken &&
+        stream.Peek().Value() == "contents") {
+      stream.ConsumeIncludingWhitespace();
+      parameters.push_back(StyleRuleFunction::Parameter{
+          "@contents", CSSSyntaxDefinition::CreateUniversal(),
+          /*default_value=*/nullptr});
+    } else {
+      if (stream.Peek().GetType() != kIdentToken) {
+        return {};  // Parse error.
+      }
+      String parameter_name = stream.Peek().Value().ToString();
+      if (!CSSVariableParser::IsValidVariableName(parameter_name)) {
+        return {};
+      }
       stream.ConsumeIncludingWhitespace();
 
-      // Note that this is a comma-containing production [1], and therefore
-      // the value may not contain commas until we support the {} wrapper
-      // defined by the spec.
-      // [1] https://drafts.csswg.org/css-values-5/#component-function-commas
-      bool important_ignored;
-      default_value = CSSVariableParser::ConsumeUnparsedDeclaration(
-          stream, /*allow_important_annotation=*/false,
-          /*is_animation_tainted=*/false,
-          /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
-          /*comma_ends_declaration=*/true, important_ignored, *context_);
-    }
+      std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
 
-    // If a type and a default are both provided, the default must
-    // parse successfully according to that type.
-    //
-    // https://drafts.csswg.org/css-mixins-1/#function-rule
-    if (type.has_value() && default_value) {
-      if (!default_value->NeedsVariableResolution() &&
-          !type->Parse(default_value->OriginalText(), *context_,
-                       /*is_animation_tainted=*/false,
-                       /*is_attr_tainted=*/false)) {
-        return std::nullopt;
+      CSSVariableData* default_value = nullptr;
+      if (stream.Peek().GetType() == kColonToken) {
+        stream.ConsumeIncludingWhitespace();
+
+        // Note that this is a comma-containing production [1], and therefore
+        // the value may not contain commas until we support the {} wrapper
+        // defined by the spec.
+        // [1] https://drafts.csswg.org/css-values-5/#component-function-commas
+        bool important_ignored;
+        default_value = CSSVariableParser::ConsumeUnparsedDeclaration(
+            stream, /*allow_important_annotation=*/false,
+            /*is_animation_tainted=*/false,
+            /*must_contain_variable_reference=*/false,
+            /*restricted_value=*/false,
+            /*comma_ends_declaration=*/true, important_ignored, *context_);
       }
-    }
 
-    parameters.push_back(StyleRuleFunction::Parameter{
-        parameter_name, type.value_or(CSSSyntaxDefinition::CreateUniversal()),
-        default_value});
+      // If a type and a default are both provided, the default must
+      // parse successfully according to that type.
+      //
+      // https://drafts.csswg.org/css-mixins-1/#function-rule
+      if (type.has_value() && default_value) {
+        if (!default_value->NeedsVariableResolution() &&
+            !type->Parse(default_value->OriginalText(), *context_,
+                         /*is_animation_tainted=*/false,
+                         /*is_attr_tainted=*/false)) {
+          return std::nullopt;
+        }
+      }
+
+      parameters.push_back(StyleRuleFunction::Parameter{
+          parameter_name, type.value_or(CSSSyntaxDefinition::CreateUniversal()),
+          default_value});
+    }
     if (stream.Peek().GetType() == kRightParenthesisToken) {
       // No more arguments.
       break;
