@@ -156,12 +156,17 @@ bool AiModePageActionIconView::ShouldShow() {
   const bool has_focus = focus_manager && location_bar_view->Contains(
                                               focus_manager->GetFocusedView());
 
-  // ...unless the user triggers the following edge-case in the Omnibox. In this
-  // case, we suppress the AIM page action in order to ensure that it doesn't
-  // get visually "sandwiched" in between the other page actions that show up in
-  // this state.
+  // ...unless the user triggers the following edge-case in the Omnibox while in
+  // a non-NTP page context. In this case, we suppress the AIM page action in
+  // order to ensure that it doesn't get visually "sandwiched" in between the
+  // other page actions that show up in this state.
+  const auto page_classification =
+      omnibox_view->model()->GetPageClassification();
+  const bool is_ntp =
+      (page_classification ==
+       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
   if (has_focus && !omnibox_view->model()->user_input_in_progress() &&
-      !omnibox_view->model()->PopupIsOpen()) {
+      !omnibox_view->model()->PopupIsOpen() && !is_ntp) {
     return false;
   }
 
