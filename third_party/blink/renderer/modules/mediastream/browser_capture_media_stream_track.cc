@@ -232,9 +232,9 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   // TODO(crbug.com/1332628): Instead of using GetNextSubCaptureTargetVersion(),
   // move the ownership of the Promises from this->pending_promises_ into
   // native_source.
-  const std::optional<uint32_t> optional_sub_capture_target_version =
+  const std::optional<uint32_t> optional_sub_capture_version =
       native_source->GetNextSubCaptureTargetVersion();
-  if (!optional_sub_capture_target_version.has_value()) {
+  if (!optional_sub_capture_version.has_value()) {
     resolver->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kOperationError,
@@ -242,35 +242,36 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
         ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
-  const uint32_t sub_capture_target_version =
-      optional_sub_capture_target_version.value();
+  const uint32_t sub_capture_version = optional_sub_capture_version.value();
 
-  pending_promises_.Set(sub_capture_target_version,
+  pending_promises_.Set(sub_capture_version,
                         MakeGarbageCollected<PromiseInfo>(resolver));
 
   // Register for a one-off notification when the first frame cropped
   // to the new crop-target is observed.
-  native_track->AddSubCaptureTargetVersionCallback(
-      sub_capture_target_version,
-      BindOnce(
-          &BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved,
-          WrapWeakPersistent(this), sub_capture_target_version));
+  //
+  // TODO(crbug.com/394794490): Pass the CaptureVersion to
+  // OnSubCaptureVersionObserved and rename it to OnCaptureVersionObserved.
+  native_track->AddCaptureVersionCallback(
+      sub_capture_version,
+      BindOnce(&BrowserCaptureMediaStreamTrack::OnSubCaptureVersionObserved,
+               WrapWeakPersistent(this), sub_capture_version));
 
   native_source->ApplySubCaptureTarget(
-      type, token.value(), sub_capture_target_version,
+      type, token.value(), sub_capture_version,
       BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-               WrapWeakPersistent(this), sub_capture_target_version));
+               WrapWeakPersistent(this), sub_capture_version));
 
   return promise;
 }
 
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_target_version, 0u);
+  DCHECK_GT(sub_capture_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_target_version);
+  const auto iter = pending_promises_.find(sub_capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
@@ -282,19 +283,19 @@ void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
   MaybeFinalizeCropPromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved(
-    uint32_t sub_capture_target_version) {
+void BrowserCaptureMediaStreamTrack::OnSubCaptureVersionObserved(
+    uint32_t sub_capture_version) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_target_version, 0u);
+  DCHECK_GT(sub_capture_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_target_version);
+  const auto iter = pending_promises_.find(sub_capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
   PromiseInfo* const info = iter->value;
 
-  DCHECK(!info->sub_capture_target_version_observed) << "Invoked twice.";
-  info->sub_capture_target_version_observed = true;
+  DCHECK(!info->sub_capture_version_observed) << "Invoked twice.";
+  info->sub_capture_version_observed = true;
 
   MaybeFinalizeCropPromise(iter);
 }
@@ -313,9 +314,9 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   const media::mojom::ApplySubCaptureTargetResult result = info->result.value();
 
   // Failure can be reported immediately, but success is only reported once
-  // the new sub-capture-target-version is observed.
+  // the new capture-version is observed.
   if (result == media::mojom::ApplySubCaptureTargetResult::kSuccess &&
-      !info->sub_capture_target_version_observed) {
+      !info->sub_capture_version_observed) {
     return;
   }
 
@@ -326,7 +327,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     MediaStreamTrackPlatform* const native_track =
         MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(Component()));
     if (native_track) {
-      native_track->RemoveSubCaptureTargetVersionCallback(iter->key);
+      native_track->RemoveCaptureVersionCallback(iter->key);
     }
   }
 

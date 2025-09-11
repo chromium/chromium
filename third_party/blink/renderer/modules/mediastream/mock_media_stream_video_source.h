@@ -68,11 +68,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   // happened on the video task runner.
   void DropFrame(media::VideoCaptureFrameDropReason reason);
 
-  // Send |sub_capture_target_version| to all registered tracks on the video
+  // Send |capture_version| to all registered tracks on the video
   // task runner. It's up to the caller to keep MockMediaStreamVideoSource alive
-  // until the sub_capture_target_version_callback (registered with
+  // until the capture_version_callback (registered with
   // MediaStreamVideoSource::AddTrack) has completed.
-  void DeliverNewSubCaptureTargetVersion(uint32_t sub_capture_target_version);
+  void DeliverNewCaptureVersion(media::CaptureVersion capture_version);
 
   const media::VideoCaptureFormat& start_format() const { return format_; }
   int max_requested_height() const { return format_.frame_size.height(); }
@@ -122,7 +122,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   bool is_suspended_ = false;
   blink::VideoCaptureDeliverFrameCB frame_callback_;
   EncodedVideoFrameCB encoded_frame_callback_;
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback_;
+  VideoCaptureVersionCB capture_version_callback_;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};

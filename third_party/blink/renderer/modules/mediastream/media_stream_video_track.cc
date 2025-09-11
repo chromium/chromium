@@ -141,7 +141,7 @@ class MediaStreamVideoTrack::FrameDeliverer
       base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source,
       bool enabled,
-      uint32_t sub_capture_target_version);
+      uint32_t sub_capture_version);
 
   FrameDeliverer(const FrameDeliverer&) = delete;
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
@@ -199,19 +199,18 @@ class MediaStreamVideoTrack::FrameDeliverer
       scoped_refptr<EncodedVideoFrame> frame,
       base::TimeTicks estimated_capture_time);
 
-  // Called when a sub-capture-target-version is acknowledged by the capture
-  // module. After this, it is guaranteed that all subsequent frames will be
-  // associated with a sub-capture-target-version that is >=
-  // |sub_capture_target_version|. Must be called on the video task runner.
-  void NewSubCaptureTargetVersionOnVideoTaskRunner(
-      uint32_t sub_capture_target_version);
+  // Called when a capture-version is acknowledged by the capture module.
+  // After this, it is guaranteed that all subsequent frames will be
+  // associated with a capture-version that is >= |capture_version|.
+  // Must be called on the video task runner.
+  void NewCaptureVersionOnVideoTaskRunner(
+      media::CaptureVersion capture_version);
 
   void SetIsRefreshingForMinFrameRate(bool is_refreshing_for_min_frame_rate);
 
-  void AddSubCaptureTargetVersionCallback(uint32_t sub_capture_target_version,
-                                          base::OnceClosure callback);
-  void RemoveSubCaptureTargetVersionCallback(
-      uint32_t sub_capture_target_version);
+  void AddCaptureVersionCallback(uint32_t sub_capture_version,
+                                 base::OnceClosure callback);
+  void RemoveCaptureVersionCallback(uint32_t sub_capture_version);
 
   // Performs logging and UMAs relating to frame drops. This includes both
   // frames dropped prior to delivery (OnFrameDroppedOnVideoTaskRunner) and
@@ -256,11 +255,12 @@ class MediaStreamVideoTrack::FrameDeliverer
   void SetIsRefreshingForMinFrameRateOnVideoTaskRunner(
       bool is_refreshing_for_min_frame_rate);
 
-  void AddSubCaptureTargetVersionCallbackOnVideoTaskRunner(
-      uint32_t sub_capture_target_version,
+  // TODO(crbug.com/394794490): Use CaptureVersion.
+  void AddCaptureVersionCallbackOnVideoTaskRunner(
+      uint32_t sub_capture_version,
       CrossThreadOnceClosure callback);
-  void RemoveSubCaptureTargetVersionCallbackOnVideoTaskRunner(
-      uint32_t sub_capture_target_version);
+  void RemoveCaptureVersionCallbackOnVideoTaskRunner(
+      uint32_t sub_capture_version);
 
   // Returns a black frame where the size and time stamp is set to the same as
   // as in |reference_frame|.
@@ -311,22 +311,21 @@ class MediaStreamVideoTrack::FrameDeliverer
   std::map<media::VideoCaptureFrameDropReason, int> frame_drop_log_counters_
       ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1481448)");
 
-  // Callbacks that will be invoked a single time when a
-  // sub-capture-target-version is observed that is at least equal to the key.
-  // The map itself (sub_capture_target_version_callbacks_) is bound to the
-  // video task runner. The callbacks are bound to their respective threads
-  // (BindPostTask).
-  HashMap<uint32_t, CrossThreadOnceClosure>
-      sub_capture_target_version_callbacks_;
+  // Callbacks that will be invoked a single time when a capture-version is
+  // observed that is at least equal to the key.
+  // The map itself (capture_version_callbacks_) is bound to the video task
+  // runner. The callbacks are bound to their respective threads (BindPostTask).
+  HashMap<uint32_t, CrossThreadOnceClosure> capture_version_callbacks_;
 
   bool await_next_key_frame_;
 
   // This should only be accessed on the video task runner.
   bool is_refreshing_for_min_frame_rate_ = false;
 
-  // This monotonously increasing value indicates which
-  // sub-capture-target-version is expected for delivered frames.
-  uint32_t sub_capture_target_version_ = 0;
+  // This monotonically increasing value indicates which
+  // capture-version is expected for delivered frames.
+  // TODO(crbug.com/394794490): Use CaptureVersion instead.
+  uint32_t sub_capture_version_ = 0;
 };
 
 MediaStreamVideoTrack::FrameDeliverer::FrameDropLogState::FrameDropLogState(
@@ -341,7 +340,7 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
     base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source,
     bool enabled,
-    uint32_t sub_capture_target_version)
+    uint32_t sub_capture_version)
     : video_task_runner_(std::move(video_task_runner)),
       main_render_task_runner_(main_render_task_runner),
       media_stream_video_track_(media_stream_video_track),
@@ -350,7 +349,7 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
       enabled_(enabled),
       emit_frame_drop_events_(true),
       await_next_key_frame_(false),
-      sub_capture_target_version_(sub_capture_target_version) {
+      sub_capture_version_(sub_capture_version) {
   DCHECK(video_task_runner_.get());
   DCHECK(main_render_task_runner_);
   SetEmitLogMessage(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -524,29 +523,28 @@ void MediaStreamVideoTrack::FrameDeliverer::SetIsRefreshingForMinFrameRate(
           WrapRefCounted(this), is_refreshing_for_min_frame_rate));
 }
 
-void MediaStreamVideoTrack::FrameDeliverer::AddSubCaptureTargetVersionCallback(
-    uint32_t sub_capture_target_version,
+void MediaStreamVideoTrack::FrameDeliverer::AddCaptureVersionCallback(
+    uint32_t sub_capture_version,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
-          &FrameDeliverer::AddSubCaptureTargetVersionCallbackOnVideoTaskRunner,
-          WrapRefCounted(this), sub_capture_target_version,
+          &FrameDeliverer::AddCaptureVersionCallbackOnVideoTaskRunner,
+          WrapRefCounted(this), sub_capture_version,
           CrossThreadBindOnce(std::move(callback))));
 }
 
-void MediaStreamVideoTrack::FrameDeliverer::
-    RemoveSubCaptureTargetVersionCallback(uint32_t sub_capture_target_version) {
+void MediaStreamVideoTrack::FrameDeliverer::RemoveCaptureVersionCallback(
+    uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
-          &FrameDeliverer::
-              RemoveSubCaptureTargetVersionCallbackOnVideoTaskRunner,
-          WrapRefCounted(this), sub_capture_target_version));
+          &FrameDeliverer::RemoveCaptureVersionCallbackOnVideoTaskRunner,
+          WrapRefCounted(this), sub_capture_version));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::
@@ -557,25 +555,23 @@ void MediaStreamVideoTrack::FrameDeliverer::
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::
-    AddSubCaptureTargetVersionCallbackOnVideoTaskRunner(
-        uint32_t sub_capture_target_version,
+    AddCaptureVersionCallbackOnVideoTaskRunner(
+        uint32_t sub_capture_version,
         CrossThreadOnceClosure callback) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!base::Contains(sub_capture_target_version_callbacks_,
-                         sub_capture_target_version));
+  DCHECK(!base::Contains(capture_version_callbacks_, sub_capture_version));
 
-  sub_capture_target_version_callbacks_.Set(sub_capture_target_version,
-                                            std::move(callback));
+  capture_version_callbacks_.Set(sub_capture_version, std::move(callback));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::
-    RemoveSubCaptureTargetVersionCallbackOnVideoTaskRunner(
-        uint32_t sub_capture_target_version) {
+    RemoveCaptureVersionCallbackOnVideoTaskRunner(
+        uint32_t sub_capture_version) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
 
   // Note: Might or might not be here, depending on whether a later crop
   // version has already been observed or not.
-  sub_capture_target_version_callbacks_.erase(sub_capture_target_version);
+  capture_version_callbacks_.erase(sub_capture_version);
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
@@ -585,8 +581,7 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
 
   frame_drop_log_state_ = FrameDropLogState();
 
-  if (frame->metadata().sub_capture_target_version !=
-      sub_capture_target_version_) {
+  if (frame->metadata().sub_capture_target_version != sub_capture_version_) {
     OnFrameDroppedOnVideoTaskRunner(
         media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent);
     return;
@@ -723,23 +718,22 @@ void MediaStreamVideoTrack::FrameDeliverer::
   }
 }
 
-void MediaStreamVideoTrack::FrameDeliverer::
-    NewSubCaptureTargetVersionOnVideoTaskRunner(
-        uint32_t sub_capture_target_version) {
+void MediaStreamVideoTrack::FrameDeliverer::NewCaptureVersionOnVideoTaskRunner(
+    media::CaptureVersion capture_version) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_GT(sub_capture_target_version, sub_capture_target_version_);
+  DCHECK_GT(capture_version.sub_capture, sub_capture_version_);
 
-  sub_capture_target_version_ = sub_capture_target_version;
+  sub_capture_version_ = capture_version.sub_capture;
 
   Vector<uint32_t> to_be_removed_keys;
-  for (auto& iter : sub_capture_target_version_callbacks_) {
-    if (iter.key > sub_capture_target_version) {
+  for (auto& iter : capture_version_callbacks_) {
+    if (iter.key > capture_version.sub_capture) {
       continue;
     }
     std::move(iter.value).Run();
     to_be_removed_keys.push_back(iter.key);
   }
-  sub_capture_target_version_callbacks_.RemoveAll(to_be_removed_keys);
+  capture_version_callbacks_.RemoveAll(to_be_removed_keys);
 }
 
 scoped_refptr<media::VideoFrame>
@@ -839,9 +833,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       CrossThreadBindRepeating(&MediaStreamVideoTrack::FrameDeliverer::
                                    DeliverEncodedVideoFrameOnVideoTaskRunner,
                                frame_deliverer_));
-  media_stream_callbacks.sub_capture_target_version_cb =
+  media_stream_callbacks.capture_version_cb =
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &FrameDeliverer::NewSubCaptureTargetVersionOnVideoTaskRunner,
+          &FrameDeliverer::NewCaptureVersionOnVideoTaskRunner,
           frame_deliverer_));
   media_stream_callbacks.settings_cb = base::BindPostTaskToCurrentDefault(
       blink::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
@@ -894,9 +888,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       CrossThreadBindRepeating(&MediaStreamVideoTrack::FrameDeliverer::
                                    DeliverEncodedVideoFrameOnVideoTaskRunner,
                                frame_deliverer_));
-  media_stream_callbacks.sub_capture_target_version_cb =
+  media_stream_callbacks.capture_version_cb =
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &FrameDeliverer::NewSubCaptureTargetVersionOnVideoTaskRunner,
+          &FrameDeliverer::NewCaptureVersionOnVideoTaskRunner,
           frame_deliverer_));
   media_stream_callbacks.settings_cb = base::BindPostTaskToCurrentDefault(
       blink::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
@@ -1194,23 +1188,22 @@ MediaStreamVideoTrack::GetCaptureHandle() {
   return capture_handle;
 }
 
-void MediaStreamVideoTrack::AddSubCaptureTargetVersionCallback(
-    uint32_t sub_capture_target_version,
+void MediaStreamVideoTrack::AddCaptureVersionCallback(
+    uint32_t sub_capture_version,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
-  frame_deliverer_->AddSubCaptureTargetVersionCallback(
-      sub_capture_target_version,
+  frame_deliverer_->AddCaptureVersionCallback(
+      sub_capture_version,
       base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                          std::move(callback)));
 }
 
-void MediaStreamVideoTrack::RemoveSubCaptureTargetVersionCallback(
-    uint32_t sub_capture_target_version) {
+void MediaStreamVideoTrack::RemoveCaptureVersionCallback(
+    uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
-  frame_deliverer_->RemoveSubCaptureTargetVersionCallback(
-      sub_capture_target_version);
+  frame_deliverer_->RemoveCaptureVersionCallback(sub_capture_version);
 }
 
 void MediaStreamVideoTrack::OnReadyStateChanged(

@@ -83,9 +83,9 @@ void MediaStreamVideoSource::AddTrack(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner,
               GetTrackAdapter()));
-      auto new_sub_capture_target_version_on_video_callback =
+      auto new_capture_version_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner,
+              &VideoTrackAdapter::NewCaptureVersionOnVideoTaskRunner,
               GetTrackAdapter()));
       VideoCaptureNotifyFrameDroppedCB frame_dropped_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -97,8 +97,8 @@ void MediaStreamVideoSource::AddTrack(
       // Callbacks are invoked from the IO thread.
       new_media_stream_callbacks.deliver_frame_cb =
           deliver_frame_on_video_callback;
-      new_media_stream_callbacks.sub_capture_target_version_cb =
-          new_sub_capture_target_version_on_video_callback;
+      new_media_stream_callbacks.capture_version_cb =
+          new_capture_version_on_video_callback;
       new_media_stream_callbacks.frame_dropped_cb = frame_dropped_callback;
       new_media_stream_callbacks.encoded_frame_cb =
           deliver_encoded_frame_on_video_callback;

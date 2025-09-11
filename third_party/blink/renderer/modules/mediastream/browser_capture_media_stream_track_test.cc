@@ -157,8 +157,8 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   const auto promise = ApplySubCaptureTarget(
       v8_scope, *track, String(valid_id.AsLowercaseString()));
 
-  track->OnSubCaptureTargetVersionObservedForTesting(
-      /*sub_capture_target_version=*/1);
+  track->OnSubCaptureVersionObservedForTesting(
+      /*sub_capture_version=*/1);
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
@@ -197,8 +197,8 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   const auto promise = ApplySubCaptureTarget(
       v8_scope, *track, String(valid_id.AsLowercaseString()));
 
-  track->OnSubCaptureTargetVersionObservedForTesting(
-      /*sub_capture_target_version=*/1);
+  track->OnSubCaptureVersionObservedForTesting(
+      /*sub_capture_version=*/1);
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();

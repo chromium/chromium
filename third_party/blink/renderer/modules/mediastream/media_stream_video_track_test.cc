@@ -930,7 +930,7 @@ TEST_F(MediaStreamVideoTrackTest,
 }
 
 TEST_F(MediaStreamVideoTrackTest,
-       DropsOldFramesWhenInitializedWithNewerSubCaptureTargetVersion) {
+       DropsOldFramesWhenInitializedWithNewerSubCaptureVersion) {
   InitializeSource();
   MockMediaStreamVideoSink sink;
 
@@ -956,8 +956,7 @@ TEST_F(MediaStreamVideoTrackTest,
   sink.DisconnectFromTrack();
 }
 
-TEST_F(MediaStreamVideoTrackTest,
-       DropsOldFramesAfterSubCaptureTargetVersionChanges) {
+TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterSubCaptureVersionChanges) {
   InitializeSource();
   MockMediaStreamVideoSink sink;
 
@@ -968,8 +967,8 @@ TEST_F(MediaStreamVideoTrackTest,
   MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
       &sink, sink.GetNotifyFrameDroppedCB());
 
-  // Crop version updated to 6.
-  mock_source()->DeliverNewSubCaptureTargetVersion(6);
+  mock_source()->DeliverNewCaptureVersion(
+      media::CaptureVersion(/*sub_capture=*/6));
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
@@ -987,7 +986,7 @@ TEST_F(MediaStreamVideoTrackTest,
 }
 
 TEST_F(MediaStreamVideoTrackTest,
-       DeliversNewFramesAfterSubCaptureTargetVersionChanges) {
+       DeliversNewFramesAfterSubCaptureVersionChanges) {
   InitializeSource();
   MockMediaStreamVideoSink sink;
 
@@ -998,8 +997,8 @@ TEST_F(MediaStreamVideoTrackTest,
   MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
       &sink, sink.GetNotifyFrameDroppedCB());
 
-  // Crop version updated to 6.
-  mock_source()->DeliverNewSubCaptureTargetVersion(6);
+  mock_source()->DeliverNewCaptureVersion(
+      media::CaptureVersion(/*sub_capture=*/6));
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));

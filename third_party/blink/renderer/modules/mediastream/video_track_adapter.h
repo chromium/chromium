@@ -89,10 +89,10 @@ class MODULES_EXPORT VideoTrackAdapter
       media::VideoCaptureFrameDropReason reason);
 
   // Called when it is guaranteed that all subsequent frames delivered
-  // over DeliverFrameOnVideoTaskRunner() will have a sub-capture-target version
-  // that is equal-to-or-greater-than the given sub-capture-target version.
-  void NewSubCaptureTargetVersionOnVideoTaskRunner(
-      uint32_t sub_capture_target_version);
+  // over DeliverFrameOnVideoTaskRunner() will have a capture-target version
+  // that is equal-to-or-greater-than the given capture-target version.
+  void NewCaptureVersionOnVideoTaskRunner(
+      media::CaptureVersion capture_version);
 
   base::SequencedTaskRunner* video_task_runner() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -138,8 +138,8 @@ class MODULES_EXPORT VideoTrackAdapter
   using DeliverEncodedVideoFrameInternalCallback =
       CrossThreadFunction<void(scoped_refptr<EncodedVideoFrame> video_frame,
                                base::TimeTicks estimated_capture_time)>;
-  using VideoCaptureSubCaptureTargetVersionInternalCallback =
-      CrossThreadFunction<void(uint32_t)>;
+  using VideoCaptureSubCaptureVersionInternalCallback =
+      CrossThreadFunction<void(media::CaptureVersion)>;
   using VideoTrackSettingsInternalCallback =
       CrossThreadFunction<void(gfx::Size frame_size,
                                double frame_rate,
@@ -153,8 +153,7 @@ class MODULES_EXPORT VideoTrackAdapter
       VideoCaptureNotifyFrameDroppedInternalCallback
           notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionInternalCallback
-          sub_capture_target_version_callback,
+      VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback format_callback,
       const VideoTrackAdapterSettings& settings);

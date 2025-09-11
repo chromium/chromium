@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "media/base/capture_version.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 
@@ -43,9 +44,9 @@ using VideoCaptureDeliverFrameCB =
 using VideoCaptureNotifyFrameDroppedCB =
     base::RepeatingCallback<void(media::VideoCaptureFrameDropReason)>;
 
-// Callback for informing when new sub-capture-target-versions are applied.
-using VideoCaptureSubCaptureTargetVersionCB =
-    base::RepeatingCallback<void(uint32_t sub_capture_target_version)>;
+// Callback for informing when new capture-versions are applied.
+using VideoCaptureVersionCB =
+    base::RepeatingCallback<void(media::CaptureVersion)>;
 
 using VideoCaptureDeviceFormatsCB =
     base::OnceCallback<void(const media::VideoCaptureFormats&)>;
@@ -78,14 +79,13 @@ using VideoCaptureStateUpdateCB =
 // for screen content capture, e.g. getDisplayMedia.
 // `deliver_frame_cb` is called when a new video frame is available.
 // `frame_dropped_cb` is called when a video frame is dropped.
-// `sub_capture_target_version_cb` is called when the sub-capture target
-// version is updated.
+// `capture_version_cb` is called when the capture version is updated.
 // `state_update_cb` is called when the video capturer state is updated.
 // If capturing fails to start or stopped due to an external event then
 struct VideoCaptureCallbacks {
   VideoCaptureDeliverFrameCB deliver_frame_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  VideoCaptureVersionCB capture_version_cb;
   VideoCaptureStateUpdateCB state_update_cb;
 };
 

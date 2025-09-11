@@ -48,8 +48,7 @@ class VideoTrackAdapterSettings;
 // for screen content capture, e.g. getDisplayMedia.
 // `deliver_frame_cb` is called when a new video frame is available.
 // `frame_dropped_cb` is called when a video frame is dropped.
-// `sub_capture_target_version_cb` is called when the sub-capture target
-// version is updated.
+// `capture_version_cb` is called when the capture version is updated.
 // `encoded_frame_cb` is called when an encoded video frame is available.
 // `settings_cb` is called when the video track settings are updated.
 // `format_cb` is called when the video track format is updated.
@@ -57,7 +56,7 @@ class VideoTrackAdapterSettings;
 struct MediaStreamVideoSourceCallbacks {
   VideoCaptureDeliverFrameCB deliver_frame_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  VideoCaptureVersionCB capture_version_cb;
   EncodedVideoFrameCB encoded_frame_cb;
   VideoTrackSettingsCallback settings_cb;
   VideoTrackFormatCallback format_cb;
@@ -278,10 +277,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // * |media_stream_callbacks.deliver_frame_cb| with the captured frames.
   // * |media_stream_callbacks.encoded_frame_cb| with encoded frames if
   //    supported and enabled via OnEncodedSinkEnabled.
-  // * |media_stream_callbacks.sub_capture_target_version_cb| whenever it is
+  // * |media_stream_callbacks.capture_version_cb| whenever it is
   //    guaranteed that all subsequent frames that
   // * |media_stream_callbacks.deliver_frame_cb| will be called for, will have
-  //    either the given sub-capture-target version or higher.
+  //    either the given capture version or higher.
   // * |media_stream_callbacks.frame_dropped_cb| will be called when a frame was
   //    dropped prior to delivery (i.e.
   //   |media_stream_callbacks.deliver_frame_cb| was not called for this frame).

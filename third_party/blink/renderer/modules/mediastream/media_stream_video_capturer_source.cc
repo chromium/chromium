@@ -110,15 +110,14 @@ void MediaStreamVideoCapturerSource::StartSourceImpl(
   state_ = kStarting;
 
   frame_callback_ = media_stream_callbacks.deliver_frame_cb;
-  sub_capture_target_version_callback_ =
-      media_stream_callbacks.sub_capture_target_version_cb;
+  capture_version_callback_ = media_stream_callbacks.capture_version_cb;
   frame_dropped_callback_ = media_stream_callbacks.frame_dropped_cb;
 
   VideoCaptureCallbacks video_capture_callbacks;
   video_capture_callbacks.deliver_frame_cb =
       std::move(media_stream_callbacks.deliver_frame_cb);
-  video_capture_callbacks.sub_capture_target_version_cb =
-      std::move(media_stream_callbacks.sub_capture_target_version_cb);
+  video_capture_callbacks.capture_version_cb =
+      std::move(media_stream_callbacks.capture_version_cb);
   video_capture_callbacks.frame_dropped_cb =
       std::move(media_stream_callbacks.frame_dropped_cb);
   video_capture_callbacks.state_update_cb =
@@ -163,8 +162,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
 
   VideoCaptureCallbacks video_capture_callbacks;
   video_capture_callbacks.deliver_frame_cb = frame_callback_;
-  video_capture_callbacks.sub_capture_target_version_cb =
-      sub_capture_target_version_callback_;
+  video_capture_callbacks.capture_version_cb = capture_version_callback_;
   video_capture_callbacks.frame_dropped_cb = frame_dropped_callback_;
 
   source_->StartCapture(
@@ -200,8 +198,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 
   VideoCaptureCallbacks video_capture_callbacks;
   video_capture_callbacks.deliver_frame_cb = frame_callback_;
-  video_capture_callbacks.sub_capture_target_version_cb =
-      sub_capture_target_version_callback_;
+  video_capture_callbacks.capture_version_cb = capture_version_callback_;
   video_capture_callbacks.frame_dropped_cb = frame_dropped_callback_;
   source_->StartCapture(
       capture_params_, std::move(video_capture_callbacks),
@@ -212,7 +209,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -224,20 +221,21 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     return;
   }
   GetMediaStreamDispatcherHost()->ApplySubCaptureTarget(
-      session_id.value(), type, sub_capture_target, sub_capture_target_version,
+      session_id.value(), type, sub_capture_target, sub_capture_version,
       std::move(callback));
 }
 
+// TODO(crbug.com/394794490): Return the next CaptureVersion.
 std::optional<uint32_t>
 MediaStreamVideoCapturerSource::GetNextSubCaptureTargetVersion() {
   if (NumTracks() != 1) {
     return std::nullopt;
   }
-  return ++current_sub_capture_target_version_;
+  return ++sub_capture_version_;
 }
 
 uint32_t MediaStreamVideoCapturerSource::GetSubCaptureTargetVersion() const {
-  return current_sub_capture_target_version_;
+  return sub_capture_version_;
 }
 
 base::WeakPtr<MediaStreamVideoSource>

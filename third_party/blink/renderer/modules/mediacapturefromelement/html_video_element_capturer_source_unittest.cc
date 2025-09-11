@@ -182,7 +182,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, EmptyWebMediaPlayerFailsCapture) {
   video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
       &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
       media::VideoCaptureParams(), std::move(video_capture_callbacks),
       BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
@@ -264,7 +264,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest,
   video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
       &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
       media::VideoCaptureParams(), std::move(video_capture_callbacks),
       BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
@@ -298,7 +298,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, AlphaAndNot) {
     video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
         &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
     video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
     html_video_capturer_->StartCapture(
         media::VideoCaptureParams(), std::move(video_capture_callbacks),
         BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
@@ -363,7 +363,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, SizeChange) {
     video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
         &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
     video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
     html_video_capturer_->StartCapture(
         media::VideoCaptureParams(), std::move(video_capture_callbacks),
         BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
@@ -408,7 +408,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, TaintedPlayerDoesNotDeliverFrames) {
   video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
       &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
       media::VideoCaptureParams(), std::move(video_capture_callbacks),
       BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,

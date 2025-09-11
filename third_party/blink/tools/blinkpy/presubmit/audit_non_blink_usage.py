@@ -2604,6 +2604,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/common/media/video_capture.h',
+        ],
+        'allowed': [
+            'media::CaptureVersion',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/public/common/privacy_budget/identifiable_token.h',
         ],
         'allowed': [

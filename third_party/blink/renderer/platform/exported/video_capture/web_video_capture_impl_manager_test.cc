@@ -238,7 +238,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
         base::BindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
                             CrossThreadUnretained(this));
     video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
     return manager_->StartCapture(id, params,
                                   std::move(video_capture_callbacks));
   }

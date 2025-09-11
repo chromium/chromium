@@ -294,7 +294,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
         base::Unretained(this));
     video_stream_fallbacks.settings_cb = base::BindRepeating(
         &VideoTrackAdapterFixtureTest::OnFrameSettings, base::Unretained(this));
-    video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_stream_fallbacks.capture_version_cb = base::DoNothing();
     video_stream_fallbacks.format_cb = base::DoNothing();
     PostCrossThreadTask(
         *testing_render_thread_.task_runner(), FROM_HERE,
@@ -763,7 +763,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   video_stream_fallbacks.encoded_frame_cb = base::DoNothing();
   video_stream_fallbacks.settings_cb =
       base::BindLambdaForTesting(check_dimensions);
-  video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_stream_fallbacks.capture_version_cb = base::DoNothing();
   video_stream_fallbacks.format_cb = base::DoNothing();
   PostCrossThreadTask(
       *testing_render_thread_.task_runner(), FROM_HERE,
@@ -968,7 +968,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
         &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
         base::Unretained(this));
     video_stream_fallbacks.settings_cb = base::DoNothing();
-    video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_stream_fallbacks.capture_version_cb = base::DoNothing();
     video_stream_fallbacks.format_cb = base::DoNothing();
     RunSyncOnRenderThread([&] {
       adapter_->AddTrack(track.get(), std::move(video_stream_fallbacks),

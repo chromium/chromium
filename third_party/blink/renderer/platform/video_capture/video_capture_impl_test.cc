@@ -212,7 +212,7 @@ class VideoCaptureImplTest : public ::testing::Test {
     video_capture_callbacks.state_update_cb = state_update_callback;
     video_capture_callbacks.deliver_frame_cb = frame_ready_callback;
     video_capture_callbacks.frame_dropped_cb = frame_dropped_callback;
-    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
 
     video_capture_impl_->StartCapture(client_id, params,
                                       std::move(video_capture_callbacks));

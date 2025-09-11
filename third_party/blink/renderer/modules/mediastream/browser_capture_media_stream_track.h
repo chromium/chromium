@@ -33,11 +33,10 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
   void Trace(Visitor*) const override;
 
-  // Allows tests to invoke OnSubCaptureTargetVersionObserved() directly, since
+  // Allows tests to invoke OnSubCaptureVersionObserved() directly, since
   // triggering it via mocks would be prohibitively difficult.
-  void OnSubCaptureTargetVersionObservedForTesting(
-      uint32_t sub_capture_target_version) {
-    OnSubCaptureTargetVersionObserved(sub_capture_target_version);
+  void OnSubCaptureVersionObservedForTesting(uint32_t sub_capture_version) {
+    OnSubCaptureVersionObserved(sub_capture_version);
   }
 
   ScriptPromise<IDLUndefined> cropTo(ScriptState*,
@@ -86,38 +85,40 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
                                                   IDLUndefined>>
         promise_resolver;
     std::optional<media::mojom::ApplySubCaptureTargetResult> result;
-    bool sub_capture_target_version_observed = false;
+    bool sub_capture_version_observed = false;
   };
 
+  // TODO(crbug.com/394794490): Change the key type to CropVersion and rename.
   using SubCaptureTargetVersionToPromiseInfoMap =
       HeapHashMap<uint32_t,
                   Member<BrowserCaptureMediaStreamTrack::PromiseInfo>>;
   using PromiseMapIterator = SubCaptureTargetVersionToPromiseInfoMap::iterator;
 
   // Each cropTo() or restrictTo() call is associated with a unique
-  // |sub_capture_target_version| which identifies this specific invocation.
+  // |sub_capture_version| which identifies this specific invocation.
   // When the browser process responds with the result of the invocation,
   // it triggers a call to OnResultFromBrowserProcess() with that
-  // |sub_capture_target_version|.
+  // |sub_capture_version|.
+  // TODO(crbug.com/394794490): Use the CropVersion.
   void OnResultFromBrowserProcess(
-      uint32_t sub_capture_target_version,
+      uint32_t sub_capture_version,
       media::mojom::ApplySubCaptureTargetResult result);
 
-  // OnSubCaptureTargetVersionObserved() is posted as a callback, bound to a
-  // unique |sub_capture_target_version|. This callback be invoked when the
+  // OnSubCaptureVersionObserved() is posted as a callback, bound to a
+  // unique |sub_capture_version|. This callback be invoked when the
   // first frame is observed which is associated with that
-  // |sub_capture_target_version|.
+  // |sub_capture_version|.
   // TODO(crbug.com/1266378): The Promise should also be resolved if a
   // a barrier event is observed. (That is, although no frame is delivered,
   // there is a guarantee that all future frames will be of this version
   // or later. This would happen if cropping a muted track, for instance.)
-  void OnSubCaptureTargetVersionObserved(uint32_t sub_capture_target_version);
+  void OnSubCaptureVersionObserved(uint32_t sub_capture_version);
 
   // The Promise that cropTo() issued is resolved when both conditions
   // are fulfulled:
   // 1. OnResultFromBrowserProcess(kSuccess) called.
-  // 2. OnSubCaptureTargetVersionObserved() called for the associated
-  // |sub_capture_target_version|.
+  // 2. OnSubCaptureVersionObserved() called for the associated
+  // |sub_capture_version|.
   //
   // The order of fulfillment does not matter.
   //
@@ -125,16 +126,18 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   // an error value.
   void MaybeFinalizeCropPromise(PromiseMapIterator iter);
 
-  // Each time cropTo() is called on a given track, its sub-capture-target
-  // version increments. Associate each Promise with its sub-capture-target
-  // version, so that Viz can easily stamp each frame. When we see the first
-  // such frame, or an equivalent message, we can resolve the Promise. (An
-  // "equivalent message" can be a notification of a dropped frame, or a
-  // notification that a frame was not produced due to consisting of 0 pixels
-  // after the crop was applied, or anything similar.)
+  // Each time cropTo() is called on a given track, its sub-capture version
+  // increments. Associate each Promise with its sub-capture version, so that
+  // Viz can easily stamp each frame. When we see the first such frame,
+  // or an equivalent message, we can resolve the Promise. (An "equivalent
+  // message" can be a notification of a dropped frame, or a notification that
+  // a frame was not produced due to consisting of 0 pixels after the crop was
+  //  applied, or anything similar.)
   //
   // Note that frames before the first call to cropTo() will be associated
   // with a version of 0, both here and in Viz.
+  //
+  // TODO(crbug.com/394794490): Use the CaptureTargetVersion as the key.
   HeapHashMap<uint32_t, Member<PromiseInfo>> pending_promises_;
 };
 

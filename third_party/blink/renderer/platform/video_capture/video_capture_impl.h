@@ -76,8 +76,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // changes.
   // |video_capture_callbacks.deliver_frame_cb| will be called when a
   // frame is ready.
-  // |video_capture_callbacks.sub_capture_target_version_cb| will be called
-  // when it is guaranteed that all subsequent frames
+  // |video_capture_callbacks.capture_version_cb| will be called when it is
+  // guaranteed that all subsequent frames
   // |video_capture_callbacks.deliver_frame_cb| is called for, have a crop
   // version that is equal-to-or-greater-than the given crop version.
   // |video_capture_callbacks.frame_dropped_cb| will be called when a frame was

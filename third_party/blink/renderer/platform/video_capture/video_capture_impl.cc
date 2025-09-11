@@ -618,7 +618,7 @@ struct VideoCaptureImpl::ClientInfo {
   media::VideoCaptureParams params;
   VideoCaptureStateUpdateCB state_update_cb;
   VideoCaptureDeliverFrameCB deliver_frame_cb;
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  VideoCaptureVersionCB capture_version_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
 };
 
@@ -694,8 +694,8 @@ void VideoCaptureImpl::StartCapture(
       std::move(video_capture_callbacks.state_update_cb);
   client_info.deliver_frame_cb =
       std::move(video_capture_callbacks.deliver_frame_cb);
-  client_info.sub_capture_target_version_cb =
-      std::move(video_capture_callbacks.sub_capture_target_version_cb);
+  client_info.capture_version_cb =
+      std::move(video_capture_callbacks.capture_version_cb);
   client_info.frame_dropped_cb =
       std::move(video_capture_callbacks.frame_dropped_cb);
 
@@ -1026,7 +1026,8 @@ void VideoCaptureImpl::OnNewSubCaptureTargetVersion(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   for (const auto& client : clients_) {
-    client.second.sub_capture_target_version_cb.Run(sub_capture_target_version);
+    client.second.capture_version_cb.Run(
+        media::CaptureVersion(sub_capture_target_version));
   }
 }
 

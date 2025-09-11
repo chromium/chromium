@@ -39,6 +39,7 @@ namespace media {
 class AudioBus;
 class AudioParameters;
 struct AudioGlitchInfo;
+struct CaptureVersion;
 class VideoFrame;
 struct VideoCaptureFeedback;
 struct VideoTransformation;
@@ -101,6 +102,12 @@ struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
 template <>
 struct CrossThreadCopier<media::VideoTransformation>
     : public CrossThreadCopierPassThrough<media::VideoTransformation> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::CaptureVersion>
+    : public CrossThreadCopierPassThrough<media::CaptureVersion> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

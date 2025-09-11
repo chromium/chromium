@@ -57,11 +57,10 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // |running_callback| will always be called on the same thread as the
   // StartCapture.
   //
-  // |video_capture_callbacks.sub_capture_target_version_cb| will be called when
+  // |video_capture_callbacks.capture_version_cb| will be called when
   // it is guaranteed that all subsequent frames
   // |video_capture_callbacks.deliver_frame_cb| is called for, have a
-  // sub-capture-target version that is equal-to-or-greater-than the given
-  // sub-capture-target version.
+  // capture version that is equal-to-or-greater-than the given capture version.
   //
   // |video_capture_callbacks.frame_dropped_cb| will be called when a frame was
   // dropped prior to delivery (i.e. |video_capture_callbacks.deliver_frame_cb|
