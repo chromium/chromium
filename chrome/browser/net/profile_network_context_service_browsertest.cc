@@ -431,23 +431,6 @@ class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
     }
   }
 
-  const char* GetExperimentString() {
-// The date and prefix for the disk cache backend experiment.
-#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250905-DiskCache-"
-    switch (GetParam()) {
-      case net::features::DiskCacheBackend::kDefault:
-        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";
-      case net::features::DiskCacheBackend::kSimple:
-        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Simple";
-      case net::features::DiskCacheBackend::kBlockfile:
-        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Blockfile";
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-      case net::features::DiskCacheBackend::kSql:
-        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Sql";
-#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
-    }
-  }
-
   base::HistogramTester histograms_;
 
  private:
@@ -465,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(
   PrefService* local_state = g_browser_process->local_state();
   DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
                                    "cache_finch_experiment_groups"),
-            base::StrCat({"None None None None ", GetExperimentString()}));
+            "None None None None scoped_feature_list_trial_group");
 
   // Set the local state for the next test.
   local_state->SetString(
@@ -486,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(
   PrefService* local_state = g_browser_process->local_state();
   DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
                                    "cache_finch_experiment_groups"),
-            base::StrCat({"None None None None ", GetExperimentString()}));
+            "None None None None scoped_feature_list_trial_group");
 }
 
 INSTANTIATE_TEST_SUITE_P(

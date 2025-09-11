@@ -412,37 +412,6 @@ bool NeedsIpProtection(const IpProtectionCoreHost* ipp_core_host,
 
 constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
 constexpr std::string_view kDiskCacheExperimentNameNone = "None";
-// The date and prefix for the disk cache backend experiment.
-#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250905-DiskCache-"
-constexpr std::string_view kDiskCacheExperimentNameDefault =
-    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";
-constexpr std::string_view kDiskCacheExperimentNameSimple =
-    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Simple";
-constexpr std::string_view kDiskCacheExperimentNameBlockfile =
-    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Blockfile";
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-constexpr std::string_view kDiskCacheExperimentNameSql =
-    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Sql";
-#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
-
-std::string_view GetDiskCacheBackendExperimentString() {
-  if (!disk_cache::InBackendExperiment()) {
-    return "";
-  }
-  switch (net::features::kDiskCacheBackendParam.Get()) {
-    case net::features::DiskCacheBackend::kDefault:
-      return kDiskCacheExperimentNameDefault;
-    case net::features::DiskCacheBackend::kSimple:
-      return kDiskCacheExperimentNameSimple;
-    case net::features::DiskCacheBackend::kBlockfile:
-      return kDiskCacheExperimentNameBlockfile;
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-    case net::features::DiskCacheBackend::kSql:
-      return kDiskCacheExperimentNameSql;
-#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
-  }
-  NOTREACHED();
-}
 
 bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   // Get the field trial groups.  If the server cannot be reached, then
@@ -452,6 +421,8 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
           net::features::kSplitCacheByNetworkIsolationKey);
   base::FieldTrial* credentials_field_trial = base::FeatureList::GetFieldTrial(
       net::features::kSplitCacheByIncludeCredentials);
+  base::FieldTrial* backend_field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kDiskCacheBackendExperiment);
 
   std::vector<std::string_view> experiment_parts;
   // SplitCacheByNetworkIsolationKey experiment:
@@ -472,9 +443,8 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
                                  : kDiskCacheExperimentNameNone);
 
   // Add the disk cache backend experiment group if active.
-  std::string_view backend_experiment = GetDiskCacheBackendExperimentString();
-  if (!backend_experiment.empty()) {
-    experiment_parts.push_back(backend_experiment);
+  if (backend_field_trial) {
+    experiment_parts.push_back(backend_field_trial->group_name());
   }
 
   const std::string current_field_trial_status =
