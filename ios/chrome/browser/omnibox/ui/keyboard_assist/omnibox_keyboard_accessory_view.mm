@@ -28,8 +28,6 @@ namespace {
 // should be shown.
 constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-
 // The glass effect view height.
 constexpr CGFloat kGlassEffectViewHeight = 58;
 
@@ -40,9 +38,6 @@ constexpr CGFloat kCornerRadius = 24;
 constexpr CGFloat kShadowRadius = 16.0;
 constexpr CGFloat kShadowVerticalOffset = 4.0;
 constexpr CGFloat kShadowOpacity = 0.12;
-
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
 }  // namespace
 
@@ -111,7 +106,6 @@ constexpr CGFloat kShadowOpacity = 0.12;
 }
 
 - (UIView*)contentView {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if (_effectView) {
       return _effectView.contentView;
@@ -153,8 +147,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
     AddSameConstraints(_effectView, _effectView.contentView);
     return _effectView.contentView;
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
+
   // Pre-iOS 26, no glass effect is used, so views are added directly to this
   // view.
   return self;
