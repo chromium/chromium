@@ -188,6 +188,12 @@ void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                                        viz::CompositorRenderPass* render_pass,
                                        AppendQuadsData* append_quads_data) {
+  // If this layer is used as a backdrop filter, don't create and append a quad
+  // as that will be done in RenderSurfaceImpl::AppendQuads.
+  if (is_backdrop_filter_mask_) {
+    return;
+  }
+
   if (solid_color_) {
     CHECK(tilings_.empty());
     AppendSolidQuad(render_pass, append_quads_data, *solid_color_);
@@ -199,12 +205,6 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
   }
 
   const float max_contents_scale = tilings_.front()->contents_scale_key();
-
-  // If this layer is used as a backdrop filter, don't create and append a quad
-  // as that will be done in RenderSurfaceImpl::AppendQuads.
-  if (is_backdrop_filter_mask_) {
-    return;
-  }
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
