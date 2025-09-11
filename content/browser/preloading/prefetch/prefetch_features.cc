@@ -85,4 +85,7 @@ const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue{
         &kPrefetchMultipleActiveSetSizeLimitForBase,
         "prefetch_multiple_active_set_size_limit_for_base_value", 2};
+
+BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

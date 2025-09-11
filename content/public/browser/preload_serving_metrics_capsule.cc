@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -17,7 +18,11 @@ namespace content {
 
 // static
 bool PreloadServingMetricsCapsule::IsFeatureEnabled() {
-  return features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
+  // The feature will be enabled with a kill switch `kPreloadServingMetrics`.
+  // For M141, we use `kPrerender2FallbackUsePreloadServingMetrics` etc. Keep
+  // them until `kPreloadServingMetrics` reaches to stable.
+  return base::FeatureList::IsEnabled(features::kPreloadServingMetrics) ||
+         features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
          GetContentClient()->browser()->UsePreloadServingMetrics();
 }
 
