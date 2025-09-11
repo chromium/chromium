@@ -2602,6 +2602,10 @@
       status: "stable",
     },
     {
+      name: "HitTestBorderRadiusForStackingContext",
+      status: "stable",
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",

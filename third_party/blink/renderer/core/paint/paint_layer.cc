@@ -1475,7 +1475,8 @@ PaintLayer* PaintLayer::HitTestLayer(
           result.GetHitTestRequest(), recursion_data.original_location);
       bool inside_fragment_foreground_rect = false;
 
-      if (HitTestForegroundForFragments(layer_fragments, temp_result,
+      if (HitTestForegroundForFragments(transform_container, container_fragment,
+                                        layer_fragments, temp_result,
                                         recursion_data.location,
                                         inside_fragment_foreground_rect) &&
           IsHitCandidateForDepthOrder(this, false, z_offset_for_contents_ptr,
@@ -1513,7 +1514,8 @@ PaintLayer* PaintLayer::HitTestLayer(
     STACK_UNINITIALIZED HitTestResult temp_result(
         result.GetHitTestRequest(), recursion_data.original_location);
     bool inside_fragment_background_rect = false;
-    if (HitTestFragmentsWithPhase(layer_fragments, temp_result,
+    if (HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                  layer_fragments, temp_result,
                                   recursion_data.location,
                                   HitTestPhase::kSelfBlockBackground,
                                   inside_fragment_background_rect) &&
@@ -1537,21 +1539,26 @@ PaintLayer* PaintLayer::HitTestLayer(
 }
 
 bool PaintLayer::HitTestForegroundForFragments(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
     const PaintLayerFragments& layer_fragments,
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     bool& inside_clip_rect) const {
-  if (HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+  if (HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kForeground, inside_clip_rect)) {
     return true;
   }
   if (inside_clip_rect &&
-      HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+      HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kFloat, inside_clip_rect)) {
     return true;
   }
   if (inside_clip_rect &&
-      HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+      HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kDescendantBlockBackgrounds,
                                 inside_clip_rect)) {
     return true;
@@ -1560,6 +1567,8 @@ bool PaintLayer::HitTestForegroundForFragments(
 }
 
 bool PaintLayer::HitTestFragmentsWithPhase(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
     const PaintLayerFragments& layer_fragments,
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
@@ -1575,6 +1584,15 @@ bool PaintLayer::HitTestFragmentsWithPhase(
                                  : fragment.foreground_rect;
     if (!bounds.Intersects(hit_test_location))
       continue;
+
+    // Check if inside the border-radius clipping area
+    if (RuntimeEnabledFeatures::
+            HitTestBorderRadiusForStackingContextEnabled() &&
+        bounds.HasRadius() &&
+        HitTestClippedOutByBorderRadius(transform_container, container_fragment,
+                                        hit_test_location, bounds)) {
+      continue;
+    }
 
     inside_clip_rect = true;
 
@@ -1624,6 +1642,16 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
     // Apply any clips established by layers in between us and the root layer.
     if (!fragment.background_rect.Intersects(recursion_data.location))
       continue;
+
+    // `recursion_data.location` is relative to `transform_container`.
+    if (RuntimeEnabledFeatures::
+            HitTestBorderRadiusForStackingContextEnabled() &&
+        fragment.background_rect.HasRadius() &&
+        HitTestClippedOutByBorderRadius(transform_container, container_fragment,
+                                        recursion_data.location,
+                                        fragment.background_rect)) {
+      continue;
+    }
 
     PaintLayer* hit_layer = HitTestLayerByApplyingTransform(
         transform_container, container_fragment, fragment, result,
@@ -2003,6 +2031,46 @@ bool PaintLayer::HitTestClippedOutByClipPath(
 
   const HitTestLocation location_in_layer(hit_test_location, -origin);
   return !ClipPathClipper::HitTest(GetLayoutObject(), location_in_layer);
+}
+
+// Checks if `hit_test_location` is clipped out by any ancestor `border-radius`
+// up to `transform_container`.
+bool PaintLayer::HitTestClippedOutByBorderRadius(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
+    const HitTestLocation& hit_test_location,
+    const ClipRect& clip_rect) const {
+  DCHECK(clip_rect.HasRadius());
+  const FragmentData& container_fragment_data =
+      container_fragment
+          ? *container_fragment->fragment_data
+          : transform_container.GetLayoutObject().FirstFragment();
+  // `hit_test_location` is relative to `transform_container`.
+  const auto& current_transform =
+      container_fragment_data.LocalBorderBoxProperties().Transform();
+
+  for (const LayoutObject* current = GetLayoutObject().Container();
+       current &&
+       current->IsDescendantOf(&transform_container.GetLayoutObject());
+       current = current->Container()) {
+    const auto* properties = current->FirstFragment().PaintProperties();
+    if (!properties) {
+      continue;
+    }
+
+    const auto* clip = properties->InnerBorderRadiusClip();
+    if (!clip) {
+      continue;
+    }
+
+    gfx::RectF mapped_location(hit_test_location.BoundingBox());
+    GeometryMapper::SourceToDestinationRect(
+        current_transform, clip->LocalTransformSpace(), mapped_location);
+    if (!clip->PaintClipRect().IntersectsQuad(gfx::QuadF(mapped_location))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 PhysicalRect PaintLayer::LocalBoundingBox() const {

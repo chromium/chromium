@@ -624,15 +624,20 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;
-  bool HitTestFragmentsWithPhase(const PaintLayerFragments&,
+  bool HitTestFragmentsWithPhase(const PaintLayer& transform_container,
+                                 const PaintLayerFragment* container_fragment,
+                                 const PaintLayerFragments&,
                                  HitTestResult&,
                                  const HitTestLocation&,
                                  HitTestPhase,
                                  bool& inside_clip_rect) const;
-  bool HitTestForegroundForFragments(const PaintLayerFragments&,
-                                     HitTestResult&,
-                                     const HitTestLocation&,
-                                     bool& inside_clip_rect) const;
+  bool HitTestForegroundForFragments(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const PaintLayerFragments&,
+      HitTestResult&,
+      const HitTestLocation&,
+      bool& inside_clip_rect) const;
   PaintLayer* HitTestTransformedLayerInFragments(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,
@@ -644,6 +649,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
+  bool HitTestClippedOutByBorderRadius(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const HitTestLocation&,
+      const ClipRect&) const;
 
   bool ShouldBeSelfPaintingLayer() const;
 
