@@ -83,5 +83,5 @@
   "builder_group": "tryserver.chromium.mac",
   "cq": "required",
   "recipe": "chromium/orchestrator",
-  "xcode_build_version": "17a5305k"
+  "xcode_build_version": "17a321"
 }
