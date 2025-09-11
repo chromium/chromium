@@ -65,6 +65,7 @@
           "--git-revision=${got_revision}",
           "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.chrome_public_test_apk_desktop.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -113,7 +114,8 @@
               "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"

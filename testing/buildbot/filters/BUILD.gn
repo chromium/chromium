@@ -109,6 +109,7 @@ source_set("chrome_public_test_apk_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/android.desktop.chrome_public_test_apk_desktop.filter",
     "//testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.device_14_tablet.chrome_public_test_apk.filter",
