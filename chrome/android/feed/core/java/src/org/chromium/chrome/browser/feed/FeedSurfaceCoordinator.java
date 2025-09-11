@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -531,13 +532,19 @@ public class FeedSurfaceCoordinator
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
                         public void onBackgroundChanged(
-                                Drawable backgroundDrawable, boolean fromInitialization) {
+                                Drawable backgroundDrawable,
+                                boolean fromInitialization,
+                                @NtpBackgroundImageType int oldType,
+                                @NtpBackgroundImageType int newType) {
                             setBackground(backgroundDrawable);
                         }
 
                         @Override
                         public void onBackgroundColorChanged(
-                                int backgroundColor, boolean fromInitialization) {
+                                int backgroundColor,
+                                boolean fromInitialization,
+                                @NtpBackgroundImageType int oldType,
+                                @NtpBackgroundImageType int newType) {
                             setBackgroundColor(backgroundColor);
                         }
                     };

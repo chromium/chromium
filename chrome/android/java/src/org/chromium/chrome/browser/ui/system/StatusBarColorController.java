@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -287,7 +288,10 @@ public class StatusBarColorController
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
                         public void onBackgroundColorChanged(
-                                int backgroundColor, boolean fromInitialization) {
+                                int backgroundColor,
+                                boolean fromInitialization,
+                                @NtpBackgroundImageType int oldType,
+                                @NtpBackgroundImageType int newType) {
                             if (mBackgroundColorForNtp == backgroundColor) return;
 
                             mBackgroundColorForNtp = backgroundColor;

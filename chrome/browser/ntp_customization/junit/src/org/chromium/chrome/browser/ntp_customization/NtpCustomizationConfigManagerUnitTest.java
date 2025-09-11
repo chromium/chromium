@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -40,6 +42,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -81,6 +84,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.addListener(mListener);
         clearInvocations(mListener);
 
+        mNtpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+                NtpBackgroundImageType.DEFAULT);
         Bitmap bitmap = createBitmap();
         mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
 
@@ -88,7 +93,12 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(
                 bitmap, mNtpCustomizationConfigManager.getBackgroundImageDrawable().getBitmap());
 
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture(), eq(false));
+        verify(mListener)
+                .onBackgroundChanged(
+                        mBitmapDrawableCaptor.capture(),
+                        eq(false),
+                        eq(NtpBackgroundImageType.DEFAULT),
+                        eq(NtpBackgroundImageType.IMAGE_FROM_DISK));
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
     }
 
@@ -100,16 +110,21 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         Bitmap bitmap = createBitmap();
         mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture(), eq(false));
+        verify(mListener)
+                .onBackgroundChanged(
+                        mBitmapDrawableCaptor.capture(),
+                        eq(false),
+                        eq(NtpBackgroundImageType.DEFAULT),
+                        eq(NtpBackgroundImageType.IMAGE_FROM_DISK));
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
         assertEquals(
-                NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK,
+                NtpBackgroundImageType.IMAGE_FROM_DISK,
                 mNtpCustomizationConfigManager.getBackgroundImageType());
 
         clearInvocations(mListener);
         mNtpCustomizationConfigManager.removeListener(mListener);
         mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
-        verify(mListener, never()).onBackgroundChanged(any(), eq(false));
+        verify(mListener, never()).onBackgroundChanged(any(), anyBoolean(), anyInt(), anyInt());
     }
 
     @Test
@@ -175,27 +190,37 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         assertEquals(
                 defaultColor, mNtpCustomizationConfigManager.getDefaultBackgroundColor(mContext));
+        mNtpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+                NtpBackgroundImageType.DEFAULT);
 
         // Test case for choosing a new customized color.
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+                mContext, colorInfo, NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
         assertEquals(
                 color, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
-        verify(mListener).onBackgroundColorChanged(eq(color), eq(false));
+        verify(mListener)
+                .onBackgroundColorChanged(
+                        eq(color),
+                        eq(false),
+                        eq(NtpBackgroundImageType.DEFAULT),
+                        eq(NtpBackgroundImageType.CHROME_COLOR));
 
         clearInvocations(mListener);
         // Test case for resetting to the default color.
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext,
-                /* colorInfo= */ null,
-                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
+                mContext, /* colorInfo= */ null, NtpBackgroundImageType.DEFAULT);
         assertEquals(defaultColor, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
 
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertFalse(prefsManager.contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
 
-        verify(mListener).onBackgroundColorChanged(eq(defaultColor), eq(false));
+        verify(mListener)
+                .onBackgroundColorChanged(
+                        eq(defaultColor),
+                        eq(false),
+                        eq(NtpBackgroundImageType.CHROME_COLOR),
+                        eq(NtpBackgroundImageType.DEFAULT));
     }
 
     private Bitmap createBitmap() {

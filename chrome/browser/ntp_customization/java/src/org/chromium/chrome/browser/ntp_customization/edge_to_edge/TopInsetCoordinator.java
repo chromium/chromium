@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -93,26 +94,25 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                 new NtpCustomizationConfigManager.HomepageStateListener() {
                     @Override
                     public void onBackgroundChanged(
-                            Drawable backgroundDrawable, boolean fromInitialization) {
-                        onNtpBackgroundChanged();
-                        if (fromInitialization) return;
-
-                        refreshWindowInsets(/* consumeTopInset= */ true);
+                            Drawable backgroundDrawable,
+                            boolean fromInitialization,
+                            @NtpBackgroundImageType int oldType,
+                            @NtpBackgroundImageType int newType) {
+                        onNtpBackgroundChanged(fromInitialization, oldType, newType);
                     }
 
                     @Override
                     public void onBackgroundColorChanged(
-                            int backgroundColor, boolean fromInitialization) {
-                        onNtpBackgroundChanged();
-                        if (fromInitialization) return;
-
-                        refreshWindowInsets(/* consumeTopInset= */ false);
+                            int backgroundColor,
+                            boolean fromInitialization,
+                            @NtpBackgroundImageType int oldType,
+                            @NtpBackgroundImageType int newType) {
+                        onNtpBackgroundChanged(fromInitialization, oldType, newType);
                     }
 
                     @Override
                     public void refreshWindowInsets(boolean consumeTopInset) {
-                        mConsumeTopInset = consumeTopInset;
-                        mInsetObserver.retriggerOnApplyWindowInsets();
+                        TopInsetCoordinator.this.refreshWindowInsets(consumeTopInset);
                     }
                 };
         NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener);
@@ -223,18 +223,27 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     // Called when a customized background of NTP is selected or removed. It initializes or removes
     // observers which track the Tab and Layout transitions.
     @VisibleForTesting
-    void onNtpBackgroundChanged() {
-        if (NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
-                == NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT) {
+    void onNtpBackgroundChanged(
+            boolean fromInitialization,
+            @NtpBackgroundImageType int oldType,
+            @NtpBackgroundImageType int newType) {
+        boolean shouldRefreshWindowInsets = false;
+        if (oldType != newType && newType == NtpBackgroundImageType.DEFAULT) {
             removeObservers();
-            return;
+            shouldRefreshWindowInsets = true;
+        } else if (oldType != newType && oldType == NtpBackgroundImageType.DEFAULT) {
+            addObservers();
+            shouldRefreshWindowInsets = true;
         }
-        maybeAddObservers();
+
+        if (fromInitialization || !shouldRefreshWindowInsets) return;
+
+        refreshWindowInsets(newType != NtpBackgroundImageType.DEFAULT);
     }
 
-    // If hasn't yet, adds observers which track Tab and Layout transitions and are only needed when
-    // the customized background is selected for NTPs.
-    private void maybeAddObservers() {
+    // Adds observers which track Tab and Layout transitions and are only needed when the customized
+    // background is selected for NTPs.
+    private void addObservers() {
         // Observing switches of Tabs.
         if (mTabSupplierObserver == null) {
             mTabSupplierObserver =
@@ -272,6 +281,11 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     private void computeEdgePaddings() {
         // Computes the top padding to reflect whether ToEdge or ToNormal for the Status Bar.
         mAppliedTopPadding = mConsumeTopInset ? 0 : mSystemInsets.top;
+    }
+
+    private void refreshWindowInsets(boolean consumeTopInset) {
+        mConsumeTopInset = consumeTopInset;
+        mInsetObserver.retriggerOnApplyWindowInsets();
     }
 
     public boolean getConsumeTopInsetForTesting() {
