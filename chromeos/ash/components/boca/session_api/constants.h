@@ -62,6 +62,12 @@ inline constexpr char kStudentHeartbeatUrlTemplate[] =
 inline constexpr char kNotifyGetActiveSession[] =
     "v1/teachers/$1/sessions/$2/students:notifyGetActiveSession";
 
+inline constexpr char kGetKioskReceiverWithoutConnectionIdUrlTemplate[] =
+    "/v1/receiverId/$1/kioskReceivers:get";
+
+inline constexpr char kGetKioskReceiverUrlTemplate[] =
+    "/v1/receiverId/$1/kioskReceivers:get?connectionId=$2";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -86,6 +92,7 @@ inline constexpr char kTranslationsEnabled[] = "translationsEnabled";
 inline constexpr char kStudentStatus[] = "studentStatuses";
 inline constexpr char kStudentStatusState[] = "state";
 inline constexpr char kDeviceStatusState[] = "state";
+inline constexpr char kReceiverState[] = "state";
 inline constexpr char kUrl[] = "url";
 inline constexpr char kTitle[] = "title";
 inline constexpr char kFavIcon[] = "faviconUrl";
@@ -122,6 +129,7 @@ inline constexpr char kServiceAccount[] = "serviceAccount";
 inline constexpr char kStudentGroupId[] = "studentGroupId";
 inline constexpr char kViewScreenConfig[] = "viewScreenConfig";
 inline constexpr char kViewScreenState[] = "viewScreenState";
+inline constexpr char kRobotEmail[] = "robotEmail";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(

@@ -29,6 +29,7 @@ message KioskReceiverConnection {
 
 message KioskReceiver {
   string robot_email = 1;
+  ReceiverConnectionState state = 2;
 }
 
 message UserDeviceInfo {

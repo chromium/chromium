@@ -8,14 +8,35 @@ static_library("receiver") {
   sources = [
     "boca_device_auth_token_service.cc",
     "boca_device_auth_token_service.h",
+    "get_kiosk_receiver_request.cc",
+    "get_kiosk_receiver_request.h",
     "receiver_handler_delegate.h",
     "register_receiver_request.cc",
     "register_receiver_request.h",
   ]
 
   deps = [
+    ":util",
     "//base",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+}
+
+static_library("util") {
+  sources = [
+    "kiosk_receiver_parser.cc",
+    "kiosk_receiver_parser.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//google_apis",
     "//google_apis/common",
   ]
@@ -26,6 +47,7 @@ source_set("unit_tests") {
 
   sources = [
     "boca_device_auth_token_service_unittest.cc",
+    "get_kiosk_receiver_request_unittest.cc",
     "register_receiver_request_unittest.cc",
   ]
 
@@ -33,6 +55,8 @@ source_set("unit_tests") {
     ":receiver",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//google_apis",
     "//google_apis/common",
     "//testing/gmock",
