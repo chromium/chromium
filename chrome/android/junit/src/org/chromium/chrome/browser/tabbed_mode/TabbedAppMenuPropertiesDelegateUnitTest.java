@@ -1584,6 +1584,18 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         context.getString(R.string.hide_reading_mode_text)));
     }
 
+    @Test
+    public void pageZoomMenuOption_NotVisibleInReadingMode() {
+        setUpMocksForPageMenu();
+        PageZoomCoordinator.setShouldShowMenuItemForTesting(true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(isMenuVisible(modelList, R.id.page_zoom_id));
+    }
+
     private MVCListAdapter.ModelList setUpMenuWithIncognitoReauthPage(boolean isShowing) {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);

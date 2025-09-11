@@ -75,6 +75,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -88,6 +89,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +132,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
@@ -215,6 +218,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
 
     private void setupFeatureDefaults() {
@@ -452,6 +457,17 @@ public class AppMenuPropertiesDelegateUnitTest {
         Assert.assertEquals(
                 R.id.readaloud_menu_id,
                 modelList2.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    public void isReaderModeShowing() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
+
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        assertTrue(mAppMenuPropertiesDelegate.isReaderModeShowing(mTab));
+
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
+        assertFalse(mAppMenuPropertiesDelegate.isReaderModeShowing(mTab));
     }
 
     private void setUpMocksForPageMenu() {

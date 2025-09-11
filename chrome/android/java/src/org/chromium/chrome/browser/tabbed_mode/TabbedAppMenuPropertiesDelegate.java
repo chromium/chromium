@@ -282,7 +282,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         buildModelForDivider(R.id.divider_line_id)));
 
         // Page Zoom
-        if (shouldShowPageZoomItem(currentTab)) modelList.add(buildPageZoomItem(currentTab));
+        // Disable page zoom menu item on Reading Mode pages.
+        if (shouldShowPageZoomItem(currentTab) && !isReaderModeShowing(currentTab)) {
+            modelList.add(buildPageZoomItem(currentTab));
+        }
 
         // Share
         if (ShareUtils.shouldEnableShare(currentTab)) {
