@@ -252,8 +252,6 @@ source_set("browser_sources") {
     "media_keys_listener_manager.h",
     "media_player_id.cc",
     "media_player_id.h",
-    "media_player_watch_time.cc",
-    "media_player_watch_time.h",
     "media_request_state.h",
     "media_service.h",
     "media_session.h",

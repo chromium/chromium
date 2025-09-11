@@ -1992,10 +1992,6 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-// TODO(crbug.com/40177301): Remove this.
-void Browser::MediaWatchTimeChanged(
-    const content::MediaPlayerWatchTime& watch_time) {}
-
 bool Browser::IsPointerLocked() const {
   return browser_window_features()
       ->exclusive_access_manager()
