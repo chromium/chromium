@@ -43,10 +43,6 @@ struct CONTENT_EXPORT ClientDataJsonParams {
   url::Origin top_origin;
   std::optional<std::vector<uint8_t>> challenge;
   bool is_cross_origin_iframe = false;
-
-  // The following fields are only set if `type` is `kPaymentGet`.
-  blink::mojom::PaymentOptionsPtr payment_options = nullptr;
-  std::string payment_rp;
 };
 
 // Builds the CollectedClientData[1] dictionary with the given values,
@@ -54,6 +50,14 @@ struct CONTENT_EXPORT ClientDataJsonParams {
 // This CHECKs if `challenge` has not been provided with a value.
 // [1] https://w3c.github.io/webauthn/#dictdef-collectedclientdata
 CONTENT_EXPORT std::string BuildClientDataJson(ClientDataJsonParams params);
+
+// Same as BuildClientDataJson above, but with payment data.
+// The 'payment_options' and 'payment_rp' arguments are only used if
+// `params.type` is `kPaymentGet`.
+CONTENT_EXPORT std::string BuildClientDataJsonWithPayment(
+    ClientDataJsonParams params,
+    blink::mojom::PaymentOptionsPtr payment_options,
+    std::string_view payment_rp);
 
 }  // namespace content
 

@@ -1717,8 +1717,6 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       public_key_options->challenge, is_cross_origin_iframe);
   if (payment_options) {
     client_data_json_params.type = ClientDataRequestType::kPaymentGet;
-    client_data_json_params.payment_options = std::move(payment_options);
-    client_data_json_params.payment_rp = req_state_->relying_party_id;
   } else if (public_key_options->extensions->remote_desktop_client_override) {
     client_data_json_params.origin =
         public_key_options->extensions->remote_desktop_client_override->origin;
@@ -1728,14 +1726,17 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   }
 
   if (public_key_options->challenge.has_value()) {
-    req_state_->client_data_json =
-        BuildClientDataJson(std::move(client_data_json_params));
+    req_state_->client_data_json = BuildClientDataJsonWithPayment(
+        std::move(client_data_json_params), std::move(payment_options),
+        req_state_->relying_party_id);
   } else {
+    std::string payment_rp = req_state_->relying_party_id;
     req_state_->request_delegate->ProvideChallengeUrl(
         *public_key_options->challenge_url,
         base::BindOnce(&AuthenticatorCommonImpl::UpdateChallengeFromUrl,
                        weak_factory_.GetWeakPtr(),
-                       std::move(client_data_json_params)));
+                       std::move(client_data_json_params),
+                       std::move(payment_options), std::move(payment_rp)));
   }
 
   if (options->mediation == Mediation::CONDITIONAL ||
@@ -3222,6 +3223,8 @@ void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
 
 void AuthenticatorCommonImpl::UpdateChallengeFromUrl(
     ClientDataJsonParams params,
+    blink::mojom::PaymentOptionsPtr payment_options,
+    std::string payment_rp,
     std::optional<base::span<const uint8_t>> challenge) {
   // ChallengeUrl is only valid for GetAssertion requests.
   CHECK(std::holds_alternative<device::CtapGetAssertionRequest>(
@@ -3240,7 +3243,8 @@ void AuthenticatorCommonImpl::UpdateChallengeFromUrl(
   }
 
   params.challenge = base::ToVector(*challenge);
-  req_state_->client_data_json = BuildClientDataJson(std::move(params));
+  req_state_->client_data_json = BuildClientDataJsonWithPayment(
+      std::move(params), std::move(payment_options), payment_rp);
   std::get<device::CtapGetAssertionRequest>(req_state_->ctap_request)
       .SetClientDataJson(req_state_->client_data_json);
   reinterpret_cast<device::GetAssertionRequestHandler*>(

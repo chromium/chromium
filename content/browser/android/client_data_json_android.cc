@@ -77,10 +77,8 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
       /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
       /*top_origin=*/url::Origin::FromJavaObject(env, jtop_origin),
       /*challenge=*/challenge, /*is_cross_origin_iframe=*/is_cross_origin);
-  client_data_json_params.payment_options = std::move(options);
-  client_data_json_params.payment_rp = relying_party_id;
-  std::string client_data_json =
-      BuildClientDataJson(std::move(client_data_json_params));
+  std::string client_data_json = BuildClientDataJsonWithPayment(
+      std::move(client_data_json_params), std::move(options), relying_party_id);
   return base::android::ConvertUTF8ToJavaString(env, client_data_json);
 }
 

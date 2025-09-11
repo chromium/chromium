@@ -379,6 +379,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   void UpdateChallengeFromUrl(
       ClientDataJsonParams params,
+      blink::mojom::PaymentOptionsPtr payment_options,
+      std::string payment_rp,
       std::optional<base::span<const uint8_t>> challenge);
 
   // Get an identifier for the current request. Callbacks that might span a
