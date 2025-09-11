@@ -36,11 +36,21 @@ class AutofillHandler : public protocol::Autofill::Backend,
  private:
   protocol::Response Enable() override;
   protocol::Response Disable() override;
-  protocol::Response Trigger(
-      int field_id,
-      std::optional<String> frame_id,
-      std::unique_ptr<protocol::Autofill::CreditCard> card,
-      std::unique_ptr<protocol::Autofill::Address> address) override;
+  void Trigger(int field_id,
+               std::optional<String> frame_id,
+               std::unique_ptr<protocol::Autofill::CreditCard> card,
+               std::unique_ptr<protocol::Autofill::Address> address,
+               std::unique_ptr<TriggerCallback> callback) override;
+
+  // Called after form extraction is finished in all frames.
+  void ContinueTrigger(content::RenderFrameHost* frame_rfh,
+                       int field_id,
+                       std::optional<String> frame_id,
+                       std::unique_ptr<protocol::Autofill::CreditCard> card,
+                       std::unique_ptr<protocol::Autofill::Address> address,
+                       std::unique_ptr<TriggerCallback> callback,
+                       bool success);
+
   // Sets a list of addresses inside `AutofillManager`, used to provide
   // developers addresses from different countries so that they can be used for
   // testing their form.
@@ -72,7 +82,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
       autofill::ContentAutofillDriver&) override;
 
   // Returns the driver for the outermost frame, not the one that created the
-  // `DevToolsAgentHost` and iniated the session.
+  // `DevToolsAgentHost` and initiated the session.
   autofill::ContentAutofillDriver* GetAutofillDriver();
 
   // Returns the client for the webcontents/tab where the devtools window is

@@ -87,14 +87,16 @@ AutofillHandler::~AutofillHandler() {
   Disable();
 }
 
-protocol::Response AutofillHandler::Trigger(
+void AutofillHandler::Trigger(
     int field_id,
     std::optional<String> frame_id,
     std::unique_ptr<protocol::Autofill::CreditCard> card,
-    std::unique_ptr<protocol::Autofill::Address> address) {
+    std::unique_ptr<protocol::Autofill::Address> address,
+    std::unique_ptr<TriggerCallback> callback) {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
   if (!host) {
-    return Response::ServerError("Target not found");
+    callback->sendFailure(Response::ServerError("Target not found"));
+    return;
   }
 
   content::RenderFrameHost* outermost_primary_rfh =
@@ -109,12 +111,39 @@ protocol::Response AutofillHandler::Trigger(
           }
         });
     if (!frame_rfh) {
-      return Response::ServerError("Frame not found");
+      callback->sendFailure(Response::ServerError("Frame not found"));
+      return;
     }
   } else {
     frame_rfh = outermost_primary_rfh;
   }
 
+  autofill::ContentAutofillDriver* autofill_driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
+  if (!autofill_driver) {
+    callback->sendFailure(
+        Response::ServerError("RenderFrameHost is being destroyed"));
+    return;
+  }
+
+  // The form extraction is done by AutofillAgent in renderer process and might
+  // not be finished yet, so we need to trigger it and to wait for it to finish
+  // before continuing. See https://crbug.com/442016685.
+  autofill_driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
+      base::BindOnce(&AutofillHandler::ContinueTrigger,
+                     weak_ptr_factory_.GetWeakPtr(), frame_rfh, field_id,
+                     frame_id, std::move(card), std::move(address),
+                     std::move(callback)));
+}
+
+void AutofillHandler::ContinueTrigger(
+    content::RenderFrameHost* frame_rfh,
+    int field_id,
+    std::optional<String> frame_id,
+    std::unique_ptr<protocol::Autofill::CreditCard> card,
+    std::unique_ptr<protocol::Autofill::Address> address,
+    std::unique_ptr<TriggerCallback> callback,
+    bool success) {
   autofill::LocalFrameToken frame_token(frame_rfh->GetFrameToken().value());
   autofill::FieldGlobalId global_field_id = {
       frame_token, autofill::FieldRendererId(field_id)};
@@ -138,20 +167,27 @@ protocol::Response AutofillHandler::Trigger(
   }
 
   if (!form.has_value()) {
-    return Response::InvalidRequest("Field not found");
+    callback->sendFailure(Response::InvalidRequest("Field not found"));
+    return;
   }
 
   if (!autofill_driver) {
-    return Response::ServerError("RenderFrameHost is being destroyed");
+    callback->sendFailure(
+        Response::ServerError("RenderFrameHost is being destroyed"));
+    return;
   }
 
   // Validate that card and address are mutually exclusive.
   if (card && address) {
-    return Response::InvalidRequest("Card and address cannot both be provided");
+    callback->sendFailure(
+        Response::InvalidRequest("Card and address cannot both be provided"));
+    return;
   }
 
   if (!card && !address) {
-    return Response::InvalidRequest("Either card or address must be provided");
+    callback->sendFailure(
+        Response::InvalidRequest("Either card or address must be provided"));
+    return;
   }
 
   if (card) {
@@ -191,8 +227,9 @@ protocol::Response AutofillHandler::Trigger(
       autofill::FieldType field_type =
           autofill::TypeNameToFieldType(field_name);
       if (!IsAddressType(field_type)) {
-        return Response::InvalidRequest("Unsupported field type: " +
-                                        field_name);
+        callback->sendFailure(
+            Response::InvalidRequest("Unsupported field type: " + field_name));
+        return;
       }
       tmp_autofill_profile.SetRawInfo(field_type,
                                       base::UTF8ToUTF16(field_value));
@@ -204,7 +241,7 @@ protocol::Response AutofillHandler::Trigger(
                            autofill::AutofillTriggerSource::kDevtools);
   }
 
-  return Response::Success();
+  callback->sendSuccess();
 }
 
 void AutofillHandler::SetAddresses(

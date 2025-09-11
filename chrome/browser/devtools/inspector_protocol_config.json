@@ -53,7 +53,7 @@
             },
             {
                 "domain": "Autofill",
-                "async": [ "setAddresses" ]
+                "async": [ "setAddresses", "trigger" ]
             },
             {
                 "domain": "PWA",
