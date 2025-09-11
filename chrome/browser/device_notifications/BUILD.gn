@@ -12,6 +12,7 @@ source_set("device_notifications") {
     sources += [
       "device_connection_tracker.h",
       "device_system_tray_icon.h",
+      "device_system_tray_icon_renderer.h",
     ]
     public_deps += [
       "//base",
@@ -20,7 +21,58 @@ source_set("device_notifications") {
       "//ui/gfx",
       "//url",
     ]
+
+    if (!is_chromeos) {
+      sources += [ "device_status_icon_renderer.h" ]
+      public_deps += [
+        "//chrome/browser/profiles:profile_util",
+        "//chrome/browser/status_icons",
+      ]
+    } else {
+      sources += [ "device_pinned_notification_renderer.h" ]
+      public_deps += [
+        "//ash/constants",
+        "//ui/message_center/public/cpp",
+      ]
+    }
   }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":device_notifications" ]
+
+  if (!is_android) {
+    sources += [
+      "device_connection_tracker.cc",
+      "device_system_tray_icon.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//content/public/browser",
+      "//url",
+    ]
+
+    if (!is_chromeos) {
+      sources += [ "device_status_icon_renderer.cc" ]
+      deps += [
+        "//base:i18n",
+        "//chrome/app:branded_strings",
+        "//chrome/app:command_ids",
+        "//chrome/app:generated_resources",
+        "//chrome/browser:browser_process",
+        "//ui/base",
+        "//ui/gfx",
+        "//ui/gfx:color_utils",
+      ]
+    } else {
+      sources += [ "device_pinned_notification_renderer.cc" ]
+      deps += [ "//components/vector_icons" ]
+    }
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
@@ -31,8 +83,11 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "device_connection_tracker_unittest.cc",
       "device_connection_tracker_unittest.h",
+      "device_system_tray_icon_unittest.cc",
       "device_system_tray_icon_unittest.h",
+      "device_test_utils.cc",
       "device_test_utils.h",
     ]
     public_deps += [
@@ -51,11 +106,17 @@ source_set("unit_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [ "device_status_icon_unittest.h" ]
+    sources += [
+      "device_status_icon_unittest.cc",
+      "device_status_icon_unittest.h",
+    ]
     public_deps += [ "//chrome/browser/status_icons" ]
   }
 
   if (is_chromeos) {
-    sources += [ "device_pinned_notification_unittest.h" ]
+    sources += [
+      "device_pinned_notification_unittest.cc",
+      "device_pinned_notification_unittest.h",
+    ]
   }
 }

@@ -1831,8 +1831,6 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers get componentized:
     # - c/b/browser_features.h"
-    # - c/b/device_notifications/device_status_icon_renderer.h"
-    # - c/b/device_notifications/device_system_tray_icon_renderer.h"
     # - c/b/net/referrer.h"
     # - c/b/notifications/system_notification_helper.h"
     # - c/b/profiles/profile_manager.h"
@@ -3774,11 +3772,6 @@ static_library("browser") {
       "device_identity/device_oauth2_token_service_factory.cc",
       "device_identity/device_oauth2_token_service_factory.h",
       "device_identity/device_oauth2_token_store.h",
-      "device_notifications/device_connection_tracker.cc",
-      "device_notifications/device_connection_tracker.h",
-      "device_notifications/device_system_tray_icon.cc",
-      "device_notifications/device_system_tray_icon.h",
-      "device_notifications/device_system_tray_icon_renderer.h",
       "diagnostics/diagnostics_controller.cc",
       "diagnostics/diagnostics_controller.h",
       "diagnostics/diagnostics_model.cc",
@@ -4339,6 +4332,7 @@ static_library("browser") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/device_notifications",
+      "//chrome/browser/device_notifications:impl",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
@@ -4690,6 +4684,10 @@ static_library("browser") {
       # - c/b/obsolete_system/obsolete_system.h
       # - c/b/lifetime/application_lifetime.h
       "//chrome/browser/upgrade_detector:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when c/b/profiles/profile_manager.h
+      # gets componentized.
+      "//chrome/browser/device_notifications:impl",
     ]
 
     #!is_android
@@ -4701,8 +4699,6 @@ static_library("browser") {
         "component_updater/screen_ai_component_installer.h",
         "device_identity/device_oauth2_token_store_desktop.cc",
         "device_identity/device_oauth2_token_store_desktop.h",
-        "device_notifications/device_status_icon_renderer.cc",
-        "device_notifications/device_status_icon_renderer.h",
         "download/bubble/download_bubble_accessible_alerts_map.cc",
         "download/bubble/download_bubble_accessible_alerts_map.h",
         "download/bubble/download_bubble_display_info.cc",
@@ -4891,8 +4887,6 @@ static_library("browser") {
       "device_identity/chromeos/device_oauth2_token_store_chromeos.h",
       "device_identity/chromeos/token_encryptor.cc",
       "device_identity/chromeos/token_encryptor.h",
-      "device_notifications/device_pinned_notification_renderer.cc",
-      "device_notifications/device_pinned_notification_renderer.h",
       "device_reauth/chromeos/authenticator_chromeos.cc",
       "device_reauth/chromeos/authenticator_chromeos.h",
       "device_reauth/chromeos/device_authenticator_chromeos.cc",
