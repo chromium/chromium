@@ -31,14 +31,6 @@ Env* GetEnvForTestWindows();
     WindowBuilderParams params = {},
     std::optional<SkColor> color = std::nullopt);
 
-// Creates a test window. If parent window is nullptr, then the caller must take
-// ownership of the created window.
-// Deprecated: Use CreateTestWindow above.
-Window* CreateTestWindowWithDelegate(WindowDelegate* delegate,
-                                     int id,
-                                     const gfx::Rect& bounds,
-                                     Window* parent);
-
 // Returns true if |upper| is above |lower| in the window stacking order.
 bool WindowIsAbove(Window* upper, Window* lower);
 

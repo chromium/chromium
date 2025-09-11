@@ -27,16 +27,6 @@ std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
   return builder.AllowAllWindowStates().Build();
 }
 
-Window* CreateTestWindowWithDelegate(WindowDelegate* delegate,
-                                     int id,
-                                     const gfx::Rect& bounds,
-                                     Window* parent) {
-  return CreateTestWindow(
-             {.delegate = delegate, .parent = parent, .bounds = bounds,
-              .window_id = id})
-      .release();
-}
-
 template <typename T>
 bool ObjectIsAbove(T* upper, T* lower) {
   DCHECK_EQ(upper->parent(), lower->parent());

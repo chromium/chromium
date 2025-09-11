@@ -740,8 +740,11 @@ TEST_F(WindowTest, MoveCursorToWithComplexTransform) {
 // scope (as opposed to being explicitly deleted by its WindowDelegate).
 TEST_F(WindowTest, NoCrashOnWindowDelete) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {20, 20},
+                                    .window_id = 0}));
 }
 
 TEST_F(WindowTest, GetEventHandlerForPoint) {
@@ -795,8 +798,12 @@ TEST_F(WindowTest, GetEventHandlerForPointInCornerOfChildBounds) {
 TEST_F(WindowTest, GetEventHandlerForPointWithOverrideDescendingOrder) {
   std::unique_ptr<SelfEventHandlingWindowDelegate> parent_delegate(
       new SelfEventHandlingWindowDelegate);
-  std::unique_ptr<Window> parent(CreateTestWindowWithDelegate(
-      parent_delegate.get(), 1, gfx::Rect(10, 20, 400, 500), root_window()));
+
+  std::unique_ptr<Window> parent =
+      CreateTestWindow({.delegate = parent_delegate.get(),
+                        .parent = root_window(),
+                        .bounds = {10, 20, 400, 500},
+                        .window_id = 1});
   std::unique_ptr<Window> child = CreateTestWindow(
       {.parent = parent.get(), .bounds = {0, 0, 390, 480}, .window_id = 2},
       SK_ColorRED);
@@ -813,12 +820,16 @@ TEST_F(WindowTest, GetToplevelWindow) {
 
   std::unique_ptr<Window> w1(
       CreateTestWindow({.parent = root_window(), .window_id = 1}));
-  std::unique_ptr<Window> w11(
-      CreateTestWindowWithDelegate(&delegate, 11, kBounds, w1.get()));
+  std::unique_ptr<Window> w11(CreateTestWindow({.delegate = &delegate,
+                                                .parent = w1.get(),
+                                                .bounds = kBounds,
+                                                .window_id = 11}));
   std::unique_ptr<Window> w111(
       CreateTestWindow({.parent = w11.get(), .window_id = 111}));
-  std::unique_ptr<Window> w1111(
-      CreateTestWindowWithDelegate(&delegate, 1111, kBounds, w111.get()));
+  std::unique_ptr<Window> w1111(CreateTestWindow({.delegate = &delegate,
+                                                  .parent = w111.get(),
+                                                  .bounds = kBounds,
+                                                  .window_id = 1111}));
 
   EXPECT_TRUE(root_window()->GetToplevelWindow() == nullptr);
   EXPECT_TRUE(w1->GetToplevelWindow() == nullptr);
@@ -869,9 +880,16 @@ TEST_F(WindowTest, DestroyTest) {
   DestroyTrackingDelegateImpl parent_delegate;
   ChildWindowDelegateImpl child_delegate(&parent_delegate);
   {
-    std::unique_ptr<Window> parent(CreateTestWindowWithDelegate(
-        &parent_delegate, 0, gfx::Rect(), root_window()));
-    CreateTestWindowWithDelegate(&child_delegate, 0, gfx::Rect(), parent.get());
+    std::unique_ptr<Window> parent =
+        CreateTestWindow({.delegate = &parent_delegate,
+                          .parent = root_window(),
+                          .bounds = {},
+                          .window_id = 0});
+    CreateTestWindow({.delegate = &child_delegate,
+                      .parent = parent.get(),
+                      .bounds = {},
+                      .window_id = 0})
+        .release();
   }
   // Both the parent and child should have been destroyed.
   EXPECT_EQ(1, parent_delegate.destroying_count());
@@ -885,10 +903,10 @@ TEST_F(WindowTest, OrphanedBeforeOnDestroyed) {
   TestWindowDelegate parent_delegate;
   DestroyOrphanDelegate child_delegate;
   {
-    std::unique_ptr<Window> parent(CreateTestWindowWithDelegate(
-        &parent_delegate, 0, gfx::Rect(), root_window()));
-    std::unique_ptr<Window> child(CreateTestWindowWithDelegate(
-        &child_delegate, 0, gfx::Rect(), parent.get()));
+    std::unique_ptr<Window> parent(aura::test::CreateTestWindow(
+        {.delegate = &parent_delegate, .parent = root_window()}));
+    std::unique_ptr<Window> child(aura::test::CreateTestWindow(
+        {.delegate = &child_delegate, .parent = parent.get()}));
     child_delegate.set_window(child.get());
   }
 }
@@ -1014,8 +1032,11 @@ TEST_F(WindowTest, StackChildAbove) {
 // Various capture assertions.
 TEST_F(WindowTest, CaptureTests) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {20, 20},
+                                    .window_id = 0}));
   EXPECT_FALSE(window->HasCapture());
 
   delegate.ResetCounts();
@@ -1067,11 +1088,13 @@ TEST_F(WindowTest, CaptureTests) {
 
 TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
   CaptureWindowDelegateImpl delegate1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &delegate1, 0, gfx::Rect(0, 0, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
+      {.delegate = &delegate1, .parent = root_window(), .bounds = {50, 50}}));
   CaptureWindowDelegateImpl delegate2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &delegate2, 0, gfx::Rect(50, 50, 50, 50), root_window()));
+  std::unique_ptr<Window> w2(
+      aura::test::CreateTestWindow({.delegate = &delegate2,
+                                    .parent = root_window(),
+                                    .bounds = {50, 50, 50, 50}}));
 
   // Press on w1.
   ui::TouchEvent press1(ui::EventType::kTouchPressed, gfx::Point(10, 10),
@@ -1126,8 +1149,8 @@ TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
 
 TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 50, 50), root_window()));
+  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = root_window(), .bounds = {50, 50}}));
   base::TimeTicks time = getTime();
   const int kTimeDelta = 100;
 
@@ -1184,8 +1207,8 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
 TEST_F(WindowTest, TransferCaptureTouchEvents) {
   // Touch on |w1|.
   CaptureWindowDelegateImpl d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 0, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
+      {.delegate = &d1, .parent = root_window(), .bounds = {20, 20}}));
   ui::TouchEvent p1(ui::EventType::kTouchPressed, gfx::Point(10, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&p1);
@@ -1196,8 +1219,8 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
 
   // Touch on |w2| with a different id.
   CaptureWindowDelegateImpl d2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &d2, 0, gfx::Rect(40, 0, 40, 20), root_window()));
+  std::unique_ptr<Window> w2(aura::test::CreateTestWindow(
+      {.delegate = &d2, .parent = root_window(), .bounds = {40, 0, 40, 20}}));
   ui::TouchEvent p2(ui::EventType::kTouchPressed, gfx::Point(41, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&p2);
@@ -1220,8 +1243,8 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
   d2.ResetCounts();
 
   CaptureWindowDelegateImpl d3;
-  std::unique_ptr<Window> w3(CreateTestWindowWithDelegate(
-      &d3, 0, gfx::Rect(0, 0, 100, 101), root_window()));
+  std::unique_ptr<Window> w3(aura::test::CreateTestWindow(
+      {.delegate = &d3, .parent = root_window(), .bounds = {100, 101}}));
   // Set capture on |w3|. All touches have already been cancelled.
   w3->SetCapture();
   EXPECT_EQ(0, d1.touch_event_count());
@@ -1268,11 +1291,13 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
 // Changes capture while capture is already ongoing.
 TEST_F(WindowTest, ChangeCaptureWhileMouseDown) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = root_window(), .bounds = {20, 20}}));
   CaptureWindowDelegateImpl delegate2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &delegate2, 0, gfx::Rect(20, 20, 20, 20), root_window()));
+  std::unique_ptr<Window> w2(
+      aura::test::CreateTestWindow({.delegate = &delegate2,
+                                    .parent = root_window(),
+                                    .bounds = {20, 20, 20, 20}}));
 
   // Execute the scheduled draws so that mouse events are not
   // aggregated.
@@ -1307,8 +1332,8 @@ TEST_F(WindowTest, ChangeCaptureWhileMouseDown) {
 // Verifies capture is reset when a window is destroyed.
 TEST_F(WindowTest, ReleaseCaptureOnDestroy) {
   CaptureWindowDelegateImpl delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = root_window(), .bounds = {20, 20}}));
   EXPECT_FALSE(window->HasCapture());
 
   // Do a capture.
@@ -1452,11 +1477,17 @@ class MouseEnterExitWindowDelegate : public TestWindowDelegate {
 // mouse transitions from window to window.
 TEST_F(WindowTest, MouseEnterExit) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
   MouseEnterExitWindowDelegate d2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &d2, 2, gfx::Rect(70, 70, 50, 50), root_window()));
+  std::unique_ptr<Window> w2(
+      aura::test::CreateTestWindow({.delegate = &d2,
+                                    .parent = root_window(),
+                                    .bounds = {70, 70, 50, 50},
+                                    .window_id = 2}));
 
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w1.get());
@@ -1476,8 +1507,11 @@ TEST_F(WindowTest, MouseEnterExit) {
 // EventType::kMouseExited.
 TEST_F(WindowTest, WindowTreeHostExit) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
 
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w1.get());
@@ -1497,11 +1531,17 @@ TEST_F(WindowTest, WindowTreeHostExit) {
 // and releases capture.
 TEST_F(WindowTest, MouseEnterExitWithClick) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
   MouseEnterExitWindowDelegate d2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &d2, 2, gfx::Rect(70, 70, 50, 50), root_window()));
+  std::unique_ptr<Window> w2(
+      aura::test::CreateTestWindow({.delegate = &d2,
+                                    .parent = root_window(),
+                                    .bounds = {70, 70, 50, 50},
+                                    .window_id = 2}));
 
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w1.get());
@@ -1525,8 +1565,11 @@ TEST_F(WindowTest, MouseEnterExitWithClick) {
 
 TEST_F(WindowTest, MouseEnterExitWhenDeleteWithCapture) {
   MouseEnterExitWindowDelegate delegate;
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
 
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(window.get());
@@ -1552,8 +1595,11 @@ TEST_F(WindowTest, MouseEnterExitWhenDeleteWithCapture) {
 // deleted under the current mouse position.
 TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
 
   // The cursor is moved into the bounds of |w1|. We expect the delegate
   // of |w1| to see an EventType::kMouseEntered event.
@@ -1565,8 +1611,11 @@ TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
 
   MouseEnterExitWindowDelegate d2;
   {
-    std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-        &d2, 2, gfx::Rect(10, 10, 50, 50), root_window()));
+    std::unique_ptr<Window> w2(
+        aura::test::CreateTestWindow({.delegate = &d2,
+                                      .parent = root_window(),
+                                      .bounds = {10, 10, 50, 50},
+                                      .window_id = 2}));
     // Enters / exits can be sent asynchronously.
     RunAllPendingInMessageLoop();
 
@@ -1596,8 +1645,11 @@ TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
 // under the current mouse position..
 TEST_F(WindowTest, MouseEnterExitWithHide) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
 
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w1.get());
@@ -1605,8 +1657,11 @@ TEST_F(WindowTest, MouseEnterExitWithHide) {
   EXPECT_FALSE(d1.exited());
 
   MouseEnterExitWindowDelegate d2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &d2, 2, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w2(
+      aura::test::CreateTestWindow({.delegate = &d2,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 2}));
   // Enters / exits can be send asynchronously.
   RunAllPendingInMessageLoop();
   EXPECT_TRUE(d1.entered());
@@ -1624,11 +1679,17 @@ TEST_F(WindowTest, MouseEnterExitWithHide) {
 
 TEST_F(WindowTest, MouseEnterExitWithParentHide) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
   MouseEnterExitWindowDelegate d2;
-  Window* w2 = CreateTestWindowWithDelegate(&d2, 2, gfx::Rect(10, 10, 50, 50),
-                                            w1.get());
+  Window* w2 = aura::test::CreateTestWindow({.delegate = &d2,
+                                             .parent = w1.get(),
+                                             .bounds = {10, 10, 50, 50},
+                                             .window_id = 2})
+                   .release();
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w2);
   // Enters / exits can be send asynchronously.
@@ -1647,11 +1708,17 @@ TEST_F(WindowTest, MouseEnterExitWithParentHide) {
 
 TEST_F(WindowTest, MouseEnterExitWithParentDelete) {
   MouseEnterExitWindowDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {10, 10, 50, 50},
+                                    .window_id = 1}));
   MouseEnterExitWindowDelegate d2;
-  Window* w2 = CreateTestWindowWithDelegate(&d2, 2, gfx::Rect(10, 10, 50, 50),
-                                            w1.get());
+  Window* w2 = aura::test::CreateTestWindow({.delegate = &d2,
+                                             .parent = w1.get(),
+                                             .bounds = {10, 10, 50, 50},
+                                             .window_id = 2})
+                   .release();
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w2);
 
@@ -1680,14 +1747,17 @@ TEST_F(WindowTest, MouseEnterExitWithParentDelete) {
 // allowing it to handle the event itself.
 TEST_F(WindowTest, GetEventHandlerForPoint_NoDelegate) {
   TestWindowDelegate d111;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      nullptr, 1, gfx::Rect(0, 0, 500, 500), root_window()));
-  std::unique_ptr<Window> w11(CreateTestWindowWithDelegate(
-      nullptr, 11, gfx::Rect(0, 0, 500, 500), w1.get()));
-  std::unique_ptr<Window> w111(CreateTestWindowWithDelegate(
-      &d111, 111, gfx::Rect(50, 50, 450, 450), w11.get()));
-  std::unique_ptr<Window> w12(CreateTestWindowWithDelegate(
-      nullptr, 12, gfx::Rect(0, 0, 500, 500), w1.get()));
+  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {500, 500}, .window_id = 1}));
+  std::unique_ptr<Window> w11(aura::test::CreateTestWindow(
+      {.parent = w1.get(), .bounds = {500, 500}, .window_id = 11}));
+  std::unique_ptr<Window> w111(
+      aura::test::CreateTestWindow({.delegate = &d111,
+                                    .parent = w11.get(),
+                                    .bounds = {50, 50, 450, 450},
+                                    .window_id = 111}));
+  std::unique_ptr<Window> w12(aura::test::CreateTestWindow(
+      {.parent = w1.get(), .bounds = {500, 500}, .window_id = 12}));
 
   gfx::Point target_point = w111->bounds().CenterPoint();
   EXPECT_EQ(w111.get(), w1->GetEventHandlerForPoint(target_point));
@@ -1726,10 +1796,10 @@ class VisibilityWindowDelegate : public TestWindowDelegate {
 TEST_F(WindowTest, Visibility) {
   VisibilityWindowDelegate d;
   VisibilityWindowDelegate d2;
-  std::unique_ptr<Window> w1(
-      CreateTestWindowWithDelegate(&d, 1, gfx::Rect(), root_window()));
-  std::unique_ptr<Window> w2(
-      CreateTestWindowWithDelegate(&d2, 2, gfx::Rect(), w1.get()));
+  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
+      {.delegate = &d, .parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w2(aura::test::CreateTestWindow(
+      {.delegate = &d2, .parent = w1.get(), .window_id = 2}));
   std::unique_ptr<Window> w3(
       CreateTestWindow({.parent = w2.get(), .window_id = 3}));
 
@@ -1788,16 +1858,28 @@ TEST_F(WindowTest, EventTargetingPolicy) {
   TestWindowDelegate d12;
   TestWindowDelegate d111;
   TestWindowDelegate d121;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      nullptr, 1, gfx::Rect(0, 0, 500, 500), root_window()));
-  std::unique_ptr<Window> w11(CreateTestWindowWithDelegate(
-      &d11, 11, gfx::Rect(0, 0, 500, 500), w1.get()));
-  std::unique_ptr<Window> w111(CreateTestWindowWithDelegate(
-      &d111, 111, gfx::Rect(50, 50, 450, 450), w11.get()));
-  std::unique_ptr<Window> w12(CreateTestWindowWithDelegate(
-      &d12, 12, gfx::Rect(0, 0, 500, 500), w1.get()));
-  std::unique_ptr<Window> w121(CreateTestWindowWithDelegate(
-      &d121, 121, gfx::Rect(150, 150, 50, 50), w12.get()));
+  std::unique_ptr<Window> w1(aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {500, 500}, .window_id = 1}));
+  std::unique_ptr<Window> w11(
+      aura::test::CreateTestWindow({.delegate = &d11,
+                                    .parent = w1.get(),
+                                    .bounds = {500, 500},
+                                    .window_id = 11}));
+  std::unique_ptr<Window> w111(
+      aura::test::CreateTestWindow({.delegate = &d111,
+                                    .parent = w11.get(),
+                                    .bounds = {50, 50, 450, 450},
+                                    .window_id = 111}));
+  std::unique_ptr<Window> w12(
+      aura::test::CreateTestWindow({.delegate = &d12,
+                                    .parent = w1.get(),
+                                    .bounds = {500, 500},
+                                    .window_id = 12}));
+  std::unique_ptr<Window> w121(
+      aura::test::CreateTestWindow({.delegate = &d121,
+                                    .parent = w12.get(),
+                                    .bounds = {150, 150, 50, 50},
+                                    .window_id = 121}));
 
   EXPECT_EQ(w121.get(), w1->GetEventHandlerForPoint(gfx::Point(160, 160)));
   w12->SetEventTargetingPolicy(EventTargetingPolicy::kTargetOnly);
@@ -1835,8 +1917,8 @@ TEST_F(WindowTest, EventTargetingPolicy) {
 TEST_F(WindowTest, ScopedEventTargetingBlockerTest) {
   // Test only when all event targeting blockers are removed from the window,
   // its event targeting policy will restore back to its original value.
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      nullptr, 1, gfx::Rect(0, 0, 500, 500), root_window()));
+  std::unique_ptr<Window> window(aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {500, 500}, .window_id = 1}));
   EXPECT_EQ(window->event_targeting_policy(),
             EventTargetingPolicy::kTargetAndDescendants);
   auto event_targeting_blocker1 =
@@ -1895,8 +1977,11 @@ TEST_F(WindowTest, TransformGesture) {
 
   std::unique_ptr<GestureTrackPositionDelegate> delegate(
       new GestureTrackPositionDelegate);
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      delegate.get(), -1234, gfx::Rect(0, 0, 20, 20), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = delegate.get(),
+                                    .parent = root_window(),
+                                    .bounds = {20, 20},
+                                    .window_id = -1234}));
 
   // Rotate the root-window clock-wise 90 degrees.
   host()->SetRootTransform(OverlayTransformToTransform(
@@ -2708,16 +2793,22 @@ TEST_F(WindowTest, MouseEventsOnLeafWindowChange) {
   generator.MoveMouseTo(50, 50);
 
   EventCountDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {100, 100},
+                                    .window_id = 1}));
   RunAllPendingInMessageLoop();
   // The format of result is "Enter/Move/Leave".
   EXPECT_EQ("1 1 0", d1.GetMouseMotionCountsAndReset());
 
   // Add new window |w11| on top of |w1| which contains the cursor.
   EventCountDelegate d11;
-  std::unique_ptr<Window> w11(CreateTestWindowWithDelegate(
-      &d11, 1, gfx::Rect(0, 0, 100, 100), w1.get()));
+  std::unique_ptr<Window> w11(
+      aura::test::CreateTestWindow({.delegate = &d11,
+                                    .parent = w1.get(),
+                                    .bounds = {100, 100},
+                                    .window_id = 1}));
   RunAllPendingInMessageLoop();
   EXPECT_EQ("0 0 1", d1.GetMouseMotionCountsAndReset());
   EXPECT_EQ("1 1 0", d11.GetMouseMotionCountsAndReset());
@@ -2787,8 +2878,10 @@ TEST_F(WindowTest, MouseEventsOnLeafWindowChange) {
   EXPECT_EQ("0 0 0", d11.GetMouseMotionCountsAndReset());
 
   // Add |w11|.
-  w11.reset(CreateTestWindowWithDelegate(
-      &d11, 1, gfx::Rect(0, 0, 100, 100), w1.get()));
+  w11 = aura::test::CreateTestWindow({.delegate = &d11,
+                                      .parent = w1.get(),
+                                      .bounds = {100, 100},
+                                      .window_id = 1});
   RunAllPendingInMessageLoop();
   EXPECT_EQ("0 0 0", d1.GetMouseMotionCountsAndReset());
   EXPECT_EQ("0 0 0", d11.GetMouseMotionCountsAndReset());
@@ -2807,24 +2900,32 @@ TEST_F(WindowTest, MouseEventsOnNonLeafWindowDelete) {
   generator.MoveMouseTo(50, 50);
 
   EventCountDelegate d1;
-  std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
-      &d1, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> w1(
+      aura::test::CreateTestWindow({.delegate = &d1,
+                                    .parent = root_window(),
+                                    .bounds = {100, 100},
+                                    .window_id = 1}));
   RunAllPendingInMessageLoop();
   // The format of result is "Enter/Move/Leave".
   EXPECT_EQ("1 1 0", d1.GetMouseMotionCountsAndReset());
 
   // Add new window |w2| on top of |w1| which contains the cursor.
   EventCountDelegate d2;
-  std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
-      &d2, 1, gfx::Rect(0, 0, 100, 100), w1.get()));
+  std::unique_ptr<Window> w2(aura::test::CreateTestWindow({.delegate = &d2,
+                                                           .parent = w1.get(),
+                                                           .bounds = {100, 100},
+                                                           .window_id = 1}));
   RunAllPendingInMessageLoop();
   EXPECT_EQ("0 0 1", d1.GetMouseMotionCountsAndReset());
   EXPECT_EQ("1 1 0", d2.GetMouseMotionCountsAndReset());
 
   // Add new window on top of |w2| which contains the cursor.
   EventCountDelegate d3;
-  CreateTestWindowWithDelegate(
-      &d3, 1, gfx::Rect(0, 0, 100, 100), w2.get());
+  aura::test::CreateTestWindow({.delegate = &d3,
+                                .parent = w2.get(),
+                                .bounds = {100, 100},
+                                .window_id = 1})
+      .release();
   RunAllPendingInMessageLoop();
   EXPECT_EQ("0 0 0", d1.GetMouseMotionCountsAndReset());
   EXPECT_EQ("0 0 1", d2.GetMouseMotionCountsAndReset());
@@ -3136,8 +3237,11 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChange) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {100, 100},
+                                    .window_id = 1}));
   window->layer()->GetAnimator()->set_disable_timer_for_test(true);
 
   delegate.clear_bounds_changed();
@@ -3170,8 +3274,11 @@ TEST_F(WindowTest, DelegateNotifiedAsBoundsChangeInHiddenLayer) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+  std::unique_ptr<Window> window(
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {100, 100},
+                                    .window_id = 1}));
   window->layer()->GetAnimator()->set_disable_timer_for_test(true);
 
   delegate.clear_bounds_changed();
@@ -3256,8 +3363,9 @@ TEST_F(WindowTest, AddChildNotifications) {
 // not break.
 TEST_F(WindowTest, DelegateDestroysSelfOnWindowDestroy) {
   std::unique_ptr<Window> w1(
-      CreateTestWindowWithDelegate(new DestroyWindowDelegate(), 0,
-                                   gfx::Rect(10, 20, 30, 40), root_window()));
+      aura::test::CreateTestWindow({.delegate = new DestroyWindowDelegate(),
+                                    .parent = root_window(),
+                                    .bounds = {10, 20, 30, 40}}));
 }
 
 class HierarchyObserver : public WindowObserver {

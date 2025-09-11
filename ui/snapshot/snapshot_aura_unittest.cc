@@ -142,8 +142,9 @@ class SnapshotAuraTest : public testing::Test {
   void SetupTestWindow(const gfx::Rect& window_bounds) {
     delegate_ =
         std::make_unique<TestPaintingWindowDelegate>(window_bounds.size());
-    test_window_.reset(aura::test::CreateTestWindowWithDelegate(
-        delegate_.get(), 0, window_bounds, root_window()));
+    test_window_ = aura::test::CreateTestWindow({.delegate = delegate_.get(),
+                                                 .parent = root_window(),
+                                                 .bounds = window_bounds});
   }
 
   gfx::Image GrabSnapshotForTestWindow() {
