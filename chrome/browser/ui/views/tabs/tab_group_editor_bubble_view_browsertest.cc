@@ -32,6 +32,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
@@ -47,21 +48,20 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     group_ = browser()->tab_strip_model()->AddToNewGroup({0});
     browser()->tab_strip_model()->OpenTabGroupEditor(group_.value());
+  }
 
-    views::ElementTrackerViews::ViewList tab_group_editor_bubble =
+  static views::Widget* WaitForAndGetEditorBubbleWidget() {
+    auto bubble_view =
         views::ElementTrackerViews::GetInstance()
             ->GetAllMatchingViewsInAnyContext(
                 TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId);
-    CHECK_EQ(tab_group_editor_bubble.size(), 1u);
+    if (bubble_view.empty()) {
+      return nullptr;
+    }
 
-    ASSERT_NE(nullptr, tab_group_editor_bubble[0]);
-    ASSERT_TRUE(tab_group_editor_bubble[0]->GetVisible());
-  }
-
-  static views::Widget* GetEditorBubbleWidget(const TabGroupHeader* header) {
-    return header->editor_bubble_tracker_.is_open()
-               ? header->editor_bubble_tracker_.widget()
-               : nullptr;
+    views::Widget* const widget = bubble_view[0]->GetWidget();
+    views::test::WidgetVisibleWaiter(widget).Wait();
+    return widget;
   }
 
   TabGroupModel* group_model() {
@@ -88,10 +88,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   ASSERT_EQ(1u, group_list.size());
   ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-  TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_list[0]);
-  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
 
   views::Button* const new_tab_button =
@@ -130,10 +127,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   ASSERT_EQ(1u, group_list.size());
   ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-  TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_list[0]);
-  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
 
   views::Button* const ungroup_button =
@@ -166,10 +160,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ShowUi("SetUp");
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-  TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_.value());
-  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
 
   views::Button* const move_group_button =
@@ -208,10 +199,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ShowUi("SetUp");
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-  TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_.value());
-  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
 
   views::Button* const move_group_button =
@@ -276,10 +264,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   ASSERT_EQ(1u, group_list.size());
   ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-  TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_list[0]);
-  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
 
   {  // Ungroup the group.
@@ -299,9 +284,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
 
   // Make sure the dialog is shown, and fake clicking the button.
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser_view->browser()
-          ->GetFeatures()
-          .tab_group_deletion_dialog_controller();
+      browser()->GetFeatures().tab_group_deletion_dialog_controller();
   EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
 
   // Pull the dialog state and call the OnDialogOk method.
