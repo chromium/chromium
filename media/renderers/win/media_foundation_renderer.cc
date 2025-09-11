@@ -28,6 +28,8 @@
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/wrapped_window_proc.h"
+#include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_info_collector.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_log.h"
@@ -47,6 +49,7 @@ using Microsoft::WRL::MakeAndInitialize;
 namespace {
 
 ATOM g_video_window_class = 0;
+constexpr uint32_t kAmdVendorId = 0x1002;
 
 // The |g_video_window_class| atom obtained is used as the |lpClassName|
 // parameter in CreateWindowEx().
@@ -112,6 +115,30 @@ const std::string GetErrorReasonString(
 // not used as a handle value too.
 bool IsInvalidHandle(const HANDLE& handle) {
   return handle == INVALID_HANDLE_VALUE || handle == nullptr;
+}
+
+bool GetVendorIdFromD3D11Device(ID3D11Device* d3d11_device) {
+  DCHECK(d3d11_device);
+
+  ComPtr<IDXGIDevice> dxgi_device;
+  HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&dxgi_device));
+  if (FAILED(hr)) {
+    return 0;
+  }
+
+  ComPtr<IDXGIAdapter> adapter;
+  hr = dxgi_device->GetAdapter(&adapter);
+  if (FAILED(hr)) {
+    return 0;
+  }
+
+  DXGI_ADAPTER_DESC desc = {};
+  hr = adapter->GetDesc(&desc);
+  if (FAILED(hr)) {
+    return 0;
+  }
+
+  return desc.VendorId;
 }
 
 }  // namespace
@@ -1256,6 +1283,24 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   // video to different graphics adapters. This is not an error, so special case
   // it here.
   PipelineStatus new_status = status;
+  // DRM_OEM_E_ASD_ACTIVE_DISPLAY_FAIL (0x8004DD2E) is an error code which
+  // comes from old AMD drivers. This error is produced when entering S3/S4
+  // sleep mode and during hotplug, but should be treated the same as
+  // DRM_E_TEE_INVALID_HWDRM_STATE.
+  if (hresult == DRM_OEM_E_ASD_ACTIVE_DISPLAY_FAIL) {
+    uint32_t vendor_id{0};
+    // Attempt to get the vendor_id using the dxgi device.
+    DXGIDeviceScopedHandle dxgi_device_handle(dxgi_device_manager_.Get());
+    ComPtr<ID3D11Device> d3d11_device = dxgi_device_handle.GetDevice();
+    if (d3d11_device) {
+      vendor_id = GetVendorIdFromD3D11Device(d3d11_device.Get());
+    }
+
+    if (vendor_id == kAmdVendorId) {
+      hresult = DRM_E_TEE_INVALID_HWDRM_STATE;
+    }
+  }
+
   if (hresult == DRM_E_TEE_INVALID_HWDRM_STATE) {
     // TODO(crbug.com/40870069): Remove these after the investigation is done.
     base::UmaHistogramBoolean(
