@@ -507,7 +507,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Opens the url of each of the visits in the provided list in a new tab. */
     public void openItemsInNewTab(List<HistoryItem> items, boolean isIncognito) {
-        if (mIsSeparateActivity && items.size() > 1) {
+        if ((mIsSeparateActivity || isIncognito) && items.size() > 1) {
             ArrayList<String> additionalUrls = new ArrayList<>(items.size() - 1);
             for (int i = 1; i < items.size(); i++) {
                 additionalUrls.add(items.get(i).getUrl().getSpec());
