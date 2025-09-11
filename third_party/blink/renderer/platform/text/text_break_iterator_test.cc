@@ -354,4 +354,21 @@ TEST_F(TextBreakIteratorTest, HyphenMinusBeforeHighLatin) {
   MatchLineBreaks({6, 11});
 }
 
+TEST_F(TextBreakIteratorTest, WordBreakSwedish) {
+  // "k:a" is interpreted as one word in Swedish and 2 words in English, up
+  // until ICU 76. See https://github.com/unicode-org/icu/pull/3249
+  const String text = "k:a";
+  std::unique_ptr<TextBreakIterator> english =
+      CreateWordBreakIteratorForTest(text, "en-us");
+  std::unique_ptr<TextBreakIterator> swedish =
+      CreateWordBreakIteratorForTest(text, "sv-se");
+  EXPECT_EQ(english->following(0), 1);
+#if U_ICU_VERSION_MAJOR_NUM >= 77
+  constexpr int swedish_expected = 1;
+#else
+  constexpr int swedish_expected = 3;
+#endif
+  EXPECT_EQ(swedish->following(0), swedish_expected);
+}
+
 }  // namespace blink

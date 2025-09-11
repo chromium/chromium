@@ -604,20 +604,7 @@ UText* TextOpenUTF16(UText* text,
 
 constexpr UText g_empty_text = UTEXT_INITIALIZER;
 
-TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
-  UErrorCode error_code = U_ZERO_ERROR;
-  static TextBreakIterator* break_iter = nullptr;
-  if (!break_iter) {
-    break_iter = icu::BreakIterator::createWordInstance(
-        CurrentTextBreakIcuLocale(), error_code);
-    DCHECK(U_SUCCESS(error_code))
-        << "ICU could not open a break iterator: " << u_errorName(error_code)
-        << " (" << error_code << ")";
-    if (!break_iter) {
-      return nullptr;
-    }
-  }
-
+bool SetText8(TextBreakIterator* break_iter, base::span<const LChar> string) {
   UTextWithBuffer text_local;
   text_local.text = g_empty_text;
   text_local.text.extraSize = sizeof(text_local.buffer);
@@ -627,7 +614,7 @@ TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
   UText* text = TextOpenLatin1(&text_local, string, nullptr, 0, &open_status);
   if (U_FAILURE(open_status)) {
     DLOG(ERROR) << "textOpenLatin1 failed with status " << open_status;
-    return nullptr;
+    return false;
   }
 
   UErrorCode set_text_status = U_ZERO_ERROR;
@@ -638,8 +625,7 @@ TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
   }
 
   utext_close(text);
-
-  return break_iter;
+  return true;
 }
 
 void SetText16(TextBreakIterator* iter, base::span<const UChar> string) {
@@ -652,23 +638,61 @@ void SetText16(TextBreakIterator* iter, base::span<const UChar> string) {
   iter->setText(&u_text, error_code);
 }
 
-}  // namespace
+class WordBreakIteratorPool {
+ public:
+  explicit WordBreakIteratorPool(const char* locale = nullptr)
+      : locale_(locale) {}
 
-TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
-  UErrorCode error_code = U_ZERO_ERROR;
-  static TextBreakIterator* break_iter = nullptr;
-  if (!break_iter) {
-    break_iter = icu::BreakIterator::createWordInstance(
-        CurrentTextBreakIcuLocale(), error_code);
+  TextBreakIterator* Get(base::span<const LChar> string);
+  TextBreakIterator* Get(base::span<const UChar> string);
+
+  static std::unique_ptr<TextBreakIterator> Create(
+      const char* locale = nullptr) {
+    UErrorCode error_code = U_ZERO_ERROR;
+    std::unique_ptr<TextBreakIterator> break_iter =
+        base::WrapUnique(icu::BreakIterator::createWordInstance(
+            locale ? icu::Locale(locale) : CurrentTextBreakIcuLocale(),
+            error_code));
     DCHECK(U_SUCCESS(error_code))
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
-    if (!break_iter) {
-      return nullptr;
+    return break_iter;
+  }
+
+ private:
+  TextBreakIterator* Get() {
+    if (!pool_) {
+      pool_ = Create(locale_);
+    }
+    return pool_.get();
+  }
+
+  std::unique_ptr<TextBreakIterator> pool_;
+  const char* locale_ = nullptr;
+};
+
+TextBreakIterator* WordBreakIteratorPool::Get(base::span<const LChar> string) {
+  if (TextBreakIterator* break_iter = Get()) {
+    if (SetText8(break_iter, string)) {
+      return break_iter;
     }
   }
-  SetText16(break_iter, string);
-  return break_iter;
+  return nullptr;
+}
+
+TextBreakIterator* WordBreakIteratorPool::Get(base::span<const UChar> string) {
+  if (TextBreakIterator* break_iter = Get()) {
+    SetText16(break_iter, string);
+    return break_iter;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
+  return pool.Get(string);
 }
 
 TextBreakIterator* WordBreakIterator(const StringView& string) {
@@ -676,9 +700,26 @@ TextBreakIterator* WordBreakIterator(const StringView& string) {
     return nullptr;
   }
   if (string.Is8Bit()) {
-    return WordBreakIterator(string.Span8());
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
+    return pool.Get(string.Span8());
   }
   return WordBreakIterator(string.Span16());
+}
+
+std::unique_ptr<TextBreakIterator> CreateWordBreakIteratorForTest(
+    const StringView& string,
+    const String& locale) {
+  if (string.empty()) {
+    return nullptr;
+  }
+  std::unique_ptr<TextBreakIterator> break_iter =
+      WordBreakIteratorPool::Create(locale.Utf8().c_str());
+  if (string.Is8Bit()) {
+    SetText8(break_iter.get(), string.Span8());
+  } else {
+    SetText16(break_iter.get(), string.Span16());
+  }
+  return break_iter;
 }
 
 PooledBreakIterator AcquireLineBreakIterator(

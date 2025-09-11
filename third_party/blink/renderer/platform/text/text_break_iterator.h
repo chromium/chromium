@@ -68,6 +68,8 @@ PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
     base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const StringView&);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
+PLATFORM_EXPORT std::unique_ptr<TextBreakIterator>
+CreateWordBreakIteratorForTest(const StringView&, const String& locale);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);
 
