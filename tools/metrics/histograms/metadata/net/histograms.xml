@@ -2320,20 +2320,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2"
-    enum="DNS.TaskTypeMetadataAvailability" expires_after="2025-02-10">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The succeeded DNS Task type of HostResolverManager::Job (the basic internal
-    unit of work for non-local host resolutions, potentially merging redundant
-    requests from Chrome) that succeeded with or without valid HTTPS DNS
-    metadata. This is recorded for successful https- or wss-schemed queries to a
-    set of Google hosts expected to have HTTPS DNS metadata, if the query type
-    requests the HTTPS record.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.HostCache.EraseStale.ExpiredBy{HostType}" units="ms"
     expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>

@@ -85,14 +85,6 @@ base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
   return dict;
 }
 
-bool IsSchemeHttpsOrWss(const HostResolver::Host& host) {
-  if (!host.HasScheme()) {
-    return false;
-  }
-  const std::string& scheme = host.GetScheme();
-  return scheme == url::kHttpsScheme || scheme == url::kWssScheme;
-}
-
 }  // namespace
 
 HostResolverManager::JobKey::JobKey(HostResolver::Host host,
@@ -1016,24 +1008,6 @@ void HostResolverManager::Job::RecordJobHistograms(
       base::UmaHistogramSparse("Net.DNS.ResolveError.Fast", std::abs(error));
     } else {
       base::UmaHistogramSparse("Net.DNS.ResolveError.Slow", std::abs(error));
-    }
-  }
-
-  if (error == OK) {
-    DCHECK(task_type.has_value());
-    // Record, for HTTPS-capable queries to a host known to serve HTTPS
-    // records, whether the HTTPS record was successfully received.
-    if (key_.query_types.Has(DnsQueryType::HTTPS) &&
-        // Skip http- and ws-schemed hosts. Although they query HTTPS records,
-        // successful queries are reported as errors, which would skew the
-        // metrics.
-        IsSchemeHttpsOrWss(key_.host) &&
-        IsGoogleHostWithAlpnH3(key_.host.GetHostnameWithoutBrackets())) {
-      bool has_metadata = !results.GetMetadatas().empty();
-      base::UmaHistogramExactLinear(
-          "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
-          static_cast<int>(task_type.value()) * 2 + (has_metadata ? 1 : 0),
-          (static_cast<int>(TaskType::kMaxValue) + 1) * 2);
     }
   }
 }
