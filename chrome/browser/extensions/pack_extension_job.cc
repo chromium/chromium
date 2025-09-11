@@ -43,7 +43,7 @@ std::optional<CrxAndKeyFiles> GetCrxAndKeyFilePaths(
       file_extensions.push_back(kExtensionKeyFileExtension);
     }
     std::optional<std::vector<base::FilePath>> crx_key_files =
-        CreateEmptyFilesUnderDownloads(root_directory, file_extensions);
+        GetOrCreateEmptyFilesUnderDownloads(root_directory, file_extensions);
     if (!crx_key_files) {
       return std::nullopt;
     }

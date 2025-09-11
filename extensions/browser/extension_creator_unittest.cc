@@ -204,8 +204,8 @@ TEST_F(ExtensionCreatorTest, InitializeInput) {
   base::FilePath existing_pem =
       extension_dir.AddExtension(FILE_PATH_LITERAL(".exist.pem"));
 
-  ASSERT_TRUE(base::WriteFile(existing_crx, ""));
-  ASSERT_TRUE(base::WriteFile(existing_pem, ""));
+  ASSERT_TRUE(base::WriteFile(existing_crx, "test data"));
+  ASSERT_TRUE(base::WriteFile(existing_pem, "test data"));
 
   struct TestCase {
     std::string name;
@@ -290,10 +290,6 @@ TEST_F(ExtensionCreatorTest, InitializeInput) {
       *base::ResolveToContentUri(extension_dir_vp.AddExtension(".exist.crx"));
   base::FilePath content_uri_pem =
       *base::ResolveToContentUri(extension_dir_vp.AddExtension(".exist.pem"));
-
-  test_cases.push_back({"content uris", extension_dir_vp, content_uri_crx,
-                        empty, content_uri_pem,
-                        ExtensionCreator::RunFlags::kNoRunFlags, true});
 #endif  // BUILDFLAG(IS_ANDROID)
 
   for (auto tc : test_cases) {

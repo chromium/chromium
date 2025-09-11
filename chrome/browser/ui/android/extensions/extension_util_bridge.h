@@ -13,12 +13,12 @@
 
 namespace extensions {
 
-// Creates empty files under Downloads. The name of the given file is
-// concatenated to the extensions to determine the names of the files to be
-// created. For example if the given file has the name "foo" and the extensions
-// are ".crx" and ".pem", the created files will have names "foo.crx" and
-// "foo.pem".
-std::optional<std::vector<base::FilePath>> CreateEmptyFilesUnderDownloads(
+// Get files under Downloads. If they don't exist, create empty ones. The name
+// of the given file is concatenated to the extensions to determine the names of
+// the files to be queried or created. For example if the given file has the
+// name "foo" and the extensions are ".crx" and ".pem", the files will have
+// names "foo.crx" and "foo.pem".
+std::optional<std::vector<base::FilePath>> GetOrCreateEmptyFilesUnderDownloads(
     const base::FilePath& file_for_basename,
     const std::vector<std::string>& dot_extensions);
 

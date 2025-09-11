@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -32,22 +34,21 @@ public class ExtensionUtilBridge {
     }
 
     /**
-     * Creates empty files under Downloads. The name of the given file is concatenated to the
-     * extensions to determine the names of the files to be created. For example if the given file
-     * has the name "foo" and the extensions are ".crx" and ".pem", the created files will have
-     * names "foo.crx" and "foo.pem".
+     * Get files under Downloads. If they don't exist, create empty ones. The name of the given file
+     * is concatenated to the extensions to determine the names of the files to be queried or
+     * created. For example if the given file has the name "foo" and the extensions are ".crx" and
+     * ".pem", the files will have names "foo.crx" and "foo.pem".
      *
-     * @param contentUriForBasename the file whose name is used to determine the created file names.
+     * @param contentUriForBasename the file whose name is used to determine the file names.
      * @param dotExtensions the extensions starting with a dot.
-     * @return List of created content URIs, or empty if creation of any file was unsuccessful.
+     * @return A list of content URIs. The list will be empty if any file query or creation failed.
      */
     @CalledByNative
-    static @Nullable @JniType("std::vector<std::string>") List<String>
-            createEmptyFilesUnderDownloads(
-                    @JniType("std::string") String contentUriForBasename,
-                    @JniType("std::vector<std::string>") List<String> dotExtensions) {
+    static @JniType("std::vector<std::string>") List<String> getOrCreateEmptyFilesUnderDownloads(
+            @JniType("std::string") String contentUriForBasename,
+            @JniType("std::vector<std::string>") List<String> dotExtensions) {
         String stem = ContentUriUtils.maybeGetDisplayName(contentUriForBasename);
-        if (stem == null || stem.isEmpty()) return null;
+        if (stem == null || stem.isEmpty()) return new ArrayList<>();
 
         Context context = ContextUtils.getApplicationContext();
         ContentResolver resolver = context.getContentResolver();
@@ -55,7 +56,7 @@ public class ExtensionUtilBridge {
         List<Uri> contentUris = new ArrayList<>();
         for (String ext : dotExtensions) {
             String name = stem + ext;
-            Uri uri = createEmptyFileUnderDownloads(resolver, name);
+            Uri uri = getOrCreateEmptyFileUnderDownloads(resolver, name);
 
             if (uri == null) {
                 for (Uri u : contentUris) {
@@ -65,7 +66,8 @@ public class ExtensionUtilBridge {
                         // The file was manually deleted concurrently.
                     }
                 }
-                return null;
+                // Query and creation not successful, return empty list.
+                return new ArrayList<>();
             }
 
             contentUris.add(uri);
@@ -77,17 +79,44 @@ public class ExtensionUtilBridge {
         return results;
     }
 
-    private static @Nullable Uri createEmptyFileUnderDownloads(
+    private static @Nullable Uri getOrCreateEmptyFileUnderDownloads(
             ContentResolver resolver, String name) {
         ContentValues contentValues = new ContentValues();
+
+        Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        Uri existedUri = getFileUriUnderDownloadsByName(resolver, name, collection);
+        if (existedUri != null) {
+            return existedUri;
+        }
+
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
-        Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         try {
             return resolver.insert(collection, contentValues);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static @Nullable Uri getFileUriUnderDownloadsByName(
+            ContentResolver resolver, String name, Uri collection) {
+        String[] projection =
+                new String[] {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DISPLAY_NAME};
+        String selection = MediaStore.MediaColumns.DISPLAY_NAME + " = ?";
+        String[] selectionArgs = new String[] {name};
+
+        try (Cursor cursor =
+                resolver.query(collection, projection, selection, selectionArgs, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int idColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
+                long id = cursor.getLong(idColumnIndex);
+                return ContentUris.withAppendedId(collection, id);
+            }
+        } catch (Exception e) {
+            // Failed to query for existing file URI
+        }
+
+        return null;
     }
 }
