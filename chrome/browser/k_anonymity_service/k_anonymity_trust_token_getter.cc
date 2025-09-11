@@ -437,8 +437,8 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
   base::Value::Dict outer_commitment;
   outer_commitment.Set(*maybe_version, std::move(key_commitment_value));
 
-  std::string key_commitment_str;
-  base::JSONWriter::Write(outer_commitment, &key_commitment_str);
+  std::string key_commitment_str =
+      base::WriteJson(outer_commitment).value_or("");
 
   KeyAndNonUniqueUserIdWithExpiration key_commitment{
       KeyAndNonUniqueUserId{key_commitment_str, non_unique_user_id},

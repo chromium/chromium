@@ -53,9 +53,7 @@ std::string CreatePayload(uint64_t failed_data_types) {
 
   root.Set(kFailedTypesPath, std::move(failed_types_list));
 
-  std::string payload;
-  base::JSONWriter::Write(root, &payload);
-  return payload;
+  return base::WriteJson(root).value_or("");
 }
 
 }  // namespace

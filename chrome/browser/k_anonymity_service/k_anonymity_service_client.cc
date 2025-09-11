@@ -561,8 +561,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
   base::Value::Dict request_dict;
   request_dict.Set("setsForType", std::move(types));
 
-  std::string request_body;
-  base::JSONWriter::Write(request_dict, &request_body);
+  std::string request_body = base::WriteJson(request_dict).value_or("");
 
   network::mojom::ObliviousHttpRequestPtr request =
       network::mojom::ObliviousHttpRequest::New();

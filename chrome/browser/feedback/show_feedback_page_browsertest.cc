@@ -294,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   const std::string category_tag = "category tag param";
   base::Value::Dict autofill_metadata = base::test::ParseJsonDict(
       R"({"form_signature": "123", "source_url": "test url"})");
-  std::string expected_autofill_metadata;
-  base::JSONWriter::Write(autofill_metadata, &expected_autofill_metadata);
+  std::string expected_autofill_metadata =
+      base::WriteJson(autofill_metadata).value_or("");
 
   GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",

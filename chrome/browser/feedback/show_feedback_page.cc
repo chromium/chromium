@@ -123,8 +123,8 @@ GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
     query_params.emplace_back(
         StrCatQueryParam(kFromAutofillQueryParam, kFromAutofillParamValue));
 
-    std::string autofill_metadata_json;
-    base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
+    std::string autofill_metadata_json =
+        base::WriteJson(autofill_metadata).value_or("");
     query_params.emplace_back(
         StrCatQueryParam(kAutofillMetadataQueryParam, autofill_metadata_json));
   }

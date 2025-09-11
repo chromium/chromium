@@ -339,8 +339,8 @@ class QuickStartDecoderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::vector<uint8_t> ConvertMessageToBytes(QuickStartMessage* message) {
-    std::string json;
-    base::JSONWriter::Write(*message->GenerateEncodedMessage(), &json);
+    std::string json =
+        base::WriteJson(*message->GenerateEncodedMessage()).value_or("");
 
     std::vector<uint8_t> payload(json.begin(), json.end());
 
@@ -694,8 +694,8 @@ TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfFidoDataMissingFromPayload) {
   QuickStartMessage message(QuickStartMessageType::kSecondDeviceAuthPayload);
 
-  std::string json_serialized_payload;
-  base::JSONWriter::Write(*message.GetPayload(), &json_serialized_payload);
+  std::string json_serialized_payload =
+      base::WriteJson(*message.GetPayload()).value_or("");
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 
@@ -711,10 +711,8 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfSecondDeviceAuthPayloadMissing) {
-  base::Value::Dict message_payload;
-
-  std::string json_serialized_payload;
-  base::JSONWriter::Write(message_payload, &json_serialized_payload);
+  std::string json_serialized_payload =
+      base::WriteJson(base::Value::Dict()).value_or("");
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 
@@ -732,8 +730,8 @@ TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfPayloadIsNotJsonDictionary) {
   std::string message_payload = "This is a JSON string";
 
-  std::string json_serialized_payload;
-  base::JSONWriter::Write(message_payload, &json_serialized_payload);
+  std::string json_serialized_payload =
+      base::WriteJson(message_payload).value_or("");
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 

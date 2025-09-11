@@ -1567,8 +1567,8 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
 
   const base::Value& content_setting_prefs =
       profile.GetPrefs()->GetValue(GetPrefName(ContentSettingsType::COOKIES));
-  std::string prefs_as_json;
-  base::JSONWriter::Write(content_setting_prefs, &prefs_as_json);
+  std::string prefs_as_json =
+      base::WriteJson(content_setting_prefs).value_or("");
   EXPECT_STREQ("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}",
                prefs_as_json.c_str());
 }

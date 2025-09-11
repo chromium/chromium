@@ -45,9 +45,7 @@ std::string GetPayloadWithNonce() {
   base::Value::Dict root;
   root.Set(kNonceField, kNonceValue);
 
-  std::string payload;
-  base::JSONWriter::Write(root, &payload);
-  return payload;
+  return base::WriteJson(root).value_or("");
 }
 
 std::string GetEmptyPayload() {

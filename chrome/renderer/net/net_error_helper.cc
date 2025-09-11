@@ -251,8 +251,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 
-  std::string json;
-  base::JSONWriter::Write(page_state.strings, &json);
+  std::string json = base::WriteJson(page_state.strings).value_or("");
 
   std::string js = "if (window.updateForDnsProbe) "
                    "updateForDnsProbe(" + json + ");";

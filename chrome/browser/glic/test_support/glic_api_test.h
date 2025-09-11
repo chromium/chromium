@@ -201,8 +201,7 @@ class GlicApiTestBase : public T {
     }
     content::RenderFrameHost* glic_guest_frame = T::FindGlicGuestMainFrame();
     ASSERT_TRUE(glic_guest_frame);
-    std::string param_json;
-    base::JSONWriter::Write(options.params, &param_json);
+    std::string param_json = base::WriteJson(options.params).value_or("");
     ProcessTestResult(
         options,
         content::EvalJs(
@@ -221,8 +220,7 @@ class GlicApiTestBase : public T {
     content::RenderFrameHost* glic_guest_frame = T::FindGlicGuestMainFrame();
     next_step_required_ = false;
     ASSERT_TRUE(glic_guest_frame);
-    std::string param_json;
-    base::JSONWriter::Write(options.params, &param_json);
+    std::string param_json = base::WriteJson(options.params).value_or("");
     ProcessTestResult(
         options,
         content::EvalJs(glic_guest_frame,
