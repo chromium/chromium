@@ -100,9 +100,9 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       contents_views.size() > 1
           ? contents_webview->parent()->bounds()
           : GetActiveContentsContainerView()->GetContentsViewBounds();
-  const views::View* container = contents_container();
-
-  const bool devtools_showing = contents_bounds != container->GetLocalBounds();
+  const gfx::Rect container_bounds =
+      GetActiveContentsContainerView()->GetLocalBounds();
+  const bool devtools_showing = contents_bounds != container_bounds;
 
   // With window controls overlay enabled, the web content extends over the
   // entire window height, overlapping the window's top-two rounded corners.
