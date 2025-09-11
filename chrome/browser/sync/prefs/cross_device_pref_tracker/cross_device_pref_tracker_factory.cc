@@ -4,13 +4,22 @@
 
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #include "components/sync_preferences/features.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/sync/android/jni_headers/CrossDevicePrefTrackerFactory_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()
     : ProfileKeyedServiceFactory(
@@ -52,3 +61,17 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       std::move(pref_provider));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+JNI_CrossDevicePrefTrackerFactory_GetForProfile(JNIEnv* env, Profile* profile) {
+  DCHECK(profile);
+
+  sync_preferences::CrossDevicePrefTracker* pref_tracker =
+      CrossDevicePrefTrackerFactory::GetForProfile(profile);
+  if (!pref_tracker) {
+    return base::android::ScopedJavaLocalRef<jobject>();
+  }
+  return pref_tracker->GetJavaObject();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
