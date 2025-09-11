@@ -38,6 +38,7 @@
 #include "base/memory/values_equivalent.h"
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fill_mode.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_playback_direction.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -135,7 +136,7 @@ struct CORE_EXPORT Timing {
 
   static V8FillMode::Enum FillModeEnum(FillMode);
   static FillMode EnumToFillMode(V8FillMode::Enum);
-  static String PlaybackDirectionString(PlaybackDirection);
+  static V8PlaybackDirection::Enum PlaybackDirectionEnum(PlaybackDirection);
 
   Timing() = default;
 
