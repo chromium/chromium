@@ -430,7 +430,9 @@ void EncodeFormFieldsForUpload(
     }
     // Do not upload fields that were filled with a fallback type, as this would
     // introduce unnecessary noise in the field votes.
-    if (field->WasAutofilledWithFallback()) {
+    if (field->WasAutofilledWithFallback() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillUploadManualFallbackFieldsToServer)) {
       continue;
     }
 

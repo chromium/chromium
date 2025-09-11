@@ -2028,8 +2028,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_FALSE(upload.field_data(3).has_initial_value_changed());
 }
 
-// Tests that Autofill does not send votes for a field that was filled with
-// fallback.
+// Tests that Autofill does send votes for a field that was filled with
+// fallback. Chrome clients should upload all form fields, see
+// crbug.com/444147005 for more details.
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeUploadRequest_SkipFieldsFilledWithFallback) {
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST}}});
@@ -2054,7 +2055,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   uploads = EncodeUploadRequest(form_structure, options);
   ASSERT_GE(uploads.size(), 1u);
   upload = uploads[0];
-  EXPECT_EQ(upload.field_data_size(), 0);
+  EXPECT_EQ(upload.field_data_size(), 1);
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {

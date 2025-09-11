@@ -799,6 +799,13 @@ BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables uploading fields that were autofilled with fallback types.
+// TODO: crbug.com/444147005 - Clean up after this feature is rolled out.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillUploadManualFallbackFieldsToServer,
+             "AutofillUploadManualFallbackFieldsToServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables uploading of more data to the Autofill server to use for computing
 // signatures: go/autofill-signatures-more-data.
 COMPONENT_EXPORT(AUTOFILL)
