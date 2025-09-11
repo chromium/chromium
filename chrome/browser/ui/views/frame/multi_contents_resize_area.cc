@@ -12,6 +12,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -33,6 +35,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsResizeArea,
                                       kMultiContentsResizeAreaElementId);
 
 MultiContentsResizeHandle::MultiContentsResizeHandle() {
+  // Cannot use `SOLID_COLOR_LAYER`, since resize handle has rounded corners,
+  // and applying layer based rounded corners will clip the focus ring.
+  SetPaintToLayer(ui::LAYER_TEXTURED);
+  layer()->SetFillsBoundsOpaquely(false);
+
   SetPreferredSize(gfx::Size(kHandleWidth, kHandleHeight));
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -42,17 +49,13 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
       l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS_RESIZE));
   SetProperty(views::kElementIdentifierKey,
               kMultiContentsResizeHandleElementId);
+
+  SetBackground(views::CreateRoundedRectBackground(
+      kColorSidePanelHoverResizeAreaHandle, kHandleCornerRadius));
 }
 
 void MultiContentsResizeHandle::UpdateVisibility(bool visible) {
-  if (visible) {
-    const SkColor resize_handle_color =
-        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
-    SetBackground(views::CreateRoundedRectBackground(resize_handle_color,
-                                                     kHandleCornerRadius));
-  } else {
-    SetBackground(nullptr);
-  }
+  layer()->SetVisible(visible);
 }
 
 void MultiContentsResizeHandle::AddedToWidget() {
