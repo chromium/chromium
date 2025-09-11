@@ -48,6 +48,7 @@ swarming.task_triggerers(
     pool_realm = "@root",
     groups = [
         "mdb/chrome-browser-infra",
+        "mdb/chrome-ops-browser-build-team",
     ],
 )
 
