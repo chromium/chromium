@@ -1,5 +1,4 @@
-#!special-case-list-v1
-# TODO(crbug.com/41488956): update to glob patterns
+#!special-case-list-v2
 
 # This ignore list is the set of suppressions that's needed in is_ubsan_security
 # builds. It has a lot in common with ignorelist.txt, but is_ubsan_security also
