@@ -2474,6 +2474,20 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedFieldsNumber) {
       PasswordFormMetricsRecorder::kFieldsNumber, 1);
 }
 
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedFieldFocusability) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  test_api(form).field(kUsernameFieldIndex).set_is_focusable(false);
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kFormFieldFocusability, 1);
+}
+
 TEST_P(PasswordFormManagerTest, HasObservedFormChangedCssClasses) {
   CreateFormManager(observed_form_);
   base::HistogramTester histogram_tester;

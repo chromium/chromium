@@ -1877,6 +1877,14 @@ bool HasObservedFormChanged(const FormData& form_data,
     if (lhs_field.name() != rhs_field.name()) {
       differences_bitmask |= PasswordFormMetricsRecorder::kFormFieldNames;
     }
+
+    // This needs to propagate to the form manager in order for users
+    // of the form manager cache (e.g. actor login) to have updated information
+    // about the password form.
+    if (lhs_field.is_focusable() != rhs_field.is_focusable()) {
+      differences_bitmask |=
+          PasswordFormMetricsRecorder::kFormFieldFocusability;
+    }
   }
 
   form_manager.GetMetricsRecorder()->RecordFormChangeBitmask(

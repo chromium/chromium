@@ -166,7 +166,8 @@ class PasswordFormMetricsRecorder
     kAutocompleteAttributes = 1 << 2,
     kFormControlTypes = 1 << 3,
     kFormFieldNames = 1 << 4,
-    kMaxFormDifferencesValue = 1 << 5,
+    kFormFieldFocusability = 1 << 5,
+    kMaxFormDifferencesValue = 1 << 6,
   };
 
   // Used in UMA histogram, please do NOT reorder.
