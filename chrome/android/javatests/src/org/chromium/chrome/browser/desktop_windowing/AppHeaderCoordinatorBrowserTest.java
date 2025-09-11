@@ -448,6 +448,7 @@ public class AppHeaderCoordinatorBrowserTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TABLET})
     @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @DisabledTest(message = "crbug.com/444486094")
     public void testKeyboardInDesktopWindow_RootViewNotPadded() throws TimeoutException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
