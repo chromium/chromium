@@ -606,6 +606,57 @@ TEST_F(BrowserViewTest, UpdateAccessibleURL) {
             after_url);
 }
 
+TEST_F(BrowserViewTest, UpdateAccessibleURLOnTabSelection) {
+  // Create two tabs with different URLs
+  const GURL url1(u"data:text/html,tab1");
+  const GURL url2(u"data:text/html,tab2");
+
+  AddTab(browser(), url1);
+  AddTab(browser(), url2);
+
+  // Initially, the second tab should be active (most recently added)
+  // Note: AddTab inserts at index 0, so tab2 is at index 0, tab1 is at index 1
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url2);
+
+  ui::AXNodeData node_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url2);
+
+  // Switch to the first tab (tab1 at index 1) by changing selection
+  browser()->tab_strip_model()->SelectTabAt(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url1);
+
+  // Verify that the accessible URL was updated due to tab selection change
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url1);
+
+  // Switch back to the second tab (tab2 at index 0)
+  browser()->tab_strip_model()->SelectTabAt(0);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url2);
+
+  // Verify that the accessible URL was updated again
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url2);
+}
+
 //  Macs do not have fullscreen policy.
 #if !BUILDFLAG(IS_MAC)
 

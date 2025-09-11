@@ -3768,6 +3768,14 @@ void BrowserView::OnTabStripModelChanged(
   // possible change.
   if (selection.selection_changed()) {
     toolbar_->InvalidateLayout();
+
+    // Update the accessible URL when the selected tab changes. This ensures
+    // that the accessibility document URL is updated for both keyboard and
+    // mouse tab switching, not just when tabs finish loading.
+    WebContents* active_contents = GetActiveWebContents();
+    if (active_contents) {
+      UpdateAccessibleURLForRootView(active_contents->GetURL());
+    }
   }
 
   if (loading_bar_) {
