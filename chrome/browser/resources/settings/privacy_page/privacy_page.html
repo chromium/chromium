@@ -120,88 +120,29 @@
               page-title="$i18n{siteSettingsCategoryFederatedIdentityApi}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsFederatedIdentityApiDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
-                allow-option-label=
-                    "$i18n{siteSettingsFederatedIdentityApiAllowed}"
-                allow-option-icon="privacy:account-circle"
-                block-option-label=
-                    "$i18n{siteSettingsFederatedIdentityApiBlocked}"
-                block-option-icon="privacy:account-circle-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
-                allow-header=
-                    "$i18n{siteSettingsFederatedIdentityApiAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsFederatedIdentityApiBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-federated-identity-api-page
+                search-term="{{searchFilter_}}">
+            </settings-federated-identity-api-page>
           </settings-subpage>
         </template>
       </template>
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}"
-          learn-more-url="$i18n{chooserUsbOverviewURL}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsUsbDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
-              allow-option-label="$i18n{siteSettingsUsbAllowed}"
-              allow-option-icon="privacy:usb"
-              block-option-label="$i18n{siteSettingsUsbBlocked}"
-              block-option-icon="privacy:usb-off">
-          </settings-category-default-radio-group>
-          <chooser-exception-list
-              category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
-              chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
-          </chooser-exception-list>
+            learn-more-url="$i18n{chooserUsbOverviewURL}">
+          <settings-usb-devices-page></settings-usb-devices-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/serialPorts" no-search>
         <settings-subpage page-title="$i18n{siteSettingsSerialPorts}"
-          learn-more-url="$i18n{chooserSerialOverviewUrl}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsSerialPortsDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-              allow-option-label=
-                  "$i18n{siteSettingsSerialPortsAllowed}"
-              allow-option-icon="privacy:developer-board"
-              block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
-              block-option-icon="privacy:developer-board-off">
-          </settings-category-default-radio-group>
-          <chooser-exception-list
-              category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-              chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
-          </chooser-exception-list>
+            learn-more-url="$i18n{chooserSerialOverviewUrl}">
+          <settings-serial-ports-page></settings-serial-ports-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <template is="dom-if" route-path="/content/bluetoothDevices" no-search>
           <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}"
-            learn-more-url="$i18n{bluetoothAdapterOffHelpURL}">
-              <div class="content-settings-header secondary">
-                $i18n{siteSettingsBluetoothDevicesDescription}
-              </div>
-              <settings-category-default-radio-group
-                    category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
-                    allow-option-label=
-                        "$i18n{siteSettingsBluetoothDevicesAllowed}"
-                    allow-option-icon="settings:bluetooth"
-                    block-option-label=
-                        "$i18n{siteSettingsBluetoothDevicesBlocked}"
-                    block-option-icon="settings:bluetooth-off">
-            </settings-category-default-radio-group>
-            <chooser-exception-list
-                category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
-                chooser-type="[[chooserTypeEnum_.BLUETOOTH_DEVICES]]">
-            </chooser-exception-list>
+              learn-more-url="$i18n{bluetoothAdapterOffHelpURL}">
+            <settings-bluetooth-devices-page></settings-bluetooth-devices-page>
           </settings-subpage>
         </template>
       </template>
@@ -241,23 +182,8 @@
       </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}"
-          learn-more-url="$i18n{chooserHidOverviewUrl}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsHidDevicesDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
-              allow-option-label=
-                  "$i18n{siteSettingsHidDevicesAllowed}"
-              allow-option-icon="privacy:videogame-asset"
-              block-option-label=
-                  "$i18n{siteSettingsHidDevicesBlocked}"
-              block-option-icon="privacy:videogame-asset-off">
-          </settings-category-default-radio-group>
-          <chooser-exception-list
-              category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
-              chooser-type="[[chooserTypeEnum_.HID_DEVICES]]">
-          </chooser-exception-list>
+            learn-more-url="$i18n{chooserHidOverviewUrl}">
+          <settings-hid-devices-page></settings-hid-devices-page>
         </settings-subpage>
       </template>
     </settings-animated-pages>

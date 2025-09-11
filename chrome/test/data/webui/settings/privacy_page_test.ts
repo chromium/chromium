@@ -21,15 +21,11 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 const redesignedPages: Route[] = [
-  routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
   routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
   routes.SITE_SETTINGS_HANDLERS,
-  routes.SITE_SETTINGS_HID_DEVICES,
   routes.SITE_SETTINGS_NOTIFICATIONS,
   routes.SITE_SETTINGS_PDF_DOCUMENTS,
   routes.SITE_SETTINGS_PROTECTED_CONTENT,
-  routes.SITE_SETTINGS_SERIAL_PORTS,
-  routes.SITE_SETTINGS_USB_DEVICES,
 
   // TODO(crbug.com/40719916) After restructure add coverage for elements on
   // routes which depend on flags being enabled.

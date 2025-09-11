@@ -1,0 +1,15 @@
+  <style include="settings-shared site-settings-shared"></style>
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsBluetoothDevicesDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
+      allow-option-label="$i18n{siteSettingsBluetoothDevicesAllowed}"
+      allow-option-icon="settings:bluetooth"
+      block-option-label="$i18n{siteSettingsBluetoothDevicesBlocked}"
+      block-option-icon="settings:bluetooth-off">
+  </settings-category-default-radio-group>
+  <chooser-exception-list
+      category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
+      chooser-type="[[chooserTypeEnum_.BLUETOOTH_DEVICES]]">
+  </chooser-exception-list>
