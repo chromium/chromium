@@ -173,6 +173,9 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
             .Then(std::move(post_host_cleared_callback.value()));
   }
 
+  bool open_command_line_urls = ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
+  ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(false);
+
   // Start by opening the browser window, to ensure that we have another
   // KeepAlive for `profile` by the time we clear the flow and its host.
   // TODO(crbug.com/40242414): Make sure we do something or log an error if
@@ -181,7 +184,7 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
       std::move(post_browser_open_callback),
       /*always_create=*/false,   // Don't create a window if one already exists.
       /*is_new_profile=*/false,  // Don't create a first run window.
-      profile);
+      open_command_line_urls, profile);
 }
 
 base::OnceClosure

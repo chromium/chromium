@@ -337,7 +337,7 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
         base::IgnoreArgs<Browser*>(base::BindOnce(
             &InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened,
             base::Unretained(this), result)),
-        true, false, profile_);
+        true, false, false, profile_);
   } else {
     OnClientOAuthSuccessAndBrowserOpened(result);
   }

@@ -217,7 +217,9 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   // triggered.
   profiles::OpenBrowserWindowForProfile(browser_future.GetCallback(),
                                         /*always_create=*/true,
-                                        /*is_new_profile=*/false, new_profile);
+                                        /*is_new_profile=*/false,
+                                        /*open_command_line_urls=*/false,
+                                        new_profile);
   EXPECT_TRUE(browser_future.Wait());
   Browser* new_browser = browser_future.Get();
   EXPECT_EQ(new_browser->profile(), new_profile);

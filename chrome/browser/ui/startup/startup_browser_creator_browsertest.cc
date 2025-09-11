@@ -4212,4 +4212,26 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
+class StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kProfileEmail, "test@gmail.com");
+    command_line->AppendSwitch(switches::kCreateProfileEmailIfNotExists);
+    command_line->AppendArg("https://www.google.com");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kCreateProfileIfNoneExists};
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest,
+                       OpenUrlsInNextProfileCreated) {
+  ASSERT_TRUE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)

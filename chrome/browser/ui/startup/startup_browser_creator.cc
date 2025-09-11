@@ -1640,6 +1640,10 @@ StartupProfilePathInfo GetStartupProfilePath(
             .mode = StartupProfileMode::kBrowserWindow};
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto has_tabs =
+      StartupTabProviderImpl().HasCommandLineTabs(command_line, cur_dir);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (command_line.HasSwitch(switches::kProfileEmail)) {
     // Use GetSwitchValueNative() rather than GetSwitchValueASCII() to support
     // non-ASCII email addresses.
@@ -1658,13 +1662,20 @@ StartupProfilePathInfo GetStartupProfilePath(
         return {.path = profile_dir,
                 .mode = StartupProfileMode::kBrowserWindow};
       }
-      if (base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists) &&
-          command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists)) {
-        // Return the profile picker instead of choosing a default profile.
-        // TODO (crbug.com/395127068): Investigate why the email sometimes does
-        // not get prefilled.
-        return {.path = base::FilePath(),
-                .mode = StartupProfileMode::kProfilePicker};
+      if (command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists)) {
+#if !BUILDFLAG(IS_CHROMEOS)
+        if (has_tabs != CommandLineTabsPresent::kNo) {
+          ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(true);
+        }
+#endif
+        if (base::FeatureList::IsEnabled(
+                features::kCreateProfileIfNoneExists)) {
+          // Return the profile picker instead of choosing a default profile.
+          // TODO (crbug.com/395127068): Investigate why the email sometimes
+          // does not get prefilled.
+          return {.path = base::FilePath(),
+                  .mode = StartupProfileMode::kProfilePicker};
+        }
       }
     }
   }
@@ -1682,8 +1693,6 @@ StartupProfilePathInfo GetStartupProfilePath(
   // URLs are provided or if we aren't able to extract them at this stage (e.g.
   // we need a profile to access search engine preferences and attempt to
   // resolve a query into a URL), open them in the last profile, instead.
-  auto has_tabs =
-      StartupTabProviderImpl().HasCommandLineTabs(command_line, cur_dir);
   if (has_tabs != CommandLineTabsPresent::kNo) {
     return {.path = profile_manager->GetLastUsedProfileDir(),
             .mode = StartupProfileMode::kBrowserWindow};
