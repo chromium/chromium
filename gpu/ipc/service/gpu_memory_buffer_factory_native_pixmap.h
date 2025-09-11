@@ -5,15 +5,11 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
 
-#include <vulkan/vulkan_core.h>
-
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/native_pixmap.h"
 
 namespace gpu {
-
-class VulkanDeviceQueue;
 
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
     : public GpuMemoryBufferFactory {
@@ -36,14 +32,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       gfx::BufferUsage usage) override;
 
  private:
-  gfx::GpuMemoryBufferHandle CreateNativeGmbHandleFromNativePixmap(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage,
-      scoped_refptr<gfx::NativePixmap> pixmap);
-
-  VulkanDeviceQueue* GetVulkanDeviceQueue();
-
   scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 
   base::WeakPtrFactory<GpuMemoryBufferFactoryNativePixmap> weak_factory_{this};
