@@ -45,14 +45,24 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "bwg_promo_scene_agent_unittest.mm" ]
+  sources = [
+    "bwg_promo_scene_agent_unittest.mm",
+    "gemini_coordinator_unittest.mm",
+  ]
 
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:features",
@@ -61,8 +71,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//third_party/ocmock",
   ]
