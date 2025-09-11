@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/synchronization/lock.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 
@@ -21,7 +22,11 @@ namespace performance_scenarios {
 
 namespace {
 
-// Global pointers to the shared memory mappings.
+// Global pointers to the shared memory mappings. Once a thread has a copy of
+// one of these pointers, it can manipulate the refcount atomically, so doesn't
+// have to worry about the underlying ScenarioMapping disappearing. But the
+// scoped_refptr itself is not atomic so the corresponding
+// MappingPtrLockForScope must be held to get that copy.
 scoped_refptr<RefCountedScenarioMapping>& MappingPtrForScope(
     ScenarioScope scope) {
   static base::NoDestructor<scoped_refptr<RefCountedScenarioMapping>>
@@ -33,6 +38,18 @@ scoped_refptr<RefCountedScenarioMapping>& MappingPtrForScope(
       return *current_process_mapping;
     case ScenarioScope::kGlobal:
       return *global_mapping;
+  }
+  NOTREACHED();
+}
+
+base::Lock& MappingPtrLockForScope(ScenarioScope scope) {
+  static base::NoDestructor<base::Lock> current_process_lock;
+  static base::NoDestructor<base::Lock> global_lock;
+  switch (scope) {
+    case ScenarioScope::kCurrentProcess:
+      return *current_process_lock;
+    case ScenarioScope::kGlobal:
+      return *global_lock;
   }
   NOTREACHED();
 }
@@ -76,6 +93,7 @@ ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
     LogMappingResult(MappingResult::kInvalidHandle);
   } else if (std::optional<SharedScenarioState::ReadOnlyMapping> mapping =
                  SharedScenarioState::MapReadOnlyRegion(std::move(region))) {
+    base::AutoLock lock(MappingPtrLockForScope(scope_));
     MappingPtrForScope(scope_) =
         base::MakeRefCounted<RefCountedScenarioMapping>(
             std::move(mapping.value()));
@@ -92,11 +110,14 @@ ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
 
 ScopedReadOnlyScenarioMemory::~ScopedReadOnlyScenarioMemory() {
   PerformanceScenarioObserverList::DestroyForScope(PassKey(), scope_);
+  base::AutoLock lock(MappingPtrLockForScope(scope_));
   MappingPtrForScope(scope_).reset();
 }
 
 scoped_refptr<RefCountedScenarioMapping> GetScenarioMappingForScope(
     ScenarioScope scope) {
+  // This lock must be held while the scoped_refptr is copied.
+  base::AutoLock lock(MappingPtrLockForScope(scope));
   return MappingPtrForScope(scope);
 }
 
