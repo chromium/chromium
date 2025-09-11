@@ -237,9 +237,7 @@ std::string MarketingBackendConnector::GetRequestContent() {
   request_dict.Set("country_code", country_code_);
   request_dict.Set("language", "en");
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 MarketingBackendConnector::~MarketingBackendConnector() = default;

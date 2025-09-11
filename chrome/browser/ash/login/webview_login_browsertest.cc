@@ -1625,9 +1625,9 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
         BuildDeviceOncDictForUntrustedAuthority(x509_contents);
 
     em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
-    base::JSONWriter::Write(onc_dict,
-                            proto.mutable_open_network_configuration()
-                                ->mutable_open_network_configuration());
+    *(proto.mutable_open_network_configuration()
+          ->mutable_open_network_configuration()) =
+        base::WriteJson(onc_dict).value_or("");
 
     device_policy_builder_.Build();
 

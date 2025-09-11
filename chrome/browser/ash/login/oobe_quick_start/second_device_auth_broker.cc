@@ -348,9 +348,7 @@ std::string CreateStartSessionRequestData(
   request.Set(kSourceDeviceInfoKey, std::move(source_device_info));
   request.Set(kTargetDeviceInfoKey, std::move(target_device_info));
 
-  base::JSONWriter::Write(request, &request_string);
-
-  return request_string;
+  return base::WriteJson(request).value_or("");
 }
 
 void RunAuthCodeCallbackWithRejectionResponse(

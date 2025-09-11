@@ -29,9 +29,7 @@ std::string AccountTransferClientData::CreateJson() {
       kClientDataChallengeKey,
       std::string(challenge_b64url_->begin(), challenge_b64url_->end()));
   fido_collected_client_data.Set(kClientDataCrossOriginKey, false);
-  std::string fido_client_data_json;
-  base::JSONWriter::Write(fido_collected_client_data, &fido_client_data_json);
-  return fido_client_data_json;
+  return base::WriteJson(fido_collected_client_data).value_or("");
 }
 
 std::array<uint8_t, crypto::hash::kSha256Size>

@@ -248,14 +248,11 @@ class WallpaperPolicyTest : public LoginManagerTest,
                                 &image_data)) {
       ADD_FAILURE();
     }
-    std::string policy;
-    base::JSONWriter::Write(policy::test::ConstructExternalDataReference(
-                                embedded_test_server()
-                                    ->GetURL(std::string("/") + relative_path)
-                                    .spec(),
-                                image_data),
-                            &policy);
-    return policy;
+    std::string path = std::string("/") + relative_path;
+    std::string url = embedded_test_server()->GetURL(path).spec();
+    return base::WriteJson(
+               policy::test::ConstructExternalDataReference(url, image_data))
+        .value_or("");
   }
 
   // Inject `filename` as wallpaper policy for test user `user_number`.  Set
