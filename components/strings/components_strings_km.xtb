@@ -130,6 +130,7 @@
 <translation id="1212527389003717329">បាន​ចាប់ផ្ដើម​ការទាញយក។ ដើម្បី​មើលឃើញ​វា សូមចុច |<ph name="ACCELERATOR" />| ឱ្យជាប់។</translation>
 <translation id="1215738931000958575">ប្រើព័ត៌មាន​ដែលបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក ដើម្បី​បំពេញ​ពាក្យ​សម្ងាត់ កូដសម្ងាត់ អាសយដ្ឋាន វិធីបង់ប្រាក់ និង​ព័ត៌មាន​ផ្សេងទៀត​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="1219129156119358924">សុវត្ថិភាពប្រព័ន្ធ</translation>
+<translation id="1219134100826635117">អ្នកគ្រប់គ្រង​របស់អ្នក​បានទប់ស្កាត់​សកម្មភាពនេះ</translation>
 <translation id="1222060260947439312">ទម្រខាងស្ដាំ</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">លេខ​កាត៖</translation>
@@ -716,6 +717,7 @@
 <translation id="2173302385160625112">ពិនិត្យមើល​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក</translation>
 <translation id="2174875517416416684">ប្រតិបត្តិការ​របស់អ្នក​មិនបាន​សម្រេចទេ។ មិនបាន​ដកប្រាក់​ពីគណនី​របស់អ្នក​ឡើយ។</translation>
 <translation id="2175630235841878061">មិនអាចទាញយកឯកសារលើសពី 100MB បានទេ</translation>
+<translation id="217631816678106981">កុំ​ដាក់ចូល</translation>
 <translation id="2178665390943006934">ប៊ូតុង "ដំឡើងកំណែ Chrome", បើកដំណើរការ ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="2178904466768126352">អ្នកវាយប្រហារ​នៅលើ​គេហទំព័រ​ដែលអ្នកបានសាកល្បងចូលមើល អាចដំឡើង​កម្មវិធី​គ្រោះថ្នាក់​ដែលលួច ឬលុបអ្វីៗ ដូចជា​ពាក្យសម្ងាត់ រូបថត សារ ឬ​លេខកាតឥណទាន​របស់អ្នក​ជាដើម។</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> នៅលើ <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1063,6 +1065,7 @@
 <translation id="2731220418440848219">ស្វែងយល់បន្ថែម​អំពីម៉ាស៊ីន​ស្វែងរក​របស់អ្នកនៅក្នុង Chromium</translation>
 <translation id="2731382536835015353">44 x 68 in</translation>
 <translation id="2734319753272419592">អនុញ្ញាតឱ្យ Google ប្រើកន្ត្រករបស់អ្នក ដើម្បីស្វែងរក​ការបញ្ចុះតម្លៃ​ដែលមានលក្ខណៈផ្ទាល់ខ្លួន។ នៅពេលមាន ការបញ្ចុះតម្លៃ​នឹង​បង្ហាញ​នៅក្នុងកន្ត្រក​របស់អ្នក​ដោយស្វ័យប្រវត្តិ។</translation>
+<translation id="2734797989819862638">កុំចម្លង</translation>
 <translation id="273785062888389088">ការគ្រប់គ្រង​អាកាសធាតុ និង HVAC</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2742128390261873684">ប្រព័ន្ធស្វ័យប្រវត្តិក្នុងផ្ទះ</translation>
@@ -1745,6 +1748,8 @@
 <translation id="3869939189466884821">ឯកសារ​មូលដ្ឋាន​របស់អ្នក​នឹងត្រូវបាន​លុបក្នុង​រយៈពេល <ph name="MINUTES" /> នាទី​ទៀត</translation>
 <translation id="3872834068356954457">វិទ្យាសាស្ត្រ</translation>
 <translation id="3875783148670536197">បង្ហាញខ្ញុំ​អំពី​របៀប</translation>
+<translation id="3877603629930976930">កុំ​ចែក​រំលែក</translation>
+<translation id="3878445208930547646">ការចម្លង​ពីគេហទំព័រនេះ​មិនត្រូវបាន​អនុញ្ញាតទេ</translation>
 <translation id="3879748587602334249">កម្មវិធីគ្រប់គ្រងការ​ទាញ​យក</translation>
 <translation id="3880456882942693779">សិល្បៈ និងការកម្សាន្ត</translation>
 <translation id="3880589673277376494">អ៊ីនធឺណិត និង​ទូរគមនាគមន៍</translation>
@@ -2114,6 +2119,7 @@
 <translation id="4466576951214254884">ប្រាក់កម្ចីនិស្សិត និងហិរញ្ញប្បទានមហាវិទ្យាល័យ</translation>
 <translation id="4467821340016922962">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ និង​មើល​ឃើញការទាញយក សូមចុច |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />បើក​ការការពារ​កម្រិតខ្ពស់<ph name="END_ENHANCED_PROTECTION_LINK" /> ដើម្បី​ទទួលបាន​សុវត្ថិភាព​កម្រិតខ្ពស់បំផុត​របស់ Chrome</translation>
+<translation id="4475299370877036544">សកម្មភាពនេះ​អាចបំពាន​គោលការណ៍​របស់​ស្ថាប័នអ្នក</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />។ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ទម្រង់នេះ​មិនមានសុវត្ថិភាពទេ។ មុខងារបំពេញស្វ័យប្រវត្តិ​ត្រូវបានបិទ។</translation>
 <translation id="4477350412780666475">សំនៀង​បន្ទាប់</translation>
@@ -3659,6 +3665,7 @@
 <translation id="70705239631109039">ការតភ្ជាប់របស់អ្នក​មិនមានសុវត្ថិភាពពេញលេញទេ</translation>
 <translation id="7071122206197538392">តារាងប្រៀបធៀបថ្មី</translation>
 <translation id="7075452647191940183">សំណើមាន​ទំហំធំពេក</translation>
+<translation id="7075896597860500885">មិនណែនាំឱ្យ​ចម្លង​ពីគេហទំព័រនេះ​ទេ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">ពី <ph name="TYPE_1" /> (ច្រើនទៀតនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)</translation>
@@ -3694,6 +3701,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">បានទប់ស្កាត់​ការបង្ហោះ</translation>
 <translation id="7132939140423847331">អ្នកគ្រប់គ្រង​របស់អ្នក​បានហាមឃាត់​មិនឱ្យ​ចម្លងទិន្នន័យនេះ។</translation>
+<translation id="7134653428559514680">មិនណែនាំឱ្យ​ចែករំលែក​ពីគេហទំព័រ​នេះទេ</translation>
 <translation id="7135130955892390533">បង្ហាញ​ស្ថានភាព</translation>
 <translation id="7135814714616751706">ស្វែងរកផ្លូវកាត់</translation>
 <translation id="7136009930065337683">ស្វែងយល់​បន្ថែមអំពី​មុខងារ​ឯកជន</translation>
@@ -3781,6 +3789,7 @@
 <translation id="7275334191706090484">ចំណាំដែលត្រូវបានគ្រប់គ្រង</translation>
 <translation id="7275808129217605899">ការ​បរិភោគដែលផ្ដល់សុខភាពល្អ</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីប្ដូរ​ពាក្យសម្ងាត់​គណនី Google របស់អ្នក</translation>
+<translation id="7286908876112207905">ការដាក់​ខ្លឹមសារនេះ​ចូលទៅក្នុង​គេហទំព័រនេះ​មិនត្រូវបាន​អនុញ្ញាតទេ</translation>
 <translation id="7291578327729322058">បញ្ចូល​បណ្ណ​បើកបរ</translation>
 <translation id="7292031607255951991">ឈ្មោះ​អ្នក​ទទួល</translation>
 <translation id="7298195798382681320">បានណែនាំ</translation>
@@ -3821,6 +3830,7 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">ឧបករណ៍​ដោះស្រាយ​ការទូទាត់</translation>
 <translation id="7366594738862061263">ស្វែងយល់អំពីរបៀបដែល Chrome ការពារពាក្យ​សម្ងាត់របស់អ្នក</translation>
+<translation id="7370751048350026847">មិនណែនាំឱ្យ​ដាក់​ខ្លឹមសារនេះ​ចូលទៅក្នុង​គេហទំព័រនេះទេ</translation>
 <translation id="7372526636730851647">រូបថត (រលោង)</translation>
 <translation id="7372973238305370288">លទ្ធផលស្វែងរក</translation>
 <translation id="7374461526650987610">ឧបករណ៍ដោះស្រាយប្រូតូកូល</translation>
@@ -3894,6 +3904,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">រថយន្ត​ដឹក​ទំនិញ និង​រថយន្ត​សណ្ដោង</translation>
 <translation id="7461924472993315131">លេខសម្គាល់</translation>
+<translation id="7463068149674892185">មិនណែនាំ​ឱ្យធ្វើ​សកម្មភាព​នេះទេ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">សុវត្ថិភាព និង​ការបង្កើន​ប្រសិទ្ធភាព JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> នឹងដឹងថា​អ្នកបាន​ចូលទៅកាន់ <ph name="TOP_LEVEL_URL" /></translation>

@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">Ата-энеңиз башкарат</translation>
 <translation id="902236149563113779">Сайттар адатта оюндар же кыймылдын багыты сыяктуу AR функциялары үчүн камеранын абалына көз салып турат</translation>
 <translation id="9039697262778250930">Ал сайттарда аккаунтуңуздан чыгып кетишиңиз мүмкүн</translation>
+<translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Cookie файлдары жок кылынсынбы?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}}</translation>

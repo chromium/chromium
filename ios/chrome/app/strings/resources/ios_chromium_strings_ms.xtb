@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Anda boleh membuka Lens di sini.</translation>
 <translation id="1042296835509784301">Buka Password Manager dalam Chromium.</translation>
 <translation id="1047130070405668746">Pilih Chromium</translation>
-<translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1091252999271033193">Ini bermakna Chromium akan meminta laman mudah alih setiap masa.</translation>
 <translation id="1115463765356382667">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps pada Chromium</translation>
 <translation id="1867772173333403444">4. Pilih Chromium</translation>
+<translation id="1965068424387304464">Petua Chromium: Simpan Kata Laluan</translation>
 <translation id="2006345422933397527">Chromium tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="2042889939382983733">Lihat Sejarah Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
@@ -119,6 +119,7 @@ Tunggu beberapa minit sebelum menukar akaun. Jika anda menukar akaun sekarang, d
 <translation id="3816686541346279443">Chromium akan menawarkan untuk menyimpan kata laluan anda.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="3833326979834193417">Chromium menjalankan Pemeriksaan Keselamatan secara automatik setiap hari untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Anda boleh mendapatkan maklumat lanjut tentang Pemeriksaan Keselamatan dalam Tetapan.</translation>
+<translation id="3837584850181228767">Petua Chromium: Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="3845223911364528001">Kembali kepada Chromium untuk memuat naik fail anda</translation>
 <translation id="3855938650519180865">Item Baharu dalam Chromium</translation>
 <translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>

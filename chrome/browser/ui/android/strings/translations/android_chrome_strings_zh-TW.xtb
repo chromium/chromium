@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497852260688568942">你的管理員停用了同步功能</translation>
 <translation id="250020030759455918">你將可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料</translation>
-<translation id="2502798195266898572">閱讀模式底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="2510106555128151389">正在安裝「<ph name="WEBAPK_NAME" />」...</translation>
 <translation id="2512234228327349533">搜尋購買選項</translation>
 <translation id="2513403576141822879">如需更多隱私權、安全性和資料收集的相關設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">Chrome 提供各種實用工具，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
-<translation id="6267063201726531683">閱讀模式底部功能表</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6291294824436685757">刪除瀏覽資料；選取要刪除的資料</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="629730747756840877">帳戶</translation>
-<translation id="6300697579369314762">閱讀模式底部功能表已開啟，並顯示在畫面下半部</translation>
 <translation id="6301526076346731664">開啟「開發人員工具」</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6307241780749477694">通過身分驗證，即可在這部裝置上存取所有密碼</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">通關密語加密資料不包括 Google Pay 中的付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
-<translation id="7151332203500147130">閱讀模式底部功能表已關閉</translation>
 <translation id="7165972437814027679">進一步瞭解為何 Chrome 會封鎖某些檔案</translation>
 <translation id="7168323970702333693">目前登入的帳戶是<ph name="USER_NAME" />。開啟設定。</translation>
 <translation id="7173114856073700355">開啟設定</translation>

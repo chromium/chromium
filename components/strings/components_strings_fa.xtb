@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">بارگیری شروع شد. برای دیدن آن، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید.</translation>
 <translation id="1215738931000958575">‏از اطلاعات ذخیره‌شده در «حساب Google» شما برای تکمیل خودکار گذرواژه‌ها، گذرکلیدها، نشانی‌ها، روش‌های پرداخت، و سایر اطلاعات شما استفاده می‌شود</translation>
 <translation id="1219129156119358924">سیستم امنیتی</translation>
+<translation id="1219134100826635117">سرپرست شما این کنش را مسدود کرده است</translation>
 <translation id="1222060260947439312">سینی راست</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">شماره کارت:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2174875517416416684">تراکنش انجام نشد. مبلغی از حسابتان برداشت نشد.</translation>
 <translation id="2175630235841878061">فایل‌های بیش‌از ۱۰۰ مگابایت برای بارگیری دردسترس نیست</translation>
+<translation id="217631816678106981">جای‌گذاری نشود</translation>
 <translation id="2178665390943006934">‏دکمه «به‌روزرسانی Chrome»؛ برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="2178904466768126352">مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید نرم‌افزار مخربی نصب کنند که مواردی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری شما را به‌سرقت می‌برد یا حذف می‌کند.</translation>
 <translation id="2179003720612888584">‫<ph name="SITE_TITLE" /> در <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">‏درباره موتور جستجویتان در Chromium بیشتر بدانید</translation>
 <translation id="2731382536835015353">۶۸ × ۴۴ اینچ</translation>
 <translation id="2734319753272419592">‏به Google اجازه دهید برای جستجوی تخفیف‌های شخصی‌سازی‌شده از سبدهای خریدتان استفاده کند. اگر تخفیفی موجود بود، آن تخفیف به‌طور خودکار در سبدهای خریدتان نشان داده خواهد شد.</translation>
+<translation id="2734797989819862638">کپی نشود</translation>
 <translation id="273785062888389088">سیستم گرمایش، تهویه مطبوع، و کنترل هوا</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2742128390261873684">خودکارسازی خانه</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">فایل‌های محلی شما تا <ph name="MINUTES" /> دقیقه دیگر حذف خواهد شد</translation>
 <translation id="3872834068356954457">علم</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
+<translation id="3877603629930976930">هم‌رسانی نشود</translation>
+<translation id="3878445208930547646">کپی کردن از این سایت مجاز نیست</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
 <translation id="3880589673277376494">اینترنت و مخابرات</translation>
@@ -2110,6 +2115,7 @@
 <translation id="4466576951214254884">تأمین هزینه کالج و وام دانش‌آموزی</translation>
 <translation id="4467821340016922962">برای خروج از تمام‌صفحه و مشاهده بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="4473643328224505070">‏برای دریافت بالاترین سطح امنیتی Chrome، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />محافظت بهبودیافته را روشن کنید<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
+<translation id="4475299370877036544">این اقدام ممکن است خط‌مشی‌های سازمانتان را نقض کند</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">این فرم ایمن نیست. تکمیل خودکار خاموش شده است.</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
 <translation id="7071122206197538392">جدول مقایسه جدید</translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
+<translation id="7075896597860500885">کپی کردن از این سایت توصیه نمی‌شود</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">از <ph name="TYPE_1" /> (موارد بیشتر در دستگاه‌های همگام‌سازی‌شده)</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">بارگذاری مسدود شد</translation>
 <translation id="7132939140423847331">سرپرست کپی شدن این داده‌ها را ممنوع کرده است.</translation>
+<translation id="7134653428559514680">هم‌رسانی از این سایت توصیه نمی‌شود</translation>
 <translation id="7135130955892390533">نمایش وضعیت</translation>
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
 <translation id="7136009930065337683">درباره «حالت ناشناس» بیشتر بدانید</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">نشانک‌های مدیریت شده</translation>
 <translation id="7275808129217605899">تغذیه سالم</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای تغییر گذرواژه «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="7286908876112207905">جای‌گذاری کردن این محتوا در این سایت مجاز نیست</translation>
 <translation id="7291578327729322058">افزودن گواهینامه رانندگی</translation>
 <translation id="7292031607255951991">نام گیرنده</translation>
 <translation id="7298195798382681320">توصیه می‌شود</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">۲۷۵ × ۱۹۸ میلی‌متر</translation>
 <translation id="7366362069757178916">کنترل‌کننده‌های پرداخت</translation>
 <translation id="7366594738862061263">‏با نحوه محافظت Chrome از گذرواژه‌هایتان آشنا شوید</translation>
+<translation id="7370751048350026847">جای‌گذاری کردن این محتوا در این سایت توصیه نمی‌شود</translation>
 <translation id="7372526636730851647">عکس (براق)</translation>
 <translation id="7372973238305370288">نتیجه جستجو</translation>
 <translation id="7374461526650987610">کنترل‌کننده‌های پروتکل</translation>
@@ -3891,6 +3901,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">کامیون باری و تریلر</translation>
 <translation id="7461924472993315131">پین</translation>
+<translation id="7463068149674892185">این کنش توصیه نمی‌شود</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">بهینه‌سازی و امنیت جاوا اسکریپت</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> متوجه خواهد شد که شما از <ph name="TOP_LEVEL_URL" /> بازدید کرده‌اید</translation>

@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">開始下載。如要查看，請按住 |<ph name="ACCELERATOR" />|。</translation>
 <translation id="1215738931000958575">使用 Google 帳戶中儲存的資訊自動填入密碼、密碼金鑰、地址、付款方式和其他資訊</translation>
 <translation id="1219129156119358924">系統安全性</translation>
+<translation id="1219134100826635117">系統管理員已封鎖這項操作</translation>
 <translation id="1222060260947439312">右匣</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
 <translation id="1225240795350945817">卡號：</translation>
@@ -713,6 +714,7 @@
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2174875517416416684">交易未完成，系統未從你的帳戶中收取任何款項。</translation>
 <translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
+<translation id="217631816678106981">不要貼上</translation>
 <translation id="2178665390943006934">「更新 Chrome」按鈕，啟動後即可透過 Chrome 設定更新 Chrome</translation>
 <translation id="2178904466768126352">你嘗試前往的網站可能有攻擊者，會安裝有害軟體，竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> (<ph name="SITE_DOMAIN_NAME" />)</translation>
@@ -1059,6 +1061,7 @@
 <translation id="2731220418440848219">進一步瞭解你在 Chromium 中的搜尋引擎</translation>
 <translation id="2731382536835015353">44 x 68 吋</translation>
 <translation id="2734319753272419592">你可以允許 Google 根據購物車內的商品搜尋個人化折扣。如果有適用的折扣，系統會自動顯示在購物車上。</translation>
+<translation id="2734797989819862638">不要複製</translation>
 <translation id="273785062888389088">空調與溫控系統</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2742128390261873684">家用裝置自動化</translation>
@@ -1740,6 +1743,8 @@
 <translation id="3869939189466884821">本機檔案將在 <ph name="MINUTES" /> 分鐘後刪除</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
+<translation id="3877603629930976930">不要分享</translation>
+<translation id="3878445208930547646">不允許複製這個網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術與娛樂</translation>
 <translation id="3880589673277376494">網際網路與電信</translation>
@@ -2108,6 +2113,7 @@
 <translation id="4466576951214254884">助學貸款與大專獎助學金</translation>
 <translation id="4467821340016922962">如要退出全螢幕模式並查看下載內容，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />開啟強化防護<ph name="END_ENHANCED_PROTECTION_LINK" />，即可享有 Chrome 最強大的安全防護機制</translation>
+<translation id="4475299370877036544">這項操作可能違反貴機構的政策</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">這個表單不安全，因此系統已停用自動填入功能。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
@@ -3653,6 +3659,7 @@
 <translation id="70705239631109039">你的連線可能有安全漏洞</translation>
 <translation id="7071122206197538392">新比較表</translation>
 <translation id="7075452647191940183">要求過大</translation>
+<translation id="7075896597860500885">不建議複製這個網站的內容</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">來自 <ph name="TYPE_1" /> (已同步的裝置上還有其他網站)</translation>
@@ -3688,6 +3695,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上傳</translation>
 <translation id="7132939140423847331">管理員已禁止複製這個資料。</translation>
+<translation id="7134653428559514680">不建議複製這個網站的內容</translation>
 <translation id="7135130955892390533">顯示狀態</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
 <translation id="7136009930065337683">進一步瞭解無痕模式</translation>
@@ -3776,6 +3784,7 @@
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7275808129217605899">健康飲食</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可變更 Google 帳戶密碼</translation>
+<translation id="7286908876112207905">不允許將這項內容貼到這個網站</translation>
 <translation id="7291578327729322058">新增駕照</translation>
 <translation id="7292031607255951991">收件者名稱</translation>
 <translation id="7298195798382681320">建議採用</translation>
@@ -3816,6 +3825,7 @@
 <translation id="7366117520888504990">198 x 275 公釐</translation>
 <translation id="7366362069757178916">付款處理常式</translation>
 <translation id="7366594738862061263">進一步瞭解 Chrome 如何保護密碼</translation>
+<translation id="7370751048350026847">不建議將這項內容貼到這個網站</translation>
 <translation id="7372526636730851647">相紙 (光面)</translation>
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
@@ -3889,6 +3899,7 @@
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">貨櫃卡車與拖車</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="7463068149674892185">不建議執行這項操作</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 最佳化與安全性</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 會知道你曾造訪 <ph name="TOP_LEVEL_URL" /></translation>
@@ -4907,6 +4918,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不支援的通訊協定。</translation>
 <translation id="918454845714257218">請確認<ph name="SIDE_OF_CARD" />的安全碼，然後再試一次</translation>
 <translation id="9186203289258525843">「將 Chrome 設為預設瀏覽器」按鈕，啟動後即可將 Chrome 設為系統預設瀏覽器</translation>
+<translation id="9186371298532546532">在更多地方使用這個地址</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更這個分頁</translation>
 <translation id="9189789270972826888">點選下方的卡片資料，即可複製及貼上 (如果系統未自動填入)。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
@@ -4922,6 +4934,7 @@
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9209339767782560829">使用登入憑證時發生問題。</translation>
+<translation id="9210152531668884481">我同意</translation>
 <translation id="9210825002219699214">航空旅遊</translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式阻止 Chrome 建立這個網站的安全連線</translation>

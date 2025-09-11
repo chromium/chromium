@@ -243,7 +243,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3703430731944883733">Quản lý nguồn cấp dữ liệu của bạn</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
-<translation id="3708684582558000260">Không cho phép trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
+<translation id="3708684582558000260">Không cho phép các trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="3709818294139939629">Đã xoá quyền truy cập của trang web vào tệp</translation>
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
@@ -472,7 +472,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6234351944623978659">Nhấn vào Ứng dụng trình duyệt &gt; Chrome</translation>
 <translation id="6262191102408817757">Dựa trên thẻ gần đây nhất của bạn</translation>
 <translation id="6262279340360821358">Đã chặn: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
-<translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
+<translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6320088164292336938">Rung</translation>
@@ -595,7 +595,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7881140103901777395">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba. Tuy nhiên, trang web này được phép sử dụng cookie của bên thứ ba để cung cấp các dịch vụ cơ bản dựa trên loại cookie này.\n\nHãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="7891547341794213004">Ẩn thẻ tiếp tục duyệt xem thẻ này</translation>
-<translation id="789722939441020330">Không cho phép trang web tự động tải nhiều tệp xuống</translation>
+<translation id="789722939441020330">Không cho phép các trang web tự động tải nhiều tệp xuống</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
 <translation id="7948081750384205628">Tìm hiểu thêm về <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
@@ -704,6 +704,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="902236149563113779">Các trang web thường theo dõi vị trí của camera để áp dụng những tính năng thực tế tăng cường, chẳng hạn như trong trò chơi hoặc chỉ đường</translation>
 <translation id="9039697262778250930">Bạn có thể bị đăng xuất khỏi các trang web này</translation>
+<translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Xoá cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>

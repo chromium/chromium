@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Atsiliepimai apie produktus jums</translation>
 <translation id="1084365883616172403">„Facebook“ įrašas paskelbtas.</translation>
 <translation id="1085677983426914530">Nepavyko atidaryti „<ph name="FILENAME" />“</translation>
+<translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1096992026380844478">Sinchronizavimo nustatymai bus atkurti pagal paskutinę atsarginę kopiją. <ph name="BEGIN_LINK" />Žr., ką galite sinchronizuoti<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Bendrinkite puslapio turinį su „Gemini“, kad gautumėte aktualesnius atsakymus. Kai bendrinate puslapį su „Gemini“, visas puslapio turinys ir URL siunčiami „Google“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3530206579861815432">Greitai raskite atidarytus ir neseniai uždarytus skirtukus sinchronizuojamuose įrenginiuose.</translation>
 <translation id="3530767473765895035">Tvarkyti paskyras šiame įrenginyje…</translation>
 <translation id="3533436815740441613">Naujas skirtukas</translation>
-<translation id="3533860663366814939">Atidarykite automatinio pildymo ir slaptažodžių nustatymus</translation>
 <translation id="3540141921715814660">Pridėti prie žymių</translation>
 <translation id="3546122170015471515">Žemėlapių peržiūros Google.com</translation>
 <translation id="3547356470684043247">Perskaitykite klientų pateiktus produktų, paslaugų ar funkcijų įvertinimus, kurie padės priimti sprendimus</translation>
@@ -681,6 +681,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3695446226812920698">Sužinokite kaip</translation>
 <translation id="3700134753671613714">Prisijunkite, kad pasiektumėte žymes visuose įrenginiuose.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje ({EMAIL}).}one{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}few{{COUNT} slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}many{{COUNT} slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}other{{COUNT} slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Čia pasirinkite šriftą, teksto dydį ir kt.</translation>
 <translation id="371230970611282515">Numato ir įspėja jus apie pavojingus įvykius, prieš jiems nutinkant.</translation>
 <translation id="372115889256123713">talpykloje išsaugoti failai</translation>
 <translation id="3725081662140949903">Jei nenorite, kad kiti asmenys naudotų jūsų slaptažodį, atidarykite programą „<ph name="APP" />“ ir pakeiskite slaptažodį</translation>

@@ -1605,6 +1605,7 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
 
 Kebijakan perangkat ini setara dengan kebijakan pengguna yang ada, <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, tetapi berlaku untuk profil yang login di layar login.</translation>
 <translation id="2089541797660774692">Aktifkan pelaporan cloud browser terkelola</translation>
+<translation id="2090280024671359587">Izinkan Pengambilan Teks dan tingkatkan kualitas model AI.</translation>
 <translation id="2090712407517297305">Halaman histori Chrome yang diatur ke dalam grup akan dapat dilihat di chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Jika kebijakan disetel ke Aktif, proxy kompresi data akan diizinkan. Jika kebijakan disetel ke Nonaktif, proxy tidak akan diizinkan.
 
@@ -3549,6 +3550,7 @@ Kebijakan ini terbatas untuk 1.000 entri.
 Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="3405997282295704902">Jangan izinkan pengguna menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Jangan tanya pengguna (download langsung dimulai)</translation>
+<translation id="3410534959501660670">Setelan untuk fitur Pengambilan Teks</translation>
 <translation id="3411947169047929182">Mengontrol konfigurasi terkait WebRtc</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
@@ -6431,6 +6433,7 @@ Nilai penanganan yang valid:
 
 Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) untuk melihat deskripsi terperinci tentang semua nilai penanganan.</translation>
 <translation id="5290940294294002042">Tentukan daftar plugin yang dapat diaktifkan atau dinonaktifkan pengguna</translation>
+<translation id="5292069729218406524">Izinkan Pengambilan Teks tanpa meningkatkan kualitas model AI.</translation>
 <translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
 <translation id="5293619885162445352">Izinkan <ph name="PEPPER_NAME" /> menggunakan dekoder video baru.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
@@ -10157,6 +10160,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="7713608076604149344">Batasan download</translation>
 <translation id="7713845740295404764">Laporkan peristiwa login/logout</translation>
 <translation id="7715711044277116530">Persentase yang digunakan untuk menskalakan penundaan layar redup dalam mode presentasi</translation>
+<translation id="7715838249298819250">Jangan izinkan Pengambilan Teks.</translation>
 <translation id="7716020145539921591">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Menyetel kebijakan memungkinkan Anda menentukan URL server proxy. Kebijakan ini hanya berpengaruh jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda memilih <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dengan <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10879,6 +10883,17 @@ Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2)
 
       Kebijakan ini diabaikan untuk akun pengguna reguler.</translation>
 <translation id="8257863622304579015">Aktifkan sandbox layanan jaringan</translation>
+<translation id="825834906982940588">Kebijakan ini mengontrol setelan fitur Pengambilan Teks untuk <ph name="PRODUCT_OS_NAME" />.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8259375588339409826">Chromium dan Google Chrome mendukung rangkaian kebijakan yang sama. Perlu diperhatikan bahwa dokumen ini mungkin berisi kebijakan yang belum dirilis (yaitu entri "Didukung di" merujuk ke versi <ph name="PRODUCT_NAME" /> yang belum dirilis) yang dapat berubah atau dihapus tanpa pemberitahuan, dan tidak ada jaminan apa pun yang diberikan, termasuk tidak ada jaminan sehubungan dengan keamanan dan privasi.
 
 Kebijakan ini khusus ditujukan untuk mengonfigurasi instance internal <ph name="PRODUCT_NAME" /> ke organisasi Anda. Penggunaan kebijakan ini di luar organisasi (misalnya, dalam program yang didistribusikan secara publik) dianggap sebagai malware dan kemungkinan akan diberi label sebagai malware oleh Google dan vendor anti-virus.

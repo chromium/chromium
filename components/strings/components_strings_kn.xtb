@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗಿದೆ. ಅದನ್ನು ನೋಡಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
 <translation id="1215738931000958575">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾಸ್‌ಕೀಗಳು, ವಿಳಾಸಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ಇತರ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="1219129156119358924">ಸಿಸ್ಟಂ ಭದ್ರತೆ</translation>
+<translation id="1219134100826635117">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="1222060260947439312">ಬಲಭಾಗದ ಟ್ರೇ</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ:</translation>
@@ -713,6 +714,7 @@
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2174875517416416684">ನಿಮ್ಮ ವಹಿವಾಟು ಯಶಸ್ವಿಯಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಯಾವುದೇ ಹಣವನ್ನು ಹಿಂಪಡೆದಿಲ್ಲ.</translation>
 <translation id="2175630235841878061">100MB ಗಿಂತ ದೊಡ್ಡ ಗಾತ್ರದ ಫೈಲ್‌ಗಳು ಡೌನ್‌ಲೋಡ್‌ಗೆ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="217631816678106981">ಪೇಸ್ಟ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="2178665390943006934">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ಬಟನ್, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2178904466768126352">ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸಿದ ಸೈಟ್‌ನಲ್ಲಿ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಫೋಟೋಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಗಳಂತಹ ವಿಷಯಗಳನ್ನು ಕದಿಯುವ ಅಥವಾ ಅಳಿಸುವ ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" /> ನಲ್ಲಿ <ph name="SITE_TITLE" /></translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">Chromium ನಲ್ಲಿನ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="2731382536835015353">44 x 68 ಇಂಚು</translation>
 <translation id="2734319753272419592">ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕುವ ಸಲುವಾಗಿ ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು Google ಗೆ ಅನುಮತಿಸಿ. ಲಭ್ಯವಿದ್ದಾಗ, ರಿಯಾಯಿತಿಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.</translation>
+<translation id="2734797989819862638">ಕಾಪಿ ಮಾಡಬೇಡಿ</translation>
 <translation id="273785062888389088">HVAC ಮತ್ತು ಹವಾಮಾನ ನಿಯಂತ್ರಣ</translation>
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2742128390261873684">ಮನೆಯ ಯಾಂತ್ರೀಕರಣ</translation>
@@ -1739,6 +1742,8 @@
 <translation id="3869939189466884821">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳನ್ನು <ph name="MINUTES" /> ನಿಮಿಷಗಳಲ್ಲಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3872834068356954457">ವಿಜ್ಞಾನ</translation>
 <translation id="3875783148670536197">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
+<translation id="3877603629930976930">ಹಂಚಿಕೊಳ್ಳಬೇಡಿ</translation>
+<translation id="3878445208930547646">ಈ ಸೈಟ್‌ನಿಂದ ಕಾಪಿ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="3880456882942693779">ಕಲೆ ಮತ್ತು ಮನರಂಜನೆ</translation>
 <translation id="3880589673277376494">ಇಂಟರ್ನೆಟ್ ಮತ್ತು ಟೆಲಿಕಾಂ</translation>
@@ -2107,6 +2112,7 @@
 <translation id="4466576951214254884">ವಿದ್ಯಾರ್ಥಿ ಸಾಲಗಳು ಮತ್ತು ಕಾಲೇಜು ಹಣಕಾಸು</translation>
 <translation id="4467821340016922962">ಫುಲ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಮತ್ತು ಡೌನ್‌ಲೋಡ್ ನೋಡಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="4473643328224505070">Chrome ನ ಉನ್ನತ ಮಟ್ಟದ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಲು <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
+<translation id="4475299370877036544">ಈ ಕ್ರಿಯೆಯು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳನ್ನು ಉಲ್ಲಂಘಿಸಬಹುದು</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ಈ ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ. ಸ್ವಯಂ ಭರ್ತಿಯನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4477350412780666475">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
@@ -3652,6 +3658,7 @@
 <translation id="70705239631109039">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪೂರ್ಣ ಸುರಕ್ಷತೆಯನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="7071122206197538392">ಹೊಸ ಹೋಲಿಕೆಯ ಟೇಬಲ್</translation>
 <translation id="7075452647191940183">ವಿನಂತಿಯು ತೀರಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
+<translation id="7075896597860500885">ಈ ಸೈಟ್‌ನಿಂದ ಕಾಪಿ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> ನಿಂದ (ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ಇನ್ನಷ್ಟು)</translation>
@@ -3687,6 +3694,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7132939140423847331">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಡೇಟಾವನ್ನು ನಕಲಿಸದಂತೆ ನಿಷೇಧಿಸಿದ್ದಾರೆ.</translation>
+<translation id="7134653428559514680">ಈ ಸೈಟ್‌ನಿಂದ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7135130955892390533">ಕಾರ್ಯನೀತಿ ಸ್ಥಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7135814714616751706">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7136009930065337683">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -3775,6 +3783,7 @@
 <translation id="7275334191706090484">ನಿರ್ವಹಿಸಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="7275808129217605899">ಆರೋಗ್ಯಕರ ಆಹಾರಸೇವನೆ</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="7286908876112207905">ಈ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಈ ಸೈಟ್‌ನಲ್ಲಿ ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7291578327729322058">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಸೇರಿಸಿ</translation>
 <translation id="7292031607255951991">ಸ್ವೀಕೃತದಾರರ ಹೆಸರು</translation>
 <translation id="7298195798382681320">ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ</translation>
@@ -3815,6 +3824,7 @@
 <translation id="7366117520888504990">198 x 275 ಮಿಮೀ</translation>
 <translation id="7366362069757178916">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳು</translation>
 <translation id="7366594738862061263">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಹೇಗೆ ರಕ್ಷಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
+<translation id="7370751048350026847">ಈ ಕಂಟೆಂಟ್ ಅನ್ನು ಈ ಸೈಟ್‌ನಲ್ಲಿ ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7372526636730851647">ಫೋಟೋ (ಹೊಳಪು)</translation>
 <translation id="7372973238305370288">ಹುಡುಕಾಟ ಫಲಿತಾಂಶ</translation>
 <translation id="7374461526650987610">ಪ್ರೊಟೊಕಾಲ್ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳು</translation>
@@ -3887,6 +3897,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ಕಾರ್ಗೋ ಟ್ರಕ್‌ಗಳು ಮತ್ತು ಟ್ರೇಲರ್‌ಗಳು</translation>
 <translation id="7461924472993315131">ಪಿನ್</translation>
+<translation id="7463068149674892185">ಈ ಕ್ರಿಯೆಯನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್‌ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ಗೆ ನೀವು <ph name="TOP_LEVEL_URL" /> ಗೆ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ ಎಂದು ತಿಳಿಯುತ್ತದೆ</translation>

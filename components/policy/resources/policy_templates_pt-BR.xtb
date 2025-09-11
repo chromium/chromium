@@ -1603,6 +1603,7 @@ Normalmente, essa política fica desativada como defesa contra phishing.</transl
 
 A política do dispositivo é equivalente à política do usuário <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, mas se aplica ao perfil de login na tela de login.</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
+<translation id="2090280024671359587">Permitir a Captura de Texto e aprimorar os modelos de IA.</translation>
 <translation id="2090712407517297305">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
@@ -3538,6 +3539,7 @@ Esta política tem um limite de 1.000 entradas.
 Se a política for deixada sem definição, a navegação no navegador será bloqueada enquanto a VPN sempre ativada com modo restrito estiver ativada e não conectada.</translation>
 <translation id="3405997282295704902">Não permitir o uso do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Não perguntar ao usuário (o download começa imediatamente)</translation>
+<translation id="3410534959501660670">Configurações do recurso Captura de Texto</translation>
 <translation id="3411947169047929182">Controla a configuração relacionada ao WebRTC</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
@@ -6417,6 +6419,7 @@ Valores de processamento válidos:
 
 Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2, link em inglês) para ver uma descrição detalhada de todos os valores de processamento.</translation>
 <translation id="5290940294294002042">Especificar uma lista de plug-ins que podem ser ativados ou desativados pelo usuário</translation>
+<translation id="5292069729218406524">Permitir a Captura de Texto sem aprimorar os modelos de IA.</translation>
 <translation id="5293285950307241933">Apagar todos os dados locais de usuário</translation>
 <translation id="5293619885162445352">Permitir que o <ph name="PEPPER_NAME" /> use o novo decodificador de vídeo.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
@@ -10129,6 +10132,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 <translation id="7713608076604149344">Restrições de downloads</translation>
 <translation id="7713845740295404764">Informar eventos de login/logout</translation>
 <translation id="7715711044277116530">Percentual pelo qual calcular o intervalo de escurecimento da tela no modo de apresentação</translation>
+<translation id="7715838249298819250">Não permitir a Captura de Texto.</translation>
 <translation id="7716020145539921591">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, você poderá especificar o URL do servidor proxy. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10857,6 +10861,17 @@ Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sec
 
       Esta política é ignorada para contas de usuário comuns.</translation>
 <translation id="8257863622304579015">Ativar o sandbox de serviço de rede</translation>
+<translation id="825834906982940588">Esta política controla as configurações do recurso Captura de Texto para o <ph name="PRODUCT_OS_NAME" />.
+
+Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para aprimorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para aperfeiçoar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para aprimorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8259375588339409826">Tanto o Chromium como o Google Chrome são compatíveis com o mesmo conjunto de políticas. É possível que este documento inclua políticas não lançadas (ou seja, a entrada "Compatível com" se refere a uma versão ainda não lançada do <ph name="PRODUCT_NAME" />), que estão sujeitas a alteração ou remoção sem aviso prévio e para as quais nenhuma garantia de qualquer tipo é fornecida, incluindo garantias com relação às propriedades de privacidade e segurança delas.
 
 Essas políticas devem ser usadas estritamente para configurar instâncias do <ph name="PRODUCT_NAME" /> internas à sua organização. O uso dessas políticas fora da sua organização (por exemplo, em um programa distribuído publicamente) é considerado malware e provavelmente será identificado como malware pelo Google e por fornecedores de programas antivírus.

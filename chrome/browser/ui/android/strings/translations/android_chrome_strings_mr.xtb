@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
 <translation id="250020030759455918">तुम्हाला Chrome मध्ये तुमची <ph name="SITE_NAME" /> साइन-इन स्थिती, ब्राउझिंग डेटा आणि साइट डेटा दिसेल</translation>
-<translation id="2502798195266898572">वाचन मोडमधील तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> इंस्टॉल करत आहे…</translation>
 <translation id="2512234228327349533">खरेदी करण्याचे पर्याय शोधा</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षितता आणि डेटा संकलनाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पहा</translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">तुम्ही Chrome ची टूल वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
-<translation id="6267063201726531683">वाचन मोड तळाशी असलेली शीट</translation>
 <translation id="6277522088822131679">पेज प्रिंट करताना एक समस्या आली. कृपया पुन्‍हा प्रयत्न करा.</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6291294824436685757">ब्राउझिंग डेटा हटवा; हटवण्यासाठी डेटा निवडा</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
 <translation id="629730747756840877">खाते</translation>
-<translation id="6300697579369314762">वाचन मोडमधील तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="6301526076346731664">डेव्हलपर टूल उघडा</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6307241780749477694">तुम्हाला या डिव्हाइसवर तुमचे सर्व पासवर्ड मिळवण्यासाठी तुम्हीच आहात याची पडताळणी करा</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">पासफ्रेझ एन्क्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
-<translation id="7151332203500147130">वाचन मोडमधील तळाशी असलेली शीट बंद केली आहे</translation>
 <translation id="7165972437814027679">Chrome काही फाइल का ब्लॉक करते याबद्दल अधिक जाणून घ्या</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> म्हणून साइन इन केले. सेटिंग उघडते.</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>

@@ -129,6 +129,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1212527389003717329">Download started. To see it, press and hold |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Use info saved in your Google Account to autofill passwords, passkeys, addresses, payment methods and other info</translation>
 <translation id="1219129156119358924">System Security</translation>
+<translation id="1219134100826635117">Your administrator has blocked this action</translation>
 <translation id="1222060260947439312">Right tray</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
 <translation id="1225240795350945817">Card number:</translation>
@@ -714,6 +715,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2174875517416416684">Your transaction didn't go through. No funds were withdrawn from your account.</translation>
 <translation id="2175630235841878061">Files over 100MB are not available for download</translation>
+<translation id="217631816678106981">Don't paste</translation>
 <translation id="2178665390943006934">Update Chrome button, activate to update Chrome from your Chrome settings</translation>
 <translation id="2178904466768126352">Attackers on the site that you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages or credit card numbers.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> on <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2731220418440848219">Learn more about your search engine in Chromium</translation>
 <translation id="2731382536835015353">44 in x 68 in</translation>
 <translation id="2734319753272419592">Let Google use your baskets to search for personalised discounts. When available, discounts will automatically show up on your baskets.</translation>
+<translation id="2734797989819862638">Don't copy</translation>
 <translation id="273785062888389088">HVAC and Climate Control</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Home automation</translation>
@@ -1742,6 +1745,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3869939189466884821">Your local files will be deleted in <ph name="MINUTES" /> minutes</translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
+<translation id="3877603629930976930">Don't share</translation>
+<translation id="3878445208930547646">Copying from this site is not allowed</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Arts and entertainment</translation>
 <translation id="3880589673277376494">Internet and telecom</translation>
@@ -2110,6 +2115,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4466576951214254884">Student loans and college financing</translation>
 <translation id="4467821340016922962">To exit full screen and see download, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /> to get Chrome's highest level of security</translation>
+<translation id="4475299370877036544">This action might violate your organisation's policies</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
@@ -3655,6 +3661,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="70705239631109039">Your connection is not fully secure</translation>
 <translation id="7071122206197538392">New comparison table</translation>
 <translation id="7075452647191940183">Request is too large</translation>
+<translation id="7075896597860500885">Copying from this site is not recommended</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">From <ph name="TYPE_1" /> (more on synced devices)</translation>
@@ -3690,6 +3697,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Blocked upload</translation>
 <translation id="7132939140423847331">Your admin has prohibited this data from being copied.</translation>
+<translation id="7134653428559514680">Sharing from this site is not recommended</translation>
 <translation id="7135130955892390533">Show status</translation>
 <translation id="7135814714616751706">Search shortcuts</translation>
 <translation id="7136009930065337683">Learn more about Incognito</translation>
@@ -3778,6 +3786,7 @@ Additional details:
 <translation id="7275334191706090484">Managed Bookmarks</translation>
 <translation id="7275808129217605899">Healthy eating</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to change your Google Account password</translation>
+<translation id="7286908876112207905">Pasting this content to this site is not allowed</translation>
 <translation id="7291578327729322058">Add driving licence</translation>
 <translation id="7292031607255951991">Recipient name</translation>
 <translation id="7298195798382681320">Recommended</translation>
@@ -3818,6 +3827,7 @@ Additional details:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Payment handlers</translation>
 <translation id="7366594738862061263">Learn about how Chrome protects your passwords</translation>
+<translation id="7370751048350026847">Pasting this content to this site is not recommended</translation>
 <translation id="7372526636730851647">Photo (glossy)</translation>
 <translation id="7372973238305370288">search result</translation>
 <translation id="7374461526650987610">Protocol Handlers</translation>
@@ -3891,6 +3901,7 @@ Additional details:
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Cargo trucks and trailers</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="7463068149674892185">This action is not recommended</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript optimisation and security</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> will know that you visited <ph name="TOP_LEVEL_URL" /></translation>

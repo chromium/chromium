@@ -703,6 +703,7 @@
 <translation id="9019902583201351841">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="902236149563113779">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ಗೇಮ್‌ಗಳು ಅಥವಾ ಹೆಡ್-ಅಪ್ ನಿರ್ದೇಶನಗಳಂತಹ AR ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಸ್ಥಾನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತವೆ</translation>
 <translation id="9039697262778250930">ನೀವು ಈ ಸೈಟ್‌ಗಳಿಂದ ಸೈನ್ ಔಟ್ ಆಗಿರಬಹುದು</translation>
+<translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9106233582039520022">ಕುಕೀಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}}</translation>

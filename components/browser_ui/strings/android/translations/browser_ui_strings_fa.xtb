@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="902236149563113779">‏سایت‌ها معمولاً موقعیت دوربین را برای ارائه ویژگی‌های AR، مانند مسیر هشدارهای اولیه یا بازی‌ها، ردیابی می‌کنند</translation>
 <translation id="9039697262778250930">ممکن است از سیستم این سایت‌ها خارج شوید</translation>
+<translation id="9065203028668620118">ویرایش</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9106233582039520022">کوکی‌ها حذف شود؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}}</translation>

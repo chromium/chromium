@@ -707,6 +707,7 @@
 <translation id="9019902583201351841">يديره والداك</translation>
 <translation id="902236149563113779">تتتبّع المواقع الإلكترونية عادةً موضع الكاميرا لتتيح ميزات الواقع المعزّز، مثل اتجاهات الألعاب أو التنبيه</translation>
 <translation id="9039697262778250930">قد يتم تسجيل خروجك من هذه المواقع الإلكترونية.</translation>
+<translation id="9065203028668620118">تعديل</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9106233582039520022">حذف ملفّات تعريف الارتباط؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>

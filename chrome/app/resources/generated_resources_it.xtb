@@ -245,6 +245,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1162479191445552288">Apri all'avvio</translation>
 <translation id="1163931534039071049">&amp;Visualizza sorgente frame</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
+<translation id="1164286072721995435">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
@@ -335,7 +336,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1218015446623563536">Elimina Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali reti mobili, Wi-Fi e sensori per stabilire la posizione del dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione tramite la disattivazione dell'impostazione Posizione principale del dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219134100826635117">L'amministratore ha bloccato questa azione</translation>
 <translation id="1219219114431716687">Torta alla frutta</translation>
 <translation id="122082903575839559">Algoritmo di firma certificato</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con crittografia RSA</translation>
@@ -425,6 +425,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1277020343994096713">Crea un nuovo PIN che sia diverso da quello attuale</translation>
 <translation id="1277597051786235230">&amp;Cerca "<ph name="SEARCH_TERMS" />" su <ph name="SEARCH_ENGINE" /> in una nuova scheda</translation>
 <translation id="127849925363482083">Premi nuovamente <ph name="SHORTCUT_TEXT" /> per chiudere la scheda bloccata</translation>
+<translation id="1278542245784398460">Fai clic con il tasto destro del mouse su questa scheda e seleziona "Aggiungi scheda a nuova visualizzazione divisa"</translation>
 <translation id="1278859221870828664">Esamina le app e i servizi offerti da Google Play</translation>
 <translation id="1279024913354609713">Non consentire</translation>
 <translation id="127946606521051357">Dispositivo nelle vicinanze con condivisione attiva</translation>
@@ -530,6 +531,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1353980523955420967">Impossibile trovare il file PPD. Assicurati che il Chromebook sia online e riprova.</translation>
 <translation id="1354045473509304750">Continua a consentire a <ph name="HOST" /> di utilizzare e spostare la videocamera</translation>
 <translation id="1354148503392558902">Modifica della password in corso…</translation>
+<translation id="1354943694624358993">Condividi sempre la scheda corrente</translation>
 <translation id="1355088139103479645">Vuoi eliminare tutti i dati?</translation>
 <translation id="1355088659320425659">Cronologia e schede</translation>
 <translation id="1356376170199999104">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva il microfono usando l'interruttore fisico.</translation>
@@ -732,6 +734,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1503392482221435031">Invia automaticamente statistiche sull'utilizzo a Google. Puoi attivare o disattivare i report sugli arresti anomali nelle impostazioni del dispositivo.</translation>
 <translation id="1503556098270577657">Hai eseguito l'accesso a <ph name="USER_EMAIL" /> usando il tuo smartphone Android</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Fissa visualizzazione divisa</translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">esportare le password</translation>
 <translation id="1505654899813338756">Puoi raggruppare le schede per tenere insieme le pagine correlate e salvarle su tutti i tuoi dispositivi</translation>
@@ -876,6 +879,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1597806446183714225">Migliora la qualità audio in modo che le voci risultino naturali e chiare.</translation>
 <translation id="1598163867407640634">Utilizza <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Gli aggiornamenti sono stati disattivati dall'amministratore.</translation>
+<translation id="1598293830962835699">Crea rapidamente una visualizzazione divisa quando ti serve</translation>
 <translation id="1600857548979126453">Accesso al backend del debugger delle pagine</translation>
 <translation id="1601481906560916994">Escludi il sito</translation>
 <translation id="1601560923496285236">Applica</translation>
@@ -1374,7 +1378,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1933489278505808700">Lettura e modifica consentite</translation>
 <translation id="1935303383381416800">Possono accedere alla tua posizione</translation>
 <translation id="193565226207940518">Strumento di assistenza</translation>
-<translation id="1935995810530254458">Copia comunque</translation>
 <translation id="1936157145127842922">Mostra nella cartella</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Pagina aggiunta all'elenco di lettura}other{Pagine aggiunte all'elenco di lettura}}</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
@@ -1718,7 +1721,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2175526076681939329">Utilizza tasti principali</translation>
 <translation id="217576141146192373">Impossibile aggiungere la stampante. Controlla la configurazione della stampante e riprova.</translation>
 <translation id="2175927920773552910">Codice QR</translation>
-<translation id="217631816678106981">Non incollare</translation>
 <translation id="2177950615300672361">Scheda di navigazione in incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178545675770638239">Seleziona password</translation>
@@ -2542,7 +2544,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2731971182069536520">La prossima volta che riavvii il dispositivo, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali.</translation>
 <translation id="2732134891301408122">Contenuti aggiuntivi <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Mi piace invia un feedback negativo relativo a questi risultati.</translation>
-<translation id="2734797989819862638">Non copiare</translation>
 <translation id="27349076983469322">Sfondo chiaro</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
 <translation id="2737363922397526254">Comprimi...</translation>
@@ -3098,6 +3099,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3122883569442693641">Altri dettagli</translation>
 <translation id="3124111068741548686">Handle UTENTE</translation>
 <translation id="3124332159330678621">Personalizza Chrome per dare un nuovo look al tuo browser</translation>
+<translation id="3125361247594231799">Fissalo per la prossima volta</translation>
 <translation id="3125816458150005808">Puoi staccarla e aprirla dal menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Per evitare problemi di ricarica e prestazioni, usa un alimentatore Dell o USB Type-C compatibile.</translation>
@@ -4215,8 +4217,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3876219572815410515">Finestre ridimensionate in alto</translation>
 <translation id="3877075909000773256">Impostazioni di Condivisione nelle vicinanze per il dispositivo di <ph name="USER_NAME" />, con l'account <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Scegli di mostrare la memoria utilizzata e le immagini nella scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
-<translation id="3877603629930976930">Non condividere</translation>
-<translation id="3878445208930547646">La copia da questo sito non è consentita</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3880513902716032002">Alcune delle pagine che visiti sono precaricate</translation>
 <translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4824,6 +4824,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4310139701823742692">Il formato del file è sbagliato. Controlla il file PPD e riprova.</translation>
 <translation id="4310496734563057511">Se condividi questo dispositivo con altre persone, puoi attivare Windows Hello per verificare la tua identità ogni volta che usi una password salvata</translation>
 <translation id="431076611119798497">&amp;Dettagli</translation>
+<translation id="431127643228811252">La visualizzazione divisa semplifica il multitasking</translation>
 <translation id="4311284648179069796">Lettura e modifica non consentite</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Account Google}other{<ph name="EXTRA_ACCOUNTS" /> Account Google}}</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
@@ -5045,7 +5046,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4473559657152613417">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a nuovo gruppo"</translation>
 <translation id="4473996011558324141">Stima del tempo in corso…</translation>
 <translation id="4474155171896946103">Aggiungi tutte le schede ai preferiti...</translation>
-<translation id="4475299370877036544">Questa azione potrebbe violare le norme della tua organizzazione</translation>
 <translation id="4476198534886170024">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per eseguire la scansione di questo codice, puoi usare un'app scanner QR sul telefono oppure alcune app fotocamera.</translation>
@@ -5729,6 +5729,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4956593309300508411">Interrompere la condivisione?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvare in una cartella solo su questo dispositivo?</translation>
+<translation id="4958916254663453555">La scheda corrente verrà condivisa automaticamente quando apri Gemini in Chrome. I contenuti completi e l'URL della scheda corrente vengono inviati a Google.</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5838,6 +5839,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5045367873597907704">Informazioni dispositivi HID</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="504561833207953641">Apertura nella sessione del browser esistente.</translation>
+<translation id="5047544190872578914">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento.</translation>
 <translation id="504953514574706691">Scheda esclusa dal gruppo suggerito</translation>
 <translation id="5050330054928994520">Sintesi vocale</translation>
 <translation id="5051461727068120271">Scarica file non verificato</translation>
@@ -7798,7 +7800,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6455894534188563617">&amp;Nuova cartella</translation>
 <translation id="645705751491738698">Continua a bloccare JavaScript</translation>
 <translation id="6457572529564180082">Impossibile avviare <ph name="APP_NAME" /></translation>
-<translation id="6458606150257356946">Incolla comunque</translation>
 <translation id="6458701200018867744">Caricamento non riuscito (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizza selezione per Trova</translation>
 <translation id="6459799433792303855">Finestra attiva spostata in un altro schermo.</translation>
@@ -8494,6 +8495,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6931690462168617033">Intensità clic</translation>
 <translation id="6933321725007230600">Attiva la &amp;sincronizzazione…</translation>
 <translation id="693459579445775904">I file vocali vengono condivisi tra gli utenti per risparmiare spazio su disco</translation>
+<translation id="6934597021412437058">Ora puoi usare la visualizzazione divisa per confrontare, svolgere più attività contemporaneamente e altro ancora</translation>
 <translation id="6935031746833428401">Scopri di più su Gestione dispositivi</translation>
 <translation id="6935286146439255109">Vassoio carta mancante</translation>
 <translation id="6938386202199793006">Hai una stampante salvata.</translation>
@@ -8550,7 +8552,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="697508444536771064">Arresta Linux</translation>
 <translation id="6978121630131642226">Motori di ricerca</translation>
-<translation id="6978236010531171013">Condividi comunque</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979041727349121225">Risparmio energetico</translation>
 <translation id="6979044105893951891">Avvio e chiusura di sessioni Ospite gestite</translation>
@@ -8695,7 +8696,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7074703793383805632">Gruppo <ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con crittografia RSA</translation>
 <translation id="7075625805486468288">Gestisci certificati e impostazioni HTTPS/SSL</translation>
-<translation id="7075896597860500885">La copia da questo sito non è consigliata</translation>
 <translation id="7076875098323397992">Impossibile avviare l'upgrade</translation>
 <translation id="7077751457066325012">Visualizza e personalizza le scorciatoie da tastiera</translation>
 <translation id="7077829361966535409">Caricamento della pagina di accesso non riuscito utilizzando le impostazioni proxy correnti. <ph name="GAIA_RELOAD_LINK_START" />Prova ad accedere di nuovo<ph name="GAIA_RELOAD_LINK_END" /> o utilizza altre <ph name="PROXY_SETTINGS_LINK_START" />impostazioni proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -8769,7 +8769,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7131896909366247105"><ph name="APP_NAME" />, in attesa</translation>
 <translation id="7132886488919643383">Usa Google AI per ricevere assistenza nella lettura, nella scrittura e nella creazione</translation>
 <translation id="7134098520442464001">Riduci le dimensioni del testo</translation>
-<translation id="7134653428559514680">La condivisione da questo sito non è consigliata</translation>
 <translation id="7134951043985383439">File scaricato pericoloso</translation>
 <translation id="7135729336746831607">Attivare il Bluetooth?</translation>
 <translation id="7136694880210472378">Imposta come predefinito</translation>
@@ -8967,7 +8966,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e mantenere privati i dati.</translation>
 <translation id="7285008278689343502">Parco nazionale del Grand Teton</translation>
 <translation id="7286867818472074330">Seleziona passkey</translation>
-<translation id="7286908876112207905">Incollare questi contenuti nel sito non è consentito</translation>
 <translation id="7287143125007575591">Accesso negato.</translation>
 <translation id="7287411021188441799">Ripristina sfondo predefinito</translation>
 <translation id="7287949630503871403">Dati archiviati nell'app</translation>
@@ -9091,7 +9089,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="736877393389250337">Impossibile aprire <ph name="URL" /> in <ph name="ALTERNATIVE_BROWSER_NAME" />. Contatta l'amministratore di sistema.</translation>
 <translation id="7368927539449986686">Modifica ricerca su sito</translation>
 <translation id="7370592524170198497">EAP ethernet:</translation>
-<translation id="7370751048350026847">Incollare questi contenuti nel sito non è consigliato</translation>
 <translation id="7374376573160927383">Gestisci i dispositivi USB</translation>
 <translation id="7376124766545122644">Impossibile utilizzare questo link. Controlla che il link inizi con "http://" o "https://" per riprovare.</translation>
 <translation id="7376553024552204454">Evidenzia il puntatore del mouse durante lo spostamento</translation>
@@ -9230,7 +9227,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7460045493116006516">Tema installato attualmente</translation>
 <translation id="7461924472993315131">Fissa</translation>
 <translation id="746216226901520237">La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
-<translation id="7463068149674892185">Questa azione non è consigliata</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">La tua organizzazione gestisce il modo in cui possono essere utilizzati i dati raccolti da queste funzionalità.</translation>
 <translation id="7464645554245611385">Ultimo aggiornamento a questa scheda</translation>
@@ -9309,6 +9305,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Chiudere scheda ed eliminare gruppo?}=1{Chiudere scheda ed eliminare gruppo?}other{Chiudere le schede ed eliminare i gruppi?}}</translation>
 <translation id="7509097596023256288">Impostazione della gestione in corso…</translation>
 <translation id="7509539379068593709">Disinstalla app</translation>
+<translation id="7513438205469584978">Suggerimenti basati sulla tua <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />attività su Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copia sul tuo dispositivo</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7514417110442087199">Aggiungi assegnazione</translation>
@@ -9595,6 +9592,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7705276765467986571">Impossibile caricare il modello Preferiti.</translation>
 <translation id="7705334495398865155">Seleziona casualmente l'ID hardware (BSSID) per impedire ad altre persone di tracciare questo dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Affianca le pagine nella stessa scheda per confrontare facilmente le opzioni e altro ancora</translation>
 <translation id="7707108266051544351">A questo sito è stato impedito l'uso dei sensori di movimento.</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="770831926727930011">I dati locali sono protetti dalla password precedente. Inseriscila per recuperarli.</translation>
@@ -9805,7 +9803,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
 <translation id="7851457902707056880">L'accesso è consentito soltanto all'account del proprietario. Riavvia ed esegui l'accesso con l'account del proprietario. Il computer si riavvierà automaticamente tra 30 secondi.</translation>
 <translation id="7851716364080026749">Impedisci sempre l'accesso a webcam e microfono</translation>
-<translation id="7851720427268294554">Parser IPP</translation>
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
 <translation id="785371335555334021">Fai clic per uscire da <ph name="TITLE" /></translation>
 <translation id="7853747251428735">Altri strume&amp;nti</translation>

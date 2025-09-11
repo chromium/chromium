@@ -85,6 +85,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1880677175115548835">Izaberite tekst</translation>
 <translation id="1919130412786645364">Dozvoli prijavljivanje u Chrome</translation>
 <translation id="1953553007165777902">Preuzima se... Još <ph name="MINUTE" /> min</translation>
+<translation id="1979600810166324878">Budite bezbedniji u pokretu uz poboljšano bezbedno pregledanje u Chrome-u za iOS</translation>
 <translation id="2001586581944147178">Otežajte onima koji imaju pristup vašem internet saobraćaju da vide koje sajtove posećujete. Chrome koristi bezbednu vezu da bi tražio IP adresu sajta u DNS-u (sistemu imena domena).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak više nije podržan. Chrome preporučuje da ga uklonite.}one{Ovi dodaci više nisu podržani. Chrome preporučuje da ih uklonite.}few{Ovi dodaci više nisu podržani. Chrome preporučuje da ih uklonite.}other{Ovi dodaci više nisu podržani. Chrome preporučuje da ih uklonite.}}</translation>
 <translation id="2018528049276128029">Svaki profil zadržava sopstvene Chrome podatke, poput obeleživača, istorije, lozinki i drugog sadržaja</translation>
@@ -383,6 +384,7 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 
 Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5468572406162360320">Da bi poboljšao ove funkcije, Chrome Google-u šalje vaše interakcije sa njima. Osobe koje pregledaju mogu da čitaju, obrađuju i komentarišu ove podatke.</translation>
+<translation id="5510398294750420479">Preuzmite Chrome na telefon da biste dodali još jedan nivo zaštite kada ste u pokretu</translation>
 <translation id="5524761631371622910">Dok probni periodi traju i ako vas je Chrome nasumično postavio u aktivni probni period, istorija pregledanja utiče na oglase koje vidite i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome briše interesovanja svakog meseca čim postanu dostupna.</translation>
 <translation id="5524890928877629608">gornji levi ugao oblasti pretrage: ulevo <ph name="LEFT" />%, nagore <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Ubrzajte Chrome</translation>
@@ -495,6 +497,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6760235774835597023">Ubrzava sajtove uz Chrome mehanizam V8, ali čini Chrome malo manje otpornim na napade. Ovo podešavanje je uključeno.</translation>
 <translation id="677276454032249905">Želite li ipak da zatvorite Chrome?</translation>
 <translation id="6794858689789885890">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chrome</translation>
+<translation id="6800285125190089494">Brže se prijavljujte na sajtove pomoću sačuvanih lozinki za Chrome na iOS-u</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="683440813066116847">Pravilo za dolazni saobraćaj za Google Chrome Canary da biste omogućili mDNS saobraćaj.</translation>
 <translation id="684888714667046800">Povezivanje sa internetom nije uspelo. Ako koristite zaštitni zid, proverite da li se <ph name="PRODUCT_EXE_NAME" /> nalazi na listi dozvoljenih.</translation>

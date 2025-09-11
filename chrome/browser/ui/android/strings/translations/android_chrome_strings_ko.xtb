@@ -307,7 +307,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2496180316473517155">방문 기록</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
-<translation id="2502798195266898572">읽기 모드 하단 시트가 전체 높이로 열림</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> 설치 중...</translation>
 <translation id="2512234228327349533">구매 옵션 검색</translation>
 <translation id="2513403576141822879">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
@@ -1128,13 +1127,11 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6255809143828972562">Chrome의 도구로 안전하게 탐색하고 제어할 수 있습니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6264485186158353794">안전한 페이지로 돌아가기</translation>
-<translation id="6267063201726531683">읽기 모드 하단 시트</translation>
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6291294824436685757">인터넷 사용 기록을 삭제합니다. 삭제할 데이터를 선택하세요</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="629730747756840877">계정</translation>
-<translation id="6300697579369314762">읽기 모드 하단 시트가 절반 높이로 열림</translation>
 <translation id="6301526076346731664">개발자 도구 열기</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6307241780749477694">이 기기에서 모든 비밀번호를 가져오려면 본인 인증을 진행하세요.</translation>
@@ -1353,7 +1350,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="71503698506017927">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
-<translation id="7151332203500147130">읽기 모드 하단 시트가 닫힘</translation>
 <translation id="7165972437814027679">Chrome에서 일부 파일을 차단하는 이유 자세히 알아보기</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>

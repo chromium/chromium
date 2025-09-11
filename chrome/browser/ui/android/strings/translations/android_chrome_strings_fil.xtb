@@ -307,7 +307,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2496180316473517155">History ng Pag-browse</translation>
 <translation id="2497852260688568942">Na-disable ng iyong administrator ang pag-sync</translation>
 <translation id="250020030759455918">Makikita mo sa Chrome ang iyong status ng pag-sign in sa <ph name="SITE_NAME" />, data mula sa pag-browse, at data ng site</translation>
-<translation id="2502798195266898572">Binuksan nang buo ang bottom sheet ng Reading mode</translation>
 <translation id="2510106555128151389">Ini-install ang <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Maghanap ng mga opsyon sa pagbili</translation>
 <translation id="2513403576141822879">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync at mga serbisyo ng Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6255809143828972562">Gamit ang mga tool mula sa Chrome, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
 <translation id="6264485186158353794">Bumalik sa safety</translation>
-<translation id="6267063201726531683">Reading mode bottom sheet</translation>
 <translation id="6277522088822131679">Nagkaproblema sa pag-print sa pahina. Pakisubukang muli.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Mag-delete ng data mula sa pag-browse; piliin ang data na ide-delete</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="629730747756840877">Account</translation>
-<translation id="6300697579369314762">Binuksan nang kalahati ang bottom sheet ng Reading mode</translation>
 <translation id="6301526076346731664">Buksan ang Mga Tool ng Developer</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
@@ -1353,7 +1350,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="71503698506017927">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Isinara ang bottom sheet ng Reading mode</translation>
 <translation id="7165972437814027679">Alamin pa kung bakit bina-block ng Chrome ang ilang file</translation>
 <translation id="7168323970702333693">Naka-sign in bilang <ph name="USER_NAME" />. Binubuksan ang mga setting.</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>

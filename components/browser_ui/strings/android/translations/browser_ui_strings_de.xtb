@@ -364,7 +364,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5068293087784369013">Seite „Neuer Tab“ personalisieren</translation>
 <translation id="5091013926750941408">Mobile Website</translation>
-<translation id="509133520954049755">Desktop-Ansicht anzeigen</translation>
+<translation id="509133520954049755">Desktop-Ansicht anfordern</translation>
 <translation id="5091663350197390230">Wenn dieser Schalter aktiviert ist, können Websites JavaScript verwenden. Wenn er deaktiviert ist, können Websites JavaScript nicht verwenden.</translation>
 <translation id="5099358668261120049">Dadurch werden alle von <ph name="ORIGIN" /> oder der zugehörigen App auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
 <translation id="5100237604440890931">Minimiert – zum Maximieren klicken</translation>
@@ -408,7 +408,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="560980142378233747">Das bedeutet, dass die Websitefunktionen wie erwartet funktionieren sollten, der Browserschutz aber möglicherweise geringer ist. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Ansicht mit Karten auf der Seite „Neuer Tab“ am unteren Rand</translation>
 <translation id="5632485077360054581">So gehts</translation>
-<translation id="5649053991847567735">Auto-Downloads</translation>
+<translation id="5649053991847567735">Automatische Downloads</translation>
 <translation id="5668404140385795438">Website-Anfrage zum Verhindern des Vergrößerns übergehen</translation>
 <translation id="5668843533782548925">Websites sind langsamer, aber sicherer</translation>
 <translation id="5677928146339483299">Blockiert</translation>
@@ -705,6 +705,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
 <translation id="902236149563113779">Websites verfolgen deine Kameraposition normalerweise, um AR-Funktionen beispielsweise in Spielen oder die Wegbeschreibung auf dem Display umzusetzen</translation>
 <translation id="9039697262778250930">Du wirst möglicherweise von diesen Websites abgemeldet</translation>
+<translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Cookies löschen?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}}</translation>

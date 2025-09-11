@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="902236149563113779">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານສຳລັບຄຸນສົມບັດ AR ເຊັ່ນ: ເກມ ຫຼື ການແນະນຳເສັ້ນທາງລ່ວງໜ້າ</translation>
 <translation id="9039697262778250930">ທ່ານອາດຖືກພາອອກຈາກລະບົບຈາກເວັບໄຊເຫຼົ່ານີ້</translation>
+<translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">ລຶບຄຸກກີ້ອອກບໍ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}}</translation>

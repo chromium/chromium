@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Produktuen iritziak zuretzat</translation>
 <translation id="1084365883616172403">Mezua Facebook-en argitaratu da.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ezin izan da ireki</translation>
+<translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
 <translation id="1096992026380844478">Sinkronizazio-ezarpenak azken babeskopiaren arabera leheneratuko dira. <ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="110491332089958282">Erantzun egokiagoak lortzeko, partekatu orriaren edukia Gemini-rekin. Gemini-rekin orri bat partekatzen duzunean, Google-ren eduki osoa eta URLa Google-ra bidaliko dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3530206579861815432">Aurkitu bizkor sinkronizatutako gailuetan irekita dauzkazun edo duela gutxi itxi dituzun fitxak.</translation>
 <translation id="3530767473765895035">Kudeatu gailuko kontuak…</translation>
 <translation id="3533436815740441613">Fitxa berria</translation>
-<translation id="3533860663366814939">Ireki Autofill &amp; Password settings (betetze automatikoaren eta pasahitzen ezarpenak)</translation>
 <translation id="3540141921715814660">Gehitu laster-marketan</translation>
 <translation id="3546122170015471515">Maps-en aurrebista Google.com helbidean</translation>
 <translation id="3547356470684043247">Irakurri bezeroek produktuei, zerbitzuei edo esperientziei buruz bidali dituzten balorazioak, erabakiak hartzeko informazio gehiago izan dezazun</translation>

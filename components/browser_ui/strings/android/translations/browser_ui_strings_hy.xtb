@@ -705,6 +705,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="902236149563113779">Կայքերը սովորաբար հետագծում են տեսախցիկի դիրքը՝ լրացված իրականության գործառույթների (օրինակ՝ խաղերի և ուղղությունների նախազգուշացումների) համար</translation>
 <translation id="9039697262778250930">Հնարավոր է, որ դուք դուրս գրվեք հաշվից այս կայքերում</translation>
+<translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Ջնջե՞լ քուքիները</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>

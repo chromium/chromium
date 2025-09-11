@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="902236149563113779">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਗੇਮਾਂ ਜਾਂ ਚਿਤਾਵਨੀ ਦਿਸ਼ਾਵਾਂ ਜਿਹੀਆਂ AR ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="9039697262778250930">ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
 <translation id="9106233582039520022">ਕੀ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}}</translation>

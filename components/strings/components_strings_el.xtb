@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">Η λήψη ξεκίνησε. Για προβολή, πατήστε παρατεταμένα το |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Χρησιμοποιήστε πληροφορίες που έχουν αποθηκευτεί στον Λογαριασμό σας Google για την αυτόματη συμπλήρωση κωδικών πρόσβασης, κλειδιών πρόσβασης, διευθύνσεων, τρόπων πληρωμής και άλλων πληροφοριών</translation>
 <translation id="1219129156119358924">Ασφάλεια συστήματος</translation>
+<translation id="1219134100826635117">Ο διαχειριστής σας έχει αποκλείσει αυτή την ενέργεια</translation>
 <translation id="1222060260947439312">Δεξιός τροφοδότης χαρτιού</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Αριθμός κάρτας:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2174875517416416684">Η συναλλαγή σας δεν ολοκληρώθηκε. Δεν πραγματοποιήθηκε καμία ανάληψη χρημάτων από τον λογαριασμό σας.</translation>
 <translation id="2175630235841878061">Τα αρχεία άνω των 100 MB δεν είναι διαθέσιμα για λήψη</translation>
+<translation id="217631816678106981">Να μην γίνει επικόλληση</translation>
 <translation id="2178665390943006934">Κουμπί Ενημέρωση Chrome, ενεργοποιήστε το για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome</translation>
 <translation id="2178904466768126352">Οι υπεύθυνοι επίθεσης στον ιστότοπο που προσπαθήσατε να επισκεφτείτε ενδέχεται να εγκαταστήσουν επιβλαβές λογισμικό που κλέβει ή διαγράφει στοιχεία, όπως τους κωδικούς πρόσβασης, τις φωτογραφίες, τα μηνύματα ή τους αριθμούς των πιστωτικών καρτών σας.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> στο <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">Μάθετε περισσότερα σχετικά με τη μηχανή αναζήτησης στο Chromium</translation>
 <translation id="2731382536835015353">44 x 68 ίντσες</translation>
 <translation id="2734319753272419592">Να επιτρέπεται στην Google να χρησιμοποιεί τα καλάθια σας για να αναζητά εξατομικευμένες εκπτώσεις. Όταν είναι διαθέσιμες, οι εκπτώσεις θα εμφανίζονται αυτόματα στα καλάθια σας.</translation>
+<translation id="2734797989819862638">Να μην γίνει αντιγραφή</translation>
 <translation id="273785062888389088">HVAC και κλιματισμός</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2742128390261873684">Οικιακός αυτοματισμός</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">Τα τοπικά αρχεία θα διαγραφούν σε <ph name="MINUTES" /> λεπτά</translation>
 <translation id="3872834068356954457">Επιστήμες</translation>
 <translation id="3875783148670536197">Οδηγίες</translation>
+<translation id="3877603629930976930">Να μην γίνει κοινή χρήση</translation>
+<translation id="3878445208930547646">Δεν επιτρέπεται η αντιγραφή από αυτόν τον ιστότοπο</translation>
 <translation id="3879748587602334249">Διαχείριση λήψεων</translation>
 <translation id="3880456882942693779">Τέχνες και ψυχαγωγία</translation>
 <translation id="3880589673277376494">Διαδίκτυο και τηλεπικοινωνίες</translation>
@@ -2111,6 +2116,7 @@
 <translation id="4466576951214254884">Φοιτητικά δάνεια και χρηματοδότηση σπουδών</translation>
 <translation id="4467821340016922962">Για έξοδο από την πλήρη οθόνη και εμφάνιση της λήψης, πατήστε |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ενεργοποιήστε τη Βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" /> για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome</translation>
+<translation id="4475299370877036544">Η συγκεκριμένη ενέργεια ενδέχεται να παραβαίνει τις πολιτικές του οργανισμού σας</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Αυτή η φόρμα δεν είναι ασφαλής. Η αυτόματη συμπλήρωση έχει απενεργοποιηθεί.</translation>
 <translation id="4477350412780666475">Επόμενο κομμάτι</translation>
@@ -3658,6 +3664,7 @@
 <translation id="70705239631109039">Η σύνδεσή σας δεν είναι πλήρως ασφαλής</translation>
 <translation id="7071122206197538392">Νέος πίνακας σύγκρισης</translation>
 <translation id="7075452647191940183">Το αίτημα είναι πολύ μεγάλο</translation>
+<translation id="7075896597860500885">Δεν συνιστάται η αντιγραφή από αυτόν τον ιστότοπο</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">Από <ph name="TYPE_1" /> (επιπλέον στις συγχρονισμένες συσκευές)</translation>
@@ -3693,6 +3700,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Αποκλεισμένη μεταφόρτωση</translation>
 <translation id="7132939140423847331">Ο διαχειριστής απαγορεύει την αντιγραφή αυτών των δεδομένων.</translation>
+<translation id="7134653428559514680">Δεν συνιστάται η κοινή χρήση από αυτόν τον ιστότοπο</translation>
 <translation id="7135130955892390533">Εμφάνιση κατάστασης</translation>
 <translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
 <translation id="7136009930065337683">Μάθετε περισσότερα σχετικά με την Ανώνυμη περιήγηση</translation>
@@ -3781,6 +3789,7 @@
 <translation id="7275334191706090484">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="7275808129217605899">Υγιεινή διατροφή</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να αλλάξετε τον κωδικό πρόσβασης του Λογαριασμού σας Google</translation>
+<translation id="7286908876112207905">Δεν επιτρέπεται η επικόλληση αυτού του περιεχομένου σε αυτόν τον ιστότοπο</translation>
 <translation id="7291578327729322058">Προσθήκη διπλώματος οδήγησης</translation>
 <translation id="7292031607255951991">Όνομα παραλήπτη</translation>
 <translation id="7298195798382681320">Προτεινόμενες</translation>
@@ -3821,6 +3830,7 @@
 <translation id="7366117520888504990">198 x 275 χλστ.</translation>
 <translation id="7366362069757178916">Δείκτες χειρισμού για πληρωμές</translation>
 <translation id="7366594738862061263">Μάθετε σχετικά με το πώς το Chrome προστατεύει τους κωδικούς πρόσβασής σας</translation>
+<translation id="7370751048350026847">Δεν συνιστάται η επικόλληση αυτού του περιεχομένου στον συγκεκριμένο ιστότοπο</translation>
 <translation id="7372526636730851647">Φωτογραφία (Γυαλιστερή)</translation>
 <translation id="7372973238305370288">αποτέλεσμα αναζήτησης</translation>
 <translation id="7374461526650987610">Χειριστές πρωτοκόλλου</translation>
@@ -3894,6 +3904,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Φορτηγά και τρέιλερ</translation>
 <translation id="7461924472993315131">Καρφίτσωμα</translation>
+<translation id="7463068149674892185">Αυτή η ενέργεια δεν συνιστάται</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Βελτιστοποίηση και ασφάλεια JavaScript</translation>
 <translation id="7465036432780054056">Το <ph name="EMBEDDED_URL" /> θα γνωρίζει ότι επισκεφτήκατε το <ph name="TOP_LEVEL_URL" /></translation>
@@ -4914,6 +4925,7 @@
 <translation id="9183425211371246419">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> χρησιμοποιεί μη υποστηριζόμενο πρωτόκολλο.</translation>
 <translation id="918454845714257218">Ελέγξτε τον κωδικό στο <ph name="SIDE_OF_CARD" /> και δοκιμάστε ξανά</translation>
 <translation id="9186203289258525843">Κουμπί Ορισμός Chrome ως προεπιλεγμένου προγράμματος περιήγησης, ενεργοποιήστε το για να ορίσετε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος</translation>
+<translation id="9186371298532546532">Χρησιμοποιήστε αυτή τη διεύθυνση σε περισσότερα μέρη</translation>
 <translation id="9189468832660648522">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε αυτή την καρτέλα</translation>
 <translation id="9189789270972826888">Κάντε κλικ στις λεπτομέρειες της κάρτας παρακάτω για αντιγραφή και επικόλληση, εάν η κάρτα δεν έχει συμπληρωθεί. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Τα θέματα που είναι παλαιότερα των 4 εβδομάδων διαγράφονται αυτόματα</translation>
@@ -4929,6 +4941,7 @@
 <translation id="920643408853370361">Ταξιδιωτική ασφάλεια</translation>
 <translation id="9207861905230894330">Αποτυχία προσθήκης άρθρου.</translation>
 <translation id="9209339767782560829">Παρουσιάστηκε πρόβλημα με τη χρήση του πιστοποιητικού σύνδεσης.</translation>
+<translation id="9210152531668884481">Συμφωνώ</translation>
 <translation id="9210825002219699214">Αεροπορικά ταξίδια</translation>
 <translation id="9213433120051936369">Προσαρμογή της εμφάνισης</translation>
 <translation id="9215416866750762878">Μια εφαρμογή παρεμποδίζει την ασφαλή σύνδεση του Chrome σε αυτόν τον ιστότοπο</translation>

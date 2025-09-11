@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="902236149563113779">Sajtet monitorojnë zakonisht pozicionin e kamerës për veçoritë e realitetit AR, si p.sh. lojërat ose udhëzimet paraprake</translation>
 <translation id="9039697262778250930">Mund të dalësh nga këto sajte</translation>
+<translation id="9065203028668620118">Redakto</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9106233582039520022">Të fshihen kukit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>

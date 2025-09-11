@@ -1589,6 +1589,7 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
 
 Questa policy del dispositivo è equivalente alla policy per gli utenti esistente <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, ma si applica al profilo di accesso nella schermata di accesso.</translation>
 <translation id="2089541797660774692">Attiva reporting su cloud tramite browser gestito</translation>
+<translation id="2090280024671359587">Consenti l'acquisizione di testo e migliora i modelli di AI</translation>
 <translation id="2090712407517297305">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se la policy viene impostata su Attivata, è consentito il proxy di compressione dei dati. Se viene impostata su Disattivata, il proxy non è consentito.
 
@@ -3470,6 +3471,7 @@ Per questa policy è possibile definire al massimo 1000 voci.
 Se la policy non viene impostata, non è possibile navigare nel browser se è attiva la VPN sempre attiva in modalità con restrizioni e la VPN non è connessa.</translation>
 <translation id="3405997282295704902">Non consentire agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Non chiedere all'utente (il download inizia immediatamente)</translation>
+<translation id="3410534959501660670">Impostazioni per la funzionalità di acquisizione di testo</translation>
 <translation id="3411947169047929182">Controlla la configurazione correlata a WebRTC</translation>
 <translation id="341285788698114069">Questa policy consente di stabilire la priorità del processo audio su Windows.
       Se la policy viene attivata, il processo audio verrà eseguito con priorità sopra la norma.
@@ -6274,6 +6276,7 @@ Valori di gestione validi:
 
 Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="5290940294294002042">Specifica un elenco di plug-in che l'utente può attivare o disattivare</translation>
+<translation id="5292069729218406524">Consenti l'acquisizione testo senza migliorare i modelli di AI</translation>
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
@@ -9884,6 +9887,7 @@ Se questa policy non viene impostata, il renderer del PDF viene scelto dal brows
 <translation id="7713608076604149344">Limitazioni dei download</translation>
 <translation id="7713845740295404764">Segnala eventi di accesso/uscita</translation>
 <translation id="7715711044277116530">Percentuale di regolazione del ritardo di oscuramento dello schermo in modalità di presentazione</translation>
+<translation id="7715838249298819250">Non consentire l'acquisizione di testo</translation>
 <translation id="7716020145539921591">Questa policy è deprecata. Usa la policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        La configurazione della policy consente di specificare l'URL del server proxy. Questa policy viene applicata solo se la policy <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificata e hai selezionato <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10593,6 +10597,17 @@ Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezio
 
       Questa policy viene ignorata per gli account utente standard.</translation>
 <translation id="8257863622304579015">Attiva la sandbox del servizio di rete</translation>
+<translation id="825834906982940588">Questa policy consente di controllare le impostazioni della funzionalità di acquisizione di testo per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori dettagli sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8259375588339409826">Chromium e Google Chrome supportano lo stesso insieme di policy. Questo documento potrebbe includere policy riferite a versioni non ancora introdotte (la relativa voce "Supported on" si riferisce a una versione non rilasciata di <ph name="PRODUCT_NAME" />). Queste policy sono soggette a modifica o rimozione senza preavviso e non viene fornita alcuna garanzia in merito, neanche in relazione alle proprietà di privacy e sicurezza.
 
 Queste policy devono essere utilizzate esclusivamente per la configurazione delle istanze di <ph name="PRODUCT_NAME" /> interne all'organizzazione. L'utilizzo di queste policy al di fuori dell'organizzazione (ad esempio in un programma distribuito pubblicamente) viene considerato malware e potrebbe essere contrassegnato come malware da Google e dai fornitori di programmi antivirus.

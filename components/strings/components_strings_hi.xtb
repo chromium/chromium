@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">डाउनलोड शुरू हो गया है. इसे देखने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें.</translation>
 <translation id="1215738931000958575">पासवर्ड, पासकी, पते, पेमेंट के तरीके, और अन्य जानकारी ऑटोमैटिक तरीके से भरने के लिए, अपने Google खाते में सेव की गई जानकारी का इस्तेमाल करें</translation>
 <translation id="1219129156119358924">सिस्‍टम सुरक्षा</translation>
+<translation id="1219134100826635117">आपके एडमिन ने इस कार्रवाई को ब्लॉक कर दिया है</translation>
 <translation id="1222060260947439312">दाईं ट्रे</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">कार्ड नंबर:</translation>
@@ -715,6 +716,7 @@
 <translation id="2173302385160625112">अपना इंटरनेट कनेक्शन जाँचें</translation>
 <translation id="2174875517416416684">लेन-देन पूरा नहीं हुआ. आपके खाते से पैसे नहीं कटे.</translation>
 <translation id="2175630235841878061">100 एमबी से बड़ी फ़ाइलें डाउनलोड नहीं की जा सकतीं</translation>
+<translation id="217631816678106981">इसे न चिपकाएं</translation>
 <translation id="2178665390943006934">'Chrome अपडेट करें' बटन, Chrome की सेटिंग से Chrome को अपडेट करने के लिए इसे चालू करें</translation>
 <translation id="2178904466768126352">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में नुकसान पहुंचाने वाला सॉफ़्टवेयर इंस्टॉल करवा सकते हैं. ये सॉफ़्टवेयर आपके पासवर्ड, फ़ोटो, मैसेज या क्रेडिट कार्ड नंबर जैसी जानकारी चोरी कर सकते हैं या उन्हें मिटा सकते हैं.</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" /> पर <ph name="SITE_TITLE" /></translation>
@@ -1061,6 +1063,7 @@
 <translation id="2731220418440848219">Chromium में अपने सर्च इंजन के बारे में ज़्यादा जानें</translation>
 <translation id="2731382536835015353">44 x 68 इंच</translation>
 <translation id="2734319753272419592">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से छूट का पता लगा सके. उपलब्ध होने पर, आपके कार्ट पर छूट अपने-आप दिखेंगी.</translation>
+<translation id="2734797989819862638">इसे कॉपी न करें</translation>
 <translation id="273785062888389088">एचवीएसी और क्लाइमेट कंट्रोल</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2742128390261873684">होम ऑटोमेशन</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">आपकी लोकल फ़ाइलें <ph name="MINUTES" /> मिनट में मिटा दी जाएंगी</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
+<translation id="3877603629930976930">शेयर न करें</translation>
+<translation id="3878445208930547646">इस साइट से कॉन्टेंट कॉपी करने की अनुमति नहीं है</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880456882942693779">कला और मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट और टेलीकॉम</translation>
@@ -2110,6 +2115,7 @@
 <translation id="4466576951214254884">कॉलेज के छात्र-छात्राओं के लिए लोन और वित्तीय सेवाएं</translation>
 <translation id="4467821340016922962">फ़ुल स्क्रीन से बाहर निकलने और डाउनलोड की गई फ़ाइलें देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="4473643328224505070">Chrome की सबसे बेहतर सुरक्षा पाने के लिए, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />बेहतर सुरक्षा मोड<ph name="END_ENHANCED_PROTECTION_LINK" /> चालू करें</translation>
+<translation id="4475299370877036544">इस कार्रवाई से आपके संगठन की नीतियों का उल्लंघन हो सकता है</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यह फ़ॉर्म सुरक्षित नहीं है. ऑटोमैटिक भरने की सुविधा बंद कर दी गई है.</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">आपका कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="7071122206197538392">तुलना करने वाली नई टेबल</translation>
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
+<translation id="7075896597860500885">इस साइट से कॉन्टेंट कॉपी करने का सुझाव नहीं दिया जाता</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> से (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">फ़ाइल को अपलोड करने की अनुमति नहीं है</translation>
 <translation id="7132939140423847331">आपके एडमिन ने इस डेटा को कॉपी किए जाने पर रोक लगाई है.</translation>
+<translation id="7134653428559514680">इस साइट से कॉन्टेंट शेयर करने का सुझाव नहीं दिया जाता</translation>
 <translation id="7135130955892390533">स्थिति दिखाएं</translation>
 <translation id="7135814714616751706">शॉर्टकट खोजें</translation>
 <translation id="7136009930065337683">गुप्त मोड के बारे में ज़्यादा जानें</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">मैनेज किए गए बुकमार्क</translation>
 <translation id="7275808129217605899">पौष्टिक आहार</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने Google खाते का पासवर्ड बदलने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
+<translation id="7286908876112207905">इस कॉन्टेंट को इस साइट पर चिपकाने की अनुमति नहीं है</translation>
 <translation id="7291578327729322058">ड्राइविंग लाइसेंस की जानकारी जोड़ें</translation>
 <translation id="7292031607255951991">पाने वाले का नाम</translation>
 <translation id="7298195798382681320">सुझाए गए</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">198 x 275 मि॰मी॰</translation>
 <translation id="7366362069757178916">पेमेंट हैंडलर</translation>
 <translation id="7366594738862061263">इस बारे में जानें कि Chrome आपके पासवर्ड की सुरक्षा कैसे करता है</translation>
+<translation id="7370751048350026847">इस कॉन्टेंट को इस साइट पर चिपकाने का सुझाव नहीं दिया जाता है</translation>
 <translation id="7372526636730851647">फ़ोटो (ग्लॉसी)</translation>
 <translation id="7372973238305370288">खोज नतीजे</translation>
 <translation id="7374461526650987610">प्रोटोकॉल हैंडलर</translation>
@@ -3891,6 +3901,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">कार्गो ट्रक और ट्रेलर</translation>
 <translation id="7461924472993315131">पिन करें</translation>
+<translation id="7463068149674892185">यह कार्रवाई करने का सुझाव नहीं दिया जाता</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ऑप्टिमाइज़ेशन और सुरक्षा</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> को पता चल जाएगा कि आपने <ph name="TOP_LEVEL_URL" /> पर विज़िट किया है</translation>
@@ -4911,6 +4922,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> एक असमर्थित प्रोटोकॉल का उपयोग करता है.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> पर कोड को देखें और फिर से कोशिश करें</translation>
 <translation id="9186203289258525843">'Chrome को डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें' बटन, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए इसे चालू करें</translation>
+<translation id="9186371298532546532">इस पते का इस्तेमाल अन्य जगहों पर भी करें</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ने यह टैब बदला है</translation>
 <translation id="9189789270972826888">अगर कार्ड की जानकारी नहीं भरी गई है, तो कार्ड की यहां दी गई जानकारी को कॉपी करके चिपकाने के लिए, उस पर क्लिक करें. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">चार हफ़्तों से ज़्यादा पुराने विषय अपने-आप मिट जाते हैं</translation>
@@ -4926,6 +4938,7 @@
 <translation id="920643408853370361">यात्रा का बीमा</translation>
 <translation id="9207861905230894330">लेख जोड़ने में विफल रहा.</translation>
 <translation id="9209339767782560829">डिजिटल सर्टिफ़िकेट का इस्तेमाल करके लॉगिन करने में समस्या हुई.</translation>
+<translation id="9210152531668884481">मैं सहमत हूं</translation>
 <translation id="9210825002219699214">एयर ट्रैवल</translation>
 <translation id="9213433120051936369">दिखने का तरीका अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="9215416866750762878">एक ऐप्‍लिकेशन Chrome को इस साइट से सुरक्षित तरीके से कनेक्‍ट होने से रोक रहा है</translation>

@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">ダウンロードを開始しました。確認するには、|<ph name="ACCELERATOR" />| を長押ししてください。</translation>
 <translation id="1215738931000958575">Google アカウントに保存されている情報を使用して、パスワード、パスキー、住所、お支払い方法などを自動入力します</translation>
 <translation id="1219129156119358924">システム セキュリティ</translation>
+<translation id="1219134100826635117">この操作は管理者によってブロックされています</translation>
 <translation id="1222060260947439312">右トレイ</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">カード番号:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2174875517416416684">取引が完了しませんでした。口座からの引き落としは行われていません。</translation>
 <translation id="2175630235841878061">100 MB を超えるファイルはダウンロードできません</translation>
+<translation id="217631816678106981">貼り付けない</translation>
 <translation id="2178665390943006934">[Chrome を更新] ボタンです。実行すると、Chrome の設定で Chrome を更新できます</translation>
 <translation id="2178904466768126352">アクセスしようとしたサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" />（<ph name="SITE_DOMAIN_NAME" />）</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">Chromium で使用する検索エンジンについての詳細</translation>
 <translation id="2731382536835015353">44x68 インチ</translation>
 <translation id="2734319753272419592">カートに入れたアイテムの割引情報の検索を Google に許可します。見つかった割引情報はカートに自動的に表示されます。</translation>
+<translation id="2734797989819862638">コピーしない</translation>
 <translation id="273785062888389088">空調設備、温度管理</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">スマートホーム</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">ローカル ファイルは <ph name="MINUTES" /> 分後に削除されます</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">手順を見る</translation>
+<translation id="3877603629930976930">共有しない</translation>
+<translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3880456882942693779">アート、エンターテインメント</translation>
 <translation id="3880589673277376494">インターネット、通信事業</translation>
@@ -2110,6 +2115,7 @@
 <translation id="4466576951214254884">学生ローン、大学ローン</translation>
 <translation id="4467821340016922962">全画面表示を終了してダウンロードを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能をオンにする<ph name="END_ENHANCED_PROTECTION_LINK" />と、Chrome の最高レベルのセキュリティで保護できます。</translation>
+<translation id="4475299370877036544">このアクションは組織のポリシーに違反している可能性があります</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">このフォームは安全ではないため、自動入力をオフにしました。</translation>
 <translation id="4477350412780666475">次の曲</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">接続は完全には保護されていません</translation>
 <translation id="7071122206197538392">新しい比較表</translation>
 <translation id="7075452647191940183">リクエストが大きすぎます</translation>
+<translation id="7075896597860500885">このサイトからのコピーは推奨されていません</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> から（同期デバイスではそれ以上のサイト）</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">アップロードがブロックされました</translation>
 <translation id="7132939140423847331">このデータのコピーは管理者によって禁止されています。</translation>
+<translation id="7134653428559514680">このサイトからの共有は推奨されていません</translation>
 <translation id="7135130955892390533">ステータスを表示</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
 <translation id="7136009930065337683">シークレット モードの詳細</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">管理対象のブックマーク</translation>
 <translation id="7275808129217605899">健康的な食事</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントのパスワードを変更します</translation>
+<translation id="7286908876112207905">このコンテンツをこのサイトに貼り付けることは許可されていません</translation>
 <translation id="7291578327729322058">運転免許証の追加</translation>
 <translation id="7292031607255951991">受取人の氏名</translation>
 <translation id="7298195798382681320">推奨</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">支払いハンドラ</translation>
 <translation id="7366594738862061263">Chrome のパスワード保護の仕組みについて</translation>
+<translation id="7370751048350026847">このコンテンツをこのサイトに貼り付けることは推奨されていません</translation>
 <translation id="7372526636730851647">写真（光沢）</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374461526650987610">プロトコル ハンドラ</translation>
@@ -3891,6 +3901,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">貨物トラック、トレーラー</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="7463068149674892185">この操作は推奨されていません</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript の最適化とセキュリティ</translation>
 <translation id="7465036432780054056">あなたが <ph name="TOP_LEVEL_URL" /> にアクセスしたことが <ph name="EMBEDDED_URL" /> で認識されます</translation>
@@ -4114,7 +4125,7 @@
 <translation id="7800977246388195491">Chrome は、最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを判断します。それ以降に訪れる他のウェブサイトは、パーソナライズド広告を表示させるためにこれらの情報をリクエストすることができます。リクエストされた際に提供するトピックやウェブサイトの情報はご自身で選べます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
-<translation id="780301667611848630">キャンセル</translation>
+<translation id="780301667611848630">利用しない</translation>
 <translation id="7805268272389338048">暗号化により個人情報が保護されます</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
@@ -4272,7 +4283,7 @@
 <translation id="8086429410809447605">婦人服</translation>
 <translation id="8086971161893892807">下書き</translation>
 <translation id="8088680233425245692">記事を表示できませんでした。</translation>
-<translation id="808894953321890993">パスワードの変更</translation>
+<translation id="808894953321890993">パスワードを変更</translation>
 <translation id="8091372947890762290">サーバーで有効化が保留になっています</translation>
 <translation id="8092254339843485299">6x8 インチ</translation>
 <translation id="8094917007353911263">ご利用のネットワークでは、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>

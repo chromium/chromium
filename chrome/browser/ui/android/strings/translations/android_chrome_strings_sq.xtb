@@ -307,7 +307,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2497852260688568942">Sinkronizimi është çaktivizuar nga administratori</translation>
 <translation id="250020030759455918">Do të shikosh statusin e identifikimit për <ph name="SITE_NAME" />, të dhënat e shfletimit dhe të dhënat e sajtit në Chrome</translation>
-<translation id="2502798195266898572">Fleta e poshtme e modalitetit të leximit u hap në lartësi të plotë</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> po instalohet...</translation>
 <translation id="2512234228327349533">Kërko për opsionet për blerjen</translation>
 <translation id="2513403576141822879">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Sinkronizimi dhe shërbimet e Google<ph name="END_LINK" /></translation>
@@ -632,6 +631,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4042941173059740150">Vazhdo te <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Fleta e poshtme</translation>
 <translation id="4045441967987592849">Rihap</translation>
+<translation id="4049920046559074950">Më shumë opsione për "<ph name="INSTANCE_TITLE" />"</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë standarde me aktivitet të ri në grupet e ndara të skedave}other{<ph name="TABS_COUNT_MANY" /> skeda standarde me aktivitet të ri në grupet e ndara të skedave}}</translation>
 <translation id="405365679581583349">Përditëso shërbimet e Google Play</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
@@ -1127,13 +1127,11 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6255809143828972562">Me veglat nga Chrome, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6264485186158353794">Kthehu aty ku je i sigurt</translation>
-<translation id="6267063201726531683">Fleta e poshtme e "Modalitetit të leximit"</translation>
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Fshi të dhënat e shfletimit; zgjidh të dhënat që do të fshish</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="629730747756840877">Llogaria</translation>
-<translation id="6300697579369314762">Fleta e poshtme e modalitetit të leximit u hap në gjysmë lartësi</translation>
 <translation id="6301526076346731664">Hap veglat e zhvilluesit</translation>
 <translation id="6303969859164067831">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6307241780749477694">Verifiko që je ti për të marrë të gjitha fjalëkalimet e tua në këtë pajisje</translation>
@@ -1352,7 +1350,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="71503698506017927">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
 
 Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Fleta e poshtme e modalitetit të leximit u mbyll</translation>
 <translation id="7165972437814027679">Mëso më shumë se pse Chrome i bllokon disa skedarë</translation>
 <translation id="7168323970702333693">Identifikuar si <ph name="USER_NAME" />. Hap cilësimet.</translation>
 <translation id="7173114856073700355">Hap cilësimet</translation>

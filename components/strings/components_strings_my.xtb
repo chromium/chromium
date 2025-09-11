@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">ဒေါင်းလုဒ်စတင်ပါပြီ။ ၎င်းကိုကြည့်ရန် |<ph name="ACCELERATOR" />| ကိုနှိပ်ထားပါ။</translation>
 <translation id="1215738931000958575">စကားဝှက်၊ လျှို့ဝှက်ကီး၊ လိပ်စာ၊ ငွေပေးချေနည်းလမ်းနှင့် အခြားအချက်အလက်များ အော်တိုဖြည့်ရန်အတွက် သင့် Google Account တွင် သိမ်းထားသော အချက်အလက်ကို သုံးနိုင်သည်</translation>
 <translation id="1219129156119358924">စနစ်လုံခြုံရေး</translation>
+<translation id="1219134100826635117">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူ ပိတ်ထားသည်</translation>
 <translation id="1222060260947439312">ညာဘက်ဗန်း</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">ကတ်နံပါတ်-</translation>
@@ -715,6 +716,7 @@
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2174875517416416684">ငွေလွှဲပြောင်းမှု မအောင်မြင်ပါ။ သင့်အကောင့်မှ ငွေထုတ်ယူမထားပါ။</translation>
 <translation id="2175630235841878061">100MB ကျော်သော ဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
+<translation id="217631816678106981">မကူးထည့်ပါနှင့်</translation>
 <translation id="2178665390943006934">သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန်အတွက် ‘Chrome အပ်ဒိတ်လုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="2178904466768126352">သင်ဝင်ကြည့်ရန်ကြိုးပမ်းသည့် ဝဘ်ဆိုက်ရှိ တိုက်ခိုက်သူများသည် သင်၏ စကားဝှက်၊ ဓာတ်ပုံ၊ မက်ဆေ့ဂျ် (သို့) ခရက်ဒစ်ကတ်နံပါတ်ကဲ့သို့ အရာများအား ခိုးယူသော သို့မဟုတ် ဖျက်သော အန္တရာယ်ရှိသည့်ဆော့ဖ်ဝဲကို ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" /> တွင် <ph name="SITE_TITLE" /></translation>
@@ -1065,6 +1067,7 @@
 <translation id="2731220418440848219">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2731382536835015353">၄၄ x ၆၈ လက်မ</translation>
 <translation id="2734319753272419592">ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများကို ရှာဖွေရန် Google ကို သင့်ဈေးခြင်းတောင်း သုံးခွင့်ပြုနိုင်သည်။ ရနိုင်သည့်အခါ လျှော့ဈေးကို သင့်ဈေးခြင်းတောင်းတွင် အလိုအလျောက်ပြမည်။</translation>
+<translation id="2734797989819862638">မိတ္တူမကူးပါနှင့်</translation>
 <translation id="273785062888389088">HVAC နှင့် အပူချိန်ထိန်းချုပ်ခြင်း</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">အိမ်တွင်း အလိုအလျောက် ထိန်းချုပ်စနစ်</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">စက်တွင်းဖိုင်များကို <ph name="MINUTES" /> မိနစ်အတွင်း ဖျက်ပါမည်</translation>
 <translation id="3872834068356954457">သိပွံ</translation>
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
+<translation id="3877603629930976930">မမျှဝေပါနှင့်</translation>
+<translation id="3878445208930547646">ဤဝဘ်ဆိုက်မှ မိတ္တူကူးခြင်းကို ခွင့်မပြုပါ</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3880456882942693779">အနုပညာ၊ ဖျော်ဖြေရေး</translation>
 <translation id="3880589673277376494">အင်တာနက်၊ တယ်လီကွန်</translation>
@@ -2111,6 +2116,7 @@
 <translation id="4466576951214254884">ကျောင်းသားချေးငွေ၊ ကောလိပ်အတွက်ငွေထောက်ပံ့ခြင်း</translation>
 <translation id="4467821340016922962">ဖန်သားပြင်အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="4473643328224505070">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေးအဆင့်ကို ရယူရန် <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />အဆင့်မြင့်ကာကွယ်မှု ဖွင့်ပါ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
+<translation id="4475299370877036544">ဤလုပ်ဆောင်ချက်သည် သင့်အဖွဲ့အစည်း၏ မူဝါဒများကို ချိုးဖောက်နိုင်သည်</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />။ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ဤဖောင်သည် မလုံခြုံပါ။ 'အော်တိုဖြည့်' ကို ပိတ်လိုက်ပါပြီ။</translation>
 <translation id="4477350412780666475">နောက်တစ်ပုဒ်</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
 <translation id="7071122206197538392">နှိုင်းယှဉ်ပြဇယားအသစ်</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
+<translation id="7075896597860500885">ဤဝဘ်ဆိုက်မှ မိတ္တူကူးခြင်းကို အကြံမပြုပါ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> မှ (စင့်ခ်လုပ်ထားသော စက်များတွင် ရှိသေးသည်)</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">အပ်လုဒ်လုပ်ခြင်း ပိတ်ထားသည်</translation>
 <translation id="7132939140423847331">ဤဒေတာကူးယူခြင်းကို သင့်စီမံခန့်ခွဲသူက တားမြစ်ထားသည်။</translation>
+<translation id="7134653428559514680">ဤဝဘ်ဆိုက်မှ မျှဝေခြင်းကို အကြံမပြုပါ</translation>
 <translation id="7135130955892390533">အခြေအနေ ပြရန်</translation>
 <translation id="7135814714616751706">ဖြတ်လမ်းလင့်ခ်များ ရှာရန်</translation>
 <translation id="7136009930065337683">‘ရုပ်ဖျက်’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">စီမံကွပ်ကဲထားသည့် စာညှပ်များ</translation>
 <translation id="7275808129217605899">ကျန်းမာစွာစားခြင်း</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account စကားဝှက်ပြောင်းရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="7286908876112207905">ဤဝဘ်ဆိုက်သို့ ဤအကြောင်းအရာ ကူးထည့်ခြင်းကို ခွင့်မပြုပါ</translation>
 <translation id="7291578327729322058">ယာဉ်မောင်းလိုင်စင် ထည့်ခြင်း</translation>
 <translation id="7292031607255951991">လက်ခံရရှိသူ အမည်</translation>
 <translation id="7298195798382681320">အကြံပြုထား</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">၁၉၈ x ၂၇၅ မီလီမီတာ</translation>
 <translation id="7366362069757178916">ငွေပေးချေမှု စီမံသူများ</translation>
 <translation id="7366594738862061263">Chrome က သင့်စကားဝှက်များကို မည်သို့ကာကွယ်ကြောင်း လေ့လာရန်</translation>
+<translation id="7370751048350026847">ဤဝဘ်ဆိုက်တွင် ဤအကြောင်းအရာ ကူးထည့်ခြင်းကို အကြံမပြုပါ</translation>
 <translation id="7372526636730851647">ဓာတ်ပုံ (တောက်ပြောင်)</translation>
 <translation id="7372973238305370288">ရှာဖွေခြင်းရလာဒ်</translation>
 <translation id="7374461526650987610">ပရိုတိုကော ကိုင်တွယ်သူများ</translation>
@@ -3891,6 +3901,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ကုန်တင်ယာဉ်၊ နောက်တွဲယာဉ်</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
+<translation id="7463068149674892185">ဤလုပ်ဆောင်ချက်ကို အကြံမပြုပါ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript အကောင်းဆုံးချိန်ညှိမှုနှင့် လုံခြုံရေး</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> သို့ သင်ဝင်ကြည့်ကြောင်း <ph name="EMBEDDED_URL" /> က သိပါမည်</translation>
@@ -4911,6 +4922,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> သည်ထောက်ပံ့မှုမရှိသည့် ပရိုတိုကောကို အသုံးပြုထားသည်။</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ရှိ ကုဒ်ကို ကြည့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9186203289258525843">Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်အတွက် ‘Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
+<translation id="9186371298532546532">ဤလိပ်စာကို နောက်ထပ်နေရာများတွင် သုံးပါ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> က ဤတဘ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="9189789270972826888">ကတ်ကို ဖြည့်မထားပါက မိတ္တူကူးပြီး ထည့်ရန် အောက်ရှိ ကတ်အသေးစိတ်ကို နှိပ်ပါ။ <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">၄ ပတ်ထက်ပိုကြာသည့် အကြောင်းအရာများကို အလိုအလျောက်ဖျက်သည်</translation>
@@ -4926,6 +4938,7 @@
 <translation id="920643408853370361">ခရီးသွားအာမခံ</translation>
 <translation id="9207861905230894330">ဆောင်းပါး ပေါင်းထည့်ခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="9209339767782560829">သင်၏ အကောင့်ဝင်ခြင်း အသိအမှတ်ပြုလက်မှတ်ကို သုံးရာတွင် ပြဿနာရှိသည်။</translation>
+<translation id="9210152531668884481">လုပ်ဆောင်ပါမည်</translation>
 <translation id="9210825002219699214">လေကြောင်းခရီးသွားခြင်း</translation>
 <translation id="9213433120051936369">အသွင်အပြင် စိတ်ကြိုက်ပြုလုပ်ခြင်း</translation>
 <translation id="9215416866750762878">ဤဝဘ်ဆိုက်သို့ လုံခြုံစွာချိတ်ဆက်မှု မပြုလုပ်နိုင်ရန် အပလီကေးရှင်းတစ်ခုက Chrome ကို တားဆီးထားပါသည်</translation>

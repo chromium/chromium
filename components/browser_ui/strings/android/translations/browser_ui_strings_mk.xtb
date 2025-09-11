@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
 <translation id="902236149563113779">Сајтовите обично ја следат позицијата на камерата за AR-функциите како што се игрите или упатствата за внимание</translation>
 <translation id="9039697262778250930">Можно е да се одјавите од сајтовиве</translation>
+<translation id="9065203028668620118">Измени</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Да се избришат колачињата?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}}</translation>

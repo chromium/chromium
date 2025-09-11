@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">আপনার জন্য প্রোডাক্টের রিভিউ</translation>
 <translation id="1084365883616172403">Facebook পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> খোলা যায়নি</translation>
+<translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1096992026380844478">আপনার শেষ ব্যাক-আপের উপর ভিত্তি করে সিঙ্ক সেটিংস ফিরিয়ে আনা হবে। <ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">আরও বেশি প্রাসঙ্গিক উত্তর পাওয়ার জন্য Gemini-র সাথে পৃষ্ঠার কন্টেন্ট শেয়ার করুন। আপনি Gemini-র সাথে কোনও পৃষ্ঠা শেয়ার করলে, Google-এর কাছে, পৃষ্ঠাটির সম্পূর্ণ কন্টেন্ট ও URL পাঠানো হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">আপনার সমস্ত সিঙ্ক করা ডিভাইসে খোলা এবং সম্প্রতি বন্ধ হওয়া ট্যাব দ্রুত খুঁজুন।</translation>
 <translation id="3530767473765895035">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন…</translation>
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
-<translation id="3533860663366814939">অটোফিল ও পাসওয়ার্ডের সেটিংস খুলুন</translation>
 <translation id="3540141921715814660">বুকমার্কে যোগ করুন</translation>
 <translation id="3546122170015471515">Google.com-এ Maps-এর প্রিভিউ</translation>
 <translation id="3547356470684043247">রিভিউ সহ আপনার সিদ্ধান্ত জানানোর ব্যাপারে সহায়তা পেতে প্রোডাক্ট, পরিষেবা অথবা অভিজ্ঞতার বিষয়ে গ্রাহকদের মূল্যায়ন পড়ুন</translation>

@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">已开始下载。若要查看，请按住 |<ph name="ACCELERATOR" />|。</translation>
 <translation id="1215738931000958575">使用 Google 账号中保存的信息自动填充密码、通行密钥、地址、支付方式和其他信息</translation>
 <translation id="1219129156119358924">系统安全</translation>
+<translation id="1219134100826635117">您的管理员已阻止此操作</translation>
 <translation id="1222060260947439312">右侧纸匣</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">卡号：</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2174875517416416684">您的交易未处理成功。系统未从您的账号中扣款。</translation>
 <translation id="2175630235841878061">无法下载超过 100MB 的文件</translation>
+<translation id="217631816678106981">请勿粘贴</translation>
 <translation id="2178665390943006934">“更新 Chrome”按钮，激活它即可从 Chrome 设置中更新 Chrome</translation>
 <translation id="2178904466768126352">您尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。</translation>
 <translation id="2179003720612888584">来自 <ph name="SITE_DOMAIN_NAME" /> 的“<ph name="SITE_TITLE" />”</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">详细了解 Chromium 中的搜索引擎</translation>
 <translation id="2731382536835015353">44 x 68 英寸</translation>
 <translation id="2734319753272419592">允许 Google 根据您购物车中的商品搜寻合乎您个人需求的折扣信息。此类折扣信息（若有）会自动显示在您的购物车中。</translation>
+<translation id="2734797989819862638">请勿复制</translation>
 <translation id="273785062888389088">暖通空调与环境控制</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2742128390261873684">家居自动化</translation>
@@ -1738,6 +1741,8 @@
 <translation id="3869939189466884821">您的本地文件将在 <ph name="MINUTES" /> 分钟后被删除</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">操作步骤</translation>
+<translation id="3877603629930976930">请勿分享</translation>
+<translation id="3878445208930547646">不允许从该网站复制</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
@@ -2106,6 +2111,7 @@
 <translation id="4466576951214254884">学生贷款与大学助学金</translation>
 <translation id="4467821340016922962">若要退出全屏模式并查看下载内容，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />开启增强型保护<ph name="END_ENHANCED_PROTECTION_LINK" />，获享 Chrome 的最高级别安全防护</translation>
+<translation id="4475299370877036544">此操作可能违反了贵组织的政策</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">此表单不安全。因此，系统已关闭自动填充功能。</translation>
 <translation id="4477350412780666475">下一曲</translation>
@@ -3650,6 +3656,7 @@
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7071122206197538392">新建比较表格</translation>
 <translation id="7075452647191940183">请求过大</translation>
+<translation id="7075896597860500885">不建议从该网站复制</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">来自 <ph name="TYPE_1" />（在已同步的设备上还有更多网站）</translation>
@@ -3685,6 +3692,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上传</translation>
 <translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
+<translation id="7134653428559514680">不建议从该网站分享</translation>
 <translation id="7135130955892390533">显示状态</translation>
 <translation id="7135814714616751706">搜索快捷键</translation>
 <translation id="7136009930065337683">详细了解无痕模式</translation>
@@ -3773,6 +3781,7 @@
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7275808129217605899">健康饮食</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可更改您的 Google 账号密码</translation>
+<translation id="7286908876112207905">不允许将此内容粘贴到该网站</translation>
 <translation id="7291578327729322058">添加驾照</translation>
 <translation id="7292031607255951991">接收方名称</translation>
 <translation id="7298195798382681320">推荐</translation>
@@ -3813,6 +3822,7 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">付款处理程序</translation>
 <translation id="7366594738862061263">了解 Chrome 如何保护您的密码</translation>
+<translation id="7370751048350026847">不建议将此内容粘贴到该网站</translation>
 <translation id="7372526636730851647">相纸（平滑）</translation>
 <translation id="7372973238305370288">搜索结果</translation>
 <translation id="7374461526650987610">协议处理程序</translation>
@@ -3886,6 +3896,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">货车与拖车</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="7463068149674892185">不建议执行此操作</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 优化和安全性</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 会知道您访问过 <ph name="TOP_LEVEL_URL" /></translation>

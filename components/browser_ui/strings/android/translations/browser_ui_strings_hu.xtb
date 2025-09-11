@@ -705,6 +705,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="9019902583201351841">Szülők által kezelt</translation>
 <translation id="902236149563113779">A webhelyek általában bizonyos AR-funkciók (például játékok vagy szem elé vetített útvonaltervek) használata érdekében követik nyomon a kamera pozícióját</translation>
 <translation id="9039697262778250930">Előfordulhat, hogy a rendszer kijelentkezteti ezekről a webhelyekről</translation>
+<translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Törli a cookie-kat?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}}</translation>

@@ -307,7 +307,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
-<translation id="2502798195266898572">Arket på nedre delen av skärmen för läsläget har öppnats över hela skärmen</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeras …</translation>
 <translation id="2512234228327349533">Sök efter köpalternativ</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
@@ -1129,13 +1128,11 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6255809143828972562">Med verktyg från Chrome kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
-<translation id="6267063201726531683">Ark för läsläge nere på skärmen</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Radera webbinformation: välj data att radera</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="629730747756840877">Konto</translation>
-<translation id="6300697579369314762">Arket på nedre delen av skärmen för läsläget har öppnats över halva skärmen</translation>
 <translation id="6301526076346731664">Öppna Utvecklarverktyg</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6307241780749477694">Verifiera din identitet för att få alla dina lösenord på den här enheten</translation>
@@ -1354,7 +1351,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="71503698506017927">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Arket på nedre delen av skärmen för läsläget har stängts</translation>
 <translation id="7165972437814027679">Läs mer om varför vissa filer blockeras i Chrome</translation>
 <translation id="7168323970702333693">Inloggad som <ph name="USER_NAME" />. Öppnar inställningarna.</translation>
 <translation id="7173114856073700355">Inställningar</translation>

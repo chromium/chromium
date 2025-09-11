@@ -705,6 +705,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="9019902583201351841">Administrado por tus padres</translation>
 <translation id="902236149563113779">Por lo general los sitios registran la posición de la cámara para habilitar funciones de RA, ya sea en juegos o para proporcionar instrucciones sobre cómo llegar.</translation>
 <translation id="9039697262778250930">Es posible que salgas de estos sitios</translation>
+<translation id="9065203028668620118">Editar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">¿Quieres borrar las cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>

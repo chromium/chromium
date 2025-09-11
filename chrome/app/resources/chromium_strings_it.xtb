@@ -177,6 +177,9 @@
 <translation id="3155163173539279776">Riavvia Chromium</translation>
 <translation id="3161522574479303604">Tutte le lingue</translation>
 <translation id="3179665906251668410">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
+<translation id="3183357154200327217">Un altro programma sul computer ha aggiunto un tema che potrebbe modificare il funzionamento di Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalizza il tuo nuovo profilo Chromium</translation>
 <translation id="3224847870593914902">Per rimuovere il tuo Account Google da Chromium, esci da Chromium nella pagina Impostazioni</translation>
 <translation id="3234316605225071811">In un secondo momento, Chromium può chiederti se vuoi usare le informazioni salvate per compilare automaticamente i moduli per te</translation>
@@ -241,6 +244,9 @@
 <translation id="4036079820698952681">Contribuisci a migliorare Chromium indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4055805654398742145">Gestore delle p&amp;assword</translation>
+<translation id="4061696872429826774">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4118474109249235144">Modalità di navigazione in incognito di Chromium</translation>
 <translation id="4122186850977583290">Vai alla pagina Informazioni su Chromium</translation>
@@ -400,6 +406,9 @@
 <translation id="6174920971222007286">Questo file potrebbe essere pericoloso<ph name="LINE_BREAK" />Chromium può controllare il download per te se fornisci la password. Le informazioni sul file vengono inviate a Google Navigazione sicura, ma i contenuti e la password del file rimangono sul dispositivo.</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
+<translation id="6204922163963157461">Un altro programma sul computer ha aggiunto un'app che potrebbe modificare il funzionamento di Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Questo computer ha già una versione più recente di Chromium. Se il software non funziona, disinstalla Chromium e riprova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium verrà riavviato ora}=1{Chromium verrà riavviato tra 1 secondo}other{Chromium verrà riavviato tra # secondi}}</translation>
 <translation id="6239161312595354541">Chiedi alla Ricerca immagini informazioni su questo video</translation>

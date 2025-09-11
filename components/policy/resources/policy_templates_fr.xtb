@@ -1529,6 +1529,7 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 
 Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> existante, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
 <translation id="2089541797660774692">Activer la création de rapports cloud via un navigateur géré</translation>
+<translation id="2090280024671359587">Autoriser la Capture de texte et améliorer les modèles d'IA.</translation>
 <translation id="2090712407517297305">La page de l'historique Chrome organisée par groupes sera visible sur chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
@@ -3384,6 +3385,7 @@ Cette règle est limitée à 1 000 entrées.
 Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'est autorisée tant que le VPN permanent en mode strict est actif et que le VPN n'est pas connecté.</translation>
 <translation id="3405997282295704902">Ne pas autoriser les utilisateurs à se servir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Ne pas demander à l'utilisateur (les téléchargements débutent immédiatement)</translation>
+<translation id="3410534959501660670">Paramètres de la fonctionnalité Capture de texte</translation>
 <translation id="3411947169047929182">Contrôle la configuration liée à WebRTC</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
       Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
@@ -6165,6 +6167,7 @@ Valeurs de gestion valides :
 
 Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) pour obtenir une description détaillée de toutes les valeurs de gestion.</translation>
 <translation id="5290940294294002042">Répertorier les plug-ins pouvant être activés ou désactivés par l'utilisateur</translation>
+<translation id="5292069729218406524">Autoriser la Capture de texte sans améliorer les modèles d'IA</translation>
 <translation id="5293285950307241933">Effacer toutes les données utilisateur locales</translation>
 <translation id="5293619885162445352">Autoriser <ph name="PEPPER_NAME" /> à utiliser le nouveau décodeur vidéo.</translation>
 <translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
@@ -9723,6 +9726,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
 <translation id="7713845740295404764">Signaler les événements de connexion/déconnexion</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>
+<translation id="7715838249298819250">Ne pas autoriser la Capture de texte</translation>
 <translation id="7716020145539921591">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Elle permet de définir l'URL du serveur proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10416,6 +10420,17 @@ Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc
 
       Cette règle est ignorée pour les comptes utilisateur classiques.</translation>
 <translation id="8257863622304579015">Activer le bac à sable du service réseau</translation>
+<translation id="825834906982940588">Cette règle contrôle les paramètres de la fonctionnalité Capture de texte pour <ph name="PRODUCT_OS_NAME" />.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8259375588339409826">Chromium et Google Chrome fonctionnent avec le même ensemble de règles. Sachez que ce document peut contenir des règles destinées à des versions logicielles inédites (règles dont la compatibilité renvoie à une version de <ph name="PRODUCT_NAME" /> qui n'est pas encore commercialisée), qui sont susceptibles d'être modifiées ou supprimées sans préavis, et pour lesquelles aucune garantie d'aucune sorte n'est fournie, y compris en termes de sécurité et de confidentialité.
 
 Ces règles sont strictement réservées à la configuration des instances de

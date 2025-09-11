@@ -307,7 +307,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="2497852260688568942">Sincronizarea este dezactivată de administrator</translation>
 <translation id="250020030759455918">Vei vedea starea de conectare la <ph name="SITE_NAME" />, datele de navigare și datele privind site-ul în Chrome</translation>
-<translation id="2502798195266898572">Foaia din partea de jos a modului de lectură deschisă la înălțimea completă</translation>
 <translation id="2510106555128151389">Se instalează <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Caută opțiuni de cumpărare</translation>
 <translation id="2513403576141822879">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizare și servicii Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6255809143828972562">Cu instrumentele din Chrome, navighezi în siguranță și deții controlul</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6264485186158353794">Înapoi la zona sigură</translation>
-<translation id="6267063201726531683">Foaia din partea de jos a modului de lectură</translation>
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
 <translation id="6278428485366576908">Temă</translation>
 <translation id="6291294824436685757">Șterge datele de navigare; selectează datele de șters</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="629730747756840877">Cont</translation>
-<translation id="6300697579369314762">Foaia din partea de jos a modului de lectură deschisă la jumătate din înălțime</translation>
 <translation id="6301526076346731664">Deschide Instrumentele pentru dezvoltatori</translation>
 <translation id="6303969859164067831">Deconectează-te și dezactivează sincronizarea</translation>
 <translation id="6307241780749477694">Confirmă-ți identitatea pentru a obține toate parolele de pe acest dispozitiv</translation>
@@ -1353,7 +1350,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="71503698506017927">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.
 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Foaia din partea de jos a modului de lectură închisă</translation>
 <translation id="7165972437814027679">Află mai multe despre motivul pentru care Chrome blochează unele fișiere</translation>
 <translation id="7168323970702333693">Conectat(ă) ca <ph name="USER_NAME" />. Deschide setările.</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>

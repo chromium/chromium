@@ -705,6 +705,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="9019902583201351841">Spravované vašimi rodičmi</translation>
 <translation id="902236149563113779">Weby zvyčajne sledujú polohu kamery, aby mohli poskytovať funkcie RR, ako sú hry alebo upozornenia s trasami</translation>
 <translation id="9039697262778250930">Váš účet môže byť odhlásený z týchto webov</translation>
+<translation id="9065203028668620118">Upraviť</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Chcete odstrániť súbory cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie povolenie}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie povolenia}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších povolení}}</translation>

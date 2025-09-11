@@ -705,6 +705,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>
 <translation id="902236149563113779">Sajtovi obično prate položaj kamere za potrebe funkcija proširene realnosti, poput igara ili putanja</translation>
 <translation id="9039697262778250930">Možda ćete biti odjavljeni sa ovih sajtova</translation>
+<translation id="9065203028668620118">Izmeni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Želite da izbrišete kolačiće?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>

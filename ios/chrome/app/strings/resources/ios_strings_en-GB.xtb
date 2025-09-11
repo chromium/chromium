@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Product reviews for you</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> couldn't be opened</translation>
+<translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1096992026380844478">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Share page content with Gemini to get more relevant answers. When you share a page with Gemini, the page's full content and URL are sent to Google. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>
 <translation id="3530767473765895035">Manage accounts on this device…</translation>
 <translation id="3533436815740441613">New tab</translation>
-<translation id="3533860663366814939">Open Autofill &amp; Password settings</translation>
 <translation id="3540141921715814660">Add to Bookmarks</translation>
 <translation id="3546122170015471515">Maps Preview on Google.com</translation>
 <translation id="3547356470684043247">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>

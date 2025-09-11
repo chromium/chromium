@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">為你推薦的產品評論</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
+<translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
 <translation id="1096992026380844478">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">與 Gemini 分享網頁內容，即可取得更符合需求的答案。與 Gemini 分享網頁時，系統會將完整內容和網址傳送給 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
 <translation id="3530767473765895035">管理這部裝置上的帳戶</translation>
 <translation id="3533436815740441613">新分頁</translation>
-<translation id="3533860663366814939">開啟「自動填入和密碼」設定</translation>
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="3546122170015471515">Google.com 上的地圖預覽</translation>
 <translation id="3547356470684043247">閱讀消費者的產品/服務/體驗評價後再做決定</translation>

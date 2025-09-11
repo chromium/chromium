@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
 <translation id="902236149563113779">사이트에서는 일반적으로 게임 또는 전방 방향 안내와 같은 AR 기능을 사용하기 위해 카메라 위치를 추적합니다.</translation>
 <translation id="9039697262778250930">다음 사이트에서 로그아웃될 수 있습니다.</translation>
+<translation id="9065203028668620118">수정</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9106233582039520022">쿠키를 삭제하시겠습니까?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}}</translation>

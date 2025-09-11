@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">ທ່ານສາມາດເປີດ Lens ໄດ້ຢູ່ບ່ອນນີ້.</translation>
 <translation id="1042296835509784301">ເປີດຕົວຈັດການລະຫັດຜ່ານໃນ Chromium.</translation>
 <translation id="1047130070405668746">ເລືອກ Chromium</translation>
-<translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="1091252999271033193">ນີ້ໝາຍຄວາມວ່າ Chromium ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 <translation id="1115463765356382667">ເຮັດສຳເລັດການກະທຳທີ່ແນະນຳຕໍ່ໄປນີ້ເພື່ອຮັບປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">ແຜນທີ່ໃນ Chromium</translation>
 <translation id="1867772173333403444">4. ເລືອກ Chromium</translation>
+<translation id="1965068424387304464">ເຄັດລັບ Chromium: ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="2006345422933397527">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="2042889939382983733">ເບິ່ງປະຫວັດ Chromium ຂອງທ່ານ</translation>
 <translation id="2052320862053429062">Chromium ຈະກວດສອບລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໆເພື່ອທຽບກັບລາຍຊື່ທີ່ມີການເຜີຍແຜ່ອອນລາຍ. ໃນເວລາກວດສອບ, ລະຫັດຜ່ານ ແລະ ຊື່ຜູ້ໃຊ້ຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້, ເພື່ອບໍ່ໃຫ້ໃຜກໍຕາມສາມາດອ່ານພວກມັນໄດ້, ຮວມທັງ Google ນຳ.</translation>
@@ -119,6 +119,7 @@
 <translation id="3816686541346279443">Chromium ຈະສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="3827545470516145620">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານຢູ່ອຸປະກອນນີ້</translation>
 <translation id="3833326979834193417">Chromium ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໂດຍອັດຕະໂນມັດທຸກມື້ເພື່ອຊ່ວຍໃຫ້ທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆ. ທ່ານສາມາດຊອກຫາຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການກວດສອບຄວາມປອດໄພໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="3837584850181228767">ເຄັດລັບ Chromium: Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="3845223911364528001">ກັບຄືນໄປຫາ Chromium ເພື່ອອັບໂຫຼດໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="3855938650519180865">ມີຫຍັງໃໝ່ໃນ Chromium</translation>
 <translation id="3886689467633467988">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ ແລະ Chromium ເພື່ອຮັບບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>

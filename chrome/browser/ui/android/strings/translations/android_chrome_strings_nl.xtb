@@ -307,7 +307,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2497852260688568942">Synchronisatie is uitgezet door je beheerder</translation>
 <translation id="250020030759455918">Je ziet je inlogstatus, browsegegevens en sitegegevens van <ph name="SITE_NAME" /> in Chrome</translation>
-<translation id="2502798195266898572">Blad onderaan voor Leesmodus is op volledige hoogte geopend</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeren...</translation>
 <translation id="2512234228327349533">Koopopties zoeken</translation>
 <translation id="2513403576141822879">Bekijk <ph name="BEGIN_LINK" />Synchronisatie en Google-services<ph name="END_LINK" /> voor meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling.</translation>
@@ -1128,13 +1127,11 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6255809143828972562">Met tools van Chrome kun je beveiligd browsen en de controle behouden</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
 <translation id="6264485186158353794">Terug naar beveiligde website</translation>
-<translation id="6267063201726531683">Blad onderaan voor Leesmodus</translation>
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6291294824436685757">Browsegegevens verwijderen: selecteer gegevens om te verwijderen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="629730747756840877">Account</translation>
-<translation id="6300697579369314762">Blad onderaan voor Leesmodus is op halve hoogte geopend</translation>
 <translation id="6301526076346731664">Ontwikkelaarstools openen</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6307241780749477694">Laat verifiëren dat jij het bent om al je wachtwoorden op dit apparaat te krijgen</translation>
@@ -1353,7 +1350,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="71503698506017927">Betaalmethoden en adressen van Google Pay vallen niet onder versleuteling met een wachtwoordzin.
 
 Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Blad onderaan voor Leesmodus is gesloten</translation>
 <translation id="7165972437814027679">Meer informatie over waarom Chrome bepaalde bestanden blokkeert</translation>
 <translation id="7168323970702333693">Ingelogd als <ph name="USER_NAME" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="7173114856073700355">Instellingen openen</translation>

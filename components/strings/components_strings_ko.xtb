@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">다운로드가 시작되었습니다. 확인하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="1215738931000958575">Google 계정에 저장된 정보를 사용하여 비밀번호, 패스키, 주소, 결제 수단 등의 정보를 자동 완성합니다.</translation>
 <translation id="1219129156119358924">시스템 보안</translation>
+<translation id="1219134100826635117">관리자가 이 작업을 차단했습니다</translation>
 <translation id="1222060260947439312">오른쪽 트레이</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">카드 번호:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2174875517416416684">트랜잭션이 완료되지 않았습니다. 계좌에서 금액이 인출되지 않았습니다.</translation>
 <translation id="2175630235841878061">100MB를 초과하는 파일은 다운로드할 수 없습니다.</translation>
+<translation id="217631816678106981">붙여넣지 않음</translation>
 <translation id="2178665390943006934">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 활성화하세요.</translation>
 <translation id="2178904466768126352">방문하려고 한 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수도 있습니다.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" />(<ph name="SITE_DOMAIN_NAME" />)</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">Chromium의 검색엔진에 관해 자세히 알아보기</translation>
 <translation id="2731382536835015353">44x68인치</translation>
 <translation id="2734319753272419592">Google이 내 장바구니를 사용하여 나에게 맞는 할인 혜택을 찾을 수 있도록 허용합니다. 할인이 제공되는 경우, 장바구니에 할인이 자동으로 표시됩니다.</translation>
+<translation id="2734797989819862638">복사 안함</translation>
 <translation id="273785062888389088">냉난방 및 온도 조절</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2742128390261873684">홈 자동화</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">로컬 파일이 <ph name="MINUTES" />분 후 삭제됩니다</translation>
 <translation id="3872834068356954457">과학</translation>
 <translation id="3875783148670536197">방법 보기</translation>
+<translation id="3877603629930976930">공유 안함</translation>
+<translation id="3878445208930547646">이 사이트에서 복사할 수 없습니다</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3880456882942693779">예술 및 엔터테인먼트</translation>
 <translation id="3880589673277376494">인터넷 및 통신</translation>
@@ -2110,6 +2115,7 @@
 <translation id="4466576951214254884">학자금 대출 및 고등교육 파이낸싱</translation>
 <translation id="4467821340016922962">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하여 Chrome의 가장 강력한 보안을 활용하세요.</translation>
+<translation id="4475299370877036544">이 작업은 조직의 정책을 위반할 수 있습니다.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
@@ -3482,7 +3488,7 @@
 <translation id="6786145470008421571">봉투 6 x 9 in</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787094689637422836">Chrome에서는 표시되는 광고와 관련해 사용자에게 더 많은 선택권을 제공하는 새로운 개인 정보 보호 기능을 도입합니다.</translation>
-<translation id="6788615780749001893">AI 모드 버튼, Enter 키를 눌러 AI 모드에 질문하세요</translation>
+<translation id="6788615780749001893">AI 모드 버튼의 Enter 키를 눌러 AI 모드에 질문하세요</translation>
 <translation id="6789062271869667677">연속(긴)</translation>
 <translation id="678982761784843853">보호된 콘텐츠 ID</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
 <translation id="7071122206197538392">새 비교 표</translation>
 <translation id="7075452647191940183">요청이 너무 큼</translation>
+<translation id="7075896597860500885">이 사이트에서 복사 기능은 사용하지 않는 것이 좋습니다.</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" />(동기화된 기기에는 그 이상)에서</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">업로드 차단됨</translation>
 <translation id="7132939140423847331">관리자가 복사를 금지한 데이터입니다.</translation>
+<translation id="7134653428559514680">이 사이트에서 복사 기능은 사용하지 않는 것이 좋습니다.</translation>
 <translation id="7135130955892390533">상태 보기</translation>
 <translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7136009930065337683">시크릿 모드 자세히 알아보기</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">관리 북마크</translation>
 <translation id="7275808129217605899">건강한 식생활</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정 비밀번호 변경</translation>
+<translation id="7286908876112207905">이 사이트에는 이 콘텐츠를 붙여넣을 수 없습니다</translation>
 <translation id="7291578327729322058">운전면허증 추가</translation>
 <translation id="7292031607255951991">수취인 이름</translation>
 <translation id="7298195798382681320">권장</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">198x275mm</translation>
 <translation id="7366362069757178916">결제 핸들러</translation>
 <translation id="7366594738862061263">Chrome에서 비밀번호를 보호하는 방법 알아보기</translation>
+<translation id="7370751048350026847">이 사이트에 해당 콘텐츠를 붙여넣지 않는 것이 좋습니다.</translation>
 <translation id="7372526636730851647">사진(유광)</translation>
 <translation id="7372973238305370288">검색결과</translation>
 <translation id="7374461526650987610">프로토콜 핸들러</translation>
@@ -3890,6 +3900,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">화물 트럭 및 트레일러</translation>
 <translation id="7461924472993315131">고정</translation>
+<translation id="7463068149674892185">이 작업은 권장되지 않습니다</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 최적화 및 보안</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" />에 방문한 사실을 <ph name="EMBEDDED_URL" />에서 알 수 있습니다</translation>

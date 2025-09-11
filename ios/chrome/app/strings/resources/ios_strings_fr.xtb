@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
 <translation id="1085677983426914530">Impossible d'ouvrir <ph name="FILENAME" /></translation>
+<translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1096992026380844478">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. <ph name="BEGIN_LINK" />Découvrez ce que vous pouvez synchroniser.<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Partagez le contenu de la page avec Gemini pour obtenir des réponses plus pertinentes. Lorsque vous partagez une page avec Gemini, tout son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3530206579861815432">Retrouvez rapidement les onglets ouverts et fermés récemment sur vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
-<translation id="3533860663366814939">Ouvrez les réglages "Remplissage automatique et mots de passe"</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3546122170015471515">Maps Preview sur Google.com</translation>
 <translation id="3547356470684043247">Lire les évaluations des clients sur les produits, services ou expériences pour prendre des décisions éclairées</translation>

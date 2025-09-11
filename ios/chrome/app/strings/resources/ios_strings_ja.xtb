@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">おすすめの商品レビュー</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> を開けませんでした</translation>
+<translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1096992026380844478">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="110491332089958282">より関連性の高い回答を得るには、ページ コンテンツを Gemini と共有してください。ページを Gemini と共有すると、ページのコンテンツ全体と URL が Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">同期したデバイスで開いているタブや最近閉じたタブが簡単に見つかります。</translation>
 <translation id="3530767473765895035">このデバイスのアカウントを管理…</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
-<translation id="3533860663366814939">[自動入力とパスワード] 設定を開く</translation>
 <translation id="3540141921715814660">ブックマークに追加する</translation>
 <translation id="3546122170015471515">Google.com のマップ プレビュー</translation>
 <translation id="3547356470684043247">レビューで製品、サービス、使い勝手に関する購入者の評価を確認し、判断材料にすることができます</translation>
@@ -1750,7 +1750,7 @@
 <translation id="7795253248079882669">[<ph name="BEGIN_BOLD" />書き出す<ph name="END_BOLD" />] をタップします</translation>
 <translation id="7801064017114765401">パソコン</translation>
 <translation id="7802239711290932774">提案されたパスワードを使用:</translation>
-<translation id="780301667611848630">キャンセル</translation>
+<translation id="780301667611848630">利用しない</translation>
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7812377703891978671">[<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />] を選択すると、すべての閲覧履歴にアクセスできます。</translation>
 <translation id="78146569776629510">ダウンロード</translation>

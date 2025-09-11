@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Rezensionen für dich</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> konnte nicht geöffnet werden</translation>
+<translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1096992026380844478">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. <ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst.<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="110491332089958282">Teile Seiteninhalte mit Gemini, um relevantere Antworten zu bekommen. Wenn du eine Seite mit Gemini teilst, werden der gesamte Inhalt und die URL der Seite an Google gesendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3530206579861815432">Auf deinen synchronisierten Geräten siehst du schnell deine geöffneten und kürzlich geschlossenen Tabs.</translation>
 <translation id="3530767473765895035">Konten auf diesem Gerät verwalten…</translation>
 <translation id="3533436815740441613">Neuer Tab</translation>
-<translation id="3533860663366814939">„Autom. ausfüllen &amp; Passwörter“ öffnen</translation>
 <translation id="3540141921715814660">Zu Lesezeichen hinzufügen</translation>
 <translation id="3546122170015471515">Maps-Vorabversion auf Google.com</translation>
 <translation id="3547356470684043247">Kundenbewertungen und ‑rezensionen zu Produkten, Dienstleistungen oder Angeboten lesen, um fundiertere Entscheidungen zu treffen</translation>

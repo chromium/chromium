@@ -129,6 +129,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1212527389003717329">Transferência iniciada. Para a ver, prima sem soltar |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Use as informações guardadas na sua Conta Google para preencher automaticamente palavras-passe, chaves de acesso, moradas, métodos de pagamento e outras informações</translation>
 <translation id="1219129156119358924">Segurança do sistema</translation>
+<translation id="1219134100826635117">O seu administrador bloqueou esta ação</translation>
 <translation id="1222060260947439312">Tabuleiro direito</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Número do cartão:</translation>
@@ -714,6 +715,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2174875517416416684">A sua transação não foi processada. Não foram retirados fundos da sua conta.</translation>
 <translation id="2175630235841878061">Os ficheiros com mais de 100 MB não estão disponíveis para transferência</translation>
+<translation id="217631816678106981">Não colar</translation>
 <translation id="2178665390943006934">Botão Atualizar Chrome; ative para atualizar o Chrome nas definições do Chrome</translation>
 <translation id="2178904466768126352">Os atacantes no site que tentou visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, as suas palavras-passe, fotos, mensagens ou números de cartões de crédito.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> em <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2731220418440848219">Saber mais sobre o seu motor de pesquisa no Chromium</translation>
 <translation id="2731382536835015353">44 x 68 pol.</translation>
 <translation id="2734319753272419592">Permita que a Google use os seus carrinhos para pesquisar descontos personalizados. Quando disponíveis, os descontos aparecem automaticamente nos seus carrinhos.</translation>
+<translation id="2734797989819862638">Não copiar</translation>
 <translation id="273785062888389088">Sistemas de climatização e AVAC</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Domótica</translation>
@@ -1742,6 +1745,8 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3869939189466884821">Os seus ficheiros locais vão ser eliminados dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
+<translation id="3877603629930976930">Não partilhar</translation>
+<translation id="3878445208930547646">Não é permitido copiar deste site</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
@@ -2110,6 +2115,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4466576951214254884">Empréstimos de estudante e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo de ecrã inteiro e ver a transferência, prima |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ative a Proteção melhorada<ph name="END_ENHANCED_PROTECTION_LINK" /> para desfrutar do nível de segurança mais elevado do Chrome</translation>
+<translation id="4475299370877036544">Esta ação pode violar as políticas da sua organização</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
@@ -3655,6 +3661,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="70705239631109039">A sua ligação não é totalmente segura</translation>
 <translation id="7071122206197538392">Nova tabela de comparação</translation>
 <translation id="7075452647191940183">O pedido é demasiado grande.</translation>
+<translation id="7075896597860500885">Não é recomendado copiar deste site</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">De <ph name="TYPE_1" /> (mais em dispositivos sincronizados)</translation>
@@ -3690,6 +3697,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Carregamento bloqueado</translation>
 <translation id="7132939140423847331">O seu administrador proibiu a cópia destes dados.</translation>
+<translation id="7134653428559514680">Não é recomendado copiar deste site</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
 <translation id="7135814714616751706">Pesquise atalhos</translation>
 <translation id="7136009930065337683">Saber mais sobre a Navegação anónima</translation>
@@ -3778,6 +3786,7 @@ Detalhes adicionais:
 <translation id="7275334191706090484">Marcadores Geridos</translation>
 <translation id="7275808129217605899">Alimentação saudável</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para alterar a sua palavra-passe da Conta Google</translation>
+<translation id="7286908876112207905">Não é permitido colar este conteúdo neste site</translation>
 <translation id="7291578327729322058">Adicione uma carta de condução</translation>
 <translation id="7292031607255951991">Nome do destinatário</translation>
 <translation id="7298195798382681320">Recomendado</translation>
@@ -3818,6 +3827,7 @@ Detalhes adicionais:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Controladores de pagamento</translation>
 <translation id="7366594738862061263">Saiba como o Chrome protege as suas palavras-passe</translation>
+<translation id="7370751048350026847">Não é recomendado colar este conteúdo neste site</translation>
 <translation id="7372526636730851647">Foto (brilhante)</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Processadores de protocolos</translation>
@@ -3890,6 +3900,7 @@ Detalhes adicionais:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiões e reboques para carga</translation>
 <translation id="7461924472993315131">Fixar</translation>
+<translation id="7463068149674892185">Esta ação não é recomendada</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Otimização e segurança de JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> vai saber que visitou <ph name="TOP_LEVEL_URL" /></translation>

@@ -337,7 +337,6 @@
 <translation id="1218015446623563536">Бришење на Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Локациската услуга на Google користи извори како што се Wi-Fi, мобилни мрежи и сензори за да се процени локацијата на уредот.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може да ја исклучите „Локацијата“ со исклучување на главната поставка за „Локација“ на уредов. Може да го исклучите и користењето Wi-Fi, мобилни мрежи и сензори за локација во поставките за локација.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219134100826635117">Вашиот администратор го блокирал дејствово</translation>
 <translation id="1219219114431716687">Овошна пита</translation>
 <translation id="122082903575839559">Алгоритам за потпис на сертификат</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 со RSA шифрирање</translation>
@@ -1387,7 +1386,6 @@
 <translation id="1933489278505808700">Дозволете читање и менување</translation>
 <translation id="1935303383381416800">Дозволено им е да ја гледаат локацијата</translation>
 <translation id="193565226207940518">Алатка за поддршка</translation>
-<translation id="1935995810530254458">Сепак копирај</translation>
 <translation id="1936157145127842922">Покажи во папка</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Страницата е додадена во „Списокот за читање“}one{Страниците се додадени во „Списокот за читање“}other{Страниците се додадени во „Списокот за читање“}}</translation>
 <translation id="1936931585862840749">Употребете број за да назначите колку примероци да се испечатат (од 1 до <ph name="MAX_COPIES" />).</translation>
@@ -1731,7 +1729,6 @@
 <translation id="2175526076681939329">Користете примарни копчиња</translation>
 <translation id="217576141146192373">Не може да се додаде печатач. Проверете ја конфигурацијата на печатачот и обидете се повторно.</translation>
 <translation id="2175927920773552910">QR-код</translation>
-<translation id="217631816678106981">Не залепувај</translation>
 <translation id="2177950615300672361">Инкогнито картичка: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178545675770638239">Изберете лозинка</translation>
@@ -2558,7 +2555,6 @@
 <translation id="2731971182069536520">Следниот пат кога ќе го рестартирате уредот, вашиот администратор ќе изврши еднократно ажурирање што ќе ги избрише локалните податоци.</translation>
 <translation id="2732134891301408122">Дополнителни содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓаат резултативе.</translation>
-<translation id="2734797989819862638">Не копирај</translation>
 <translation id="27349076983469322">Светла заднина</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Собери...</translation>
@@ -4231,8 +4227,6 @@
 <translation id="3876219572815410515">Прозорците со променета големина се најгоре</translation>
 <translation id="3877075909000773256">Поставки за „Споделување во близина“ за уредот на <ph name="USER_NAME" /> што споделува под сметката <ph name="USER_EMAIL" /></translation>
 <translation id="3877209288227498506">Изберете да се прикажуваат искористената меморија и сликите во картичка со преглед што се појавува со наместување на курсорот над картичка</translation>
-<translation id="3877603629930976930">Не споделувај</translation>
-<translation id="3878445208930547646">Не е дозволено копирање од сајтов</translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
 <translation id="3880513902716032002">Некои од страниците што ги отворате се вчитани однапред</translation>
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5061,7 +5055,6 @@
 <translation id="4473559657152613417">Кликнете картичка со десно копче и изберете „Додајте картичка во нова група“</translation>
 <translation id="4473996011558324141">се пресметува времетраењето</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
-<translation id="4475299370877036544">Дејствово можеби ќе ги прекрши правилата на вашата организација</translation>
 <translation id="4476198534886170024">Дозволено. Вклучете <ph name="LINK_BEGIN" />пристап до камерата за оперативниот систем<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Атлетичарка</translation>
 <translation id="4476659815936224889">За да го скенирате кодов, може да користите апликација за QR-скенер на вашиот телефон или некои апликации за камера.</translation>
@@ -7820,7 +7813,6 @@
 <translation id="6455894534188563617">&amp;Нова папка</translation>
 <translation id="645705751491738698">Продолжи да блокираш JavaScript</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> не може да се стартува</translation>
-<translation id="6458606150257356946">Сепак залепи</translation>
 <translation id="6458701200018867744">Прикачувањето не успеа (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Користи избор за пребарување</translation>
 <translation id="6459799433792303855">Активниот прозорец е преместен на друг екран.</translation>
@@ -8574,7 +8566,6 @@
 <translation id="69739764870135975">Ако Google го користите и како стандарден пребарувач, тогаш ќе добивате подобри и контекстуално релевантни предлози</translation>
 <translation id="697508444536771064">Исклучи го Linux</translation>
 <translation id="6978121630131642226">Пребарувачи</translation>
-<translation id="6978236010531171013">Сепак сподели</translation>
 <translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979041727349121225">Штедач на енергија</translation>
 <translation id="6979044105893951891">Стартувај ја и излези од надгледуваната гостинска сесија</translation>
@@ -8718,7 +8709,6 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> група <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Со шифрирање РСА</translation>
 <translation id="7075625805486468288">Управувајте со сертификатите и поставките на HTTPS/SSL</translation>
-<translation id="7075896597860500885">Не се препорачува копирање од сајтов</translation>
 <translation id="7076875098323397992">Надградбата не може да започне</translation>
 <translation id="7077751457066325012">Прегледајте и приспособете ги кратенките од тастатура</translation>
 <translation id="7077829361966535409">Страницата за пријавување не успеа да се вчита со користење на тековните поставки за прокси. <ph name="GAIA_RELOAD_LINK_START" />Обидете се да се пријавите повторно<ph name="GAIA_RELOAD_LINK_END" /> или користете поинакви <ph name="PROXY_SETTINGS_LINK_START" />поставки за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -8792,7 +8782,6 @@
 <translation id="7131896909366247105">Се чека <ph name="APP_NAME" /></translation>
 <translation id="7132886488919643383">Користете ја Google AI за да добивате помош при читање, пишување и создавање</translation>
 <translation id="7134098520442464001">Направи го текстот помал</translation>
-<translation id="7134653428559514680">Не се препорачува споделување од сајтов</translation>
 <translation id="7134951043985383439">Преземена е опасна датотека</translation>
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
@@ -8990,7 +8979,6 @@
 <translation id="7284411326658527427">Секое лице може да ја персонализира својата сметка и да ја задржи приватноста на податоците.</translation>
 <translation id="7285008278689343502">Национален парк „Гранд Тетон“</translation>
 <translation id="7286867818472074330">Изберете криптографски клуч</translation>
-<translation id="7286908876112207905">Не е дозволено лепење на содржиниве на сајтов</translation>
 <translation id="7287143125007575591">Пристапот е одбиен.</translation>
 <translation id="7287411021188441799">Врати ја стандардната заднина</translation>
 <translation id="7287949630503871403">Податоци складирани во апликацијата</translation>
@@ -9114,7 +9102,6 @@
 <translation id="736877393389250337"><ph name="URL" /> не може да се отвори во <ph name="ALTERNATIVE_BROWSER_NAME" />. Контактирајте со системскиот администратор.</translation>
 <translation id="7368927539449986686">Изменете го пребарувањето сајтови</translation>
 <translation id="7370592524170198497">Етернет EAP:</translation>
-<translation id="7370751048350026847">Не се препорачува залепување на содржиниве на сајтов</translation>
 <translation id="7374376573160927383">Управувајте со USB-уредите</translation>
 <translation id="7376124766545122644">Не може да се користи линков. Проверете дали линкот започнува со „http://“ или „https://“ за да пробате пак.</translation>
 <translation id="7376553024552204454">Нагласување на покажувачот на глувчето при движење</translation>
@@ -9253,7 +9240,6 @@
 <translation id="7460045493116006516">Темата што ви е инсталирана</translation>
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746216226901520237">Следниот пат, телефонот ќе го отклучи вашиот <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
-<translation id="7463068149674892185">Дејствово не се препорачува</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Вашата организација управува со тоа како може да се користат податоците што ги прибираат функцииве.</translation>
 <translation id="7464645554245611385">Последна промена на картичкава</translation>
@@ -9829,7 +9815,6 @@
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“. За да заштедите батерија, во поставките за „Помошникот“ може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
 <translation id="7851457902707056880">Најавувањето беше ограничено само на сопственикот на сметката. Рестартирајте и најавете се со сметката на корисникот. Машината автоматски ќе се рестартира за 30 секунди.</translation>
 <translation id="7851716364080026749">Секогаш блокирај пристап за камера и микрофон</translation>
-<translation id="7851720427268294554">IPP-анализатор</translation>
 <translation id="78526636422538552">Додавањето повеќе сметки на Google е оневозможено</translation>
 <translation id="785371335555334021">Кликнете за да излезете од <ph name="TITLE" /></translation>
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>

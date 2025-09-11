@@ -307,7 +307,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2496180316473517155">Historie procházení</translation>
 <translation id="2497852260688568942">Synchronizace je administrátorem zakázána.</translation>
 <translation id="250020030759455918">Uvidíte stav přihlášení, údaje o prohlížení a data webu <ph name="SITE_NAME" /> v Chromu</translation>
-<translation id="2502798195266898572">Spodní panel režimu čtení otevřený na celou výšku obrazovky</translation>
 <translation id="2510106555128151389">Probíhá instalace aplikace <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Vyhledat možnosti nákupu</translation>
 <translation id="2513403576141822879">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat naleznete v části <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6255809143828972562">S nástroji v prohlížeči Chrome budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6264485186158353794">Zpět na bezpečnější stránku</translation>
-<translation id="6267063201726531683">Spodní panel režimu čtení</translation>
 <translation id="6277522088822131679">Při tištění stránky došlo k problému. Zkuste to prosím znovu.</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6291294824436685757">Smazat údaje o prohlížení, vybrat data, která chcete smazat</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="629730747756840877">Účet</translation>
-<translation id="6300697579369314762">Spodní panel režimu čtení otevřený na polovinu výšky obrazovky</translation>
 <translation id="6301526076346731664">Otevřít Nástroje pro vývojáře</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
 <translation id="6307241780749477694">Pokud na tomhle zařízení chcete mít všechna svá hesla, ověřte svou totožnost</translation>
@@ -1353,7 +1350,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="71503698506017927">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
 
 Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Spodní panel režimu čtení, zavřený</translation>
 <translation id="7165972437814027679">Další informace o tom, proč Chrome některé soubory blokuje</translation>
 <translation id="7168323970702333693">Jste přihlášeni jako <ph name="USER_NAME" />. Otevře nastavení.</translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>

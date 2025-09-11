@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Ulasan produk untuk Anda</translation>
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> tidak dapat dibuka</translation>
+<translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
 <translation id="1096992026380844478">Setelan sinkronisasi akan dipulihkan berdasarkan cadangan terakhir Anda. <ph name="BEGIN_LINK" />Lihat apa saja yang dapat Anda sinkronkan<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Bagikan konten halaman kepada Gemini untuk mendapatkan jawaban yang lebih relevan. Saat Anda membagikan halaman kepada Gemini, URL dan konten lengkap halaman tersebut akan dikirim ke Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3530206579861815432">Temukan dengan cepat tab yang terbuka atau yang baru saja ditutup di semua perangkat yang disinkronkan.</translation>
 <translation id="3530767473765895035">Kelola akun di perangkat ini…</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
-<translation id="3533860663366814939">Buka setelan Autofill &amp; Password</translation>
 <translation id="3540141921715814660">Tambahkan ke Bookmark</translation>
 <translation id="3546122170015471515">Pratinjau Maps di Google.com</translation>
 <translation id="3547356470684043247">Baca evaluasi pelanggan terkait produk, layanan, atau pengalaman untuk membantu menentukan keputusan Anda dengan ulasan</translation>

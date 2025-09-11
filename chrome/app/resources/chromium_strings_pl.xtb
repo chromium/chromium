@@ -95,6 +95,7 @@
 <translation id="2185166961232948079">Chromium – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Błąd sprawdzania aktualizacji: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Usuń konto z Chromium</translation>
+<translation id="2210502920229141283">Zwiększ swoje bezpieczeństwo w dowolnym miejscu dzięki Ulepszonemu bezpiecznemu przeglądaniu w Chromium na iOS</translation>
 <translation id="2210682093923538346">Niebezpieczna witryna. Przeglądarka Chromium usunęła powiadomienia.</translation>
 <translation id="2236949375853147973">Moja aktywność</translation>
 <translation id="2238130810669087193">Aby mieć dostęp do adresów oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium. Ten adres zostanie zapisany na Twoim koncie Google, gdy się zalogujesz.</translation>
@@ -153,6 +154,7 @@
 <translation id="2928420929544864228">Instalacja ukończona.</translation>
 <translation id="2933336679234709858">Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
 <translation id="2945997411976714835">Błąd instalacji: nie udało się uruchomić procesu instalatora.</translation>
+<translation id="2948852018303413228">Szybciej loguj się na stronach dzięki zapisanym hasłom w Chromium na iOS</translation>
 <translation id="2970426615109535079">Przeglądarką Chromium zarządza Twoja organizacja</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2977506796191543575">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
@@ -556,6 +558,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7888981273428720788">Ustaw Chromium jako przeglądarkę domyślną</translation>
 <translation id="7934340546140346950">Chromium automatycznie przełącza niezabezpieczone połączenia na HTTPS, gdy jest to możliwe</translation>
 <translation id="7937630085815544518">Byłeś zalogowany w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
+<translation id="7953047982688951904">Pobierz Chromium na telefon, aby zapewnić sobie dodatkową warstwę ochrony, gdziekolwiek jesteś</translation>
 <translation id="7975919845073681630">To jest druga instalacja Chromium. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="7997934263947464652">Rozszerzenia, aplikacje i motywy z nieznanych źródeł mogą wyrządzić szkody na Twoim urządzeniu. Chromium zaleca, aby instalować je tylko ze sklepu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Przeglądarka</translation>

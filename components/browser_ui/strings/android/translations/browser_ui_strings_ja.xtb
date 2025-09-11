@@ -58,7 +58,7 @@
 <translation id="1660204651932907780">音声の再生をサイトに許可する（推奨）</translation>
 <translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1679305402657584804">サイトが NFC デバイスの使用を要求できるようにする</translation>
-<translation id="1686785653877010442">サイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信する場合がよくあります。</translation>
+<translation id="1686785653877010442">多くのサイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信します。</translation>
 <translation id="169515064810179024">サイトによるモーション センサーへのアクセスをブロックする</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
@@ -585,7 +585,7 @@
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
-<translation id="780301667611848630">キャンセル</translation>
+<translation id="780301667611848630">利用しない</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7805832099057502789">新しいタブページの外観のボトムシートが画面全体に表示されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="902236149563113779">ゲームや HUD のナビ表示などで AR 機能を使用するため、サイトでカメラ位置を追跡する場合があります。</translation>
 <translation id="9039697262778250930">これらのサイトからログアウトされる可能性があります</translation>
+<translation id="9065203028668620118">編集</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Cookie を削除しますか？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>

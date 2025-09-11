@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Produktanmeldelser for deg</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
+<translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1096992026380844478">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Del sideinnhold med Gemini for å få mer relevante svar. Når du deler en side med Gemini, sendes hele sideinnholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3530206579861815432">Du kan raskt finne åpne og nylig lukkede faner på alle de synkroniserte enhetene dine.</translation>
 <translation id="3530767473765895035">Administrer kontoer på denne enheten…</translation>
 <translation id="3533436815740441613">Ny fane</translation>
-<translation id="3533860663366814939">Åpne innstillingene for autofyll og passord</translation>
 <translation id="3540141921715814660">Legg til i bokmerker</translation>
 <translation id="3546122170015471515">Forhåndsvisninger i Maps på Google.com</translation>
 <translation id="3547356470684043247">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller erfaringer for å gjøre det lettere å ta beslutninger</translation>

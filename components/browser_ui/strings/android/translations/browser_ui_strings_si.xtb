@@ -585,7 +585,7 @@
 <translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
-<translation id="780301667611848630">එපා, ස්තූතියි</translation>
+<translation id="780301667611848630">එපා ස්තූතියි</translation>
 <translation id="7804248752222191302">වෙබ් අඩවියක් ඔබේ කැමරාව භාවිත කරයි</translation>
 <translation id="7805832099057502789">නව පටිති පිටු පෙනුම පහළ පත්‍රය සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
 <translation id="7807060072011926525">Google විසින් සපයනු ලැබේ</translation>
@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">ඔබේ දෙමව්පියන් පාලනය කරයි</translation>
 <translation id="902236149563113779">අඩවි සාමාන්‍යයෙන් ක්‍රීඩා හෝ පූර්ව දැනුම්දීම් දිශා වැනි AR විශේෂාංග සඳහා ඔබගේ කැමරාවේ පිහිටීම හඹා යයි</translation>
 <translation id="9039697262778250930">ඔබ මෙම අඩවිවලින් වරනය විය හැක</translation>
+<translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">කුකී මකන්න ද?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}}</translation>

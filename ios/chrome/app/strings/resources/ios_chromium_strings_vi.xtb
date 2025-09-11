@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Bạn có thể mở Ống kính tại đây.</translation>
 <translation id="1042296835509784301">Mở Trình quản lý mật khẩu trong Chromium.</translation>
 <translation id="1047130070405668746">Chọn Chromium</translation>
-<translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1091252999271033193">Tức là lần nào Chromium cũng yêu cầu trang web dành cho thiết bị di động.</translation>
 <translation id="1115463765356382667">Làm theo các đề xuất dưới đây để tận dụng tối đa Chromium.</translation>
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Google Maps trên Chromium</translation>
 <translation id="1867772173333403444">4. Chọn Chromium</translation>
+<translation id="1965068424387304464">Mẹo khi dùng Chromium: Lưu mật khẩu</translation>
 <translation id="2006345422933397527">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2042889939382983733">Xem nhật ký duyệt web trên Chromium</translation>
 <translation id="2052320862053429062">Chromium định kỳ kiểm tra mật khẩu của bạn so với các danh sách đăng trên Internet. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
@@ -119,6 +119,7 @@ Hãy thử đợi ít phút rồi chuyển đổi tài khoản. Nếu bạn chuy
 <translation id="3816686541346279443">Chromium sẽ đề xuất lưu mật khẩu của bạn.</translation>
 <translation id="3827545470516145620">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
 <translation id="3833326979834193417">Chromium tự động chạy tính năng Kiểm tra an toàn hằng ngày để bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác. Bạn có thể tìm thêm thông tin về tính năng Kiểm tra an toàn trong phần Cài đặt.</translation>
+<translation id="3837584850181228767">Mẹo khi dùng Chromium: Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="3845223911364528001">Quay lại Chromium để tải tệp lên</translation>
 <translation id="3855938650519180865">Tính năng mới trong Chromium</translation>
 <translation id="3886689467633467988">Đăng nhập vào trang web này và Chromium để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn.</translation>

@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">Керується батьками</translation>
 <translation id="902236149563113779">Сайти зазвичай відстежують положення камери для функцій доповненої реальності, як-от ігри або попередження про напрямки</translation>
 <translation id="9039697262778250930">Імовірно, ви вийдете з облікового запису на цих сайтах</translation>
+<translation id="9065203028668620118">Редагувати</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Видалити файли cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>

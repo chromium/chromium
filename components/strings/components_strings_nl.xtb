@@ -129,6 +129,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1212527389003717329">Download gestart. Houd je vinger op |<ph name="ACCELERATOR" />| om de download te bekijken.</translation>
 <translation id="1215738931000958575">Gebruik informatie die is opgeslagen in je Google-account om wachtwoorden, toegangssleutels, adressen, betaalmethoden en andere informatie automatisch in te vullen</translation>
 <translation id="1219129156119358924">Systeembeveiliging</translation>
+<translation id="1219134100826635117">Je beheerder heeft deze actie geblokkeerd</translation>
 <translation id="1222060260947439312">Rechterlade</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Kaartnummer:</translation>
@@ -714,6 +715,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2174875517416416684">Je transactie is mislukt. Er is geen geld van je rekening afgeschreven.</translation>
 <translation id="2175630235841878061">Je kunt bestanden groter dan 100 MB niet downloaden</translation>
+<translation id="217631816678106981">Niet plakken</translation>
 <translation id="2178665390943006934">Knop Chrome updaten. Activeer deze om Chrome te updaten vanuit de Chrome-instellingen.</translation>
 <translation id="2178904466768126352">Aanvallers op de site die je probeerde te bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoorden, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> op <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2731220418440848219">Meer informatie over je zoekmachine in Chromium</translation>
 <translation id="2731382536835015353">44 x 68 inch</translation>
 <translation id="2734319753272419592">Laat Google je winkelwagens gebruiken om naar gepersonaliseerde kortingen te zoeken. Als er kortingen beschikbaar zijn, zie je die automatisch in je winkelwagens.</translation>
+<translation id="2734797989819862638">Niet kopiëren</translation>
 <translation id="273785062888389088">HVAC en klimaatbeheersing</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatisering in huis</translation>
@@ -1737,6 +1740,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3869939189466884821">Je lokale bestanden worden over <ph name="MINUTES" /> minuten verwijderd</translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
+<translation id="3877603629930976930">Niet delen</translation>
+<translation id="3878445208930547646">Kopiëren vanaf deze site is niet toegestaan</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
 <translation id="3880589673277376494">Internet en telecom</translation>
@@ -2104,6 +2109,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4466576951214254884">Studieleningen en studiefinanciering</translation>
 <translation id="4467821340016922962">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten en de download te bekijken</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zet Geoptimaliseerde beveiliging aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te krijgen</translation>
+<translation id="4475299370877036544">Deze actie schendt misschien het beleid van je organisatie</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Dit formulier is niet beveiligd. Automatisch invullen is uitgezet.</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
@@ -3648,6 +3654,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="70705239631109039">Je verbinding is niet volledig beveiligd</translation>
 <translation id="7071122206197538392">Nieuwe vergelijkingstabel</translation>
 <translation id="7075452647191940183">Verzoek is te groot</translation>
+<translation id="7075896597860500885">Kopiëren vanaf deze site wordt niet aanbevolen</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">Van <ph name="TYPE_1" /> (meer op gesynchroniseerde apparaten)</translation>
@@ -3683,6 +3690,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Upload geblokkeerd</translation>
 <translation id="7132939140423847331">Je beheerder heeft voorkomen dat deze gegevens worden gekopieerd.</translation>
+<translation id="7134653428559514680">Delen vanaf deze site wordt niet aanbevolen</translation>
 <translation id="7135130955892390533">Status bekijken</translation>
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
 <translation id="7136009930065337683">Meer informatie over incognito</translation>
@@ -3771,6 +3779,7 @@ Aanvullende informatie:
 <translation id="7275334191706090484">Beheerde bookmarks</translation>
 <translation id="7275808129217605899">Gezond eten</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het wachtwoord van je Google-account te wijzigen</translation>
+<translation id="7286908876112207905">Deze content plakken op deze site is niet toegestaan</translation>
 <translation id="7291578327729322058">Rijbewijs toevoegen</translation>
 <translation id="7292031607255951991">Naam van ontvanger</translation>
 <translation id="7298195798382681320">Aanbevolen</translation>
@@ -3811,6 +3820,7 @@ Aanvullende informatie:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingshandlers</translation>
 <translation id="7366594738862061263">Meer informatie over hoe Chrome je wachtwoorden beveiligt</translation>
+<translation id="7370751048350026847">Deze content plakken op deze site wordt niet aanbevolen</translation>
 <translation id="7372526636730851647">Foto (glanzend)</translation>
 <translation id="7372973238305370288">zoekresultaat</translation>
 <translation id="7374461526650987610">Protocolhandlers</translation>
@@ -3884,6 +3894,7 @@ Aanvullende informatie:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Vrachtwagens en opleggers</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
+<translation id="7463068149674892185">Deze actie wordt niet aanbevolen</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">JavaScript-optimalisatie en -beveiliging</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> weet dat je <ph name="TOP_LEVEL_URL" /> hebt bezocht</translation>

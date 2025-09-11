@@ -1601,6 +1601,7 @@ Esta política suele estar inhabilitada para ofrecer protección frente al phish
 
 Esta política de dispositivo es equivalente a la política del usuario existente <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, pero se aplica al perfil de acceso en la pantalla de acceso.</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube de navegadores administrados</translation>
+<translation id="2090280024671359587">Permitir la Captura de texto y mejorar los modelos de IA.</translation>
 <translation id="2090712407517297305">Mostrar una página del historial de Chrome organizada en grupos en chrome://history/grouped</translation>
 <translation id="2090939118981888335">Si habilitas la política, se activará el proxy de compresión de datos. Si la inhabilitas, se desactivará el proxy.
 
@@ -3541,6 +3542,7 @@ Esta política se limitará a 1,000 entradas.
 Si no estableces la política, se impedirá la navegación en el navegador cuando la VPN siempre activada con modo estricto esté activa y la VPN no esté conectada.</translation>
 <translation id="3405997282295704902">No permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">No preguntar al usuario (las descargas comienzan de inmediato)</translation>
+<translation id="3410534959501660670">Configuración de la función Captura de texto</translation>
 <translation id="3411947169047929182">Controla la configuración relacionada con WebRtc</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si habilitas la política, se ejecutará el proceso de audio con prioridad por encima de la normal.
@@ -6420,6 +6422,7 @@ Valores de procesamiento válidos:
 
 Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) para obtener una descripción detallada de todos los valores de procesamiento.</translation>
 <translation id="5290940294294002042">Especificar una lista de complementos que el usuario puede habilitar o inhabilitar.</translation>
+<translation id="5292069729218406524">Permitir la Captura de texto sin mejorar los modelos de IA.</translation>
 <translation id="5293285950307241933">Borrar todos los datos locales del usuario</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de video</translation>
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
@@ -10147,6 +10150,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 <translation id="7713608076604149344">Restricciones de descarga</translation>
 <translation id="7713845740295404764">Informar eventos de acceso y salida</translation>
 <translation id="7715711044277116530">Indica el porcentaje en el que debe ajustarse la demora de inactividad de la pantalla en el modo de presentación.</translation>
+<translation id="7715838249298819250">No permitir Captura de texto.</translation>
 <translation id="7716020145539921591">Esta política no está disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si configuras esta política, podrás especificar la dirección URL del servidor proxy. Esta política solo tendrá efecto si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> y si seleccionas <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -10874,6 +10878,17 @@ Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#sec
 
       Esta política no se aplica a las cuentas de usuario normales.</translation>
 <translation id="8257863622304579015">Habilitar la zona de pruebas del servicio de red</translation>
+<translation id="825834906982940588">Esta política controla la configuración de la función Captura de texto para <ph name="PRODUCT_OS_NAME" />.
+
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = No permite la función.
+
+Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8259375588339409826">Chromium y Google Chrome se rigen por las mismas políticas.
       Debes tener en cuenta que es posible que este documento incluya
       políticas no publicadas (p. ej., la entrada "Disponible en" hace

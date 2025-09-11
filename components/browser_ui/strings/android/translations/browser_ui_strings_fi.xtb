@@ -705,6 +705,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="9019902583201351841">Vanhempiesi hallinnoima</translation>
 <translation id="902236149563113779">Sivustot seuraavat yleensä kameran asentoa tarjotakseen AR-ominaisuuksia, kuten pelejä tai suuntailmoituksia</translation>
 <translation id="9039697262778250930">Sinut voidaan kirjata ulos näiltä sivustoilta</translation>
+<translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Poistetaanko evästeet?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}}</translation>

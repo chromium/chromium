@@ -307,7 +307,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2497852260688568942">Sinkronisasi dinonaktifkan oleh administrator</translation>
 <translation id="250020030759455918">Di Chrome, Anda akan melihat status login, data penjelajahan, dan data situs <ph name="SITE_NAME" /></translation>
-<translation id="2502798195266898572">Panel bawah mode baca terbuka sepenuhnya</translation>
 <translation id="2510106555128151389">Menginstal <ph name="WEBAPK_NAME" /> ...</translation>
 <translation id="2512234228327349533">Telusuri opsi pembelian</translation>
 <translation id="2513403576141822879">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Sinkronisasi dan layanan Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6255809143828972562">Dengan alat dari Chrome, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6264376385120300461">Tetap download</translation>
 <translation id="6264485186158353794">Kembali agar aman</translation>
-<translation id="6267063201726531683">Panel bawah mode baca</translation>
 <translation id="6277522088822131679">Terjadi error saat mencetak halaman. Coba lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Hapus data penjelajahan; pilih data yang akan dihapus</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="629730747756840877">Akun</translation>
-<translation id="6300697579369314762">Panel bawah mode baca terbuka setengah</translation>
 <translation id="6301526076346731664">Membuka Alat Developer</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6307241780749477694">Verifikasi diri Anda untuk mendapatkan semua sandi di perangkat ini</translation>
@@ -1353,7 +1350,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="71503698506017927">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay.
 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Panel bawah mode baca ditutup</translation>
 <translation id="7165972437814027679">Pelajari lebih lanjut alasan Chrome memblokir beberapa file</translation>
 <translation id="7168323970702333693">Login sebagai <ph name="USER_NAME" />. Membuka setelan.</translation>
 <translation id="7173114856073700355">Buka Setelan</translation>

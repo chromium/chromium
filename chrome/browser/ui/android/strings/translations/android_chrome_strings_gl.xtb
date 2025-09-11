@@ -307,7 +307,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497852260688568942">O administrador desactivou a sincronización</translation>
 <translation id="250020030759455918">Poderás ver o teu estado de inicio de sesión de <ph name="SITE_NAME" />, os teus datos de navegación e os datos do sitio en Chrome</translation>
-<translation id="2502798195266898572">Panel inferior do modo de lectura aberto a altura completa</translation>
 <translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Buscar opcións de compra</translation>
 <translation id="2513403576141822879">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización e servizos de Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6255809143828972562">Coas ferramentas de Chrome, podes navegar de maneira segura e manter o control</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
-<translation id="6267063201726531683">Panel inferior do modo de lectura</translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Eliminar os datos de navegación. Seleccionar os datos que queres eliminar</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="629730747756840877">Conta</translation>
-<translation id="6300697579369314762">Panel inferior do modo de lectura aberto a altura media</translation>
 <translation id="6301526076346731664">Abrir ferramentas de programación</translation>
 <translation id="6303969859164067831">Pechar sesión e desactivar a sincronización</translation>
 <translation id="6307241780749477694">Verifica a túa identidade para ter todos os teus contrasinais neste dispositivo</translation>
@@ -1353,7 +1350,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="71503698506017927">A encriptación mediante frase de acceso non inclúe os métodos de pago nin os enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Panel inferior do modo de lectura pechado</translation>
 <translation id="7165972437814027679">Máis información sobre por que Chrome bloquea algúns ficheiros</translation>
 <translation id="7168323970702333693">Iniciaches sesión como <ph name="USER_NAME" />. Abre a configuración.</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>

@@ -705,6 +705,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="902236149563113779">Sites volgen je camerapositie meestal voor AR-functies, zoals games of visuele aanduidingen voor routes</translation>
 <translation id="9039697262778250930">Je wordt misschien uitgelogd van deze sites</translation>
+<translation id="9065203028668620118">Bewerken</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Cookies verwijderen?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>

@@ -337,7 +337,6 @@
 <translation id="1218015446623563536">Linux ડિલીટ કરો</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googleની સ્થાન સેવા, આ ડિવાઇસના સ્થાનનું અનુમાન લગાવવામાં સહાય માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સર જેવા સૉર્સનો ઉપયોગ કરે છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે આ ડિવાઇસ પરની મુખ્ય સ્થાન સેટિંગને બંધ કરીને સ્થાન સેવાને બંધ કરી શકો છો. તમે સ્થાન સેટિંગમાં સ્થાન સેવા માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સરનો ઉપયોગ પણ બંધ કરી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219134100826635117">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા આ ક્રિયા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="1219219114431716687">ફળનો ટાર્ટ</translation>
 <translation id="122082903575839559">પ્રમાણપત્ર સહી ઍલ્ગોરિધમ</translation>
 <translation id="1221024147024329929">RSA એન્ક્રિપ્શનવાળું PKCS #1 MD2</translation>
@@ -427,6 +426,7 @@
 <translation id="1277020343994096713">એક નવો પિન બનાવો જે તમારા વર્તમાન પિનથી અલગ હોય</translation>
 <translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> પર નવા ટૅબમાં “<ph name="SEARCH_TERMS" />” શોધો</translation>
 <translation id="127849925363482083">પિન કરેલું ટૅબ બંધ કરવા માટે ફરીથી <ph name="SHORTCUT_TEXT" /> દબાવો</translation>
+<translation id="1278542245784398460">આ ટૅબ પર રાઇટ ક્લિક કરો અને “નવા વિભાજિત વ્યૂમાં ટૅબ ઉમેરો” પસંદ કરો</translation>
 <translation id="1278859221870828664">Google Play ઍપ અને સેવાઓનો રિવ્યૂ કરો</translation>
 <translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="127946606521051357">નજીકનું ડિવાઇસ શેર કરી રહ્યું છે</translation>
@@ -735,6 +735,7 @@
 <translation id="1503392482221435031">વપરાશના આંકડા ઑટોમૅટિક રીતે Googleને મોકલે છે. તમે તમારા ડિવાઇસના સેટિંગમાં ક્રૅશ રિપોર્ટની સુવિધા ચાલુ કે બંધ કરી શકો છો.</translation>
 <translation id="1503556098270577657">તમે તમારા Android ફોનનો ઉપયોગ કરીને <ph name="USER_EMAIL" />માં સાઇન ઇન થયા છો</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ને દૂર કરો</translation>
+<translation id="1504253885059472207">વિભાજિત વ્યૂને પિન કરો</translation>
 <translation id="1504551620756424144">શેર કરેલા ફોલ્ડરો Windowsમાં <ph name="BASE_DIR" />પર ઉપલબ્ધ હોય છે.</translation>
 <translation id="1505494256539862015">બધા પાસવર્ડની નિકાસ કરો</translation>
 <translation id="1505654899813338756">તમે સંબંધિત પેજને એકસાથે રાખવા માટે અને તમારા સમગ્ર ડિવાઇસ પર સાચવેલા રાખવા માટે ટૅબને ગ્રૂપ કરી શકો છો</translation>
@@ -876,6 +877,7 @@
 <translation id="1597806446183714225">ઑડિયોની ક્વૉલિટી બહેતર બનાવો જેથી વૉઇસ કુદરતી અને સ્પષ્ટ લાગે.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે <ph name="SITE_ETLD_PLUS_ONE" />નો ઉપયોગ કરો</translation>
 <translation id="1598233202702788831">તમારા વ્યવસ્થાપક દ્વારા અપડેટ્સ અક્ષમ કરાયા છે.</translation>
+<translation id="1598293830962835699">જ્યારે તમને વિભાજિત વ્યૂની જરૂર પડે, ત્યારે તેને ઝડપથી બનાવો</translation>
 <translation id="1600857548979126453">પેજ ડિબગર બૅકએન્ડ ઍક્સેસ કરો</translation>
 <translation id="1601481906560916994">સાઇટને બાકાત રાખો</translation>
 <translation id="1601560923496285236">લાગુ કરો</translation>
@@ -1374,7 +1376,6 @@
 <translation id="1933489278505808700">વાંચવા અને ફેરફાર કરવાની મંજૂરી આપી છે</translation>
 <translation id="1935303383381416800">તમારું સ્થાન જોવાની મંજૂરી છે</translation>
 <translation id="193565226207940518">સપોર્ટ ટૂલ</translation>
-<translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1936157145127842922">ફોલ્ડરમાં બતાવો</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}one{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}other{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યા}}</translation>
 <translation id="1936931585862840749">કેટલી કૉપિ પ્રિન્ટ કરવાની છે એ દર્શાવવા માટે સંખ્યાનો ઉપયોગ કરો (1 થી <ph name="MAX_COPIES" /> સુધીની).</translation>
@@ -1718,7 +1719,6 @@
 <translation id="2175526076681939329">પ્રાથમિક કીનો ઉપયોગ કરો</translation>
 <translation id="217576141146192373">પ્રિન્ટર ઉમેરી શકાયું નથી. કૃપા કરીને તમારા પ્રિન્ટરની ગોઠવણી ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
-<translation id="217631816678106981">પેસ્ટ કરશો નહીં</translation>
 <translation id="2177950615300672361">છુપો ટેબ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
@@ -2543,7 +2543,6 @@
 <translation id="2731971182069536520">આગલી વખતે તમે તમારું ડિવાઇસ ફરી શરૂ કરશો, ત્યારે તમારા વ્યવસ્થાપક એક-સમયનો અપડેટ કરશે, જેના કારણે તમારો બધો સ્થાનિક ડેટા ડિલીટ થઈ જશે.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ</translation>
 <translation id="2733248615007838252">થમ્બ્સ અપ એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ પરિણામો ગમે છે.</translation>
-<translation id="2734797989819862638">કૉપિ કરશો નહીં</translation>
 <translation id="27349076983469322">આછું બૅકગ્રાઉન્ડ</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
@@ -3099,6 +3098,7 @@
 <translation id="3122883569442693641">વધુ વિગતો</translation>
 <translation id="3124111068741548686">વપરાશકર્તા હેન્ડલ કરે છે</translation>
 <translation id="3124332159330678621">તમારા બ્રાઉઝરને કોઈ નવો દેખાવ આપવા માટે Chromeને કસ્ટમાઇઝ કરો</translation>
+<translation id="3125361247594231799">આગલી વખત માટે તેને પિન કરો</translation>
 <translation id="3125816458150005808">તમે તેને અનપિન કરી શકો છો અને તેને મેનૂમાંથી ખોલી શકો છો</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ચાર્જિંગ અને કાર્યપ્રદર્શનની સમસ્યાઓ ટાળવા માટે, સુસંગત Dell અથવા USB પ્રકાર-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
@@ -4216,8 +4216,6 @@
 <translation id="3876219572815410515">વિન્ડોનું કદ ઉપરની બાજુએ બદલ્યું</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ના ડિવાઇસ માટે નજીકના શેર સેટિંગ, <ph name="USER_EMAIL" /> એકાઉન્ટ હેઠળ શેર કરવામાં આવી રહ્યાં છે.</translation>
 <translation id="3877209288227498506">ટૅબ પર લઈ જવાથી મળતા પૉપ-અપના પ્રીવ્યૂ કાર્ડમાં મેમરી વપરાશ અને છબીઓ બતાવવાનું પસંદ કરો</translation>
-<translation id="3877603629930976930">શેર કરશો નહીં</translation>
-<translation id="3878445208930547646">આ સાઇટ પરથી કૉપિ કરવાની મંજૂરી નથી</translation>
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
 <translation id="3880513902716032002">તમે મુલાકાત લો છો તેમાંથી કેટલાક પેજ પહેલેથી લોડ કરવામાં આવે છે</translation>
 <translation id="3884152383786131369">એકથી વધારે ભાષાઓમાં ઉપલબ્ધ વેબ કન્ટેન્ટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4825,6 +4823,7 @@
 <translation id="4310139701823742692">ખોટા ફોર્મેટની ફાઇલ છે. PPD ફાઇલ તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="4310496734563057511">જો તમે આ ડિવાઇસ અન્ય લોકો સાથે શેર કરો છો, તો જ્યારે પણ તમે કોઈ સાચવેલા પાસવર્ડનો ઉપયોગ કરો ત્યારે એ તમે જ છો તેની ચકાસણી કરવા માટે તમે Windows Hello ચાલુ કરી શકો છો</translation>
 <translation id="431076611119798497">&amp;વિગતો</translation>
+<translation id="431127643228811252">વિભાજિત વ્યૂ એકથી વધુ કાર્યો કરવાનું વધુ સરળ બનાવે છે</translation>
 <translation id="4311284648179069796">વાંચવા અને ફેરફાર કરવાની મંજૂરી આપી નથી</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google એકાઉન્ટ}one{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}other{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}}</translation>
 <translation id="4312866146174492540">અવરોધિત કરો (ડિફૉલ્ટ)</translation>
@@ -5046,7 +5045,6 @@
 <translation id="4473559657152613417">ટૅબ પર રાઇટ ક્લિક કરો અને "નવા ગ્રૂપમાં ટૅબ ઉમેરો" પસંદ કરો</translation>
 <translation id="4473996011558324141">સમયનો અંદાજ કાઢી રહ્યાં છીએ</translation>
 <translation id="4474155171896946103">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
-<translation id="4475299370877036544">આ ક્રિયા કદાચ તમારી સંસ્થાની પૉલિસીઓનું ઉલ્લંઘન કરી શકે છે</translation>
 <translation id="4476198534886170024">મંજૂરી છે. <ph name="LINK_BEGIN" />સિસ્ટમનો કૅમેરાનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
 <translation id="4476590490540813026">ઍથ્લીટ</translation>
 <translation id="4476659815936224889">આ કોડ સ્કૅન કરવા માટે, તમે તમારા ફોન પર QR સ્કૅનર ઍપ અથવા અમુક કૅમેરા ઍપનો ઉપયોગ કરી શકો છો.</translation>
@@ -7807,7 +7805,6 @@ USB ડિવાઇસ</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> લૉન્ચ કરી શકાતી નથી</translation>
-<translation id="6458606150257356946">તેમ છતાં પેસ્ટ કરો</translation>
 <translation id="6458701200018867744">અપલોડ નિષ્ફળ થયું (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">શોધવા માટે પસંદગીનો ઉપયોગ કરો</translation>
 <translation id="6459799433792303855">સક્રિય વિંડો બીજા ડિસ્પ્લેમાં ખસેડી છે.</translation>
@@ -8505,6 +8502,7 @@ USB ડિવાઇસ</translation>
 <translation id="6931690462168617033">ક્લિકની ક્ષમતા</translation>
 <translation id="6933321725007230600">&amp;સિંક કરો સુવિધા ચાલુ કરો...</translation>
 <translation id="693459579445775904">ડિસ્ક સ્પેસ સાચવવા માટે, વપરાશકર્તાઓમાં વૉઇસની ફાઇલો શેર કરવામાં આવે છે</translation>
+<translation id="6934597021412437058">હવે તમે તુલના, એકથી વધુ કાર્યો અને બીજું ઘણું કરવા માટે વિભાજિત વ્યૂનો ઉપયોગ કરી શકો છો</translation>
 <translation id="6935031746833428401">ડિવાઇસના મેનેજમેન્ટ વિશે વધુ જાણો</translation>
 <translation id="6935286146439255109">પેપર ટ્રે ખૂટે છે</translation>
 <translation id="6938386202199793006">તમારી પાસે 1 સાચવેલું પ્રિન્ટર છે.</translation>
@@ -8561,7 +8559,6 @@ USB ડિવાઇસ</translation>
 <translation id="69739764870135975">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="697508444536771064">Linux શટ ડાઉન કરો</translation>
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
-<translation id="6978236010531171013">કોઈપણ રીતે શેર કરો</translation>
 <translation id="6978717888677691380">તમે બ્લૉક કરેલી સાઇટ</translation>
 <translation id="6979041727349121225">એનર્જી સેવર</translation>
 <translation id="6979044105893951891">મેનેજ કરેલા અતિથિ સત્રો લૉન્ચ કરો અને બહાર નીકળો</translation>
@@ -8706,7 +8703,6 @@ USB ડિવાઇસ</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ગ્રૂપ - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA એન્ક્રિપ્શનવાળું PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL પ્રમાણપત્રો અને સેટિંગ મેનેજ કરો</translation>
-<translation id="7075896597860500885">આ સાઇટ પરથી કૉપિ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="7076875098323397992">અપગ્રેડની પ્રક્રિયા શરૂ કરી શકાતી નથી</translation>
 <translation id="7077751457066325012">કીબોર્ડ શૉર્ટકટ જુઓ અને કસ્ટમાઇઝ કરો</translation>
 <translation id="7077829361966535409">સાઇન-ઇન પેજ વર્તમાન પ્રૉક્સી સેટિંગનો ઉપયોગ કરીને લોડ થવામાં નિષ્ફળ થયું. કૃપા કરીને <ph name="GAIA_RELOAD_LINK_START" />ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો<ph name="GAIA_RELOAD_LINK_END" /> અથવા જુદા <ph name="PROXY_SETTINGS_LINK_START" />પ્રૉક્સી સેટિંગ<ph name="PROXY_SETTINGS_LINK_END" />નો ઉપયોગ કરો.</translation>
@@ -8780,7 +8776,6 @@ USB ડિવાઇસ</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="7132886488919643383">વાંચન, લેખન અને રચનામાં સહાય મેળવવા માટે Google AIનો ઉપયોગ કરો</translation>
 <translation id="7134098520442464001">ટેક્સ્ટને વધુ નાનો બનાવો</translation>
-<translation id="7134653428559514680">આ સાઇટ પરથી શેર કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="7134951043985383439">જોખમી ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="7135729336746831607">બ્લૂટૂથ ચાલુ કરીએ?</translation>
 <translation id="7136694880210472378">ડિફૉલ્ટ બનાવો</translation>
@@ -8978,7 +8973,6 @@ USB ડિવાઇસ</translation>
 <translation id="7284411326658527427">દરેક વ્યક્તિ તેમનું એકાઉન્ટ મનગમતું બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
 <translation id="7285008278689343502">ગ્રાન્ડ ટેટન નેશનલ પાર્ક</translation>
 <translation id="7286867818472074330">પાસકી પસંદ કરો</translation>
-<translation id="7286908876112207905">આ કન્ટેન્ટને આ સાઇટ પર પેસ્ટ કરવાની મંજૂરી નથી</translation>
 <translation id="7287143125007575591">ઍક્સેસ નિષેધ.</translation>
 <translation id="7287411021188441799">ડિફૉલ્ટ બૅકગ્રાઉન્ડ પાછું મેળવો</translation>
 <translation id="7287949630503871403">ઍપમાં સ્ટોર કરેલો ડેટા</translation>
@@ -9102,7 +9096,6 @@ USB ડિવાઇસ</translation>
 <translation id="736877393389250337"><ph name="ALTERNATIVE_BROWSER_NAME" />માં <ph name="URL" /> ખોલી શકાયું નથી. કૃપા કરીને તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7368927539449986686">સાઇટની શોધમાં ફેરફાર કરો</translation>
 <translation id="7370592524170198497">ઇથરનેટ EAP:</translation>
-<translation id="7370751048350026847">આ કન્ટેન્ટને આ સાઇટ પર પેસ્ટ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="7374376573160927383">USB ડિવાઇસને મેનેજ કરો</translation>
 <translation id="7376124766545122644">આ લિંકનો ઉપયોગ કરી શકાતો નથી. ફરી પ્રયાસ કરવા માટે ચેક કરો કે તમારી લિંક 'http://' અથવા 'https://'થી શરૂ થતી હોય.</translation>
 <translation id="7376553024552204454">માઉસ કર્સર જ્યારે ગતિમાન હોય ત્યારે તેને હાઇલાઇટ કરો</translation>
@@ -9241,7 +9234,6 @@ USB ડિવાઇસ</translation>
 <translation id="7460045493116006516">તમે ઇન્સ્ટૉલ કરેલી વર્તમાન થીમ</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
 <translation id="746216226901520237">આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
-<translation id="7463068149674892185">આ ઍક્શનનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">તમારી સંસ્થા, આ સુવિધાઓ દ્વારા એકત્રિત કરવામાં આવેલા ડેટાનો ઉપયોગ કેવી રીતે કરવામાં આવી શકે છે તે મેનેજ કરે છે.</translation>
 <translation id="7464645554245611385">આ ટૅબની છેલ્લી અપડેટ</translation>
@@ -9607,6 +9599,7 @@ USB ડિવાઇસ</translation>
 <translation id="7705276765467986571">બુકમાર્ક મૉડેલ લોડ કરી શકાયું નથી. </translation>
 <translation id="7705334495398865155">અન્ય લોકોને આ ડિવાઇસ ટ્રૅક કરવાથી રોકવા માટે તમારા હાર્ડવેરના ID (BSSID)ની કોઈપણ ક્રમમાં ગોઠવણ કરો.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">તમે વિકલ્પો અને વધુની તુલના સરળતાથી કરી શકો તે માટે, એક જ ટૅબમાં પેજને બાજુ-બાજુમાં મૂકો</translation>
 <translation id="7707108266051544351">આ સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
 <translation id="770831926727930011">તમારો સ્થાનિક ડેટા તમારા જૂના પાસવર્ડ વડે સુરક્ષિત છે. સ્થાનિક ડેટા રિકવર કરવા માટે તમારો જૂનો પાસવર્ડ દાખલ કરો.</translation>
@@ -9817,7 +9810,6 @@ USB ડિવાઇસ</translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ તમારા વ્યક્તિગત પરિણામો અથવા તમારા Assistantને ઍક્સેસ કરી શકે છે. બૅટરીની બચત કરવા માટે, આ ડિવાઇસ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય, માત્ર ત્યારે જ તમે તમારા Assistantના સેટિંગમાં “Ok Google”ની સુવિધા ચાલુ રાખવાનું પસંદ કરી શકો છો.</translation>
 <translation id="7851457902707056880">સાઇન ઇન માત્ર માલિકનાં એકાઉન્ટ માટે જ પ્રતિબંધિત છે. કૃપા કરીને રીબૂટ કરો અને માલિકનાં એકાઉન્ટથી સાઇન ઇન કરો. મશીન 30 સેકન્ડમાં સ્વતઃ રીબૂટ થશે.</translation>
 <translation id="7851716364080026749">હંમેશા કૅમેરા અને માઇક્રોફોનના ઍક્સેસને બ્લૉક કરો</translation>
-<translation id="7851720427268294554">IPP વિશ્લેષક</translation>
 <translation id="78526636422538552">Googleના વધુ એકાઉન્ટ ઉમેરી શકાશે નહીં</translation>
 <translation id="785371335555334021"><ph name="TITLE" />થી દૂર નૅવિગેટ કરવા માટે ક્લિક કરો</translation>
 <translation id="7853747251428735">વધુ સા&amp;ધનો</translation>

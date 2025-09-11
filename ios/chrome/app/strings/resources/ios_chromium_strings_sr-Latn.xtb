@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Ovde možete da otvorite Objektiv.</translation>
 <translation id="1042296835509784301">Otvara Menadžer lozinki u Chromium-u.</translation>
 <translation id="1047130070405668746">Izaberite Chromium</translation>
-<translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtevati mobilni sajt.</translation>
 <translation id="1115463765356382667">Obavite ove predložene radnje u nastavku da biste iskoristili Chromium na najbolji način.</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Mape u Chromium-u</translation>
 <translation id="1867772173333403444">4. Izaberite Chromium</translation>
+<translation id="1965068424387304464">Napomena za Chromium: Sačuvajte lozinke</translation>
 <translation id="2006345422933397527">Chromium ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="2042889939382983733">Pregledajte Chromium istoriju</translation>
 <translation id="2052320862053429062">Chromium povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
@@ -119,6 +119,7 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="3816686541346279443">Chromium će vam ponuditi da sačuva lozinku.</translation>
 <translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
 <translation id="3833326979834193417">Chromium automatski pokreće Proveru bezbednosti svakog dana da bi vas zaštitio od povrede podataka, nebezbednih veb-sajtova i drugog. Više o Proveri bezbednosti možete da pronađete u Podešavanjima.</translation>
+<translation id="3837584850181228767">Napomena za Chromium: Poboljšano bezbedno pregledanje</translation>
 <translation id="3845223911364528001">Vratite se u Chromium da biste otpremili fajl</translation>
 <translation id="3855938650519180865">Šta je novo u Chromium-u</translation>
 <translation id="3886689467633467988">Prijavite se na ovaj sajt i u Chromium da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>

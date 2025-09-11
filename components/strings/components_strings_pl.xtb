@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1063822554756965137">Pliki zostały usunięte</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome uważa, że nie chcesz otrzymywać powiadomień z tej strony internetowej. Żądania są ukrywane, aby nie przeszkadzać Ci w przeglądaniu.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Szczegóły wyszukiwarki</translation>
 <translation id="1068467933609179019">Ustawienia usług autouzupełniania</translation>
@@ -129,6 +130,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1212527389003717329">Rozpoczęto pobieranie. Aby wyświetlić pobrane pliki, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Używaj informacji zapisanych na koncie Google do automatycznego uzupełniania haseł, kluczy dostępu, adresów, form płatności i innych informacji</translation>
 <translation id="1219129156119358924">Zabezpieczenia systemu</translation>
+<translation id="1219134100826635117">Administrator zablokował to działanie</translation>
 <translation id="1222060260947439312">Taca prawa</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Numer karty:</translation>
@@ -714,6 +716,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2174875517416416684">Transakcja nie została zrealizowana. Środki z Twojego konta nie zostały pobrane.</translation>
 <translation id="2175630235841878061">Nie można pobrać plików przekraczających 100 MB</translation>
+<translation id="217631816678106981">Nie wklejaj</translation>
 <translation id="2178665390943006934">Przycisk Zaktualizuj Chrome; aktywuj, aby zaktualizować przeglądarkę Chrome z poziomu jej ustawień</translation>
 <translation id="2178904466768126352">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasła, zdjęcia, wiadomości czy numery kart kredytowych.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> na <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1063,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2731220418440848219">Więcej informacji o wyszukiwarce w Chromium</translation>
 <translation id="2731382536835015353">44 x 68 cali</translation>
 <translation id="2734319753272419592">Pozwól Google na sprawdzanie, czy do produktów, które masz w koszykach, można zastosować spersonalizowane rabaty. Dostępne rabaty będą automatycznie wyświetlane w koszykach.</translation>
+<translation id="2734797989819862638">Nie kopiuj</translation>
 <translation id="273785062888389088">Ogrzewanie, wentylacja i klimatyzacja oraz nawilżanie powietrza</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatyka domowa</translation>
@@ -1622,6 +1626,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3678529606614285348">Otwórz stronę w nowym oknie incognito (Ctrl+Shift+N)</translation>
 <translation id="3678914302246317895">Wpisz <ph name="OTP_LENGTH" />-cyfrowy kod weryfikacyjny</translation>
 <translation id="3681007416295224113">Informacje o certyfikacie</translation>
+<translation id="3681191721636073359">Chrome uważa, że nie chcesz używać swojej lokalizacji na tej stronie internetowej. Żądania są ukrywane, aby nie przeszkadzać Ci w przeglądaniu.</translation>
 <translation id="3681421644246505351">Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania.</translation>
 <translation id="3681841880472207951">Film QuickTime</translation>
 <translation id="3682094733650754138">Wybrano opcję wypełnienia adresu</translation>
@@ -1742,6 +1747,8 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3869939189466884821">Za <ph name="MINUTES" /> minut Twoje pliki lokalne zostaną usunięte</translation>
 <translation id="3872834068356954457">Nauka</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
+<translation id="3877603629930976930">Nie udostępniaj</translation>
+<translation id="3878445208930547646">Kopiowanie z tej witryny jest niedozwolone</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3880456882942693779">Sztuka i rozrywka</translation>
 <translation id="3880589673277376494">Internet i telekomunikacja</translation>
@@ -2110,6 +2117,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4466576951214254884">Kredyty studenckie i finansowanie studiów</translation>
 <translation id="4467821340016922962">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" />, aby korzystać z najwyższego poziomu zabezpieczeń Chrome</translation>
+<translation id="4475299370877036544">To działanie może naruszać zasady Twojej organizacji</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ten formularz nie jest bezpieczny. Autouzupełnianie zostało wyłączone.</translation>
 <translation id="4477350412780666475">Następny utwór</translation>
@@ -3655,6 +3663,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="70705239631109039">Połączenie nie jest całkowicie bezpieczne</translation>
 <translation id="7071122206197538392">Nowa tabela porównawcza</translation>
 <translation id="7075452647191940183">Żądanie jest za duże</translation>
+<translation id="7075896597860500885">Kopiowanie z tej witryny nie jest zalecane</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">Z witryny <ph name="TYPE_1" /> (więcej na zsynchronizowanych urządzeniach)</translation>
@@ -3690,6 +3699,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Przesyłanie jest zablokowane</translation>
 <translation id="7132939140423847331">Administrator nie zezwala na kopiowanie tych danych.</translation>
+<translation id="7134653428559514680">Udostępnianie z tej witryny nie jest zalecane</translation>
 <translation id="7135130955892390533">Wyświetlanie informacji o obecności</translation>
 <translation id="7135814714616751706">Szukaj skrótów</translation>
 <translation id="7136009930065337683">Więcej informacji o trybie incognito</translation>
@@ -3778,6 +3788,7 @@ Dodatkowe informacje:
 <translation id="7275334191706090484">Zakładki zarządzane</translation>
 <translation id="7275808129217605899">Zdrowe odżywianie</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby zmienić swoje hasło do konta Google</translation>
+<translation id="7286908876112207905">Wklejanie tej treści w tej witrynie jest niedozwolone</translation>
 <translation id="7291578327729322058">Dodaj prawo jazdy</translation>
 <translation id="7292031607255951991">Nazwa odbiorcy</translation>
 <translation id="7298195798382681320">Zalecana</translation>
@@ -3818,6 +3829,7 @@ Dodatkowe informacje:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Moduły do obsługi płatności</translation>
 <translation id="7366594738862061263">Jak Chrome chroni Twoje hasła</translation>
+<translation id="7370751048350026847">Wklejanie tej treści w tej witrynie nie jest zalecane</translation>
 <translation id="7372526636730851647">Zdjęcie (błyszczące)</translation>
 <translation id="7372973238305370288">wynik wyszukiwania</translation>
 <translation id="7374461526650987610">Obsługa protokołów</translation>
@@ -3891,6 +3903,7 @@ Dodatkowe informacje:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Samochody ciężarowe i przyczepy</translation>
 <translation id="7461924472993315131">Przypnij</translation>
+<translation id="7463068149674892185">Nie zalecamy tego</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optymalizacja i zabezpieczenia JavaScriptu</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> dowie się o Twojej wizycie na <ph name="TOP_LEVEL_URL" /></translation>
@@ -4584,6 +4597,7 @@ Dodatkowe informacje:
 <translation id="8624354461147303341">Otrzymaj zniżki</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła próbę wyłudzenia informacji<ph name="END_LINK" /> na odwiedzonej przez Ciebie stronie. Strony wyłudzające informacje udają inne strony, aby Cię oszukać.<ph name="NEW_LINE" />Osoby przeprowadzające ataki czasem przejmują nawet strony, które zwykle są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
+<translation id="8640996933372643759">Aby udostępniać karty i współpracować z innymi, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="8641131559425911240">Koperta (Bond)</translation>
 <translation id="8643409044755049933">Koperta Kaku 3</translation>
 <translation id="8643846627971610148">Gdy grupa jest zamknięta, może do niej dołączyć ograniczona liczba osób</translation>

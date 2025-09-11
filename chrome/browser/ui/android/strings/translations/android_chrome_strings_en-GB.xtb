@@ -307,7 +307,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="250020030759455918">You'll see your <ph name="SITE_NAME" /> sign-in status, browsing data and site data in Chrome</translation>
-<translation id="2502798195266898572">Reading mode bottom sheet opened at full height</translation>
 <translation id="2510106555128151389">Installing <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Search buying options</translation>
 <translation id="2513403576141822879">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google services<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6255809143828972562">With tools from Chrome, you can browse safely and stay in control</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6264485186158353794">Back to safety</translation>
-<translation id="6267063201726531683">Reading mode bottom sheet</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6291294824436685757">Delete browsing data; select data to delete</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="629730747756840877">Account</translation>
-<translation id="6300697579369314762">Reading mode bottom sheet opened at half height</translation>
 <translation id="6301526076346731664">Open Developer tools</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
@@ -1353,7 +1350,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="71503698506017927">Passphrase encryption doesn't include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Reading mode bottom sheet closed</translation>
 <translation id="7165972437814027679">Learn more about why Chrome blocks some files</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
 <translation id="7173114856073700355">Open settings</translation>

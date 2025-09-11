@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Рецензии на производот за вас</translation>
 <translation id="1084365883616172403">Објавата на Facebook е завршена.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
+<translation id="1086486568852410168">Пребарај со Google Lens</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Споделувајте ги содржините на страниците со Gemini за да добивате порелевантни одговори. Кога ќе споделите страница со Gemini, сите содржини на страницата и нејзината URL-адреса се испраќаат до Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">Брзо пронајдете отворени и неодамна затворени картички низ вашите синхронизирани уреди.</translation>
 <translation id="3530767473765895035">Управувајте со сметките на уредов…</translation>
 <translation id="3533436815740441613">Нова картичка</translation>
-<translation id="3533860663366814939">Отворете ги поставките за Autofill &amp; Password</translation>
 <translation id="3540141921715814660">Додај во „Обележувачи“</translation>
 <translation id="3546122170015471515">„Преглед на „Карти““ на Google.com</translation>
 <translation id="3547356470684043247">Читајте рецензии од клиенти за производите, услугите или доживувањата за полесно да одлучувате</translation>

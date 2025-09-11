@@ -245,6 +245,7 @@
 <translation id="1162479191445552288">เปิดใช้เมื่อเริ่มต้นระบบ</translation>
 <translation id="1163931534039071049">&amp;ดูรหัสต้นฉบับของเฟรม</translation>
 <translation id="1164015913575846413">Alt + คลิก</translation>
+<translation id="1164286072721995435">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1166212789817575481">ปิดแท็บทางด้านขวา</translation>
@@ -335,7 +336,6 @@
 <translation id="1218015446623563536">ลบ Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />บริการตำแหน่งของ Google ใช้แหล่งที่มาต่างๆ เช่น Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์เพื่อช่วยคาดคะเนตำแหน่งของอุปกรณ์นี้<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดตำแหน่งได้โดยปิดการตั้งค่าตำแหน่งหลักในอุปกรณ์นี้ และปิดการใช้ Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับการบอกตำแหน่งในการตั้งค่าตำแหน่งได้ด้วย<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219134100826635117">ผู้ดูแลระบบบล็อกการดำเนินการนี้</translation>
 <translation id="1219219114431716687">ทาร์ตผลไม้</translation>
 <translation id="122082903575839559">อัลกอริธึมลายเซ็นใบรับรอง </translation>
 <translation id="1221024147024329929">PKCS #1 MD2 พร้อมการเข้ารหัส RSA</translation>
@@ -425,6 +425,7 @@
 <translation id="1277020343994096713">สร้าง PIN ใหม่ที่ต่างจาก PIN ปัจจุบัน</translation>
 <translation id="1277597051786235230">&amp;ค้นหา "<ph name="SEARCH_TERMS" />" ด้วย <ph name="SEARCH_ENGINE" /> ในแท็บใหม่</translation>
 <translation id="127849925363482083">กด <ph name="SHORTCUT_TEXT" /> อีกครั้งเพื่อปิดแท็บที่ปักหมุด</translation>
+<translation id="1278542245784398460">คลิกขวาที่แท็บนี้แล้วเลือก "เพิ่มแท็บไปยังมุมมองแบบแยกใหม่"</translation>
 <translation id="1278859221870828664">ตรวจสอบแอปและบริการของ Google Play</translation>
 <translation id="1279024913354609713">ไม่อนุญาต</translation>
 <translation id="127946606521051357">อุปกรณ์ใกล้เคียงกำลังจะแชร์</translation>
@@ -530,6 +531,7 @@
 <translation id="1353980523955420967">ไม่พบ PPD โปรดตรวจสอบว่า Chromebook ออนไลน์อยู่และลองอีกครั้ง</translation>
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1354148503392558902">กำลังเปลี่ยนรหัสผ่าน...</translation>
+<translation id="1354943694624358993">แชร์แท็บปัจจุบันเสมอ</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1355088659320425659">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="1356376170199999104">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
@@ -732,6 +734,7 @@
 <translation id="1503392482221435031">ส่งสถิติการใช้งานให้ Google โดยอัตโนมัติ คุณเปิดหรือปิดรายงานข้อขัดข้องได้ในการตั้งค่าของอุปกรณ์</translation>
 <translation id="1503556098270577657">คุณลงชื่อเข้าใช้ <ph name="USER_EMAIL" /> ด้วยโทรศัพท์ Android</translation>
 <translation id="150411034776756821">นำ <ph name="SITE" /> ออก</translation>
+<translation id="1504253885059472207">ปักหมุดมุมมองแบบแยก</translation>
 <translation id="1504551620756424144">โฟลเดอร์ที่แชร์จะอยู่ใน Windows ที่ <ph name="BASE_DIR" /></translation>
 <translation id="1505494256539862015">ส่งออกรหัสผ่าน</translation>
 <translation id="1505654899813338756">คุณสามารถจัดกลุ่มแท็บเพื่อเก็บหน้าที่เกี่ยวข้องกันไว้ด้วยกันและบันทึกไว้ในอุปกรณ์ต่างๆ</translation>
@@ -876,6 +879,7 @@
 <translation id="1597806446183714225">ปรับปรุงคุณภาพเสียงเพื่อให้เสียงฟังดูเป็นธรรมชาติและชัดเจน</translation>
 <translation id="1598163867407640634">ใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">ผู้ดูแลระบบปิดใช้การอัปเดต</translation>
+<translation id="1598293830962835699">สร้างมุมมองแบบแยกได้อย่างรวดเร็วเมื่อต้องการ</translation>
 <translation id="1600857548979126453">เข้าถึงแบ็คเอนด์เครื่องซ่อมแซมหน้าเว็บ</translation>
 <translation id="1601481906560916994">ยกเว้นเว็บไซต์</translation>
 <translation id="1601560923496285236">นำไปใช้</translation>
@@ -1374,7 +1378,6 @@
 <translation id="1933489278505808700">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง</translation>
 <translation id="1935303383381416800">ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="193565226207940518">เครื่องมือการสนับสนุน</translation>
-<translation id="1935995810530254458">คัดลอกเลย</translation>
 <translation id="1936157145127842922">แสดงในโฟลเดอร์</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{เพิ่มหน้าไปยังเรื่องรออ่านแล้ว}other{เพิ่มหน้าไปยังเรื่องรออ่านแล้ว}}</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
@@ -1718,7 +1721,6 @@
 <translation id="2175526076681939329">ใช้แป้นหลัก</translation>
 <translation id="217576141146192373">เพิ่มเครื่องพิมพ์ไม่ได้ โปรดตรวจสอบการกำหนดค่าของเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
-<translation id="217631816678106981">ไม่วาง</translation>
 <translation id="2177950615300672361">แท็บไม่ระบุตัวตน: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178545675770638239">เลือกรหัสผ่าน</translation>
@@ -2542,7 +2544,6 @@
 <translation id="2731971182069536520">ครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่อง</translation>
 <translation id="2732134891301408122">เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="2733248615007838252">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบผลการค้นหาเหล่านี้</translation>
-<translation id="2734797989819862638">ไม่คัดลอก</translation>
 <translation id="27349076983469322">พื้นหลังสีสว่าง</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
 <translation id="2737363922397526254">ยุบ...</translation>
@@ -3098,6 +3099,7 @@
 <translation id="3122883569442693641">รายละเอียดเพิ่มเติม</translation>
 <translation id="3124111068741548686">ผู้ใช้จัดการ</translation>
 <translation id="3124332159330678621">ปรับแต่ง Chrome เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้เบราว์เซอร์</translation>
+<translation id="3125361247594231799">ปักหมุดไว้สำหรับครั้งถัดไป</translation>
 <translation id="3125816458150005808">คุณเลิกปักหมุดและเปิดจากเมนูได้</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">โปรดใช้อะแดปเตอร์ Dell หรือ USB Type-C เพื่อหลีกเลี่ยงปัญหาด้านการชาร์จและประสิทธิภาพ</translation>
@@ -4213,8 +4215,6 @@
 <translation id="3876219572815410515">ปรับขนาดหน้าต่างไปทางด้านบนแล้ว</translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3877209288227498506">เลือกเพื่อแสดงการใช้งานหน่วยความจำและอิมเมจในการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
-<translation id="3877603629930976930">ไม่แชร์</translation>
-<translation id="3878445208930547646">ไม่อนุญาตให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880513902716032002">ระบบจะโหลดหน้าเว็บบางหน้าที่คุณเข้าชมไว้ล่วงหน้า</translation>
 <translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4822,6 +4822,7 @@
 <translation id="4310139701823742692">รูปแบบไฟล์ไม่ถูกต้อง ตรวจสอบไฟล์ PPD แล้วลองอีกครั้ง</translation>
 <translation id="4310496734563057511">หากแชร์อุปกรณ์นี้กับผู้อื่น คุณสามารถเปิด Windows Hello เพื่อยืนยันตัวตนทุกครั้งที่ใช้รหัสผ่านที่บันทึกไว้</translation>
 <translation id="431076611119798497">&amp;รายละเอียด</translation>
+<translation id="431127643228811252">มุมมองแบบแยกหน้าจอช่วยให้ทำงานหลายอย่างพร้อมกันได้ง่ายขึ้น</translation>
 <translation id="4311284648179069796">ไม่ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{บัญชี Google 1 บัญชี}other{บัญชี Google <ph name="EXTRA_ACCOUNTS" /> บัญชี}}</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
@@ -5043,7 +5044,6 @@
 <translation id="4473559657152613417">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
 <translation id="4473996011558324141">กำลังประมาณเวลา</translation>
 <translation id="4474155171896946103">บุ๊กมาร์กแท็บทั้งหมด...</translation>
-<translation id="4475299370877036544">การดําเนินการนี้อาจละเมิดนโยบายขององค์กร</translation>
 <translation id="4476198534886170024">อนุญาต เปิด<ph name="LINK_BEGIN" />การเข้าถึงกล้องของระบบ<ph name="LINK_END" /></translation>
 <translation id="4476590490540813026">นักกีฬา</translation>
 <translation id="4476659815936224889">หากต้องการสแกนโค้ดนี้ คุณใช้ตัวสแกนคิวอาร์โค้ดในโทรศัพท์หรือแอปกล้องถ่ายรูปบางแอปสแกนได้</translation>
@@ -5727,6 +5727,7 @@
 <translation id="4956593309300508411">หยุดการแชร์ใช่ไหม</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">บันทึกลงในโฟลเดอร์ในอุปกรณ์นี้เท่านั้นไหม</translation>
+<translation id="4958916254663453555">ระบบจะแชร์แท็บปัจจุบันโดยอัตโนมัติเมื่อคุณเปิด Gemini ใน Chrome โดยจะส่งเนื้อหาและ URL เต็มของแท็บปัจจุบันไปยัง Google</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5836,6 +5837,7 @@
 <translation id="5045367873597907704">เกี่ยวกับอุปกรณ์ HID</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="504561833207953641">กำลังเปิดในเซสชันเบราว์เซอร์ที่มีอยู่</translation>
+<translation id="5047544190872578914">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ</translation>
 <translation id="504953514574706691">ยกเว้นแท็บออกจากกลุ่มที่แนะนำแล้ว</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ดาวน์โหลดไฟล์ที่ไม่ได้รับการยืนยัน</translation>
@@ -7795,7 +7797,6 @@
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
 <translation id="645705751491738698">บล็อกการเรียกใช้ JavaScript</translation>
 <translation id="6457572529564180082">เปิดใช้งาน <ph name="APP_NAME" /> ไม่ได้</translation>
-<translation id="6458606150257356946">วางเลย</translation>
 <translation id="6458701200018867744">อัปโหลดไม่สำเร็จ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
 <translation id="6459488832681039634">ใช้สิ่งที่เลือกเพื่อค้นหา</translation>
 <translation id="6459799433792303855">หน้าต่างที่ใช้งานย้ายไปอยู่หน้าจออื่น</translation>
@@ -8491,6 +8492,7 @@
 <translation id="6931690462168617033">ความแรงในการคลิก</translation>
 <translation id="6933321725007230600">เปิด&amp;การซิงค์...</translation>
 <translation id="693459579445775904">ไฟล์เสียงจะแชร์กับผู้ใช้เพื่อประหยัดพื้นที่ในดิสก์</translation>
+<translation id="6934597021412437058">ตอนนี้คุณใช้มุมมองแบบแยกเพื่อเปรียบเทียบ ทำงานหลายอย่างพร้อมกัน และอื่นๆ ได้แล้ว</translation>
 <translation id="6935031746833428401">ดูข้อมูลเพิ่มเติมเกี่ยวกับการจัดการอุปกรณ์</translation>
 <translation id="6935286146439255109">ไม่มีถาดกระดาษ</translation>
 <translation id="6938386202199793006">คุณมีเครื่องพิมพ์ที่บันทึกไว้ 1 เครื่อง</translation>
@@ -8547,7 +8549,6 @@
 <translation id="69739764870135975">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="697508444536771064">ปิด Linux</translation>
 <translation id="6978121630131642226">เครื่องมือค้นหา</translation>
-<translation id="6978236010531171013">แชร์เลย</translation>
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979041727349121225">โหมดประหยัดพลังงาน</translation>
 <translation id="6979044105893951891">เปิดและออกจากเซสชันผู้เยี่ยมชมที่มีการจัดการ</translation>
@@ -8692,7 +8693,6 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> กลุ่ม <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7075625805486468288">จัดการใบรับรอง HTTPS/SSL และการตั้งค่า</translation>
-<translation id="7075896597860500885">ไม่แนะนำให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="7076875098323397992">เริ่มการอัปเกรดไม่ได้</translation>
 <translation id="7077751457066325012">ดูและปรับแต่งแป้นพิมพ์ลัด</translation>
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
@@ -8766,7 +8766,6 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" /> กำลังรอ</translation>
 <translation id="7132886488919643383">ใช้ AI ของ Google เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
 <translation id="7134098520442464001">ทำให้ข้อความเล็กลง</translation>
-<translation id="7134653428559514680">ไม่แนะนำให้แชร์จากเว็บไซต์นี้</translation>
 <translation id="7134951043985383439">ดาวน์โหลดไฟล์อันตรายแล้ว</translation>
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
 <translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
@@ -8964,7 +8963,6 @@
 <translation id="7284411326658527427">โดยแต่ละคนจะปรับเปลี่ยนการตั้งค่าบัญชีในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
 <translation id="7285008278689343502">อุทยานแห่งชาติ Grand Teton</translation>
 <translation id="7286867818472074330">เลือกพาสคีย์</translation>
-<translation id="7286908876112207905">ไม่อนุญาตให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7287143125007575591">ปฏิเสธการเข้าถึง</translation>
 <translation id="7287411021188441799">คืนค่าพื้นหลังเริ่มต้น</translation>
 <translation id="7287949630503871403">ข้อมูลที่จัดเก็บในแอป</translation>
@@ -9088,7 +9086,6 @@
 <translation id="736877393389250337">เปิด <ph name="URL" /> ใน <ph name="ALTERNATIVE_BROWSER_NAME" /> ไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="7368927539449986686">แก้ไขการค้นหาเว็บไซต์</translation>
 <translation id="7370592524170198497">อีเทอร์เน็ต EAP:</translation>
-<translation id="7370751048350026847">ไม่แนะนำให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7374376573160927383">จัดการอุปกรณ์ USB</translation>
 <translation id="7376124766545122644">ใช้ลิงก์นี้ไม่ได้ ตรวจสอบว่าลิงก์ขึ้นต้นด้วย "http://" หรือ "https://" เพื่อลองอีกครั้ง</translation>
 <translation id="7376553024552204454">ไฮไลต์เคอร์เซอร์เมาส์เมื่อขยับ</translation>
@@ -9226,7 +9223,6 @@
 <translation id="7460045493116006516">ธีมที่คุณติดตั้งอยู่ตอนนี้</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
-<translation id="7463068149674892185">ไม่แนะนำให้ดำเนินการนี้</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">องค์กรของคุณเป็นผู้จัดการวิธีใช้ข้อมูลที่ฟีเจอร์เหล่านี้เก็บรวบรวม</translation>
 <translation id="7464645554245611385">ข้อมูลอัปเดตล่าสุดของแท็บนี้</translation>
@@ -9305,6 +9301,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ปิดแท็บและลบกลุ่มใช่ไหม}=1{ปิดแท็บและลบกลุ่มใช่ไหม}other{ปิดแท็บและลบกลุ่มใช่ไหม}}</translation>
 <translation id="7509097596023256288">กำลังตั้งค่าการจัดการ</translation>
 <translation id="7509539379068593709">ถอนการติดตั้งแอป</translation>
+<translation id="7513438205469584978">คำแนะนำอิงตาม<ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />กิจกรรมใน Google<ph name="END_LINK_GOOGLE_ACTIVITY" /> ของคุณ</translation>
 <translation id="7514239104543605883">คัดลอกไปยังอุปกรณ์ของคุณ</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514417110442087199">เพิ่มการกำหนด</translation>
@@ -9591,6 +9588,7 @@
 <translation id="7705276765467986571">ไม่สามารถโหลดรูปแบบบุ๊กมาร์ก</translation>
 <translation id="7705334495398865155">สุ่มรหัสของฮาร์ดแวร์ (BSSID) เพื่อป้องกันไม่ให้ผู้อื่นติดตามอุปกรณ์นี้</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">เปิดหน้าเว็บข้างกันในแท็บเดียวกันเพื่อให้คุณเปรียบเทียบตัวเลือกและอื่นๆ ได้ง่ายๆ</translation>
 <translation id="7707108266051544351">เว็บไซต์นี้ถูกบล็อกไม่ให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
 <translation id="770831926727930011">ข้อมูลในเครื่องได้รับการปกป้องโดยรหัสผ่านเก่า โปรดป้อนรหัสผ่านเก่าเพื่อกู้คืนข้อมูลในเครื่อง</translation>
@@ -9801,7 +9799,6 @@
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เสียงหรือเสียงที่บันทึกไว้ซึ่งคล้ายกับเสียงของคุณอาจเข้าถึงผลการค้นหาเฉพาะบุคคลหรือ Assistant ของคุณได้ หากต้องการประหยัดแบตเตอรี่ ในการตั้งค่า Assistant คุณสามารถเลือกให้ "Ok Google" ใช้งานได้เฉพาะเมื่ออุปกรณ์นี้เชื่อมต่อกับแหล่งพลังงานเท่านั้น</translation>
 <translation id="7851457902707056880">จำกัดการลงชื่อเข้าใช้เฉพาะบัญชีผู้ใช้เท่านั้น โปรดรีบูตและลงชื่อเข้าใช้ด้วยบัญชีของเจ้าของ คอมพิวเตอร์จะรีบูตอัตโนมัติใน 30 วินาที</translation>
 <translation id="7851716364080026749">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนทุกครั้ง</translation>
-<translation id="7851720427268294554">โปรแกรมแยกวิเคราะห์ IPP</translation>
 <translation id="78526636422538552">ปิดใช้การเพิ่มบัญชี Google อื่นอยู่</translation>
 <translation id="785371335555334021">คลิกเพื่อออกจากหน้า<ph name="TITLE" /></translation>
 <translation id="7853747251428735">เครื่องมือเ&amp;พิ่มเติม</translation>

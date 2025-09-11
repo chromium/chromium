@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Size özel ürün yorumları</translation>
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> açılamadı</translation>
+<translation id="1086486568852410168">Google Lens ile ara</translation>
 <translation id="1096992026380844478">Senkronizasyon ayarlarınız, son yedeğinize bağlı olarak geri yüklenecek. <ph name="BEGIN_LINK" />Neleri senkronize edebileceğinizi görün<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="110491332089958282">Daha alakalı yanıtlar almak için sayfa içeriğini Gemini ile paylaşın. Bir sayfayı Gemini ile paylaştığınızda sayfanın tüm içerikleri ve URL'si Google'a gönderilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
@@ -647,7 +648,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3530206579861815432">Senkronize edilmiş cihazlarınızdaki açık ve yakın zamanda kapatılan sekmeleri hızlıca bulun.</translation>
 <translation id="3530767473765895035">Bu cihazdaki hesapları yönet…</translation>
 <translation id="3533436815740441613">Yeni Sekme</translation>
-<translation id="3533860663366814939">Otomatik Doldurma ve Şifre ayarlarını açın</translation>
 <translation id="3540141921715814660">Yer İşaretlerine Ekle</translation>
 <translation id="3546122170015471515">Google.com'da Haritalar Önizlemeleri</translation>
 <translation id="3547356470684043247">Kararlarınızı şekillendirmenize yardımcı olacak yorumlar için ürün, hizmet veya deneyimle ilgili müşteri değerlendirmelerini okuyun.</translation>

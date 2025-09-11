@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">ביקורות על מוצרים שיכולים לעניין אותך</translation>
 <translation id="1084365883616172403">‏הפרסום ב-‏Facebook בוצע.</translation>
 <translation id="1085677983426914530">לא ניתן לפתוח את <ph name="FILENAME" /></translation>
+<translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1096992026380844478">הגדרות הסנכרון ישוחזרו על סמך הגיבוי האחרון שלך. <ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="110491332089958282">‏כדי לקבל תשובות רלוונטיות יותר אתם יכולים לשתף את תוכן הדף עם Gemini. כשאתם משתפים דף עם Gemini, התוכן המלא של הדף וכתובת ה-URL שלו נשלחים אל Google. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
 <translation id="3530767473765895035">ניהול החשבונות במכשיר הזה…</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
-<translation id="3533860663366814939">פותחים את ההגדרות של המילוי האוטומטי והסיסמאות</translation>
 <translation id="3540141921715814660">הוספה לסימניות</translation>
 <translation id="3546122170015471515">‏הפצה מקדימה של "מפות" ב-Google.com</translation>
 <translation id="3547356470684043247">כדאי לקרוא ביקורות של לקוחות על מוצרים, שירותים או חוויית השימוש כדי לקבל החלטות מושכלות יותר</translation>

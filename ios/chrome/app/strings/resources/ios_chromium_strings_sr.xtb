@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Овде можете да отворите Објектив.</translation>
 <translation id="1042296835509784301">Отвара Менаџер лозинки у Chromium-у.</translation>
 <translation id="1047130070405668746">Изаберите Chromium</translation>
-<translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
 <translation id="1091252999271033193">То значи да ће Chromium сваки пут захтевати мобилни сајт.</translation>
 <translation id="1115463765356382667">Обавите ове предложене радње у наставку да бисте искористили Chromium на најбољи начин.</translation>
 <translation id="1185134272377778587">О Chromium-у</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Мапе у Chromium-у</translation>
 <translation id="1867772173333403444">4. Изаберите Chromium</translation>
+<translation id="1965068424387304464">Напомена за Chromium: Сачувајте лозинке</translation>
 <translation id="2006345422933397527">Chromium не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="2042889939382983733">Прегледајте Chromium историју</translation>
 <translation id="2052320862053429062">Chromium повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
@@ -119,6 +119,7 @@
 <translation id="3816686541346279443">Chromium ће вам понудити да сачува лозинку.</translation>
 <translation id="3827545470516145620">Добијате стандардну безбедносну заштиту на овом уређају</translation>
 <translation id="3833326979834193417">Chromium аутоматски покреће Проверу безбедности сваког дана да би вас заштитио од повреде података, небезбедних веб-сајтова и другог. Више о Провери безбедности можете да пронађете у Подешавањима.</translation>
+<translation id="3837584850181228767">Напомена за Chromium: Побољшано безбедно прегледање</translation>
 <translation id="3845223911364528001">Вратите се у Chromium да бисте отпремили фајл</translation>
 <translation id="3855938650519180865">Шта је ново у Chromium-у</translation>
 <translation id="3886689467633467988">Пријавите се на овај сајт и у Chromium да би вам обележивачи и други садржај били доступни на свим уређајима.</translation>

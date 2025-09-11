@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Здесь можно открыть Объектив.</translation>
 <translation id="1042296835509784301">Откроется Менеджер паролей в Chromium.</translation>
 <translation id="1047130070405668746">Выберите Chromium.</translation>
-<translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1091252999271033193">Chromium всегда будет запрашивать мобильный сайт.</translation>
 <translation id="1115463765356382667">Ознакомьтесь со всеми возможностями Chromium.</translation>
 <translation id="1185134272377778587">О Chromium</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карты в Chromium</translation>
 <translation id="1867772173333403444">4. Выберите Chromium.</translation>
+<translation id="1965068424387304464">Совет по работе с Chromium: сохраняйте пароли</translation>
 <translation id="2006345422933397527">Браузеру Chromium не удалось проверить наличие обновлений. Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="2042889939382983733">Посмотреть историю Chromium</translation>
 <translation id="2052320862053429062">Время от времени Chromium проверяет, есть ли ваши пароли в списках, опубликованных в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
@@ -119,6 +119,7 @@
 <translation id="3816686541346279443">Chromium предложит сохранить пароль.</translation>
 <translation id="3827545470516145620">На этом устройстве используется стандартная система защиты.</translation>
 <translation id="3833326979834193417">Chromium ежедневно автоматически запускает проверку безопасности, чтобы обеспечить защиту от утечки данных, подозрительных сайтов и других проблем. Больше о проверке безопасности можно узнать в настройках.</translation>
+<translation id="3837584850181228767">Совет по работе с Chromium: используйте улучшенный Безопасный просмотр</translation>
 <translation id="3845223911364528001">Чтобы загрузить файл, вернитесь в Chromium.</translation>
 <translation id="3855938650519180865">Что нового в Chromium</translation>
 <translation id="3886689467633467988">Войдите на этот сайт и в Chromium, чтобы синхронизировать закладки и другую информацию на своих устройствах.</translation>

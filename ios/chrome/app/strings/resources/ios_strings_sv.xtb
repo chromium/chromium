@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Produktrecensioner för dig</translation>
 <translation id="1084365883616172403">Inlägg på Facebook klart.</translation>
 <translation id="1085677983426914530">Det gick inte att öppna <ph name="FILENAME" />.</translation>
+<translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1096992026380844478">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Dela sidinnehåll med Gemini för att få mer relevanta svar. När du delar en sida med Gemini skickas sidans fullständiga innehåll och webbadress till Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3530206579861815432">Du hittar snabbt öppna och nyligen stängda flikar på alla dina synkroniserade enheter.</translation>
 <translation id="3530767473765895035">Hantera konton på den här enheten …</translation>
 <translation id="3533436815740441613">Ny flik</translation>
-<translation id="3533860663366814939">Öppna kategorin Autofyll och lösenord</translation>
 <translation id="3540141921715814660">Lägg till i bokmärken</translation>
 <translation id="3546122170015471515">Förhandsgranskningar av Maps på Google.com</translation>
 <translation id="3547356470684043247">Läs kundutvärderingar av produkter, tjänster eller upplevelser som underlag för dina beslut med recensioner.</translation>

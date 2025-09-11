@@ -245,6 +245,7 @@
 <translation id="1162479191445552288">डिवाइस चालू होने पर ऐप्लिकेशन लॉन्च करें</translation>
 <translation id="1163931534039071049">फ़्रेम का स्रोत &amp;देखें</translation>
 <translation id="1164015913575846413">alt + क्लिक</translation>
+<translation id="1164286072721995435">अगर इस विकल्प को चुना जाता है, तो हर बार नई बातचीत शुरू करने पर, मौजूदा टैब को Gemini के साथ शेयर किया जाएगा. मौजूदा टैब को शेयर करने की सुविधा, किसी भी समय रोकी जा सकती है. जनरेटिव एआई मॉडल बेहतर बनाने के लिए, आपके डेटा का इस्तेमाल नहीं किया जाता है.</translation>
 <translation id="1164891049599601209">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1166212789817575481">दाईं ओर के टैब बंद करें</translation>
@@ -336,7 +337,6 @@
 <translation id="1218015446623563536">Linux मिटाएं</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google की जगह की जानकारी सेवा, इस डिवाइस की जगह का पता लगाने के लिए वाई-फ़ाई, मोबाइल नेटवर्क और सेंसर जैसे स्रोतों का इस्तेमाल करती है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />आप इस डिवाइस पर जगह की मुख्य सेटिंग बंद करके जगह की जानकारी वाली सेवा को बंद कर सकते हैं. आप जगह की सेटिंग में जाकर वाई-फ़ाई, मोबाइल नेटवर्क और जगह की जानकारी का पता लगाने वाले सेंसर का इस्तेमाल करना बंद भी कर सकते हैं.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219134100826635117">आपके एडमिन ने इस कार्रवाई को ब्लॉक कर दिया है</translation>
 <translation id="1219219114431716687">फ़्रूट टार्ट</translation>
 <translation id="122082903575839559">प्रमाणपत्र हस्ताक्षर एल्गोरिद्म</translation>
 <translation id="1221024147024329929">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD2</translation>
@@ -426,6 +426,7 @@
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
 <translation id="1277597051786235230">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="127849925363482083">पिन किए गए टैब को बंद करने के लिए, <ph name="SHORTCUT_TEXT" /> को फिर से दबाएं</translation>
+<translation id="1278542245784398460">इस टैब पर राइट क्लिक करके, “नए स्प्लिट व्यू में देखने के लिए टैब जोड़ें” को चुनें</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
 <translation id="1279024913354609713">अनुमति न दें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
@@ -531,6 +532,7 @@
 <translation id="1353980523955420967">PPD नहीं मिला. पक्का करें कि आपका Chromebook ऑनलाइन है और दोबारा आज़माएं.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> को कैमरे का इस्तेमाल और उसे मूव करते रहने दें</translation>
 <translation id="1354148503392558902">पासवर्ड बदला जा रहा है...</translation>
+<translation id="1354943694624358993">हमेशा मौजूदा टैब शेयर करें</translation>
 <translation id="1355088139103479645">क्या आप पूरा डेटा मिटाना चाहते हैं?</translation>
 <translation id="1355088659320425659">इतिहास और टैब</translation>
 <translation id="1356376170199999104">अनुमति है – <ph name="PERMISSION_DETAILS" />. फ़िज़िकल स्विच का इस्तेमाल करके, माइक्रोफ़ोन चालू करें.</translation>
@@ -734,6 +736,7 @@
 <translation id="1503392482221435031">Google को इस्तेमाल के आंकड़े अपने-आप भेजता है. डिवाइस की सेटिंग में जाकर, क्रैश रिपोर्ट बनाने की सुविधा को चालू या बंद किया जा सकता है.</translation>
 <translation id="1503556098270577657">अपने Android फ़ोन का इस्तेमाल करके <ph name="USER_EMAIL" /> से साइन इन किया है</translation>
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
+<translation id="1504253885059472207">स्प्लिट व्यू को पिन करें</translation>
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करना</translation>
 <translation id="1505654899813338756">मिलते-जुलते विषय से जुड़े पेजों को एक साथ रखने के लिए, टैब ग्रुप बनाए जा सकते हैं. ये ग्रुप, आपके सभी डिवाइसों में सेव हो जाते हैं</translation>
@@ -878,6 +881,7 @@
 <translation id="1597806446183714225">ऑडियो की क्वालिटी बेहतर करें, ताकि आवाज़ें नैचुरल और साफ़ सुनाई दें.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="1598233202702788831">आपके व्‍यवस्‍थापक के द्वारा अपडेट अक्षम किए गए हैं</translation>
+<translation id="1598293830962835699">ज़रूरत पड़ने पर, तुरंत स्प्लिट व्यू सेट करें</translation>
 <translation id="1600857548979126453">पेज डीबगर बैकएंड को एक्सेस करें</translation>
 <translation id="1601481906560916994">साइट को शामिल न करें</translation>
 <translation id="1601560923496285236">लागू करें</translation>
@@ -1385,7 +1389,6 @@
 <translation id="1933489278505808700">पढ़ने और बदलाव करने की अनुमति है</translation>
 <translation id="1935303383381416800">आपकी जगह की जानकारी देखने की अनुमति है</translation>
 <translation id="193565226207940518">सहायता टूल</translation>
-<translation id="1935995810530254458">फिर भी कॉपी करें</translation>
 <translation id="1936157145127842922">फ़ोल्डर में दिखाएं</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{पेज को रीडिंग लिस्ट में जोड़ा गया}one{पेज को रीडिंग लिस्ट में जोड़ा गया}other{पेज, रीडिंग लिस्ट में जोड़े गए}}</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
@@ -1729,7 +1732,6 @@
 <translation id="2175526076681939329">प्राइमरी बटन का इस्तेमाल करें</translation>
 <translation id="217576141146192373">प्रिंटर जोड़ा नहीं जा सका. अपने प्रिंटर के कॉन्फ़िगरेशन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
-<translation id="217631816678106981">इसे न चिपकाएं</translation>
 <translation id="2177950615300672361">गुप्त टैब: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178545675770638239">पासवर्ड चुनें</translation>
@@ -2556,7 +2558,6 @@
 <translation id="2731971182069536520">जब आप अगली बार डिवाइस रीस्टार्ट करेंगे, तो आपका एडमिन एक बार किया जाने वाला अपडेट करेगा जिससे आपका स्थानीय डेटा मिट जाएगा.</translation>
 <translation id="2732134891301408122">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से पेज <ph name="CURRENT_ELEMENT" /></translation>
 <translation id="2733248615007838252">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं.</translation>
-<translation id="2734797989819862638">इसे कॉपी न करें</translation>
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
@@ -3112,6 +3113,7 @@
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
 <translation id="3124111068741548686">उपयोगकर्ता हैंडल</translation>
 <translation id="3124332159330678621">अपने ब्राउज़र को एक नया रूप देने के लिए, Chrome को कस्टमाइज़ करें</translation>
+<translation id="3125361247594231799">इसे अगली बार के लिए पिन करें</translation>
 <translation id="3125816458150005808">इसे अनपिन करके, मेन्यू से भी खोला जा सकता है</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">चार्ज होने और परफ़ॉर्मेंस से जुड़ी समस्याओं से बचने के लिए, डिवाइस के साथ काम करने वाला Dell या यूएसबी टाइप-सी पावर अडैप्टर इस्तेमाल करें.</translation>
@@ -4229,8 +4231,6 @@
 <translation id="3876219572815410515">विंडो का साइज़ ऊपर की ओर बदल गया</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> के डिवाइस के लिए आस-पास शेयर करने की सेटिंग. इसके लिए <ph name="USER_EMAIL" /> खाते का इस्तेमाल किया जा रहा है.</translation>
 <translation id="3877209288227498506">टैब पर कर्सर घुमाने पर झलक दिखाने वाले कार्ड में मेमोरी का इस्तेमाल और इमेज दिखाने का विकल्प चुनें</translation>
-<translation id="3877603629930976930">शेयर न करें</translation>
-<translation id="3878445208930547646">इस साइट से कॉन्टेंट कॉपी करने की अनुमति नहीं है</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880513902716032002">आपके विज़िट किए गए पेजों में से, कुछ पेज पहले से ही लोड होते हैं</translation>
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4837,6 +4837,7 @@
 <translation id="4310139701823742692">फ़ाइल का फ़ॉर्मैट गलत है. PPD फ़ाइल देखें और फिर से कोशिश करें.</translation>
 <translation id="4310496734563057511">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास Windows Hello चालू करने का विकल्प होता है, ताकि जब भी आप सेव किया गया पासवर्ड इस्तेमाल करें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="431076611119798497">&amp;विवरण</translation>
+<translation id="431127643228811252">स्प्लिट व्यू की मदद से एक साथ कई काम करना आसान हो जाता है</translation>
 <translation id="4311284648179069796">पढ़ने और बदलाव करने की अनुमति नहीं है</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google खाता}one{<ph name="EXTRA_ACCOUNTS" /> Google खाता}other{<ph name="EXTRA_ACCOUNTS" /> Google खाते}}</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
@@ -5058,7 +5059,6 @@
 <translation id="4473559657152613417">टैब पर राइट क्लिक करें और "टैब को नए ग्रुप में जोड़ें" को चुनें</translation>
 <translation id="4473996011558324141">लगने वाला अनुमानित समय</translation>
 <translation id="4474155171896946103">सभी टैब बुकमार्क करें...</translation>
-<translation id="4475299370877036544">इस कार्रवाई से आपके संगठन की नीतियों का उल्लंघन हो सकता है</translation>
 <translation id="4476198534886170024">अनुमति है. <ph name="LINK_BEGIN" />सिस्टम का कैमरा ऐक्सेस करने<ph name="LINK_END" /> की अनुमति दें.</translation>
 <translation id="4476590490540813026">एथलीट</translation>
 <translation id="4476659815936224889">इस कोड को स्कैन करने के लिए, आप अपने फ़ोन पर क्यूआर स्कैनर या कुछ कैमरा ऐप्लिकेशन का इस्तेमाल कर सकते हैं.</translation>
@@ -5742,6 +5742,7 @@
 <translation id="4956593309300508411">क्या इस ग्रुप को अब शेयर नहीं करना है?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">क्या आपको बुकमार्क सिर्फ़ इस डिवाइस के फ़ोल्डर में सेव करना है?</translation>
+<translation id="4958916254663453555">Chrome में Gemini खोलने पर, आपका मौजूदा टैब अपने-आप शेयर हो जाएगा. मौजूदा टैब का पूरा कॉन्टेंट और यूआरएल, Google को भेजा जाता है.</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
 <translation id="4960020053211143927">कुछ ऐप्लिकेशन पर काम नहीं करती</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5851,6 +5852,7 @@
 <translation id="5045367873597907704">एचआईडी डिवाइसों के बारे में जानकारी</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
 <translation id="504561833207953641">मौजूदा ब्राउज़र सत्र में खुल रहा है.</translation>
+<translation id="5047544190872578914">अगर इस विकल्प को चुना जाता है, तो हर बार नई बातचीत शुरू करने पर, मौजूदा टैब को Gemini के साथ शेयर किया जाएगा. मौजूदा टैब को शेयर करने की सुविधा, किसी भी समय रोकी जा सकती है.</translation>
 <translation id="504953514574706691">सुझाए गए ग्रुप से टैब को हटाया गया</translation>
 <translation id="5050330054928994520">TTS (लिखाई को बोली में बदलना)</translation>
 <translation id="5051461727068120271">बिना पुष्टि वाली फ़ाइल डाउनलोड करें</translation>
@@ -7813,7 +7815,6 @@
 <translation id="6455894534188563617">&amp;नया फ़ोल्डर</translation>
 <translation id="645705751491738698">JavaScript को अवरोधित करना जारी रखें</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> को लॉन्च नहीं किया जा सकता</translation>
-<translation id="6458606150257356946">फिर भी चिपकाएं</translation>
 <translation id="6458701200018867744">अपलोड नहीं हो सका (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">ढूंढने के लिए चुनाव का उपयोग करें</translation>
 <translation id="6459799433792303855">चालू विंडो को किसी दूसरे डिसप्ले में ले जाया गया.</translation>
@@ -8511,6 +8512,7 @@
 <translation id="6931690462168617033">क्लिक की क्षमता</translation>
 <translation id="6933321725007230600">सिंक को चालू करें...</translation>
 <translation id="693459579445775904">डिस्क में बचा स्टोरेज सेव करने के लिए, आवाज़ वाली फ़ाइलों को लोगों के साथ शेयर किया जाता है</translation>
+<translation id="6934597021412437058">अब स्प्लिट व्यू का इस्तेमाल करके कई काम किए जा सकते हैं. जैसे, तुलना करना, एक साथ कई काम करना वगैरह</translation>
 <translation id="6935031746833428401">डिवाइस मैनेजमेंट के बारे में ज़्यादा जानें</translation>
 <translation id="6935286146439255109">पेपर ट्रे नहीं है</translation>
 <translation id="6938386202199793006">आपके पास सेव किया गया एक प्रिंटर है.</translation>
@@ -8567,7 +8569,6 @@
 <translation id="69739764870135975">अगर Google आपका डिफ़ॉल्ट सर्च इंजन भी है, तो आपको बेहतर और कॉन्टेक्स्ट के हिसाब से सुझाव मिलेंगे</translation>
 <translation id="697508444536771064">Linux को शट डाउन करें</translation>
 <translation id="6978121630131642226">सर्च इंजन</translation>
-<translation id="6978236010531171013">फिर भी शेयर करें</translation>
 <translation id="6978717888677691380">ब्लॉक की गई साइटें</translation>
 <translation id="6979041727349121225">एनर्जी सेवर</translation>
 <translation id="6979044105893951891">मेहमान के तौर पर ब्राउज़ करने के लिए प्रबंधित किए गए सेशन लॉन्च करें और उनसे बाहर आएं</translation>
@@ -8712,7 +8713,6 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ग्रुप - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
-<translation id="7075896597860500885">इस साइट से कॉन्टेंट कॉपी करने का सुझाव नहीं दिया जाता</translation>
 <translation id="7076875098323397992">अपग्रेड करने की प्रोसेस शुरू नहीं की जा सकती</translation>
 <translation id="7077751457066325012">कीबोर्ड शॉर्टकट देखें और पसंद के मुताबिक बनाएं</translation>
 <translation id="7077829361966535409">मौजूदा प्रॉक्सी सेटिंग के इस्तेमाल करने से साइन इन पेज लोड नहीं हो सका. कृपया <ph name="GAIA_RELOAD_LINK_START" />फिर साइन इन करने की कोशिश करें<ph name="GAIA_RELOAD_LINK_END" />, या अलग-अलग <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग<ph name="PROXY_SETTINGS_LINK_END" /> का इस्तेमाल करें.</translation>
@@ -8786,7 +8786,6 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, इंतज़ार किया जा रहा है</translation>
 <translation id="7132886488919643383">पढ़ने, कॉन्टेंट लिखने, और इमेज बनाने में मदद पाने के लिए, Google के एआई का इस्तेमाल करें</translation>
 <translation id="7134098520442464001">लेख को छोटा करें</translation>
-<translation id="7134653428559514680">इस साइट से कॉन्टेंट शेयर करने का सुझाव नहीं दिया जाता</translation>
 <translation id="7134951043985383439">खतरनाक फ़ाइल डाउनलोड की गई</translation>
 <translation id="7135729336746831607">क्या आप ब्लूटूथ चालू करना चाहते हैं?</translation>
 <translation id="7136694880210472378">डिफ़ॉल्ट के तौर पर सेट करें</translation>
@@ -8984,7 +8983,6 @@
 <translation id="7284411326658527427">हर व्यक्ति अपने खाते को पसंद के हिसाब से बना सकता है और डेटा को निजी रख सकता है.</translation>
 <translation id="7285008278689343502">ग्रैंड टीटॉन नैशनल पार्क</translation>
 <translation id="7286867818472074330">पासकी चुनें</translation>
-<translation id="7286908876112207905">इस कॉन्टेंट को इस साइट पर चिपकाने की अनुमति नहीं है</translation>
 <translation id="7287143125007575591">एक्सेस मना कर दिया गया.</translation>
 <translation id="7287411021188441799">डिफ़ॉल्ट बैकग्राउंड बहाल करें</translation>
 <translation id="7287949630503871403">ऐप्लिकेशन में सेव किया गया डेटा</translation>
@@ -9108,7 +9106,6 @@
 <translation id="736877393389250337"><ph name="URL" /> <ph name="ALTERNATIVE_BROWSER_NAME" /> में नहीं खोला जा सकता है. कृपया अपने सिस्टम एडमिन से संपर्क करें.</translation>
 <translation id="7368927539449986686">साइट खोज की सुविधा में बदलाव करें</translation>
 <translation id="7370592524170198497">ईथरनेट EAP:</translation>
-<translation id="7370751048350026847">इस कॉन्टेंट को इस साइट पर चिपकाने का सुझाव नहीं दिया जाता है</translation>
 <translation id="7374376573160927383">अपने यूएसबी डिवाइस प्रबंधित करें</translation>
 <translation id="7376124766545122644">इस लिंक का इस्तेमाल नहीं किया जा सकता. दोबारा कोशिश करते समय यह देखें कि आपका लिंक 'http://' या 'https://' से शुरू होता हो.</translation>
 <translation id="7376553024552204454">माउस कर्सर के हिलने पर उसे हाइलाइट करें</translation>
@@ -9246,7 +9243,6 @@
 <translation id="7460045493116006516">आपकी इंस्टॉल की हुई मौजूदा थीम</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746216226901520237">अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
-<translation id="7463068149674892185">यह कार्रवाई करने का सुझाव नहीं दिया जाता</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">आपका संगठन यह मैनेज करता है कि इन सुविधाओं से इकट्ठा किया गया डेटा कैसे इस्तेमाल किया जा सकता है.</translation>
 <translation id="7464645554245611385">इस टैब से जुड़ा पिछला अपडेट</translation>
@@ -9325,6 +9321,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को बंद करके ग्रुप मिटाना है?}=1{क्या टैब को बंद करके ग्रुप मिटाना है?}one{क्या टैब को बंद करके ग्रुप मिटाना है?}other{क्या टैब बंद करके ग्रुप मिटाने हैं?}}</translation>
 <translation id="7509097596023256288">मैनेजमेंट सेट अप किया जा रहा है</translation>
 <translation id="7509539379068593709">ऐप्लिकेशन अनइंस्टॉल करें</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google खाते से की गई आपकी गतिविधि<ph name="END_LINK_GOOGLE_ACTIVITY" /> के आधार पर सुझाव</translation>
 <translation id="7514239104543605883">अपने डिवाइस में कॉपी करें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7514417110442087199">कार्रवाई के लिए कोई स्विच असाइन करें</translation>
@@ -9611,6 +9608,7 @@
 <translation id="7705276765467986571">बुकमार्क मॉडल लोड नहीं कर सका.</translation>
 <translation id="7705334495398865155">अपने हार्डवेयर आईडी (BSSID) को किसी भी क्रम में लगाएं, ताकि दूसरे लोग इस डिवाइस को ट्रैक न कर सकें.</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
+<translation id="7706742200777909964">अलग-अलग पेजों को एक ही टैब में अगल-बगल रखें और तुलना करने जैसे कामों में मदद पाएं</translation>
 <translation id="7707108266051544351">इस साइट को हलचल वाले सेंसर का इस्तेमाल करने से रोक दिया गया है.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="770831926727930011">आपके पुराने पासवर्ड का इस्तेमाल करके, लोकल डेटा को सुरक्षित रखा गया है. लोकल डेटा वापस पाने के लिए, अपना पुराना पासवर्ड डालें.</translation>
@@ -9821,7 +9819,6 @@
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है. बैटरी बचाने के लिए, आप अपनी Assistant की सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
 <translation id="7851457902707056880">साइन इन की सिर्फ़ मालिक के खाते तक पाबंदी लगाई गई है. कृपया 'रीबूट' करें और मालिक खाते से साइन इन करें. मशीन 30 सेकंड में अपने आप 'रीबूट' हो जाएगी.</translation>
 <translation id="7851716364080026749">कैमरा और माइक्रोफ़ोन एक्सेस कभी भी ब्लॉक करें</translation>
-<translation id="7851720427268294554">आईपीपी पार्सर</translation>
 <translation id="78526636422538552">और Google खाते जोड़ने की सुविधा बंद है</translation>
 <translation id="785371335555334021"><ph name="TITLE" /> से बाहर आने के लिए, क्लिक करें</translation>
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>

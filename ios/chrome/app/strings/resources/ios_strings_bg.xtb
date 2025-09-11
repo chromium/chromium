@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Подходящи за вас отзиви за продукт</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="1085677983426914530">Файлът „<ph name="FILENAME" />“ не бе отворен</translation>
+<translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1096992026380844478">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Споделяйте съдържанието на страниците с Gemini, за да получавате по-уместни отговори. Когато споделите страница с Gemini, пълното съдържание и URL адресът ѝ се изпращат до Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">Можете бързо да намирате отворените и наскоро затворените раздели на синхронизираните си устройства.</translation>
 <translation id="3530767473765895035">Управление на профилите на това устройство…</translation>
 <translation id="3533436815740441613">Нов раздел</translation>
-<translation id="3533860663366814939">Отворете Autofill &amp; Password settings</translation>
 <translation id="3540141921715814660">Добавяне към отметките</translation>
 <translation id="3546122170015471515">Предварителен преглед на Карти в Google.com</translation>
 <translation id="3547356470684043247">Четете оценки за продуктите и услугите или отзиви за практическата работа на клиентите, така че да вземате информирани решения</translation>

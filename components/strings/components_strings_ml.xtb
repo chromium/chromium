@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">ഡൗൺലോഡ് ചെയ്യാൻ ആരംഭിച്ചു. അത് കാണാൻ അമർത്തിപ്പിടിക്കുക |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">പാസ്‌വേഡുകൾ, പാസ്‌കീകൾ, വിലാസങ്ങൾ, പേയ്‌മെന്റ് രീതികൾ, മറ്റ് വിവരങ്ങൾ എന്നിവ സ്വയമേവ പൂരിപ്പിക്കാൻ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="1219129156119358924">സിസ്‌റ്റം സുരക്ഷ</translation>
+<translation id="1219134100826635117">നിങ്ങളുടെ അഡ്‌മിൻ ഈ പ്രവർത്തനം ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="1222060260947439312">വലത് വശത്തുള്ള ട്രേ</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">കാർഡ് നമ്പർ:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="2174875517416416684">നിങ്ങളുടെ ഇടപാട് പൂർത്തിയാക്കാനായില്ല. നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് ഫണ്ടുകളൊന്നും പിൻവലിച്ചില്ല.</translation>
 <translation id="2175630235841878061">100MB-യിൽ കൂടുതൽ വലുപ്പമുള്ള ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ ലഭ്യമല്ല</translation>
+<translation id="217631816678106981">ഒട്ടിക്കരുത്</translation>
 <translation id="2178665390943006934">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="2178904466768126352">നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിച്ച സൈറ്റിലെ അറ്റാക്കർമാർ, നിങ്ങളുടെ പാസ്‌വേഡുകളോ ഫോട്ടോകളോ സന്ദേശങ്ങളോ ക്രെഡിറ്റ് കാർഡ് നമ്പറുകളോ പോലുള്ള കാര്യങ്ങൾ മോഷ്ടിക്കുകയോ ഇല്ലാതാക്കുകയോ ചെയ്യുന്ന, ദോഷകരമായ സോഫ്റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്തേക്കാം.</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" /> എന്നതിലെ <ph name="SITE_TITLE" /></translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">Chromium-ലെ നിങ്ങളുടെ തിരയൽ എഞ്ചിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2731382536835015353">44 x 68 ഇഞ്ച്</translation>
 <translation id="2734319753272419592">വ്യക്തിപരമാക്കിയ കിഴിവുകൾ തിരയുന്നതിന് നിങ്ങളുടെ കാർട്ടുകൾ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക. കിഴിവുകൾ ലഭ്യമാകുമ്പോൾ, നിങ്ങളുടെ കാർട്ടുകളിൽ അവ സ്വയമേവ ദൃശ്യമാകും.</translation>
+<translation id="2734797989819862638">പകർത്തരുത്</translation>
 <translation id="273785062888389088">HVAC-യും കാലാവസ്ഥാ നിയന്ത്രണവും</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2742128390261873684">ഹോം ഓട്ടോമേഷൻ</translation>
@@ -1741,6 +1744,8 @@
 <translation id="3869939189466884821">നിങ്ങളുടെ ലോക്കൽ ഫയലുകൾ <ph name="MINUTES" /> മിനിറ്റിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
+<translation id="3877603629930976930">പങ്കിടരുത്</translation>
+<translation id="3878445208930547646">ഈ സൈറ്റിൽ നിന്ന് പകർത്തുന്നത് അനുവദനീയമല്ല</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
 <translation id="3880589673277376494">ഇന്റർനെറ്റും ടെലികോമും</translation>
@@ -2109,6 +2114,7 @@
 <translation id="4466576951214254884">വിദ്യാർത്ഥി വായ്‌പകളും കോളേജ് ഫിനാൻസിംഗും</translation>
 <translation id="4467821340016922962">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാനും ഡൗൺലോഡ് കാണാനും |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="4473643328224505070">Chrome-ന്റെ ഉയർന്ന തലത്തിലുള്ള സുരക്ഷ നേടാൻ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കുക<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
+<translation id="4475299370877036544">ഈ നടപടി, നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ ലംഘിച്ചേക്കാം</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ഈ ഫോം സുരക്ഷിതമല്ല. സ്വയമേവ പൂരിപ്പിക്കൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
@@ -3654,6 +3660,7 @@
 <translation id="70705239631109039">നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="7071122206197538392">പുതിയ താരതമ്യ പട്ടിക</translation>
 <translation id="7075452647191940183">അഭ്യർത്ഥന വളരെ വലുതാണ്</translation>
+<translation id="7075896597860500885">ഈ സൈറ്റിൽ നിന്ന് പകർത്തുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> എന്നതിൽ നിന്ന് (സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ ഇതിൽ കൂടുതൽ)</translation>
@@ -3689,6 +3696,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">അപ്‌ലോഡ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7132939140423847331">ഈ ഡാറ്റ പകർത്തുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നിരോധിച്ചിരിക്കുന്നു.</translation>
+<translation id="7134653428559514680">ഈ സൈറ്റിൽ നിന്നുള്ള പങ്കിടൽ നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="7135130955892390533">സ്‌റ്റാറ്റസ് കാണിക്കുക</translation>
 <translation id="7135814714616751706">Search കുറുക്കുവഴികൾ</translation>
 <translation id="7136009930065337683">അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -3777,6 +3785,7 @@
 <translation id="7275334191706090484">നിയന്ത്രിത ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7275808129217605899">ആരോഗ്യകരമായ ഭക്ഷണശീലം</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="7286908876112207905">ഈ ഉള്ളടക്കം ഈ സൈറ്റിൽ ഒട്ടിക്കുന്നത് അനുവദനീയമല്ല</translation>
 <translation id="7291578327729322058">ഡ്രൈവിംഗ് ലൈസൻസ് ചേർക്കുക</translation>
 <translation id="7292031607255951991">സ്വീകർത്താവിന്റെ പേര്</translation>
 <translation id="7298195798382681320">ശുപാർശചെയ്യുന്നത്</translation>
@@ -3817,6 +3826,7 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ</translation>
 <translation id="7366594738862061263">Chrome നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നത് എങ്ങനെയെന്ന് അറിയുക</translation>
+<translation id="7370751048350026847">ഈ ഉള്ളടക്കം ഈ സൈറ്റിൽ ഒട്ടിക്കുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="7372526636730851647">ഫോട്ടോ (ഗ്ലോസി)</translation>
 <translation id="7372973238305370288">തിരയൽ ഫലം</translation>
 <translation id="7374461526650987610">പ്രോട്ടോക്കോൾ ഹാൻഡ്‌ലറുകൾ</translation>
@@ -3888,6 +3898,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">കാർഗോ ട്രക്കുകളും ട്രെയ്‌ലറുകളും</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
+<translation id="7463068149674892185">ഈ പ്രവർത്തനം നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Javascript ഒപ്റ്റിമൈസേഷനും സുരക്ഷയും</translation>
 <translation id="7465036432780054056">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും</translation>

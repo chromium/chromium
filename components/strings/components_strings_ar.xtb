@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">بدأت عملية التنزيل. للاطّلاع عليها، يُرجى الضغط مع الاستمرار على |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">‏استخدام المعلومات المحفوظة في حسابك على Google لملء تلقائيًا كلمات المرور ومفاتيح المرور والعناوين وطرق الدفع وغيرها من المعلومات</translation>
 <translation id="1219129156119358924">أمان النظام</translation>
+<translation id="1219134100826635117">حظَر المشرف هذا الإجراء</translation>
 <translation id="1222060260947439312">الدُرج الأيمن</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">رقم البطاقة:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">يرجى التأكّد من الاتصال بالإنترنت</translation>
 <translation id="2174875517416416684">تعذّر إتمام معاملتك. لم يتم سحب أي أموال من حسابك.</translation>
 <translation id="2175630235841878061">لا تتوفّر إمكانية تنزيل الملفات التي يزيد حجمها عن 100 ميغابايت.</translation>
+<translation id="217631816678106981">عدم اللصق</translation>
 <translation id="2178665390943006934">‏زر تحديث Chrome: يمكن النقر على هذا الزر لتحديث متصفِّح Chrome من الإعدادات</translation>
 <translation id="2178904466768126352">قد يتمكّن المهاجمون على هذا الموقع الإلكتروني من تثبيت برامج ضارة تسرق أو تحذف بيانات، مثل كلمات المرور أو الصور أو الرسائل أو أرقام بطاقات الائتمان.</translation>
 <translation id="2179003720612888584">‫"<ph name="SITE_TITLE" />" على <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1061,6 +1063,7 @@
 <translation id="2731220418440848219">‏مزيد من المعلومات عن محرك البحث في Chromium</translation>
 <translation id="2731382536835015353">44 × 68 بوصة</translation>
 <translation id="2734319753272419592">‏يمكنك السماح لشركة Google باستخدام سلّات التسوّق للبحث عن خصومات مخصَّصة. ستظهر الخصومات في سلّات التسوّق تلقائيًا عند توفُّرها.</translation>
+<translation id="2734797989819862638">عدم النسخ</translation>
 <translation id="273785062888389088">تدفئة وتهوية وتكييف هواء وتحكُّم في المناخ</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2742128390261873684">التشغيل الآلي للأجهزة المنزلية</translation>
@@ -1743,6 +1746,8 @@
 <translation id="3869939189466884821">سيتم حذف ملفاتك على الجهاز بعد <ph name="MINUTES" /> من الدقائق</translation>
 <translation id="3872834068356954457">علوم</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
+<translation id="3877603629930976930">عدم المشاركة</translation>
+<translation id="3878445208930547646">لا يُسمح بالنسخ من هذا الموقع الإلكتروني.</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3880456882942693779">فنون وترفيه</translation>
 <translation id="3880589673277376494">إنترنت واتصالات</translation>
@@ -2112,6 +2117,7 @@
 <translation id="4466576951214254884">قروض للطلاب وتمويل الدراسة الجامعية</translation>
 <translation id="4467821340016922962">للخروج من وضع "ملء الشاشة" والاطّلاع على عملية التنزيل، يمكنك الضغط على |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070">‏<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />يمكنك تفعيل ميزة "الحماية المحسَّنة"<ph name="END_ENHANCED_PROTECTION_LINK" /> للحصول على أعلى مستوى حماية في Chrome</translation>
+<translation id="4475299370877036544">قد ينتهك هذا الإجراء سياسات مؤسستك.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">هذا النموذج غير آمن. تمّ إيقاف ميزة "الملء التلقائي".</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
@@ -3657,6 +3663,7 @@
 <translation id="70705239631109039">اتصالك ليس آمنًا بالكامل</translation>
 <translation id="7071122206197538392">إضافة إلى "جدول مقارنة" جديد</translation>
 <translation id="7075452647191940183">الطلب كبير جدًا</translation>
+<translation id="7075896597860500885">لا يُنصَح بالنسخ من هذا الموقع الإلكتروني.</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">من <ph name="TYPE_1" /> (المزيد على الأجهزة التي تمت مزامنتها)</translation>
@@ -3692,6 +3699,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">تحميل الملفات محظور</translation>
 <translation id="7132939140423847331">حظر المشرف نسخ هذه البيانات.</translation>
+<translation id="7134653428559514680">لا يُنصَح بالمشاركة من هذا الموقع الإلكتروني</translation>
 <translation id="7135130955892390533">عرض الحالة</translation>
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
 <translation id="7136009930065337683">مزيد من المعلومات حول وضع التصفُّح المتخفي</translation>
@@ -3780,6 +3788,7 @@
 <translation id="7275334191706090484">الإشارات المرجعية المُدارة</translation>
 <translation id="7275808129217605899">تغذية صحية</translation>
 <translation id="7285654172857511148">‏‫<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، يُرجى الضغط على مفتاح Tab ثم مفتاح Enter لتغيير كلمة مرور حسابك على Google</translation>
+<translation id="7286908876112207905">لا يُسمح بلصق هذا المحتوى في هذا الموقع الإلكتروني.</translation>
 <translation id="7291578327729322058">إضافة رخصة قيادة</translation>
 <translation id="7292031607255951991">اسم المستلم</translation>
 <translation id="7298195798382681320">موصى بها</translation>
@@ -3820,6 +3829,7 @@
 <translation id="7366117520888504990">‏‎198 × 275 ملم</translation>
 <translation id="7366362069757178916">معالِجات الدفع</translation>
 <translation id="7366594738862061263">‏مزيد من المعلومات عن كيفية حماية كلمات المرور في Chrome</translation>
+<translation id="7370751048350026847">لا يُنصَح بلصق هذا المحتوى في هذا الموقع الإلكتروني.</translation>
 <translation id="7372526636730851647">تصوير (لامع)</translation>
 <translation id="7372973238305370288">نتيجة البحث</translation>
 <translation id="7374461526650987610">معالجات البروتوكول</translation>
@@ -3893,6 +3903,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">شاحنات نقل ومقطورات</translation>
 <translation id="7461924472993315131">تثبيت</translation>
+<translation id="7463068149674892185">لا يُنصح بتنفيذ هذا الإجراء</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">‏تحسين محرك JavaScript وتأمينه</translation>
 <translation id="7465036432780054056">سيتم إعلام <ph name="EMBEDDED_URL" /> بأنّك زرت <ph name="TOP_LEVEL_URL" />.</translation>

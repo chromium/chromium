@@ -160,6 +160,7 @@ Lưu ý: Hãy đọc thêm về chính sách giảm thiểu quy trình (https://
 <translation id="1087437665304381368">Chính sách này chỉ kiểm soát chế độ nhà phát triển của <ph name="PRODUCT_OS_NAME" />. Nếu muốn ngăn khả năng truy cập vào Tùy chọn của nhà phát triển Android, bạn cần đặt chính sách <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">Danh sách chính sách của Chrome Enterprise sẽ chuyển sang vị trí mới! Vui lòng cập nhật dấu trang của bạn thành <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Tự động điền tên người dùng trên trang SAML IdP</translation>
+<translation id="1090430607214486535">Nhạy cảm</translation>
 <translation id="1091765729282771296">Cho phép các trang web yêu cầu người dùng cấp quyền truy cập vào thiết bị HID</translation>
 <translation id="1095209545735032039">Chặn API nối tiếp trên các trang web này</translation>
 <translation id="1096105751829466145">Nhà cung cấp dịch vụ tìm kiếm mặc định</translation>

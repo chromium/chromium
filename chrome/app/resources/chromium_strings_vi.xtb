@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">Chromium – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Lỗi khi kiểm tra bản cập nhật: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Xoá tài khoản khỏi Chromium</translation>
+<translation id="2210502920229141283">An toàn hơn khi di chuyển nhờ tính năng Duyệt web an toàn có tăng cường bảo vệ trên Chromium cho iOS</translation>
 <translation id="2210682093923538346">Đây là trang web nguy hiểm. Chromium đã xoá quyền thông báo.</translation>
 <translation id="2236949375853147973">Hoạt động của tôi</translation>
 <translation id="2238130810669087193">Để sử dụng địa chỉ và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium. Địa chỉ này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
@@ -154,6 +155,7 @@
 <translation id="2928420929544864228">Đã cài đặt xong.</translation>
 <translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chromium vào Tài khoản Google của bạn.</translation>
 <translation id="2945997411976714835">Lỗi cài đặt: Trình cài đặt không thể bắt đầu quá trình.</translation>
+<translation id="2948852018303413228">Đăng nhập vào các trang web nhanh hơn bằng mật khẩu đã lưu cho Chromium trên iOS</translation>
 <translation id="2970426615109535079">Tổ chức bạn quản lý Chromium</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="2977506796191543575">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chromium cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
@@ -559,6 +561,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7888981273428720788">Đặt Chromium làm trình duyệt mặc định</translation>
 <translation id="7934340546140346950">Chromium tự động nâng cấp các kết nối không an toàn lên HTTPS mỗi khi có thể</translation>
 <translation id="7937630085815544518">Bạn đã đăng nhập vào Chromium là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
+<translation id="7953047982688951904">Tải Chromium xuống điện thoại để tăng cường bảo vệ khi bạn di chuyển</translation>
 <translation id="7975919845073681630">Đây là cài đặt thứ cấp của Chromium và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="7997934263947464652">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chromium đề xuất bạn chỉ nền cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Trình duyệt</translation>

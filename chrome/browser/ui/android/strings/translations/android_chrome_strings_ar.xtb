@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="250020030759455918">‏ستظهر لك حالة تسجيل الدخول على "<ph name="SITE_NAME" />"، وبيانات التصفُّح وبيانات الموقع الإلكتروني في Chrome.</translation>
-<translation id="2502798195266898572">تم فتح البطاقة السفلية لـ "وضع القراءة" بطول الشاشة</translation>
 <translation id="2510106555128151389">جارٍ تثبيت "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2512234228327349533">البحث عن خيارات الشراء</translation>
 <translation id="2513403576141822879">‏لعرض مزيد من الإعدادات المتعلِّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطِّلاع على <ph name="BEGIN_LINK" />خدمات Google والمزامنة<ph name="END_LINK" /></translation>
@@ -1129,13 +1128,11 @@
 <translation id="6255809143828972562">‏بفضل أدوات من Chrome، يمكنك التصفّح بأمان والتحكّم في بياناتك بشكل كامل</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264485186158353794">الرجوع</translation>
-<translation id="6267063201726531683">بطاقة "وضع القراءة" السفلية</translation>
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6291294824436685757">حذف بيانات التصفّح واختيار البيانات المراد حذفها</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="629730747756840877">الحساب</translation>
-<translation id="6300697579369314762">تم فتح البطاقة السفلية لـ "وضع القراءة" في نصف الشاشة</translation>
 <translation id="6301526076346731664">فتح "أدوات المطوّرين"</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور المحفوظة على هذا الجهاز</translation>
@@ -1354,7 +1351,6 @@
 <translation id="71503698506017927">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
 
 لتغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">تم إغلاق البطاقة السفلية لـ "وضع القراءة"</translation>
 <translation id="7165972437814027679">‏مزيد من المعلومات حول سبب حظر Chrome لبعض الملفات</translation>
 <translation id="7168323970702333693">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>

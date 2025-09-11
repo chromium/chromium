@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">तपाईँको अविभावक द्वारा व्यवस्थित</translation>
 <translation id="902236149563113779">साइटहरूले सामान्यतया गेम वा हेड्स-अप निर्देशन जस्ता AR सुविधाहरू प्रदान गर्न तपाईंको क्यामेराको स्थिति ट्र्याक गर्छन्</translation>
 <translation id="9039697262778250930">तपाईंलाई यी साइटहरूबाट साइन आउट गरिन सक्छ</translation>
+<translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9106233582039520022">कुकीहरू मेटाउने हो?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}}</translation>

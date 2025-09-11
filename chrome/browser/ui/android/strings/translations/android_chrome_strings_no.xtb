@@ -307,7 +307,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="2497852260688568942">Administratoren din har slått av synkronisering</translation>
 <translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
-<translation id="2502798195266898572">Feltet nederst for lesemodus er åpnet i full høyde</translation>
 <translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2512234228327349533">Søk etter kjøpsalternativer</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
@@ -1128,13 +1127,11 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6255809143828972562">Med verktøy fra Chrome kan du surfe trygt og ha kontroll</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>
-<translation id="6267063201726531683">Felt nederst for lesemodus</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Slett nettlesingsdata – velg dataene du vil slette</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="629730747756840877">Konto</translation>
-<translation id="6300697579369314762">Feltet nederst for lesemodus er åpnet i halv høyde</translation>
 <translation id="6301526076346731664">Åpne utviklerverktøyene</translation>
 <translation id="6303969859164067831">Logg av og slå av synkronisering</translation>
 <translation id="6307241780749477694">Bekreft at det er deg, for å få alle passordene dine på denne enheten</translation>
@@ -1353,7 +1350,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="71503698506017927">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">Feltet nederst for lesemodus er lukket</translation>
 <translation id="7165972437814027679">Finn ut mer om hvorfor Chrome blokkerer enkelte filer</translation>
 <translation id="7168323970702333693">Logget på som <ph name="USER_NAME" />. Åpner innstillinger.</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>

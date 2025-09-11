@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">మీ కోసం ప్రోడక్ట్ రివ్యూలు</translation>
 <translation id="1084365883616172403">Facebook పోస్ట్ పూర్తయింది.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" />‌ను తెరవడం సాధ్యపడలేదు</translation>
+<translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
 <translation id="1096992026380844478">మీ చివరి బ్యాకప్ ఆధారంగా మీ సింక్ సెట్టింగ్‌లు రీస్టోర్ చేయబడతాయి. <ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="110491332089958282">మరింత సందర్భోచితమైన సమాధానాలను పొందడానికి, పేజీలోని కంటెంట్‌ను Geminiకి షేర్ చేయండి. మీరు Geminiకి ఒక పేజీని షేర్ చేసినప్పుడు, పేజీలోని పూర్తి కంటెంట్, URLలు Googleకు పంపబడతాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">మీ సింక్ చేసిన పరికరాలలో తెరిచిన, ఇటీవల మూసివేసిన ట్యాబ్‌లను క్విక్‌గా కనుగొనండి.</translation>
 <translation id="3530767473765895035">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి…</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
-<translation id="3533860663366814939">ఆటోఫిల్ &amp; పాస్‌వర్డ్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3540141921715814660">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="3546122170015471515">Google.com సైట్‌లో Maps ప్రివ్యూలు</translation>
 <translation id="3547356470684043247">రివ్యూలతో మీ నిర్ణయాలను తెలియజేయడంలో సహాయపడేందుకు ప్రోడక్ట్‌లు, సర్వీస్‌లు లేదా ఎక్స్‌పీరియన్స్‌లకు సంబంధించిన కస్టమర్ పరిశీలనలను చదవండి</translation>

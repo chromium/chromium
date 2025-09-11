@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2497852260688568942">您的管理员已停用同步</translation>
 <translation id="250020030759455918">您会在 Chrome 中看到自己的 <ph name="SITE_NAME" /> 登录状态、浏览数据和网站数据</translation>
-<translation id="2502798195266898572">已打开阅读模式底部动作条，并以最大高度显示</translation>
 <translation id="2510106555128151389">正在安装“<ph name="WEBAPK_NAME" />”…</translation>
 <translation id="2512234228327349533">搜索购买选项</translation>
 <translation id="2513403576141822879">若想了解更多与隐私、安全和数据收集相关的设置，请参阅<ph name="BEGIN_LINK" />同步功能和 Google 服务<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6264485186158353794">返回安全连接</translation>
-<translation id="6267063201726531683">阅读模式底部动作条</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题</translation>
 <translation id="6291294824436685757">删除浏览数据；选择要删除的数据</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="629730747756840877">账号</translation>
-<translation id="6300697579369314762">已打开阅读模式底部动作条，并以一半高度显示</translation>
 <translation id="6301526076346731664">打开开发者工具</translation>
 <translation id="6303969859164067831">退出账号并关闭同步功能</translation>
 <translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
@@ -1351,7 +1348,6 @@
 <translation id="7148400116894863598">从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
-<translation id="7151332203500147130">已关闭阅读模式底部动作条</translation>
 <translation id="7165972437814027679">详细了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
 <translation id="7173114856073700355">打开“设置”</translation>

@@ -95,6 +95,7 @@
 <translation id="2185166961232948079">Chromium – вход в сеть – "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2190166659037789668">Ошибка проверки обновлений: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Удалить аккаунт из Chromium</translation>
+<translation id="2210502920229141283">Улучшенный Безопасный просмотр в Chromium для iOS поможет защитить данные мобильных устройств.</translation>
 <translation id="2210682093923538346">Опасный сайт. Браузер Chromium отозвал разрешение на показ уведомлений.</translation>
 <translation id="2236949375853147973">Мои действия</translation>
 <translation id="2238130810669087193">Чтобы синхронизировать адреса и другие данные на всех своих устройствах, войдите в Chromium. Затем этот адрес будет сохранен в аккаунте Google.</translation>
@@ -153,6 +154,7 @@
 <translation id="2928420929544864228">Установка завершена.</translation>
 <translation id="2933336679234709858">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы использовать и сохранять данные Chromium в аккаунте Google.</translation>
 <translation id="2945997411976714835">Произошла ошибка. Не удалось начать установку.</translation>
+<translation id="2948852018303413228">Входите на сайты быстрее, используя сохраненные пароли в Chromium для iOS.</translation>
 <translation id="2970426615109535079">Ваша организация управляет Chromium</translation>
 <translation id="2977470724722393594">Вы используете последнюю версию Chromium</translation>
 <translation id="2977506796191543575">Если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chromium может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
@@ -554,6 +556,7 @@
 <translation id="7888981273428720788">Сделайте Chromium браузером по умолчанию</translation>
 <translation id="7934340546140346950">Chromium автоматически использует HTTPS для незащищенных подключений, когда это возможно.</translation>
 <translation id="7937630085815544518">Ранее вы входили в Chromium как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
+<translation id="7953047982688951904">Скачайте Chromium на телефон для дополнительной защиты устройства.</translation>
 <translation id="7975919845073681630">Это дополнительная установка Chromium. Его нельзя сделать браузером по умолчанию.</translation>
 <translation id="7997934263947464652">Расширения, приложения и темы из неизвестных источников могут навредить устройству. Рекомендуем скачивать подобное ПО только из <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Браузер</translation>

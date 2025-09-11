@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Recensións de produtos para ti</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1085677983426914530">"<ph name="FILENAME" />" non se puido abrir</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1096992026380844478">Restaurarase a configuración de sincronización en función da última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Comparte o contido da páxina con Gemini para obter resultados máis relevantes. Cando compartes unha páxina con Gemini, envíanse a Google tanto o contido completo como o URL da páxina. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3530206579861815432">Atopa con rapidez pestanas abertas e pechadas recentemente nos teus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Xestionar contas neste dispositivo…</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
-<translation id="3533860663366814939">Abre a opción de AutoFill &amp; Passwords (Autocompletar e contrasinais)</translation>
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="3546122170015471515">Vista previa de Maps en google.com</translation>
 <translation id="3547356470684043247">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas</translation>

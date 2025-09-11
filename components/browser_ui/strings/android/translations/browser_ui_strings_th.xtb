@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">จัดการโดยผู้ปกครอง</translation>
 <translation id="902236149563113779">โดยปกติแล้วเว็บไซต์จะติดตามตำแหน่งกล้องของคุณเพื่อช่วยให้ฟีเจอร์ AR ต่างๆ ดำเนินการได้ เช่น เกมหรือการแจ้งทิศทางล่วงหน้า</translation>
 <translation id="9039697262778250930">ระบบอาจนำคุณออกจากระบบเว็บไซต์เหล่านี้</translation>
+<translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9106233582039520022">ลบคุกกี้ไหม</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>

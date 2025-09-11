@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="2497852260688568942">સમન્વયન, તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરવામાં આવ્યું છે</translation>
 <translation id="250020030759455918">તમને Chromeમાં તમારું <ph name="SITE_NAME" />નું સાઇન ઇન સ્ટેટસ, બ્રાઉઝિંગ ડેટા અને સાઇટ ડેટા દેખાશે</translation>
-<translation id="2502798195266898572">વાંચન મોડ બોટમ શીટ પૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="2512234228327349533">ખરીદી કરવાના વિકલ્પો શોધો</translation>
 <translation id="2513403576141822879">ગોપનીયતા, સુરક્ષા, અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક અને Google સેવાઓ<ph name="END_LINK" /> જુઓ</translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">Chromeના ટૂલ વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
-<translation id="6267063201726531683">વાંચન મોડ બોટમ શીટ</translation>
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6291294824436685757">બ્રાઉઝિંગ ડેટા ડિલીટ કરો; ડિલીટ કરવા માટેનો ડેટા પસંદ કરો</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
-<translation id="6300697579369314762">વાંચન મોડ બોટમ શીટ અડધી ઊંચાઈએ ખોલી</translation>
 <translation id="6301526076346731664">ડેવલપર ટૂલ ખોલો</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
 <translation id="6307241780749477694">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ મેળવવા માટે ખાતરી કરો કે તે તમે જ છો</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને સરનામા શામેલ હોતા નથી.
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">વાંચન મોડ બોટમ શીટ બંધ કરી</translation>
 <translation id="7165972437814027679">Chrome અમુક ફાઇલોને કેમ બ્લૉક કરે છે તે વિશે વધુ જાણો</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. સેટિંગ ખોલે છે.</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>

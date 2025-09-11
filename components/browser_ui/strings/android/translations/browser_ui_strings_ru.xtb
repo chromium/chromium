@@ -705,6 +705,7 @@
 <translation id="9019902583201351841">Управляется твоими родителями</translation>
 <translation id="902236149563113779">Обычно сайты отслеживают положение камеры, чтобы использовать связанные с дополненной реальностью функции, например в играх или при показе маршрутов с подсказками.</translation>
 <translation id="9039697262778250930">Возможно, вам потребуется повторно войти в аккаунт на этих сайтах.</translation>
+<translation id="9065203028668620118">Изменить</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Удалить файлы cookie</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>

@@ -31,6 +31,16 @@
           <ph name="ADVANCED_TITLE" />
           dhe anulo zgjedhjen e "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Nëse kjo nuk e zgjidh këtë problem, rekomandojmë ta zgjedhësh përsëri këtë opsion për një cilësi më të mirë të funksionimit.</translation>
+<translation id="6581867098636731226">Shko te
+          menyja e Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Rrjeti dhe interneti &gt; Proxy
+          dhe anulo zgjedhjen e "Zbulo automatikisht cilësimet".</translation>
 <translation id="7230956101631259640">Po shikon një faqe të sigurt të Chrome</translation>
 <translation id="8232971017369963250">Chrome është mundësuar nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome është mundësuar po ashtu nga <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>

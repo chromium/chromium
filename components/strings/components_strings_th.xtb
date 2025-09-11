@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
 <translation id="1215738931000958575">ใช้ข้อมูลที่บันทึกไว้ในบัญชี Google ของคุณเพื่อป้อนรหัสผ่าน พาสคีย์ ที่อยู่ วิธีการชำระเงิน และข้อมูลอื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
+<translation id="1219134100826635117">ผู้ดูแลระบบบล็อกการดำเนินการนี้</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">หมายเลขบัตร:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2174875517416416684">ทำธุรกรรมไม่สำเร็จ ไม่มีการถอนเงินออกจากบัญชีของคุณ</translation>
 <translation id="2175630235841878061">ไฟล์ที่มีขนาดเกิน 100 MB ไม่พร้อมให้ดาวน์โหลด</translation>
+<translation id="217631816678106981">ไม่วาง</translation>
 <translation id="2178665390943006934">ปุ่มอัปเดต Chrome เปิดใช้งานเพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="2178904466768126352">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> ใน <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1060,6 +1062,7 @@
 <translation id="2731220418440848219">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาใน Chromium</translation>
 <translation id="2731382536835015353">44 x 68 นิ้ว</translation>
 <translation id="2734319753272419592">ให้ Google ใช้รถเข็นเพื่อค้นหาส่วนลดที่เหมาะกับคุณ ส่วนลดจะแสดงในรถเข็นโดยอัตโนมัติเมื่อพร้อมให้บริการ</translation>
+<translation id="2734797989819862638">ไม่คัดลอก</translation>
 <translation id="273785062888389088">ระบบปรับอากาศ (HVAC) และการควบคุมสภาพอากาศ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2742128390261873684">ระบบอัตโนมัติในบ้าน</translation>
@@ -1741,6 +1744,8 @@
 <translation id="3869939189466884821">ระบบจะลบไฟล์ในเครื่องของคุณใน <ph name="MINUTES" /> นาที</translation>
 <translation id="3872834068356954457">วิทยาศาสตร์</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
+<translation id="3877603629930976930">ไม่แชร์</translation>
+<translation id="3878445208930547646">ไม่อนุญาตให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
 <translation id="3880589673277376494">อินเทอร์เน็ตและโทรคมนาคม</translation>
@@ -2109,6 +2114,7 @@
 <translation id="4466576951214254884">สินเชื่อเพื่อการศึกษา</translation>
 <translation id="4467821340016922962">หากต้องการออกจากโหมดเต็มหน้าจอและดูการดาวน์โหลด ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดใช้การปกป้องที่ดียิ่งขึ้น<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อรับการรักษาความปลอดภัยระดับสูงสุดของ Chrome</translation>
+<translation id="4475299370877036544">การดําเนินการนี้อาจละเมิดนโยบายขององค์กร</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" /> <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ฟอร์มนี้ไม่ปลอดภัย ปิดการป้อนข้อความอัตโนมัติแล้ว</translation>
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
@@ -3654,6 +3660,7 @@
 <translation id="70705239631109039">การเชื่อมต่อไม่ปลอดภัยอย่างสมบูรณ์</translation>
 <translation id="7071122206197538392">ตารางเปรียบเทียบใหม่</translation>
 <translation id="7075452647191940183">คำขอมีขนาดใหญ่เกินไป</translation>
+<translation id="7075896597860500885">ไม่แนะนำให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">จาก <ph name="TYPE_1" /> (ดูเพิ่มเติมในอุปกรณ์ที่ซิงค์)</translation>
@@ -3689,6 +3696,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">การอัปโหลดถูกบล็อก</translation>
 <translation id="7132939140423847331">ผู้ดูแลระบบของคุณห้ามไม่ให้คัดลอกข้อมูลนี้</translation>
+<translation id="7134653428559514680">ไม่แนะนำให้แชร์จากเว็บไซต์นี้</translation>
 <translation id="7135130955892390533">แสดงสถานะ</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
 <translation id="7136009930065337683">ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตน</translation>
@@ -3777,6 +3785,7 @@
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="7275808129217605899">การรับประทานอาหารเพื่อสุขภาพ</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเปลี่ยนรหัสผ่านของบัญชี Google</translation>
+<translation id="7286908876112207905">ไม่อนุญาตให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7291578327729322058">เพิ่มใบขับขี่</translation>
 <translation id="7292031607255951991">ชื่อผู้รับ</translation>
 <translation id="7298195798382681320">แนะนำ</translation>
@@ -3817,6 +3826,7 @@
 <translation id="7366117520888504990">198 x 275 มม.</translation>
 <translation id="7366362069757178916">เครื่องจัดการการชำระเงิน</translation>
 <translation id="7366594738862061263">ดูข้อมูลเพิ่มเติมเกี่ยวกับวิธีที่ Chrome ปกป้องรหัสผ่านของคุณ</translation>
+<translation id="7370751048350026847">ไม่แนะนำให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7372526636730851647">รูปภาพ (เงา)</translation>
 <translation id="7372973238305370288">ผลการค้นหา</translation>
 <translation id="7374461526650987610">เครื่องจัดการโปรโตคอล</translation>
@@ -3890,6 +3900,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">รถบรรทุกและรถพ่วง</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
+<translation id="7463068149674892185">ไม่แนะนำให้ดำเนินการนี้</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">การเพิ่มประสิทธิภาพและความปลอดภัยของ JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> จะรู้ว่าคุณไปที่ <ph name="TOP_LEVEL_URL" /></translation>
@@ -4909,6 +4920,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ใช้โปรโตคอลที่ไม่รองรับ</translation>
 <translation id="918454845714257218">ตรวจสอบรหัสใน <ph name="SIDE_OF_CARD" /> แล้วลองอีกครั้ง</translation>
 <translation id="9186203289258525843">ปุ่มตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น เปิดใช้งานเพื่อตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบ</translation>
+<translation id="9186371298532546532">ใช้ที่อยู่นี้ในที่อื่นๆ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> เปลี่ยนแท็บนี้แล้ว</translation>
 <translation id="9189789270972826888">คลิกรายละเอียดบัตรด้านล่างเพื่อคัดลอกและวางหากไม่ได้กรอกข้อมูลบัตร <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">หัวข้อที่เก่ากว่า 4 สัปดาห์จะถูกลบโดยอัตโนมัติ</translation>
@@ -4924,6 +4936,7 @@
 <translation id="920643408853370361">ประกันภัยการเดินทาง</translation>
 <translation id="9207861905230894330">การเพิ่มบทความล้มเหลว</translation>
 <translation id="9209339767782560829">เกิดปัญหาในการใช้ใบรับรองการเข้าสู่ระบบ</translation>
+<translation id="9210152531668884481">ตกลง</translation>
 <translation id="9210825002219699214">การเดินทางโดยเครื่องบิน</translation>
 <translation id="9213433120051936369">กำหนดลักษณะที่ปรากฏ</translation>
 <translation id="9215416866750762878">มีแอปพลิเคชันที่ห้ามไม่ให้ Chrome เชื่อมต่อกับไซต์นี้อย่างปลอดภัย</translation>

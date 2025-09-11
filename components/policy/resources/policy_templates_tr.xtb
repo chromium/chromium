@@ -1548,6 +1548,7 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 
 Bu cihaz politikası, mevcut <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> kullanıcı politikası ile aynıdır ancak giriş ekranındaki oturum açma profilinde geçerlidir.</translation>
 <translation id="2089541797660774692">Yönetilen tarayıcı bulut raporlamasını etkinleştir</translation>
+<translation id="2090280024671359587">Metin yakalama özelliğine izin ver ve yapay zeka modellerini iyileştir</translation>
 <translation id="2090712407517297305">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.</translation>
 <translation id="2090939118981888335">Politika, Etkin değerine ayarlanırsa veri sıkıştırma proxy'sine izin verilir. Politika, Devre Dışı değerine ayarlanırsa proxy'ye izin verilmez.
 
@@ -3450,6 +3451,7 @@ Bu politika 1.000 giriş ile sınırlıdır.
 Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken tarayıcıda gezinmeyi engeller.</translation>
 <translation id="3405997282295704902">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin verme</translation>
 <translation id="3406122462682235653">Kullanıcıya sorma (indirme işlemleri hemen başlar)</translation>
+<translation id="3410534959501660670">Metin yakalama özelliğinin ayarları</translation>
 <translation id="3411947169047929182">WebRTC ile ilgili yapılandırmayı kontrol eder</translation>
 <translation id="341285788698114069">Bu politika, Windows üzerinde ses işleminin önceliğini kontrol eder.
       Bu politika etkinleştirilirse ses işlemi, normal üstü öncelikli çalışır.
@@ -6263,6 +6265,7 @@ Geçerli işleme değerleri:
 
 Tüm işleme değerlerinin ayrıntılı açıklaması için RFC 8828 belgesinin 5.2 numaralı bölümüne bakın (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="5290940294294002042">Kullanıcının etkinleştirebileceği veya devre dışı bırakabileceği eklentilerin listesini belirt</translation>
+<translation id="5292069729218406524">Yapay zeka modellerini iyileştirmeden Metin yakalama özelliğine izin ver</translation>
 <translation id="5293285950307241933">Tüm yerel kullanıcı verilerini sil</translation>
 <translation id="5293619885162445352"><ph name="PEPPER_NAME" /> eklentisinin, yeni video kod çözücüyü kullanmasına izin ver.</translation>
 <translation id="529457411593078576">CCT için ilk çalıştırma sırasında Hizmet Şartları'nı etkinleştirme</translation>
@@ -9897,6 +9900,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>
 <translation id="7713845740295404764">Giriş/çıkış etkinliklerini raporla</translation>
 <translation id="7715711044277116530">Sunum modunda ekranın kararma gecikmesinin ölçekleneceği yüzde</translation>
+<translation id="7715838249298819250">Metin yakalama özelliğine izin verme</translation>
 <translation id="7716020145539921591">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
 
        Politikanın ayarlanması proxy sunucunun URL'sini belirtmenizi sağlar. Bu politika yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde ve <ph name="PROXY_MODE_POLICY_NAME" /> politikasıyla <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> seçtiğinizde geçerli olur.
@@ -10613,6 +10617,17 @@ Tüm işleme değerlerinin ayrıntılı açıklaması için RFC 8828 belgesinin 
 
       Bu politika normal kullanıcı hesaplarında yoksayılır.</translation>
 <translation id="8257863622304579015">Ağ hizmeti korumalı alanını etkinleştir</translation>
+<translation id="825834906982940588">Bu politika, <ph name="PRODUCT_OS_NAME" /> için Metin yakalama özelliğinin ayarlarını kontrol eder.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın, yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın, kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="8259375588339409826">Hem Chromium hem de Google Chrome aynı politika grubunu destekler. Bu dokümanın, piyasaya çıkmamış yazılım sürümleri için hazırlanmış (yani "Desteklenen sürümler" bilgisinde, piyasaya çıkmamış bir <ph name="PRODUCT_NAME" /> sürümünü belirtir) politikalar içerebileceğini ve bu tür politikaların önceden bildirilmeksizin değiştirilebileceğini veya kaldırılabileceğini, güvenlik ve gizlilik özellikleriyle ilgili tüm garantiler de dahil olmak üzere herhangi bir garanti sağlanmadığını lütfen unutmayın.
 
 Bu politikalar sadece kuruluşunuz dahilindeki <ph name="PRODUCT_NAME" /> örneklerini yapılandırmak için kullanılabilir. Bu politikaların kuruluşunuzun dışında (örneğin, herkese açık olarak dağıtılan bir programda) kullanılması kötü amaçlı yazılım olarak kabul edilmesine yol açar ve muhtemelen Google ile virüsten korunma yazılımı tedarikçileri tarafından da kötü amaçlı yazılım olarak sınıflandırılır.

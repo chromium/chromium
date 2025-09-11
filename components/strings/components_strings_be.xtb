@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">Спампоўванне пачалося. Каб паглядзець спампаваныя файлы, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Выкарыстоўвайце даныя са свайго Уліковага запісу Google для аўтазапаўнення пры ўводзе пароляў, ключоў доступу, адрасоў, спосабаў аплаты і іншых звестак</translation>
 <translation id="1219129156119358924">Бяспека сістэмы</translation>
+<translation id="1219134100826635117">Адміністратар заблакіраваў гэта дзеянне</translation>
 <translation id="1222060260947439312">Правы латок</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Нумар карткі:</translation>
@@ -714,6 +715,7 @@
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2174875517416416684">Трансакцыя не выканана. Сродкі не спісаны з вашага рахунку.</translation>
 <translation id="2175630235841878061">Файлы памерам больш за 100 МБ спампоўваць нельга</translation>
+<translation id="217631816678106981">Не ўстаўляць</translation>
 <translation id="2178665390943006934">Кнопка "Абнавіць Chrome". Каб абнавіць браўзер Chrome праз яго налады, націсніце яе.</translation>
 <translation id="2178904466768126352">На сайце, які вы спрабавалі наведаць, дзейнічаюць зламыснікі. Яны могуць усталяваць шкоднае праграмнае забеспячэнне, якое выкрадае або выдаляе вашы даныя, напрыклад паролі, фота, паведамленні ці нумары крэдытных картак.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> (<ph name="SITE_DOMAIN_NAME" />)</translation>
@@ -1061,6 +1063,7 @@
 <translation id="2731220418440848219">Даведацца больш пра пошукавую сістэму ў Chromium</translation>
 <translation id="2731382536835015353">44 x 68 цаляў</translation>
 <translation id="2734319753272419592">Дайце Google доступ да вашых кошыкаў, каб сэрвісы Google маглі шукаць для вас персаналізаваныя скідкі. Даступныя скідкі будуць паказвацца ў кошыках аўтаматычна.</translation>
+<translation id="2734797989819862638">Не капіраваць</translation>
 <translation id="273785062888389088">Сістэмы ацяплення, вентыляцыі і кандыцыяніравання паветра і клімат-кантроль</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Аўтаматызацыя дома</translation>
@@ -1742,6 +1745,8 @@
 <translation id="3869939189466884821">Лакальныя файлы будуць выдалены праз <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Навука</translation>
 <translation id="3875783148670536197">Паказаць</translation>
+<translation id="3877603629930976930">Не абагульваць</translation>
+<translation id="3878445208930547646">Капіраванне змесціва з гэтага сайта забаронена</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
 <translation id="3880589673277376494">Інтэрнэт і тэлекамунікацыі</translation>
@@ -2110,6 +2115,7 @@
 <translation id="4466576951214254884">Студэнцкія крэдыты і пазыкі на адукацыю</translation>
 <translation id="4467821340016922962">Каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Уключыце палепшаную абарону<ph name="END_ENHANCED_PROTECTION_LINK" /> – найвышэйшы ўзровень бяспекі Chrome</translation>
+<translation id="4475299370877036544">Гэта дзеянне можа парушаць правілы вашай арганізацыі</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Гэта форма не з’яўляецца бяспечнай. Аўтазапаўненне было выключана.</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
@@ -3654,6 +3660,7 @@
 <translation id="70705239631109039">Ваша падключэнне не цалкам бяспечнае</translation>
 <translation id="7071122206197538392">Новая табліца параўнання</translation>
 <translation id="7075452647191940183">Запыт занадта вялікі</translation>
+<translation id="7075896597860500885">Не рэкамендуецца капіраваць змесціва з гэтага сайта</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">З <ph name="TYPE_1" /> (больш на сінхранізаваных прыладах)</translation>
@@ -3689,6 +3696,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Запампоўванне забаронена</translation>
 <translation id="7132939140423847331">Ваш адміністратар забараніў капіраванне гэтых даных.</translation>
+<translation id="7134653428559514680">Не рэкамендуецца абагульваць змесціва з гэтага сайта</translation>
 <translation id="7135130955892390533">Паказаць стан</translation>
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
 <translation id="7136009930065337683">Даведацца больш пра рэжым інкогніта</translation>
@@ -3776,6 +3784,7 @@
 <translation id="7275334191706090484">Кіруемыя закладкі</translation>
 <translation id="7275808129217605899">Здаровае харчаванне</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб змяніць пароль Уліковага запісу Google, націсніце Tab, затым Enter</translation>
+<translation id="7286908876112207905">Устаўка змесціва на гэты сайт забаронена</translation>
 <translation id="7291578327729322058">Дадаць вадзіцельскае пасведчанне</translation>
 <translation id="7292031607255951991">Імя атрымальніка</translation>
 <translation id="7298195798382681320">Рэкамендавана</translation>
@@ -3816,6 +3825,7 @@
 <translation id="7366117520888504990">198 x 275 мм</translation>
 <translation id="7366362069757178916">Апрацоўшчыкі плацяжоў</translation>
 <translation id="7366594738862061263">Даведацца пра тое, як Chrome абараняе вашы паролі</translation>
+<translation id="7370751048350026847">Не рэкамендуецца ўстаўляць змесціва на гэты сайт</translation>
 <translation id="7372526636730851647">Глянцавая фотапапера</translation>
 <translation id="7372973238305370288">вынік пошуку</translation>
 <translation id="7374461526650987610">Апрацоўшчыкі пратаколаў</translation>
@@ -3890,6 +3900,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Грузавыя аўтамабілі і прычэпы</translation>
 <translation id="7461924472993315131">Замацаваць</translation>
+<translation id="7463068149674892185">Не рэкамендуецца выконваць гэта дзеянне</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Аптымізацыя і бяспека JavaScript</translation>
 <translation id="7465036432780054056">Сайт <ph name="EMBEDDED_URL" /> атрымае інфармацыю, што вы наведвалі старонку <ph name="TOP_LEVEL_URL" /></translation>
@@ -4909,6 +4920,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> выкарыстоўвае пратакол, які не падтрымліваецца.</translation>
 <translation id="918454845714257218">Праверце код на <ph name="SIDE_OF_CARD" /> і паўтарыце спробу</translation>
 <translation id="9186203289258525843">Кнопка "Зрабіць Chrome стандартным браўзерам". Каб зрабіць Chrome стандартным браўзерам сістэмы, націсніце яе.</translation>
+<translation id="9186371298532546532">Выкарыстоўвайце гэты адрас у іншых месцах</translation>
 <translation id="9189468832660648522">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) змяніў гэту ўкладку</translation>
 <translation id="9189789270972826888">Калі даныя карткі не былі запоўнены, націсніце на рэквізіты, паказаныя ніжэй, каб скапіраваць і ўставіць іх. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Тэмы, дададзеныя на падставе наведвання сайтаў больш чым 4 тыдні таму назад, выдаляюцца аўтаматычна</translation>
@@ -4924,6 +4936,7 @@
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9209339767782560829">Узнікла праблема з выкарыстаннем вашага сертыфіката ўваходу.</translation>
+<translation id="9210152531668884481">Згаджаюся</translation>
 <translation id="9210825002219699214">Авіяпералёты</translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>

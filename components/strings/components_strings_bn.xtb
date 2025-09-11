@@ -129,6 +129,7 @@
 <translation id="1212527389003717329">ডাউনলোড শুরু হয়েছে। সেটি দেখতে, |<ph name="ACCELERATOR" />| বোতাম প্রেস করে ধরে রাখুন।</translation>
 <translation id="1215738931000958575">পাসওয়ার্ড, পাসকী, ঠিকানা, পেমেন্ট পদ্ধতি ও অন্যান্য তথ্য অটোফিল করতে, আপনার Google অ্যাকাউন্টে সেভ করা তথ্য ব্যবহার করা হয়</translation>
 <translation id="1219129156119358924">সিস্টেম নিরাপত্তা</translation>
+<translation id="1219134100826635117">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাকশন ব্লক করে দিয়েছে</translation>
 <translation id="1222060260947439312">ডানদিকের ট্রে</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">কার্ডের নম্বর:</translation>
@@ -715,6 +716,7 @@
 <translation id="2173302385160625112">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="2174875517416416684">ট্রানজ্যাকশন হতে পারেনি। আপনার অ্যাকাউন্ট থেকে কোনও টাকা কাটা হয়নি।</translation>
 <translation id="2175630235841878061">১০০এমবি সাইজের বেশি বড় ফাইল ডাউনলোড করার জন্য উপলভ্য নেই</translation>
+<translation id="217631816678106981">পেস্ট করবেন না</translation>
 <translation id="2178665390943006934">'Chrome আপডেট করুন' বোতাম, আপনার Chrome সেটিংস থেকে Chrome আপডেট করতে এটি চালু করুন</translation>
 <translation id="2178904466768126352">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা ক্ষতিকর সফ্টওয়্যার ইনস্টল করে দিতে পারে, যা পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বর চুরি করতে বা মুছে দিতে পারে।</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" />-এ <ph name="SITE_TITLE" /></translation>
@@ -1061,6 +1063,7 @@
 <translation id="2731220418440848219">Chromium-এ ব্যবহৃত সার্চ ইঞ্জিন সম্পর্কে আরও জানুন</translation>
 <translation id="2731382536835015353">৪৪ x ৬৮ ইঞ্চি</translation>
 <translation id="2734319753272419592">পছন্দমতো ডিসকাউন্ট খুঁজে পেতে Google-কে আপনার কার্ট ব্যবহার করতে দিন উপলভ্য হলে, অটোমেটিক আপনার কার্টে দেখানো হবে।</translation>
+<translation id="2734797989819862638">কপি করবেন না</translation>
 <translation id="273785062888389088">HVAC ও জলবায়ু কন্ট্রোল</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2742128390261873684">হোম অটোমেশন</translation>
@@ -1743,6 +1746,8 @@
 <translation id="3869939189466884821">আপনার স্থানীয় ফাইল <ph name="MINUTES" /> মিনিটের মধ্যে মুছে যাবে</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
+<translation id="3877603629930976930">শেয়ার করবেন না</translation>
+<translation id="3878445208930547646">এই সাইট কপি করার অনুমতি দেয় না</translation>
 <translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
 <translation id="3880456882942693779">কলা এবং বিনোদন</translation>
 <translation id="3880589673277376494">ইন্টারনেট ও টেলিকম</translation>
@@ -2111,6 +2116,7 @@
 <translation id="4466576951214254884">স্টুডেন্ট লোন এবং কলেজ ফাইন্যান্সিং</translation>
 <translation id="4467821340016922962">ফুল স্ক্রিন থেকে বেরিয়ে আসতে ও ডাউনলোড দেখতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="4473643328224505070">Chrome-এর সবচেয়ে সেরা লেভেলের সুরক্ষা পেতে <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />উন্নত সুরক্ষা চালু করুন<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
+<translation id="4475299370877036544">এই অ্যাকশন সংস্থার নীতি লঙ্ঘন করতে পারে</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
@@ -3655,6 +3661,7 @@
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7071122206197538392">তুলনা সম্পর্কিত নতুন সারণী</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
+<translation id="7075896597860500885">এই সাইট থেকে কপি করার সাজেশন দেওয়া হয় না</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524"><ph name="TYPE_1" /> থেকে (সিঙ্ক করা ডিভাইসে আরও রয়েছে)</translation>
@@ -3690,6 +3697,7 @@
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">ব্লক করা আপলোড</translation>
 <translation id="7132939140423847331">আপনার অ্যাডমিন এই ডেটা কপি করার থেকে সীমাবদ্ধ করেছেন।</translation>
+<translation id="7134653428559514680">এই সাইট থেকে শেয়ার করার সাজেশন দেওয়া হয় না</translation>
 <translation id="7135130955892390533">স্ট্যাটাস দেখুন</translation>
 <translation id="7135814714616751706">শর্টকাট সার্চ করুন</translation>
 <translation id="7136009930065337683">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
@@ -3778,6 +3786,7 @@
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7275808129217605899">স্বাস্থ্যকর খাদ্যাভ্যাস</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="7286908876112207905">এই সাইট এই কন্টেন্টটি পেস্ট করার অনুমতি দেয় না</translation>
 <translation id="7291578327729322058">ড্রাইভিং লাইসেন্স যোগ করুন</translation>
 <translation id="7292031607255951991">প্রাপকের নাম</translation>
 <translation id="7298195798382681320">প্রস্তাবিত</translation>
@@ -3818,6 +3827,7 @@
 <translation id="7366117520888504990">১৯৮ x ২৭৫ মিমি</translation>
 <translation id="7366362069757178916">পেমেন্ট হ্যান্ডলার</translation>
 <translation id="7366594738862061263">Chrome কীভাবে পাসওয়ার্ড সুরক্ষিত রাখে সেই বিষয়ে জানুন</translation>
+<translation id="7370751048350026847">এই সাইটে কন্টেন্ট পেস্ট করার সাজেশন দেওয়া হয় না</translation>
 <translation id="7372526636730851647">ফটো (গ্লসি)</translation>
 <translation id="7372973238305370288">ফলাফল খুঁজুন</translation>
 <translation id="7374461526650987610">প্রোটোকল পরিচালনাকারী</translation>
@@ -3891,6 +3901,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">কার্গো ট্রাক ও ট্রেলার</translation>
 <translation id="7461924472993315131">পিন</translation>
+<translation id="7463068149674892185">এই অ্যাকশনের সাজেশন দেওয়া হয় না</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ও সুরক্ষা</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> জানবে যে আপনি <ph name="TOP_LEVEL_URL" /> ভিজিট করেছেন</translation>

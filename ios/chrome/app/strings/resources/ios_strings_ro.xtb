@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">Recenzii de produse pentru tine</translation>
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> nu a putut fi deschis</translation>
+<translation id="1086486568852410168">Caută cu Google Lens</translation>
 <translation id="1096992026380844478">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Trimite conținutul paginii la Gemini pentru a primi răspunsuri mai relevante. Când trimiți o pagină la Gemini, conținutul complet și adresa URL a paginii sunt trimise la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3530206579861815432">Găsește rapid filele deschise și închise recent de pe toate dispozitivele sincronizate.</translation>
 <translation id="3530767473765895035">Gestionează conturile de pe acest dispozitiv…</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
-<translation id="3533860663366814939">Deschide Setările pentru completare automată și parole</translation>
 <translation id="3540141921715814660">Adaugă în Marcaje</translation>
 <translation id="3546122170015471515">Previzualizări Maps pe Google.com</translation>
 <translation id="3547356470684043247">Citește evaluările clienților pentru produse, servicii sau experiențe ca să iei decizii informate cu ajutorul recenziilor</translation>

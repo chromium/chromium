@@ -27,6 +27,7 @@
 <translation id="1082554859195167538">为您推荐的商品评价</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1085677983426914530">无法打开“<ph name="FILENAME" />”</translation>
+<translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">与 Gemini 分享网页内容，以获得更符合需求的回答。当您与 Gemini 分享网页时，系统会将网页的完整内容和网址发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -647,7 +648,6 @@
 <translation id="3530206579861815432">在所有已同步的设备上快速找到当前打开的和最近关闭的标签页。</translation>
 <translation id="3530767473765895035">管理此设备上的账号…</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
-<translation id="3533860663366814939">打开“自动填充与密码”设置</translation>
 <translation id="3540141921715814660">添加到书签</translation>
 <translation id="3546122170015471515">Google.com 上的地图预览</translation>
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>

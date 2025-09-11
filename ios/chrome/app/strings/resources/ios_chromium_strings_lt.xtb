@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Čia galite atidaryti „Lens“.</translation>
 <translation id="1042296835509784301">Atidaroma Slaptažodžių tvarkyklė naršyklėje „Chromium“.</translation>
 <translation id="1047130070405668746">Pasirinkite „Chromium“</translation>
-<translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1091252999271033193">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks svetainės mobiliesiems užklausą.</translation>
 <translation id="1115463765356382667">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chromium“ galimybes.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Žemėlapiai naršyklėje „Chromium“</translation>
 <translation id="1867772173333403444">4. Pasirinkite „Chromium“</translation>
+<translation id="1965068424387304464">„Chromium“ patarimas: išsaugokite slaptažodžius</translation>
 <translation id="2006345422933397527">„Chromium“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2042889939382983733">„Chromium“ istorijos peržiūra</translation>
 <translation id="2052320862053429062">„Chromium“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
@@ -119,6 +119,7 @@ Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perju
 <translation id="3816686541346279443">„Chromium“ pasiūlys išsaugoti slaptažodį.</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="3833326979834193417">„Chromium“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
+<translation id="3837584850181228767">„Chromium“ patarimas: Sustiprintas saugus naršymas</translation>
 <translation id="3845223911364528001">Grįžkite į „Chromium“, kad įkeltumėte failą</translation>
 <translation id="3855938650519180865">„Chromium“ naujienos</translation>
 <translation id="3886689467633467988">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>

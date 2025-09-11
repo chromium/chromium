@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି</translation>
 <translation id="2497852260688568942">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ସିଙ୍କ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="250020030759455918">ଆପଣ <ph name="SITE_NAME" />ରେ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ସ୍ଥିତି, ବ୍ରାଉଜିଂ ଡାଟା ଏବଂ ସାଇଟ୍ ଡାଟା, Chromeରେ ଦେଖିବେ</translation>
-<translation id="2502798195266898572">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />କୁ ଇନଷ୍ଟଲ କରାଯାଉଛି...</translation>
 <translation id="2512234228327349533">କ୍ରୟ ବିକଳ୍ପ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2513403576141822879">ଗୋପନୀୟତା, ସୁରକ୍ଷା ଏବଂ ଡାଟା ସଂଗ୍ରହ ସହ ସମ୍ବନ୍ଧିତ ଅଧିକ ସେଟିଂସ ପାଇଁ <ph name="BEGIN_LINK" />ସିଙ୍କ ଓ Google ସେବା<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">Chromeରୁ ଟୁଲଗୁଡ଼ିକ ମାଧ୍ୟମରେ ଆପଣ ସୁରକ୍ଷିତ ଭାବେ ବ୍ରାଉଜ କରିପାରିବେ ଏବଂ ନିୟନ୍ତ୍ରଣରେ ରହିପାରିବେ</translation>
 <translation id="6264376385120300461">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="6264485186158353794">ନିରାପତ୍ତାକୁ ଫେରନ୍ତୁ</translation>
-<translation id="6267063201726531683">ରିଡିଂ ମୋଡ ବଟମ ସିଟ</translation>
 <translation id="6277522088822131679">ପୃଷ୍ଟା ପ୍ରିଣ୍ଟ କରିବାରେ କିଛି ସମସ୍ୟା ଦେଖାଦେଇଛି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6291294824436685757">ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ; ଡିଲିଟ କରିବାକୁ ଡାଟା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
-<translation id="6300697579369314762">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6301526076346731664">ଡେଭେଲପର ଟୁଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6307241780749477694">ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡ ପାଇବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନ Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
 
 ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
-<translation id="7151332203500147130">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7165972437814027679">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ସେଟିଂସ ଖୋଲେ।</translation>
 <translation id="7173114856073700355">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>

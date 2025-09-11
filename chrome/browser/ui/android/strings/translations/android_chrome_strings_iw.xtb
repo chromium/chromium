@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2497852260688568942">האדמין שלך השבית את הסנכרון</translation>
 <translation id="250020030759455918">‏אפשר לראות ב-Chrome את סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, את נתוני הגלישה ואת נתוני האתר.</translation>
-<translation id="2502798195266898572">הגיליון התחתון של מצב הקריאה נפתח בגובה מלא</translation>
 <translation id="2510106555128151389">מתבצעת התקנה של <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">חיפוש אפשרויות קנייה</translation>
 <translation id="2513403576141822879">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" /></translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">‏בעזרת הכלים של Chrome אפשר לגלוש בבטחה ובשליטה</translation>
 <translation id="6264376385120300461">להוריד בכל זאת</translation>
 <translation id="6264485186158353794">חזרה לחוף מבטחים</translation>
-<translation id="6267063201726531683">גיליון תחתון של מצב קריאה</translation>
 <translation id="6277522088822131679">הייתה בעיה בהדפסת הדף. צריך לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6291294824436685757">מחיקת נתוני הגלישה, בחירת נתונים למחיקה</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="629730747756840877">חשבון</translation>
-<translation id="6300697579369314762">הגיליון התחתון של מצב הקריאה נפתח בחצי מגובה המסך</translation>
 <translation id="6301526076346731664">פתיחת "כלים למפתחים"</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6307241780749477694">כדי לקבל את כל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
 
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">הגיליון התחתון של מצב הקריאה סגור</translation>
 <translation id="7165972437814027679">‏מידע נוסף על חסימה של קבצים מסוימים ב-Chrome</translation>
 <translation id="7168323970702333693">נכנסת לחשבון בתור <ph name="USER_NAME" />. ההגדרות ייפתחו.</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>

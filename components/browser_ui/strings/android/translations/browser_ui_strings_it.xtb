@@ -705,6 +705,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="9019902583201351841">Gestito dai genitori</translation>
 <translation id="902236149563113779">In genere, i siti monitorano la posizione della fotocamera per funzionalità AR come i giochi o le indicazioni fornite con la posizione della testa</translation>
 <translation id="9039697262778250930">Il tuo account potrebbe essere disconnesso da questi siti</translation>
+<translation id="9065203028668620118">Modifica</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vuoi eliminare i cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>

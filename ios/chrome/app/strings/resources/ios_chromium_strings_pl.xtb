@@ -4,7 +4,6 @@
 <translation id="1000436330784933699">Tutaj możesz otworzyć Obiektyw.</translation>
 <translation id="1042296835509784301">Otwiera Menedżera haseł w Chromium.</translation>
 <translation id="1047130070405668746">Wybierz Chromium.</translation>
-<translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1091252999271033193">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę mobilną.</translation>
 <translation id="1115463765356382667">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
@@ -43,6 +42,7 @@
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Mapy w Chromium</translation>
 <translation id="1867772173333403444">4. Wybierz Chromium.</translation>
+<translation id="1965068424387304464">Wskazówka od Chromium: zapisuj hasła</translation>
 <translation id="2006345422933397527">Chromium nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2042889939382983733">Wyświetl historię Chromium</translation>
 <translation id="2052320862053429062">Co jakiś czas Chromium sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
@@ -119,6 +119,7 @@ Zanim przełączysz się na inne konto, odczekaj kilka minut. Jeśli przełączy
 <translation id="3816686541346279443">Chromium zaproponuje zapisanie hasła.</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="3833326979834193417">Chromium codziennie automatycznie uruchamia kontrolę zabezpieczeń, aby chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami i innymi zagrożeniami. Więcej informacji o kontroli zabezpieczeń znajdziesz w Ustawieniach.</translation>
+<translation id="3837584850181228767">Wskazówka od Chromium: Ulepszone bezpieczne przeglądanie</translation>
 <translation id="3845223911364528001">Wróć do Chromium, aby przesłać plik</translation>
 <translation id="3855938650519180865">Co nowego w Chromium</translation>
 <translation id="3886689467633467988">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>

@@ -129,6 +129,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1212527389003717329">Bylo zahájeno stahování. Pokud ho chcete zobrazit, stiskněte a podržte |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Používat informace uložené ve vašem účtu Google k automatickému vyplňování hesel, přístupových klíčů, adres, platebních metod a dalších informací</translation>
 <translation id="1219129156119358924">Zabezpečení systému</translation>
+<translation id="1219134100826635117">Váš administrátor tuto akci zablokoval</translation>
 <translation id="1222060260947439312">Pravý zásobník</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Číslo karty:</translation>
@@ -714,6 +715,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2174875517416416684">Transakce neproběhla. Z vašeho účtu nebyly vybrány žádné prostředky.</translation>
 <translation id="2175630235841878061">Soubory větší než 100 MB nejsou k dispozici ke stažení</translation>
+<translation id="217631816678106981">Nevkládat</translation>
 <translation id="2178665390943006934">Tlačítko Aktualizovat Chrome, aktivací aktualizujete Chrome z nastavení Chromu</translation>
 <translation id="2178904466768126352">Útočníci na webu, který jste se pokusili navštívit, by mohli nainstalovat škodlivý software k odcizení nebo vymazání věcí, jako jsou vaše hesla, fotky, zprávy nebo čísla kreditních karet.</translation>
 <translation id="2179003720612888584"><ph name="SITE_DOMAIN_NAME" />, <ph name="SITE_TITLE" /></translation>
@@ -1060,6 +1062,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2731220418440848219">Další informace o vyhledávači v prohlížeči Chromium</translation>
 <translation id="2731382536835015353">44 × 68 palců</translation>
 <translation id="2734319753272419592">Nechte Google vyhledávat na základě nákupních košíků personalizované slevy. Dostupné slevy se v košících zobrazí automaticky.</translation>
+<translation id="2734797989819862638">Nekopírovat</translation>
 <translation id="273785062888389088">Vzduchotechnika a klimatizace</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Chytrá domácnost</translation>
@@ -1738,6 +1741,8 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3869939189466884821">Vaše místní soubory budou za <ph name="MINUTES" /> min smazány</translation>
 <translation id="3872834068356954457">Věda</translation>
 <translation id="3875783148670536197">Ukázat postup</translation>
+<translation id="3877603629930976930">Nesdílet</translation>
+<translation id="3878445208930547646">Kopírování z tohoto webu není povoleno</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3880456882942693779">Umění a zábava</translation>
 <translation id="3880589673277376494">Internet a telekomunikace</translation>
@@ -2106,6 +2111,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4466576951214254884">Studentské půjčky a financování školného</translation>
 <translation id="4467821340016922962">Pokud chcete ukončit režim celé obrazovky a zobrazit stahování, stiskněte |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zapněte rozšířenou ochranu<ph name="END_ENHANCED_PROTECTION_LINK" /> a získejte nejvyšší úroveň zabezpečení Chromu</translation>
+<translation id="4475299370877036544">Tato akce může být v rozporu se zásadami vaší organizace</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Tento formulář není zabezpečený. Automatické vyplňování bylo vypnuto.</translation>
 <translation id="4477350412780666475">Další skladba</translation>
@@ -3650,6 +3656,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="70705239631109039">Vaše připojení není plně zabezpečené</translation>
 <translation id="7071122206197538392">Nová srovnávací tabulka</translation>
 <translation id="7075452647191940183">Požadavek je příliš velký</translation>
+<translation id="7075896597860500885">Kopírování z tohoto webu administrátor nedoporučuje</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7079783554682867524">Z webu <ph name="TYPE_1" /> (další na synchronizovaných zařízeních)</translation>
@@ -3685,6 +3692,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Nahrání je blokováno</translation>
 <translation id="7132939140423847331">Váš správce kopírování těchto dat zakázal.</translation>
+<translation id="7134653428559514680">Sdílení z tohoto webu administrátor nedoporučuje</translation>
 <translation id="7135130955892390533">Zobrazit stav</translation>
 <translation id="7135814714616751706">Vyhledat zkratky</translation>
 <translation id="7136009930065337683">Další informace o anonymním režimu</translation>
@@ -3772,6 +3780,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7275808129217605899">Zdravá výživa</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter změníte heslo účtu Google</translation>
+<translation id="7286908876112207905">Vložení tohoto obsahu na tento web není povoleno</translation>
 <translation id="7291578327729322058">Přidání řidičského průkazu</translation>
 <translation id="7292031607255951991">Jméno příjemce</translation>
 <translation id="7298195798382681320">Doporučeno</translation>
@@ -3812,6 +3821,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7366117520888504990">198 × 275 mm</translation>
 <translation id="7366362069757178916">Obslužné nástroje pro platby</translation>
 <translation id="7366594738862061263">Jak Chrome chrání hesla</translation>
+<translation id="7370751048350026847">Vložení tohoto obsahu na tento web administrátor nedoporučuje</translation>
 <translation id="7372526636730851647">Fotografie (lesklá)</translation>
 <translation id="7372973238305370288">výsledek vyhledávání</translation>
 <translation id="7374461526650987610">Obslužné nástroje protokolů</translation>
@@ -3885,6 +3895,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Nákladní a přívěsná vozidla</translation>
 <translation id="7461924472993315131">Připnout</translation>
+<translation id="7463068149674892185">Tato akci administrátor nedoporučuje</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimalizace a zabezpečení JavaScriptu</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> bude vědět, že jste navštívili web <ph name="TOP_LEVEL_URL" />.</translation>
@@ -4904,6 +4915,7 @@ Další podrobnosti:
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> používá nepodporovaný protokol.</translation>
 <translation id="918454845714257218">Zkontrolujte kód (<ph name="SIDE_OF_CARD" />) a zkuste to znovu</translation>
 <translation id="9186203289258525843">Tlačítko nastavení Chromu jako výchozího prohlížeče, aktivací nastavíte Chrome jako výchozí prohlížeč v nastavení systému</translation>
+<translation id="9186371298532546532">Používat tuto adresu na více místech</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> změnil(a) tuto kartu</translation>
 <translation id="9189789270972826888">Pokud se karta nevyplnila, kliknutím zkopírujte níže uvedené údaje o kartě. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Témata starší než 4 týdny se automaticky mažou</translation>
@@ -4919,6 +4931,7 @@ Další podrobnosti:
 <translation id="920643408853370361">Cestovní pojištění</translation>
 <translation id="9207861905230894330">Přidání článku se nezdařilo.</translation>
 <translation id="9209339767782560829">Při používání vašeho přihlašovacího certifikátu došlo k problému.</translation>
+<translation id="9210152531668884481">Ano</translation>
 <translation id="9210825002219699214">Letecká doprava</translation>
 <translation id="9213433120051936369">Přizpůsobit vzhled</translation>
 <translation id="9215416866750762878">Nějaká aplikace Chromu brání v bezpečném připojení k tomuto webu.</translation>

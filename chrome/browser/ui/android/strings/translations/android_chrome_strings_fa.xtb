@@ -307,7 +307,6 @@
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="250020030759455918">‏وضعیت ورود به سیستم <ph name="SITE_NAME" />، داده‌های محصول مرور، و داده‌های سایت را در Chrome خواهید دید</translation>
-<translation id="2502798195266898572">برگ زیرین «حالت خواندن» به‌صورت کامل باز شده است</translation>
 <translation id="2510106555128151389">درحال نصب <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">جستجوی گزینه‌های خرید</translation>
 <translation id="2513403576141822879">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت و جمع‌آوری داده‌ها، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید</translation>
@@ -1128,13 +1127,11 @@
 <translation id="6255809143828972562">‏با ابزارهای Chrome، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
-<translation id="6267063201726531683">برگ زیرین «حالت خواندن»</translation>
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6291294824436685757">حذف داده‌های مرور؛ داده‌های مدنظر برای حذف را انتخاب کنید</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="629730747756840877">حساب</translation>
-<translation id="6300697579369314762">برگ زیرین «حالت خواندن» به‌صورت نیمه باز شده است</translation>
 <translation id="6301526076346731664">باز کردن ابزارهای توسعه‌دهندگان</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
@@ -1353,7 +1350,6 @@
 <translation id="71503698506017927">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay نمی‌شود.
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
-<translation id="7151332203500147130">برگ زیرین «حالت خواندن» بسته شده است</translation>
 <translation id="7165972437814027679">‏اطلاعات بیشتر درباره اینکه چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="7168323970702333693">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
