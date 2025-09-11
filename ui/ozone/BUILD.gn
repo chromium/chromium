@@ -130,6 +130,7 @@ component("ozone_base") {
     ":native_pixmap_usage",
     ":ozone_switches",
     "//base",
+    "//components/viz/common:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ipc",
     "//skia",

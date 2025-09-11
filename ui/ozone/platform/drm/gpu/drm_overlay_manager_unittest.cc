@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
@@ -79,7 +80,7 @@ OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
                                         int plane_z_order) {
   OverlaySurfaceCandidate candidate;
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  candidate.format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  candidate.format = viz::MultiPlaneFormat::kNV12;
   candidate.plane_z_order = plane_z_order;
   candidate.buffer_size = rect.size();
   candidate.display_rect = gfx::RectF(rect);
@@ -458,9 +459,9 @@ TEST_F(DrmOverlayManagerTest, SupportedBufferFormat) {
       CreateCandidate(gfx::Rect(0, 0, 150, 150), -1),
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
       CreateCandidate(gfx::Rect(10, 10, 20, 20), 1)};
-  candidates[0].format = gfx::BufferFormat::RGBA_8888;
-  candidates[1].format = gfx::BufferFormat::YUV_420_BIPLANAR;
-  candidates[2].format = gfx::BufferFormat::BGRA_8888;
+  candidates[0].format = viz::SinglePlaneFormat::kRGBA_8888;
+  candidates[1].format = viz::MultiPlaneFormat::kNV12;
+  candidates[2].format = viz::SinglePlaneFormat::kBGRA_8888;
 
   // Primary widget supports BGRA/RGBA only.
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);

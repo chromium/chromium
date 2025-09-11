@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -53,7 +54,8 @@ OverlaySurfaceCandidate MakeOverlayCandidate(int z_order,
 
   // Use default display format since this should be compatible with most
   // devices.
-  overlay_candidate.format = display::DisplaySnapshot::PrimaryFormat();
+  overlay_candidate.format =
+      viz::GetSharedImageFormat(display::DisplaySnapshot::PrimaryFormat());
 
   // The bounds rectangle of the candidate overlay buffer.
   overlay_candidate.buffer_size = bounds_rect.size();

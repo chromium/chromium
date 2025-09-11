@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -60,7 +61,8 @@ OverlaySurfaceCandidate MakeOverlayCandidate(int z_order,
 
   // Use default display format since this should be compatible with most
   // devices.
-  overlay_candidate.format = display::DisplaySnapshot::PrimaryFormat();
+  overlay_candidate.format =
+      viz::GetSharedImageFormat(display::DisplaySnapshot::PrimaryFormat());
 
   // The bounds rectangle of the candidate overlay buffer.
   overlay_candidate.buffer_size = bounds_rect.size();

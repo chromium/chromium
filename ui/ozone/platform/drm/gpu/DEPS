@@ -1,5 +1,7 @@
 include_rules = [
   "+ash/constants/ash_switches.h",
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+media/media_buildflags.h",
   "-ui/ozone/platform/drm",
   "+ui/ozone/platform/drm/common",
@@ -8,12 +10,3 @@ include_rules = [
   # TODO remove this once AFBC works for modesetting buffers.
   "+third_party/libdrm/src/include/drm/drm_fourcc.h",
 ]
-
-specific_include_rules = {
-  "mock_drm_modifiers_filter\.(cc|h)": [
-    "+components/viz/common/resources/shared_image_format.h",
-  ],
-  "hardware_display_controller.cc": [
-    "+components/viz/common/resources/shared_image_format_utils.h",
-  ],
-}

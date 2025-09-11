@@ -82,10 +82,9 @@ void ConvertToOzoneOverlaySurface(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane& primary_plane,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = primary_plane.transform;
-  ozone_candidate->format =
-      SinglePlaneSharedImageFormatToBufferFormat(primary_plane.format);
+  ozone_candidate->format = primary_plane.format;
   ozone_candidate->color_space = GetColorSpaceForOzone(
-      primary_plane.format, /*orig_color_space=*/primary_plane.color_space);
+      ozone_candidate->format, /*orig_color_space=*/primary_plane.color_space);
   ozone_candidate->display_rect = primary_plane.display_rect;
   ozone_candidate->crop_rect = primary_plane.uv_rect;
   ozone_candidate->clip_rect.reset();
@@ -101,9 +100,9 @@ void ConvertToOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = overlay_candidate.transform;
-  ozone_candidate->format = gpu::ToBufferFormat(overlay_candidate.format);
+  ozone_candidate->format = overlay_candidate.format;
   ozone_candidate->color_space =
-      GetColorSpaceForOzone(overlay_candidate.format,
+      GetColorSpaceForOzone(ozone_candidate->format,
                             /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
@@ -128,9 +127,9 @@ void ConvertToTiledOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = gfx::OVERLAY_TRANSFORM_NONE;
-  ozone_candidate->format = gfx::BufferFormat::RGBA_8888;
+  ozone_candidate->format = SinglePlaneFormat::kRGBA_8888;
   ozone_candidate->color_space =
-      GetColorSpaceForOzone(SinglePlaneFormat::kRGBA_8888,
+      GetColorSpaceForOzone(ozone_candidate->format,
                             /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = gfx::RectF(1.0, 1.0);
@@ -530,8 +529,10 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     return false;
   }
 
-  if (is_primary && (candidate->buffer_size != native_pixmap->GetBufferSize() ||
-                     candidate->format != native_pixmap->GetBufferFormat())) {
+  if (is_primary &&
+      (candidate->buffer_size != native_pixmap->GetBufferSize() ||
+       candidate->format !=
+           GetSharedImageFormat(native_pixmap->GetBufferFormat()))) {
     // If |mailbox| corresponds to the last submitted primary plane, its
     // parameters may not match those of the current candidate due to a
     // reshape. If the size and format don't match, skip this candidate for

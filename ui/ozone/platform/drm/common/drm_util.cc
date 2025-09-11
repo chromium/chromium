@@ -1034,6 +1034,39 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
   }
 }
 
+int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format) {
+  // DRM atomic interface doesn't currently support specifying an alpha
+  // blending. We can simulate disabling alpha blending creating an fb
+  // with a format without the alpha channel.
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return DRM_FORMAT_XBGR8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+      format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return DRM_FORMAT_XRGB8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return DRM_FORMAT_XRGB2101010;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return DRM_FORMAT_XBGR2101010;
+  }
+  if (format == viz::SinglePlaneFormat::kBGR_565) {
+    return DRM_FORMAT_RGB565;
+  }
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    return DRM_FORMAT_NV12;
+  }
+  if (format == viz::MultiPlaneFormat::kYV12) {
+    return DRM_FORMAT_YVU420;
+  }
+  if (format == viz::MultiPlaneFormat::kP010) {
+    return DRM_FORMAT_P010;
+  }
+  NOTREACHED();
+}
+
 const char* GetNameForColorspace(const gfx::ColorSpace color_space) {
   if (color_space == gfx::ColorSpace::CreateHDR10())
     return kColorSpaceBT2020RGBEnumName;

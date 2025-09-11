@@ -566,6 +566,7 @@ source_set("wayland_unittests") {
     "mojom:test_interfaces",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
+    "//components/viz/common:shared_image_format",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_server",

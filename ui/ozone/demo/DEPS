@@ -1,5 +1,7 @@
 include_rules = [
   "+components/tracing",
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+mojo/core/embedder",
   "+ui/gl",
 ]

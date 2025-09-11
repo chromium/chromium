@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/logging.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -61,8 +62,11 @@ void WaylandOverlayManager::CheckOverlaySupport(
 bool WaylandOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
-  if (!manager_gpu_->SupportsFormat(candidate.format))
+  if (!manager_gpu_->SupportsFormat(
+          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+              candidate.format))) {
     return false;
+  }
 
   // TODO( https://crbug.com/331241180 ): Quads can come into overlay processor
   // with 'rect's having position and size as pseudo nonsense values. Here we

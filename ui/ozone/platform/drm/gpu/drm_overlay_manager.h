@@ -99,10 +99,10 @@ class DrmOverlayManager : public OverlayManagerOzone {
   bool CanHandleCandidate(const OverlaySurfaceCandidate& candidate,
                           gfx::AcceleratedWidget widget) const;
 
-  // Checks if gfx::BufferFormat that overlay candidate requires is supported
-  // by hardware.
-  bool IsBufferFormatSupported(gfx::BufferFormat required_overlay_buffer_format,
-                               gfx::AcceleratedWidget widget) const;
+  // Checks if viz::SharedImageFormat that overlay candidate requires is
+  // supported by hardware.
+  bool IsFormatSupported(viz::SharedImageFormat required_overlay_format,
+                         gfx::AcceleratedWidget widget) const;
 
   // Updates the MRU cache for overlay configuration |candidates| with |status|.
   void UpdateCacheForOverlayCandidates(

@@ -23,6 +23,10 @@ namespace gfx {
 enum class BufferFormat : uint8_t;
 }
 
+namespace ui {
+class WaylandOverlayManager;
+}
+
 enum SkColorType : int;
 
 namespace viz {
@@ -96,6 +100,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class gpu::ClientSharedImage;
   friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
   friend class gpu::TestSharedImageInterface;
+  friend class ui::WaylandOverlayManager;
 
   // BufferFormat is being transitioned out of SharedImage code (to use
   // SharedImageFormat instead). Refrain from using this function or preferably

@@ -26,7 +26,7 @@ OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
                                         int plane_z_order) {
   ui::OverlaySurfaceCandidate candidate;
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  candidate.format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  candidate.format = viz::MultiPlaneFormat::kNV12;
   candidate.plane_z_order = plane_z_order;
   candidate.buffer_size = rect.size();
   candidate.display_rect = gfx::RectF(rect);
@@ -94,7 +94,7 @@ TEST_P(WaylandOverlayManagerTest, FormatSupportTest) {
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
       CreateCandidate(gfx::Rect(10, 10, 20, 20), 1)};
-  candidates[1].format = gfx::BufferFormat::RGBX_8888;
+  candidates[1].format = viz::SinglePlaneFormat::kRGBX_8888;
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
   EXPECT_TRUE(candidates[0].overlay_handled);
   EXPECT_FALSE(candidates[1].overlay_handled);
