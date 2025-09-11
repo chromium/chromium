@@ -46,7 +46,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/"token",
       /*interested_data_types=*/syncer::DataTypeSet(),
-      /*floating_workspace_last_signin_timestamp=*/signin_timestamp);
+      /*auto_sign_out_last_signin_timestamp=*/signin_timestamp);
 }
 
 }  // namespace
@@ -135,16 +135,14 @@ class AutoSignOutTest : public testing::Test {
 
 // Verifies that local device info timestamp is updated when service is created.
 TEST_F(AutoSignOutTest, TimestampUpdatedAfterServiceCreation) {
-  EXPECT_FALSE(local_device_info()
-                   ->floating_workspace_last_signin_timestamp()
-                   .has_value());
+  EXPECT_FALSE(
+      local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
 
   AutoSignOutService auto_sign_out_service(
       fake_device_info_sync_service(), test_sync_service(), session_manager());
 
-  EXPECT_TRUE(local_device_info()
-                  ->floating_workspace_last_signin_timestamp()
-                  .has_value());
+  EXPECT_TRUE(
+      local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
 }
 
 // Verifies that a sign-out is triggered when a newer device signs in.
@@ -214,7 +212,7 @@ TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
       fake_device_info_sync_service(), test_sync_service(), session_manager());
 
   const base::Time timestamp_before_sleep =
-      local_device_info()->floating_workspace_last_signin_timestamp().value();
+      local_device_info()->auto_sign_out_last_signin_timestamp().value();
 
   // Simulate sleep.
   fake_power_manager_client()->SendSuspendImminent(
@@ -226,7 +224,7 @@ TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
   fake_power_manager_client()->SendSuspendDone();
 
   const base::Time timestamp_after_wakeup =
-      local_device_info()->floating_workspace_last_signin_timestamp().value();
+      local_device_info()->auto_sign_out_last_signin_timestamp().value();
 
   EXPECT_EQ(timestamp_after_wakeup, timestamp_before_sleep);
 
@@ -234,7 +232,7 @@ TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
       /*success=*/true, /*UnlockType=*/session_manager::UnlockType::PASSWORD);
 
   const base::Time timestamp_after_unlock =
-      local_device_info()->floating_workspace_last_signin_timestamp().value();
+      local_device_info()->auto_sign_out_last_signin_timestamp().value();
 
   EXPECT_GT(timestamp_after_unlock, timestamp_after_wakeup);
 }
@@ -246,7 +244,7 @@ TEST_F(AutoSignOutTest, TimestampNotUpdatedOnUnlockWithoutPreviousSleep) {
       fake_device_info_sync_service(), test_sync_service(), session_manager());
 
   const base::Time timestamp_before_unlock =
-      local_device_info()->floating_workspace_last_signin_timestamp().value();
+      local_device_info()->auto_sign_out_last_signin_timestamp().value();
 
   task_environment().FastForwardBy(base::Seconds(10));
 
@@ -254,7 +252,7 @@ TEST_F(AutoSignOutTest, TimestampNotUpdatedOnUnlockWithoutPreviousSleep) {
       /*success=*/true, /*UnlockType=*/session_manager::UnlockType::PASSWORD);
 
   const base::Time timestamp_after_unlock =
-      local_device_info()->floating_workspace_last_signin_timestamp().value();
+      local_device_info()->auto_sign_out_last_signin_timestamp().value();
 
   EXPECT_EQ(timestamp_after_unlock, timestamp_before_unlock);
 }

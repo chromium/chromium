@@ -304,7 +304,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes,
-      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

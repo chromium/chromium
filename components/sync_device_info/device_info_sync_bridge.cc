@@ -248,10 +248,10 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
       info.send_tab_to_self_receiving_type());
-  if (info.floating_workspace_last_signin_timestamp().has_value()) {
+  if (info.auto_sign_out_last_signin_timestamp().has_value()) {
     feature_fields
         ->set_auto_sign_out_last_signin_timestamp_windows_epoch_micros(
-            info.floating_workspace_last_signin_timestamp()
+            info.auto_sign_out_last_signin_timestamp()
                 .value()
                 .ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
@@ -323,10 +323,10 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->fcm_registration_token() ==
              stored->fcm_registration_token() &&
          current->interested_data_types() == stored->interested_data_types() &&
-         current->floating_workspace_last_signin_timestamp().has_value() ==
-             stored->floating_workspace_last_signin_timestamp().has_value() &&
-         current->floating_workspace_last_signin_timestamp() ==
-             stored->floating_workspace_last_signin_timestamp();
+         current->auto_sign_out_last_signin_timestamp().has_value() ==
+             stored->auto_sign_out_last_signin_timestamp().has_value() &&
+         current->auto_sign_out_last_signin_timestamp() ==
+             stored->auto_sign_out_last_signin_timestamp();
 }
 
 }  // namespace

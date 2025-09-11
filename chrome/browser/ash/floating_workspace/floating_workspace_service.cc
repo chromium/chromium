@@ -838,23 +838,22 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
 
     // Sort the DeviceInfo vector so the most recently modified devices are
     // first.
-    std::sort(
-        all_devices.begin(), all_devices.end(),
-        [](const syncer::DeviceInfo* device1,
-           const syncer::DeviceInfo* device2) {
-          return device1->floating_workspace_last_signin_timestamp().value_or(
-                     base::Time()) >
-                 device2->floating_workspace_last_signin_timestamp().value_or(
-                     base::Time());
-        });
+    std::sort(all_devices.begin(), all_devices.end(),
+              [](const syncer::DeviceInfo* device1,
+                 const syncer::DeviceInfo* device2) {
+                return device1->auto_sign_out_last_signin_timestamp().value_or(
+                           base::Time()) >
+                       device2->auto_sign_out_last_signin_timestamp().value_or(
+                           base::Time());
+              });
     // Checks if the most recently modified devices are after this device's last
     // active timestamp.
     for (const syncer::DeviceInfo* device : all_devices) {
       // If the timestamp is older than the current timestamp or the entry is
       // nullopt, then any other devices afterwards are older, so we can stop
       // here.
-      if (!device->floating_workspace_last_signin_timestamp().has_value() ||
-          device->floating_workspace_last_signin_timestamp().value() <
+      if (!device->auto_sign_out_last_signin_timestamp().has_value() ||
+          device->auto_sign_out_last_signin_timestamp().value() <
               initialization_time_ +
                   (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
                   kMinTimeToWait) {

@@ -84,8 +84,8 @@ void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
       continue;
     }
     // Sign out if a device has signed in after the current device.
-    if (device->floating_workspace_last_signin_timestamp().has_value() &&
-        device->floating_workspace_last_signin_timestamp().value() >
+    if (device->auto_sign_out_last_signin_timestamp().has_value() &&
+        device->auto_sign_out_last_signin_timestamp().value() >
             initialization_time_) {
       session_manager_->RequestSignOut();
       return;

@@ -138,7 +138,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt, "token",
       syncer::DataTypeSet(),
-      /*floating_workspace_last_signin_timestamp=*/last_updated_timestamp);
+      /*auto_sign_out_last_signin_timestamp=*/last_updated_timestamp);
 }
 
 std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
@@ -325,15 +325,15 @@ class FloatingWorkspaceServiceTest : public testing::Test {
         fake_device_info_sync_service()
             ->GetLocalDeviceInfoProvider()
             ->GetLocalDeviceInfo();
-    EXPECT_FALSE(local_device_info->floating_workspace_last_signin_timestamp()
-                     .has_value());
+    EXPECT_FALSE(
+        local_device_info->auto_sign_out_last_signin_timestamp().has_value());
     auto* floating_workspace_service =
         FloatingWorkspaceServiceFactory::GetForProfile(profile());
     floating_workspace_service->Init(test_sync_service(),
                                      fake_desk_sync_service(),
                                      fake_device_info_sync_service());
-    EXPECT_TRUE(local_device_info->floating_workspace_last_signin_timestamp()
-                    .has_value());
+    EXPECT_TRUE(
+        local_device_info->auto_sign_out_last_signin_timestamp().has_value());
     // TODO(crbug.com/419250389): we should properly mimic entering user session
     // instead of just calling these methods manually.
     session_manager::SessionManager::Get()

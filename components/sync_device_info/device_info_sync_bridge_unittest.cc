@@ -418,7 +418,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
             sharing_enabled_features),
         /*paask_info=*/std::nullopt, last_fcm_registration_token,
         last_interested_data_types,
-        /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+        /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -430,7 +430,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
 
   void UpdateRecentSignInTime(base::Time time) override {
     ASSERT_TRUE(local_device_info_);
-    local_device_info_->set_floating_workspace_last_signin_timestamp(time);
+    local_device_info_->set_auto_sign_out_last_signin_timestamp(time);
   }
 
   version_info::Channel GetChannel() const override {

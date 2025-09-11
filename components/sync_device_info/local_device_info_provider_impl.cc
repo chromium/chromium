@@ -120,16 +120,15 @@ void LocalDeviceInfoProviderImpl::Initialize(
   std::string last_fcm_registration_token;
   DataTypeSet last_interested_data_types;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
-  std::optional<base::Time> floating_workspace_last_signin_timestamp;
+  std::optional<base::Time> auto_sign_out_last_signin_timestamp;
   if (device_info_restored_from_store) {
     last_fcm_registration_token =
         device_info_restored_from_store->fcm_registration_token();
     last_interested_data_types =
         device_info_restored_from_store->interested_data_types();
     paask_info = device_info_restored_from_store->paask_info();
-    floating_workspace_last_signin_timestamp =
-        device_info_restored_from_store
-            ->floating_workspace_last_signin_timestamp();
+    auto_sign_out_last_signin_timestamp =
+        device_info_restored_from_store->auto_sign_out_last_signin_timestamp();
   }
 
   // The local device doesn't have a last updated timestamps. It will be set in
@@ -145,8 +144,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       sync_client_->GetSendTabToSelfReceivingType(),
       sync_client_->GetLocalSharingInfo(), paask_info,
       last_fcm_registration_token, last_interested_data_types,
-      /*floating_workspace_last_signin_timestamp=*/
-      floating_workspace_last_signin_timestamp);
+      /*auto_sign_out_last_signin_timestamp=*/
+      auto_sign_out_last_signin_timestamp);
 
   full_hardware_class_ = full_hardware_class;
 
@@ -170,7 +169,7 @@ void LocalDeviceInfoProviderImpl::UpdateClientName(
 void LocalDeviceInfoProviderImpl::UpdateRecentSignInTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_device_info_);
-  local_device_info_->set_floating_workspace_last_signin_timestamp(time);
+  local_device_info_->set_auto_sign_out_last_signin_timestamp(time);
 }
 
 }  // namespace syncer
