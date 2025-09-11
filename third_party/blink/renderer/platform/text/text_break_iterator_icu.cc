@@ -42,6 +42,10 @@ namespace blink {
 
 namespace {
 
+inline icu::Locale CurrentTextBreakIcuLocale() {
+  return icu::Locale(CurrentTextBreakLocaleID());
+}
+
 class LineBreakIteratorPool final {
   USING_FAST_MALLOC(LineBreakIteratorPool);
 
@@ -70,7 +74,7 @@ class LineBreakIteratorPool final {
       UErrorCode open_status = U_ZERO_ERROR;
       bool locale_is_empty = locale.empty();
       iterator = icu::BreakIterator::createLineInstance(
-          locale_is_empty ? icu::Locale(CurrentTextBreakLocaleID())
+          locale_is_empty ? CurrentTextBreakIcuLocale()
                           : icu::Locale(locale.Utf8().c_str()),
           open_status);
       // locale comes from a web page and it can be invalid, leading ICU
@@ -78,7 +82,7 @@ class LineBreakIteratorPool final {
       if (!locale_is_empty && U_FAILURE(open_status)) {
         open_status = U_ZERO_ERROR;
         iterator = icu::BreakIterator::createLineInstance(
-            icu::Locale(CurrentTextBreakLocaleID()), open_status);
+            CurrentTextBreakIcuLocale(), open_status);
       }
 
       if (U_FAILURE(open_status)) {
@@ -605,7 +609,7 @@ TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
   static TextBreakIterator* break_iter = nullptr;
   if (!break_iter) {
     break_iter = icu::BreakIterator::createWordInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code);
+        CurrentTextBreakIcuLocale(), error_code);
     DCHECK(U_SUCCESS(error_code))
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
@@ -655,7 +659,7 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
   static TextBreakIterator* break_iter = nullptr;
   if (!break_iter) {
     break_iter = icu::BreakIterator::createWordInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code);
+        CurrentTextBreakIcuLocale(), error_code);
     DCHECK(U_SUCCESS(error_code))
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
@@ -780,7 +784,7 @@ class CharacterBreakIterator::Pool {
 
     ICUError error_code;
     PooledIterator iterator(icu::BreakIterator::createCharacterInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code));
+        CurrentTextBreakIcuLocale(), error_code));
     DCHECK(U_SUCCESS(error_code) && iterator)
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
@@ -885,7 +889,7 @@ TextBreakIterator* SentenceBreakIterator(base::span<const UChar> string) {
   static TextBreakIterator* iterator = nullptr;
   if (!iterator) {
     iterator = icu::BreakIterator::createSentenceInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), open_status);
+        CurrentTextBreakIcuLocale(), open_status);
     DCHECK(U_SUCCESS(open_status))
         << "ICU could not open a break iterator: " << u_errorName(open_status)
         << " (" << open_status << ")";
