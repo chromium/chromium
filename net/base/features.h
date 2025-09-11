@@ -894,6 +894,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 // HttpStreamFactoryJobController.
 NET_EXPORT BASE_DECLARE_FEATURE(kAdditionalDelayMainJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAdditionalDelay);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kDelayMainJobWithAvailableSpdySession);
 
 // If enabled, we will extend the quic handshake timeout.
 NET_EXPORT BASE_DECLARE_FEATURE(kExtendQuicHandshakeTimeout);

@@ -770,6 +770,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kAdditionalDelayMainJob,
                    "AdditionalDelay",
                    base::Milliseconds(0));
+BASE_FEATURE_PARAM(bool,
+                   kDelayMainJobWithAvailableSpdySession,
+                   &kAdditionalDelayMainJob,
+                   "DelayMainJobWithAvailableSpdySession",
+                   false);
 
 BASE_FEATURE(ExtendQuicHandshakeTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
