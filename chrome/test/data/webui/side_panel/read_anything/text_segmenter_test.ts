@@ -62,20 +62,22 @@ suite('TextSegmenter', () => {
     assertEquals('Hello there.This/is\n', text.slice(0, index));
   });
 
+  // The purpose of this test is intended to verify that
+  // textSegmenter.updateLanguage is being used correctly, rather than
+  // testing the lower level segmentation rules.
   test('updateLanguage', () => {
-    // 'k:a' is interpreted as one word in Swedish and 2 words in English and
-    // French.
-    const text = 'k:a';
+    // In Greek, ';' is interpreted as a question mark.
+    const text = 'Πού είσαι; Είμαι στο σπίτι.';
     const textSegmenter = TextSegmenter.getInstance();
 
     textSegmenter.updateLanguage('en-us');
-    assertEquals(2, textSegmenter.getWordCount(text));
+    assertEquals(1, textSegmenter.getSentences(text).length);
 
-    textSegmenter.updateLanguage('sv-se');
-    assertEquals(1, textSegmenter.getWordCount(text));
+    textSegmenter.updateLanguage('el');
+    assertEquals(2, textSegmenter.getSentences(text).length);
 
     textSegmenter.updateLanguage('fr-fr');
-    assertEquals(2, textSegmenter.getWordCount(text));
+    assertEquals(1, textSegmenter.getSentences(text).length);
   });
 
   test('getSentences', () => {
