@@ -9,6 +9,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,8 +46,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
 
-  using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
-  using DbusShortcuts = DbusArray<DbusShortcut>;
+  using DbusShortcut = std::tuple<std::string, dbus_xdg::Dictionary>;
+  using DbusShortcuts = std::vector<DbusShortcut>;
 
   // These are exposed in the header for testing.
   static constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
@@ -86,11 +88,11 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
                          Observer* observer) override;
 
   void OnCreateSession(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
   void OnListShortcuts(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
   void OnBindShortcuts(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   // Callbacks for DBus signals.
   void OnActivatedSignal(dbus::Signal* signal);
@@ -105,7 +107,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
 
   void CreateSession();
 
-  void BindShortcuts(const DbusShortcuts& old_shortcuts);
+  void BindShortcuts(DbusShortcuts& old_shortcuts);
 
   void CloseSession();
 

@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <tuple>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
@@ -65,11 +67,11 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
  private:
   // Glob-style patterns are indicated by 0, MIME types by 1. Patterns are
   // case-sensitive.
-  using DbusFilterPattern = DbusStruct<DbusUint32, DbusString>;
-  using DbusFilterPatterns = DbusArray<DbusFilterPattern>;
+  using DbusFilterPattern = std::tuple<uint32_t, std::string>;
+  using DbusFilterPatterns = std::vector<DbusFilterPattern>;
   // The first string is a user-visible name for the filter.
-  using DbusFilter = DbusStruct<DbusString, DbusFilterPatterns>;
-  using DbusFilters = DbusArray<DbusFilter>;
+  using DbusFilter = std::tuple<std::string, DbusFilterPatterns>;
+  using DbusFilters = std::vector<DbusFilter>;
 
   // A named set of patterns used as a dialog filter.
   struct PortalFilter {
@@ -115,19 +117,20 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
                                   base::FilePath::StringType default_extension,
                                   std::string parent_handle);
 
-  DbusDictionary BuildOptionsDictionary(const base::FilePath& default_path,
-                                        bool default_path_exists,
-                                        const PortalFilterSet& filter_set);
+  dbus_xdg::Dictionary BuildOptionsDictionary(
+      const base::FilePath& default_path,
+      bool default_path_exists,
+      const PortalFilterSet& filter_set);
 
   DbusFilter MakeFilterStruct(const PortalFilter& filter);
 
   void MakeFileChooserRequest(const std::string& method,
                               const std::string& title,
-                              DbusDictionary options,
+                              dbus_xdg::Dictionary options,
                               std::string parent_handle);
 
   void OnFileChooserResponse(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   void CompleteOpen(std::vector<base::FilePath> paths,
                     std::string current_filter);
