@@ -245,26 +245,7 @@ SiteInfo SiteInfo::CreateForGuest(
 // static
 SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                           const UrlInfo& url_info) {
-  // The call to GetSiteForURL() below is only allowed on the UI thread, due to
-  // its possible use of effective urls.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CreateInternal(isolation_context, url_info,
-                        /*compute_site_url=*/true);
-}
-
-// static
-SiteInfo SiteInfo::CreateOnIOThread(const IsolationContext& isolation_context,
-                                    const UrlInfo& url_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(url_info.storage_partition_config.has_value());
-  return CreateInternal(isolation_context, url_info,
-                        /*compute_site_url=*/false);
-}
-
-// static
-SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
-                                  const UrlInfo& url_info,
-                                  bool compute_site_url) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(url_info.is_sandboxed ||
          url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
   std::pair<AgentClusterKey, AgentClusterKey::OACStatus>
@@ -282,62 +263,59 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   std::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
 
-  if (compute_site_url) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    std::optional<GURL> effective_url =
-        GetContentClient()->browser()->GetEffectiveURL(
-            isolation_context.browser_or_resource_context().ToBrowserContext(),
-            url_info.url);
+  std::optional<GURL> effective_url =
+      GetContentClient()->browser()->GetEffectiveURL(
+          isolation_context.browser_or_resource_context().ToBrowserContext(),
+          url_info.url);
 
-    // In the case of WebUIs, pass the real URL as an effective URL. It will be
-    // used to compute a SiteInfo's site URL which is the complete WebUI URL,
-    // while the agent_cluster_key_ has a site URL which is the WebUI TLD. This
-    // allows WebUI to continue to differentiate WebUIType via site URL while
-    // allowing WebUI with a shared TLD to share a RenderProcessHost.
-    // TODO(crbug.com/40176090): Remove this and replace it with
-    // SiteInstanceGroups once the support lands.
-    if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url)) {
-      CHECK(!effective_url.has_value());
-      effective_url = url_info.url;
-    }
+  // In the case of WebUIs, pass the real URL as an effective URL. It will be
+  // used to compute a SiteInfo's site URL which is the complete WebUI URL,
+  // while the agent_cluster_key_ has a site URL which is the WebUI TLD. This
+  // allows WebUI to continue to differentiate WebUIType via site URL while
+  // allowing WebUI with a shared TLD to share a RenderProcessHost.
+  // TODO(crbug.com/40176090): Remove this and replace it with
+  // SiteInstanceGroups once the support lands.
+  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url)) {
+    CHECK(!effective_url.has_value());
+    effective_url = url_info.url;
+  }
 
-    // If there is an effective URL, compute the effective site URL and override
-    // the site_url computed from the AgentClusterKey.
-    if (effective_url.has_value()) {
-      site_url =
-          GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
-              .first.GetURL();
-    }
+  // If there is an effective URL, compute the effective site URL and override
+  // the site_url computed from the AgentClusterKey.
+  if (effective_url.has_value()) {
+    site_url =
+        GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
+            .first.GetURL();
+  }
 
-    BrowserContext* browser_context =
-        isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
 
-    // If the SiteInfo is for a site that does not require a dedicated process
-    // (and will end up in the default SiteInstanceGroup), then we should use
-    // the default JITless and V8 optimization values. Passing an empty URL into
-    // the corresponding ContentBrowserClient functions returns the default
-    // JITless/V8 values for the embedder.
-    GURL agent_cluster_url_or_default =
-        ShouldUseDefaultSiteInstanceGroup() &&
-                !RequiresDedicatedProcessInternal(
-                    site_url, isolation_context, browser_context,
-                    url_info.requests_coop_isolation(),
-                    !url_info.oac_header_request.has_value(),
-                    site_url == GetErrorPageSiteAndLockURL(),
-                    url_info.is_sandboxed, url_info.is_pdf)
-            ? GURL()
-            : agent_cluster_key.GetURL();
-    is_jitless =
-        is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
-                          browser_context, agent_cluster_url_or_default);
-    are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
-        browser_context, isolation_context.browsing_instance_id(),
-        url::Origin::Create(agent_cluster_url_or_default));
+  // If the SiteInfo is for a site that does not require a dedicated process
+  // (and will end up in the default SiteInstanceGroup), then we should use
+  // the default JITless and V8 optimization values. Passing an empty URL into
+  // the corresponding ContentBrowserClient functions returns the default
+  // JITless/V8 values for the embedder.
+  GURL agent_cluster_url_or_default =
+      ShouldUseDefaultSiteInstanceGroup() &&
+              !RequiresDedicatedProcessInternal(
+                  site_url, isolation_context, browser_context,
+                  url_info.requests_coop_isolation(),
+                  !url_info.oac_header_request.has_value(),
+                  site_url == GetErrorPageSiteAndLockURL(),
+                  url_info.is_sandboxed, url_info.is_pdf)
+          ? GURL()
+          : agent_cluster_key.GetURL();
+  is_jitless =
+      is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
+                        browser_context, agent_cluster_url_or_default);
+  are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
+      browser_context, isolation_context.browsing_instance_id(),
+      url::Origin::Create(agent_cluster_url_or_default));
 
-    if (!storage_partition_config.has_value()) {
-      storage_partition_config =
-          GetStoragePartitionConfigForUrl(browser_context, site_url);
-    }
+  if (!storage_partition_config.has_value()) {
+    storage_partition_config =
+        GetStoragePartitionConfigForUrl(browser_context, site_url);
   }
   DCHECK(storage_partition_config.has_value());
 

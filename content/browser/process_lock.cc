@@ -43,16 +43,8 @@ ProcessLock ProcessLock::CreateAllowAnySite(
 ProcessLock ProcessLock::Create(const IsolationContext& isolation_context,
                                 const UrlInfo& url_info) {
   DCHECK(url_info.storage_partition_config.has_value());
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI))
-    return ProcessLock(SiteInfo::Create(isolation_context, url_info));
-
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  // On the IO thread we need to use a special SiteInfo creation method because
-  // we cannot properly compute some SiteInfo fields on that thread.
-  // ProcessLocks must always match no matter which thread they were created on,
-  // but the SiteInfo objects used to create them may not always match.
-  return ProcessLock(SiteInfo::CreateOnIOThread(isolation_context, url_info));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  return ProcessLock(SiteInfo::Create(isolation_context, url_info));
 }
 
 // static

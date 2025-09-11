@@ -92,23 +92,6 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo Create(const IsolationContext& isolation_context,
                          const UrlInfo& url_info);
 
-  // Similar to the function above, but this method can only be called on the
-  // IO thread. All fields except for the site_url should be the same as
-  // the other method. The site_url field will match the process_lock_url
-  // in the object returned by this function. This is because we cannot compute
-  // the effective URL from the IO thread.
-  //
-  // `url_info` MUST contain a StoragePartitionConfig because we can't ask the
-  // embedder which StoragePartitionConfig to use from the IO thread.
-  //
-  // NOTE: Do not use this method unless there is a very clear and good reason
-  // to do so. It primarily exists to facilitate the creation of ProcessLocks
-  // from any thread. ProcessLocks do not rely on the site_url field so the
-  // difference between this method and Create() does not cause problems for
-  // that usecase.
-  static SiteInfo CreateOnIOThread(const IsolationContext& isolation_context,
-                                   const UrlInfo& url_info);
-
   // Method to make creating SiteInfo objects for tests easier. It is a thin
   // wrapper around Create() that uses UrlInfo::CreateForTesting(),
   // and WebExposedIsolationInfo::CreateNonIsolated() to generate the
@@ -430,17 +413,6 @@ class CONTENT_EXPORT SiteInfo {
   // containers; two SiteInfos that return the same value here will map to the
   // same entry in std::map, etc.
   static auto MakeSecurityPrincipalKey(const SiteInfo& site_info);
-
-  // Helper method containing common logic used by the public
-  // Create() and CreateOnIOThread() methods. Most of the parameters simply
-  // match the values passed into the caller. `compute_site_url` controls
-  // whether the site_url field is computed from an effective URL or simply
-  // copied from the `process_lock_url_`. `compute_site_url` is set to false in
-  // contexts where it may not be possible to get the effective URL (e.g. on the
-  // IO thread).
-  static SiteInfo CreateInternal(const IsolationContext& isolation_context,
-                                 const UrlInfo& url_info,
-                                 bool compute_site_url);
 
   // Returns the AgentClusterKey (and OAC status) appropriate to use for the
   // provided |url_info|. |effective_url| is the effective URL, which can
