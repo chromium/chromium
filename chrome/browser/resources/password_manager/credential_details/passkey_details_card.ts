@@ -31,7 +31,7 @@ export interface PasskeyDetailsCardElement {
     showMore: HTMLAnchorElement,
     usernameValue: CredentialFieldElement,
     displayNameValue: CredentialFieldElement,
-    infoLabel: HTMLElement,
+    infoLabelContent: HTMLElement,
   };
 }
 
@@ -123,14 +123,22 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   }
 
   private getInfoLabelText_() {
+    if (this.passkey.hidden) {
+      return this.i18nAdvanced('passkeyHiddenInfoLabel', {
+        substitutions: [this.passkey.affiliatedDomains[0].name],
+        tags: ['a'],
+      });
+    }
+
     // Google Password Manager passkeys always have their creation time
     // available.
     assert(this.passkey.creationTime !== undefined);
 
     const date = new Date(this.passkey.creationTime);
-    return this.i18n(
-        'passkeyManagementInfoLabel',
-        date.toLocaleDateString(/*locales=*/ undefined, {dateStyle: 'short'}));
+    return this.i18nAdvanced('passkeyManagementInfoLabel', {
+      substitutions: [date.toLocaleDateString(/*locales=*/ undefined,
+                                              {dateStyle: 'short'})],
+    });
   }
 }
 

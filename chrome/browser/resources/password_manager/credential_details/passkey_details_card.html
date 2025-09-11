@@ -41,13 +41,16 @@
     <div class="row-container">
       <div id="infoLabel" class="cr-secondary-text">
         <cr-icon icon="passwords-icon:passkey"></cr-icon>
-        [[getInfoLabelText_(passkey)]]
+        <span id="infoLabelContent"
+            inner-h-t-m-l="[[getInfoLabelText_(passkey)]]">
+        </span>
       </div>
     </div>
   </div>
   <div class="button-container">
     <cr-button id="editButton" class="edit-button" on-click="onEditClicked_"
-        aria-label="[[getAriaLabelForEditButton_(passkey)]]">
+        aria-label="[[getAriaLabelForEditButton_(passkey)]]"
+        disabled="[[passkey.hidden]]">
       $i18n{edit}
     </cr-button>
     <cr-button id="deleteButton" on-click="onDeleteClick_"

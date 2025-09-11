@@ -56,6 +56,7 @@ export interface PasswordEntryParams {
   note?: string;
   changePasswordUrl?: string;
   affiliatedDomains?: chrome.passwordsPrivate.DomainInfo[];
+  hidden?: boolean;
 }
 
 /**
@@ -103,6 +104,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     password: params.password || '',
     affiliatedDomains: params.affiliatedDomains || [domain],
     creationTime: params.isPasskey ? 1000000000 : undefined,
+    hidden: params.hidden || false,
   };
 }
 
@@ -225,6 +227,7 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     note: '',
     compromisedInfo: types.length ? compromisedInfo : undefined,
     creationTime: undefined,
+    hidden: false,
   };
 }
 

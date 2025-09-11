@@ -11,6 +11,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -82,6 +83,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/features.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -1372,6 +1374,11 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
             credential.backup_password->creation_timestamp,
             /*pattern=*/"MMM dd"));
     entry.backup_password = std::move(backup_password_info);
+  }
+  // Gate this behind a flag since other clients may be setting `hidden` to
+  // `true` before the Chrome desktop feature is ready.
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    entry.hidden = credential.hidden;
   }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;

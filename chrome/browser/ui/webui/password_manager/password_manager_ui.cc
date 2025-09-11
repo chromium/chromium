@@ -353,6 +353,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_DELETE_BUTTON_ARIA_LABEL},
       {"passkeyDetailsCardDeleteButtonNoUsernameAriaLabel",
        IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_DELETE_BUTTON_NO_USERNAME_ARIA_LABEL},
+      {"passkeyHiddenInfoLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_HIDDEN_INFO_LABEL},
       {"passkeyManagementInfoLabel",
        IDS_PASSWORD_MANAGER_UI_PASSKEY_MANAGEMENT_INFO_LABEL},
       {"passkeyUpgradeSettingsToggleLabel",
