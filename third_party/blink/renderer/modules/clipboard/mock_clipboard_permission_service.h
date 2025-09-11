@@ -39,7 +39,8 @@ class MockClipboardPermissionService final
 
   MOCK_METHOD(void,
               RequestPageEmbeddedPermission,
-              (mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
+              (Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
+               mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
                RequestPageEmbeddedPermissionCallback),
               (override));
 

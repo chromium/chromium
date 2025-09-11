@@ -258,13 +258,14 @@ void GeolocationPermissionContextTests::RequestGeolocationPermission(
     const GURL& requesting_frame,
     bool user_gesture,
     bool embedded_permission_element_initiated) {
-  std::unique_ptr<permissions::PermissionRequestData> request_data =
-      std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<ContentSettingPermissionResolver>(
-              ContentSettingsType::GEOLOCATION),
-          id, user_gesture, requesting_frame);
-  request_data->embedded_permission_element_initiated =
-      embedded_permission_element_initiated;
+  auto request_data = std::make_unique<permissions::PermissionRequestData>(
+      std::make_unique<ContentSettingPermissionResolver>(
+          ContentSettingsType::GEOLOCATION),
+      id, user_gesture, requesting_frame);
+  if (embedded_permission_element_initiated) {
+    request_data->embedded_permission_request_descriptor =
+        blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+  }
   geolocation_permission_context_->RequestPermission(
       std::move(request_data),
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,

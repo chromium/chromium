@@ -57,6 +57,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       mojo::PendingRemote<blink::mojom::EmbeddedPermissionControlClient> client)
       override;
   void RequestPageEmbeddedPermission(
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
       RequestPageEmbeddedPermissionCallback callback) override;
   void RequestPermission(blink::mojom::PermissionDescriptorPtr permission,

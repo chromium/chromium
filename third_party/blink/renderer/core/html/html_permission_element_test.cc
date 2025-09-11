@@ -305,7 +305,8 @@ class TestPermissionService : public PermissionService {
   }
 
   void RequestPageEmbeddedPermission(
-      EmbeddedPermissionRequestDescriptorPtr permissions,
+      Vector<PermissionDescriptorPtr> permissions,
+      EmbeddedPermissionRequestDescriptorPtr descriptor,
       RequestPageEmbeddedPermissionCallback) override {}
   void RequestPermission(PermissionDescriptorPtr permission,
                          bool user_gesture,

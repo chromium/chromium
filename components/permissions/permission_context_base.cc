@@ -549,7 +549,7 @@ void PermissionContextBase::DecidePermission(
   auto cleanup_cb =
       base::BindOnce(&PermissionContextBase::CleanUpRequest,
                      weak_factory_.GetWeakPtr(), web_contents, request_data->id,
-                     request_data->embedded_permission_element_initiated);
+                     request_data->IsEmbeddedPermissionElementInitiated());
   PermissionRequestID permission_request_id = request_data->id;
 
   std::unique_ptr<PermissionRequest> request =

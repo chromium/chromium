@@ -116,7 +116,8 @@ class TestPermissionService : public PermissionService {
   }
 
   void RequestPageEmbeddedPermission(
-      mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
+      Vector<PermissionDescriptorPtr> permissions,
+      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptors,
       RequestPageEmbeddedPermissionCallback) override {}
   void RequestPermission(PermissionDescriptorPtr permission,
                          bool user_gesture,

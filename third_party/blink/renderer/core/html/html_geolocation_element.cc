@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
@@ -49,6 +50,14 @@ void HTMLGeolocationElement::UpdatePermissionStatusAndAppearance() {
   // be updated based on the status of location data querying.
   UpdatePermissionStatus();
   PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
+}
+
+void HTMLGeolocationElement::
+    PopulateEmbeddedPermissionRequestDescriptorExtension(
+        mojom::blink::EmbeddedPermissionRequestDescriptor& descriptor) {
+  descriptor.geolocation =
+      mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
+  descriptor.geolocation->autolocate = autolocate();
 }
 
 }  // namespace blink

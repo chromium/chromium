@@ -1126,12 +1126,12 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
   CHECK_LE(permission_descriptors_.size(), 2U);
   auto descriptor = EmbeddedPermissionRequestDescriptor::New();
   descriptor->element_position = BoundsInWidget();
-  descriptor->permissions = mojo::Clone(permission_descriptors_);
+  PopulateEmbeddedPermissionRequestDescriptorExtension(*descriptor);
 
   pending_request_created_ = base::TimeTicks::Now();
 
   GetPermissionService()->RequestPageEmbeddedPermission(
-      std::move(descriptor),
+      mojo::Clone(permission_descriptors_), std::move(descriptor),
       BindOnce(&HTMLPermissionElement::OnEmbeddedPermissionsDecided,
                WrapWeakPersistent(this)));
 }

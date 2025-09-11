@@ -125,7 +125,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   // element and still keep the whole permission process going. We'll check the
   // status later when we show a prompt and help the user fix it if they haven't
   // given us location access yet.
-  if (!request_data->embedded_permission_element_initiated &&
+  if (!request_data->IsEmbeddedPermissionElementInitiated() &&
       !IsLocationAccessPossible(web_contents, request_data->requesting_origin,
                                 request_data->user_gesture)) {
     NotifyPermissionSet(*request_data, std::move(callback),
@@ -140,7 +140,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
           *request_data->resolver, render_frame_host,
           request_data->requesting_origin, request_data->embedding_origin)
           .status;
-  if (!request_data->embedded_permission_element_initiated &&
+  if (!request_data->IsEmbeddedPermissionElementInitiated() &&
       status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {content_settings_type()}) ==

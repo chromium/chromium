@@ -179,11 +179,11 @@ PermissionRequest::GetDialogAnnotatedMessageText(
 #endif
 
 bool PermissionRequest::IsEmbeddedPermissionElementInitiated() const {
-  return data_->embedded_permission_element_initiated;
+  return data_->IsEmbeddedPermissionElementInitiated();
 }
 
 std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {
-  return data_->anchor_element_position;
+  return data_->GetAnchorElementPosition();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -502,8 +502,10 @@ void PermissionRequest::set_preview_parameters(
 
 void PermissionRequest::SetEmbeddedPermissionElementInitiatedForTesting(
     bool embedded_permission_element_initiated) {
-  data_->embedded_permission_element_initiated =
-      embedded_permission_element_initiated;
+  if (embedded_permission_element_initiated) {
+    data_->embedded_permission_request_descriptor =
+        blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+  }
 }
 
 bool PermissionRequest::IsSourceSubscribedToPermissionChangeEvent(

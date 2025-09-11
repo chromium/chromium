@@ -205,6 +205,7 @@ void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
 }
 
 void PermissionServiceImpl::RequestPageEmbeddedPermission(
+    std::vector<PermissionDescriptorPtr> permissions,
     EmbeddedPermissionRequestDescriptorPtr descriptor,
     RequestPageEmbeddedPermissionCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
@@ -216,28 +217,16 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
   }
 
   if (auto* browser_context = context_->GetBrowserContext()) {
-    if (HasDuplicatesOrInvalidPermissions(descriptor->permissions) ||
-        !CheckPageEmbeddedPermissionTypes(descriptor->permissions)) {
+    if (HasDuplicatesOrInvalidPermissions(permissions) ||
+        !CheckPageEmbeddedPermissionTypes(permissions)) {
       ReceivedBadMessage();
       return;
     }
 
-    std::vector<PermissionDescriptorPtr> permission_descriptors;
-    permission_descriptors.reserve(descriptor->permissions.size());
-
-    for (PermissionDescriptorPtr& permission : descriptor->permissions) {
-      permission_descriptors.push_back(permission.Clone());
-    }
-
-    auto element_position = descriptor->element_position;
-
     RequestPermissionsInternal(
         browser_context,
-        PermissionRequestDescription(
-            std::move(descriptor->permissions), /*user_gesture=*/true,
-            /*requesting_origin=*/GURL(),
-            /*embedded_permission_element_initiated=*/true,
-            /*anchor_element_position=*/element_position),
+        PermissionRequestDescription(std::move(permissions),
+                                     std::move(descriptor)),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
                        std::move(callback)));
   }

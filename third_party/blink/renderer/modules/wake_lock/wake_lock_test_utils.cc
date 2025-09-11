@@ -231,6 +231,7 @@ void MockPermissionService::RegisterPageEmbeddedPermissionControl(
 }
 
 void MockPermissionService::RequestPageEmbeddedPermission(
+    Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
     RequestPageEmbeddedPermissionCallback) {
   NOTREACHED();

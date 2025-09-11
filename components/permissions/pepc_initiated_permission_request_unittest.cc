@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -95,8 +96,9 @@ class PEPCInitiatedPermissionRequestTest
     return prompt_factory_.get();
   }
 
-  PermissionDescriptorPtr CreatePermissionDescriptorPtr(
+  std::vector<PermissionDescriptorPtr> CreatePermissionDescriptorPtrs(
       ContentSettingsType type) {
+    std::vector<PermissionDescriptorPtr> descriptors;
     PermissionDescriptorPtr permission_descriptor = PermissionDescriptor::New();
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
@@ -108,17 +110,14 @@ class PEPCInitiatedPermissionRequestTest
       default:
         NOTREACHED() << "Unsupported permission type in this test fixture";
     }
-
-    return permission_descriptor;
+    descriptors.push_back(std::move(permission_descriptor));
+    return descriptors;
   }
 
-  EmbeddedPermissionRequestDescriptorPtr CreatePEPCPermissionDescriptorPtr(
-      ContentSettingsType type) {
+  EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptorPtr() {
     EmbeddedPermissionRequestDescriptorPtr permission_descriptor =
         EmbeddedPermissionRequestDescriptor::New();
-
-    permission_descriptor->permissions.push_back(
-        CreatePermissionDescriptorPtr(type));
 
     return permission_descriptor;
   }
@@ -169,7 +168,9 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingAllowed) {
   // A regular request will not reach the permission request manager, since the
   // permission is already granted.
   permission_service()->RequestPermission(
-      CreatePermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_CAMERA)
+          .front()
+          .Clone(),
       /* user_gesture= */ true,
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallback,
@@ -185,8 +186,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingAllowed) {
   // A PEPC request is allowed through regardless of the state of the content
   // setting.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(
-          ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -210,7 +211,9 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingBlocked) {
   // A regular request will not reach the permission request manager, since the
   // permission is blocked.
   permission_service()->RequestPermission(
-      CreatePermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_MIC),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC)
+          .front()
+          .Clone(),
       /* user_gesture= */ true,
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallback,
@@ -226,7 +229,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingBlocked) {
   // A PEPC request is allowed through regardless of the state of the content
   // setting.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_MIC),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -252,7 +256,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedInFencedFrame) {
 
   // A PEPC request is not allowed in a fenced frame.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_MIC),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -286,7 +291,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
 
   // A PEPC request is allowed through from a frame with a valid policy.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_MIC),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -316,7 +322,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
 
   // A PEPC request is not allowed through from a frame without a valid policy.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(ContentSettingsType::MEDIASTREAM_MIC),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -344,8 +351,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedByKillSwitch) {
 
   // Attempt to make a PEPC request.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(
-          ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));
@@ -363,8 +370,8 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedOnInsecureOrigin) {
 
   // Attempt to make a PEPC request.
   permission_service()->RequestPageEmbeddedPermission(
-      CreatePEPCPermissionDescriptorPtr(
-          ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_CAMERA),
+      CreateEmbeddedPermissionRequestDescriptorPtr(),
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
           base::Unretained(this)));

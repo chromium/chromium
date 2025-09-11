@@ -13,6 +13,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/resolvers/permission_resolver.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -66,6 +67,22 @@ struct PermissionRequestData {
     return *this;
   }
 
+  bool IsEmbeddedPermissionElementInitiated() const {
+    return !!embedded_permission_request_descriptor;
+  }
+
+  bool IsGeolocationElementInitiated() const {
+    return embedded_permission_request_descriptor &&
+           embedded_permission_request_descriptor->geolocation;
+  }
+
+  std::optional<gfx::Rect> GetAnchorElementPosition() const {
+    if (embedded_permission_request_descriptor) {
+      return embedded_permission_request_descriptor->element_position;
+    }
+    return std::nullopt;
+  }
+
   // The request type if it exists.
   std::optional<RequestType> request_type;
 
@@ -78,19 +95,16 @@ struct PermissionRequestData {
   // Indicates the request is initiated by a user gesture.
   bool user_gesture;
 
-  // Indicates the request is initiated from an embedded permission element.
-  bool embedded_permission_element_initiated;
-
   // The origin on whose behalf this permission request is being made.
   GURL requesting_origin;
 
   // The origin of embedding frame (generally is the top level frame).
   GURL embedding_origin;
 
-  // Anchor element position (in screen coordinates), gennerally when the
-  // permission request is made from permission element. Used to calculate
-  // position where the secondary prompt UI is expected to be shown.
-  std::optional<gfx::Rect> anchor_element_position;
+  // If not null, this request comes from an embedded permission element,
+  // and this struct holds element-specific data.
+  blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+      embedded_permission_request_descriptor;
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;

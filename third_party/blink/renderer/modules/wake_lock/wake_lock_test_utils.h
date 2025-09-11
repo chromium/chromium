@@ -121,6 +121,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient> client)
       override;
   void RequestPageEmbeddedPermission(
+      Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
       RequestPageEmbeddedPermissionCallback) override;
   void RequestPermission(mojom::blink::PermissionDescriptorPtr permission,

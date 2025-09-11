@@ -39,6 +39,8 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   // HTMLPermissionElement:
   void UpdateText() override;
   void UpdatePermissionStatusAndAppearance() override;
+  void PopulateEmbeddedPermissionRequestDescriptorExtension(
+      mojom::blink::EmbeddedPermissionRequestDescriptor&) override;
 
  private:
   bool precise_ = false;
