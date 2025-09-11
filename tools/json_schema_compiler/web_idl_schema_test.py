@@ -790,6 +790,16 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('path/to/implementation.h',
                      schema['compiler_options']['implemented_in'])
 
+  # Tests that an API interface using the 'generate_error_messages' extended
+  # attribute has the associated attribute set to true after processing.
+  def testGenerateErrorMessages(self):
+    idl = web_idl_schema.Load('test/web_idl/generate_error_messages.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    self.assertEqual('generateErrorMessagesAPI', schema['namespace'])
+    self.assertTrue(schema['compiler_options']['generate_error_messages'])
+
   # Tests a variety of default values that are set on an API namespace when they
   # are not specified in the source IDL file.
   def testNonSpecifiedDefaultValues(self):

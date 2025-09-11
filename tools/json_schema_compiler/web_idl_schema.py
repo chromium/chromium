@@ -802,6 +802,8 @@ class Namespace:
       elif attribute_name == 'implemented_in':
         compiler_options['implemented_in'] = extended_attribute.GetProperty(
             'VALUE')
+      elif attribute_name == 'generate_error_messages':
+        compiler_options['generate_error_messages'] = True
       else:
         raise SchemaCompilerError(
             f'Unknown extended attribute with name "{attribute_name}" when'
