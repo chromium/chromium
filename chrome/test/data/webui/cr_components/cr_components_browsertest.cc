@@ -219,3 +219,15 @@ IN_PROC_BROWSER_TEST_F(CrComponentsPrerenderTest, Prerendering) {
   RunTest("cr_components/most_visited_test.js",
           "runMochaSuite('Prerendering');");
 }
+
+class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
+ protected:
+  CrComponentsComposeboxTest() {
+    set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
+  RunTest("cr_components/composebox/context_menu_entrypoint_test.js",
+          "mocha.run()");
+}

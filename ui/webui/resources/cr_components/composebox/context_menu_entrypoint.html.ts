@@ -7,11 +7,31 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 
 export function getHtml(this: ContextMenuEntrypointElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
-<cr-button id="contextButton"
-    title="$i18n{addContextTitle}">
-  <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
-  <span id="description">$i18n{addContext}</span>
-</cr-button>
+  <cr-button id="entrypoint"
+      @click="${this.onEntrypointClick_}"
+      title="$i18n{addContextTitle}">
+    <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
+    <span id="description">$i18n{addContext}</span>
+  </cr-button>
+
+  <cr-action-menu id="menu" role-description="$i18n{menu}">
+    ${this.hasTabSuggestions_ ? html`
+      <h4 id="tabHeader">$i18n{addTab}</h4>
+      <hr/>
+    `: ''}
+    <cr-button id="imageUpload" class="dropdown-item"
+        @click="${this.openImageUpload_}">
+      <cr-icon icon="composebox:imageUpload" slot="prefix-icon"></cr-icon>
+      $i18n{addImage}
+    </cr-button>
+    <cr-button id="fileUpload" class="dropdown-item"
+        @click="${this.openFileUpload_}">
+      <cr-icon icon="composebox:fileUpload" slot="prefix-icon"></cr-icon>
+      $i18n{uploadFile}
+    </cr-button>
+  </cr-action-menu>
 <!--_html_template_end_-->`;
+  // clang-format off
 }
