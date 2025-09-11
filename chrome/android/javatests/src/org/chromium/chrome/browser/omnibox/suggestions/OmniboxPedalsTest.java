@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
@@ -274,6 +275,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/444490246")
     public void testManageAccessibilitySettings() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
         clickOnPedalToSettings(
