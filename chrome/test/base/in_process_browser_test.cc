@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/common/chrome_constants.h"
@@ -631,13 +632,15 @@ Profile* InProcessBrowserTest::GetProfile() const {
   return browser() ? browser()->profile() : nullptr;
 }
 
-void InProcessBrowserTest::CloseBrowserSynchronously(Browser* browser) {
+void InProcessBrowserTest::CloseBrowserSynchronously(
+    BrowserWindowInterface* browser) {
   CloseBrowserAsynchronously(browser);
   ui_test_utils::WaitForBrowserToClose(browser);
 }
 
-void InProcessBrowserTest::CloseBrowserAsynchronously(Browser* browser) {
-  browser->window()->Close();
+void InProcessBrowserTest::CloseBrowserAsynchronously(
+    BrowserWindowInterface* browser) {
+  browser->GetWindow()->Close();
 #if BUILDFLAG(IS_MAC)
   // BrowserWindowController depends on the auto release pool being recycled
   // in the message loop to delete itself.
