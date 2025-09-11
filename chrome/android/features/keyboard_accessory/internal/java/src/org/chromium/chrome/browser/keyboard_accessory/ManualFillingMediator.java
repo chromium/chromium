@@ -606,6 +606,16 @@ class ManualFillingMediator
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP));
     }
 
+    /**
+     * @return Whether suggestions should animate from the top instead of horizontally. This
+     *     vertical animation is specific to the revamped UI on large form factor devices.
+     */
+    private boolean shouldAnimateSuggestionsFromTop() {
+        return isLargeFormFactor()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
+    }
+
     public boolean isLargeFormFactor() {
         int windowWidthDp = mActivity.getResources().getConfiguration().screenWidthDp;
         int windowHeightDp = mActivity.getResources().getConfiguration().screenHeightDp;
@@ -627,6 +637,7 @@ class ManualFillingMediator
         TraceEvent.begin("ManualFillingMediator#enforceStateProperties");
         if (requiresVisibleBar(extensionState)) {
             mKeyboardAccessory.setHasStickyLastItem(shouldHaveStickyLastItem());
+            mKeyboardAccessory.setAnimateSuggestionsFromTop(shouldAnimateSuggestionsFromTop());
             mKeyboardAccessory.show();
         } else {
             mKeyboardAccessory.dismiss();

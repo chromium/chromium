@@ -70,6 +70,8 @@ class KeyboardAccessoryProperties {
             new WritableBooleanPropertyKey("has_suggestions");
     static final WritableBooleanPropertyKey HAS_STICKY_LAST_ITEM =
             new WritableBooleanPropertyKey("has_sticky_last_item");
+    static final WritableBooleanPropertyKey ANIMATE_SUGGESTIONS_FROM_TOP =
+            new WritableBooleanPropertyKey("animate_suggestions_from_top");
 
     static final WritableObjectPropertyKey<KeyboardAccessoryView.AnimationListener>
             ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
@@ -88,13 +90,15 @@ class KeyboardAccessoryProperties {
                         SHOW_SWIPING_IPH,
                         HAS_SUGGESTIONS,
                         HAS_STICKY_LAST_ITEM,
+                        ANIMATE_SUGGESTIONS_FROM_TOP,
                         ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
                 .with(DISABLE_ANIMATIONS_FOR_TESTING, false)
                 .with(SHOW_SWIPING_IPH, false)
-                .with(HAS_SUGGESTIONS, false);
+                .with(HAS_SUGGESTIONS, false)
+                .with(ANIMATE_SUGGESTIONS_FROM_TOP, false);
     }
 
     /**

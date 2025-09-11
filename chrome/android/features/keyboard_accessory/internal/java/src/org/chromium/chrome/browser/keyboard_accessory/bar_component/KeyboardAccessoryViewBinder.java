@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.hasShownAnyAutofillIphBefore;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.showHelpBubble;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
@@ -381,6 +382,8 @@ class KeyboardAccessoryViewBinder {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
         } else if (propertyKey == HAS_STICKY_LAST_ITEM) {
             view.setHasStickyLastItem(model.get(HAS_STICKY_LAST_ITEM));
+        } else if (propertyKey == ANIMATE_SUGGESTIONS_FROM_TOP) {
+            view.setAnimateSuggestionsFromTop(model.get(ANIMATE_SUGGESTIONS_FROM_TOP));
         } else if (propertyKey == SHEET_OPENER_ITEM || propertyKey == DISMISS_ITEM) {
             // No binding required.
         } else {

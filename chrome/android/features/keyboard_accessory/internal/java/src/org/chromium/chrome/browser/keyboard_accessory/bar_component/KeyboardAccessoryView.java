@@ -52,12 +52,12 @@ class KeyboardAccessoryView extends LinearLayout {
     private ObjectAnimator mAnimator;
     private AnimationListener mAnimationListener;
     private ViewPropertyAnimator mRunningAnimation;
-    private float mLastBarItemsViewPosition;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
     private boolean mAllowClicksWhileObscured;
     private boolean mHasStickyLastItem;
     private int mMaxWidth;
+    private boolean mAnimateSuggestionsFromTop;
 
     protected RecyclerView mBarItemsView;
 
@@ -387,6 +387,10 @@ class KeyboardAccessoryView extends LinearLayout {
         mHasStickyLastItem = hasStickyLastItem;
     }
 
+    void setAnimateSuggestionsFromTop(boolean animateSuggestionsFromTop) {
+        mAnimateSuggestionsFromTop = animateSuggestionsFromTop;
+    }
+
     void setAccessibilityMessage(boolean hasSuggestions) {
         setContentDescription(
                 getContext()
@@ -493,25 +497,37 @@ class KeyboardAccessoryView extends LinearLayout {
 
     private void animateSuggestionArrival() {
         if (areAnimationsDisabled()) return;
-        int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
         if (mAnimator != null && mAnimator.isRunning()) {
             mAnimator.cancel();
-        } else {
-            mLastBarItemsViewPosition = mBarItemsView.getX();
         }
 
+        if (mAnimateSuggestionsFromTop) {
+            mAnimator = createVerticalAnimator();
+        } else {
+            mAnimator = createHorizontalAnimator();
+        }
+        mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
+        mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
+        mAnimator.start();
+    }
+
+    private ObjectAnimator createVerticalAnimator() {
+        // Animate from the top of the screen to its original position.
+        final float start = -getY();
+        setTranslationY(start);
+        return ObjectAnimator.ofFloat(this, "translationY", start, 0f);
+    }
+
+    private ObjectAnimator createHorizontalAnimator() {
+        final float endPosition = 0f;
+        int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
         float start =
-                mLastBarItemsViewPosition
+                endPosition
                         - bounceDirection
                                 * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
                                 * getContext().getResources().getDisplayMetrics().density;
         mBarItemsView.setTranslationX(start);
-        mAnimator =
-                ObjectAnimator.ofFloat(
-                        mBarItemsView, "translationX", start, mLastBarItemsViewPosition);
-        mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
-        mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
-        mAnimator.start();
+        return ObjectAnimator.ofFloat(mBarItemsView, "translationX", start, endPosition);
     }
 
     private void initializeHorizontalRecyclerView(RecyclerView recyclerView) {

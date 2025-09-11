@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
@@ -653,6 +654,15 @@ public class KeyboardAccessoryControllerTest {
 
         mCoordinator.setHasStickyLastItem(false);
         assertFalse(mModel.get(HAS_STICKY_LAST_ITEM));
+    }
+
+    @Test
+    public void testSetAnimateSuggestionsFromTop() {
+        mCoordinator.setAnimateSuggestionsFromTop(true);
+        assertTrue(mModel.get(ANIMATE_SUGGESTIONS_FROM_TOP));
+
+        mCoordinator.setAnimateSuggestionsFromTop(false);
+        assertFalse(mModel.get(ANIMATE_SUGGESTIONS_FROM_TOP));
     }
 
     @Test

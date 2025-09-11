@@ -1481,6 +1481,7 @@ public class ManualFillingControllerTest {
         assertTrue(style.isDocked());
         assertEquals(0, style.getMaxWidth());
         verify(mMockKeyboardAccessory, never()).setHasStickyLastItem(anyBoolean());
+        verify(mMockKeyboardAccessory, never()).setAnimateSuggestionsFromTop(anyBoolean());
     }
 
     @Test
@@ -1502,6 +1503,7 @@ public class ManualFillingControllerTest {
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
+        verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }
 
     @Test
@@ -1525,6 +1527,7 @@ public class ManualFillingControllerTest {
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
+        verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }
 
     @Test
@@ -1548,6 +1551,7 @@ public class ManualFillingControllerTest {
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
+        verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }
 
     @Test
@@ -1571,6 +1575,7 @@ public class ManualFillingControllerTest {
         assertTrue(style.isDocked());
         assertEquals(0, style.getMaxWidth());
         verify(mMockKeyboardAccessory).setHasStickyLastItem(true);
+        verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(false);
     }
 
     @Test

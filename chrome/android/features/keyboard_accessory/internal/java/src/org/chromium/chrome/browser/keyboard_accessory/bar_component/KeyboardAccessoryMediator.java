@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
@@ -324,6 +325,7 @@ class KeyboardAccessoryMediator
                 || propertyKey == SHOW_SWIPING_IPH
                 || propertyKey == HAS_SUGGESTIONS
                 || propertyKey == HAS_STICKY_LAST_ITEM
+                || propertyKey == ANIMATE_SUGGESTIONS_FROM_TOP
                 || propertyKey == ANIMATION_LISTENER) {
             return;
         }
@@ -375,6 +377,10 @@ class KeyboardAccessoryMediator
 
     void setHasStickyLastItem(boolean hasStickyLastItem) {
         mModel.set(HAS_STICKY_LAST_ITEM, hasStickyLastItem);
+    }
+
+    void setAnimateSuggestionsFromTop(boolean animateSuggestionsFromTop) {
+        mModel.set(ANIMATE_SUGGESTIONS_FROM_TOP, animateSuggestionsFromTop);
     }
 
     boolean isShown() {

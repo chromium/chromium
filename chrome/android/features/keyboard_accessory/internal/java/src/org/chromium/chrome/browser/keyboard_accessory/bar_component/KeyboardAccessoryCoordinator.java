@@ -357,6 +357,15 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         mMediator.setHasStickyLastItem(hasStickyLastItem);
     }
 
+    /**
+     * Defines whether the suggestion animation should start from the top of the accessory bar.
+     *
+     * @param animateSuggestionsFromTop A boolean indicating whether to animate from the top.
+     */
+    public void setAnimateSuggestionsFromTop(boolean animateSuggestionsFromTop) {
+        mMediator.setAnimateSuggestionsFromTop(animateSuggestionsFromTop);
+    }
+
     /** Triggers the accessory to be shown. */
     public void show() {
         TraceEvent.begin("KeyboardAccessoryCoordinator#show");
