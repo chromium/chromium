@@ -56,11 +56,14 @@ class ScopedResourceUsageQuery {
   void RemoveObserver(QueryResultObserver* observer);
 
   // Starts sending scheduled queries. They will repeat as long as the
-  // ScopedResourceUsageQuery object exists.
+  // ScopedResourceUsageQuery object exists. If `observe_other_queries` is true,
+  // observers will be notified whenever a measurement that matches any of  the
+  // query params is available, even if it was caused by a different query.
   // TODO(crbug.com/40926264): Repeating queries will be sent on a timer with
-  // `delay` between queries. Replace this with the full scheduling hints
-  // described at https://bit.ly/resource-attribution-api#heading=h.upcqivkhbs4t
-  void Start(base::TimeDelta delay);
+  // `delay` between queries, unless `delay` is 0. Replace this with the full
+  // scheduling hints described at
+  // https://bit.ly/resource-attribution-api#heading=h.upcqivkhbs4t
+  void Start(base::TimeDelta delay, bool observe_other_queries = false);
 
   // Sends an immediate query, in addition to the schedule of repeated queries
   // triggered by Start().
