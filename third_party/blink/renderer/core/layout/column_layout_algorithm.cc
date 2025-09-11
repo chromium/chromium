@@ -433,6 +433,30 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
         // version of GapDecorations. Once the optimized version is implemented,
         // we can remove all the parts of this function used for the old
         // version.
+        LayoutUnit applicable_border_scrollbar_padding_block_end =
+            container_builder_.ApplicableBorders().block_end +
+            container_builder_.ApplicableScrollbar().block_end +
+            container_builder_.ApplicablePadding().block_end;
+        LayoutUnit fragment_block_size = container_builder_.FragmentBlockSize();
+
+        // For the content inline and block ends, we must take the max of where
+        // the fragment starts and ends and where the last cross gap and main
+        // gap are. This is so that when content overflows the container, we
+        // still paint the gap decorations.
+        LayoutUnit content_inline_end =
+            !cross_gaps_.empty()
+                ? std::max(cross_gaps_.back().GetGapOffset().inline_offset,
+                           container_builder_.FragmentInlineSize() -
+                               BorderScrollbarPadding().inline_end)
+                : container_builder_.FragmentInlineSize() -
+                      BorderScrollbarPadding().inline_end;
+        LayoutUnit content_block_end =
+            !main_gaps_.empty()
+                ? std::max(main_gaps_.back().GetGapOffset(),
+                           fragment_block_size -
+                               applicable_border_scrollbar_padding_block_end)
+                : fragment_block_size -
+                      applicable_border_scrollbar_padding_block_end;
         // TODO(crbug.com/440123087): Risky since they could in theory be used
         // after moved. Clean up to not move members. Change members to
         // unique_ptrs.
@@ -445,18 +469,10 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
         CHECK(content_inline_start_.has_value());
         CHECK(content_block_start_.has_value());
-        gap_geometry->SetContentInlineOffsets(
-            *content_inline_start_, container_builder_.FragmentInlineSize() -
-                                        BorderScrollbarPadding().inline_end);
-
-        LayoutUnit content_block_size = container_builder_.FragmentBlockSize();
-        LayoutUnit applicable_border_scrollbar_padding_block_end =
-            container_builder_.ApplicableBorders().block_end +
-            container_builder_.ApplicableScrollbar().block_end +
-            container_builder_.ApplicablePadding().block_end;
-        gap_geometry->SetContentBlockOffsets(
-            *content_block_start_,
-            content_block_size - applicable_border_scrollbar_padding_block_end);
+        gap_geometry->SetContentInlineOffsets(*content_inline_start_,
+                                              content_inline_end);
+        gap_geometry->SetContentBlockOffsets(*content_block_start_,
+                                             content_block_end);
 
         gap_geometry->SetSpannerMainGapsIndices(
             std::move(spanner_main_gaps_indices_));

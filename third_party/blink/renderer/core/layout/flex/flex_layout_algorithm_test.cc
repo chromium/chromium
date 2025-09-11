@@ -802,8 +802,8 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedOneLine) {
   EXPECT_EQ(column_gaps.size(), 1);
 
   // No Main Gaps so we don't expect an inline start or end.
-  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit());
-  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
   EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(52));
 
@@ -885,6 +885,73 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedBasic) {
 
   VerifyMainGaps(expected_row_gaps, row_gaps);
   VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapIntersectionsOptimizedContentEndPastContainer) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox>* {
+        background-color: rgb(96 139 168 / 0.2);
+    }
+
+    #flexbox {
+        border: 2px solid rgb(96 139 168);
+        border-width: 2px;
+        display: flex;
+        column-gap: 10px;
+        column-rule-style: solid;
+        column-rule-width: 10px;
+        column-rule-color: red;
+        width: 200px;
+        flex-wrap: nowrap;
+    }
+
+    .items {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+    }
+</style>
+
+<div id="flexbox">
+    <div class="items">One</div>
+    <div class="items">Two</div>
+    <div class="items">Three</div>
+    <div class="items">Four</div>
+    <div class="items">Five</div>
+    <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(300), LayoutUnit(300)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */
+                                       nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  // The elements overflow, so the content end should be past the container end.
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(297));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(52));
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedNonAlignedColumn) {

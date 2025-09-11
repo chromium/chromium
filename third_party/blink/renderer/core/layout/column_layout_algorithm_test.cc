@@ -6983,6 +6983,73 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationOptimizedGapsBasic) {
 }
 
 TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationOptimizedGapsContentEndPastContainer) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+ body {
+  margin: 0px;
+ }
+
+ #container {
+  border: 2px solid rgb(96 139 168);
+  width: 200px;
+  column-count: 3;
+  column-width: 60px;
+  column-gap: 10px;
+  column-rule-width: 10px;
+  column-rule-style: solid;
+  column-rule-color: purple;
+   height: 200px;
+ }
+
+ p {
+    background: rgb(96 139 168 / 0.2);
+    height: 200px;
+    margin: 0px;
+ }
+
+</style>
+
+  <body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <p>Three</p>
+    <p> Four </p>
+    <p> Five </p>
+
+  </div>
+</body>
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 0);
+  EXPECT_EQ(column_gaps.size(), 4);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  // The elements overflow, so the content end should be past the container end.
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(277));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
        GapDecorationOptimizedGapsColumnWrapOneColumn) {
   ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);

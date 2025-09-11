@@ -339,17 +339,13 @@ class GapAccumulator {
     }
 
     LayoutUnit content_inline_start =
-        is_column_ ? content_cross_start_.value_or(LayoutUnit())
-                   : content_main_start_.value_or(LayoutUnit());
+        is_column_ ? content_cross_start_ : content_main_start_;
     LayoutUnit content_inline_end =
-        is_column_ ? content_cross_end_.value_or(LayoutUnit())
-                   : content_main_end_.value_or(LayoutUnit());
+        is_column_ ? content_cross_end_ : content_main_end_;
     LayoutUnit content_block_start =
-        is_column_ ? content_main_start_.value_or(LayoutUnit())
-                   : content_cross_start_.value_or(LayoutUnit());
+        is_column_ ? content_main_start_ : content_cross_start_;
     LayoutUnit content_block_end =
-        is_column_ ? content_main_end_.value_or(LayoutUnit())
-                   : content_cross_end_.value_or(LayoutUnit());
+        is_column_ ? content_main_end_ : content_cross_end_;
 
     gap_geometry->SetContentInlineOffsets(content_inline_start,
                                           content_inline_end);
@@ -784,44 +780,44 @@ class GapAccumulator {
 
     // "first" and "last" here refers to the inline direction.
     const bool is_first_item = item_index_in_line == 0;
+    const bool is_last_item =
+        item_index_in_line == flex_line.item_indices.size() - 1;
 
-    if (is_first_line && !content_cross_start_.has_value()) {
+    if (is_first_line && is_first_item) {
       content_cross_start_ = flex_line.cross_axis_offset;
+      content_main_start_ =
+          is_column_
+              ? container_builder_->BorderScrollbarPadding().block_start
+              : container_builder_->BorderScrollbarPadding().inline_start;
+      const LayoutUnit main_offset =
+          is_column_ ? item_offset.block_offset : item_offset.inline_offset;
+      content_main_start_ = std::min(content_main_start_, main_offset);
     }
 
-    if (is_last_line && !content_cross_end_.has_value()) {
+    if (is_last_line && is_first_item) {
       content_cross_end_ = flex_line.LineCrossEnd();
     }
 
     // The first item in any line doesn't have any `CrossGap` associated with
     // it.
     if (is_first_item) {
-      // We only set the content end for the `GapGeometry` if it hasn't been set
-      // yet, and if there are multiple lines.
-      if (num_lines_ > 1 && !content_main_end_.has_value()) {
-        LayoutUnit border_scrollbar_padding =
-            is_column_
-                ? container_builder_->BorderScrollbarPadding().block_end
-                : container_builder_->BorderScrollbarPadding().inline_end;
-        content_main_end_ =
-            is_column_
-                ? container_builder_->InitialBorderBoxSize().block_size -
-                      border_scrollbar_padding
-                : container_builder_->InlineSize() - border_scrollbar_padding;
-      }
-
       // We set the `MainGap` start offset when we process the first item in a
       // line, and nothing else. The last line does not have any `MainGap`s
       // (number of main gaps = `num_lines_` - 1)
       if (num_lines_ > 1 && !is_last_line) {
         PopulateMainGapForFirstItem(flex_line, flex_line_index);
-        // We only set the content start for the `GapGeometry` if it hasn't been
-        // set yet.
-        if (!content_main_start_.has_value()) {
-          content_main_start_ =
+
+        if (flex_line.item_indices.size() == 1) {
+          LayoutUnit border_scrollbar_padding =
               is_column_
-                  ? container_builder_->BorderScrollbarPadding().block_start
-                  : container_builder_->BorderScrollbarPadding().inline_start;
+                  ? container_builder_->BorderScrollbarPadding().block_end
+                  : container_builder_->BorderScrollbarPadding().inline_end;
+          LayoutUnit container_main_end =
+              is_column_
+                  ? container_builder_->InitialBorderBoxSize().block_size -
+                        border_scrollbar_padding
+                  : container_builder_->InlineSize() - border_scrollbar_padding;
+          content_main_end_ = container_main_end;
         }
         return;
       }
@@ -835,6 +831,22 @@ class GapAccumulator {
 
     PopulateCrossGapForCurrentItem(flex_line, flex_line_index,
                                    flex_lines.size(), main_intersection_offset);
+
+    if (is_last_item) {
+      LayoutUnit border_scrollbar_padding =
+          is_column_ ? container_builder_->BorderScrollbarPadding().block_end
+                     : container_builder_->BorderScrollbarPadding().inline_end;
+      LayoutUnit container_main_end =
+          is_column_
+              ? container_builder_->InitialBorderBoxSize().block_size -
+                    border_scrollbar_padding
+              : container_builder_->InlineSize() - border_scrollbar_padding;
+
+      const LayoutUnit last_gap_offset =
+          is_column_ ? cross_gaps_.back().GetGapOffset().block_offset
+                     : cross_gaps_.back().GetGapOffset().inline_offset;
+      content_main_end_ = std::max(last_gap_offset, container_main_end);
+    }
   }
 
   void PopulateMainGapForFirstItem(const FlexLine& flex_line,
@@ -933,10 +945,10 @@ class GapAccumulator {
   Vector<MainGap> main_gaps_;
   Vector<CrossGap> cross_gaps_;
 
-  std::optional<LayoutUnit> content_cross_start_;
-  std::optional<LayoutUnit> content_cross_end_;
-  std::optional<LayoutUnit> content_main_start_;
-  std::optional<LayoutUnit> content_main_end_;
+  LayoutUnit content_cross_start_;
+  LayoutUnit content_cross_end_;
+  LayoutUnit content_main_start_;
+  LayoutUnit content_main_end_;
 };
 
 }  // anonymous namespace
