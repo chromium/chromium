@@ -248,7 +248,8 @@ jboolean EventForwarder::OnGestureEvent(JNIEnv* env,
       ScalePoint(view_->GetLocationOnScreen(x, y), 1.f / dip_scale);
   return view_->OnGestureEvent(GestureEventAndroid(
       type, gfx::PointF(x / dip_scale, y / dip_scale), root_location, time_ms,
-      scale, 0, 0, 0, 0, /*target_viewport*/ false, /*synthetic_scroll*/ false,
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, scale, 0, 0, 0, 0,
+      /*target_viewport*/ false, /*synthetic_scroll*/ false,
       /*prevent_boosting*/ false));
 }
 
@@ -326,7 +327,8 @@ void EventForwarder::DoubleTap(JNIEnv* env,
   float dip_scale = view_->GetDipScale();
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_DOUBLE_TAP, gfx::PointF(x / dip_scale, y / dip_scale),
-      gfx::PointF(), time_ms, 0, 0, 0, 0, 0, /*target_viewport*/ true,
+      gfx::PointF(), time_ms, ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0,
+      0, 0, 0, /*target_viewport*/ true,
       /*synthetic_scroll*/ false, /*prevent_boosting*/ false));
 }
 
@@ -343,13 +345,15 @@ void EventForwarder::StartFling(JNIEnv* env,
   float dip_scale = view_->GetDipScale();
   // Use velocity as delta in scroll event.
   view_->OnGestureEvent(GestureEventAndroid(
-      GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(), time_ms, 0,
-      velocity_x / dip_scale, velocity_y / dip_scale, 0, 0,
+      GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(), time_ms,
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, velocity_x / dip_scale,
+      velocity_y / dip_scale, 0, 0,
       /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
   view_->OnGestureEvent(GestureEventAndroid(
-      GESTURE_EVENT_TYPE_FLING_START, gfx::PointF(), gfx::PointF(), time_ms, 0,
-      0, 0, velocity_x / dip_scale, velocity_y / dip_scale,
+      GESTURE_EVENT_TYPE_FLING_START, gfx::PointF(), gfx::PointF(), time_ms,
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0, 0,
+      velocity_x / dip_scale, velocity_y / dip_scale,
       /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
 }
@@ -358,8 +362,8 @@ void EventForwarder::CancelFling(JNIEnv* env,
                                  jlong time_ms,
                                  jboolean prevent_boosting) {
   view_->OnGestureEvent(GestureEventAndroid(
-      GESTURE_EVENT_TYPE_FLING_CANCEL, gfx::PointF(), gfx::PointF(), time_ms, 0,
-      0, 0, 0, 0,
+      GESTURE_EVENT_TYPE_FLING_CANCEL, gfx::PointF(), gfx::PointF(), time_ms,
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0, 0, 0, 0,
       /*target_viewport*/ false, /*synthetic_scroll*/ false, prevent_boosting));
 }
 

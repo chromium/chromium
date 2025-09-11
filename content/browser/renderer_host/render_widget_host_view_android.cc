@@ -1446,8 +1446,9 @@ bool RenderWidgetHostViewAndroid::OnGestureEvent(
     float delta = min_page_scale_ / page_scale_;
     web_event = ui::CreateWebGestureEventFromGestureEventAndroid(
         ui::GestureEventAndroid(event.type(), event.location(),
-                                event.screen_location(), event.time(), delta, 0,
-                                0, 0, 0, /*target_viewport*/ false,
+                                event.screen_location(), event.time(),
+                                event.source(), delta, 0, 0, 0, 0,
+                                /*target_viewport*/ false,
                                 /*synthetic_scroll*/ false,
                                 /*prevent_boosting*/ false));
   } else {
