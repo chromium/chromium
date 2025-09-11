@@ -55,7 +55,6 @@ template("chrome_app") {
   }
 
   if (use_blink) {
-    assert(ios_partition_alloc_enabled)
     template("browserkit_extension") {
       _process_target = target_name
       _outer_target = _target_name
@@ -170,11 +169,9 @@ template("chrome_app") {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       deps += [ "//ios/chrome/app:app_trampoline" ]
-      if (ios_partition_alloc_enabled) {
-        frameworks = [ "EarlyMallocZoneRegistration.framework" ]
-        bundle_deps +=
-            [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
-      }
+      frameworks = [ "EarlyMallocZoneRegistration.framework" ]
+      bundle_deps +=
+          [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
     }
   }
 }

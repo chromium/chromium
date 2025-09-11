@@ -697,19 +697,17 @@ source_set("multitasking_test_app_delegate") {
   ]
 }
 
-if (ios_partition_alloc_enabled) {
-  ios_framework_bundle("early_partition_alloc_framework") {
-    output_name = "EarlyMallocZoneRegistration"
-    sources = [ "early_pa_registration.cc" ]
-    info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
-    extra_substitutions =
-        [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
+ios_framework_bundle("early_partition_alloc_framework") {
+  output_name = "EarlyMallocZoneRegistration"
+  sources = [ "early_pa_registration.cc" ]
+  info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
+  extra_substitutions =
+      [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
 
-    deps = [
-      "//base/allocator:early_zone_registration_apple",
-      "//base/allocator/partition_allocator:buildflags",
-    ]
-  }
+  deps = [
+    "//base/allocator:early_zone_registration_apple",
+    "//base/allocator/partition_allocator:buildflags",
+  ]
 }
 
 chrome_app("chrome") {
