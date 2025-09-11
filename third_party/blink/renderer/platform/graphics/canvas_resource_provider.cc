@@ -196,6 +196,8 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    bool is_accelerated,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
@@ -203,7 +205,38 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              alpha_type,
                              color_space,
                              std::move(context_provider_wrapper),
-                             delegate) {}
+                             delegate),
+      raster_context_provider_(base::WrapRefCounted(
+          ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
+      is_accelerated_(is_accelerated),
+      shared_image_usage_flags_(shared_image_usage_flags),
+      use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
+                                                   ->ContextProvider()
+                                                   .GetCapabilities()
+                                                   .gpu_rasterization) {}
+
+CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    Delegate* delegate)
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             delegate),
+      shared_image_interface_provider_(
+          shared_image_interface_provider
+              ? shared_image_interface_provider->GetWeakPtr()
+              : nullptr),
+      is_accelerated_(false),
+      shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
+      use_oop_rasterization_(false),
+      is_software_(true) {}
 
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
@@ -223,16 +256,8 @@ class CanvasResourceProviderSharedImageImpl
                                           format,
                                           alpha_type,
                                           color_space,
-                                          /*context_provider_wrapper=*/nullptr,
-                                          delegate),
-        shared_image_interface_provider_(
-            shared_image_interface_provider
-                ? shared_image_interface_provider->GetWeakPtr()
-                : nullptr),
-        is_accelerated_(false),
-        shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
-        use_oop_rasterization_(false),
-        is_software_(true) {
+                                          shared_image_interface_provider,
+                                          delegate) {
     if (shared_image_interface_provider_) {
       shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     }
@@ -253,17 +278,9 @@ class CanvasResourceProviderSharedImageImpl
                                           alpha_type,
                                           color_space,
                                           std::move(context_provider_wrapper),
-                                          delegate),
-        raster_context_provider_(
-            base::WrapRefCounted(ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     .RasterContextProvider())),
-        is_accelerated_(is_accelerated),
-        shared_image_usage_flags_(shared_image_usage_flags),
-        use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
-                                                     ->ContextProvider()
-                                                     .GetCapabilities()
-                                                     .gpu_rasterization) {
+                                          is_accelerated,
+                                          shared_image_usage_flags,
+                                          delegate) {
     if (raster_context_provider_) {
       raster_context_provider_->AddObserver(this);
     }
@@ -1050,48 +1067,6 @@ class CanvasResourceProviderSharedImageImpl
   base::WeakPtr<CanvasResourceProviderSharedImageImpl> CreateWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-
-  // The maximum number of in-flight resources waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 3;
-
-  struct UnusedResource {
-    UnusedResource(base::TimeTicks last_use,
-                   scoped_refptr<CanvasResourceSharedImage> resource)
-        : last_use(last_use), resource(std::move(resource)) {}
-    base::TimeTicks last_use;
-    scoped_refptr<CanvasResourceSharedImage> resource;
-  };
-
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |unused_resources_| will be empty.
-  Vector<UnusedResource> unused_resources_;
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
-  base::OneShotTimer unused_resources_reclaim_timer_;
-  bool resource_recycling_enabled_ = true;
-
-  // `raster_context_provider_` holds a reference on the shared
-  // `RasterContextProvider`, to keep it alive until it notifies us after the
-  // GPU context is lost. Without this, no `CanvasResourceProvider` would get
-  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
-  // recreated.
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
-  const bool is_accelerated_;
-  gpu::SharedImageUsageSet shared_image_usage_flags_;
-  bool current_resource_has_write_access_ = false;
-  const bool use_oop_rasterization_;
-  bool is_software_ = false;
-  bool is_cleared_ = false;
-
-  // The resource that is currently being used by this provider.
-  scoped_refptr<CanvasResourceSharedImage> resource_;
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
-  PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
-
-  bool notified_context_lost_ = false;
 
   base::WeakPtrFactory<CanvasResourceProviderSharedImageImpl> weak_ptr_factory_{
       this};

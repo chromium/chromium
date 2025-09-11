@@ -537,8 +537,10 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
             kPremul_SkAlphaType,
             gfx::ColorSpace::CreateSRGB(),
             SharedGpuContext::ContextProviderWrapper(),
+            /*is_accelerated=*/hint != RasterModeHint::kPreferCPU,
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
             delegate),
-        is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
     ON_CALL(*this, Snapshot)
@@ -553,9 +555,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
         Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
-        IsAccelerated(),
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-            gpu::SHARED_IMAGE_USAGE_RASTER_WRITE));
+        IsAccelerated(), shared_image_usage_flags_));
   }
   bool SupportsDirectCompositing() const override {
     return supports_direct_compositing_;
@@ -585,7 +585,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  bool is_accelerated_;
   bool supports_direct_compositing_;
   base::WeakPtrFactory<FakeCanvasResourceProvider> weak_ptr_factory_{this};
 };
