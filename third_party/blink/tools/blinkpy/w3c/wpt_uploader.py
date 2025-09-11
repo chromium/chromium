@@ -10,7 +10,6 @@ import json
 import logging
 import os
 import requests
-import six
 import tempfile
 
 from blinkpy.common.net.rpc import BuildbucketClient
@@ -118,7 +117,7 @@ class WptReportUploader(object):
 
         def crc32c(data):
             crc32c_fun = crcmod.predefined.mkPredefinedCrcFun('crc-32c')
-            return crc32c_fun(six.ensure_binary(data))
+            return crc32c_fun(data)
 
         project_id = 'blink-kms'
         location_id = 'global'

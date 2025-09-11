@@ -58,8 +58,6 @@ from typing import (
     get_args,
 )
 
-import six
-
 from urllib.parse import urljoin
 
 from blinkpy.common import exit_codes

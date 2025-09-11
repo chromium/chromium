@@ -35,8 +35,6 @@ import re
 import unittest
 from unittest.mock import patch
 
-import six
-
 from blinkpy.common.system.filesystem import _remove_contents, _sanitize_filename
 
 _TEXT_ENCODING = 'utf-8'
@@ -45,8 +43,8 @@ _TEXT_ENCODING = 'utf-8'
 def _ensure_binary_contents(file_contents):
     # Iterate over a copy while the underlying mapping is mutated.
     for path, contents in list(file_contents.items()):
-        if contents is not None:
-            contents = six.ensure_binary(contents, _TEXT_ENCODING)
+        if isinstance(contents, str):
+            contents = contents.encode(_TEXT_ENCODING)
         file_contents[path] = contents
 
 
@@ -222,6 +220,8 @@ class MockFileSystem(object):
         # text strings, then coerce the return value to the original argument
         # type.
         binary_mode = all(isinstance(comp, bytes) for comp in comps)
+        if binary_mode:
+            comps = [comp.decode() for comp in comps]
         # This function is called a lot, so we optimize it; there are
         # unit tests to check that we match _slow_but_correct_join(), above.
         path = ''
@@ -229,14 +229,13 @@ class MockFileSystem(object):
         for comp in comps:
             if not comp:
                 continue
-            comp = six.ensure_text(comp)
             if comp[0] == sep:
                 path = comp
                 continue
             if path:
                 path += sep
             path += comp
-        if six.ensure_text(comps[-1]) == '' and path:
+        if comps[-1] == '' and path:
             path += '/'
         path = path.replace(sep + sep, sep)
         return path.encode() if binary_mode else path

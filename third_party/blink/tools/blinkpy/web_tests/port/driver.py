@@ -30,7 +30,6 @@ import base64
 import logging
 import re
 import shlex
-import six
 import time
 
 from blinkpy.common.system import path
