@@ -8,8 +8,9 @@ import logging
 import pathlib
 import subprocess
 import sys
-import time
+import textwrap
 import threading
+import time
 from typing import Any
 from collections.abc import Collection
 
@@ -23,12 +24,14 @@ DEFAULT_EXTENSIONS = [
 ]
 
 
-def _stream_reader(stream, output_list: list[str]):
+def _stream_reader(stream, output_list: list[str], width):
     """Reads a stream line-by-line and appends to a list."""
     try:
         for line in iter(stream.readline, ''):
-            sys.stderr.write(line)
             output_list.append(line)
+            wrapped_text = '\n'.join(
+                textwrap.wrap(line.rstrip('\r\n'), width=width))
+            sys.stderr.write(wrapped_text + '\n')
     except OSError:
         # Stream may be closed unexpectedly
         pass
@@ -99,9 +102,10 @@ def call_api(prompt: str, options: dict[str, Any],
             process.stdin.close()
         logging.info('--- Streaming Output (Timeout: %ss) ---',
                      timeout_seconds)
+        console_width = int(provider_vars.get('console_width', 80))
         output_thread = threading.Thread(
             target=_stream_reader,
-            args=(process.stdout, combined_output),
+            args=(process.stdout, combined_output, console_width),
         )
         output_thread.start()
         process.wait(timeout=timeout_seconds)

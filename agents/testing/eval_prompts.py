@@ -479,6 +479,7 @@ def main() -> int:
                                  args.promptfoo_version)
 
     returncode = 0
+    console_width = shutil.get_terminal_size().columns
     for config in configs_to_run:
         with WorkDir('workdir', root_path, not args.no_clean, args.verbose,
                      args.force, is_btrfs) as workdir:
@@ -489,6 +490,8 @@ def main() -> int:
                 '--no-cache',
                 '-c',
                 str(config),
+                '--var',
+                f'console_width={console_width}',
             ]
             if args.verbose:
                 command.extend(['--var', 'verbose=True'])
