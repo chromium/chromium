@@ -47,7 +47,7 @@ Vector<String> Tokenize(const String& text) {
 
   // Obtain a word break iterator for the entire string.
   // This iterator will find boundaries between words, punctuation, and spaces.
-  TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+  TextBreakIterator* it = WordBreakIterator(text);
 
   if (!it) {
     return tokens;

@@ -398,7 +398,7 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
     return;
   }
 
-  TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+  TextBreakIterator* it = WordBreakIterator(text);
   if (!it) {
     return;
   }

@@ -66,9 +66,7 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 // Use this for insertion point and selection manipulations.
 PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
     base::span<const UChar>);
-PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
-                                                     wtf_size_t start,
-                                                     wtf_size_t length);
+PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const StringView&);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);

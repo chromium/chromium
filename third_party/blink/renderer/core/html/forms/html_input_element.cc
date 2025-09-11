@@ -1967,8 +1967,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   filtered.reserve(options->length());
   editor_value = editor_value.FoldCase();
 
-  TextBreakIterator* iter =
-      WordBreakIterator(editor_value, 0, editor_value.length());
+  TextBreakIterator* iter = WordBreakIterator(editor_value);
 
   Vector<bool> filtering_flag(options->length(), true);
   if (iter) {

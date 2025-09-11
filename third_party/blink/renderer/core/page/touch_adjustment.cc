@@ -229,8 +229,7 @@ static inline void AppendContextSubtargetsForNode(
           .ShouldSelectOnContextualMenuClick()) {
     // Make subtargets out of every word.
     String text_value = text_node->data();
-    TextBreakIterator* word_iterator =
-        WordBreakIterator(text_value, 0, text_value.length());
+    TextBreakIterator* word_iterator = WordBreakIterator(text_value);
     int last_offset = word_iterator->first();
     if (last_offset == -1)
       return;

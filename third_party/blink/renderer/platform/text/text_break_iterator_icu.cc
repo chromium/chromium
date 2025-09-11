@@ -667,16 +667,14 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
   return break_iter;
 }
 
-TextBreakIterator* WordBreakIterator(const String& string,
-                                     wtf_size_t start,
-                                     wtf_size_t length) {
+TextBreakIterator* WordBreakIterator(const StringView& string) {
   if (string.empty()) {
     return nullptr;
   }
   if (string.Is8Bit()) {
-    return WordBreakIterator(string.Span8().subspan(start, length));
+    return WordBreakIterator(string.Span8());
   }
-  return WordBreakIterator(string.Span16().subspan(start, length));
+  return WordBreakIterator(string.Span16());
 }
 
 PooledBreakIterator AcquireLineBreakIterator(
