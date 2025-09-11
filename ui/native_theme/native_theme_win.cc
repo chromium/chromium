@@ -54,6 +54,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/win/native_color_mixers_win.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/gfx/color_conversions.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -682,16 +683,23 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
 
   if (forced_colors()) {
     // According to the spec, the preferred color scheme for web content is
-    // 'dark' if 'Canvas' has L<33% and 'light' if L>67%. On Windows, the
-    // 'Canvas' keyword is mapped to the 'Window' system color. As such, we use
-    // the luminance of 'Window' to calculate the corresponding luminance of
-    // 'Canvas'. https://www.w3.org/TR/css-color-adjust-1/#forced
-    SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
-    float luminance = color_utils::GetRelativeLuminance(bg_color);
-    if (luminance < 0.33) {
-      return NativeTheme::PreferredColorScheme::kDark;
+    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
+    // LAB lightness. The Canvas color is mapped to the Window system color.
+    // https://www.w3.org/TR/css-color-adjust-1/#forced
+    if (const auto bg_color = GetSystemThemeColor(SystemThemeColor::kWindow)) {
+      const SkColor srgb_legacy = bg_color.value();
+      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
+                                                   SkColorGetG(srgb_legacy),
+                                                   SkColorGetB(srgb_legacy));
+      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
+      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
+      if (lab_lightness < 33.0f) {
+        return PreferredColorScheme::kDark;
+      }
+      if (lab_lightness > 67.0f) {
+        return PreferredColorScheme::kLight;
+      }
     }
-    return NativeTheme::PreferredColorScheme::kLight;
   }
 
   return in_dark_mode_ ? NativeTheme::PreferredColorScheme::kDark
@@ -729,14 +737,18 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   // [1]
   // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
   // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
-  SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
-  SkColor fg_color = system_colors_[SystemThemeColor::kWindowText];
-  float contrast_ratio = color_utils::GetContrastRatio(bg_color, fg_color);
-  if (contrast_ratio >= 7) {
-    return NativeTheme::PreferredContrast::kMore;
+  if (const auto bg_color = GetSystemThemeColor(SystemThemeColor::kWindow),
+      fg_color = GetSystemThemeColor(SystemThemeColor::kWindowText);
+      bg_color.has_value() && fg_color.has_value()) {
+    const float contrast_ratio =
+        color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
+    if (contrast_ratio >= 7) {
+      return PreferredContrast::kMore;
+    }
+    return contrast_ratio <= 2.5 ? PreferredContrast::kLess
+                                 : PreferredContrast::kCustom;
   }
-  return contrast_ratio <= 2.5 ? NativeTheme::PreferredContrast::kLess
-                               : NativeTheme::PreferredContrast::kCustom;
+  return PreferredContrast::kNoPreference;
 }
 
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
