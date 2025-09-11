@@ -233,6 +233,10 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
                                   int32_t channel_number,
                                   size_t buffer_offset,
                                   ExceptionState& exception_state) {
+  if (!destination->length()) {
+    return;
+  }
+
   if (channel_number < 0 ||
       static_cast<uint32_t>(channel_number) >= channels_.size()) {
     exception_state.ThrowDOMException(
@@ -274,6 +278,10 @@ void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
                                 int32_t channel_number,
                                 size_t buffer_offset,
                                 ExceptionState& exception_state) {
+  if (!source->length()) {
+    return;
+  }
+
   if (channel_number < 0 ||
       static_cast<uint32_t>(channel_number) >= channels_.size()) {
     exception_state.ThrowDOMException(
