@@ -3152,6 +3152,37 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
 }
 
+class InactiveContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit InactiveContentsDelegate(WebContents* contents) {
+    contents->SetDelegate(this);
+  }
+
+  bool IsContentsActive(content::WebContents* web_contents) override {
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       FileChooserBlockedFromInactiveButVisibleWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::VISIBLE);
+  InactiveContentsDelegate delegate(wc);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        EnumerateDirectoryBlockedFromHiddenWebContents) {
   ASSERT_TRUE(embedded_test_server()->Start());
