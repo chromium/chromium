@@ -550,7 +550,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
             });
   }
   ~FakeCanvasResourceProvider() override = default;
-  bool IsAccelerated() const override { return is_accelerated_; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
         Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),

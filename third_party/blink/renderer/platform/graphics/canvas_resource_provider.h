@@ -527,6 +527,15 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override = default;
 
+  bool IsAccelerated() const final { return is_accelerated_; }
+  bool SupportsDirectCompositing() const override { return true; }
+  bool unused_resources_reclaim_timer_is_running_for_testing() const override {
+    return unused_resources_reclaim_timer_.IsRunning();
+  }
+  int NumInflightResourcesForTesting() const override {
+    return num_inflight_resources_;
+  }
+
  protected:
   // The maximum number of in-flight resources waiting to be used for
   // recycling.

@@ -322,8 +322,6 @@ class CanvasResourceProviderSharedImageImpl
            !shared_image_interface_provider_->SharedImageInterface();
   }
 
-  bool IsAccelerated() const final { return is_accelerated_; }
-  bool SupportsDirectCompositing() const override { return true; }
   bool IsValid() const final {
     if (is_software_) {
       return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
@@ -344,12 +342,6 @@ class CanvasResourceProviderSharedImageImpl
       return false;
     }
     return !unused_resources_.empty();
-  }
-  bool unused_resources_reclaim_timer_is_running_for_testing() const override {
-    return unused_resources_reclaim_timer_.IsRunning();
-  }
-  int NumInflightResourcesForTesting() const override {
-    return num_inflight_resources_;
   }
 
   scoped_refptr<gpu::ClientSharedImage>
