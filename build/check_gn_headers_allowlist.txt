@@ -104,7 +104,6 @@ gpu/config/gpu_lists_version.h
 gpu/gles2_conform_support/gtf/gtf_stubs.h
 gpu/gpu_export.h
 ipc/ipc_channel_proxy_unittest_messages.h
-ipc/ipc_message_null_macros.h
 media/audio/audio_logging.h
 media/cast/common/mod_util.h
 media/cast/net/rtcp/rtcp_session.h
