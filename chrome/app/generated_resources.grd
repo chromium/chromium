@@ -17935,6 +17935,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining that the passkeys can be managed in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Manage your passwords &amp; passkeys in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_DOESNT_WORK_LABEL" desc="The label in a bubble that is displayed after a passkey is deleted from a site. Since the passkey is now useless, it will be automatically removed from Google Password Manager after about 30 days. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        This passkey doesn't work anymore. It will get deleted soon from <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.
+      </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL for more details.">
         Google Password Manager
       </message>
