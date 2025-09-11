@@ -17,7 +17,6 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -737,7 +736,6 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   const MisconfiguredEntropyResult result =
       SeedHasMisconfiguredEntropy(*client_state, seed);
   if (result.is_misconfigured) {
-    base::debug::DumpWithoutCrashing();
     return CreateTrialsResult{.applied_seed = false};
   }
 
