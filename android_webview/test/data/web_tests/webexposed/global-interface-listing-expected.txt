@@ -2042,6 +2042,7 @@ interface Document : Node
     getter readyState
     getter referrer
     getter rootElement
+    getter routeMap
     getter scripts
     getter scrollingElement
     getter styleSheets
@@ -7834,6 +7835,15 @@ interface RestrictionTarget
     static method fromElement
     attribute @@toStringTag
     method constructor
+interface Route
+    attribute @@toStringTag
+    getter matches
+    getter pattern
+    method constructor
+interface RouteMap
+    attribute @@toStringTag
+    method constructor
+    method get
 interface RtcReceivedPacket
     attribute @@toStringTag
     getter data

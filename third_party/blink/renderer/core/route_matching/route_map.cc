@@ -42,6 +42,15 @@ RouteMap::RouteMap() : Supplement<Document>(nullptr) {
 void RouteMap::Trace(Visitor* v) const {
   v->Trace(routes_);
   Supplement<Document>::Trace(v);
+  ScriptWrappable::Trace(v);
+}
+
+Route* RouteMap::get(const String& route_name) {
+  const auto it = routes_.find(route_name);
+  if (it == routes_.end()) {
+    return nullptr;
+  }
+  return it->value;
 }
 
 // BEGIN Supplement support:

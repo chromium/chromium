@@ -223,6 +223,8 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // The (experimental) DOM Parts API.
     [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();
 
+    [RuntimeEnabled=RouteMatching] readonly attribute RouteMap routeMap;
+
     // Event handler attributes
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;

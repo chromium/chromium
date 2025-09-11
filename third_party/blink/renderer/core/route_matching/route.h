@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_H_
 
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -14,10 +14,12 @@ namespace blink {
 class Document;
 class URLPattern;
 
-class Route : public GarbageCollected<Route> {
+class Route : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   Route(Document& document) : document_(&document) {}
-  void Trace(Visitor* v) const;
+  void Trace(Visitor* v) const final;
 
   URLPattern* pattern() const;
   bool matches() const { return matches_; }

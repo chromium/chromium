@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -21,8 +22,10 @@ class Route;
 //
 // See;
 // https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching
-class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
+class CORE_EXPORT RouteMap final : public ScriptWrappable,
                                    public Supplement<Document> {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   static const char kSupplementName[];
 
@@ -57,6 +60,8 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   RouteMap();
 
   void Trace(Visitor*) const final;
+
+  Route* get(const String& route_name);
 
   // Supplement support. Document pointers may be null (in which case null will
   // be returned).

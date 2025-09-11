@@ -16,6 +16,7 @@ namespace blink {
 void Route::Trace(Visitor* v) const {
   v->Trace(document_);
   v->Trace(patterns_);
+  ScriptWrappable::Trace(v);
 }
 
 URLPattern* Route::pattern() const {
