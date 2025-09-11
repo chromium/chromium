@@ -19,6 +19,7 @@ suite('ViewerJs', function() {
 
     assert.equal(
         container.innerHTML,
-        '<a href="http://example.com">good link</a>bad linkanother bad link');
+        '<a href="http://example.com" target="_blank">good link</a>' +
+            'bad linkanother bad link');
   });
 });

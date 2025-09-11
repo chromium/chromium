@@ -39,8 +39,8 @@ function addToPage(html) {
 }
 
 /**
- * Iterates through all links on the page. If a link does not have
- * an http or https scheme, it removes the link element from the DOM.
+ * Visits all links on the page, preserve http and https links and have them
+ * open to new tab. Remove (i.e., unwrap) otherwise.
  */
 function sanitizeLinks() {
   const allLinks = document.querySelectorAll('a');
@@ -49,19 +49,23 @@ function sanitizeLinks() {
     const href = linkElement.getAttribute('href');
 
     if (href) {
-      let isProtocolInvalid = false;
+      let keepLink = false;
       // Use a try-catch block to handle malformed URLs gracefully.
       try {
-        const url = new URL(href, window.location.href);
-        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-          isProtocolInvalid = true;
+        if (href) {
+          const url = new URL(href, window.location.href);
+          // In particular, reject javascript: and #in-page links.
+          if (url.protocol === 'http:' || url.protocol === 'https:') {
+            keepLink = true;
+            // Open to new tab.
+            linkElement.target = '_blank';
+          }
         }
       } catch (error) {
-        // A malformed URL is considered invalid.
-        isProtocolInvalid = true;
+        // URL is malformed.
       }
 
-      if (isProtocolInvalid) {
+      if (!keepLink) {
         // If the protocol is invalid or the URL is malformed, unwrap the link.
         const parent = linkElement.parentNode;
 
@@ -78,6 +82,7 @@ function sanitizeLinks() {
         }
       }
     }
+    // With href, an anchor can be a placeholder. Leave these alone.
   });
 }
 
