@@ -615,6 +615,22 @@ void AutofillManager::ParseFormAsync(
     return;
   }
 
+  const FormStructure* const cached_form_structure =
+      FindCachedFormById(form_data.global_id());
+  if (cached_form_structure &&
+      !CachedFormNeedsUpdate(form_data, *cached_form_structure)) {
+    auto form_structure = std::make_unique<FormStructure>(form_data);
+    // Update the cache to the latest FormData from the renderer (in particular,
+    // update the field values) while preserving all other information (in
+    // particular, the field types).
+    form_structure->RetrieveFromCache(
+        *cached_form_structure,
+        FormStructure::RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing);
+    form_structures_[form_data.global_id()] = std::move(form_structure);
+    std::move(callback).Run(*this, std::move(form_data));
+    return;
+  }
+
   std::vector<FormData> forms;
   forms.push_back(std::move(form_data));
   ParseFormsAsyncCommon(
@@ -675,21 +691,6 @@ void AutofillManager::ParseFormsAsyncCommon(
           }
 
           if (cached_form_structure) {
-            if (!force_reparse &&
-                !CachedFormNeedsUpdate(context.forms[i],
-                                       *cached_form_structure)) {
-              // Update the cache to the latest data from the renderer in the
-              // form cache (in particular, the current field values) while
-              // preserving all other information (in particular, the field
-              // types).
-              form->RetrieveFromCache(*cached_form_structure,
-                                      FormStructure::RetrieveFromCacheReason::
-                                          kFormCacheUpdateWithoutParsing);
-              self->form_structures_[context.forms[i].global_id()] =
-                  std::move(form);
-              continue;
-            }
-
             // Preserves already cached information (in particular, the server
             // field types). This must happen before rationalization.
             form->RetrieveFromCache(*cached_form_structure,
