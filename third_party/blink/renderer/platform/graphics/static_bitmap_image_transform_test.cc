@@ -7,6 +7,7 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -22,8 +23,10 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     SharedGpuContext::Reset();
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   scoped_refptr<AcceleratedStaticBitmapImage> CreateAccelerated(
