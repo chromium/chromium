@@ -604,7 +604,7 @@ enum AutofillSuggestionTriggerSource {
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
-  kShowPromptAfterDialogClosedNonManualFallback = 14,
+  // kShowPromptAfterDialogClosedNonManualFallback = 14 is deprecated.
   // The compose saved state notification is triggered when the compose dialog
   // loses focus and is closed.
   kComposeDialogLostFocus = 15,

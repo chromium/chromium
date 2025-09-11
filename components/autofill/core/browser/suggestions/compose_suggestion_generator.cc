@@ -88,9 +88,7 @@ void ComposeSuggestionGenerator::GenerateSuggestions(
       [](const std::pair<SuggestionDataSource, std::vector<SuggestionData>>&
              data) { return !data.second.empty(); });
   if (other_products_have_suggestion_data ||
-      IsAutofillManuallyTriggered(trigger_source_) ||
-      trigger_source_ == AutofillSuggestionTriggerSource::
-                             kShowPromptAfterDialogClosedNonManualFallback) {
+      IsAutofillManuallyTriggered(trigger_source_)) {
     callback({FillingProduct::kCompose, {}});
     return;
   }

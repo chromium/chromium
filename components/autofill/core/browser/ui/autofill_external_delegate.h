@@ -240,10 +240,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  // Returns the trigger source to use to reopen the popup after an edit or
-  // delete address profile dialog is closed.
-  AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
-
   // Checks the user's accepted suggestion and logs metrics on the ranking of
   // the suggestion in the Autofill dropdown.
   void LogRankingContextAfterSuggestionAccepted(

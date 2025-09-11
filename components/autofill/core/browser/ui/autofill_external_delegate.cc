@@ -115,8 +115,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::
-        kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
@@ -1224,18 +1222,6 @@ void AutofillExternalDelegate::InsertDataListValues(
         Suggestion::Text(list_entry.value, Suggestion::Text::IsPrimary(true));
     suggestion.labels = {{Suggestion::Text(list_entry.text)}};
   }
-}
-
-AutofillSuggestionTriggerSource
-AutofillExternalDelegate::GetReopenTriggerSource() const {
-  // Manual fallbacks show suggestions of a specific type. If the Autofill
-  // wasn't triggered manually, return
-  // `kShowPromptAfterDialogClosedNonManualFallback` to avoid showing other
-  // suggestion types.
-  return IsAutofillManuallyTriggered(trigger_source_)
-             ? trigger_source_
-             : AutofillSuggestionTriggerSource::
-                   kShowPromptAfterDialogClosedNonManualFallback;
 }
 
 void AutofillExternalDelegate::LogRankingContextAfterSuggestionAccepted(

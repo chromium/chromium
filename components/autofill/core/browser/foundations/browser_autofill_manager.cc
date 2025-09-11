@@ -437,8 +437,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
-    case AutofillSuggestionTriggerSource::
-        kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
@@ -1571,9 +1569,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // include Compose or single field form suggestions. Manual fallbacks can't
   // trigger different suggestion types.
   const bool should_offer_other_suggestions =
-      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source) &&
-      trigger_source != AutofillSuggestionTriggerSource::
-                            kShowPromptAfterDialogClosedNonManualFallback;
+      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source);
 
   if (should_offer_other_suggestions &&
       (field.form_control_type() == FormControlType::kTextArea ||
