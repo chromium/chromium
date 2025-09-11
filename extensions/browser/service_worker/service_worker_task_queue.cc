@@ -467,7 +467,7 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
         context_id.extension_id, tasks ? tasks->size() : 0, status.status_code);
   }
 
-  DeleteAllPendingTasks(context_id);
+  RunAndClearPendingTasksWithNullContext(context_id);
   // TODO(crbug.com/40680422): Needs more thought: extension would be in
   // perma-broken state after this as the registration wouldn't be stored if
   // this happens.
@@ -532,7 +532,8 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       extension_id, browser_context_->UniqueId(), *activation_token};
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
-  // TODO(lazyboy): Run orphaned tasks with nullptr ContextInfo.
+
+  RunAndClearPendingTasksWithNullContext(context_id);
   worker_state_observations_.RemoveObservation(worker_state);
   worker_state_map_.erase(context_id);
   pending_tasks_map_.erase(context_id);
@@ -582,11 +583,17 @@ void ServiceWorkerTaskQueue::AddPendingTaskForContext(
   GetOrAddPendingTasks(context_id).push_back(std::move(pending_task));
 }
 
-void ServiceWorkerTaskQueue::DeleteAllPendingTasks(
+void ServiceWorkerTaskQueue::RunAndClearPendingTasksWithNullContext(
     const SequencedContextId& context_id) {
-  std::vector<PendingTask>* tasks = pending_tasks(context_id);
-  if (tasks) {
-    tasks->clear();
+  if (!HasPendingTasks(context_id)) {
+    return;
+  }
+  std::vector<PendingTask> tasks;
+  std::swap(GetOrAddPendingTasks(context_id), tasks);
+
+  for (auto& task : tasks) {
+    // Run the task with nullptr ContextInfo to indicate failure.
+    std::move(task).Run(nullptr);
   }
 }
 
@@ -635,8 +642,8 @@ void ServiceWorkerTaskQueue::RetryStartWorker(
   // but it can conceivably happen in at least two scenarios:
   // - Another task wakes up the worker successfully in the span between
   //   posting the retry task and it running.
-  // - Another start attempt has failed with a non-transient error,
-  //   causing `OnWorkerStartFail` to call `DeleteAllPendingTasks`.
+  // - Another start attempt has failed with a non-transient error, causing
+  //   `OnWorkerStartFail` to call `RunAndClearPendingTasksWithNullContext`.
   if (!HasPendingTasks(context_id)) {
     worker_start_retry_attempts_.erase(context_id.token);
     return;

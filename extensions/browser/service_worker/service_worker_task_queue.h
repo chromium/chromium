@@ -448,9 +448,10 @@ class ServiceWorkerTaskQueue
   void AddPendingTaskForContext(PendingTask&& pending_task,
                                 const SequencedContextId& context_id);
 
-  // Stop tracking any pending tasks for this `context_id` for the activated
-  // extension.
-  void DeleteAllPendingTasks(const SequencedContextId& context_id);
+  // Runs any pending tasks associated with `context_id` with a null context
+  // (indicating failure) and clears them from the queue.
+  void RunAndClearPendingTasksWithNullContext(
+      const SequencedContextId& context_id);
 
   // Whether there are any pending tasks to run for the activated extension.
   bool HasPendingTasks(const SequencedContextId& context_id);
