@@ -114,9 +114,9 @@ def main():
     DEBUG = args.debug
 
     benchmarks = [
+        "module_internal_nosig",
         "chrome_nosig",
         "base_sig",
-        "module_internal_nosig",
         "cta_test_sig",
     ]
 
@@ -124,21 +124,21 @@ def main():
         benchmarks = [benchmarks[0]]
     else:
         random.shuffle(benchmarks)
-        # Only compare two benchmarks each time.
-        benchmarks = benchmarks[:2]
 
-    emulators = [  # base options
-        "android_31_google_apis_x64_local.textpb",
-        "android_33_google_apis_x64_local.textpb",
+    emulators = [  # base options, always do api34.
         "android_34_google_apis_x64_local.textpb",
     ]
 
-    if args.debug:
-        emulators = [emulators[0]]
-    else:
-        random.shuffle(emulators)
+    if not args.debug:
+        additional_emulators = [
+            "android_31_google_apis_x64_local.textpb",
+            "android_33_google_apis_x64_local.textpb",
+            "android_35_google_apis_x64_local.textpb",
+            "android_36_google_apis_x64_local.textpb",
+        ]
         # Only compare two emulator each time.
-        emulators = emulators[:2]
+        emulators += [random.choice(additional_emulators)]
+        random.shuffle(emulators)
 
     bos = [
         Options(benchmark=benchmark, e=emulator, i=i, n=n, s=s)
