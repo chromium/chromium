@@ -554,8 +554,9 @@ WebInputEventResult PointerEventManager::DispatchTouchPointerEvent(
     if (result != WebInputEventResult::kNotHandled &&
         pointer_event->type() == event_type_names::kPointerdown &&
         pointer_event->isPrimary()) {
-      touch_ids_for_canceled_pointerdowns_.push_back(
-          web_pointer_event.unique_touch_event_id);
+      pointer_event_target.target_frame->GetEventHandler()
+          .AppendTouchIdForCanceledPointerDown(
+              web_pointer_event.unique_touch_event_id);
     }
   }
   return result;
@@ -1353,6 +1354,11 @@ Element* PointerEventManager::GetMouseCaptureTarget() {
   if (pending_pointer_capture_target_.Contains(PointerEventFactory::kMouseId))
     return pending_pointer_capture_target_.at(PointerEventFactory::kMouseId);
   return nullptr;
+}
+
+void PointerEventManager::AppendTouchIdForCanceledPointerDown(
+    uint32_t unique_touch_event_id) {
+  touch_ids_for_canceled_pointerdowns_.push_back(unique_touch_event_id);
 }
 
 bool PointerEventManager::IsActive(const PointerId pointer_id) const {

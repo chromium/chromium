@@ -212,6 +212,9 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       Element* override_target_element = nullptr,
       WebMenuSourceType = kMenuSourceNone);
 
+  // See PointerEventManager::AppendTouchIdForCanceledPointerDown().
+  void AppendTouchIdForCanceledPointerDown(uint32_t unique_touch_event_id);
+
   // Returns whether pointerId is active or not
   bool IsPointerEventActive(PointerId);
 

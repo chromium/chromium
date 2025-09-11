@@ -1531,6 +1531,12 @@ bool EventHandler::RootFrameTrackedActivePointerInCurrentFrame(
              pointer_id, frame_);
 }
 
+void EventHandler::AppendTouchIdForCanceledPointerDown(
+    uint32_t unique_touch_event_id) {
+  pointer_event_manager_->AppendTouchIdForCanceledPointerDown(
+      unique_touch_event_id);
+}
+
 bool EventHandler::IsPointerEventActive(PointerId pointer_id) {
   return pointer_event_manager_->IsActive(pointer_id) ||
          RootFrameTrackedActivePointerInCurrentFrame(pointer_id);

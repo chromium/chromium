@@ -88,6 +88,10 @@ class CORE_EXPORT PointerEventManager final
   // See Element::hasPointerCapture(PointerId).
   bool HasPointerCapture(PointerId, const Element*) const;
 
+  // Records the fact that the primary pointerdown corresponding
+  // to the given `unique_touch_event_id` has been canceled.
+  void AppendTouchIdForCanceledPointerDown(uint32_t unique_touch_event_id);
+
   bool IsActive(const PointerId) const;
 
   // Returns whether there is any touch on the screen.
@@ -98,8 +102,8 @@ class CORE_EXPORT PointerEventManager final
   bool IsPointerIdActiveOnFrame(PointerId, LocalFrame*) const;
 
   // Returns true if the primary pointerdown corresponding to the given
-  // |uniqueTouchEventId| was canceled. Also drops stale ids from
-  // |m_touchIdsForCanceledPointerdowns|.
+  // |unique_touch_event_id| was canceled. Also drops stale ids from
+  // |touch_ids_for_canceled_pointerdowns_|.
   bool PrimaryPointerdownCanceled(uint32_t unique_touch_event_id);
 
   void RemoveLastMousePosition();
