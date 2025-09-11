@@ -240,13 +240,27 @@ TEST_F(TabRendererDataTest, Urls) {
   auto* entry = wc->GetController().GetLastCommittedEntry();
   ASSERT_NE(nullptr, entry);
   const GURL kUrl("http://example.com/");
-  entry->SetURL(kUrl);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kUrl, wc->GetPrimaryMainFrame());
   TabRendererData data =
       TabRendererData::FromTabInModel(&tab_strip_model_, index);
   EXPECT_EQ(data.visible_url, kUrl);
   EXPECT_EQ(data.last_committed_url, kUrl);
   EXPECT_TRUE(data.should_display_url);
   EXPECT_FALSE(data.should_render_empty_title);
+}
+
+TEST_F(TabRendererDataTest, ShouldNotDisplayInitialUrl) {
+  int index = AddTab();
+  content::WebContents* wc = tab_strip_model_.GetWebContentsAt(index);
+  auto* entry = wc->GetController().GetLastCommittedEntry();
+  ASSERT_NE(nullptr, entry);
+  ASSERT_TRUE(entry->IsInitialEntry());
+  const GURL kUrl("http://example.com/");
+  entry->SetURL(kUrl);
+  TabRendererData data =
+      TabRendererData::FromTabInModel(&tab_strip_model_, index);
+  EXPECT_FALSE(data.should_display_url);
 }
 
 TEST_F(TabRendererDataTest, ShouldRenderEmptyTitle) {

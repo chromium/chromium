@@ -45,6 +45,9 @@ class MultiContentsViewMiniToolbar : public views::View,
 
   void UpdateState(bool is_active, bool is_highlighted);
 
+  // Trigger an update of the tab data used to populate the mini toolbar.
+  void UpdateContents();
+
   views::Label* domain_label_for_testing() { return domain_label_; }
   views::ImageButton* image_button_for_testing() { return image_button_; }
 
