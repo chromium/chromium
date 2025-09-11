@@ -1032,7 +1032,6 @@ NSDate* LastTimeUserInteractedWithNonModalPromo() {
 void OpenIOSDefaultBrowserSettingsPage(bool force_default_apps_if_available,
                                        UIApplication* ui_application_to_use) {
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     if (IsDefaultAppsDestinationAvailable() &&
         (force_default_apps_if_available ||
@@ -1041,7 +1040,6 @@ void OpenIOSDefaultBrowserSettingsPage(bool force_default_apps_if_available,
           URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
     }
   }
-#endif
   if (!ui_application_to_use) {
     ui_application_to_use = [UIApplication sharedApplication];
   }

@@ -32,7 +32,7 @@ const base::TimeDelta kMinimumNewClientFirstRunAge = base::Days(28);
 
 // Gets the system call to use/override for testing. Uses a function so the
 // static variable can be contained inside the function.
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+
 base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>&
 GetSystemCallForTesting() API_AVAILABLE(ios(18.4)) {
   static base::NoDestructor<
@@ -40,11 +40,10 @@ GetSystemCallForTesting() API_AVAILABLE(ios(18.4)) {
       g_system_call_for_testing;
   return *g_system_call_for_testing;
 }
-#endif
 
 // Performs the actual system call to the default status check API. Wrapped in
 // its own function to facilitate mocking in tests.
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+
 UIApplicationCategoryDefaultStatus MakeSystemCall(NSError** error)
     API_AVAILABLE(ios(18.4)) {
   if (GetSystemCallForTesting()) {
@@ -55,7 +54,6 @@ UIApplicationCategoryDefaultStatus MakeSystemCall(NSError** error)
       defaultStatusForCategory:UIApplicationCategoryWebBrowser
                          error:error];
 }
-#endif
 
 }  // namespace
 
@@ -145,7 +143,6 @@ void AssignNewCohortIfNeeded(PrefService* local_state) {
   local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
 }
 
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 DefaultStatusAPIResult SystemToLocalEnum(
     UIApplicationCategoryDefaultStatus system_enum) API_AVAILABLE(ios(18.4)) {
   switch (system_enum) {
@@ -161,7 +158,6 @@ DefaultStatusAPIResult SystemToLocalEnum(
       return DefaultStatusAPIResult::kUnknown;
   }
 }
-#endif
 
 DefaultStatusRetention DetermineRetentionStatus(
     DefaultStatusAPIResult previous,
@@ -184,7 +180,6 @@ DefaultStatusRetention DetermineRetentionStatus(
 }
 
 void QueryDefaultStatusIfReadyAndLogResults(PrefService* local_state) {
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
   if (@available(iOS 18.4, *)) {
     int cohort_number = local_state->GetInteger(kDefaultStatusAPICohort);
     DUMP_WILL_BE_CHECK(cohort_number > 0 && cohort_number <= kCohortCount);
@@ -252,17 +247,14 @@ void QueryDefaultStatusIfReadyAndLogResults(PrefService* local_state) {
       local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
     }
   }
-#endif
 }
 
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 void OverrideSystemCallForTesting(  // IN-TEST
     base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)> cb)
     API_AVAILABLE(ios(18.4)) {
   CHECK_IS_TEST();
   internal::GetSystemCallForTesting() = std::move(cb);
 }
-#endif
 
 }  // namespace internal
 
