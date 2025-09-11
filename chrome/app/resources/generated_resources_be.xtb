@@ -8099,6 +8099,7 @@
 <translation id="6657240842932274095">Дазволіць сістэмным службам выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659213950629089752">Маштаб старонкі быў зменены пашырэннем "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Укладка</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – ідзе запіс на камеру</translation>
 <translation id="6660301751798595791">Выбар голасу</translation>
 <translation id="6660819301598582123">абвгдеёжзійклмнопрстуўфхцчшыьэюя</translation>
@@ -9330,6 +9331,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Закрыць укладку і выдаліць групу?}=1{Закрыць укладкі і выдаліць групу?}one{Закрыць укладкі і выдаліць групы?}few{Закрыць укладкі і выдаліць групы?}many{Закрыць укладкі і выдаліць групы?}other{Закрыць укладкі і выдаліць групы?}}</translation>
 <translation id="7509097596023256288">Ідзе наладжванне кіравання</translation>
 <translation id="7509539379068593709">Выдаліць праграму</translation>
+<translation id="7513438205469584978">Прапановы на аснове вашых <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />дзеянняў у Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Скапіраваць на прыладу</translation>
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7514417110442087199">Дадаць прызначэнне</translation>

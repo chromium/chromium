@@ -8089,6 +8089,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6657240842932274095">Vols permetre que els serveis del sistema utilitzin la teva ubicació?</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6659213950629089752">L'extensió <ph name="NAME" /> ha fet zoom en aquesta pàgina</translation>
+<translation id="6659594942844771486">Pestanya</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: la càmera està gravant</translation>
 <translation id="6660301751798595791">Selecció de veu</translation>
 <translation id="6660819301598582123">El pàl·lid xinès i el jove marquès bevien whisky en la fosca atziaga.</translation>
@@ -9321,6 +9322,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vols tancar la pestanya i suprimir el grup?}=1{Vols tancar la pestanya i suprimir el grup?}other{Vols tancar les pestanyes i suprimir els grups?}}</translation>
 <translation id="7509097596023256288">Configuració de la gestió</translation>
 <translation id="7509539379068593709">Desinstal·la l'aplicació</translation>
+<translation id="7513438205469584978">Suggeriments basats en la teva <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />activitat de Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copia-ho al dispositiu</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7514417110442087199">Afegeix una assignació</translation>

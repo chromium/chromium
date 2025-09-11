@@ -8111,6 +8111,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6657240842932274095">Dozvoliti sistemskim uslugama da koriste vašu lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6659213950629089752">Ovu stranicu je zumirala ekstenzija "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Kartica</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – snimanje kamerom</translation>
 <translation id="6660301751798595791">Odabir glasa</translation>
 <translation id="6660819301598582123">Bošnjak Fadil Hadžić žučljiv zet najgrđem piscu!</translation>
@@ -9343,7 +9344,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Zatvoriti karticu i izbrisati grupu?}=1{Zatvoriti kartice i izbrisati grupu?}one{Zatvoriti kartice i izbrisati grupe?}few{Zatvoriti kartice i izbrisati grupe?}other{Zatvoriti kartice i izbrisati grupe?}}</translation>
 <translation id="7509097596023256288">Postavljanje upravljanja</translation>
 <translation id="7509539379068593709">Deinstaliraj aplikaciju</translation>
-<translation id="7513438205469584978">Prijedlozi na temelju vaše <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktivnosti na Googleu<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
+<translation id="7513438205469584978">Prijedlozi se zasnivaju na vašoj <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktivnosti na Googleu<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopirajte na svoj uređaj</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7514417110442087199">Dodaj dodjelu</translation>

@@ -8111,6 +8111,7 @@
 <translation id="6657240842932274095">ਕੀ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਨੂੰ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6659213950629089752">ਇਹ ਪੰਨਾ "<ph name="NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਜ਼ੂਮ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
+<translation id="6659594942844771486">ਟੈਬ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ਕੈਮਰਾ ਰਿਕਾਰਡਿੰਗ</translation>
 <translation id="6660301751798595791">ਅਵਾਜ਼ ਦੀ ਚੋਣ</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>
@@ -9343,6 +9344,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ਕੀ ਟੈਬ ਬੰਦ ਕਰ ਕੇ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}=1{ਕੀ ਟੈਬ ਬੰਦ ਕਰ ਕੇ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}other{ਕੀ ਟੈਬਾਂ ਬੰਦ ਕਰ ਕੇ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}}</translation>
 <translation id="7509097596023256288">ਪ੍ਰਬੰਧਨ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7509539379068593709">ਐਪ ਅਣਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="7513438205469584978">ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google ਸਰਗਰਮੀ<ph name="END_LINK_GOOGLE_ACTIVITY" /> ਦੇ ਆਧਾਰ 'ਤੇ ਸੁਝਾਅ</translation>
 <translation id="7514239104543605883">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7514417110442087199">ਜ਼ਿੰਮੇ ਲਗਾਏ ਗਏ ਸਵਿੱਚ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>

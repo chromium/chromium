@@ -8098,6 +8098,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6657240842932274095">Autoriser les services système à utiliser votre position?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension « <ph name="NAME" /> » sur cette page</translation>
+<translation id="6659594942844771486">Onglet</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Enregistrement par appareil photo</translation>
 <translation id="6660301751798595791">Sélection de la voix</translation>
 <translation id="6660819301598582123">Voici à quoi ressemblera votre texte.</translation>
@@ -9329,6 +9330,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe?}=1{Fermer l'onglet et supprimer le groupe?}one{Fermer l'onglet et supprimer le groupe?}other{Fermer les onglets et supprimer les groupes?}}</translation>
 <translation id="7509097596023256288">Configuration de la gestion en cours…</translation>
 <translation id="7509539379068593709">Désinstaller l'application</translation>
+<translation id="7513438205469584978">Suggestions basées sur votre <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />activité Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copier vers votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Attribuer une action</translation>

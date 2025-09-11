@@ -8092,6 +8092,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659213950629089752">La extensión "<ph name="NAME" />" hizo zoom en esta página</translation>
+<translation id="6659594942844771486">Pestaña</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - La cámara está grabando</translation>
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">El veloz murciélago hindú comía feliz cardillo y kiwi.</translation>
@@ -9324,6 +9325,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Quieres cerrar la pestaña y borrar el grupo?}=1{¿Quieres cerrar la pestaña y borrar el grupo?}other{¿Quieres cerrar las pestañas y borrar los grupos?}}</translation>
 <translation id="7509097596023256288">Se está configurando la administración</translation>
 <translation id="7509539379068593709">Desinstalar app</translation>
+<translation id="7513438205469584978">Sugerencias basadas en tu <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />actividad de Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copiar a tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Agregar asignación</translation>

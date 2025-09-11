@@ -8108,6 +8108,7 @@
 <translation id="6657240842932274095">क्या सिस्टम की सेवाओं को अपनी जगह की जानकारी का ऐक्सेस देना है?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659213950629089752">इस पेज को "<ph name="NAME" />" एक्सटेंशन द्वारा ज़ूम किया गया था</translation>
+<translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - कैमरे से रिकॉर्डिंग की जा रही है</translation>
 <translation id="6660301751798595791">आवाज़ चुनें</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>
@@ -9339,6 +9340,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को बंद करके ग्रुप मिटाना है?}=1{क्या टैब को बंद करके ग्रुप मिटाना है?}one{क्या टैब को बंद करके ग्रुप मिटाना है?}other{क्या टैब बंद करके ग्रुप मिटाने हैं?}}</translation>
 <translation id="7509097596023256288">मैनेजमेंट सेट अप किया जा रहा है</translation>
 <translation id="7509539379068593709">ऐप्लिकेशन अनइंस्टॉल करें</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google खाते से की गई आपकी गतिविधि<ph name="END_LINK_GOOGLE_ACTIVITY" /> के आधार पर सुझाव</translation>
 <translation id="7514239104543605883">अपने डिवाइस में कॉपी करें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7514417110442087199">कार्रवाई के लिए कोई स्विच असाइन करें</translation>

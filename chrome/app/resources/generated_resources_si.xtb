@@ -8096,6 +8096,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6657240842932274095">පද්ධති සේවාවලට ඔබේ ස්ථානය භාවිත කිරීමට ඉඩ දෙන්න ද?</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6659213950629089752">මෙම පිටුව "<ph name="NAME" />" දිගුව මගින් විශාලනය කර තිබුණි</translation>
+<translation id="6659594942844771486">ටැබ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - කැමරා පටිගත කිරීම</translation>
 <translation id="6660301751798595791">හඬ තේරීම</translation>
 <translation id="6660819301598582123">කඩිසර දුඹුරු හිවලා කම්මැලි සුනඛයාට උඩින් පැන්නේය.</translation>
@@ -9327,6 +9328,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{පටිත්ත වසා සමූහය මකන්න ද?}=1{පටිති වසා සමූහය මකන්න ද?}one{පටිති වසා සමූහය මකන්න ද?}other{පටිති වසා සමූහය මකන්න ද?}}</translation>
 <translation id="7509097596023256288">කළමනාකරණය පිහිටුවීම</translation>
 <translation id="7509539379068593709">යෙදුම අස්ථාපනය කරන්න</translation>
+<translation id="7513438205469584978">ඔබේ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google ක්‍රියාකාරකම්<ph name="END_LINK_GOOGLE_ACTIVITY" /> මත පදනම් වූ යෝජනා</translation>
 <translation id="7514239104543605883">ඔබේ උපාංගයට පිටපත් කරන්න</translation>
 <translation id="7514365320538308">බාගන්න</translation>
 <translation id="7514417110442087199">පැවරුම එක් කරන්න</translation>
@@ -9755,7 +9757,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7799650166313181433"><ph name="USER_EMAIL" /> වෙත පුරා ඇති උපාංගවලට පමණක් මෙම උපාංගය සමග බෙදා ගත හැක. ඔබට ඔබේ උපාංග අතර බෙදා ගැනීම අනුමත කිරීමට අවශ්‍ය නොවනු ඇත.</translation>
 <translation id="7800485561443537737">ඔබේ <ph name="DEVICE_TYPE" /> හි ජංගම දත්ත භාවිත කරන අතර ඔබේ වාහකයා අතිරේක ගාස්තු අය කළ හැක. බැටරි භාවිතය වැඩි විය හැක. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">වාමාවර්ථව කරකරවන්න (&amp;o)</translation>
-<translation id="780301667611848630">එපා, ස්තූතියි</translation>
+<translation id="780301667611848630">එපා ස්තූතියි</translation>
 <translation id="7803657407897251194">ඔබේ Android උපාංගය සැකසීම දිගටම කරගෙන යාමට, ඔබේ <ph name="DEVICE_TYPE" /> ජාලයකට සම්බන්ධ කරන්න</translation>
 <translation id="7804072833593604762">ටැබය වසන ලදි</translation>
 <translation id="7805371082115476536">සැහැල්ලු</translation>

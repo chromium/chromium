@@ -8091,6 +8091,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6657240842932274095">Consentire ai servizi di sistema di utilizzare la tua posizione?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659213950629089752">Questa pagina è stata ingrandita con l'estensione "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Scheda</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Registrazione con videocamera</translation>
 <translation id="6660301751798595791">Selezione voce</translation>
 <translation id="6660819301598582123">Pranzo d'acqua fa volti sghembi.</translation>
@@ -9323,6 +9324,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Chiudere scheda ed eliminare gruppo?}=1{Chiudere scheda ed eliminare gruppo?}other{Chiudere le schede ed eliminare i gruppi?}}</translation>
 <translation id="7509097596023256288">Impostazione della gestione in corso…</translation>
 <translation id="7509539379068593709">Disinstalla app</translation>
+<translation id="7513438205469584978">Suggerimenti basati sulla tua <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />attività su Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copia sul tuo dispositivo</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7514417110442087199">Aggiungi assegnazione</translation>

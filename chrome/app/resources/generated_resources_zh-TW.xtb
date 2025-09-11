@@ -8082,6 +8082,7 @@
 <translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659213950629089752">「<ph name="NAME" />」擴充功能已調整這個頁面的大小</translation>
+<translation id="6659594942844771486">分頁</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 攝影機正在錄影</translation>
 <translation id="6660301751798595791">語音選擇</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跳過一條懶狗。</translation>
@@ -9313,6 +9314,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
 <translation id="7509097596023256288">正在設定管理服務</translation>
 <translation id="7509539379068593709">解除安裝應用程式</translation>
+<translation id="7513438205469584978">根據你個人 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活動<ph name="END_LINK_GOOGLE_ACTIVITY" />提供的建議</translation>
 <translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派設定</translation>

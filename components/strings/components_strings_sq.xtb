@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
 <translation id="112840717907525620">Memoria specifike e politikës është në rregull</translation>
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> - Për të dalë nga ekrani i plotë, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="1138458427267715730">Merr sinjalizime kur çmimi ulet në çdo sajt në ueb</translation>
 <translation id="1142713751288681188">Lloji i letrës</translation>
 <translation id="1144136880160289237">Nuk ke ende asnjë temë aktive</translation>
@@ -454,6 +455,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompjuter</translation>
+<translation id="1740404923954980840">Për të dalë nga ekrani i plotë, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="1741474054575634405">Menaxho kartat e besnikërisë...</translation>
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Çarçafë dhe mbulesa krevati</translation>
@@ -1153,6 +1155,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2933624813161016821">Letër alumini me stampim</translation>
 <translation id="293796669683825859">Komente</translation>
 <translation id="2938225289965773019">Hap lidhjet e <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> - Për të shfaqur kursorin, ndërro aplikacionet, ringarko faqen ose kthehu prapa</translation>
 <translation id="2940418897281183211">Imazh PNG</translation>
 <translation id="2941878205777356567">Zarf 9 x 12 inç</translation>
 <translation id="2941952326391522266">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është nga <ph name="DOMAIN2" />. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
@@ -1322,6 +1325,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
+<translation id="3212468046572043669">Shkarkimi filloi. Për ta shikuar, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="3212581601480735796">Aktiviteti yt në <ph name="HOSTNAME" /> po monitorohet</translation>
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
 <translation id="3215311088819828484">Rezultati u përditësua</translation>
@@ -1859,6 +1863,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4085326869263783566">Më ndihmo të shkruaj. Shtyp "Tab" dhe më pas "Enter" për ta hapur</translation>
 <translation id="4085769736382018559">Krahaso produktet</translation>
 <translation id="4085778582400064057">Blu 2</translation>
+<translation id="4085859451613666999">Karta jote është e ruajtur në "Llogarinë tënde të Google", kështu që mund ta plotësosh automatikisht për blerjet e ardhshme</translation>
 <translation id="4088981014127559358">Zhvendosja e imazhit në boshtin Y në anën 1</translation>
 <translation id="4089152113577680600">Tabakaja 14</translation>
 <translation id="4092349052316400070">Plotëso adresën</translation>
@@ -2408,6 +2413,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4995474875135717171">Modifikuar:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar kërkimin te sajti dhe motorin e parazgjedhur të kërkimit</translation>
 <translation id="4998950033665438990">Në një anë</translation>
+<translation id="5001338033791319371">Për të dalë nga ekrani i plotë dhe për të shikuar shkarkimin, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
 <translation id="5002932099480077015">Nëse aktivizohet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="5007344584818503324">Aktiviteti i grupeve të ndara të skedave</translation>
@@ -3968,6 +3974,7 @@ Detaje shtesë:
 <translation id="7582602800368606489">Krijo shpejt një ngjarje të re në Google Calendar</translation>
 <translation id="7586676035079382730">Njoftimet nuk lejohen</translation>
 <translation id="7588707273764747927">Transferim</translation>
+<translation id="7589062909165841767">"Llogaria jote e Google" mund të ketë <ph name="BEGIN_LINK_GAA" />Aktivitetin e aplikacioneve Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Të ndahet përmbajtja konfidenciale?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> dëshiron të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikata e serverit shkel kufizimet për serverin.</translation>
@@ -4253,6 +4260,7 @@ Detaje shtesë:
 <translation id="8075736640322370409">Krijo shpejt një "Fletë të re të Google"</translation>
 <translation id="8075898834294118863">Menaxho cilësimet e sajtit</translation>
 <translation id="8076492880354921740">Skedat</translation>
+<translation id="8076880883123051368">"Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, si p.sh. <ph name="BEGIN_LINK_GAA" />Aktiviteti i aplikacioneve Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Zarf kinez nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Të ngarkohet skedari konfidencial?}other{Të ngarkohen skedarët konfidencialë?}}</translation>
 <translation id="8079031581361219619">Dëshiron të ngarkosh përsëri sajtin?</translation>
@@ -4386,6 +4394,7 @@ Detaje shtesë:
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8297545700510100061">Kukit dhe të dhënat e tjera të sajtit përdoren për të të kujtuar ty, p.sh. për të të identifikuar ose për të personalizuar reklamat. Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Karta është ruajtur vetëm në pajisje</translation>
 <translation id="8301894345671534559">Fut kodin</translation>
 <translation id="8304912090860925649">Tabelë e re krahasimi</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
@@ -4906,6 +4915,7 @@ Detaje shtesë:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Estetikë e pastër</translation>
 <translation id="9195969368671142407">Kur organizata jote kufizon ruajtjen në "Llogarinë tënde të Google", nuk mund të ndash apo të bashkohesh në grupet e skedave</translation>
+<translation id="9198613052465150219">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
 <translation id="9201904868909900493">Anketa po hapet...</translation>
 <translation id="9204089334327209740">Pasi ngarkimi të ketë përfunduar, mund të modifikosh skedarët në <ph name="CLOUD_PROVIDER" />. Hapësira ruajtëse lokale, duke përfshirë çdo skedar te "Koshi", do të hiqet automatikisht.</translation>

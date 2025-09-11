@@ -8103,6 +8103,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6657240842932274095">Ungependa kuruhusu huduma za mfumo zitumie data ya mahali ulipo?</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6659213950629089752">Ukurasa huu ulikuzwa kwa kiendelezi "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Kichupo</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Kamera inarekodi</translation>
 <translation id="6660301751798595791">Kuchagua sauti</translation>
 <translation id="6660819301598582123">Heri kujikwaa mguu kuliko kujikwaa ulimi.</translation>
@@ -9335,6 +9336,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Ungependa kufunga kichupo na ufute kikundi?}=1{Ungependa kufunga vichupo na ufute kikundi?}other{Ungependa kufunga vichupo na ufute vikundi?}}</translation>
 <translation id="7509097596023256288">Inaweka mipangilio ya udhibiti</translation>
 <translation id="7509539379068593709">Ondoa Programu</translation>
+<translation id="7513438205469584978">Mapendekezo kulingana na <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />shughuli zako kwenye Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Nakili kwenye kifaa chako</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="7514417110442087199">Kabidhi kitendo kwenye swichi</translation>

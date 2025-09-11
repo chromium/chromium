@@ -8107,6 +8107,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6657240842932274095">Engedélyezi a rendszerszolgáltatásoknak a helyadatok használatát?</translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659213950629089752">Az oldal nagyítását a(z) „<ph name="NAME" />” bővítmény hajtotta végre</translation>
+<translation id="6659594942844771486">Lap</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – A kamera felvételt készít</translation>
 <translation id="6660301751798595791">Hang kiválasztása</translation>
 <translation id="6660819301598582123">Egy hűtlen vejét fülöncsípő, dühös mexikói úr Wesselényinél mázol Quitóban</translation>
@@ -9338,6 +9339,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Bezárja a lapot, és törli a csoportot?}=1{Bezárja a lapokat, és törli a csoportot?}other{Bezárja a lapokat, és törli a csoportokat?}}</translation>
 <translation id="7509097596023256288">Kezelés beállítása</translation>
 <translation id="7509539379068593709">Alkalmazás eltávolítása</translation>
+<translation id="7513438205469584978">Javaslatok az Ön <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-tevékenységei<ph name="END_LINK_GOOGLE_ACTIVITY" /> alapján</translation>
 <translation id="7514239104543605883">Átmásolás az eszközére</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7514417110442087199">Hozzárendelés hozzáadása</translation>

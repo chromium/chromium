@@ -6580,7 +6580,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>
 <translation id="5562588178647493983">Pour en savoir plus, contactez votre administrateur</translation>
 <translation id="556321030400250233">fichier local ou partagé</translation>
-<translation id="5563234215388768762">Effectuez une recherche sur Google ou saisissez une URL</translation>
+<translation id="5563234215388768762">Rechercher sur Google ou saisir une URL</translation>
 <translation id="5563824734298958390">Quitter le groupe d'onglets ?</translation>
 <translation id="5565579144504951367">Votre matériel est prêt à être configuré</translation>
 <translation id="5565735124758917034">Actif</translation>
@@ -8095,6 +8095,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6657240842932274095">Autoriser les services système à utiliser votre position ?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension "<ph name="NAME" />" sur cette page</translation>
+<translation id="6659594942844771486">Onglet</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Enregistrement de la caméra</translation>
 <translation id="6660301751798595791">Sélection de la voix</translation>
 <translation id="6660819301598582123">Voici à quoi ressemblera votre texte.</translation>
@@ -9327,6 +9328,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe ?}=1{Fermer les onglets et supprimer le groupe ?}one{Fermer les onglets et supprimer le groupe ?}other{Fermer les onglets et supprimer les groupes ?}}</translation>
 <translation id="7509097596023256288">Configurer la gestion</translation>
 <translation id="7509539379068593709">Désinstaller l'appli</translation>
+<translation id="7513438205469584978">Suggestions basées sur votre <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />activité Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copier sur votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Ajouter une attribution</translation>

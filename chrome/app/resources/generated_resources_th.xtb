@@ -8088,6 +8088,7 @@
 <translation id="6657240842932274095">อนุญาตให้บริการของระบบใช้ตำแหน่งของคุณไหม</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6659213950629089752">หน้านี้ซูมด้วยส่วนขยาย "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">แท็บ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - กำลังบันทึกกล้อง</translation>
 <translation id="6660301751798595791">ตัวเลือกในการพูด</translation>
 <translation id="6660819301598582123">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขที่เกียจคร้าน</translation>
@@ -9319,6 +9320,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ปิดแท็บและลบกลุ่มใช่ไหม}=1{ปิดแท็บและลบกลุ่มใช่ไหม}other{ปิดแท็บและลบกลุ่มใช่ไหม}}</translation>
 <translation id="7509097596023256288">กำลังตั้งค่าการจัดการ</translation>
 <translation id="7509539379068593709">ถอนการติดตั้งแอป</translation>
+<translation id="7513438205469584978">คำแนะนำอิงตาม<ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />กิจกรรมใน Google<ph name="END_LINK_GOOGLE_ACTIVITY" /> ของคุณ</translation>
 <translation id="7514239104543605883">คัดลอกไปยังอุปกรณ์ของคุณ</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514417110442087199">เพิ่มการกำหนด</translation>

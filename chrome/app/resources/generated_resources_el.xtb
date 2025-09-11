@@ -8109,6 +8109,7 @@
 <translation id="6657240842932274095">Να επιτρέπεται στις υπηρεσίες συστήματος να χρησιμοποιούν την τοποθεσία σας;</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659213950629089752">Έγινε εστίαση σε αυτήν τη σελίδα από την επέκταση "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Εγγραφή από την κάμερα</translation>
 <translation id="6660301751798595791">Επιλογή φωνής</translation>
 <translation id="6660819301598582123">Η γρήγορη καφέ αλεπού πηδάει πάνω από το τεμπέλικο σκυλί.</translation>
@@ -9341,6 +9342,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Κλείσιμο καρτέλας και διαγραφή ομάδας;}=1{Κλείσιμο καρτέλας και διαγραφή ομάδας;}other{Κλείσιμο καρτελών και διαγραφή ομάδων;}}</translation>
 <translation id="7509097596023256288">Ρύθμιση διαχείρισης</translation>
 <translation id="7509539379068593709">Απεγκατάσταση εφαρμογής</translation>
+<translation id="7513438205469584978">Προτάσεις με βάση τη <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />δραστηριότητά σας στην Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Αντιγραφή στη συσκευή σας</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7514417110442087199">Προσθήκη ανάθεσης</translation>

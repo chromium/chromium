@@ -8104,6 +8104,7 @@
 <translation id="6657240842932274095">የሥርዓት አገልግሎቶች አካባቢዎን እንዲጠቀሙ ይፈቀድ?</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
 <translation id="6659213950629089752">ይህ ገፅ በ«<ph name="NAME" />» ቅጥያው ነው የጎላው</translation>
+<translation id="6659594942844771486">ትር</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ካሜራዎ እየቀዳ ነው</translation>
 <translation id="6660301751798595791">የድምጽ ምርጫ</translation>
 <translation id="6660819301598582123">The quick brown fox jumps over the lazy dog</translation>
@@ -9336,6 +9337,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ትር ይዘጋ እና ቡድን ይሰረዝ?}=1{ትር ይዘጋ እና ቡድን ይሰረዝ?}one{ትር ይዘጋ እና ቡድን ይሰረዝ?}other{ትሮች ይዘጉ እና ቡድኖች ይሰረዙ?}}</translation>
 <translation id="7509097596023256288">አስተዳደርን በማቀናበር ላይ</translation>
 <translation id="7509539379068593709">መተግበሪያን አራግፍ</translation>
+<translation id="7513438205469584978">በእርስዎ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />የGoogle እንቅስቃሴ<ph name="END_LINK_GOOGLE_ACTIVITY" /> መሠረት ጥቆማዎች</translation>
 <translation id="7514239104543605883">ወደ መሣሪያዎ ይቅዱ</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7514417110442087199">ምደባን አክል</translation>

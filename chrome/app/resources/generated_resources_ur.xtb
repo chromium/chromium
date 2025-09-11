@@ -8092,6 +8092,7 @@
 <translation id="6657240842932274095">سسٹم سروسز کو اپنا مقام استعمال کرنے کی اجازت دیں؟</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6659213950629089752">اس صفحہ کو "<ph name="NAME" />" ایکسٹینشن کے ذریعہ زوم کیا گیا تھا۔</translation>
+<translation id="6659594942844771486">براؤزر ٹیب</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - کیمرا سے ریکارڈنگ کی جا رہی ہے</translation>
 <translation id="6660301751798595791">صوتی انتخاب</translation>
 <translation id="6660819301598582123">تیز بھوری لومڑی نے سست کتے پر چھلانگ لگائی۔</translation>
@@ -9323,6 +9324,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ٹیب بند کریں اور گروپ کو حذف کریں؟}=1{ٹیبز کو بند اور گروپ کو حذف کریں؟}other{ٹیبز کو بند کریں اور گروپس کو حذف کریں؟}}</translation>
 <translation id="7509097596023256288">مینیجمنٹ سیٹ اپ کیا جا رہا ہے</translation>
 <translation id="7509539379068593709">ایپ کو اَن انسٹال کریں</translation>
+<translation id="7513438205469584978">‏آپ کی <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google سرگرمی<ph name="END_LINK_GOOGLE_ACTIVITY" /> کی بنیاد پر تجاویز</translation>
 <translation id="7514239104543605883">اپنے آلہ پر کاپی کریں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7514417110442087199">تفویض شامل کریں</translation>

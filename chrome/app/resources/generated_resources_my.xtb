@@ -8104,6 +8104,7 @@
 <translation id="6657240842932274095">သင့်တည်နေရာသုံးရန် စနစ်ဝန်ဆောင်မှုများကို ခွင့်ပြုမလား။</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6659213950629089752">ဒီစာမျက်နှာကို "<ph name="NAME" />" တိုးချဲ့မှုကို ချဲ့ပေးခဲ့</translation>
+<translation id="6659594942844771486">တဘ်</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ကင်မရာ ရိုက်ကူးနေသည်</translation>
 <translation id="6660301751798595791">အသံရွေးချယ်မှု</translation>
 <translation id="6660819301598582123">သီဟိုဠ်မှ ဉာဏ်ကြီးရှင်သည် အာယုဝဍ္ဎနဆေးညွှန်းစာကို ဇလွန်ဈေးဘေး ဗာဒံပင်ထက် အဓိဋ္ဌာန်လျက် ဂဃနဏဖတ်ခဲ့သည်။</translation>
@@ -9335,6 +9336,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{တဘ်ပိတ်ပြီး အုပ်စုကို ဖျက်မလား။}=1{တဘ်များပိတ်ပြီး အုပ်စုကို ဖျက်မလား။}other{တဘ်များပိတ်ပြီး အုပ်စုများကို ဖျက်မလား။}}</translation>
 <translation id="7509097596023256288">စီမံခန့်ခွဲမှုကို စနစ်ထည့်သွင်းနေသည်</translation>
 <translation id="7509539379068593709">အက်ပ်ကို ဖယ်ရှားရန်</translation>
+<translation id="7513438205469584978">သင်၏ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google ၌ လုပ်ဆောင်ချက်<ph name="END_LINK_GOOGLE_ACTIVITY" /> ပေါ် အခြေခံသည့် အကြံပြုချက်များ</translation>
 <translation id="7514239104543605883">သင့်စက်သို့ မိတ္တူကူးရန်</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7514417110442087199">သတ်မှတ်မှုထည့်ရန်</translation>

@@ -8093,6 +8093,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6657240842932274095">¿Permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659213950629089752">Esta página fue ampliada por la extensión <ph name="NAME" /></translation>
+<translation id="6659594942844771486">Pestaña</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: grabación de la cámara</translation>
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">El viejo Señor Gómez pedía queso, kiwi y habas, pero le ha tocado un saxofón.</translation>
@@ -9325,6 +9326,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Cerrar pestaña y eliminar grupo?}=1{¿Cerrar pestaña y eliminar grupo?}other{¿Cerrar pestañas y eliminar grupos?}}</translation>
 <translation id="7509097596023256288">Configurando la gestión</translation>
 <translation id="7509539379068593709">Desinstalar aplicación</translation>
+<translation id="7513438205469584978">Sugerencias basadas en tu <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />actividad en Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copiar en tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Añadir mapeo</translation>

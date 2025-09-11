@@ -4847,7 +4847,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4324577459193912240">Datei unvollständig</translation>
 <translation id="4325237902968425115">"<ph name="LINUX_APP_NAME" />" wird deinstalliert...</translation>
-<translation id="4325433082696797523">Speicher und Stromversorgung</translation>
+<translation id="4325433082696797523">Speicher und Energie</translation>
 <translation id="4325515113816851466">Die Einstellungen, die deine Eltern festgelegt haben, gelten nicht mehr, wen du dich abmeldest</translation>
 <translation id="4326146840124313313">Die stärksten Sicherheitsfunktionen von Chrome, um dich besser vor gefährlichen Websites, Downloads und Erweiterungen zu schützen</translation>
 <translation id="4327380114687339519">Menü „Erweiterungen“</translation>
@@ -6576,7 +6576,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5561162485081632007">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend</translation>
 <translation id="5562588178647493983">Weitere Informationen erhältst du von deinem Administrator</translation>
 <translation id="556321030400250233">lokale oder geteilte Datei</translation>
-<translation id="5563234215388768762">Mit Google suchen oder eine URL eingeben</translation>
+<translation id="5563234215388768762">Suchbegriff oder URL eingeben</translation>
 <translation id="5563824734298958390">Tabgruppe verlassen?</translation>
 <translation id="5565579144504951367">Die Hardware kann eingerichtet werden</translation>
 <translation id="5565735124758917034">Aktiv</translation>
@@ -8085,6 +8085,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6657240842932274095">Systemdiensten erlauben, deinen Standort zu verwenden?</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659213950629089752">Diese Seite wurde mit der Erweiterung "<ph name="NAME" />" gezoomt.</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kamera zeichnet auf</translation>
 <translation id="6660301751798595791">Stimmenauswahl</translation>
 <translation id="6660819301598582123">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.</translation>

@@ -8093,6 +8093,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6657240842932274095">Povolit systémovým službám používat vaši polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659213950629089752">Obsah této stránky byl přiblížen pomocí rozšíření <ph name="NAME" /></translation>
+<translation id="6659594942844771486">Karta</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – zaznamenávání kamery</translation>
 <translation id="6660301751798595791">Výběr hlasu</translation>
 <translation id="6660819301598582123">Příliš žluťoučký kůň úpěl ďábelské ódy.</translation>
@@ -9324,6 +9325,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Zavřít kartu a smazat skupinu?}=1{Zavřít karty a smazat skupinu?}few{Zavřít karty a smazat skupiny?}many{Zavřít karty a smazat skupiny?}other{Zavřít karty a smazat skupiny?}}</translation>
 <translation id="7509097596023256288">Probíhá nastavování správy</translation>
 <translation id="7509539379068593709">Odinstalovat aplikaci</translation>
+<translation id="7513438205469584978">Návrhy na základě vaší <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />aktivity na Googlu<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Kopírovat do zařízení</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7514417110442087199">Přidat přiřazení</translation>

@@ -8097,6 +8097,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6657240842932274095">Vil du la systemtjenester bruke posisjonen din?</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659213950629089752">Denne siden ble zoomet inn av utvidelsen «<ph name="NAME" />»</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – kameraopptak</translation>
 <translation id="6660301751798595791">Stemmevalg</translation>
 <translation id="6660819301598582123">Høvdingens kjære squaw får litt pizza i Mexico by.</translation>
@@ -9329,6 +9330,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanene og slette gruppen?}other{Vil du lukke fanene og slette gruppene?}}</translation>
 <translation id="7509097596023256288">Konfigurerer av administrasjon</translation>
 <translation id="7509539379068593709">Avinstaller appen</translation>
+<translation id="7513438205469584978">Forslag basert på <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-aktiviteten<ph name="END_LINK_GOOGLE_ACTIVITY" /> din</translation>
 <translation id="7514239104543605883">Kopiér til enheten din</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7514417110442087199">Legg til tilordning</translation>

@@ -7357,7 +7357,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6130807998512240230">Phone Hub, Nearby Share</translation>
 <translation id="6130887916931372608">Teklatuko tekla</translation>
 <translation id="6131511889181741773">Zipriztinak</translation>
-<translation id="6132188132833716741">⇥ AA moduari galdetzeko, sakatu abuladorea eta, ondoren, Sartu</translation>
+<translation id="6132188132833716741">⇥ AA moduari galdetzeko, sakatu tabuladorea eta, ondoren, Sartu</translation>
 <translation id="6132251717264923430">Ainguratu da botoia</translation>
 <translation id="6132714462430777655">Ikastetxeko gailuaren erregistroa saltatu nahi duzu?</translation>
 <translation id="6134418895482326458">Ezkutatu orri-oina fitxa berriaren orrian</translation>
@@ -8088,6 +8088,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6657240842932274095">Zure kokapena erabiltzeko baimena eman nahi diezu sistemaren zerbitzuei?</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" luzapenak aplikatu dio zooma orriari</translation>
+<translation id="6659594942844771486">Fitxa</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: kamera grabatzen</translation>
 <translation id="6660301751798595791">Ahotsaren hautapena</translation>
 <translation id="6660819301598582123">Vaudeville itxurako filmean yogi ñaño bat jipoitzen dute whiski truk Quebec-en.</translation>
@@ -9318,6 +9319,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa itxi, eta taldea ezabatu nahi duzu?}=1{Fitxak itxi, eta taldea ezabatu nahi duzu?}other{Fitxak itxi, eta taldeak ezabatu nahi dituzu?}}</translation>
 <translation id="7509097596023256288">Kudeaketa konfiguratzen</translation>
 <translation id="7509539379068593709">Desinstalatu aplikazioa</translation>
+<translation id="7513438205469584978">Zure <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-ko jardueretan<ph name="END_LINK_GOOGLE_ACTIVITY" /> daude oinarrituta iradokizunak</translation>
 <translation id="7514239104543605883">Kopiatu zure gailuan</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7514417110442087199">Gehitu esleipen bat</translation>

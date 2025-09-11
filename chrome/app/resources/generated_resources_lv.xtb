@@ -8095,6 +8095,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6657240842932274095">Vai atļaut sistēmas pakalpojumiem izmantot jūsu atrašanās vietu?</translation>
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6659213950629089752">Šīs lapas saturs tika tālummainīts, izmantojot paplašinājumu <ph name="NAME" />.</translation>
+<translation id="6659594942844771486">Cilne</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> — iespējota ierakstīšana, izmantojot kameru</translation>
 <translation id="6660301751798595791">Balss atlase</translation>
 <translation id="6660819301598582123">Muļķa hipiji turpat brīvi mēģina nogaršot celofāna žņaudzējčūsku.</translation>
@@ -9327,6 +9328,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vai aizvērt cilni un dzēst grupu?}=1{Vai aizvērt cilnes un dzēst grupu?}zero{Vai aizvērt cilnes un dzēst grupas?}one{Vai aizvērt cilnes un dzēst grupas?}other{Vai aizvērt cilnes un dzēst grupas?}}</translation>
 <translation id="7509097596023256288">Pārvaldības iestatīšana</translation>
 <translation id="7509539379068593709">Atinstalēt lietotni</translation>
+<translation id="7513438205469584978">Ieteikumu pamatā ir jūsu <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google darbības<ph name="END_LINK_GOOGLE_ACTIVITY" />.</translation>
 <translation id="7514239104543605883">Kopēt uz jūsu ierīci</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7514417110442087199">Pievienot piešķiršanu</translation>

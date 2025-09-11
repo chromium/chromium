@@ -8119,6 +8119,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6657240842932274095">Caniatáu i wasanaethau system ddefnyddio'ch lleoliad?</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="6659213950629089752">Cafodd y dudalen hon ei chwyddo gan yr estyniad "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Camera wrthi'n recordio</translation>
 <translation id="6660301751798595791">Dewis llais</translation>
 <translation id="6660819301598582123">Gwnaeth y llwynog brown cyflym neidio dros y ci diog.</translation>
@@ -9350,6 +9351,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Cau'r tab a dileu'r grŵp?}=1{Cau'r tabiau a dileu'r grŵp?}two{Cau'r tabiau a dileu'r grwpiau?}few{Cau'r tabiau a dileu'r grwpiau?}many{Cau'r tabiau a dileu'r grwpiau?}other{Cau'r tabiau a dileu'r grwpiau?}}</translation>
 <translation id="7509097596023256288">Wrthi'n gosod rheolaeth</translation>
 <translation id="7509539379068593709">Dadosod yr Ap</translation>
+<translation id="7513438205469584978">Awgrymiadau yn seiliedig ar eich <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />gweithgarwch Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copïo i'ch dyfais</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7514417110442087199">Ychwanegu aseiniad</translation>

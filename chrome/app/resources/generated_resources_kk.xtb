@@ -8085,6 +8085,7 @@
 <translation id="6657240842932274095">Жүйелік қызметтердің локацияңызды пайдалануына рұқсат беру қажет пе?</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659213950629089752">Бұл бет "<ph name="NAME" />" кеңейтімі арқылы масштабталды</translation>
+<translation id="6659594942844771486">Қойынды</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – камерамен жазып жатыр</translation>
 <translation id="6660301751798595791">Дауыс таңдау</translation>
 <translation id="6660819301598582123">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
@@ -9315,6 +9316,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Қойындыны жауып, топты жою қажет пе?}=1{Қойындыларды жауып, топты жою қажет пе?}other{Қойындыларды жауып, топтарды жою қажет пе?}}</translation>
 <translation id="7509097596023256288">Басқару құралы реттелуде</translation>
 <translation id="7509539379068593709">Қолданбаны жою</translation>
+<translation id="7513438205469584978">Ұсыныстар <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-дағы әрекетіңізге<ph name="END_LINK_GOOGLE_ACTIVITY" /> негізделген.</translation>
 <translation id="7514239104543605883">Құрылғыға көшіру</translation>
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7514417110442087199">Тағайындау</translation>

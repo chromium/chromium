@@ -8105,6 +8105,7 @@
 <translation id="6657240842932274095">మీ లొకేషన్‌ను ఉపయోగించడానికి సిస్టమ్ సర్వీస్‌లను అనుమతించాలా?</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659213950629089752">ఈ పేజీ "<ph name="NAME" />" ఎక్స్‌టెన్షన్‌ ద్వారా జూమ్ చేయబడింది</translation>
+<translation id="6659594942844771486">బ్రౌజర్ ట్యాబ్</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - కెమెరా రికార్డింగ్</translation>
 <translation id="6660301751798595791">వాయిస్ ఎంపిక</translation>
 <translation id="6660819301598582123">దేశ భాషలందు తెలుగు లెస్స</translation>
@@ -9337,6 +9338,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ట్యాబ్‌ను మూసివేసి, గ్రూప్‌ను తొలగించాలా?}=1{ట్యాబ్‌లను మూసివేసి, గ్రూప్‌ను తొలగించాలా?}other{ట్యాబ్‌లను మూసివేసి, గ్రూప్‌లను తొలగించాలా?}}</translation>
 <translation id="7509097596023256288">మేనేజ్‌మెంట్ సెటప్ చేయబడుతోంది</translation>
 <translation id="7509539379068593709">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="7513438205469584978">మీ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google యాక్టివిటీ<ph name="END_LINK_GOOGLE_ACTIVITY" /> ఆధారంగా సూచనలు</translation>
 <translation id="7514239104543605883">మీ పరికరానికి కాపీ చేయండి</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7514417110442087199">కేటాయింపును జోడించండి</translation>

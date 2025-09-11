@@ -8094,6 +8094,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6657240842932274095">Queres permitir que os servizos do sistema usen a túa localización?</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659213950629089752">A extensión <ph name="NAME" /> aplicou o zoom nesta páxina</translation>
+<translation id="6659594942844771486">Pestana</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />, cámara gravando</translation>
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">Necesitamos unha tipografía chuliña de cor kiwi que lle zorregue unha labazada visual á xente.</translation>
@@ -9325,6 +9326,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Queres pechar a pestana e eliminar o grupo?}=1{Queres pechar as pestanas e eliminar o grupo?}other{Queres pechar as pestanas e eliminar os grupos?}}</translation>
 <translation id="7509097596023256288">Configurando xestión</translation>
 <translation id="7509539379068593709">Desinstalar aplicación</translation>
+<translation id="7513438205469584978">As suxestións baséanse na túa <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />actividade de Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Engadir asignación</translation>

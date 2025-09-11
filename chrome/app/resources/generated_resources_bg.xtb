@@ -8106,6 +8106,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6657240842932274095">Да се разреши ли на системните услуги да използват местоположението ви?</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659213950629089752">Мащабът на тази страница бе променен от разширението <ph name="NAME" /></translation>
+<translation id="6659594942844771486">Раздел</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – записва чрез камерата</translation>
 <translation id="6660301751798595791">Избиране на глас</translation>
 <translation id="6660819301598582123">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>
@@ -9338,6 +9339,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Искате ли да затворите раздела и да изтриете групата?}=1{Искате ли да затворите разделите и да изтриете групата?}other{Искате ли да затворите разделите и да изтриете групите?}}</translation>
 <translation id="7509097596023256288">Управлението се настройва</translation>
 <translation id="7509539379068593709">Деинсталиране на приложението</translation>
+<translation id="7513438205469584978">Предложения въз основа на <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />активността ви в Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Копиране на устройството ви</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7514417110442087199">Задаване на действие</translation>

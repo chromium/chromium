@@ -233,7 +233,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3594780231884063836">Videonun sesini kapat</translation>
 <translation id="3600792891314830896">Ses çalan sitelerin sesini kapat</translation>
 <translation id="3602290021589620013">Önizleme</translation>
-<translation id="3611658447322220736">Yeni kapatılan siteler veri gönderip alma işlemini bitirebilir</translation>
+<translation id="3611658447322220736">Yeni kapatılan siteler veri gönderip alma işlemini tamamlayabilir</translation>
 <translation id="3619294456800709762">Siteler otomatik olarak pencere içinde pencere moduna girebilir</translation>
 <translation id="3628308229821498208">Önerilen aramalar</translation>
 <translation id="3641456520301071208">Siteler konum bilgimi isteyebilir</translation>
@@ -244,7 +244,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3697164069658504920">Bu düğme açıkken siteler USB cihazları kullanmak isteyebilir. Düğme kapalıyken siteler USB cihazları kullanamaz.</translation>
 <translation id="3703430731944883733">Feed'inizi yönetin</translation>
 <translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
-<translation id="3708684582558000260">Kapatılan sitelerin veri gönderme veya alma işlemini bitirmesine izin verme</translation>
+<translation id="3708684582558000260">Kapatılan sitelerin veri gönderip alma işlemini tamamlamasına izin verme</translation>
 <translation id="3709818294139939629">Sitenin dosya erişimi kaldırıldı</translation>
 <translation id="3721953990244350188">Kapat ve sonraki mevcut işlemi göster</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>

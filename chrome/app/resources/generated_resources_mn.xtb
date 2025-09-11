@@ -8103,6 +8103,7 @@
 <translation id="6657240842932274095">Системийн үйлчилгээнүүдэд таны байршлыг ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659213950629089752">Энэ хуудсыг "<ph name="NAME" />" өргөтгөлөөр татаж харуулсан байна.</translation>
+<translation id="6659594942844771486">Таб</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Камерын бичлэг</translation>
 <translation id="6660301751798595791">Дуу хоолойн сонголт</translation>
 <translation id="6660819301598582123">Хурдан бор үнэг залхуу нохойн дээгүүр үсрэв.</translation>
@@ -9334,6 +9335,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Табыг хааж, бүлгийг устгах уу?}=1{Табуудыг хааж, бүлгийг устгах уу?}other{Табуудыг хааж, бүлгүүдийг устгах уу?}}</translation>
 <translation id="7509097596023256288">Менежмент тохируулах</translation>
 <translation id="7509539379068593709">Аппыг устгах</translation>
+<translation id="7513438205469584978">Зөвлөмжүүд нь таны <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google үйл ажиллагаан дээр үндэслэсэн<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Төхөөрөмж рүүгээ хуулах</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7514417110442087199">Даалгаврыг нэмэх</translation>

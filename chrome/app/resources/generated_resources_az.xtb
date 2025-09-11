@@ -8090,6 +8090,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6657240842932274095">Sistem xidmətlərinin məkan istifadəsinə icazə verilsin?</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659213950629089752">Bu səhifə "<ph name="NAME" />" artırması tərəfindən böyüdülüb</translation>
+<translation id="6659594942844771486">Səkmə</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Kamera qeydə alır</translation>
 <translation id="6660301751798595791">Səs seçimi</translation>
 <translation id="6660819301598582123">Qəhvəyi rəngli cəld tülkü tənbəl itin üzərindən qaçaraq hoppandı.</translation>
@@ -9321,6 +9322,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab bağlansın və qrup silinsin?}=1{Tablar bağlansın və qrup silinsin?}other{Tablar bağlansın və qruplar silinsin?}}</translation>
 <translation id="7509097596023256288">İdarəetmənin ayarlanması</translation>
 <translation id="7509539379068593709">Tətbiqi ləğv edin</translation>
+<translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google fəaliyyətinizə<ph name="END_LINK_GOOGLE_ACTIVITY" /> əsaslanan təkliflər</translation>
 <translation id="7514239104543605883">Cihazınıza kopyalayın</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7514417110442087199">Təyinat əlavə edin</translation>

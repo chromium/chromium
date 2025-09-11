@@ -8106,6 +8106,7 @@
 <translation id="6657240842932274095">ອະນຸຍາດໃຫ້ບໍລິການລະບົບໃຊ້ສະຖານທີ່ຂອງທ່ານບໍ?</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="6659213950629089752">ໜ້ານີ້ຖືກຊູມໂດຍສ່ວນຂະຫຍາຍ "<ph name="NAME" />"</translation>
+<translation id="6659594942844771486">ແຖບ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ການບັນທຶກກ້ອງຖ່າຍຮູບ</translation>
 <translation id="6660301751798595791">ການເລືອກສຽງເວົ້າ</translation>
 <translation id="6660819301598582123">ໝາຈອກສີນໍ້າຕານທີ່ວ່ອງໄວໂດດຂ້າມໝາຂີ້ຄ້ານ.</translation>
@@ -9336,6 +9337,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}=1{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}other{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}}</translation>
 <translation id="7509097596023256288">ກຳລັງຕັ້ງຄ່າການຈັດການ</translation>
 <translation id="7509539379068593709">ຖອນການຕິດຕັ້ງແອັບ</translation>
+<translation id="7513438205469584978">ຄຳແນະນຳອີງຕາມ <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />ການເຄື່ອນໄຫວ Google<ph name="END_LINK_GOOGLE_ACTIVITY" /> ຂອງທ່ານ</translation>
 <translation id="7514239104543605883">ສຳເນົາໄປໃສ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7514417110442087199">ເພີ່ມການກຳນົດ</translation>

@@ -8095,6 +8095,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6657240842932274095">Permiți serviciilor de sistem să-ți folosească locația?</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659213950629089752">Această pagină a fost mărită sau micșorată de extensia „<ph name="NAME" />”</translation>
+<translation id="6659594942844771486">Filă</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – înregistrare cu camera foto</translation>
 <translation id="6660301751798595791">Selectarea vocii</translation>
 <translation id="6660819301598582123">Vând muzică de jazz și haine de bun-gust în New-York și Quebec la preț fix.</translation>
@@ -9327,6 +9328,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Închizi fila și ștergi grupul?}=1{Închizi filele și ștergi grupul?}few{Închizi filele și ștergi grupurile?}other{Închizi filele și ștergi grupurile?}}</translation>
 <translation id="7509097596023256288">Se configurează gestionarea</translation>
 <translation id="7509539379068593709">Dezinstalează aplicația</translation>
+<translation id="7513438205469584978">Sugestii bazate pe <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />activitatea ta pe Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copiază pe dispozitiv</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7514417110442087199">Adaugă atribuirea</translation>

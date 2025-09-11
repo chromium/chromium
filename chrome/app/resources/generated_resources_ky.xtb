@@ -8108,6 +8108,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6657240842932274095">Системдик кызматтарга жайгашкан жериңизди колдонууга уруксат бересизби?</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659213950629089752">Бул түзмөк "<ph name="NAME" />" кеңейтүүсү менен чоңойтулган</translation>
+<translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Камерадан жаздырууда</translation>
 <translation id="6660301751798595791">Үн тандоо</translation>
 <translation id="6660819301598582123">Билимдүүнүн түнү - күн, билимсиздин күнү - түн.</translation>
@@ -9339,6 +9340,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Өтмөк жабылып, топ өчүрүлсүнбү?}=1{Өтмөктөр жабылып, топ өчүрүлсүнбү?}other{Өтмөктөр жабылып, топтор өчүрүлсүнбү?}}</translation>
 <translation id="7509097596023256288">Башкаруу жөндөлүүдө</translation>
 <translation id="7509539379068593709">Колдонмону чыгарып салуу</translation>
+<translation id="7513438205469584978">Сунуштар <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google'да жасаган нерселердин<ph name="END_LINK_GOOGLE_ACTIVITY" /> негизинде көрсөтүлдү</translation>
 <translation id="7514239104543605883">Түзмөгүңүзгө көчүрүү</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7514417110442087199">Дайындоо</translation>

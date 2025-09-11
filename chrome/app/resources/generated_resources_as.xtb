@@ -8107,6 +8107,7 @@
 <translation id="6657240842932274095">ছিষ্টেম সেৱাসমূহক আপোনাৰ অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" এক্সটেনশ্বনে এই পৃষ্ঠাটো জুম কৰিছে</translation>
+<translation id="6659594942844771486">ব্ৰাউজাৰ টেব</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - কেমেৰাৰ ৰেকৰ্ডিং</translation>
 <translation id="6660301751798595791">কণ্ঠধ্বনিৰ বাছনি</translation>
 <translation id="6660819301598582123">অসমৰ এশিঙীয়া গঁড় পৃথিৱী বিখ্যাত।</translation>
@@ -9338,6 +9339,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{টেবটো বন্ধ কৰি গোটটো মচিবনে?}=1{টেবসমূহ বন্ধ কৰি গোটটো মচিবনে?}one{টেবসমূহ বন্ধ কৰি গোটসমূহ মচিবনে?}other{টেবসমূহ বন্ধ কৰি গোটসমূহ মচিবনে?}}</translation>
 <translation id="7509097596023256288">পৰিচালনা কৰাৰ সুবিধাটো ছেট আপ কৰি থকা হৈছে</translation>
 <translation id="7509539379068593709">এপ্ আনইনষ্টল কৰিবনে?</translation>
+<translation id="7513438205469584978">আপুনি <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Googleত কৰা কাৰ্যকলাপ<ph name="END_LINK_GOOGLE_ACTIVITY" />ৰ ভিত্তিক পৰামৰ্শ</translation>
 <translation id="7514239104543605883">আপোনাৰ ডিভাইচটোলৈ প্ৰতিলিপি কৰক</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7514417110442087199">আবণ্টন কৰক</translation>

@@ -8111,6 +8111,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6657240842932274095">Leyfa kerfisþjónustum að nota staðsetninguna þína?</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6659213950629089752">Þessi síða var stækkuð með viðbótinni „<ph name="NAME" />“</translation>
+<translation id="6659594942844771486">Flipi</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Myndavél tekur upp</translation>
 <translation id="6660301751798595791">Raddval</translation>
 <translation id="6660819301598582123">Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa.</translation>
@@ -9342,6 +9343,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Loka flipa og eyða hópi?}=1{Loka flipum og eyða hópi?}one{Loka flipum og eyða hópum?}other{Loka flipum og eyða hópum?}}</translation>
 <translation id="7509097596023256288">Uppsetning umsjónar</translation>
 <translation id="7509539379068593709">Fjarlægja forrit</translation>
+<translation id="7513438205469584978">Tillögur sem byggjast á <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-virkninni þinni<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Afrita í tæki</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7514417110442087199">Bæta við úthlutun</translation>
