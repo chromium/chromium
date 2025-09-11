@@ -19,6 +19,9 @@ source_set("timestamped_pref_value") {
 
 source_set("cross_device_pref_tracker") {
   sources = [
+    "common_cross_device_pref_provider.cc",
+    "common_cross_device_pref_provider.h",
+    "cross_device_pref_provider.h",
     "cross_device_pref_tracker.cc",
     "cross_device_pref_tracker.h",
     "cross_device_pref_tracker_impl.cc",
