@@ -670,12 +670,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kHttpCacheNoVarySearchFakePersistence,
-                   &kHttpCacheNoVarySearch,
-                   "fake_persistence",
-                   false);
-
-BASE_FEATURE_PARAM(bool,
                    kHttpCacheNoVarySearchKeepNotSuitable,
                    &kHttpCacheNoVarySearch,
                    "keep_not_suitable",

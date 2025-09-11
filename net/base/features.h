@@ -799,14 +799,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kHttpCacheNoVarySearchPersistenceEnabled);
 
-// If true, the persisted files will be created with valid but empty contents at
-// startup and after that closed and never used. Has no effect if
-// "persistence_enabled" is false. Causes "HttpCache.NoVarySearch.LoadResult" to
-// log "SnapshotLoadFailed" as there is no point in adding a new enum value for
-// this temporary feature.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                      kHttpCacheNoVarySearchFakePersistence);
-
 // If true, don't erase the NoVarySearchCache entry when simple cache in-memory
 // hints indicate that the disk cache entry is not usable.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
