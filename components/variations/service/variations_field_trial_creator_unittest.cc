@@ -389,12 +389,10 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       const base::FilePath user_data_dir = base::FilePath(),
       metrics::StartupVisibility startup_visibility =
           metrics::StartupVisibility::kUnknown)
-      : VariationsFieldTrialCreator(
-            client,
-            // Pass a VariationsSeedStore to base class.
-            CreateSeedStore(local_state,
-                            user_data_dir.AppendASCII("VariationsSeedV1")),
-            UIStringOverrider()),
+      : VariationsFieldTrialCreator(client,
+                                    // Pass a VariationsSeedStore to base class.
+                                    CreateSeedStore(local_state, user_data_dir),
+                                    UIStringOverrider()),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
         // Instead, use a TestVariationsSeedStore as the member variable.
         seed_store_(local_state),
@@ -489,7 +487,7 @@ class FieldTrialCreatorTest : public ::testing::Test {
   }
 
   const base::FilePath seed_file_path() const {
-    return user_data_dir_path().AppendASCII("TestSeedFile");
+    return user_data_dir_path().AppendASCII("VariationsSeedV1");
   }
 
  private:
