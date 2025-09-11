@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -28,7 +28,7 @@ mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr() {
 }  // namespace
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
-    GlicSharingManagerImpl* sharing_manager,
+    GlicSharingManager* sharing_manager,
     GlicWindowController* window_controller,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),

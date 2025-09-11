@@ -28,6 +28,15 @@ class GlicSharingManager {
   virtual base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) = 0;
 
+  // Callback for changes to the tab data representation of the focused tab.
+  // This includes any event that changes tab data -- e.g. favicon/title change
+  // events (where the container does not change), as well as container changed
+  // events.
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const mojom::TabData*)>;
+  virtual base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) = 0;
+
   // Returns the currently focused tab data or an error reason stating why one
   // was not available. This may also contain a tab candidate along with details
   // as to why it cannot be focused. Virtual for testing.
@@ -45,6 +54,13 @@ class GlicSharingManager {
       base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
   virtual base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) = 0;
+
+  // Registers a callback to be invoked when the TabData for a pinned tab
+  // changes.
+  using PinnedTabDataChangedCallback =
+      base::RepeatingCallback<void(const TabDataChange&)>;
+  virtual base::CallbackListSubscription AddPinnedTabDataChangedCallback(
+      PinnedTabDataChangedCallback callback) = 0;
 
   // Pins the specified tabs. If we are only able to pin `n` tabs within the
   // limit, the first `n` tabs from this collection will be pinned and we
@@ -68,6 +84,9 @@ class GlicSharingManager {
 
   // Gets the current number of pinned tabs.
   virtual int32_t GetNumPinnedTabs() const = 0;
+
+  // Fetches the current list of pinned tabs.
+  virtual std::vector<content::WebContents*> GetPinnedTabs() const = 0;
 
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;

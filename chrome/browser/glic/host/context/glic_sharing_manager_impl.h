@@ -47,12 +47,26 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) override;
 
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
   FocusedTabData GetFocusedTabData() override;
 
   using TabPinningStatusChangedCallback =
       base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
   base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback) override;
+
+  using PinnedTabsChangedCallback =
+      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
+  base::CallbackListSubscription AddPinnedTabsChangedCallback(
+      PinnedTabsChangedCallback callback) override;
+
+  using PinnedTabDataChangedCallback =
+      base::RepeatingCallback<void(const TabDataChange&)>;
+  base::CallbackListSubscription AddPinnedTabDataChangedCallback(
+      PinnedTabDataChangedCallback callback) override;
 
   bool PinTabs(base::span<const tabs::TabHandle> tab_handles) override;
 
@@ -76,27 +90,6 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       FocusedBrowserChangedCallback callback);
   BrowserWindowInterface* GetFocusedBrowser() const;
 
-  // Callback for changes to the tab data representation of the focused tab.
-  // This includes any event that changes tab data -- e.g. favicon/title change
-  // events (where the container does not change), as well as container changed
-  // events.
-  using FocusedTabDataChangedCallback =
-      base::RepeatingCallback<void(const mojom::TabData*)>;
-  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
-      FocusedTabDataChangedCallback callback);
-
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
-  base::CallbackListSubscription AddPinnedTabsChangedCallback(
-      PinnedTabsChangedCallback callback) override;
-
-  // Registers a callback to be invoked when the TabData for a pinned tab
-  // changes.
-  using PinnedTabDataChangedCallback =
-      base::RepeatingCallback<void(const TabDataChange&)>;
-  base::CallbackListSubscription AddPinnedTabDataChangedCallback(
-      PinnedTabDataChangedCallback callback);
-
   // Sets the limit on the number of pinned tabs. Returns the effective number
   // of pinned tabs. Can differ due to supporting fewer tabs than requested or
   // having more tabs currently pinned than requested.
@@ -113,7 +106,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       base::OnceCallback<void(GlicGetContextResult)> callback);
 
   // Fetches the current list of pinned tabs.
-  std::vector<content::WebContents*> GetPinnedTabs() const;
+  std::vector<content::WebContents*> GetPinnedTabs() const override;
 
   // Subscribes to changes in pin candidates.
   void SubscribeToPinCandidates(
