@@ -166,6 +166,15 @@ void AssociateGoogleVariationID(IDCollectionKey key,
                              variation_id, time_window);
 }
 
+void AssociateGoogleVariationIDForTesting(IDCollectionKey key,
+                                          std::string_view trial_name,
+                                          std::string_view group_name,
+                                          VariationID variation_id,
+                                          TimeWindow time_window) {
+  AssociateGoogleVariationID(key, MakeActiveGroupId(trial_name, group_name),
+                             variation_id, time_window);
+}
+
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 ActiveGroupId active_group_id,
                                 VariationID variation_id,

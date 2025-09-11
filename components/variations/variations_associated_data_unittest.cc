@@ -74,10 +74,10 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   trial_true->AppendGroup(winner, 10);
 
   // Set GoogleVariationIDs so we can verify that they were chosen correctly.
-  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(),
-                             default_name1, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(), winner,
-                             TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_true->trial_name(),
+                                       default_name1, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_true->trial_name(),
+                                       winner, TEST_VALUE_B);
 
   EXPECT_EQ(winner, trial_true->group_name());
   EXPECT_EQ(TEST_VALUE_B, GetIDForTrial(GOOGLE_APP, trial_true.get()));
@@ -88,10 +88,10 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   const std::string loser = "ALoser";
   trial_false->AppendGroup(loser, 0);
 
-  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(),
-                             default_name2, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(), loser,
-                             TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_false->trial_name(),
+                                       default_name2, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(GOOGLE_APP, trial_false->trial_name(),
+                                       loser, TEST_VALUE_B);
 
   EXPECT_NE(loser, trial_false->group_name());
   EXPECT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_APP, trial_false.get()));

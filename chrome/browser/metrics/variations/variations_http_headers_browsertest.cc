@@ -700,8 +700,8 @@ void CreateFieldTrial(const base::FieldTrial::EntropyProvider& entropy_provider,
   for (int i = 1; i < 101; ++i) {
     const std::string group_name = base::StringPrintf("%d", i);
     if (with_google_web_experiment_ids) {
-      AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
-                                 trial->trial_name(), group_name, i);
+      AssociateGoogleVariationIDForTesting(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                           trial->trial_name(), group_name, i);
     }
     trial->AppendGroup(group_name, 1);
   }

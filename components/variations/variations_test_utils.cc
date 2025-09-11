@@ -313,7 +313,8 @@ scoped_refptr<base::FieldTrial> CreateInactiveTrialAndAssociateId(
     IDCollectionKey key,
     VariationID id,
     TimeWindow time_window) {
-  AssociateGoogleVariationID(key, trial_name, group_name, id, time_window);
+  AssociateGoogleVariationIDForTesting(key, trial_name, group_name, id,
+                                       time_window);
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::CreateFieldTrial(trial_name, group_name));
   CHECK(trial);

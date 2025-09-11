@@ -71,7 +71,7 @@ class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
                 identity_test_env_.identity_manager(),
                 shared_url_loader_factory_)) {
     // Set up a variation.
-    variations::AssociateGoogleVariationID(
+    variations::AssociateGoogleVariationIDForTesting(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial name",
         "group name", kVariationID);
     base::FieldTrialList::CreateFieldTrial("trial name", "group name")

@@ -115,6 +115,17 @@ void AssociateGoogleVariationID(IDCollectionKey key,
                                 VariationID variation_id,
                                 TimeWindow time_window = TimeWindow());
 
+// Alias for the above function, but for testing. All test uses should be via
+// this function. Once that is the case, the above function will be restricted
+// to call sites that are approved to use it.
+COMPONENT_EXPORT(VARIATIONS)
+void AssociateGoogleVariationIDForTesting(
+    IDCollectionKey key,
+    std::string_view trial_name,
+    std::string_view group_name,
+    VariationID variation_id,
+    TimeWindow time_window = TimeWindow());
+
 // As above, but takes an ActiveGroupId hash pair, rather than the string names.
 COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(

@@ -113,7 +113,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
   void CreateFieldTrialWithId(const std::string& trial_name,
                               const std::string& group_name,
                               int variation_id) {
-    variations::AssociateGoogleVariationID(
+    variations::AssociateGoogleVariationIDForTesting(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial_name, group_name,
         static_cast<variations::VariationID>(variation_id));
     base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
