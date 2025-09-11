@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -74,7 +75,6 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mProfileSupplier));
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
         doReturn(123L).when(mNativeMock).init(mProfile);
-        mMediator.initializeBridge(mProfile);
         Clipboard.setInstanceForTesting(mClipboard);
     }
 
@@ -85,12 +85,14 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void onUrlFocusChange_toolbarVisibleWhenFocused() {
+        mMediator.initializeBridge(mProfile);
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
     }
 
     @Test
     public void onUrlFocusChange_toolbarHiddenWhenNotFocused() {
+        mMediator.initializeBridge(mProfile);
         // Show it first
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
@@ -140,6 +142,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void addAttachment_addAttachment() {
+        mMediator.initializeBridge(mProfile);
         byte[] byteArray = new byte[] {1, 2, 3};
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
@@ -156,11 +159,12 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onUseAiModeChanged_off_clearsAttachments() {
+    public void onUseAiModeChanged_off_clearsAttachmentsAndAbandonsSession() {
         ModelList modelList = new ModelList();
         mMediator =
                 new NavigationAttachmentsMediator(
                         mContext, mWindowAndroid, mModel, mViewHolder, modelList, mProfileSupplier);
+        mMediator.initializeBridge(mProfile);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 
@@ -168,6 +172,69 @@ public class NavigationAttachmentsMediatorUnitTest {
         mMediator.onUseAiModeChanged(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
+        verify(mNativeMock).notifySessionAbandoned(123L);
+    }
+
+    @Test
+    public void onUseAiModeChanged_on_startsSession() {
+        mMediator.initializeBridge(mProfile);
+        mMediator.onUseAiModeChanged(true);
+        verify(mNativeMock).notifySessionStarted(123L);
+    }
+
+    @Test
+    public void setToolbarVisible_noBridge_doesNothing() {
+        // Create a mediator, but don't initialize the bridge.
+        NavigationAttachmentsMediator mediator =
+                new NavigationAttachmentsMediator(
+                        mContext,
+                        mWindowAndroid,
+                        mModel,
+                        mViewHolder,
+                        new ModelList(),
+                        mProfileSupplier);
+
+        // The bridge is not initialized, so no native calls should be made.
+        mediator.setToolbarVisible(true);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+
+        mediator.setToolbarVisible(false);
+        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+    }
+
+    @Test
+    public void setToolbarVisible_stateNotChanged_doesNothing() {
+        mMediator.initializeBridge(mProfile);
+        // Initial state is false. Calling with false should do nothing.
+        mMediator.setToolbarVisible(false);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+
+        // Transition to true. Should NOT start a session.
+        mMediator.setToolbarVisible(true);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+
+        // Manually start a session to test the hiding part.
+        mMediator.onUseAiModeChanged(true);
+        verify(mNativeMock).notifySessionStarted(123L);
+        Mockito.clearInvocations(mNativeMock);
+
+        // Calling with true again. Should do nothing.
+        mMediator.setToolbarVisible(true);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
+
+        // Transition to false. Should abandon the session.
+        mMediator.setToolbarVisible(false);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mNativeMock).notifySessionAbandoned(123L);
+        Mockito.clearInvocations(mNativeMock);
+
+        // Calling with false again. Should do nothing.
+        mMediator.setToolbarVisible(false);
+        verify(mNativeMock, never()).notifySessionStarted(anyLong());
+        verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
     }
 
     @Test

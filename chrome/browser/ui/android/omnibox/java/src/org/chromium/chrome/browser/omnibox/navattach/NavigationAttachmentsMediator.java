@@ -26,8 +26,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
@@ -55,7 +55,7 @@ class NavigationAttachmentsMediator {
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
     private final Drawable mFallbackDrawable;
-    private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mUseAiMode;
 
     NavigationAttachmentsMediator(
@@ -87,33 +87,51 @@ class NavigationAttachmentsMediator {
         new OneShotCallback<>(profileObservableSupplier, this::initializeBridge);
     }
 
+    /** Clean up resources used by this class. */
     void destroy() {
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
         }
     }
 
-    @Initializer
     @VisibleForTesting
     void initializeBridge(Profile profile) {
         mComposeBoxQueryControllerBridge = new ComposeBoxQueryControllerBridge(profile);
     }
 
+    /**
+     * Called when the user toggles the AI mode.
+     *
+     * @param enabled Whether the AI mode is enabled.
+     */
     void onUseAiModeChanged(boolean enabled) {
         mUseAiMode = enabled;
-        if (!enabled) {
-            mModelList.clear();
-            mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
-        }
+        setComposeboxSessionState(enabled);
     }
 
-    /** Called when the URL focus changes. */
+    /**
+     * Show or hide the navigation attachments toolbar.
+     *
+     * @param visible Whether the toolbar should be visible.
+     */
     void setToolbarVisible(boolean visible) {
         // Don't toggle visibility until we have a bridge to talk to.
         if (mComposeBoxQueryControllerBridge == null) return;
+        // Don't take an action if the state isn't really changing.
+        if (mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE) == visible) return;
 
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, visible);
-        if (visible) {
+        if (!visible) {
+            setComposeboxSessionState(false);
+        }
+    }
+
+    private void setComposeboxSessionState(boolean enabled) {
+        if (mComposeBoxQueryControllerBridge == null) return;
+        if (mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) == enabled) return;
+
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
+        if (enabled) {
             mComposeBoxQueryControllerBridge.notifySessionStarted();
         } else {
             mComposeBoxQueryControllerBridge.notifySessionAbandoned();
@@ -122,11 +140,20 @@ class NavigationAttachmentsMediator {
         }
     }
 
+    /**
+     * @return Whether the user has enabled the AI mode.
+     */
     boolean isUsingAiMode() {
         return mUseAiMode;
     }
 
+    /**
+     * @param queryText The query text to be used for the AIM URL.
+     * @return The URL for the AIM service.
+     */
     GURL getAimUrl(String queryText) {
+        assert mComposeBoxQueryControllerBridge != null;
+        if (mComposeBoxQueryControllerBridge == null) return GURL.emptyGURL();
         return mComposeBoxQueryControllerBridge.getAimUrl(queryText);
     }
 
@@ -287,9 +314,14 @@ class NavigationAttachmentsMediator {
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Add an attachment to the navigation attachments toolbar.
+     *
+     * @param attachmentDetails The details of the attachment to add.
+     */
     /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
         uploadAttachment(attachmentDetails);
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        setComposeboxSessionState(true);
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
@@ -307,6 +339,9 @@ class NavigationAttachmentsMediator {
     }
 
     private void uploadAttachment(AttachmentDetails attachmentDetails) {
+        assert mComposeBoxQueryControllerBridge != null;
+        if (mComposeBoxQueryControllerBridge == null) return;
+
         mComposeBoxQueryControllerBridge.addFile(
                 attachmentDetails.title, attachmentDetails.mimeType, attachmentDetails.data);
     }
