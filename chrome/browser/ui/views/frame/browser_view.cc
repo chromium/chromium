@@ -790,19 +790,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // based on whether it is visible instead of setting the height to 0px. This
     // will enable BrowserViewLayout to hide the contents separator on its own
     // using the same logic used by normal BrowserElementsViews.
-    // The separator should not be shown when in split view, unless the browser
-    // is in immersive fullscreen with the toolbar hidden.
-    bool is_immersive_fullscreen_no_toolbar =
-        browser_view_->IsFullscreen() &&
-        browser_view_->immersive_mode_controller()->IsEnabled()
-#if BUILDFLAG(IS_MAC)
-        &&
-        !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser())
-#endif
-        ;
-
-    return !browser_view_->browser()->app_controller() &&
-           (is_immersive_fullscreen_no_toolbar || !IsActiveTabSplit());
+    return !browser_view_->browser()->app_controller();
   }
 
   bool IsActiveTabSplit() const override {

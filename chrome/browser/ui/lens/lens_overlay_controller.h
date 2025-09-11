@@ -832,8 +832,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void OnSidePanelDidOpen();
 
   // Sets the top right or top left corner of the overlay to be rounded if the
-  // side panel is open and the tab is in a split, since SidePanelRoundedCorner
-  // will be hidden in that case.
+  // side panel is open and the `SideBySide` feature is enabled. This is
+  // necessary because rounded corners are owned by the `MultiContentsView`,
+  // and the overlay is shown on top of it.
+  // TODO(crbug.com/443102583): Remove this block if `overlay_view_` ends up
+  // getting reparented into `MultiContentsView`.
   void SetOverlayRoundedCorner();
 
   // Called to continue the screenshot process while opening lens overlay.

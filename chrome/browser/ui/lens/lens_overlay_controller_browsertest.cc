@@ -8998,11 +8998,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
       [&]() { return controller->state() == State::kOverlayAndResults; }));
 
   // Expect the side panel rounded corner to exist.
-  EXPECT_FALSE(controller->GetOverlayViewForTesting()->layer() &&
-               controller->GetOverlayViewForTesting()
-                       ->layer()
-                       ->GetTargetRoundedCornerRadius()
-                       .upper_right() > 0);
+  ASSERT_TRUE(controller->GetOverlayViewForTesting()->layer());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()
+                  ->layer()
+                  ->GetTargetRoundedCornerRadius()
+                  .upper_right() > 0);
   EXPECT_TRUE(AreAnyRoundedCornersShowing());
 }
 

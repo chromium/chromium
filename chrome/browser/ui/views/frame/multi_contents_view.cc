@@ -412,13 +412,17 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   const int width = size_bounds.width().value();
   const int height = size_bounds.height().value();
 
-  gfx::Rect available_space = CalculateSeparatorLayouts(
-      gfx::Rect(width, height), layouts.child_layouts);
+  gfx::Rect available_space = gfx::Rect(width, height);
+  if (IsDragAndDropEnabled()) {
+    available_space =
+        CalculateDropTargetLayout(available_space, layouts.child_layouts);
+  }
+
+  available_space =
+      CalculateSeparatorLayouts(available_space, layouts.child_layouts);
 
   ViewWidths widths = GetViewWidths(available_space);
 
-  gfx::Rect drop_target_rect(widths.drop_target_width,
-                             available_space.height());
   gfx::Rect start_rect(available_space.origin(),
                        gfx::Size(widths.start_width, available_space.height()));
   gfx::Rect resize_rect(
@@ -426,24 +430,6 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
       gfx::Size(widths.resize_width, available_space.height()));
   gfx::Rect end_rect(resize_rect.top_right(),
                      gfx::Size(widths.end_width, available_space.height()));
-
-  if (IsDragAndDropEnabled() && drop_target_view_->side().has_value()) {
-    switch (drop_target_view_->side().value()) {
-      case MultiContentsDropTargetView::DropSide::START:
-        // If the drop target view will show at the start, shift everything
-        // over.
-        start_rect.set_x(start_rect.x() + widths.drop_target_width);
-        resize_rect.set_x(resize_rect.x() + widths.drop_target_width);
-        end_rect.set_x(resize_rect.x() + widths.drop_target_width);
-        drop_target_rect.set_origin(available_space.origin());
-        break;
-      case MultiContentsDropTargetView::DropSide::END:
-        drop_target_rect.set_origin(end_rect.top_right());
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
 
   if (IsInSplitView()) {
     start_rect.Inset(start_contents_view_inset_);
@@ -459,19 +445,61 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
 
-  if (IsDragAndDropEnabled()) {
-    layouts.child_layouts.emplace_back(drop_target_view_.get(),
-                                       drop_target_view_->GetVisible(),
-                                       drop_target_rect);
-  }
-
   layouts.host_size = gfx::Size(width, height);
   return layouts;
+}
+
+gfx::Rect MultiContentsView::CalculateDropTargetLayout(
+    const gfx::Rect& available_space,
+    std::vector<views::ChildLayout>& child_layouts) const {
+  CHECK(IsDragAndDropEnabled());
+  if (!drop_target_view_->GetVisible()) {
+    child_layouts.emplace_back(drop_target_view_.get(), false, gfx::Rect());
+    return available_space;
+  }
+
+  const int drop_target_width =
+      drop_target_view_->GetPreferredWidth(available_space.width());
+
+  const int drop_target_x = (drop_target_view_->side() ==
+                             MultiContentsDropTargetView::DropSide::START)
+                                ? available_space.x()
+                                : available_space.right() - drop_target_width;
+  const int remaining_space_x =
+      available_space.x() + ((drop_target_view_->side() ==
+                              MultiContentsDropTargetView::DropSide::START)
+                                 ? drop_target_width
+                                 : 0);
+
+  child_layouts.emplace_back(
+      drop_target_view_.get(), true,
+      gfx::Rect(drop_target_x, available_space.y(), drop_target_width,
+                available_space.height()));
+
+  return gfx::Rect(remaining_space_x, available_space.y(),
+                   available_space.width() - drop_target_width,
+                   available_space.height());
 }
 
 gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
     const gfx::Rect& available_space,
     std::vector<views::ChildLayout>& child_layouts) const {
+  if (IsInSplitView()) {
+    child_layouts.emplace_back(contents_separators_.top_separator.get(), false,
+                               gfx::Rect());
+    child_layouts.emplace_back(contents_separators_.leading_separator.get(),
+                               false, gfx::Rect());
+    child_layouts.emplace_back(contents_separators_.trailing_separator.get(),
+                               false, gfx::Rect());
+    child_layouts.emplace_back(
+        contents_separators_.top_leading_rounded_corner.get(), false,
+        gfx::Rect());
+    child_layouts.emplace_back(
+        contents_separators_.top_trailing_rounded_corner.get(), false,
+        gfx::Rect());
+    return available_space;
+  }
+
   const int width = available_space.width();
   const int height = available_space.height();
 
@@ -484,37 +512,41 @@ gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
       contents_separators_.should_show_top,
       gfx::Rect(available_space.origin(), {width, separator_height}));
 
+  const bool should_show_leading =
+      contents_separators_.should_show_leading ||
+      (drop_target_view_->side() ==
+       MultiContentsDropTargetView::DropSide::START);
   const int leading_separator_width =
-      contents_separators_.should_show_leading
+      should_show_leading
           ? contents_separators_.leading_separator->GetPreferredSize().width()
           : 0;
   child_layouts.emplace_back(
-      contents_separators_.leading_separator.get(),
-      contents_separators_.should_show_leading,
+      contents_separators_.leading_separator.get(), should_show_leading,
       gfx::Rect(available_space.origin(), {leading_separator_width, height}));
 
+  const bool should_show_trailing =
+      contents_separators_.should_show_trailing ||
+      (drop_target_view_->side() == MultiContentsDropTargetView::DropSide::END);
+
   const int trailing_separator_width =
-      contents_separators_.should_show_trailing
+      should_show_trailing
           ? contents_separators_.trailing_separator->GetPreferredSize().width()
           : 0;
   child_layouts.emplace_back(
-      contents_separators_.trailing_separator.get(),
-      contents_separators_.should_show_trailing,
+      contents_separators_.trailing_separator.get(), should_show_trailing,
       gfx::Rect(available_space.right() - trailing_separator_width,
                 available_space.y(), trailing_separator_width, height));
 
   child_layouts.emplace_back(
       contents_separators_.top_leading_rounded_corner.get(),
-      contents_separators_.should_show_leading &&
-          contents_separators_.should_show_top,
+      should_show_leading && contents_separators_.should_show_top,
       gfx::Rect(
           available_space.origin(),
           contents_separators_.top_leading_rounded_corner->GetPreferredSize()));
 
   child_layouts.emplace_back(
       contents_separators_.top_trailing_rounded_corner.get(),
-      contents_separators_.should_show_trailing &&
-          contents_separators_.should_show_top,
+      should_show_trailing && contents_separators_.should_show_top,
       gfx::Rect({available_space.right() -
                      contents_separators_.top_trailing_rounded_corner
                          ->GetPreferredSize()
@@ -542,11 +574,7 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
         available_space.width() - widths.start_width - widths.resize_width;
   } else {
     CHECK(!contents_container_views_[1]->GetVisible());
-    widths.drop_target_width =
-        IsDragAndDropEnabled()
-            ? drop_target_view_->GetPreferredWidth(available_space.width())
-            : 0;
-    widths.start_width = available_space.width() - widths.drop_target_width;
+    widths.start_width = available_space.width();
   }
   return ClampToMinWidth(widths);
 }
@@ -616,6 +644,10 @@ void MultiContentsView::SetShouldShowTopSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_top = should_show;
+  start_contents_view_inset_.set_top(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
+  end_contents_view_inset_.set_top(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }
@@ -625,6 +657,8 @@ void MultiContentsView::SetShouldShowLeadingSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_leading = should_show;
+  start_contents_view_inset_.set_left(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }
@@ -634,6 +668,8 @@ void MultiContentsView::SetShouldShowTrailingSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_trailing = should_show;
+  end_contents_view_inset_.set_right(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }

@@ -569,3 +569,85 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {
   EXPECT_THAT(actual_child_layouts,
               testing::UnorderedElementsAreArray(expected_separator_layouts));
 }
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
+// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
+  MultiContentsView* view = multi_contents_view();
+  gfx::Rect initial_bounds(10, 20, 100, 80);
+
+  // Drop target hidden.
+  {
+    std::vector<views::ChildLayout> actual_child_layouts;
+    view->drop_target_view_->SetVisible(false);
+    view->drop_target_view_->animation_for_testing().End();
+    gfx::Rect remaining_space =
+        view->CalculateDropTargetLayout(initial_bounds, actual_child_layouts);
+
+    EXPECT_EQ(initial_bounds, remaining_space);
+    EXPECT_EQ(1u, actual_child_layouts.size());
+    EXPECT_EQ(view->drop_target_view_.get(),
+              actual_child_layouts[0].child_view);
+    EXPECT_FALSE(actual_child_layouts[0].visible);
+  }
+
+  // Drop target is on the START side.
+  {
+    std::vector<views::ChildLayout> actual_child_layouts;
+    view->drop_target_view_->Show(
+        MultiContentsDropTargetView::DropSide::START,
+        MultiContentsDropTargetView::DropTargetState::kFull);
+    view->drop_target_view_->animation_for_testing().End();
+    gfx::Rect remaining_space =
+        view->CalculateDropTargetLayout(initial_bounds, actual_child_layouts);
+
+    const int drop_target_width =
+        view->drop_target_view_->GetPreferredWidth(initial_bounds.width());
+    gfx::Rect expected_remaining_space(
+        initial_bounds.x() + drop_target_width, initial_bounds.y(),
+        initial_bounds.width() - drop_target_width, initial_bounds.height());
+    EXPECT_EQ(expected_remaining_space, remaining_space);
+
+    std::vector<views::ChildLayout> expected_child_layouts;
+    expected_child_layouts.emplace_back(
+        view->drop_target_view_.get(), true,
+        gfx::Rect(initial_bounds.x(), initial_bounds.y(), drop_target_width,
+                  initial_bounds.height()));
+    EXPECT_THAT(actual_child_layouts,
+                testing::UnorderedElementsAreArray(expected_child_layouts));
+  }
+
+  // Drop target is on the END side.
+  {
+    std::vector<views::ChildLayout> actual_child_layouts;
+    view->drop_target_view_->Show(
+        MultiContentsDropTargetView::DropSide::END,
+        MultiContentsDropTargetView::DropTargetState::kFull);
+    view->drop_target_view_->animation_for_testing().End();
+    gfx::Rect remaining_space =
+        view->CalculateDropTargetLayout(initial_bounds, actual_child_layouts);
+
+    const int drop_target_width =
+        view->drop_target_view_->GetPreferredWidth(initial_bounds.width());
+    gfx::Rect expected_remaining_space(
+        initial_bounds.x(), initial_bounds.y(),
+        initial_bounds.width() - drop_target_width, initial_bounds.height());
+    EXPECT_EQ(expected_remaining_space, remaining_space);
+
+    std::vector<views::ChildLayout> expected_child_layouts;
+    expected_child_layouts.emplace_back(
+        view->drop_target_view_.get(), true,
+        gfx::Rect(initial_bounds.right() - drop_target_width,
+                  initial_bounds.y(), drop_target_width,
+                  initial_bounds.height()));
+    EXPECT_THAT(actual_child_layouts,
+                testing::UnorderedElementsAreArray(expected_child_layouts));
+  }
+}

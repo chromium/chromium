@@ -139,11 +139,11 @@ class BrowserViewLayout : public views::LayoutManager {
   // view is active, this includes the full split view.
   int GetMinWebContentsWidth() const;
 
-  void UpdateSplitViewInsets();
-
   // Returns the current pref for vertical tabs by accessing the vertical
   // tab strip state controller
   bool IsVerticalTabsEnabled() const;
+
+  bool IsImmersiveModeEnabledWithoutToolbar() const;
 
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;

@@ -52,8 +52,6 @@ class MultiContentsView : public views::View,
     double start_width = 0;
     double resize_width = 0;
     double end_width = 0;
-
-    double drop_target_width = 0;
   };
 
   static constexpr int kSplitViewContentInset = 8;
@@ -143,12 +141,6 @@ class MultiContentsView : public views::View,
 
   MultiContentsViewDropTargetController& drop_target_controller() const;
 
-  gfx::Insets& start_contents_view_inset() {
-    return start_contents_view_inset_;
-  }
-
-  gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
-
   bool IsDragAndDropEnabled() const;
   void OnDragAndDropPrefStateChange();
 
@@ -177,6 +169,7 @@ class MultiContentsView : public views::View,
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, DropTargetLayout);
   FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, SeparatorLayout);
 
   // Encapsulates the views required to draw a separator around contents.
@@ -200,6 +193,12 @@ class MultiContentsView : public views::View,
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  // Adds the drop target layout to the given list and return the remaining
+  // available space after the layout.
+  gfx::Rect CalculateDropTargetLayout(
+      const gfx::Rect& available_space,
+      std::vector<views::ChildLayout>& child_layouts) const;
 
   // Adds separator layouts to the given list and returns the remaining
   // space after the layout.
