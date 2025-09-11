@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "chromeos/ash/components/boca/session_api/json_proto_converters.h"
 #include "google_apis/common/base_requests.h"
 
 namespace ash::boca {
@@ -132,22 +133,11 @@ namespace ash::boca {
 
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session) {
-  if (session_dict->FindDict(kTeacher)) {
-    auto* teacher = session->mutable_teacher();
-    if (auto* ptr = session_dict->FindDict(kTeacher)->FindString(kEmail)) {
-      teacher->set_email(*ptr);
-    }
-    if (auto* ptr = session_dict->FindDict(kTeacher)->FindString(kGaiaId)) {
-      teacher->set_gaia_id(*ptr);
-    }
-    if (auto* ptr = session_dict->FindDict(kTeacher)->FindString(kFullName)) {
-      teacher->set_full_name(*ptr);
-    }
-
-    if (auto* ptr = session_dict->FindDict(kTeacher)->FindString(kPhotoUrl)) {
-      teacher->set_photo_url(*ptr);
-    }
+  const auto* teacher_dict = session_dict->FindDict(kTeacher);
+  if (!teacher_dict) {
+    return;
   }
+  *session->mutable_teacher() = ConvertUserIdentityJsonToProto(teacher_dict);
 }
 
 void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
@@ -195,20 +185,8 @@ void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
         if (auto* items = students_dict.GetIfDict()->FindList(kStudents)) {
           for (auto& item : *items) {
             auto* item_dict = item.GetIfDict();
-
-            auto* students = student_groups->mutable_students()->Add();
-            if (auto* ptr = item_dict->FindString(kEmail)) {
-              students->set_email(*ptr);
-            }
-            if (auto* ptr = item_dict->FindString(kFullName)) {
-              students->set_full_name(*ptr);
-            }
-            if (auto* ptr = item_dict->FindString(kGaiaId)) {
-              students->set_gaia_id(*ptr);
-            }
-            if (auto* ptr = item_dict->FindString(kPhotoUrl)) {
-              students->set_photo_url(*ptr);
-            }
+            auto* student = student_groups->mutable_students()->Add();
+            *student = ConvertUserIdentityJsonToProto(item_dict);
           }
         }
       }
