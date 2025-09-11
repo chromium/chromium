@@ -258,6 +258,43 @@ suite('NewTabPageComposeboxTest', () => {
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
   });
 
+  test('uploading/deleting file queries zps', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    const id = generateZeroId();
+    await uploadFileAndVerify(
+        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    callbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kUploadSuccessful, null);
+    await microtasksFinished();
+
+    // Autocomplete should be stopped (with matches cleared) and then
+    // queried again when a file is uploaded.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+    // Delete the uploaded file.
+    const deletedId = composeboxElement.$.carousel.files[0]!.uuid;
+    composeboxElement.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
+      detail: {
+        uuid: deletedId,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+
+    // Deleting a file should also stop autocomplete (and clear matches) and
+    // then query autocomplete again for unimodal zps results.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 2);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
+  });
+
   [new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
    new File(['foo'], 'foo.pdf', {type: 'application/pdf'})]
       .forEach((file) => {

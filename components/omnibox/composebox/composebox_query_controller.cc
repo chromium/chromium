@@ -251,6 +251,7 @@ ComposeboxQueryController::GetNextRequestId(
   }
   if (cluster_info_.has_value()) {
     suggest_inputs_.set_search_session_id(cluster_info_->search_session_id());
+    suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
   } else {
     suggest_inputs_.clear_search_session_id();
   }
@@ -366,6 +367,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
 bool ComposeboxQueryController::DeleteFile(
     const base::UnguessableToken& file_token) {
+  // Multiple file upload is not supported yet, once it is, the suggest
+  // inputs should instead be updated to reflect this file being deleted.
+  // Suggest inputs must be cleared so when autocomplete is queried again
+  // in the UI, contextual suggestions do not appear.
+  if (active_files_.size() == 1) {
+    suggest_inputs_.Clear();
+  }
   return !!active_files_.erase(file_token);
 }
 
