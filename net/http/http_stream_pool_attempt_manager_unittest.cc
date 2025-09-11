@@ -40,6 +40,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/alternate_protocol_usage.h"
 #include "net/http/alternative_service.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_info.h"
@@ -156,7 +157,8 @@ class Preconnector {
             stream_key.socket_tag(), stream_key.network_anonymization_key(),
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
-            alternative_service_info_, allowed_alpns_, load_flags_, proxy_info_,
+            alternative_service_info_, AdvertisedAltSvcState::kUnknown,
+            allowed_alpns_, load_flags_, proxy_info_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
@@ -297,7 +299,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             stream_key.socket_tag(), stream_key.network_anonymization_key(),
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
-            alternative_service_info_, allowed_alpns_, load_flags_, proxy_info_,
+            alternative_service_info_, AdvertisedAltSvcState::kUnknown,
+            allowed_alpns_, load_flags_, proxy_info_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),

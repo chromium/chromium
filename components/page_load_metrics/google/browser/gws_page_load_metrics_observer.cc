@@ -131,6 +131,10 @@ const char kHistogramIncognitoSuffix[] = ".Incognito";
 const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
 
 const char kHistogramGWSSessionSource[] = HISTOGRAM_PREFIX "SessionSource";
+const char kHistogramGWSAdvertisedAltSvcState[] =
+    HISTOGRAM_PREFIX "AdvertisedAltSvcState";
+const char kHistogramGWSHttpNetworkSessionQuicEnabled[] =
+    HISTOGRAM_PREFIX "HttpNetworkSessionQuicEnabled";
 
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
@@ -675,21 +679,18 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
                             timing.initialize_stream_delay);
 
-  if (network_accessed_ &&
-      (http_connection_info_ == net::HttpConnectionInfoCoarse::kHTTP2 ||
-       http_connection_info_ == net::HttpConnectionInfoCoarse::kQUIC)) {
-    if (timing.session_source.has_value()) {
-      base::UmaHistogramEnumeration(
-          base::StrCat({internal::kHistogramGWSSessionSource, protocol}),
-          *timing.session_source);
+  // Record latency trace events.
+  RecordLatencyHistograms(timing.non_redirect_response_start_time);
+
+  if (network_accessed_) {
+    if (timing.session_details.has_value()) {
+      RecordSessionDetails(*timing.session_details, protocol);
     } else {
-      // Collect a DumpWithoutCrashing report.
+      // `session_details` is expected to be present. Collect a
+      // DumpWithoutCrashing report.
       base::debug::DumpWithoutCrashing();
     }
   }
-
-  // Record latency trace events.
-  RecordLatencyHistograms(timing.non_redirect_response_start_time);
 
   // Record trace events according to the navigation milestone.
   TRACE_EVENT_BEGIN("loading", "GWSNavigationStartToFirstRequestStart",
@@ -872,4 +873,38 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSTimeBetweenHCTAndSCT,
                         sct.value() - hct.value());
   }
+}
+
+void GWSPageLoadMetricsObserver::RecordSessionDetails(
+    const content::NavigationHandleTiming::SessionDetails& session_details,
+    std::string_view protocol) {
+  if (http_connection_info_ == net::HttpConnectionInfoCoarse::kHTTP2 ||
+      http_connection_info_ == net::HttpConnectionInfoCoarse::kQUIC) {
+    if (session_details.session_source.has_value()) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({internal::kHistogramGWSSessionSource, protocol}),
+          *session_details.session_source);
+    } else {
+      // `session_source` is expected to be present. Collect a
+      // DumpWithoutCrashing report.
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+
+  std::string advertized_alt_svc_state_histgram_name = base::StrCat(
+      {internal::kHistogramGWSAdvertisedAltSvcState,
+       session_details.http_network_session_quic_enabled ? ".QuicEnabled"
+                                                         : ".QuicDisabled"});
+  base::UmaHistogramEnumeration(advertized_alt_svc_state_histgram_name,
+                                session_details.advertised_alt_svc_state);
+  if (IsIncognitoProfile()) {
+    auto histogram_name = base::StrCat({advertized_alt_svc_state_histgram_name,
+                                        internal::kHistogramIncognitoSuffix});
+    base::UmaHistogramEnumeration(histogram_name,
+                                  session_details.advertised_alt_svc_state);
+  }
+
+  base::UmaHistogramBoolean(
+      internal::kHistogramGWSHttpNetworkSessionQuicEnabled,
+      session_details.http_network_session_quic_enabled);
 }

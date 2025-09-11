@@ -7090,8 +7090,15 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
         response_head_->load_timing_internal_info->connected_callback_delay;
     navigation_handle_timing_.initialize_stream_delay =
         response_head_->load_timing_internal_info->initialize_stream_delay;
-    navigation_handle_timing_.session_source =
-        response_head_->load_timing_internal_info->session_source;
+    navigation_handle_timing_.session_details = {
+        .session_source =
+            response_head_->load_timing_internal_info->session_source,
+        .advertised_alt_svc_state =
+            response_head_->load_timing_internal_info->advertised_alt_svc_state,
+        .http_network_session_quic_enabled =
+            response_head_->load_timing_internal_info
+                ->http_network_session_quic_enabled,
+    };
   }
 
   final_receive_headers_end_time_ =

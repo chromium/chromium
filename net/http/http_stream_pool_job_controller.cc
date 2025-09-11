@@ -126,6 +126,7 @@ HttpStreamPool::JobController::JobController(
       allowed_alpns_(request_info.allowed_alpns),
       proxy_info_(request_info.proxy_info),
       alternative_service_info_(request_info.alternative_service_info),
+      advertised_alt_svc_state_(request_info.advertised_alt_svc_state),
       origin_stream_key_(request_info.destination,
                          request_info.privacy_mode,
                          request_info.socket_tag,
@@ -592,9 +593,12 @@ void HttpStreamPool::JobController::CallRequestCompleteAndStreamReady() {
   CHECK(delegate_);
   CHECK(pending_stream_);
 
-  stream_request_->Complete({pending_stream_->negotiated_protocol,
-                             ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
-                             pending_stream_->session_source});
+  stream_request_->Complete({
+      .negotiated_protocol = pending_stream_->negotiated_protocol,
+      .alternate_protocol_usage = ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+      .session_source = pending_stream_->session_source,
+      .advertised_alt_svc_state = advertised_alt_svc_state_,
+  });
   delegate_->OnStreamReady(proxy_info_, std::move(pending_stream_->stream));
 }
 

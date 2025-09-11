@@ -746,7 +746,12 @@ void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
   if (stream_request_completion_details_.has_value()) {
     load_timing_internal_info->session_source =
         stream_request_completion_details_->session_source;
+    load_timing_internal_info->advertised_alt_svc_state =
+        stream_request_completion_details_->advertised_alt_svc_state;
   }
+
+  load_timing_internal_info->http_network_session_quic_enabled =
+      session_->IsQuicEnabled();
 }
 
 bool HttpNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {

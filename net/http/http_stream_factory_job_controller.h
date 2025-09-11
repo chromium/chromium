@@ -14,6 +14,8 @@
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/http/alternate_protocol_usage.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/spdy/spdy_session_pool.h"
@@ -172,6 +174,12 @@ class HttpStreamFactory::JobController
     STATE_NONE
   };
 
+  // Represents an alternative service and its state.
+  struct AdvertisedAlternativeService {
+    AlternativeServiceInfo info;
+    AdvertisedAltSvcState state = AdvertisedAltSvcState::kUnknown;
+  };
+
   void OnIOComplete(int result);
 
   void RunLoop(int result);
@@ -236,12 +244,12 @@ class HttpStreamFactory::JobController
   //   |dns_alpn_h3_job_failed_on_default_network_| to false.
   void ResetErrorStatusForJobs();
 
-  AlternativeServiceInfo GetAlternativeServiceInfoFor(
+  AdvertisedAlternativeService GetAdvertisedAltSvcFor(
       const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
-  AlternativeServiceInfo GetAlternativeServiceInfoInternal(
+  AdvertisedAlternativeService GetAdvertisedAltSvcInternal(
       const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
@@ -333,9 +341,9 @@ class HttpStreamFactory::JobController
 
   std::unique_ptr<Job> preconnect_backup_job_;
 
-  // The alternative service used by |alternative_job_|
-  // (or by |main_job_| if |is_preconnect_|.)
-  AlternativeServiceInfo alternative_service_info_;
+  // The alternative service and its state used by `alternative_job_`
+  // (or by `main_job_` if `is_preconnect_`.)
+  AdvertisedAlternativeService advertised_alt_svc_;
 
   // Error status used for alternative service brokenness reporting.
   // Net error code of the main job. Set to OK by default.

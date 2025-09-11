@@ -1113,6 +1113,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.AdvertisedAltSvcState{QuicAvailability}{IncognitoSuffix}"
+    enum="AdvertisedAltSvcState" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the state of advertised Alt-Svc for a Google search navigation.
+    This is only recorded for Search navigations and is recorded once after
+    navigation commit.
+  </summary>
+  <token key="QuicAvailability">
+    <variant name=".QuicDisabled"/>
+    <variant name=".QuicEnabled"/>
+  </token>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{ConnectionProtocolType}{Profile}"
     enum="ConnectionReuseStatus" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
@@ -1295,6 +1312,17 @@ chromium-metrics-reviews@google.com.
   <token key="BrowserInitializationStatus"
       variants="BrowserInitializationStatus"/>
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.HttpNetworkSessionQuicEnabled"
+    enum="Boolean" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures whether QUIC is enabled at the network stack for Google search
+    navigation. This is only recorded for Search navigations and is recorded
+    once after navigation commit.
+  </summary>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.IsFirstNavigationForGWS"

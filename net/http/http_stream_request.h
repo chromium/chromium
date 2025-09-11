@@ -140,6 +140,8 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
         AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
     // Indicates whether the request is used an existing H2 or H3 session.
     std::optional<SessionSource> session_source;
+    // The state of the advertised alternative service.
+    AdvertisedAltSvcState advertised_alt_svc_state;
   };
 
   // Request will notify `helper` when it's destructed.

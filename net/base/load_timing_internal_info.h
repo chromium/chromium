@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/http/alternate_protocol_usage.h"
 
 namespace net {
 
@@ -48,6 +49,13 @@ struct NET_EXPORT LoadTimingInternalInfo {
 
   // Indicates whether the request used an existing H2/H3 session or not.
   std::optional<SessionSource> session_source;
+
+  // State of the advertised alternative service.
+  AdvertisedAltSvcState advertised_alt_svc_state =
+      AdvertisedAltSvcState::kUnknown;
+
+  // Whether QUIC is enabled.
+  bool http_network_session_quic_enabled = false;
 };
 
 }  // namespace net

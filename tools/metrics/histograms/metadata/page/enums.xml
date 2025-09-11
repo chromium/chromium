@@ -31,6 +31,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received activation"/>
 </enum>
 
+<!-- LINT.IfChange(AdvertisedAltSvcState) -->
+
+<enum name="AdvertisedAltSvcState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="QuicNotBroken"/>
+  <int value="2" label="QuicBroken"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:AdvertisedAltSvcState) -->
+
 <!-- LINT.IfChange(ConnectionReuseStatus) -->
 
 <enum name="ConnectionReuseStatus">

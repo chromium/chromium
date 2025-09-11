@@ -194,6 +194,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   NextProtoSet allowed_alpns_;
   const ProxyInfo proxy_info_;
   const AlternativeServiceInfo alternative_service_info_;
+  const AdvertisedAltSvcState advertised_alt_svc_state_;
 
   const HttpStreamKey origin_stream_key_;
   const QuicSessionAliasKey origin_quic_key_;
