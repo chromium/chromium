@@ -1,5 +1,7 @@
 include_rules = [
   "+base",
+  "+components/session_manager/core",
   "+components/sync_device_info",
+  "+components/sync",
   "+testing",
 ]

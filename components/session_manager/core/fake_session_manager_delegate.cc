@@ -11,7 +11,11 @@ FakeSessionManagerDelegate::FakeSessionManagerDelegate() = default;
 FakeSessionManagerDelegate::~FakeSessionManagerDelegate() = default;
 
 void FakeSessionManagerDelegate::RequestSignOut() {
-  // Do nothing.
+  ++request_sign_out_count_;
+}
+
+int FakeSessionManagerDelegate::request_sign_out_count() const {
+  return request_sign_out_count_;
 }
 
 }  // namespace session_manager

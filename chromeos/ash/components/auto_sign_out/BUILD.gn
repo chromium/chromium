@@ -12,6 +12,8 @@ component("auto_sign_out") {
 
   deps = [
     "//base",
+    "//components/session_manager/core",
+    "//components/sync",
     "//components/sync_device_info",
   ]
 }
@@ -23,6 +25,9 @@ source_set("unit_tests") {
 
   deps = [
     ":auto_sign_out",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
+    "//components/sync:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
     "//testing/gtest",
