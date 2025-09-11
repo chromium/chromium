@@ -64,10 +64,6 @@ BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
              "LensOverlaySidePanelOpenInNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlaySimplifiedSelection,
-             "LensOverlaySimplifiedSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
              "LensOverlayVisualSelectionUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -440,22 +436,6 @@ constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
     base::Days(30)};
 constexpr base::FeatureParam<int> kRecentLanguagesAmount{
     &kLensOverlayTranslateLanguages, "recent-languages-amount", 5};
-
-constexpr base::FeatureParam<int>
-    kLensOverlaySimplifiedSelectionTextReceivedTimeout{
-        &kLensOverlaySimplifiedSelection, "simplified-text-received-timeout",
-        2000};
-constexpr base::FeatureParam<int>
-    kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout{
-        &kLensOverlaySimplifiedSelection, "copy-text-received-timeout", 500};
-constexpr base::FeatureParam<int>
-    kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout{
-        &kLensOverlaySimplifiedSelection, "translate-text-received-timeout",
-        500};
-constexpr base::FeatureParam<bool>
-    kLensOverlaySimplifiedSelectionShouldCopyAsImage{
-        &kLensOverlaySimplifiedSelection, "copy-command-copies-as-image",
-        false};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayVisualSelectionUpdatesEnableDynamicTheme{
@@ -990,26 +970,6 @@ double GetUploadProgressBarShowHeuristic() {
 
 bool ShouldAutoFocusSearchbox() {
   return kAutoFocusSearchbox.Get();
-}
-
-bool IsSimplifiedSelectionEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlaySimplifiedSelection);
-}
-
-int GetSimplifiedSelectionTextReceivedTimeout() {
-  return kLensOverlaySimplifiedSelectionTextReceivedTimeout.Get();
-}
-
-int GetCopyTextReceivedTimeout() {
-  return kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout.Get();
-}
-
-int GetTranslateTextReceivedTimeout() {
-  return kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout.Get();
-}
-
-bool GetShouldCopyAsImage() {
-  return kLensOverlaySimplifiedSelectionShouldCopyAsImage.Get();
 }
 
 bool IsLensOverlayVisualSelectionUpdatesEnabled() {

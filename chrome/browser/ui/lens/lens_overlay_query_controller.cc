@@ -1930,8 +1930,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
     RunSuggestInputsCallback();
   }
 
-  if (lens::features::IsSimplifiedSelectionEnabled() &&
-      server_response.interaction_response().has_text()) {
+  if (server_response.interaction_response().has_text()) {
     interaction_response_callback_.Run(CreateTextMojomFromInteractionResponse(
         server_response.interaction_response(),
         latest_interaction_request_data_.get()

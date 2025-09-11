@@ -3888,11 +3888,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "enable-lens-overlay-simplified-selection",
-    "owners": [ "juanmojica@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 139
-  },
-  {
     "name": "enable-lens-overlay-straight-to-srp",
     "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 145

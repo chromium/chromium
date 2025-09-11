@@ -737,8 +737,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           {{"enable-early-start-query-flow-optimization", "true"}}},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
-        /*disabled_features=*/{
-            lens::features::kLensOverlaySimplifiedSelection});
+        /*disabled_features=*/{});
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -1969,10 +1968,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleStartQueryResponse) {
-  // TODO(crbug.com/398040980): After launching simplified selection, this can
-  // be removed as it will be replaced with the
-  // `HandleStartQueryResponse` test in the
-  // `LensOverlayControllerBrowserSimplifiedSelection` suite.
   WaitForPaint();
 
   // State should start in off.
@@ -2003,6 +1998,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_objects_.empty());
 
+  // Only objects should have been sent to the overlay from the full image
+  // response.
   auto* object =
       fake_controller->fake_overlay_page_.last_received_objects_[0].get();
   auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
@@ -4638,8 +4635,7 @@ class LensOverlayControllerEntrypointsBrowserTest
     //   kAiModeOmniboxEntryPoint.
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{lens::features::kLensOverlaySimplifiedSelection,
-                               omnibox::kAiModeOmniboxEntryPoint});
+        /*disabled_features=*/{omnibox::kAiModeOmniboxEntryPoint});
   }
 
   void VerifyEntrypoints(bool expected_visible) {
@@ -9013,71 +9009,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHWithPathMatchBrowserTest,
   // URL in x_url_forced_allowed_match_patterns and in allowed path filters.
   EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.d.edu/homework")));
-}
-
-class LensOverlayControllerBrowserSimplifiedSelectionTest
-    : public LensOverlayControllerBrowserTest {
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlay,
-          {{"results-search-url", kResultsSearchBaseUrl},
-           {"use-dynamic-theme", "true"},
-           {"use-dynamic-theme-min-population-pct", "0.002"},
-           {"use-dynamic-theme-min-chroma", "3.0"}}},
-         {lens::features::kLensOverlayContextualSearchbox,
-          {
-              {"send-page-url-for-contextualization", "true"},
-              {"use-inner-text-as-context", "true"},
-          }},
-         {lens::features::kLensOverlaySurvey, {}},
-         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}},
-         {lens::features::kLensOverlaySimplifiedSelection, {}}},
-        /*disabled_features=*/{});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserSimplifiedSelectionTest,
-                       HandleStartQueryResponse) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Before showing the UI, there should be no set objects or text as
-  // no query flow has started.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(
-      fake_controller->fake_overlay_page_.last_received_objects_.empty());
-  EXPECT_FALSE(fake_controller->fake_overlay_page_.last_received_text_);
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  // When the overlay is bound, it should start the query flow which returns a
-  // response for the full image callback.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Prevent flakiness by flushing the tasks.
-  fake_controller->FlushForTesting();
-
-  // After flushing the mojo calls, the data should be present.
-  EXPECT_FALSE(
-      fake_controller->fake_overlay_page_.last_received_objects_.empty());
-
-  // Only objects should have been sent to the overlay from the full image
-  // response.
-  auto* object =
-      fake_controller->fake_overlay_page_.last_received_objects_[0].get();
-  auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
-  EXPECT_TRUE(object);
-  EXPECT_TRUE(text);
-  EXPECT_TRUE(kTestOverlayObject->Equals(*object));
-  EXPECT_EQ(kTestText->content_language, text->content_language);
 }
 
 class LensOverlayControllerSideBySideBrowserTest

@@ -58,10 +58,6 @@ BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 
-// Enables the Lens overlay simplified selection flow.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlaySimplifiedSelection);
-
 // Enables the Lens overlay visual selection updates.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdates);
@@ -726,34 +722,6 @@ extern double GetUploadProgressBarShowHeuristic();
 // first opened.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldAutoFocusSearchbox();
-
-// Whether to enable the simplified selection flow in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsSimplifiedSelectionEnabled();
-
-// The text received timeout for the simplified selection feature. Time to wait
-// for Lens text response before displaying the selected region context menu, in
-// milliseconds.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetSimplifiedSelectionTextReceivedTimeout();
-
-// The copy text received timeout for the simplified selection feature. Time to
-// wait for text in the interaction response before falling back to using the
-// full image response to copy text from a region.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetCopyTextReceivedTimeout();
-
-// The translate text received timeout for the simplified selection feature.
-// Time to wait for text in the interaction response before falling back to
-// using the full image response to translate text from a region.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetTranslateTextReceivedTimeout();
-
-// Whether the copy keyboard command (ex: CMD+C) should copy the selected region
-// as an image or copy the text within the region when the simplified selection
-// feature is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetShouldCopyAsImage();
 
 // Whether the visual selection updates are enabled. This is true if the
 // visual selection updates feature flag is enabled or if the omnibox

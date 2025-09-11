@@ -3644,14 +3644,11 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(content_data.compression_type(), lens::CompressionType::ZSTD);
 }
 
-TEST_F(LensOverlayQueryControllerTest,
-       FetchInteraction_SimplifiedSelectionWithDetectedText) {
-  // Enable simplified selection.
+TEST_F(LensOverlayQueryControllerTest, FetchInteraction_WithDetectedText) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       {{lens::features::kLensOverlayLatencyOptimizations,
-        {{"enable-cluster-info-optimization", "true"}}},
-       {lens::features::kLensOverlaySimplifiedSelection, {}}},
+        {{"enable-cluster-info-optimization", "true"}}}},
       {});
 
   base::test::TestFuture<lens::mojom::TextPtr> interaction_response_future;

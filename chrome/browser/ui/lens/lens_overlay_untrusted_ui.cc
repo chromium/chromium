@@ -34,6 +34,15 @@ namespace lens {
 
 // The number of times to show cursor tooltips.
 constexpr int kNumTimesToShowCursorTooltips = 5;
+// Time to wait for Lens text response before displaying the selected region
+// context menu, in milliseconds.
+constexpr int kTextReceivedTimeoutMs = 2000;
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to copy text from a region.
+constexpr int kCopyTextTimeoutMs = 500;
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to translate text from a region.
+constexpr int kTranslateTextTimeoutMs = 500;
 
 LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
@@ -201,18 +210,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::IsLensOverlayCopyAsImageEnabled());
   html_source->AddBoolean("enableSaveAsImage",
                           lens::features::IsLensOverlaySaveAsImageEnabled());
-  html_source->AddInteger(
-      "textReceivedTimeout",
-      lens::features::IsSimplifiedSelectionEnabled()
-          ? lens::features::GetSimplifiedSelectionTextReceivedTimeout()
-          : lens::features::
-                GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
-  html_source->AddInteger("copyTextTimeout",
-                          lens::features::GetCopyTextReceivedTimeout());
-  html_source->AddInteger("translateTextTimeout",
-                          lens::features::GetTranslateTextReceivedTimeout());
-  html_source->AddBoolean("shouldCopyAsImage",
-                          lens::features::GetShouldCopyAsImage());
+  html_source->AddInteger("textReceivedTimeout", kTextReceivedTimeoutMs);
+  html_source->AddInteger("copyTextTimeout", kCopyTextTimeoutMs);
+  html_source->AddInteger("translateTextTimeout", kTranslateTextTimeoutMs);
   html_source->AddBoolean(
       "darkMode",
       lens::LensOverlayShouldUseDarkMode(
@@ -241,8 +241,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "recentLanguagesAmount",
       lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
-  html_source->AddBoolean("simplifiedSelectionEnabled",
-                          lens::features::IsSimplifiedSelectionEnabled());
   html_source->AddBoolean(
       "enableBorderGlow",
       lens::features::GetVisualSelectionUpdatesEnableBorderGlow());

@@ -86,8 +86,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                               {lens::features::kLensOverlayContextualSearchbox,
                                {{"use-pdfs-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
-        /*disabled_features=*/{
-            lens::features::kLensOverlaySimplifiedSelection});
+        /*disabled_features=*/{});
   }
 
   void WaitForTemplateURLServiceToLoad() {
@@ -307,9 +306,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
 // This tests the following CUJ:
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
-//  (3) User highlights some text.
+//  (3) User selects a region with text.
 //  (4) User presses CTRL+C on some text.
-//  (5) Highlighted text gets copied.
+//  (5) Text in region gets copied.
 // TODO(crbug.com/399520257): Fix test failure on Linux, and ASAN.
 #if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER)
 // Flaky on ASAN, and on Linux.
@@ -326,18 +325,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
                                       kTextCopiedState);
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  auto top_left_point = base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+    return gfx::Point(el->AsA<views::TrackedElementViews>()
+                          ->view()
+                          ->GetBoundsInScreen()
+                          .origin());
+  });
 
-  // In kDocumentWithNamedElement.
-  const DeepQuery kPathToBody{
-      "body",
-  };
-
-  // Path to text
-  const DeepQuery kPathToWord{
+  // Path to region selection layer.
+  const DeepQuery kPathToRegionSelection{
       "lens-overlay-app",
       "lens-selection-overlay",
-      "lens-text-layer",
-      ".word",
+      "region-selection",
   };
 
   const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
@@ -355,15 +354,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
               kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
 
       // Wait for the webview to finish loading to prevent re-entrancy. Then
-      // click a word to highlight it. Flush tasks after click to prevent
-      // flakiness.
-      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
-                    WaitForScreenshotRendered(kOverlayId),
-                    EnsurePresent(kOverlayId, kPathToWord),
-                    MoveMouseTo(kOverlayId, kPathToWord),
-                    ClickMouse(ui_controls::LEFT)),
+      // click the center of the region selection layer to select a region.
+      // Flush tasks after click to prevent flakiness.
+      InSameContext(
+          WaitForShow(LensOverlayController::kOverlayId),
+          WaitForScreenshotRendered(kOverlayId),
+          EnsurePresent(kOverlayId, kPathToRegionSelection),
+          MoveMouseTo(kOverlayId, kPathToRegionSelection),
+          DragMouseTo(LensOverlayController::kOverlayId, top_left_point)),
 
-      // Clicking the text should have opened the side panel with the results
+      // Clicking the overlay should have opened the side panel with the results
       // frame.
       InAnyContext(InstrumentNonTabWebView(
                        kOverlaySidePanelWebViewId,
@@ -371,24 +371,23 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
                    WaitForWebContentsReady(kOverlaySidePanelWebViewId),
                    WaitForWebContentsPainted(kOverlaySidePanelWebViewId)),
 
-      //   Press CTRL+C command and ensure the highlighted text is saved to
-      //   clipboard. We send the command to the side panel web view because in
-      //   actual usage, the side panel is the view with focus so it receives
-      //   the event right after selecting text.
+      // Press CTRL+C command and ensure the selected region is saved to
+      // clipboard. Send the command to the side panel web view because in
+      // actual usage, the side panel is the view with focus so it receives
+      // the event right after selecting the region.
       InSameContext(
           WaitForShow(kOverlaySidePanelWebViewId),
           FocusWebContents(kOverlaySidePanelWebViewId),
           SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
-          PollState(kTextCopiedState,
-                    [&]() {
-                      ui::Clipboard* clipboard =
-                          ui::Clipboard::GetForCurrentThread();
-                      std::u16string clipboard_text;
-                      clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                                          /* data_dst = */ nullptr,
-                                          &clipboard_text);
-                      return base::EqualsASCII(clipboard_text, "This");
-                    }),
+          PollState(
+              kTextCopiedState,
+              [&]() {
+                ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+                std::u16string clipboard_text;
+                clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                    /* data_dst = */ nullptr, &clipboard_text);
+                return base::EqualsASCII(clipboard_text, "This is test text.");
+              }),
           WaitForState(kTextCopiedState, true)));
 }
 
@@ -946,115 +945,6 @@ IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
                   WaitForHide(LensOverlayController::kOverlayId));
 }
 
-class LensOverlayControllerSimplifiedSelectionCUJTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerSimplifiedSelectionCUJTest() = default;
-  ~LensOverlayControllerSimplifiedSelectionCUJTest() override = default;
-  LensOverlayControllerSimplifiedSelectionCUJTest(
-      const LensOverlayControllerSimplifiedSelectionCUJTest&) = delete;
-  void operator=(const LensOverlayControllerSimplifiedSelectionCUJTest&) =
-      delete;
-
-  void SetUpFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{lens::features::kLensOverlay, {}},
-                              {lens::features::kLensOverlaySimplifiedSelection,
-                               {}},
-                              {lens::features::kLensOverlayContextualSearchbox,
-                               {{"use-pdfs-as-context", "true"},
-                                {"auto-focus-searchbox", "false"}}}},
-        /*disabled_features=*/{lens::features::kLensOverlayTranslateButton});
-  }
-};
-
-// This tests the following CUJ:
-//  (1) User navigates to a website.
-//  (2) User opens lens overlay.
-//  (3) User highlights some region.
-//  (4) User presses CTRL+C.
-//  (5) Text in region gets copied.
-// TODO(crbug.com/399520257): Fix test failure on Linux, and ASAN.
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER)
-// Flaky on ASAN, and on Linux.
-#define MAYBE_CopyKeyCommandCopiesText DISABLED_CopyKeyCommandCopiesText
-#else
-#define MAYBE_CopyKeyCommandCopiesText CopyKeyCommandCopiesText
-#endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifiedSelectionCUJTest,
-                       MAYBE_CopyKeyCommandCopiesText) {
-  WaitForTemplateURLServiceToLoad();
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                      kTextCopiedState);
-
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  auto top_left_point = base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-    return gfx::Point(el->AsA<views::TrackedElementViews>()
-                          ->view()
-                          ->GetBoundsInScreen()
-                          .origin());
-  });
-
-  // Path to region selection layer.
-  const DeepQuery kPathToRegionSelection{
-      "lens-overlay-app",
-      "lens-selection-overlay",
-      "region-selection",
-  };
-
-  const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
-
-  RunTestSequence(
-      OpenLensOverlay(),
-
-      // The overlay controller is an independent floating widget associated
-      // with a tab rather than a browser window, so by convention gets its own
-      // element context.
-      InAnyContext(
-          InstrumentNonTabWebView(kOverlayId,
-                                  LensOverlayController::kOverlayId),
-          WaitForWebContentsReady(
-              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-
-      // Wait for the webview to finish loading to prevent re-entrancy. Then
-      // click the center of the region selection layer to select a region.
-      // Flush tasks after click to prevent flakiness.
-      InSameContext(
-          WaitForShow(LensOverlayController::kOverlayId),
-          WaitForScreenshotRendered(kOverlayId),
-          EnsurePresent(kOverlayId, kPathToRegionSelection),
-          MoveMouseTo(kOverlayId, kPathToRegionSelection),
-          DragMouseTo(LensOverlayController::kOverlayId, top_left_point)),
-
-      // Clicking the overlay should have opened the side panel with the results
-      // frame.
-      InAnyContext(InstrumentNonTabWebView(
-                       kOverlaySidePanelWebViewId,
-                       LensOverlayController::kOverlaySidePanelWebViewId),
-                   WaitForWebContentsReady(kOverlaySidePanelWebViewId),
-                   WaitForWebContentsPainted(kOverlaySidePanelWebViewId)),
-
-      // Press CTRL+C command and ensure the selected region is saved to
-      // clipboard. Send the command to the side panel web view because in
-      // actual usage, the side panel is the view with focus so it receives
-      // the event right after selecting the region.
-      InSameContext(
-          WaitForShow(kOverlaySidePanelWebViewId),
-          FocusWebContents(kOverlaySidePanelWebViewId),
-          SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
-          PollState(
-              kTextCopiedState,
-              [&]() {
-                ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-                std::u16string clipboard_text;
-                clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                                    /* data_dst = */ nullptr, &clipboard_text);
-                return base::EqualsASCII(clipboard_text, "This is test text.");
-              }),
-          WaitForState(kTextCopiedState, true)));
-}
 
 using LensOverlayControllerReturnToPageCUJTest = LensOverlayControllerCUJTest;
 

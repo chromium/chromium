@@ -1514,9 +1514,6 @@ extern const char kLensOverlayPermissionBubbleAltDescription[];
 extern const char kLensOverlaySidePanelOpenInNewTabName[];
 extern const char kLensOverlaySidePanelOpenInNewTabDescription[];
 
-extern const char kLensOverlaySimplifiedSelectionName[];
-extern const char kLensOverlaySimplifiedSelectionDescription[];
-
 extern const char kLensOverlayStraightToSrpName[];
 extern const char kLensOverlayStraightToSrpDescription[];
 

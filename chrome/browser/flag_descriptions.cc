@@ -2610,11 +2610,6 @@ const char kLensOverlayPermissionBubbleAltName[] =
 const char kLensOverlayPermissionBubbleAltDescription[] =
     "Enables Lens overlay permission bubble alt appearance.";
 
-const char kLensOverlaySimplifiedSelectionName[] =
-    "Lens overlay simplified selection";
-const char kLensOverlaySimplifiedSelectionDescription[] =
-    "Enables simplified selection in the Lens overlay.";
-
 const char kLensOverlayTextSelectionContextMenuEntrypointName[] =
     "Lens overlay text selection context menu entrypoint";
 const char kLensOverlayTextSelectionContextMenuEntrypointDescription[] =
