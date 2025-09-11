@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -388,8 +389,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
             // TODO(crbug.com/439911511): Remove old resources once the feature is launched.
             findPreference(PREF_GOOGLE_SERVICES)
                     .setIcon(R.drawable.ic_google_services_48dp_with_bg_containment);
-            updateBackgrounds(getListView());
         }
+        notifyPreferencesUpdated();
     }
 
     private Preference addPreferenceIfAbsent(String key) {

@@ -4,36 +4,21 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
-import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.browser_ui.settings.SettingsStylingController;
-
-import java.util.Objects;
 
 /** Preference fragment for showing the Site Settings UI. */
 @NullMarked
 public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
-        implements FragmentSettingsNavigation {
+        implements FragmentSettingsNavigation, PreferenceUpdateObserver.Provider {
     private @Nullable SiteSettingsDelegate mSiteSettingsDelegate;
     private @Nullable SettingsNavigation mSettingsNavigation;
-
-    /**
-     * The item decoration that applies the background to the settings items. Null if the settings
-     * containment feature is not enabled.
-     */
-    private @Nullable SettingsItemBackgroundDecoration mItemBackgroundDecoration;
+    private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
 
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
@@ -56,45 +41,6 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
         return mSiteSettingsDelegate != null;
     }
 
-    @NonNull
-    @Override
-    public RecyclerView onCreateRecyclerView(
-            @NonNull LayoutInflater inflater,
-            @NonNull ViewGroup parent,
-            @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView =
-                super.onCreateRecyclerView(inflater, parent, savedInstanceState);
-
-        if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration();
-            recyclerView.addItemDecoration(mItemBackgroundDecoration);
-        }
-        return recyclerView;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-            updateBackgrounds(getListView());
-        }
-    }
-
-    /** Updates the background of all the visible preferences on the settings screen. */
-    protected void updateBackgrounds(RecyclerView recyclerView) {
-        recyclerView.post(
-                () -> {
-                    if (mItemBackgroundDecoration == null) return;
-                    SettingsStylingController stylingController =
-                            new SettingsStylingController(
-                                    Objects.requireNonNull(getContext()), getPreferenceScreen());
-
-                    mItemBackgroundDecoration.updatePreferenceStyles(
-                            stylingController.generatePreferenceStyles());
-                    recyclerView.invalidateItemDecorations();
-                });
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -111,5 +57,22 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     /** Returns the associated {@link SettingsNavigation}. */
     public @Nullable SettingsNavigation getSettingsNavigation() {
         return mSettingsNavigation;
+    }
+
+    @Override
+    public void setPreferenceUpdateObserver(PreferenceUpdateObserver observer) {
+        mPreferenceUpdateObserver = observer;
+    }
+
+    @Override
+    public void removePreferenceUpdateObserver() {
+        mPreferenceUpdateObserver = null;
+    }
+
+    /** Notifies the observer that the preferences have been updated. */
+    protected void notifyPreferencesUpdated() {
+        if (mPreferenceUpdateObserver != null) {
+            mPreferenceUpdateObserver.onPreferencesUpdated(this);
+        }
     }
 }

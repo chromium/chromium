@@ -338,6 +338,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     @Override
     public void onPersonalDataChanged() {
         rebuildProfileList();
+        notifyPreferencesUpdated();
         if (sObserverForTest != null) sObserverForTest.onEditorDismiss();
     }
 

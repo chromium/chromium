@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -53,7 +54,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
+import org.chromium.components.browser_ui.settings.SettingsStylingController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -67,7 +71,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The Chrome settings activity.
@@ -89,7 +95,9 @@ import java.util.Locale;
  */
 @NullMarked
 public class SettingsActivity extends ChromeBaseAppCompatActivity
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+                SnackbarManageable,
+                PreferenceUpdateObserver {
     private static final String TAG = "SettingsActivity";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -134,6 +142,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
 
+    private final Map<Fragment, SettingsItemBackgroundDecoration> mItemDecorations =
+            new HashMap<>();
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -167,6 +178,49 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (!mStandalone) {
             fragmentManager.registerFragmentLifecycleCallbacks(
                     new TitleUpdater(), false /* recursive */);
+        }
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    new FragmentManager.FragmentLifecycleCallbacks() {
+                        @Override
+                        public void onFragmentAttached(
+                                @NonNull FragmentManager fm,
+                                @NonNull Fragment f,
+                                @NonNull Context context) {
+                            if (f instanceof PreferenceUpdateObserver.Provider provider) {
+                                provider.setPreferenceUpdateObserver(SettingsActivity.this);
+                            }
+                        }
+
+                        @Override
+                        public void onFragmentDetached(
+                                @NonNull FragmentManager fm, @NonNull Fragment f) {
+                            if (f instanceof PreferenceUpdateObserver.Provider provider) {
+                                provider.removePreferenceUpdateObserver();
+                            }
+                        }
+
+                        @Override
+                        public void onFragmentViewCreated(
+                                @NonNull FragmentManager fm,
+                                @NonNull Fragment f,
+                                @NonNull View v,
+                                @Nullable Bundle savedInstanceState) {
+                            if (f instanceof PreferenceFragmentCompat fragment) {
+                                updateBackgrounds(fragment);
+                            }
+                        }
+
+                        @Override
+                        public void onFragmentViewDestroyed(
+                                @NonNull FragmentManager fm, @NonNull Fragment f) {
+                            if (f instanceof PreferenceFragmentCompat) {
+                                mItemDecorations.remove(f);
+                            }
+                        }
+                    },
+                    false /* recursive */);
         }
 
         super.onCreate(savedInstanceState);
@@ -211,6 +265,36 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             findViewById(R.id.content).setBackgroundColor(backgroundColor);
             findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
         }
+    }
+
+    @Override
+    public void onPreferencesUpdated(PreferenceFragmentCompat fragment) {
+        updateBackgrounds(fragment);
+    }
+
+    /** Updates the background of all the visible preferences on the settings screen. */
+    private void updateBackgrounds(PreferenceFragmentCompat fragment) {
+        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()
+                || fragment.getListView() == null) return;
+        // Posting this runnable ensures the RecyclerView has completed its layout pass before
+        // updating backgrounds.
+        fragment.getListView()
+                .post(
+                        () -> {
+                            SettingsStylingController controller =
+                                    new SettingsStylingController(
+                                            SettingsActivity.this, fragment.getPreferenceScreen());
+                            SettingsItemBackgroundDecoration itemDecoration =
+                                    mItemDecorations.get(fragment);
+                            if (itemDecoration == null) {
+                                itemDecoration = new SettingsItemBackgroundDecoration();
+                                mItemDecorations.put(fragment, itemDecoration);
+                                fragment.getListView().addItemDecoration(itemDecoration);
+                            }
+                            itemDecoration.updatePreferenceStyles(
+                                    controller.generatePreferenceStyles());
+                            fragment.getListView().invalidateItemDecorations();
+                        });
     }
 
     @Override

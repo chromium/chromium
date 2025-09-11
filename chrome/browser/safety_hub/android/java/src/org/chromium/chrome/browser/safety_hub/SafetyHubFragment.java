@@ -338,6 +338,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModuleMediator.updateModule();
 
         updateAllModulesExpandState();
+        notifyPreferencesUpdated();
     }
 
     private void updateAllModulesExpandState() {

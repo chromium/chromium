@@ -122,6 +122,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             if (mEmptyView == null) return;
 
             mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
+            notifyPreferencesUpdated();
         }
     }
 

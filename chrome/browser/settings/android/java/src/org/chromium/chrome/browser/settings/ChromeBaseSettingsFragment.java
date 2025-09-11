@@ -4,14 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -22,11 +15,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
-import org.chromium.components.browser_ui.settings.SettingsStylingController;
-
-import java.util.Objects;
 
 /**
  * Base class for settings in Chrome.
@@ -39,55 +29,11 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         implements EmbeddableSettingsPage,
                 ProfileDependentSetting,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient,
-                CustomDividerFragment {
+                CustomDividerFragment,
+                PreferenceUpdateObserver.Provider {
     private Profile mProfile;
     private SettingsCustomTabLauncher mCustomTabLauncher;
-
-    /**
-     * The item decoration that applies the background to the settings items. Null if the settings
-     * containment feature is not enabled.
-     */
-    private @Nullable SettingsItemBackgroundDecoration mItemBackgroundDecoration;
-
-    @NonNull
-    @Override
-    public RecyclerView onCreateRecyclerView(
-            @NonNull LayoutInflater inflater,
-            @NonNull ViewGroup parent,
-            @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView =
-                super.onCreateRecyclerView(inflater, parent, savedInstanceState);
-
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration();
-            recyclerView.addItemDecoration(mItemBackgroundDecoration);
-        }
-        return recyclerView;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            updateBackgrounds(getListView());
-        }
-    }
-
-    /** Updates the background of all the visible preferences on the settings screen. */
-    protected void updateBackgrounds(RecyclerView recyclerView) {
-        recyclerView.post(
-                () -> {
-                    if (mItemBackgroundDecoration == null) return;
-                    SettingsStylingController stylingController =
-                            new SettingsStylingController(
-                                    Objects.requireNonNull(getContext()), getPreferenceScreen());
-
-                    mItemBackgroundDecoration.updatePreferenceStyles(
-                            stylingController.generatePreferenceStyles());
-                    recyclerView.invalidateItemDecorations();
-                });
-    }
+    private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
 
     /**
      * @return The profile associated with the current Settings screen.
@@ -109,6 +55,16 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         mCustomTabLauncher = customTabLauncher;
     }
 
+    @Override
+    public void setPreferenceUpdateObserver(PreferenceUpdateObserver observer) {
+        mPreferenceUpdateObserver = observer;
+    }
+
+    @Override
+    public void removePreferenceUpdateObserver() {
+        mPreferenceUpdateObserver = null;
+    }
+
     // CustomDividerFragment implementation.
     /** Returns whether the divider should be shown. */
     @Override
@@ -128,5 +84,12 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
      */
     public SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
+    }
+
+    /** Notifies the observer that the preferences have been updated. */
+    protected void notifyPreferencesUpdated() {
+        if (mPreferenceUpdateObserver != null) {
+            mPreferenceUpdateObserver.onPreferencesUpdated(this);
+        }
     }
 }
