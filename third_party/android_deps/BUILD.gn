@@ -262,6 +262,11 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_serialization_json_java") {
+    deps = [ ":org_jetbrains_kotlinx_kotlinx_serialization_json_jvm_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jsoup_jsoup_java") {
     jar_path = "cipd/libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
     output_name = "org_jsoup_jsoup"
@@ -356,6 +361,26 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_serialization_json_jvm_java") {
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_json_jvm/kotlinx-serialization-json-jvm-1.7.2.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_serialization_json_jvm"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":org_jetbrains_kotlinx_kotlinx_serialization_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
