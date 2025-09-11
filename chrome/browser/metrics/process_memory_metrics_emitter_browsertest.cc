@@ -39,6 +39,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -121,18 +122,24 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  private:
   ~ProcessMemoryMetricsEmitterFake() override = default;
 
-  void ReceivedMemoryDump(bool success,
-                          std::unique_ptr<GlobalMemoryDump> ptr) override {
+  void ReceivedMemoryDump(
+      absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
+      bool success,
+      std::unique_ptr<GlobalMemoryDump> ptr) override {
     EXPECT_TRUE(success);
-    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(success, std::move(ptr));
+    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
+                                                    success, std::move(ptr));
     finished_memory_dump_ = true;
     QuitIfFinished();
   }
 
-  void ReceivedProcessInfos(std::vector<ProcessInfo> process_infos) override {
-    ProcessMemoryMetricsEmitter::ReceivedProcessInfos(std::move(process_infos));
+  absl::flat_hash_map<base::ProcessId, ProcessInfo> ReceivedProcessInfos(
+      std::vector<ProcessInfo> process_infos) override {
+    auto process_info_map = ProcessMemoryMetricsEmitter::ReceivedProcessInfos(
+        std::move(process_infos));
     finished_process_info_ = true;
     QuitIfFinished();
+    return process_info_map;
   }
 
   void QuitIfFinished() {

@@ -23,6 +23,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
@@ -55,24 +56,27 @@ int GetResidentValue(const MetricMap& metric_map) {
 // visibility.
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  public:
-  ProcessMemoryMetricsEmitterFake(
+  explicit ProcessMemoryMetricsEmitterFake(
       ukm::TestAutoSetUkmRecorder& test_ukm_recorder)
-      : ukm_recorder_(&test_ukm_recorder) {
-    MarkServiceRequestsInProgress();
-  }
+      : ukm_recorder_(&test_ukm_recorder) {}
 
   ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
       delete;
   ProcessMemoryMetricsEmitterFake& operator=(
       const ProcessMemoryMetricsEmitterFake&) = delete;
 
-  void ReceivedMemoryDump(bool success,
-                          std::unique_ptr<GlobalMemoryDump> ptr) override {
-    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(success, std::move(ptr));
+  void ReceivedMemoryDump(
+      absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
+      bool success,
+      std::unique_ptr<GlobalMemoryDump> ptr) override {
+    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
+                                                    success, std::move(ptr));
   }
 
-  void ReceivedProcessInfos(ProcessInfoVector process_infos) override {
-    ProcessMemoryMetricsEmitter::ReceivedProcessInfos(std::move(process_infos));
+  absl::flat_hash_map<base::ProcessId, ProcessInfo> ReceivedProcessInfos(
+      ProcessInfoVector process_infos) override {
+    return ProcessMemoryMetricsEmitter::ReceivedProcessInfos(
+        std::move(process_infos));
   }
 
   ukm::UkmRecorder* GetUkmRecorder() override { return ukm_recorder_; }
@@ -88,13 +92,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
 
   std::optional<base::TimeDelta> GetProcessUptime(
       base::TimeTicks now,
-      base::ProcessId pid) override {
-    switch (pid) {
-      case 401:
-        return base::Seconds(21);
-      default:
-        return base::Seconds(42);
+      const ProcessInfo* process_info) override {
+    if (process_info && process_info->pid == 401) {
+      return base::Seconds(21);
     }
+    return base::Seconds(42);
   }
 
  private:
@@ -702,9 +704,9 @@ TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {
 
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
-  emitter->ReceivedProcessInfos(ProcessInfoVector());
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+      emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
   expected_entries.push_back(expected_metrics);
@@ -733,11 +735,17 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
       memory_instrumentation::mojom::GlobalMemoryDump::New());
   PopulateRendererMetrics(global_dump, expected_metrics, 401);
 
+  // Need a ProcessInfo with the correct PID for the GetProcessUptime fake,
+  // which will override the `launch_time` with fixed test data.
+  ProcessInfoVector process_infos(1);
+  process_infos[0].pid = 401;
+  process_infos[0].launch_time = base::TimeTicks::Now();
+
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
-  emitter->ReceivedProcessInfos(ProcessInfoVector());
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+      emitter->ReceivedProcessInfos(std::move(process_infos)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
   expected_entries.push_back(expected_metrics);
@@ -771,9 +779,9 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
 
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
-  emitter->ReceivedProcessInfos(ProcessInfoVector());
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+      emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   CheckMemoryUkmEntryMetrics(entries_metrics);
 }
@@ -802,9 +810,9 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsManyDumps) {
       expected_metrics.erase("TimeSinceLastVisible");
       entries_metrics.push_back(expected_metrics);
     }
-    emitter->ReceivedProcessInfos(ProcessInfoVector());
     emitter->ReceivedMemoryDump(
-        true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+        emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+        GlobalMemoryDump::MoveFrom(std::move(global_dump)));
   }
 
   CheckMemoryUkmEntryMetrics(entries_metrics, 2u);
@@ -819,9 +827,9 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ReceiveProcessInfoFirst) {
 
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 2u);
@@ -852,8 +860,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ReceiveProcessInfoSecond) {
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 2u);
@@ -884,8 +892,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GlobalDumpFailed) {
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
   emitter->ReceivedMemoryDump(
-      false, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), false,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Should not record any metrics since the memory dump failed, and don't
   // crash.
@@ -904,8 +912,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ProcessInfoHasTwoURLs) {
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that if there are two URLs, neither is emitted.
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -999,8 +1007,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
   histograms.ExpectBucketCount(
@@ -1080,8 +1088,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GpuHistogramsAreRecorded) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
   histograms.ExpectBucketCount("Memory.Experimental.Gpu2.Vulkan2",
@@ -1105,8 +1113,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
       new ProcessMemoryMetricsEmitterFake(test_ukm_recorder_));
   emitter->ReceivedMemoryDump(
-      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
-  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::Memory_TabFootprint::kEntryName);
