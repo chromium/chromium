@@ -5374,8 +5374,9 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   }));
 }
 
+// TODO(crbug.com/440876016): Re-enable this test
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
-                       PdfBytesExcludedInRequest) {
+                       DISABLED_PdfBytesExcludedInRequest) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Open the PDF document and wait for it to finish loading.
