@@ -96,30 +96,26 @@ import java.util.concurrent.FutureTask;
  * implementation classes.
  *
  * <p>The exact initialization process depends on the platform OS level:
+ *
  * <ul>
- *
- * <li>On API 21 (no longer supported), the platform invoked a parameterless constructor. Since we
- * didn't have a WebViewDelegate instance, this required us to invoke WebViewDelegate methods via
- * reflection. This constructor has been removed from the code as we no longer support Android
- * 21.</li>
- *
- * <li>From API 22 through API 25, the platform instead directly calls the constructor with a
- * WebViewDelegate parameter (See internal CL http://ag/577188 or the public AOSP cherrypick
- * https://r.android.com/114870). API 22 (no longer supported) would fallback to the
- * parameterless constructor if the first constructor call throws an exception, however this
- * fallback was removed in API 23.</li>
- *
- * <li>Starting in API 26, the platform calls {@link #create} instead of calling the constructor
- * directly (see internal CLs http://ag/1334128 and http://ag/1846560).</li>
- *
- * <li>From API 27 onward, the platform code is updated during each release to use the {@code
- * WebViewChromiumFactoryProviderForX} subclass, where "X" is replaced by the actual platform API
- * version (ex. "ForOMR1"). It still invokes the {@link #create} method on the subclass. While the
- * OS version is still under development, the "ForX" subclass implements the new platform APIs (in a
- * private codebase). Once the APIs for that version have been finalized, we eventually roll these
- * implementations into this class and the "ForX" subclass just calls directly into this
- * implementation.</li>
- *
+ *   <li>On API 21 (no longer supported), the platform invoked a parameterless constructor. Since we
+ *       didn't have a WebViewDelegate instance, this required us to invoke WebViewDelegate methods
+ *       via reflection. This constructor has been removed from the code as we no longer support
+ *       Android 21.
+ *   <li>From API 22 through API 25, the platform instead directly calls the constructor with a
+ *       WebViewDelegate parameter (See internal CL http://ag/577188 or the public AOSP cherrypick
+ *       https://r.android.com/114870). API 22 (no longer supported) would fallback to the
+ *       parameterless constructor if the first constructor call throws an exception, however this
+ *       fallback was removed in API 23.
+ *   <li>Starting in API 26, the platform calls {@link #create} instead of calling the constructor
+ *       directly (see internal CLs http://ag/1334128 and http://ag/1846560).
+ *   <li>From API 27 onward, the platform code is updated during each release to use the {@code
+ *       WebViewChromiumFactoryProviderForX} subclass, where "X" is replaced by the actual platform
+ *       API version (ex. "ForOMR1"). It still invokes the {@link #create} method on the subclass.
+ *       While the OS version is still under development, the "ForX" subclass implements the new
+ *       platform APIs (in a private codebase). Once the APIs for that version have been finalized,
+ *       we eventually roll these implementations into this class and the "ForX" subclass just calls
+ *       directly into this implementation.
  * </ul>
  */
 @SuppressWarnings("deprecation")
@@ -170,15 +166,92 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     /**
-     * Class that takes care of chromium lazy initialization.
-     * This is package-public so that a downstream subclass can access it.
+     * Class that takes care of chromium lazy initialization. This is package-public so that a
+     * downstream subclass can access it.
      */
     /* package */ WebViewChromiumAwInit mAwInit;
+
+    private SharedStatics mSharedStatics;
+
+    // Should only be called after initialize.
+    public SharedStatics getSharedStatics() {
+        assert mSharedStatics != null;
+        return mSharedStatics;
+    }
 
     private SharedPreferences mWebViewPrefs;
     private WebViewDelegate mWebViewDelegate;
 
-    @GuardedBy("mAwInit.getLazyInitLock()")
+    private static class StaticsAdapter implements Statics {
+        private final SharedStatics mSharedStatics;
+
+        StaticsAdapter(SharedStatics sharedStatics) {
+            mSharedStatics = sharedStatics;
+        }
+
+        @Override
+        public String findAddress(String addr) {
+            return mSharedStatics.findAddress(addr);
+        }
+
+        @Override
+        public String getDefaultUserAgent(Context context) {
+            return mSharedStatics.getDefaultUserAgent(context);
+        }
+
+        @Override
+        public void setWebContentsDebuggingEnabled(boolean enable) {
+            mSharedStatics.setWebContentsDebuggingEnabled(enable);
+        }
+
+        @Override
+        public void clearClientCertPreferences(Runnable onCleared) {
+            mSharedStatics.clearClientCertPreferences(onCleared);
+        }
+
+        @Override
+        public void freeMemoryForTests() {
+            mSharedStatics.freeMemoryForTests();
+        }
+
+        @Override
+        public void enableSlowWholeDocumentDraw() {
+            mSharedStatics.enableSlowWholeDocumentDraw();
+        }
+
+        @Override
+        public Uri[] parseFileChooserResult(int resultCode, Intent intent) {
+            return mSharedStatics.parseFileChooserResult(resultCode, intent);
+        }
+
+        @Override
+        public void initSafeBrowsing(Context context, ValueCallback<Boolean> callback) {
+            mSharedStatics.initSafeBrowsing(context, CallbackConverter.fromValueCallback(callback));
+        }
+
+        @Override
+        public void setSafeBrowsingWhitelist(List<String> urls, ValueCallback<Boolean> callback) {
+            mSharedStatics.setSafeBrowsingAllowlist(
+                    urls, CallbackConverter.fromValueCallback(callback));
+        }
+
+        @Override
+        public Uri getSafeBrowsingPrivacyPolicyUrl() {
+            return mSharedStatics.getSafeBrowsingPrivacyPolicyUrl();
+        }
+
+        @SuppressWarnings("UnusedMethod")
+        public boolean isMultiProcessEnabled() {
+            return mSharedStatics.isMultiProcessEnabled();
+        }
+
+        @SuppressWarnings("UnusedMethod")
+        public String getVariationsHeader() {
+            return mSharedStatics.getVariationsHeader();
+        }
+    }
+    ;
+
     private Statics mStaticsAdapter;
 
     private boolean mIsSafeModeEnabled;
@@ -370,6 +443,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
 
             mAwInit = createAwInit();
+            mSharedStatics = new SharedStatics(mAwInit);
+            mStaticsAdapter = new StaticsAdapter(mSharedStatics);
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 mAwInit.setProviderInitOnMainLooperLocation(
                         new Throwable(
@@ -759,80 +834,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mWebViewPrefs;
     }
 
+    // Should be called only after initialize()
     @Override
     public Statics getStatics() {
-        SharedStatics sharedStatics = mAwInit.getStatics();
-        synchronized (mAwInit.getLazyInitLock()) {
-            if (mStaticsAdapter == null) {
-                mStaticsAdapter =
-                        new Statics() {
-                            @Override
-                            public String findAddress(String addr) {
-                                return sharedStatics.findAddress(addr);
-                            }
-
-                            @Override
-                            public String getDefaultUserAgent(Context context) {
-                                return sharedStatics.getDefaultUserAgent(context);
-                            }
-
-                            @Override
-                            public void setWebContentsDebuggingEnabled(boolean enable) {
-                                sharedStatics.setWebContentsDebuggingEnabled(enable);
-                            }
-
-                            @Override
-                            public void clearClientCertPreferences(Runnable onCleared) {
-                                sharedStatics.clearClientCertPreferences(onCleared);
-                            }
-
-                            @Override
-                            public void freeMemoryForTests() {
-                                sharedStatics.freeMemoryForTests();
-                            }
-
-                            @Override
-                            public void enableSlowWholeDocumentDraw() {
-                                sharedStatics.enableSlowWholeDocumentDraw();
-                            }
-
-                            @Override
-                            public Uri[] parseFileChooserResult(int resultCode, Intent intent) {
-                                return sharedStatics.parseFileChooserResult(resultCode, intent);
-                            }
-
-                            @Override
-                            public void initSafeBrowsing(
-                                    Context context, ValueCallback<Boolean> callback) {
-                                sharedStatics.initSafeBrowsing(
-                                        context, CallbackConverter.fromValueCallback(callback));
-                            }
-
-                            @Override
-                            public void setSafeBrowsingWhitelist(
-                                    List<String> urls, ValueCallback<Boolean> callback) {
-                                sharedStatics.setSafeBrowsingAllowlist(
-                                        urls, CallbackConverter.fromValueCallback(callback));
-                            }
-
-                            @Override
-                            public Uri getSafeBrowsingPrivacyPolicyUrl() {
-                                return sharedStatics.getSafeBrowsingPrivacyPolicyUrl();
-                            }
-
-                            @SuppressWarnings("UnusedMethod")
-                            public boolean isMultiProcessEnabled() {
-                                return sharedStatics.isMultiProcessEnabled();
-                            }
-
-                            @SuppressWarnings("UnusedMethod")
-                            public String getVariationsHeader() {
-                                return sharedStatics.getVariationsHeader();
-                            }
-                        };
-            }
-            return mStaticsAdapter;
-        }
+        assert mStaticsAdapter != null;
+        return mStaticsAdapter;
     }
 
     @Override

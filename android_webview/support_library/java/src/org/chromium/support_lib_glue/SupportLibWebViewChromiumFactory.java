@@ -473,8 +473,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 "Android.WebView.AndroidX.ApiCall", apiCall, ApiCall.COUNT);
     }
 
-    @GuardedBy("mAwInit.getLazyInitLock()")
-    private InvocationHandler mStatics;
+    private final InvocationHandler mStatics;
 
     @GuardedBy("mAwInit.getLazyInitLock()")
     private InvocationHandler mServiceWorkerController;
@@ -496,6 +495,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebkitToCompatConverterAdapter());
         mAwInit = WebkitToSharedGlueConverter.getGlobalAwInit();
+        mStatics =
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new StaticsAdapter(mAwInit.getSharedStatics()));
     }
 
     @Override
@@ -610,16 +612,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getStatics() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_STATICS")) {
             recordApiCall(ApiCall.GET_STATICS);
-            SharedStatics sharedStatics = mAwInit.getStatics();
-            synchronized (mAwInit.getLazyInitLock()) {
-                if (mStatics == null) {
-                    mStatics =
-                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                    new StaticsAdapter(sharedStatics));
-                }
-
-                return mStatics;
-            }
+            return mStatics;
         }
     }
 

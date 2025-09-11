@@ -276,7 +276,7 @@ public class WebViewChromiumAwInit {
         int ASYNC_WEBVIEW_STARTUP = 10;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
         int COUNT = 11;
-    };
+    }
 
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
@@ -460,8 +460,7 @@ public class WebViewChromiumAwInit {
                     }
 
                     if (ApkInfo.isDebugAndroidOrApp()) {
-                        mChromiumStartedGlobals.mSharedStatics
-                                .setWebContentsDebuggingEnabledUnconditionally(true);
+                        getSharedStatics().setWebContentsDebuggingEnabledUnconditionally(true);
                     }
 
                     if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -814,6 +813,10 @@ public class WebViewChromiumAwInit {
         }
     }
 
+    public SharedStatics getSharedStatics() {
+        return mFactory.getSharedStatics();
+    }
+
     public AwTracingController getAwTracingController() {
         triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
         return mChromiumStartedGlobals.mAwTracingController;
@@ -822,13 +825,6 @@ public class WebViewChromiumAwInit {
     public AwProxyController getAwProxyController() {
         triggerAndWaitForChromiumStarted(CallSite.GET_AW_PROXY_CONTROLLER);
         return mChromiumStartedGlobals.mAwProxyController;
-    }
-
-    public SharedStatics getStatics() {
-        // TODO: Optimization potential: most of the static methods only need the native
-        // library loaded and initialized, not the entire browser process started.
-        triggerAndWaitForChromiumStarted(CallSite.GET_STATICS);
-        return mChromiumStartedGlobals.mSharedStatics;
     }
 
     public CookieManager getDefaultCookieManager() {
@@ -950,10 +946,8 @@ public class WebViewChromiumAwInit {
     private static final class ChromiumStartedGlobals {
         final AwTracingController mAwTracingController;
         final AwProxyController mAwProxyController;
-        final SharedStatics mSharedStatics;
 
         ChromiumStartedGlobals() {
-            mSharedStatics = new SharedStatics();
             mAwProxyController = new AwProxyController();
             mAwTracingController = new AwTracingController();
         }
