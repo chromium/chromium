@@ -1454,6 +1454,8 @@ crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animati
 crbug.com/384523570 virtual/run-snapshot-post-layout/fast/animation/scroll-animations/scroll-animation-lifetime.html [ Timeout ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/fast/animation/scroll-animations/scrolltimeline-root-scroller-quirks-mode.html [ Failure ]
+crbug.com/444224359 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/css/animation-range-normal-matches-cover.html [ Failure Pass ]
+crbug.com/444258753 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/svg-graphics-element-001.html [ Failure Pass ]
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
 crbug.com/1234202 external/wpt/html/semantics/embedded-content/the-video-element/video_initially_paused.html [ Failure ]
