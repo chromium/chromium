@@ -121,7 +121,7 @@ void OnDeviceModelService::GetDeviceAndPerformanceInfo(
   // This is expected to take awhile in some cases, so run on a background
   // thread to avoid blocking the main thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           [](OnDeviceModelService* service) {
             if (!service) {
