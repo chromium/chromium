@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {TooltipPosition} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -156,6 +158,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
       // First inspectable view after sorting.
       firstInspectView_: {type: Object},
+      enableToggleTooltipPosition_: {type: String},
     };
   }
 
@@ -167,6 +170,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       createDummyExtensionInfo();
   private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
       undefined;
+  protected accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
+
+  override firstUpdated() {
+    this.enableToggleTooltipPosition_ =
+        isRTL() ? TooltipPosition.RIGHT : TooltipPosition.LEFT;
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
