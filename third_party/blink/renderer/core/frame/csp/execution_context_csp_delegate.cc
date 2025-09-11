@@ -263,6 +263,10 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
   }
 }
 
+bool ExecutionContextCSPDelegate::ScriptSrcExtendedHashesEnabled() {
+  return RuntimeEnabledFeatures::CSPHashesV1Enabled(execution_context_);
+}
+
 SecurityContext& ExecutionContextCSPDelegate::GetSecurityContext() {
   return execution_context_->GetSecurityContext();
 }

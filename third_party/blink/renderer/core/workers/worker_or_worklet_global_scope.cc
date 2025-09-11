@@ -179,6 +179,8 @@ class OutsideSettingsCSPDelegate final
     global_scope_for_logging_->AddInspectorIssue(std::move(issue));
   }
 
+  bool ScriptSrcExtendedHashesEnabled() override { return false; }
+
  private:
   const Member<const FetchClientSettingsObject> outside_settings_object_;
   const Member<UseCounter> use_counter_;

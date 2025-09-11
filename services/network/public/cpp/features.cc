@@ -633,7 +633,7 @@ BASE_FEATURE(kCSPScriptSrcV2, "ScriptSrcV2", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCSPScriptSrcHashesInV1,
              "ScriptSrcHashesV1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheSharingForPervasiveScripts,
              "CacheSharingForPervasiveScripts",

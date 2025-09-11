@@ -1165,11 +1165,16 @@
     },
     {
       // When enabled, allowlisting script urls and scripts used in eval via
-      // hashes will be supported in script-src. Controlled by the
-      // network::features::kCSPScriptSrcHashesInV1 flag.
+      // hashes will be supported in script-src. This is a no-op if the
+      // network::features::kCSPScriptSrcHashesInV1 flag is off, since it
+      // controls parsing in the network service.
       // See crbug.com/392657736 for details.
       name: "CSPHashesV1",
       base_feature: "none",
+      origin_trial_feature_name: "CSPExtendedScriptSrcHashes",
+      origin_trial_os: ["win", "linux", "mac", "android", "chromeos"],
+      status: "experimental",
+      public: true,
     },
     {
       name: "CSPReportHash",

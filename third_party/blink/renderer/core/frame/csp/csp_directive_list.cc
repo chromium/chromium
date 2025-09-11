@@ -366,13 +366,15 @@ bool CheckEvalAndReportViolation(
     const String& console_message,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    const Vector<network::IntegrityMetadata>& script_hash_values) {
+    const Vector<network::IntegrityMetadata>& script_hash_values,
+    bool csp_extended_script_src_hashes_enabled) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (CheckAllowEval(directive.source_list)) {
     return true;
   }
-  if (CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
+  if (csp_extended_script_src_hashes_enabled &&
+      CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
     return true;
   }
   String suffix = String();
@@ -385,14 +387,14 @@ bool CheckEvalAndReportViolation(
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   std::optional<String> hash;
-  if (base::FeatureList::IsEnabled(
-          network::features::kCSPScriptSrcHashesInV1)) {
+  if (csp_extended_script_src_hashes_enabled) {
     hash = GetEvalSha256String(content);
     suffix =
         StrCat({suffix, " Hash of blocked script: \"", hash.value(), "\"."});
   } else {
     hash = std::nullopt;
   }
+
   // The console message will only be printed inside ReportEvalViolation if the
   // directive is report only (because the main part of the message is redundant
   // with the text included in the exception thrown otherwise).
@@ -795,13 +797,13 @@ bool CSPDirectiveListAllowEval(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    const Vector<network::IntegrityMetadata>& script_hash_values) {
+    const Vector<network::IntegrityMetadata>& script_hash_values,
+    bool csp_extended_script_src_hashes_enabled) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (reporting_disposition == ReportingDisposition::kReport) {
     String console_message;
-    if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1)) {
+    if (csp_extended_script_src_hashes_enabled) {
       if (directive.source_list && directive.source_list->allow_eval &&
           CSPSourceListIsEvalHashPresent(*directive.source_list)) {
         console_message =
@@ -822,20 +824,19 @@ bool CSPDirectiveListAllowEval(
           "not an allowed source of script in the following Content Security "
           "Policy directive: ";
     }
-    return CheckEvalAndReportViolation(csp, policy, console_message,
-                                       exception_status, content,
-                                       script_hash_values);
+    return CheckEvalAndReportViolation(
+        csp, policy, console_message, exception_status, content,
+        script_hash_values, csp_extended_script_src_hashes_enabled);
   }
   if (CSPDirectiveListIsReportOnly(csp)) {
     return true;
   }
-  if (CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
+  if (csp_extended_script_src_hashes_enabled &&
+      CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
     return true;
   }
   if (!CheckAllowEval(directive.source_list)) {
-    if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1) &&
-        !content.empty()) {
+    if (csp_extended_script_src_hashes_enabled && !content.empty()) {
       policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kSecurity,
           mojom::blink::ConsoleMessageLevel::kError,
@@ -871,15 +872,15 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
 
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
-    String& error_message) {
+    String& error_message,
+    bool csp_extended_script_src_hashes_enabled) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   // TODO(crbug.com/392657736): This message should be updated to recommend
   // hashes when kCSPScriptSrcHashesInV1 is enabled.
   if (!CheckAllowEval(directive.source_list)) {
     String console_message;
-    if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1)) {
+    if (csp_extended_script_src_hashes_enabled) {
       if (directive.source_list && directive.source_list->allow_eval &&
           CSPSourceListIsEvalHashPresent(*directive.source_list)) {
         console_message =
@@ -1044,6 +1045,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
+    bool csp_extended_script_src_hashes_enabled,
     const String& nonce,
     const IntegrityMetadataSet& integrity_metadata,
     ParserDisposition parser_disposition) {
@@ -1093,8 +1095,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
                                              integrity_metadata)) {
       return CSPCheckResult::Allowed();
     }
-    if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1)) {
+    if (csp_extended_script_src_hashes_enabled) {
       if (parser_disposition == kNotParserInserted &&
           CSPDirectiveListAllowDynamicUrl(csp, type)) {
         return CSPCheckResult::Allowed();

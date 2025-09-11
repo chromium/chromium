@@ -1241,6 +1241,8 @@ TEST(ContentSecurityPolicy,
                                     std::vector<uint8_t>{'a', 'b', 'c'});
   expected_csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
                                     std::vector<uint8_t>{'A', 'B', 'C'});
+  expected_csp->url_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                        std::vector<uint8_t>{'c', 'd'});
   expected_csp->nonces.push_back("cde");
 
   EXPECT_TRUE(expected_csp.Equals(
@@ -1335,11 +1337,11 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
                                      std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
+            csp->url_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                         std::vector<uint8_t>{'c', 'd'});
             return csp;
           }),
-          "The Content-Security-Policy directive 'script-src' contains "
-          "'url-sha256-Y2Q=' as a source expression that is permitted only "
-          "for 'script-src-v2' directive. It will be ignored.",
+          "",
       },
       {
           mojom::CSPDirectiveName::ScriptSrc,
@@ -1351,11 +1353,11 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
                                      std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
+            csp->eval_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'c', 'd'});
             return csp;
           }),
-          "The Content-Security-Policy directive 'script-src' contains "
-          "'eval-sha256-Y2Q=' as a source expression that is permitted only "
-          "for 'script-src-v2' directive. It will be ignored.",
+          "",
       },
       {
           // TODO(crbug.com/392657736): Remove if script-src-v2 isn't
@@ -1631,7 +1633,11 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       {
           mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'strict-dynamic-url'",
-          base::BindOnce([] { return mojom::CSPSourceList::New(); }),
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_dynamic_url = true;
+            return csp;
+          }),
           "The source list for the Content Security Policy directive "
           "'script-src' contains an invalid source: ''wrong''. It will be "
           "ignored.",

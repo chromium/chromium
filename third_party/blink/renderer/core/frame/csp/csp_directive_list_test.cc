@@ -140,7 +140,7 @@ TEST_F(CSPDirectiveListTest, IsMatchingNoncePresent) {
                     *directive_list, context, CSPDirectiveName::ScriptSrcElem,
                     KURL(), blocked_url, blocked_url,
                     ResourceRequest::RedirectStatus::kNoRedirect,
-                    reporting_disposition, test.nonce));
+                    reporting_disposition, false, test.nonce));
     }
   }
 }
@@ -210,7 +210,7 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceNoNonce) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
         script_src, script_src, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(),
+        ReportingDisposition::kSuppressReporting, false, String(),
         IntegrityMetadataSet(), kParserInserted));
 
     // Enforce
@@ -220,7 +220,7 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceNoNonce) {
                   *directive_list, context, CSPDirectiveName::ScriptSrcElem,
                   KURL(), script_src, script_src,
                   ResourceRequest::RedirectStatus::kNoRedirect,
-                  ReportingDisposition::kSuppressReporting, String(),
+                  ReportingDisposition::kSuppressReporting, false, String(),
                   IntegrityMetadataSet(), kParserInserted));
   }
 }
@@ -272,7 +272,7 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(test.nonce),
+        ReportingDisposition::kSuppressReporting, false, String(test.nonce),
         IntegrityMetadataSet(), kParserInserted));
 
     // Enforce 'script-src'
@@ -283,7 +283,7 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce),
+            ReportingDisposition::kSuppressReporting, false, String(test.nonce),
             IntegrityMetadataSet(), kParserInserted));
 
     // Report-only 'style-src'
@@ -292,7 +292,7 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::StyleSrcElem, KURL(),
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(test.nonce)));
+        ReportingDisposition::kSuppressReporting, false, String(test.nonce)));
 
     // Enforce 'style-src'
     directive_list = CreateList(String("style-src ") + test.list,
@@ -302,7 +302,8 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::StyleSrcElem, KURL(),
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce)));
+            ReportingDisposition::kSuppressReporting, false,
+            String(test.nonce)));
 
     // Report-only 'style-src'
     directive_list = CreateList(String("default-src ") + test.list,
@@ -310,11 +311,11 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(test.nonce)));
+        ReportingDisposition::kSuppressReporting, false, String(test.nonce)));
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::StyleSrcElem, KURL(),
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(test.nonce)));
+        ReportingDisposition::kSuppressReporting, false, String(test.nonce)));
 
     // Enforce 'style-src'
     directive_list = CreateList(String("default-src ") + test.list,
@@ -324,14 +325,15 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce),
+            ReportingDisposition::kSuppressReporting, false, String(test.nonce),
             IntegrityMetadataSet(), kParserInserted));
     EXPECT_EQ(
         CSPCheckResult(test.expected),
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::StyleSrcElem, KURL(),
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce)));
+            ReportingDisposition::kSuppressReporting, false,
+            String(test.nonce)));
   }
 }
 
@@ -399,10 +401,10 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
       // At least one integrity hash must be present.
       {"'sha256-yay'", "https://a.com/file", "", false},
 
-      // script-src doesn't support url hashes by default.
+      // Check URLs can be allowlisted via their hash.
       {"'url-sha256-yay'", "https://a.com/file", "", false},
       {"'url-sha256-IyodCgwKGmOP0Vm8YUQbOET0U+HGD3THhrHT5RqRzbA='",
-       "https://a.com/file", "", false},
+       "https://a.com/file", "", true},
   };
 
   ContentSecurityPolicy* context =
@@ -427,8 +429,8 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(), integrity_metadata,
-        kParserInserted));
+        ReportingDisposition::kSuppressReporting, true, String(),
+        integrity_metadata, kParserInserted));
 
     // Enforce 'script-src'
     directive_list = CreateList(String("script-src ") + test.list,
@@ -438,7 +440,7 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::ScriptSrcElem, KURL(),
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(),
+            ReportingDisposition::kSuppressReporting, true, String(),
             integrity_metadata, kParserInserted));
   }
 }
@@ -503,8 +505,8 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithUrlHash) {
     EXPECT_TRUE(CSPDirectiveListAllowFromSource(
         *directive_list, context, CSPDirectiveName::ScriptSrcElem, document,
         resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-        ReportingDisposition::kSuppressReporting, String(), integrity_metadata,
-        kParserInserted));
+        ReportingDisposition::kSuppressReporting, false, String(),
+        integrity_metadata, kParserInserted));
 
     // Enforce 'script-src'
     directive_list = CreateList(String("script-src ") + test.list,
@@ -514,7 +516,7 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithUrlHash) {
         CSPDirectiveListAllowFromSource(
             *directive_list, context, CSPDirectiveName::ScriptSrcElem, document,
             resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(),
+            ReportingDisposition::kSuppressReporting, true, String(),
             integrity_metadata, kParserInserted));
   }
 }
@@ -1245,7 +1247,7 @@ TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
               *testCase.directive_list, context,
               CSPDirectiveName::ScriptSrcElem, KURL(), testCase.script_url,
               testCase.script_url, ResourceRequest::RedirectStatus::kNoRedirect,
-              reporting_disposition, testCase.script_nonce));
+              reporting_disposition, false, testCase.script_nonce));
     }
     static const char* message =
         "Note that 'strict-dynamic' is present, so "
