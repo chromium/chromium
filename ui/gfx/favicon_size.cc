@@ -6,8 +6,6 @@
 
 namespace gfx {
 
-const int kFaviconSize = 16;
-
 void CalculateFaviconTargetSize(int* width, int* height) {
   if (*width > kFaviconSize || *height > kFaviconSize) {
     // Too big, resize it maintaining the aspect ratio.

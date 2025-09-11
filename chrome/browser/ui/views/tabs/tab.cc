@@ -354,8 +354,15 @@ void Tab::Layout(PassKey) {
   const int start = contents_rect.x();
 
 #if BUILDFLAG(ENABLE_GLIC)
+  // Position the underline under the tab contents.
+  constexpr int kGlicUnderlineYOffset = 8;
   if (glic_tab_underline_view_) {
-    gfx::Rect glic_bounds = contents_rect + gfx::Vector2d(0, 9);
+    gfx::Rect glic_bounds =
+        contents_rect + gfx::Vector2d(0, kGlicUnderlineYOffset);
+    // Use the full width of the tab in order to accommodate small tab sizes
+    // where the width of the contents bounds is 0.
+    glic_bounds.set_x(0);
+    glic_bounds.set_width(size().width());
     glic_tab_underline_view_->SetBoundsRect(glic_bounds);
   }
 #endif

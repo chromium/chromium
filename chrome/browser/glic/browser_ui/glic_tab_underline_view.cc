@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/paint/paint_flags.h"
 #include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -35,6 +36,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/view_class_properties.h"
@@ -113,6 +115,22 @@ std::vector<float> GetParameterizedFloats() {
   }
   return floats;
 }
+
+// The width to use for the underline when tabs reach a small size.
+constexpr static int kSmallUnderlineWidth = gfx::kFaviconSize;
+
+// The width to use for the underline at the smallest tab sizes when tab
+// contents begin to be clipped.
+constexpr static int kMinUnderlineWidth = kSmallUnderlineWidth - 4;
+
+// The threshold for tab width at which `kMinUnderlineWidth` should be used.
+constexpr static int kMinimumTabWidthThreshold = 42;
+
+// The height of the underline effect.
+constexpr static int kEffectHeight = 2;
+
+// The radius to use for rounded corners of the underline effect.
+constexpr static float kCornerRadius = kEffectHeight / 2.0f;
 
 }  // namespace
 
@@ -607,29 +625,39 @@ GlicTabUnderlineView::GlicTabUnderlineView(Browser* browser,
 
 GlicTabUnderlineView::~GlicTabUnderlineView() = default;
 
+int GlicTabUnderlineView::ComputeWidth() {
+  // At the smallest tab sizes, favicons can be clipped and so a shorter
+  // underline is required.
+  if (size().width() < kMinimumTabWidthThreshold) {
+    return kMinUnderlineWidth;
+  }
+
+  // Underline should use either the width of the tab's contents bounds or the
+  // width of the favicon, whichever is greater.
+  int underline_width = size().width() - tab_->GetInsets().width();
+  if (underline_width < gfx::kFaviconSize) {
+    return kSmallUnderlineWidth;
+  }
+
+  return underline_width;
+}
+
 void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
-  auto bounds = GetLocalBounds();
   const auto u_resolution = GetLocalBounds();
   // Insets aren't relevant to the tab underline effect, but are defined in the
   // uniforms of the GlicBorderView shader.
   gfx::Insets uniform_insets = gfx::Insets();
 
-  float corner_radius = 0.0f;
-#if BUILDFLAG(IS_MAC)
-  if (!browser_->window()->IsFullscreen()) {
-    corner_radius = 12.0f;
-  }
-#endif
   // TODO(crbug.com/433136181): shader logic is borrowed from GlicBorderView,
   // but emphasis can be fixed to 0 for the underline and related handling can
   // be removed entirely.
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_time"), .value = GetEffectTime()},
       {.name = SkString("u_emphasis"), .value = emphasis_},
-      {.name = SkString("u_corner_radius"), .value = corner_radius},
+      {.name = SkString("u_corner_radius"), .value = kCornerRadius},
       {.name = SkString("u_insets"),
        .value = static_cast<float>(uniform_insets.left())},
       {.name = SkString("u_progress"), .value = progress_}};
@@ -675,13 +703,31 @@ void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
     cached_paint_shader_ = shader;
   }
 
-  constexpr static int kMaxEffectWidth = 2;
-  gfx::Point origin =
-      bounds.origin() +
-      gfx::Vector2d(0, bounds.size().height() - kMaxEffectWidth);
-  gfx::Size size(bounds.size().width(), kMaxEffectWidth);
+  int underline_width = ComputeWidth();
+  int underline_x = (size().width() - underline_width + 1) / 2;
+
+  // Draw the underline in the bottom `kEffectHeight` area of the given bounds
+  // below the tab contents.
+  gfx::Point origin(underline_x, size().height() - kEffectHeight);
+  gfx::Size size(underline_width, kEffectHeight);
   gfx::Rect effect_bounds(origin, size);
-  canvas->DrawRect(gfx::RectF(effect_bounds), flags);
+
+  cc::PaintFlags new_flags(flags);
+  // At small sizes, paint the underline as a solid color instead of a gradient.
+  if (underline_width < gfx::kFaviconSize) {
+    new_flags.setShader(nullptr);
+    // `colors_` is not populated if the kGlicParameterizedShader feature is not
+    // enabled.
+    if (!colors_.empty()) {
+      new_flags.setColor(colors_[0]);  // -gem-sys-color--brand-blue #3186FF
+    } else {
+      // Use -gem-sys-color--brand-blue as fallback color.
+      const SkColor fallback_color = SkColorSetARGB(255, 49, 134, 255);
+      new_flags.setColor(fallback_color);
+    }
+  }
+
+  canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
 }
 
 void GlicTabUnderlineView::OnAnimationStep(base::TimeTicks timestamp) {

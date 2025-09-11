@@ -141,6 +141,8 @@ class GlicTabUnderlineView : public views::View,
 
   void UpdateShader();
 
+  int ComputeWidth();
+
   // A utility class that subscribes to `GlicKeyedService` for various browser
   // UI status changes that affect showing and animating of the tab underlines.
   class UnderlineViewUpdater;
