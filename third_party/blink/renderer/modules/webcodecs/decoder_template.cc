@@ -354,6 +354,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   if (MaybeAbortRequest(request)) {
     DCHECK_EQ(request, pending_request_);
     pending_request_.Release()->EndTracing();
+    ProcessRequests();
     return;
   }
 
