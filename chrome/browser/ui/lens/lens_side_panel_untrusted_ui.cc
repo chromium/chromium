@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -236,6 +237,14 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       "searchboxComposePlaceholder",
       l10n_util::GetStringUTF8(IDS_LENS_COMPOSEBOX_HINT_TEXT));
   html_source->AddBoolean("composeboxShowPdfUpload", false);
+
+  // If the ThemeSource isn't added here, since this WebUI is
+  // chrome-untrusted, it will be unable to load stylesheets until a new tab
+  // is opened.
+  content::URLDataSource::Add(
+      Profile::FromWebUI(web_ui),
+      std::make_unique<ThemeSource>(Profile::FromWebUI(web_ui),
+                                    /*serve_untrusted=*/true));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
