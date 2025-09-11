@@ -531,7 +531,13 @@ class ExtensionFrameHostHelper
 
 // Tests that removing a MV3 extension with a pending message from incognito
 // does not crash. See https://crbug.com/443038597
-IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, RemoveWithPending) {
+// Flaky on a Android bot. See crbug.com/444381373.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RemoveWithPending DISABLED_RemoveWithPending
+#else
+#define MAYBE_RemoveWithPending RemoveWithPending
+#endif
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, MAYBE_RemoveWithPending) {
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
       profile());
   auto* extension = LoadExtension(
