@@ -110,11 +110,12 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   // This is used to follow the standard regarding transferToBitmap
   scoped_refptr<StaticBitmapImage> GetImageAndResetInternal();
 
-  CanvasResourceProvider* GetOrCreateResourceProviderForOffscreenCanvas();
+  CanvasResourceProviderSharedImage*
+  GetOrCreateResourceProviderForOffscreenCanvas();
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 
   Member<ImageLayerBridge> image_layer_bridge_;
-  std::unique_ptr<CanvasResourceProvider>
+  std::unique_ptr<CanvasResourceProviderSharedImage>
       resource_provider_for_offscreen_canvas_;
 };
 

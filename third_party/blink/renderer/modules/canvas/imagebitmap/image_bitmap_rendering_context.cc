@@ -139,14 +139,14 @@ void ImageBitmapRenderingContext::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-CanvasResourceProvider*
+CanvasResourceProviderSharedImage*
 ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
   CHECK(Host()->IsOffscreenCanvas());
   if (isContextLost() && !IsContextBeingRestored()) {
     return nullptr;
   }
 
-  if (CanvasResourceProvider* provider =
+  if (CanvasResourceProviderSharedImage* provider =
           resource_provider_for_offscreen_canvas_.get()) {
     if (!provider->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
@@ -169,7 +169,7 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
     return nullptr;
   }
 
-  std::unique_ptr<CanvasResourceProvider> provider;
+  std::unique_ptr<CanvasResourceProviderSharedImage> provider;
   gfx::Size surface_size(Host()->width(), Host()->height());
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
