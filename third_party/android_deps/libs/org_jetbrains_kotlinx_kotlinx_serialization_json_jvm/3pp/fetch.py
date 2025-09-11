@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='kotlinx-serialization-json-jvm',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override=None,
+                         version_override='1.7.2',
                          version_filter=None)
 
 if __name__ == '__main__':
