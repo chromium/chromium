@@ -74,7 +74,7 @@
   display: flex;
 }
 
-#pdfChip{
+.chip {
   align-items: center;
   background-color: var(--color-new-tab-page-composebox-file-chip-background);
   border-radius: 8px;
@@ -85,7 +85,7 @@
   width: 153px;
 }
 
-#pdfThumbnail{
+.thumbnail {
   flex-shrink: 0;
   height: 36px;
   position: relative;
@@ -102,7 +102,7 @@
   width: 100%;
 }
 
-.pdf-overlay {
+.overlay {
   height: 100%;
   left: 0;
   opacity: 0;
@@ -111,7 +111,7 @@
   width: 100%;
 }
 
-#removePdfButton {
+.remove-button {
   --cr-icon-button-fill-color:
     var(--color-new-tab-page-composebox-file-chip-text);
   --cr-icon-button-icon-size: 24px;
@@ -124,7 +124,7 @@
   width: 100%;
 }
 
-.pdf-title {
+.title {
   color: var(--color-new-tab-page-composebox-file-chip-text);
   font-family: inherit;
   font-size: 14px;
@@ -139,7 +139,13 @@
 
 #imgChip:hover .img-overlay,
 #imgChip:focus-within .img-overlay,
-#pdfChip:hover .pdf-overlay,
-#pdfChip:focus-within .pdf-overlay {
+.chip:hover .overlay,
+.chip:focus-within .overlay {
   opacity: 1;
+}
+
+#tabThumbnail composebox-tab-favicon {
+  border-radius: 4px;
+  height: 100%;
+  width: 100%;
 }

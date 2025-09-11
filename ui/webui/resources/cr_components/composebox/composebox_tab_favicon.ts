@@ -43,7 +43,7 @@ export class TabFaviconElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('url')) {
+    if (changedProperties.has('url') || changedProperties.has('size')) {
       if (!this.url) {
         this.style.setProperty('background-image', '');
       } else {

@@ -11,7 +11,25 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
-  ${this.file.objectUrl ? html`
+  ${this.file.url ? html`
+    <div id="tabChip" class="chip">
+      <div id="tabThumbnail" class="thumbnail">
+        <composebox-tab-favicon .url="${this.file.url.url}" .size="${33}">
+        </composebox-tab-favicon>
+        <div class="overlay">
+          <cr-icon-button
+              id="removeTabButton"
+              class="remove-button"
+              iron-icon="cr:clear"
+              title="${this.file.name}"
+              aria-label="${this.deleteFileButtonTitle}"
+              @click="${this.deleteFile_}">
+          </cr-icon-button>
+        </div>
+      </div>
+      <p class="title">${this.file.name}</p>
+    </div>
+  ` : this.file.objectUrl ? html`
     <div id="imgChip">
       ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
         <img class="img-thumbnail"
@@ -31,8 +49,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           @click="${this.deleteFile_}">
       </cr-icon-button>
     </div>` : html`
-    <div id="pdfChip">
-      <div id="pdfThumbnail">
+    <div id="pdfChip" class="chip">
+      <div id="pdfThumbnail" class="thumbnail">
         ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
           <cr-icon icon="thumbnail:pdf" class="pdf-icon">
           </cr-icon>
@@ -41,9 +59,10 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             <circle class="spinner-circle" cx="50" cy="50" r="40" />
           </svg>
         `}
-        <div class="pdf-overlay">
+        <div class="overlay">
           <cr-icon-button
               id="removePdfButton"
+              class="remove-button"
               iron-icon="cr:clear"
               title="${this.file.name}"
               aria-label="${this.deleteFileButtonTitle}"
@@ -51,7 +70,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </cr-icon-button>
         </div>
       </div>
-      <p class="pdf-title">${this.file.name}</p>
+      <p class="title" id="pdfTitle">${this.file.name}</p>
     </div>
   `}
 </div>

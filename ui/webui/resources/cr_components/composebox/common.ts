@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {FileUploadStatus} from './composebox_query.mojom-webui.js';
 
@@ -12,4 +13,5 @@ export interface ComposeboxFile {
   objectUrl: string|null;
   type: string;
   status: FileUploadStatus;
+  url: Url|null;
 }

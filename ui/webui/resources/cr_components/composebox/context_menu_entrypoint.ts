@@ -74,14 +74,17 @@ export class ContextMenuEntrypointElement extends CrLitElement {
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLInputElement;
-    const tabId = Number(tabElement.dataset['id']);
-    if (!tabId) {
+    const tabInfo =
+        this.tabSuggestions_[Number(tabElement.dataset['index'])];
+
+    if (!tabInfo) {
       return;
     }
 
     this.fire('add-tab-context', {
-      id: tabId,
-      title: tabElement.dataset['title']!,
+      id: tabInfo.tabId,
+      title: tabInfo.title,
+      url: tabInfo.url,
     });
     this.$.menu.close();
   }
