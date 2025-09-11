@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_provider.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -30,13 +31,15 @@ class DeviceInfoSyncService;
 
 namespace sync_preferences {
 
+// Concrete implementation of `CrossDevicePrefTracker`.
 class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
                                    public syncer::DeviceInfoTracker::Observer {
  public:
   CrossDevicePrefTrackerImpl(
       PrefService* profile_pref_service,
       PrefService* local_pref_service,
-      syncer::DeviceInfoSyncService* device_info_sync_service);
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      std::unique_ptr<CrossDevicePrefProvider> pref_provider);
   ~CrossDevicePrefTrackerImpl() override;
 
   CrossDevicePrefTrackerImpl(const CrossDevicePrefTrackerImpl&) = delete;
@@ -53,7 +56,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
       std::string_view pref_name,
       const DeviceFilter& filter) const override;
 
-  // `KeyedService` override
+  // `KeyedService` overrides
   void Shutdown() override;
 
   // `syncer::DeviceInfoTracker::Observer` overrides
@@ -88,6 +91,9 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `DeviceInfoTracker` (for remote metadata).
   // Must outlive this object until Shutdown().
   raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
+
+  // Provides the lists of prefs to be tracked.
+  std::unique_ptr<CrossDevicePrefProvider> pref_provider_;
 
   // Registrars for observing changes to tracked prefs.
   PrefChangeRegistrar profile_pref_registrar_;

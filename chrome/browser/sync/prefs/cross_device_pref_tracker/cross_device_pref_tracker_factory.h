@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"

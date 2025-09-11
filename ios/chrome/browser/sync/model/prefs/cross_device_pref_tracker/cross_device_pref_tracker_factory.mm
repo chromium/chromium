@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/ios_chrome_cross_device_pref_provider.h"
 
 // static
 sync_preferences::CrossDevicePrefTracker*
@@ -49,8 +50,11 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  auto pref_provider = std::make_unique<IOSChromeCrossDevicePrefProvider>();
+
   // The implementation in `components/sync_preferences` is platform-agnostic.
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
       profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      std::move(pref_provider));
 }

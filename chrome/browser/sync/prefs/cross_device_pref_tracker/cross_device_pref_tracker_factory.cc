@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #include "components/sync_preferences/features.h"
 
@@ -45,7 +46,9 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
+  auto pref_provider = std::make_unique<ChromeCrossDevicePrefProvider>();
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
       profile->GetPrefs(), g_browser_process->local_state(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      std::move(pref_provider));
 }

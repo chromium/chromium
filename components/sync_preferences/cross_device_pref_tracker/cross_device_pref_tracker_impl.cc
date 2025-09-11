@@ -30,13 +30,16 @@ namespace sync_preferences {
 CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
     PrefService* profile_pref_service,
     PrefService* local_pref_service,
-    syncer::DeviceInfoSyncService* device_info_sync_service)
+    syncer::DeviceInfoSyncService* device_info_sync_service,
+    std::unique_ptr<CrossDevicePrefProvider> pref_provider)
     : profile_pref_service_(profile_pref_service),
       local_pref_service_(local_pref_service),
-      device_info_sync_service_(device_info_sync_service) {
+      device_info_sync_service_(device_info_sync_service),
+      pref_provider_(std::move(pref_provider)) {
   CHECK(profile_pref_service_);
   CHECK(local_pref_service_);
   CHECK(device_info_sync_service_);
+  CHECK(pref_provider_);
 
   // Initialize the registrars with the corresponding `PrefService`.
   profile_pref_registrar_.Init(profile_pref_service_);
