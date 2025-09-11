@@ -463,8 +463,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
     if (auto* data = DynamicTo<Text>(position.AnchorNode())) {
       DCHECK_EQ(data->length(), 0u);
     } else {
-      // TODO(xiaochengh): Investigate if we reach here.
-      NOTREACHED();
+      // TODO(crbug.com/444003274): This branch is reachable unexpectedly,
+      // however we don't know how to reproduce it.
     }
   }
 
