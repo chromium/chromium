@@ -6,6 +6,8 @@ source_set("cross_device_pref_tracker_factory") {
   sources = [
     "cross_device_pref_tracker_factory.h",
     "cross_device_pref_tracker_factory.mm",
+    "ios_chrome_cross_device_pref_provider.h",
+    "ios_chrome_cross_device_pref_provider.mm",
   ]
   public_deps = [
     "//base",
