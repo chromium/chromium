@@ -31,6 +31,8 @@ struct DisplayParams {
   std::vector<int32_t> insets;  // {left, top, right, bottom}
   gfx::Rect scaled_work_area;
   float dip_scale;
+  float pixels_per_inch_x;
+  float pixels_per_inch_y;
   int32_t rotation_degrees;
   int32_t bits_per_pixel;
   int32_t bits_per_component;
@@ -45,6 +47,8 @@ const DisplayParams kPrimaryDisplayParams = {
     .insets = {10, 20, 30, 40},
     .scaled_work_area = {8, 16, 1504, 816},
     .dip_scale = 1.25,
+    .pixels_per_inch_x = 160,
+    .pixels_per_inch_y = 160,
     .rotation_degrees = 0,
     .bits_per_pixel = 24,
     .bits_per_component = 8,
@@ -57,6 +61,8 @@ const DisplayParams kExternalDisplayParams{
     .insets = {1, 2, 3, 4},
     .scaled_work_area = {1, -1438, 896, 1434},
     .dip_scale = 1,
+    .pixels_per_inch_x = 160,
+    .pixels_per_inch_y = 160,
     .rotation_degrees = 90,
     .bits_per_pixel = 12,
     .bits_per_component = 0,
@@ -69,6 +75,8 @@ const DisplayParams kSecondExternalDisplayParams{
     .insets = {0, 0, 0, 0},
     .scaled_work_area = {-720, 192, 720, 480},
     .dip_scale = 1,
+    .pixels_per_inch_x = 160,
+    .pixels_per_inch_y = 160,
     .rotation_degrees = 0,
     .bits_per_pixel = 12,
     .bits_per_component = 0,
@@ -90,7 +98,8 @@ class DisplayAndroidManagerTest : public testing::Test {
         base::android::ConvertUTF8ToJavaString(env_, display_params.label),
         base::android::ToJavaIntArray(env_, display_params.bounds),
         base::android::ToJavaIntArray(env_, display_params.insets),
-        display_params.dip_scale, display_params.rotation_degrees,
+        display_params.dip_scale, display_params.pixels_per_inch_x,
+        display_params.pixels_per_inch_y, display_params.rotation_degrees,
         display_params.bits_per_pixel, display_params.bits_per_component,
         /* isWideColorGamut= */ false, /* isHdr= */ false,
         /* hdrMaxLuminanceRatio= */ 1.0, display_params.is_internal);

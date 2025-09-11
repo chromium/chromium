@@ -256,6 +256,11 @@ inline constexpr char kInContextCookieControlsOpened[] =
 inline constexpr char kNotificationsVibrateEnabled[] =
     "notifications.vibrate_enabled";
 
+// Boolean that indicates whether the desktop site global setting was enabled by
+// the user.
+inline constexpr char kRequestDesktopSiteGlobalSettingUserEnabled[] =
+    "Chrome.RequestDesktopSiteGlobalSetting.UserEnabled";
+
 // Window setting for request desktop site. When enabled, we will request
 // mobile site if the window is narrow.
 inline constexpr char kDesktopSiteWindowSettingEnabled[] =

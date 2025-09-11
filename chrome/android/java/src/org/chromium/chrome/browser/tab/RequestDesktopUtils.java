@@ -15,6 +15,7 @@ import android.view.Display;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
@@ -25,6 +26,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -35,6 +38,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -47,6 +51,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -355,6 +360,48 @@ public class RequestDesktopUtils {
     }
 
     /**
+     * Determines whether the desktop site should be overridden for the current URL.
+     *
+     * @param profile The current {@link Profile}.
+     * @param url The current URL.
+     * @param context The current context.
+     * @return Whether the desktop site should be overridden for the current URL.
+     */
+    public static boolean shouldOverrideDesktopSite(
+            Profile profile, @Nullable GURL url, Context context) {
+        // For --request-desktop-sites, always override the user agent.
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES)) {
+            return true;
+        }
+
+        // If domain/global setting is enabled and window setting should not
+        // apply, override the user agent.
+        if (TabUtils.readRequestDesktopSiteContentSettings(profile, url)
+                && !RequestDesktopUtils.shouldApplyWindowSetting(profile, url, context)) {
+            return true;
+        }
+
+        // Enable on large connected displays only when user has not explicitly set preference.
+        if (ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()
+                && isOnEligibleExternalDisplayForDesktopUA(context)
+                && !hasUserUpdatedContentSettings(url, profile)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean hasUserUpdatedContentSettings(@Nullable GURL url, Profile profile) {
+        // Global setting would not apply when user overrides via domain settings.
+        if (!TabUtils.isRequestDesktopSiteContentSettingsGlobal(profile, url)) return true;
+
+        // Using global settings.
+        // Check if user has updated global setting preference.
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        return sharedPreferencesManager.contains(
+                PrefNames.REQUEST_DESKTOP_SITE_GLOBAL_SETTING_USER_ENABLED);
+    }
+
+    /**
      * Determine whether RDS window setting should be applied. When returning 'true' the mobile user
      * agent should be used for the current window size.
      */
@@ -418,5 +465,18 @@ public class RequestDesktopUtils {
     private static boolean isOnExternalDisplay(Context context) {
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
         return display.getDisplayId() != Display.DEFAULT_DISPLAY;
+    }
+
+    private static boolean isOnEligibleExternalDisplayForDesktopUA(Context context) {
+        // Do not enable on default display.
+        if (!isOnExternalDisplay(context)) {
+            return false;
+        }
+        DisplayAndroid currentDisplay = DisplayAndroid.getNonMultiDisplay(context);
+        double displaySizeInInches = DisplayUtil.getDisplaySizeInInches(currentDisplay);
+        if (displaySizeInInches < DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES) {
+            return false;
+        }
+        return true;
     }
 }

@@ -319,6 +319,7 @@ display::Display WindowAndroid::GetDisplayWithWindowColorSpace() {
   DisplayAndroidManager::DoUpdateDisplay(
       &display, display.label(), display.bounds(), display.work_area(),
       display.GetSizeInPixel(), display.device_scale_factor(),
+      display.GetPixelsPerInchX(), display.GetPixelsPerInchY(),
       display.RotationAsDegree(), display.color_depth(),
       display.depth_per_component(), window_is_wide_color_gamut_,
       display.GetColorSpaces().SupportsHDR(),

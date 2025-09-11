@@ -40,6 +40,7 @@ source_set("content_settings") {
       "javascript_optimizer_provider_android.h",
       "request_desktop_site_web_contents_observer_android.h",
     ]
+    public_deps += [ "//chrome/browser/preferences:android" ]
   } else {
     sources += [
       "generated_cookie_prefs.h",

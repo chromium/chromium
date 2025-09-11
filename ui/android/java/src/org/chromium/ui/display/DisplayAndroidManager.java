@@ -348,6 +348,8 @@ public class DisplayAndroidManager {
                         displayAndroid.getBoundsAsArray(),
                         insetsArray,
                         displayAndroid.getDipScale(),
+                        displayAndroid.getXdpi(),
+                        displayAndroid.getYdpi(),
                         displayAndroid.getRotationDegrees(),
                         displayAndroid.getBitsPerPixel(),
                         displayAndroid.getBitsPerComponent(),
@@ -366,6 +368,8 @@ public class DisplayAndroidManager {
                 int[] bounds, // the order is: left, top, right, bottom
                 int[] insets, // the order is: left, top, right, bottom
                 float dipScale,
+                float xDpi,
+                float yDpi,
                 int rotationDegrees,
                 int bitsPerPixel,
                 int bitsPerComponent,

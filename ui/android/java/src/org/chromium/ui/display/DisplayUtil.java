@@ -132,6 +132,18 @@ public abstract class DisplayUtil {
     }
 
     /**
+     * Returns the display size in inches.
+     *
+     * @param display The display to get the size of.
+     * @return The display size in inches.
+     */
+    public static double getDisplaySizeInInches(DisplayAndroid display) {
+        double xInches = display.getDisplayWidth() / display.getXdpi();
+        double yInches = display.getDisplayHeight() / display.getYdpi();
+        return Math.sqrt(Math.pow(xInches, 2) + Math.pow(yInches, 2));
+    }
+
+    /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
      *
      * @param displayMetrics The DisplayMetrics to scale up density for.

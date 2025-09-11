@@ -31,7 +31,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -58,7 +57,6 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -107,7 +105,6 @@ import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -2567,20 +2564,8 @@ class TabImpl implements Tab {
             url = webContents.getVisibleUrl();
         }
 
-        CommandLine commandLine = CommandLine.getInstance();
-        // For --request-desktop-sites, always override the user agent.
-        boolean alwaysRequestDesktopSite =
-                commandLine.hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES);
-
-        boolean shouldRespectContentSetting =
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, url)
-                        && !RequestDesktopUtils.shouldApplyWindowSetting(
-                                mProfile, url, getContext());
-        boolean isOnExternalDisplay =
-                ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()
-                        && !DisplayUtil.isContextInDefaultDisplay(getContext());
         boolean shouldRequestDesktopSite =
-                alwaysRequestDesktopSite || isOnExternalDisplay || shouldRespectContentSetting;
+                RequestDesktopUtils.shouldOverrideDesktopSite(mProfile, url, getContext());
 
         if (shouldRequestDesktopSite != currentRequestDesktopSite) {
             // The user is not forcing any mode and we determined that we need to

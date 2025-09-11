@@ -143,6 +143,12 @@ class DISPLAY_EXPORT Display final {
   // values depend on each platforms.
   float device_scale_factor() const { return device_scale_factor_; }
   void set_device_scale_factor(float scale) { device_scale_factor_ = scale; }
+  void set_pixels_per_inch(float pixels_per_inch_x, float pixels_per_inch_y) {
+    pixels_per_inch_x_ = pixels_per_inch_x;
+    pixels_per_inch_y_ = pixels_per_inch_y;
+  }
+  float GetPixelsPerInchX() const { return pixels_per_inch_x_; }
+  float GetPixelsPerInchY() const { return pixels_per_inch_y_; }
 
   Rotation rotation() const { return rotation_; }
   void set_rotation(Rotation rotation) { rotation_ = rotation; }
@@ -303,6 +309,8 @@ class DISPLAY_EXPORT Display final {
   gfx::Point native_origin_;
   gfx::Rect work_area_;
   float device_scale_factor_;
+  float pixels_per_inch_x_;
+  float pixels_per_inch_y_;
   Rotation rotation_ = ROTATE_0;
   std::optional<Rotation> panel_rotation_;
   TouchSupport touch_support_ = TouchSupport::UNKNOWN;

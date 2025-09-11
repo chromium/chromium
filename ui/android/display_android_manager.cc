@@ -103,6 +103,8 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             const gfx::Rect& work_area,
                                             const gfx::Size& size_in_pixels,
                                             float dip_scale,
+                                            float pixels_per_inch_x,
+                                            float pixels_per_inch_y,
                                             int rotation_degrees,
                                             int bits_per_pixel,
                                             int bits_per_component,
@@ -118,6 +120,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
   }
   display->set_size_in_pixels(size_in_pixels);
   display->set_device_scale_factor(dip_scale);
+  display->set_pixels_per_inch(pixels_per_inch_x, pixels_per_inch_y);
 
   {
     // Decide the color space to use for sRGB, WCG, and HDR content. By default,
@@ -190,6 +193,8 @@ void DisplayAndroidManager::UpdateDisplay(
     const base::android::JavaRef<jintArray>&
         jInsets,  // the order is: left, top, right, bottom
     jfloat dipScale,
+    jfloat pixelsPerInchX,
+    jfloat pixelsPerInchY,
     jint rotationDegrees,
     jint bitsPerPixel,
     jint bitsPerComponent,
@@ -220,7 +225,8 @@ void DisplayAndroidManager::UpdateDisplay(
   display::Display display(sdkDisplayId);
   DoUpdateDisplay(&display, base::android::ConvertJavaStringToUTF8(env, label),
                   dip_bounds, dip_work_area, bounds_in_pixels.size(), dipScale,
-                  rotationDegrees, bitsPerPixel, bitsPerComponent,
+                  pixelsPerInchX, pixelsPerInchY, rotationDegrees, bitsPerPixel,
+                  bitsPerComponent,
                   isWideColorGamut && use_display_wide_color_gamut_, isHdr,
                   hdrMaxLuminanceRatio);
 

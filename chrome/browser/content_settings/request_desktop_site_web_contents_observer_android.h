@@ -38,6 +38,9 @@ class RequestDesktopSiteWebContentsObserverAndroid
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<PrefService> pref_service_ = nullptr;
 
+  // The display size threshold in inches for enabling desktop user agent on
+  // connected displays.
+  static constexpr double kDesktopSiteDisplaySizeThresholdInches = 10.0;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
