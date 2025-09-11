@@ -8716,6 +8716,7 @@
       name: "masonry",
       longhands: [ "grid-template-areas", "grid-template-columns", "masonry-direction", "masonry-fill"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      layout_dependent: true,
       runtime_flag: "CSSMasonryLayout",
     },
     {

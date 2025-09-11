@@ -3000,6 +3000,11 @@ const CSSValue* Masonry::CSSValueFromComputedStyleInternal(
       value_phase);
 }
 
+bool Masonry::IsLayoutDependent(const ComputedStyle* style,
+                                LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsLayoutMasonry();
+}
+
 bool MasonryFlow::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
