@@ -44,8 +44,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
       const gfx::Rect& rect,
       Part direction,
       State state,
+      bool forced_colors,
       bool dark_mode,
-      bool in_forced_colors,
+      PreferredContrast contrast,
       const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
@@ -53,7 +54,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
                            const gfx::Rect& rect,
-                           bool in_forced_colors) const override;
+                           bool forced_colors,
+                           PreferredContrast contrast) const override;
   void PaintScrollbarThumb(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -85,7 +87,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
                    const ColorProvider* color_provider,
                    const gfx::Rect& rect,
                    Part direction,
-                   bool in_forced_colors,
+                   bool forced_colors,
+                   PreferredContrast contrast,
                    const ScrollbarArrowExtraParams& extra_params) const;
   void PaintArrow(cc::PaintCanvas* canvas,
                   const ColorProvider* color_provider,

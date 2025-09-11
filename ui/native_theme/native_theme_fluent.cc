@@ -52,10 +52,11 @@ void NativeThemeFluent::PaintArrowButton(
     const gfx::Rect& rect,
     Part direction,
     State state,
+    bool forced_colors,
     bool dark_mode,
-    bool in_forced_colors,
+    PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
-  PaintButton(canvas, color_provider, rect, direction, in_forced_colors,
+  PaintButton(canvas, color_provider, rect, direction, forced_colors, contrast,
               extra_params);
   PaintArrow(canvas, color_provider, rect, direction, state, extra_params);
 }
@@ -67,9 +68,14 @@ void NativeThemeFluent::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    bool in_forced_colors) const {
+    bool forced_colors,
+    PreferredContrast contrast) const {
   gfx::Rect track_fill_rect = rect;
-  if (in_forced_colors) {
+  // Windows native Fluent scrollbars draw a border in forced colors mode
+  // regardless of the contrast of the colors; and the border seems clearly
+  // beneficial in high contrast, especially on platforms that don't natively do
+  // forced colors.
+  if (forced_colors || contrast == PreferredContrast::kMore) {
     gfx::Insets edge_insets;
     if (part == NativeTheme::Part::kScrollbarHorizontalTrack) {
       edge_insets.set_left_right(-kFluentScrollbarTrackOutlineWidth,
@@ -207,14 +213,16 @@ void NativeThemeFluent::PaintButton(
     const ColorProvider* color_provider,
     const gfx::Rect& rect,
     Part direction,
-    bool in_forced_colors,
+    bool forced_colors,
+    PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
   const SkColor button_color = extra_params.track_color.value_or(
       color_provider->GetColor(kColorWebNativeControlScrollbarTrack));
   flags.setColor(button_color);
   gfx::Rect button_fill_rect = rect;
-  if (in_forced_colors) {
+  // See comments in `PaintScrollbarTrack()` re: the condition here.
+  if (forced_colors || contrast == PreferredContrast::kMore) {
     const gfx::InsetsF outline_insets(kFluentScrollbarTrackOutlineWidth / 2.0f);
     gfx::Insets edge_insets;
     if (direction == NativeTheme::Part::kScrollbarUpArrow) {

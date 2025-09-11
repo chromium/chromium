@@ -37,6 +37,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -733,6 +734,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const {
     return preferred_color_scheme_;
   }
+  mojom::blink::PreferredContrast GetPreferredContrast() const {
+    return preferred_contrast_;
+  }
   bool GetForceDarkModeEnabled() const { return force_dark_mode_enabled_; }
   ForcedColors GetForcedColors() const { return forced_colors_; }
   void UpdateColorSchemeBackground(bool color_scheme_changed = false);
@@ -1158,6 +1162,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // The color of the canvas backdrop for the used color-scheme.
   Color color_scheme_background_;
+
+  // This data member should be initialized in the constructor in order to avoid
+  // including full mojom headers from this header.
+  mojom::blink::PreferredContrast preferred_contrast_;
 
   // Forced colors is set in WebThemeEngine.
   ForcedColors forced_colors_{ForcedColors::kNone};

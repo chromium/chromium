@@ -202,8 +202,9 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                             State state,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
+                            bool forced_colors,
                             PreferredColorScheme color_scheme,
-                            bool in_forced_colors,
+                            PreferredContrast contrast,
                             const std::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty()) {
     return;
@@ -240,7 +241,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kInnerSpinButton:
       PaintInnerSpinButton(canvas, color_provider, state, rect,
                            std::get<InnerSpinButtonExtraParams>(extra),
-                           dark_mode, in_forced_colors);
+                           forced_colors, dark_mode, contrast);
       break;
     case kMenuList:
       PaintMenuList(canvas, color_provider, state, rect,
@@ -261,7 +262,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kProgressBar:
       PaintProgressBar(canvas, color_provider, state, rect,
                        std::get<ProgressBarExtraParams>(extra), dark_mode,
-                       accent_color_opaque);
+                       contrast, accent_color_opaque);
       break;
     case kPushButton:
       PaintButton(canvas, color_provider, state, rect,
@@ -277,8 +278,8 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kScrollbarLeftArrow:
     case kScrollbarRightArrow:
       if (scrollbar_button_length_ > 0) {
-        PaintArrowButton(canvas, color_provider, rect, part, state, dark_mode,
-                         in_forced_colors,
+        PaintArrowButton(canvas, color_provider, rect, part, state,
+                         forced_colors, dark_mode, contrast,
                          std::get<ScrollbarArrowExtraParams>(extra));
       }
       break;
@@ -291,7 +292,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kScrollbarVerticalTrack:
       PaintScrollbarTrack(canvas, color_provider, part, state,
                           std::get<ScrollbarTrackExtraParams>(extra), rect,
-                          in_forced_colors);
+                          forced_colors, contrast);
       break;
     case kScrollbarHorizontalGripper:
     case kScrollbarVerticalGripper:
@@ -304,7 +305,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kSliderTrack:
       PaintSliderTrack(canvas, color_provider, state, rect,
-                       std::get<SliderExtraParams>(extra), dark_mode,
+                       std::get<SliderExtraParams>(extra), dark_mode, contrast,
                        accent_color_opaque);
       break;
     case kSliderThumb:
@@ -351,8 +352,9 @@ void NativeThemeBase::PaintArrowButton(
     const gfx::Rect& rect,
     Part direction,
     State state,
+    bool forced_colors,
     bool dark_mode,
-    bool in_forced_colors,
+    PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
   NOTIMPLEMENTED();
 }
@@ -469,7 +471,8 @@ void NativeThemeBase::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    bool in_forced_colors) const {
+    bool forced_colors,
+    PreferredContrast contrast) const {
   NOTIMPLEMENTED();
 }
 
@@ -877,6 +880,7 @@ void NativeThemeBase::PaintSliderTrack(
     const gfx::Rect& rect,
     const SliderExtraParams& slider,
     bool dark_mode,
+    PreferredContrast contrast,
     const std::optional<SkColor>& accent_color) const {
   // Paint the entire slider track.
   cc::PaintFlags flags;
@@ -918,7 +922,7 @@ void NativeThemeBase::PaintSliderTrack(
   flags.setStrokeWidth(border_width);
   SkColor border_color =
       ControlsBorderColorForState(state, dark_mode, color_provider);
-  if (preferred_contrast() != PreferredContrast::kMore && state != kDisabled &&
+  if (contrast != PreferredContrast::kMore && state != kDisabled &&
       !dark_mode) {
     border_color = SkColorSetA(border_color, 0x80);
   }
@@ -964,8 +968,9 @@ void NativeThemeBase::PaintInnerSpinButton(
     State state,
     const gfx::Rect& rect,
     const InnerSpinButtonExtraParams& spin_button,
+    bool forced_colors,
     bool dark_mode,
-    bool in_forced_colors) const {
+    PreferredContrast contrast) const {
   if (spin_button.read_only) {
     state = kDisabled;
   }
@@ -985,19 +990,19 @@ void NativeThemeBase::PaintInnerSpinButton(
       ui::NativeTheme::SpinArrowsDirection::kUpDown) {
     half.set_height(rect.height() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarUpArrow,
-                     north_state, dark_mode, in_forced_colors, arrow);
+                     north_state, forced_colors, dark_mode, contrast, arrow);
 
     half.set_y(rect.y() + rect.height() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarDownArrow,
-                     south_state, dark_mode, in_forced_colors, arrow);
+                     south_state, forced_colors, dark_mode, contrast, arrow);
   } else {
     half.set_width(rect.width() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarLeftArrow,
-                     south_state, dark_mode, in_forced_colors, arrow);
+                     south_state, forced_colors, dark_mode, contrast, arrow);
 
     half.set_x(rect.x() + rect.width() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarRightArrow,
-                     north_state, dark_mode, in_forced_colors, arrow);
+                     north_state, forced_colors, dark_mode, contrast, arrow);
   }
 }
 
@@ -1008,6 +1013,7 @@ void NativeThemeBase::PaintProgressBar(
     const gfx::Rect& rect,
     const ProgressBarExtraParams& progress_bar,
     bool dark_mode,
+    PreferredContrast contrast,
     const std::optional<SkColor>& accent_color) const {
   DCHECK(!rect.IsEmpty());
   // Paint the track.
@@ -1071,7 +1077,7 @@ void NativeThemeBase::PaintProgressBar(
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(border_width);
   SkColor border_color = GetControlColor(kBorder, dark_mode, color_provider);
-  if (preferred_contrast() != PreferredContrast::kMore && !dark_mode) {
+  if (contrast != PreferredContrast::kMore && !dark_mode) {
     border_color = SkColorSetA(border_color, 0x80);
   }
   flags.setColor(border_color);

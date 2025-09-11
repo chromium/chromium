@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -53,6 +54,18 @@ NT::PreferredColorScheme NativeColorScheme(
   static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTPCS>(
       {{MCS::kLight, NTPCS::kLight}, {MCS::kDark, NTPCS::kDark}});
   return kColorSchemeMap.at(color_scheme);
+}
+
+ui::NativeTheme::PreferredContrast NativeContrast(
+    mojom::blink::PreferredContrast contrast) {
+  using MPC = mojom::blink::PreferredContrast;
+  using NTPC = ui::NativeTheme::PreferredContrast;
+  static constexpr auto kContrastMap = base::MakeFixedFlatMap<MPC, NTPC>(
+      {{MPC::kMore, NTPC::kMore},
+       {MPC::kLess, NTPC::kLess},
+       {MPC::kNoPreference, NTPC::kNoPreference},
+       {MPC::kCustom, NTPC::kCustom}});
+  return kContrastMap.at(contrast);
 }
 
 }  // namespace blink

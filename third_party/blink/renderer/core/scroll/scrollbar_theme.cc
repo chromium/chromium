@@ -127,8 +127,9 @@ void ScrollbarTheme::PaintScrollCorner(
   mojom::blink::ColorScheme color_scheme = scrollbar->UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, corner_rect, &extra_params, color_scheme,
-      scrollbar->InForcedColorsMode(),
+      WebThemeEngine::kStateNormal, corner_rect, &extra_params,
+      scrollbar->InForcedColorsMode(), color_scheme,
+      scrollbar->GetPreferredContrast(),
       scrollbar->GetColorProvider(color_scheme));
 #endif
 }

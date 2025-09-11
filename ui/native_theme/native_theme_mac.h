@@ -42,8 +42,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
+             bool forced_colors,
              PreferredColorScheme color_scheme,
-             bool in_forced_colors,
+             PreferredContrast contrast,
              const std::optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,

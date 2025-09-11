@@ -73,8 +73,9 @@ class StubWebThemeEngine : public WebThemeEngine {
              State,
              const gfx::Rect&,
              const ExtraParams*,
-             mojom::blink::ColorScheme color_scheme,
              bool,
+             mojom::blink::ColorScheme color_scheme,
+             mojom::blink::PreferredContrast,
              const ui::ColorProvider*,
              const std::optional<SkColor>&) override {
     // Make  sure we don't overflow the array.

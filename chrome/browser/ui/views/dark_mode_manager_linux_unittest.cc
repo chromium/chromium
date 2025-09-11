@@ -49,8 +49,9 @@ class MockNativeTheme : public NativeTheme {
                State state,
                const gfx::Rect& rect,
                const ExtraParams& extra,
+               bool forced_colors,
                PreferredColorScheme color_scheme,
-               bool in_forced_colors,
+               PreferredContrast contrast,
                const std::optional<SkColor>& accent_color),
               (const override));
   MOCK_METHOD(bool, SupportsNinePatch, (Part part), (const override));

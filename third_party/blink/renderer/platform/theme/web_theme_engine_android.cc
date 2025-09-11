@@ -167,8 +167,9 @@ void WebThemeEngineAndroid::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
+    bool forced_colors,
     mojom::blink::ColorScheme color_scheme,
-    bool in_forced_colors,
+    mojom::blink::PreferredContrast contrast,
     const ui::ColorProvider* color_provider,
     const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
@@ -178,8 +179,8 @@ void WebThemeEngineAndroid::Paint(
   const ui::ColorProvider* color_provider_android = nullptr;
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, color_provider_android, NativeThemePart(part),
-      NativeThemeState(state), rect, native_theme_extra_params,
-      NativeColorScheme(color_scheme), in_forced_colors, accent_color);
+      NativeThemeState(state), rect, native_theme_extra_params, forced_colors,
+      NativeColorScheme(color_scheme), NativeContrast(contrast), accent_color);
 }
 
 }  // namespace blink

@@ -69,6 +69,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
@@ -9615,6 +9616,10 @@ bool Document::IsScriptBlockedUntilPrerenderActivation() const {
 
 mojom::blink::PreferredColorScheme Document::GetPreferredColorScheme() const {
   return GetStyleEngine().GetPreferredColorScheme();
+}
+
+mojom::blink::PreferredContrast Document::GetPreferredContrast() const {
+  return GetStyleEngine().GetPreferredContrast();
 }
 
 void Document::ColorSchemeChanged() {

@@ -43,8 +43,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
+             bool forced_colors,
              PreferredColorScheme color_scheme,
-             bool in_forced_colors,
+             PreferredContrast contrast,
              const std::optional<SkColor>& accent_color) const override;
 
   bool SupportsNinePatch(Part part) const override;
@@ -110,8 +111,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       const gfx::Rect& rect,
       Part direction,
       State state,
+      bool forced_colors,
       bool dark_mode,
-      bool in_forced_colors,
+      PreferredContrast contrast,
       const ScrollbarArrowExtraParams& extra_params) const;
   // Paint the scrollbar track. Done before the thumb so that it can contain
   // alpha.
@@ -122,7 +124,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       State state,
       const ScrollbarTrackExtraParams& extra_params,
       const gfx::Rect& rect,
-      bool in_forced_colors) const;
+      bool forced_colors,
+      PreferredContrast contrast) const;
   // Draw the scrollbar thumb over the track.
   virtual void PaintScrollbarThumb(
       cc::PaintCanvas* canvas,
@@ -195,6 +198,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                         const gfx::Rect& rect,
                         const SliderExtraParams& slider,
                         bool dark_mode,
+                        PreferredContrast contrast,
                         const std::optional<SkColor>& accent_color) const;
 
   void PaintSliderThumb(cc::PaintCanvas* canvas,
@@ -211,8 +215,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       State state,
       const gfx::Rect& rect,
       const InnerSpinButtonExtraParams& spin_button,
+      bool forced_colors,
       bool dark_mode,
-      bool in_forced_colors) const;
+      PreferredContrast contrast) const;
 
   void PaintProgressBar(cc::PaintCanvas* canvas,
                         const ColorProvider* color_provider,
@@ -220,6 +225,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                         const gfx::Rect& rect,
                         const ProgressBarExtraParams& progress_bar,
                         bool dark_mode,
+                        PreferredContrast contrast,
                         const std::optional<SkColor>& accent_color) const;
 
   virtual void PaintFrameTopArea(

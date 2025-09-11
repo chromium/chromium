@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
@@ -694,7 +695,12 @@ class CORE_EXPORT Document : public ContainerNode,
     return *style_engine_.Get();
   }
 
+  void UpdateForcedColors();
+  bool InForcedColorsMode() const;
+  bool InDarkMode();
+
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const;
+  mojom::blink::PreferredContrast GetPreferredContrast() const;
 
   void ScheduleUseShadowTreeUpdate(SVGUseElement&);
   void UnscheduleUseShadowTreeUpdate(SVGUseElement&);
@@ -1988,10 +1994,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsAnimatedPropertyCounted(CSSPropertyID property) const;
   void ClearUseCounterForTesting(mojom::WebFeature);
   void ClearWebDXFeatureCounterForTesting(mojom::blink::WebDXFeature);
-
-  void UpdateForcedColors();
-  bool InForcedColorsMode() const;
-  bool InDarkMode();
 
   const ui::ColorProvider* GetColorProviderForPainting(
       mojom::blink::ColorScheme color_scheme) const;

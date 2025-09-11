@@ -127,8 +127,9 @@ void NativeThemeAura::PaintArrowButton(
     const gfx::Rect& rect,
     Part direction,
     State state,
+    bool forced_colors,
     bool dark_mode,
-    bool in_forced_colors,
+    PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
   SkColor bg_color =
       GetControlColor(kScrollbarArrowBackground, dark_mode, color_provider);
@@ -218,7 +219,8 @@ void NativeThemeAura::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    bool in_forced_colors) const {
+    bool forced_colors,
+    PreferredContrast contrast) const {
   // Overlay Scrollbar should never paint a scrollbar track.
   DCHECK(!use_overlay_scrollbar());
   cc::PaintFlags flags;

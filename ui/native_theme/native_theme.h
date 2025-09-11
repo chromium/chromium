@@ -380,8 +380,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
                      State state,
                      const gfx::Rect& rect,
                      const ExtraParams& extra,
+                     bool forced_colors,
                      PreferredColorScheme color_scheme,
-                     bool in_forced_colors,
+                     PreferredContrast contrast,
                      const std::optional<SkColor>& accent_color) const = 0;
   void Paint(
       cc::PaintCanvas* canvas,
@@ -390,10 +391,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       State state,
       const gfx::Rect& rect,
       const ExtraParams& extra,
+      bool forced_colors = false,
       PreferredColorScheme color_scheme = PreferredColorScheme::kNoPreference,
-      bool in_forced_colors = false) const {
-    Paint(canvas, color_provider, part, state, rect, extra, color_scheme,
-          in_forced_colors, std::nullopt);
+      PreferredContrast contrast = PreferredContrast::kNoPreference) const {
+    Paint(canvas, color_provider, part, state, rect, extra, forced_colors,
+          color_scheme, contrast, std::nullopt);
   }
 
   // Returns whether the theme uses a nine-patch resource for the given part.

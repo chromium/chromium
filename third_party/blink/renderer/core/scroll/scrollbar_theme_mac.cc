@@ -219,7 +219,8 @@ void ScrollbarThemeMac::PaintTrackBackground(GraphicsContext& context,
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, color_scheme, scrollbar.InForcedColorsMode(),
+      &params, scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
   if (opacity != 1)
     context.EndLayer();
@@ -249,8 +250,9 @@ void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
       vertical_scrollbar->UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
-      WebThemeEngine::State::kStateNormal, bounds, &params, color_scheme,
-      vertical_scrollbar->InForcedColorsMode(),
+      WebThemeEngine::State::kStateNormal, bounds, &params,
+      vertical_scrollbar->InForcedColorsMode(), color_scheme,
+      vertical_scrollbar->GetPreferredContrast(),
       vertical_scrollbar->GetColorProvider(color_scheme));
 }
 
@@ -307,7 +309,8 @@ void ScrollbarThemeMac::PaintThumb(GraphicsContext& context,
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, color_scheme, scrollbar.InForcedColorsMode(),
+      &params, scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
 }
 

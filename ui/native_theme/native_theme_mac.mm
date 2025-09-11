@@ -130,8 +130,9 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            State state,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
+                           bool forced_colors,
                            PreferredColorScheme color_scheme,
-                           bool in_forced_colors,
+                           PreferredContrast contrast,
                            const std::optional<SkColor>& accent_color) const {
   // For `color_scheme`, `kNoPreference` means "use current".
   const bool dark_mode =
@@ -162,7 +163,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
       break;
     default:
       NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
-                             color_scheme, in_forced_colors, accent_color);
+                             forced_colors, color_scheme, contrast,
+                             accent_color);
       break;
   }
 }

@@ -18,8 +18,9 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
              WebThemeEngine::State state,
              const gfx::Rect& rect,
              const WebThemeEngine::ExtraParams* extra_params,
+             bool forced_colors,
              mojom::blink::ColorScheme color_scheme,
-             bool in_forced_colors,
+             mojom::blink::PreferredContrast contrast,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override;
 
@@ -31,6 +32,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
       WebThemeEngine::State state,
       const gfx::Rect& rect,
       const WebThemeEngine::ExtraParams* extra_params,
+      bool forced_colors,
       mojom::blink::ColorScheme color_scheme);
 };
 

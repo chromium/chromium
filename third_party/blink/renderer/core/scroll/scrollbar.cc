@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1011,17 +1012,20 @@ bool Scrollbar::LastKnownMousePositionInFrameRect() const {
 
 const ui::ColorProvider* Scrollbar::GetColorProvider(
     mojom::blink::ColorScheme color_scheme) const {
-  if (const auto* box = GetLayoutBox()) {
-    return box->GetDocument().GetColorProviderForPainting(color_scheme);
-  }
-  return nullptr;
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetColorProviderForPainting(color_scheme)
+             : nullptr;
+}
+
+mojom::blink::PreferredContrast Scrollbar::GetPreferredContrast() const {
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetPreferredContrast()
+             : mojom::blink::PreferredContrast::kNoPreference;
 }
 
 bool Scrollbar::InForcedColorsMode() const {
-  if (const auto* box = GetLayoutBox()) {
-    return box->GetDocument().InForcedColorsMode();
-  }
-  return false;
+  const auto* const box = GetLayoutBox();
+  return box && box->GetDocument().InForcedColorsMode();
 }
 
 }  // namespace blink

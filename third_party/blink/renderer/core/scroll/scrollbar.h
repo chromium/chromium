@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_H_
 
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -247,6 +248,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool LastKnownMousePositionInFrameRect() const;
 
   const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
+  mojom::blink::PreferredContrast GetPreferredContrast() const;
   bool InForcedColorsMode() const;
 
  protected:

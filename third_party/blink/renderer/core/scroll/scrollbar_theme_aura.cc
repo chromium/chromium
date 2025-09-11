@@ -294,13 +294,14 @@ void ScrollbarThemeAura::PaintTrackBackground(GraphicsContext& context,
   }
 
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
-  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(),
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalTrack
           : WebThemeEngine::kPartScrollbarVerticalTrack,
-      state, rect, &extra_params, color_scheme, scrollbar.InForcedColorsMode(),
+      state, rect, &extra_params, scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
 }
 
@@ -328,10 +329,12 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
         scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
   }
   WebThemeEngine::ExtraParams extra_params(scrollbar_button);
-  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      gc.Canvas(), params.part, params.state, rect, &extra_params, color_scheme,
-      scrollbar.InForcedColorsMode(), scrollbar.GetColorProvider(color_scheme));
+      gc.Canvas(), params.part, params.state, rect, &extra_params,
+      scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
+      scrollbar.GetColorProvider(color_scheme));
 }
 
 void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
@@ -353,7 +356,8 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
   const mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       gc.Canvas(), part, scrollbar.GetStateForPart(kThumbPart), rect, &params,
-      color_scheme, scrollbar.InForcedColorsMode(),
+      scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
 }
 

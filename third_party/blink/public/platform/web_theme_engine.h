@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_utils.h"
@@ -275,8 +276,9 @@ class WebThemeEngine {
       State,
       const gfx::Rect&,
       const ExtraParams*,
-      blink::mojom::ColorScheme,
-      bool in_forced_colors,
+      bool,
+      mojom::ColorScheme,
+      mojom::PreferredContrast,
       const ui::ColorProvider*,
       const std::optional<SkColor>& accent_color = std::nullopt) {}
 

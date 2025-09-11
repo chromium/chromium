@@ -244,7 +244,8 @@ StyleEngine::StyleEngine(Document& document)
           MakeGarbageCollected<StyleSheetCollection>(document)),
       preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
       owner_preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
-      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
+      owner_color_scheme_(mojom::blink::ColorScheme::kLight),
+      preferred_contrast_(mojom::blink::PreferredContrast::kNoPreference) {
   if (document.GetFrame()) {
     resolver_ = MakeGarbageCollected<StyleResolver>(document);
     global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
@@ -4346,9 +4347,12 @@ void StyleEngine::UpdateColorScheme() {
   } else {
     preferred_color_scheme_ = owner_preferred_color_scheme_;
   }
+  mojom::blink::PreferredContrast old_preferred_contrast = preferred_contrast_;
+  preferred_contrast_ = settings->GetPreferredContrast();
   bool old_force_dark_mode_enabled = force_dark_mode_enabled_;
   force_dark_mode_enabled_ = settings->GetForceDarkModeEnabled();
   bool media_feature_override_color_scheme = false;
+  bool media_feature_override_contrast = false;
 
   // TODO(1479201): Should DevTools emulation use the WebPreferences API
   // overrides?
@@ -4364,26 +4368,43 @@ void StyleEngine::UpdateColorScheme() {
       preferred_color_scheme_ = preferred_color_scheme_override.value();
       media_feature_override_color_scheme = true;
     }
+    if (std::optional<mojom::blink::PreferredContrast>
+            preferred_contrast_override = overrides->GetPreferredContrast()) {
+      preferred_contrast_ = preferred_contrast_override.value();
+      media_feature_override_contrast = true;
+    }
   }
 
   const PreferenceOverrides* preference_overrides =
       GetDocument().GetPage()->GetPreferenceOverrides();
-  if (preference_overrides && !media_feature_override_color_scheme) {
-    std::optional<mojom::blink::PreferredColorScheme>
-        preferred_color_scheme_override =
-            preference_overrides->GetPreferredColorScheme();
-    if (preferred_color_scheme_override.has_value()) {
-      preferred_color_scheme_ = preferred_color_scheme_override.value();
+  if (preference_overrides) {
+    if (!media_feature_override_color_scheme) {
+      std::optional<mojom::blink::PreferredColorScheme>
+          preferred_color_scheme_override =
+              preference_overrides->GetPreferredColorScheme();
+      if (preferred_color_scheme_override.has_value()) {
+        preferred_color_scheme_ = preferred_color_scheme_override.value();
+      }
+    }
+    if (!media_feature_override_contrast) {
+      std::optional<mojom::blink::PreferredContrast>
+          preferred_contrast_override =
+              preference_overrides->GetPreferredContrast();
+      if (preferred_contrast_override.has_value()) {
+        preferred_contrast_ = preferred_contrast_override.value();
+      }
     }
   }
 
   if (GetDocument().Printing()) {
     preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
+    preferred_contrast_ = mojom::blink::PreferredContrast::kNoPreference;
     force_dark_mode_enabled_ = false;
   }
 
   if (forced_colors_ != old_forced_colors ||
       preferred_color_scheme_ != old_preferred_color_scheme ||
+      preferred_contrast_ != old_preferred_contrast ||
       force_dark_mode_enabled_ != old_force_dark_mode_enabled) {
     PlatformColorsChanged();
   }
