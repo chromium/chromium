@@ -72,7 +72,7 @@ class ExtensionSidePanelManager;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
-class GlicConversationHelper;
+class GlicInstanceHelper;
 class GlicTabIndicatorHelper;
 }  // namespace glic
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -391,7 +391,7 @@ class TabFeatures {
       collaboration_messaging_page_action_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicConversationHelper> glic_conversation_helper_;
+  std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

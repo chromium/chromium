@@ -30,11 +30,11 @@ GlicInstance::EmbedderEntry& GlicInstance::EmbedderEntry::operator=(
 GlicInstance::GlicInstance(
     Profile* profile,
     std::unique_ptr<Host> host,
-    ConversationId conversation_id,
+    InstanceId instance_id,
     base::WeakPtr<AttachmentDelegate> attachment_delegate)
     : profile_(profile),
       attachment_delegate_(attachment_delegate),
-      conversation_id_(conversation_id),
+      id_(instance_id),
       host_(std::move(host)) {}
 
 GlicInstance::~GlicInstance() = default;
@@ -194,7 +194,7 @@ GlicUiEmbedder* GlicInstance::CreateActiveEmbedderFor(const EmbedderKey& key) {
           [&](tabs::TabInterface* tab) {
             new_entry.embedder =
                 std::make_unique<GlicSidePanelUi>(tab->GetWeakPtr(), *this);
-            auto* helper = GlicConversationHelper::From(tab);
+            auto* helper = GlicInstanceHelper::From(tab);
             CHECK(helper);
             new_entry.destruction_subscription = helper->SubscribeToDestruction(
                 base::BindRepeating(&GlicInstance::OnAssociatedTabDestroyed,
@@ -225,9 +225,8 @@ void GlicInstance::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   host_->PanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
-void GlicInstance::OnAssociatedTabDestroyed(
-    tabs::TabInterface* tab,
-    const ConversationId& conversation_id) {
+void GlicInstance::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
+                                            const InstanceId& instance_id) {
   DisassociateFromTab(tab);
   if (IsOrphaned() && attachment_delegate_) {
     attachment_delegate_->OnInstanceOrphaned(this);

@@ -102,7 +102,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/service/glic_conversation_helper.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #endif
 namespace tabs {
 
@@ -278,9 +278,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(
             tab.GetBrowserWindowInterface()->GetProfile())) {
-      glic_conversation_helper_ =
-          GetUserDataFactory().CreateInstance<glic::GlicConversationHelper>(
-              tab, &tab);
+      glic_instance_helper_ =
+          GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(tab,
+                                                                        &tab);
       glic_tab_indicator_helper_ =
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);

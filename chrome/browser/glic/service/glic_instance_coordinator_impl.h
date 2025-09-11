@@ -124,7 +124,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
 
  private:
   GlicInstance* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
-  GlicInstance* GetInstanceFor(const ConversationId& id);
+  GlicInstance* GetInstanceFor(const InstanceId& id);
   GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
   GlicInstance* CreateGlicInstance(BrowserWindowInterface* bwi);
 
@@ -144,15 +144,14 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   const raw_ptr<Profile> profile_;
 
   // TODO: This is a temporary solution to associate a
-  // conversation with a browser window. This will be removed once there are
-  // affordances for users to manage their own conversations.
-  std::map<BrowserWindowInterface*, ConversationId>
-      browser_to_conversation_map_;
+  // instance with a browser window. This will be removed once there are
+  // affordances for users to manage their own instances.
+  std::map<BrowserWindowInterface*, InstanceId> browser_to_instance_map_;
 
-  std::map<ConversationId, std::unique_ptr<GlicInstance>> instances_;
+  std::map<InstanceId, std::unique_ptr<GlicInstance>> instances_;
 
-  // The conversation ID of the one instance that is currently floating.
-  std::optional<ConversationId> floating_instance_key_;
+  // The instance ID of the one instance that is currently floating.
+  std::optional<InstanceId> floating_instance_key_;
 
   std::unique_ptr<HostManager> host_manager_;
 

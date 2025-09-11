@@ -25,7 +25,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/service/glic_conversation_helper.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -88,12 +88,12 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
     tabs::TabInterface* tab) {
-  auto* helper = GlicConversationHelper::From(tab);
+  auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
 
-  auto conversation_id = helper->GetConversationId();
-  if (conversation_id.has_value()) {
-    if (auto* instance = GetInstanceFor(conversation_id.value())) {
+  auto instance_id = helper->GetInstanceId();
+  if (instance_id.has_value()) {
+    if (auto* instance = GetInstanceFor(instance_id.value())) {
       return instance;
     }
   }
@@ -104,12 +104,12 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
 void GlicInstanceCoordinatorImpl::OnBrowserAdded(Browser* browser) {}
 
 void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
-  browser_to_conversation_map_.erase(browser);
+  browser_to_instance_map_.erase(browser);
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
   if (floating_instance_key_.has_value() &&
-      floating_instance_key_.value() == instance->conversation_id()) {
+      floating_instance_key_.value() == instance->id()) {
     return;
   }
   RemoveInstance(instance);
@@ -368,26 +368,26 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
     return instance;
   }
 
-  auto* helper = GlicConversationHelper::From(tab);
+  auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
 
   // If the tab is not part of a conversation, we will check if the browser
   // window is.
   auto* bwi = tab->GetBrowserWindowInterface();
-  auto it = browser_to_conversation_map_.find(bwi);
-  if (it != browser_to_conversation_map_.end()) {
-    helper->SetConversationId(it->second);
+  auto it = browser_to_instance_map_.find(bwi);
+  if (it != browser_to_instance_map_.end()) {
+    helper->SetInstanceId(it->second);
     return GetInstanceFor(it->second);
   }
 
   // Create a new conversation and instance.
   auto* new_instance = CreateGlicInstance(bwi);
-  helper->SetConversationId(new_instance->conversation_id());
+  helper->SetInstanceId(new_instance->id());
   return new_instance;
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
-    const ConversationId& id) {
+    const InstanceId& id) {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
     return it->second.get();
@@ -398,22 +398,21 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
 GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
     BrowserWindowInterface* bwi) {
   // TODO: Sync this id with the web client.
-  ConversationId new_conversation_id = base::Uuid::GenerateRandomV4();
+  InstanceId instance_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstance>(
-      profile_, std::make_unique<Host>(profile_), new_conversation_id,
+      profile_, std::make_unique<Host>(profile_), instance_id,
       weak_ptr_factory_.GetWeakPtr());
   if (bwi) {
-    browser_to_conversation_map_[bwi] = new_conversation_id;
+    browser_to_instance_map_[bwi] = instance_id;
   }
   auto* instance_ptr = new_instance.get();
-  instances_[new_conversation_id] = std::move(new_instance);
+  instances_[instance_id] = std::move(new_instance);
   return instance_ptr;
 }
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty() {
   if (!floating_instance_key_.has_value()) {
-    floating_instance_key_ =
-        CreateGlicInstance(/*bwi=*/nullptr)->conversation_id();
+    floating_instance_key_ = CreateGlicInstance(/*bwi=*/nullptr)->id();
   }
   auto instance_iter = instances_.find(*floating_instance_key_);
   CHECK(instance_iter != instances_.end());
@@ -432,7 +431,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
-  instances_.erase(instance->conversation_id());
+  instances_.erase(instance->id());
 }
 
 bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {

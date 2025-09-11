@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/service/glic_conversation_helper.h"
 #include "chrome/browser/glic/service/glic_instance_delegate.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -52,7 +52,7 @@ class GlicInstance : public GlicInstanceDelegate {
 
   GlicInstance(Profile* profile,
                std::unique_ptr<Host> host,
-               ConversationId conversation_id,
+               InstanceId instance_id,
                base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
 
@@ -68,7 +68,7 @@ class GlicInstance : public GlicInstanceDelegate {
   void DetachInstance() override;
   bool IsShowing() const;
   BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
-  const ConversationId& conversation_id() const { return conversation_id_; }
+  const InstanceId& id() const { return id_; }
 
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);
@@ -76,7 +76,7 @@ class GlicInstance : public GlicInstanceDelegate {
   void Toggle(EmbedderType type, tabs::TabInterface* tab);
   std::unique_ptr<views::View> CreateViewForSidePanel(tabs::TabInterface* tab);
 
-  // Manages the association of this conversation with a tab.
+  // Manages the association of this instance with a tab.
   void DisassociateFromTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
 
@@ -116,7 +116,7 @@ class GlicInstance : public GlicInstanceDelegate {
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
-                                const ConversationId& conversation_id);
+                                const InstanceId& instance_id);
 
   raw_ptr<Profile> profile_;
 
@@ -124,7 +124,7 @@ class GlicInstance : public GlicInstanceDelegate {
   // when detached.
   raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
-  const ConversationId conversation_id_;
+  InstanceId id_;
 
   // The single source of truth for all embedders.
   // A tabs::TabInterface* key is a tab-bound side panel.
