@@ -273,6 +273,7 @@ source_set("browser") {
     "//components/content_capture/browser",
     "//components/content_relationship_verification",
     "//components/embedder_support/android:context_menu",
+    "//components/metrics:net",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",

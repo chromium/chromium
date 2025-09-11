@@ -11,13 +11,18 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/accessibility_state_provider.h"
+#include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
+#include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -58,6 +63,13 @@ ChromeBackgroundTracingMetricsProvider::ChromeBackgroundTracingMetricsProvider(
 
   system_profile_providers_.emplace_back(
       std::make_unique<AccessibilityStateProvider>());
+  system_profile_providers_.emplace_back(
+      std::make_unique<metrics::DriveMetricsProvider>(
+          chrome::FILE_LOCAL_STATE));
+  system_profile_providers_.emplace_back(
+      std::make_unique<metrics::NetworkMetricsProvider>(
+          content::CreateNetworkConnectionTrackerAsyncGetter(),
+          std::make_unique<metrics::NetworkQualityEstimatorProviderImpl>()));
 }
 
 ChromeBackgroundTracingMetricsProvider::
