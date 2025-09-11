@@ -63,6 +63,8 @@
   if (identity.gaiaID) {
     [shared_defaults setObject:identity.gaiaID
                         forKey:app_group::kPrimaryAccount];
+  } else {
+    [shared_defaults removeObjectForKey:app_group::kPrimaryAccount];
   }
 }
 
