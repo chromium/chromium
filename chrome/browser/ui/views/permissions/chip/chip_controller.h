@@ -69,7 +69,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
-  void OnTabVisibilityChanged(content::Visibility visibility) override;
+  void OnTabActiveChanged(bool is_active) override;
   // Called when the currently active permission request was finalized. That
   // could be called independently of `OnRequestDecided`.
   void OnRequestsFinalized() override;

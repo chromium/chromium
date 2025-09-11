@@ -118,8 +118,8 @@ void ChipController::OnNavigation(
   ResetPermissionPromptChip();
 }
 
-void ChipController::OnTabVisibilityChanged(content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
+void ChipController::OnTabActiveChanged(bool is_active) {
+  if (!is_active) {
     ResetPermissionPromptChip();
   }
 }

@@ -141,6 +141,7 @@ source_set("permissions") {
     "//components/prefs",
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
+    "//components/tabs:public",
     "//components/ukm/content",
     "//components/url_formatter",
     "//components/variations",
