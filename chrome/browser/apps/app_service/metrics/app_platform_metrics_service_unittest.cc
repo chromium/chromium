@@ -461,10 +461,10 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   std::unique_ptr<aura::Window> CreateWebAppWindow(aura::Window* parent) {
-    std::unique_ptr<aura::Window> window(
-        aura::test::CreateTestWindowWithDelegate(&delegate1_, 1, gfx::Rect(),
-                                                 parent));
-    return window;
+    return aura::test::CreateTestWindow({.delegate = &delegate1_,
+                                         .parent = parent,
+                                         .bounds = {},
+                                         .window_id = 1});
   }
 
   GURL GetSourceUrlForApp(const std::string& app_id) {

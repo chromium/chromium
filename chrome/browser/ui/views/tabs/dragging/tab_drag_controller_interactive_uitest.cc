@@ -1813,9 +1813,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   const gfx::Rect bounds = browser_window->GetBoundsInScreen();
   aura::test::TestWindowDelegate masked_window_delegate;
   masked_window_delegate.set_can_focus(false);
-  std::unique_ptr<aura::Window> masked_window(
-      aura::test::CreateTestWindowWithDelegate(
-          &masked_window_delegate, 10, bounds, browser_window->parent()));
+  std::unique_ptr<aura::Window> masked_window =
+      aura::test::CreateTestWindow({.delegate = &masked_window_delegate,
+                                    .parent = browser_window->parent(),
+                                    .bounds = bounds,
+                                    .window_id = 10});
   masked_window->SetProperty(aura::client::kZOrderingKey,
                              ui::ZOrderLevel::kFloatingWindow);
   auto targeter = std::make_unique<aura::WindowTargeter>();
