@@ -1207,9 +1207,9 @@ class WaylandDesktop(Desktop):
     # right after the gnome session is launched. See: http://crbug.com/444052254
     display_layout_file = os.path.join(
         CONFIG_DIR, "host#%s.display_layout.pb" % g_host_hash)
-    logging.info("Existing display layout file deleted.")
     try:
       os.remove(display_layout_file)
+      logging.info("Existing display layout file deleted.")
     except FileNotFoundError:
       pass
 
