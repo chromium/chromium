@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/mappable_buffer_shared_memory.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 
 #include <stdint.h>
 

@@ -23,6 +23,8 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -30,8 +32,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/common/mappable_buffer.h"
-#include "gpu/ipc/common/mappable_buffer_shared_memory.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -39,17 +39,17 @@
 #include "ui/gfx/buffer_usage_util.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "gpu/ipc/common/mappable_buffer_io_surface.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_io_surface.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/mappable_buffer_dxgi.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
 #endif
 
 namespace gpu {

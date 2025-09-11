@@ -2,46 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_
-#define GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_SHARED_MEMORY_H_
+#define GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_SHARED_MEMORY_H_
 
 #include <stddef.h>
 
 #include <memory>
-#include <vector>
 
-#include "base/functional/callback_helpers.h"
-#include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/mappable_buffer.h"
-
-namespace gfx {
-class ClientNativePixmap;
-class ClientNativePixmapFactory;
-}  // namespace gfx
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer.h"
 
 namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of MappableBuffer based on Ozone native pixmap.
-class GPU_IPC_COMMON_EXPORT MappableBufferNativePixmap : public MappableBuffer {
+// Implementation of MappableBuffer based on shared memory.
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferSharedMemory
+    : public MappableBuffer {
  public:
-  MappableBufferNativePixmap(const MappableBufferNativePixmap&) = delete;
-  MappableBufferNativePixmap& operator=(const MappableBufferNativePixmap&) =
+  MappableBufferSharedMemory(const MappableBufferSharedMemory&) = delete;
+  MappableBufferSharedMemory& operator=(const MappableBufferSharedMemory&) =
       delete;
 
-  ~MappableBufferNativePixmap() override;
+  ~MappableBufferSharedMemory() override;
 
-  static constexpr gfx::GpuMemoryBufferType kBufferType = gfx::NATIVE_PIXMAP;
+  static constexpr gfx::GpuMemoryBufferType kBufferType =
+      gfx::SHARED_MEMORY_BUFFER;
 
-  static std::unique_ptr<MappableBufferNativePixmap> CreateFromHandleForTesting(
-      gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
+  static std::unique_ptr<MappableBufferSharedMemory> CreateFromHandleForTesting(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) {
-    return CreateFromHandle(client_native_pixmap_factory, std::move(handle),
-                            size, format, usage);
+    return CreateFromHandle(std::move(handle), size, format, usage);
   }
 
   static base::OnceClosure AllocateForTesting(
@@ -59,27 +52,36 @@ class GPU_IPC_COMMON_EXPORT MappableBufferNativePixmap : public MappableBuffer {
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+#if BUILDFLAG(IS_WIN)
+  void SetUsePreMappedMemory(bool use_premapped_memory) override {}
+#endif
 
  private:
   friend class ClientSharedImage;
 
-  static std::unique_ptr<MappableBufferNativePixmap> CreateFromHandle(
-      gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
+  static std::unique_ptr<MappableBufferSharedMemory> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
-  MappableBufferNativePixmap(
+  MappableBufferSharedMemory(
       const gfx::Size& size,
       gfx::BufferFormat format,
-      std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
+      gfx::BufferUsage usage,
+      base::UnsafeSharedMemoryRegion shared_memory_region,
+      base::WritableSharedMemoryMapping shared_memory_mapping,
+      size_t offset,
+      uint32_t stride);
 
   void AssertMapped();
 
   const gfx::Size size_;
   const gfx::BufferFormat format_;
-  const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;
+  base::UnsafeSharedMemoryRegion shared_memory_region_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
+  size_t offset_;
+  uint32_t stride_;
 
   // Note: This lock must be held throughout the entirety of the Map() and
   // Unmap() operations to avoid corrupt mutation across multiple threads.
@@ -89,4 +91,4 @@ class GPU_IPC_COMMON_EXPORT MappableBufferNativePixmap : public MappableBuffer {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_SHARED_MEMORY_H_

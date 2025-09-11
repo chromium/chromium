@@ -47,6 +47,10 @@ group("webgpu") {
   }
 }
 
+source_set("export") {
+  sources = [ "gpu_command_buffer_client_export.h" ]
+}
+
 source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
@@ -67,7 +71,6 @@ source_set("client_sources") {
     "gl_helper.h",
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
-    "gpu_command_buffer_client_export.h",
     "gpu_control.h",
     "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
@@ -92,8 +95,10 @@ source_set("client_sources") {
     "//skia",
   ]
   deps = [
+    ":export",
     ":gles2_interface",
     ":webgpu_interface",
+    "//gpu/command_buffer/client/internal",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",

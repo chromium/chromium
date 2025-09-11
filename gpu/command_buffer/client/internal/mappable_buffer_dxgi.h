@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_
-#define GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_DXGI_H_
+#define GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_DXGI_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,8 +20,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
-#include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/mappable_buffer.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
@@ -29,7 +29,8 @@ namespace gpu {
 class ClientSharedImage;
 
 // Implementation of MappableBuffer based on dxgi textures.
-class GPU_IPC_COMMON_EXPORT MappableBufferDXGI : public MappableBuffer {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferDXGI
+    : public MappableBuffer {
  public:
   MappableBufferDXGI(const MappableBufferDXGI&) = delete;
   MappableBufferDXGI& operator=(const MappableBufferDXGI&) = delete;
@@ -149,4 +150,4 @@ class GPU_IPC_COMMON_EXPORT MappableBufferDXGI : public MappableBuffer {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_DXGI_H_

@@ -408,6 +408,8 @@ test("gpu_unittests") {
     "command_buffer/client/fenced_allocator_test.cc",
     "command_buffer/client/gles2_implementation_unittest.cc",
     "command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "command_buffer/client/internal/mappable_buffer_shared_memory_unittest.cc",
+    "command_buffer/client/internal/mappable_buffer_test_template.h",
     "command_buffer/client/mapped_memory_unittest.cc",
     "command_buffer/client/mock_transfer_buffer.cc",
     "command_buffer/client/mock_transfer_buffer.h",
@@ -512,8 +514,6 @@ test("gpu_unittests") {
     "config/gpu_util_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
-    "ipc/common/mappable_buffer_shared_memory_unittest.cc",
-    "ipc/common/mappable_buffer_test_template.h",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
@@ -553,7 +553,7 @@ test("gpu_unittests") {
 
   if (is_mac) {
     sources += [
-      "ipc/common/mappable_buffer_io_surface_unittest.cc",
+      "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
     ]
   }
@@ -568,14 +568,14 @@ test("gpu_unittests") {
 
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
-      "ipc/common/mappable_buffer_native_pixmap_unittest.cc",
+      "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
     ]
   }
 
   if (is_win) {
     sources += [
-      "ipc/common/mappable_buffer_dxgi_unittest.cc",
+      "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_dxgi_unittest.cc",
     ]
   }
@@ -633,6 +633,7 @@ test("gpu_unittests") {
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:webgpu",
+    "//gpu/command_buffer/client/internal",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/service",

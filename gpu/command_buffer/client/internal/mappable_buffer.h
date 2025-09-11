@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_H_
-#define GPU_IPC_COMMON_MAPPABLE_BUFFER_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_H_
+#define GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_H_
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -19,7 +19,7 @@ namespace gpu {
 
 // Abstraction for a CPU-mappable buffer that is used internally by
 // ClientSharedImage to implement mappable SharedImages.
-class GPU_IPC_COMMON_EXPORT MappableBuffer {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBuffer {
  public:
   using CopyNativeBufferToShMemCallback =
       base::RepeatingCallback<void(gfx::GpuMemoryBufferHandle,
@@ -86,4 +86,4 @@ class GPU_IPC_COMMON_EXPORT MappableBuffer {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_H_

@@ -10,8 +10,8 @@
 // This file defines tests that implementations of MappableBuffer should
 // pass in order to be conformant.
 
-#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
-#define GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
+#define GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
 
 #include <stddef.h>
 #include <string.h>
@@ -25,8 +25,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/common/mappable_buffer_shared_memory.h"
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,23 +42,23 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/common/mappable_buffer_io_surface.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_io_surface.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/mappable_buffer_dxgi.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
 #endif
 
 namespace gpu {
@@ -466,4 +466,4 @@ REGISTER_TYPED_TEST_SUITE_P(MappableBufferTest,
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_TEST_TEMPLATE_H_

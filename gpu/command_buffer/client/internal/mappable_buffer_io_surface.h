@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_
-#define GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_IO_SURFACE_H_
+#define GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_IO_SURFACE_H_
 
 #include <IOSurface/IOSurfaceRef.h>
 #include <stddef.h>
@@ -12,8 +12,8 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/mappable_buffer.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
@@ -21,7 +21,8 @@ namespace gpu {
 class ClientSharedImage;
 
 // Implementation of MappableBuffer based on IO surfaces.
-class GPU_IPC_COMMON_EXPORT MappableBufferIOSurface : public MappableBuffer {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferIOSurface
+    : public MappableBuffer {
  public:
   MappableBufferIOSurface(const MappableBufferIOSurface&) = delete;
   MappableBufferIOSurface& operator=(const MappableBufferIOSurface&) = delete;
@@ -95,4 +96,4 @@ class GPU_IPC_COMMON_EXPORT MappableBufferIOSurface : public MappableBuffer {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_INTERNAL_MAPPABLE_BUFFER_IO_SURFACE_H_

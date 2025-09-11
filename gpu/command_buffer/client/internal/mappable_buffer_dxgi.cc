@@ -6,7 +6,7 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-#include "gpu/ipc/common/mappable_buffer_dxgi.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
 
 #include <d3d11.h>
 #include <dxgi1_2.h>

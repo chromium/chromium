@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/mappable_buffer_io_surface.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_io_surface.h"
 
-#include "gpu/ipc/common/mappable_buffer_test_template.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_test_template.h"
 
 namespace gpu {
 namespace {

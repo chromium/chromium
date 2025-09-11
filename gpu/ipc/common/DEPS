@@ -15,7 +15,4 @@ specific_include_rules = {
   "shared_image_metadata_mojom_traits.h": [
     "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
   ],
-  "mappable_buffer_test_template.h": [
-    "+components/viz/test/test_gpu_service_holder.h",
-  ]
 }
