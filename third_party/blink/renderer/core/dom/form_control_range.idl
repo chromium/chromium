@@ -7,4 +7,10 @@
     RuntimeEnabled=FormControlRange
 ] interface FormControlRange : AbstractRange {
     [CallWith=Document] constructor();
+
+    [RaisesException] void setFormControlRange(Node element,
+                              unsigned long start,
+                              unsigned long end);
+
+    stringifier;
 };

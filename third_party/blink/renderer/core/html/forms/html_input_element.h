@@ -110,6 +110,8 @@ class CORE_EXPORT HTMLInputElement
   // Returns true if the type is email, number, password, search, tel, text,
   // or url.
   bool IsTextField() const;
+  // Returns true if type is text, search, url, tel, or password.
+  bool InputSupportsSelectionAPI() const;
   bool IsTelephone() const;
   // To override from TextControlElement
   bool IsAutoDirectionalityFormAssociated() const final;

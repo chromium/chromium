@@ -2966,6 +2966,8 @@ interface FontFaceSetLoadEvent : Event
 interface FormControlRange : AbstractRange
     attribute @@toStringTag
     method constructor
+    method setFormControlRange
+    method toString
 interface FormData
     attribute @@toStringTag
     method @@iterator

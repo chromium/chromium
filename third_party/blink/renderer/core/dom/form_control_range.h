@@ -12,6 +12,7 @@
 namespace blink {
 
 class Document;
+class ExceptionState;
 class Node;
 class TextControlElement;
 
@@ -40,6 +41,19 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
   bool collapsed() const override;
   bool IsStaticRange() const override;
   Document& OwnerDocument() const override;
+
+  // Sets the range on a <textarea> or text-supporting <input>.
+  // Offsets are UTF-16 indices into element.value; throws on unsupported
+  // elements or out-of-bounds offsets. Backwards ranges (start_offset >
+  // end_offset) are auto-collapsed to [start_offset, start_offset] to match
+  // standard Range behavior.
+  void setFormControlRange(Node* element,
+                           unsigned start_offset,
+                           unsigned end_offset,
+                           ExceptionState&);
+
+  // Returns the substring of element.value; empty string if unset or invalid.
+  String toString() const;
 
  private:
   Member<Document> owner_document_;

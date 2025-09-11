@@ -1100,6 +1100,10 @@ bool HTMLInputElement::IsTextField() const {
   return input_type_->IsTextFieldInputType();
 }
 
+bool HTMLInputElement::InputSupportsSelectionAPI() const {
+  return input_type_->SupportsSelectionAPI();
+}
+
 bool HTMLInputElement::IsTelephone() const {
   return input_type_->IsTelephoneInputType();
 }
