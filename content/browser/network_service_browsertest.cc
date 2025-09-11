@@ -456,8 +456,9 @@ class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/442538651): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
-                       MemoryPressureSentToNetworkProcess) {
+                       DISABLED_MemoryPressureSentToNetworkProcess) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
