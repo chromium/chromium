@@ -195,8 +195,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool AllowGpuLaunchRetryOnIOThread() override;
-  GURL GetEffectiveURL(content::BrowserContext* browser_context,
-                       const GURL& url) override;
+  std::optional<GURL> GetEffectiveURL(content::BrowserContext* browser_context,
+                                      const GURL& url) override;
   void OnRendererProcessLockedStateUpdated(content::RenderProcessHost* host,
                                            const GURL& site_url) override;
   bool ShouldCompareEffectiveURLsForSiteInstanceSelection(

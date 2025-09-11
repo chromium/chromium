@@ -3886,12 +3886,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
 class GetEffectiveUrlClient : public ContentBrowserTestContentBrowserClient {
  public:
-  GURL GetEffectiveURL(content::BrowserContext* browser_context,
-                       const GURL& url) override {
+  std::optional<GURL> GetEffectiveURL(content::BrowserContext* browser_context,
+                                      const GURL& url) override {
     if (effective_url_) {
       return *effective_url_;
     }
-    return url;
+    return std::nullopt;
   }
 
   bool IsSuitableHost(RenderProcessHost* process_host,

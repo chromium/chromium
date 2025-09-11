@@ -127,7 +127,8 @@ const Extension* GetEnabledExtensionFromSiteURL(BrowserContext* context,
 bool HasEffectiveUrl(content::BrowserContext* browser_context,
                      const GURL& url) {
   return ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
-             Profile::FromBrowserContext(browser_context), url) != url;
+             Profile::FromBrowserContext(browser_context), url)
+      .has_value();
 }
 
 bool AllowServiceWorker(const GURL& scope,
@@ -219,7 +220,7 @@ ChromeContentBrowserClientExtensionsPart::
     ~ChromeContentBrowserClientExtensionsPart() = default;
 
 // static
-GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
+std::optional<GURL> ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
     Profile* profile,
     const GURL& url) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
@@ -256,7 +257,7 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   }
 
   // Don't translate to effective URLs in all other cases.
-  return url;
+  return std::nullopt;
 }
 
 // static

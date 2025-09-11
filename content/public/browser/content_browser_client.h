@@ -414,9 +414,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void BrowserChildProcessHostCreated(BrowserChildProcessHost* host) {}
 
   // Gets the effective URL for the given actual URL, to allow an embedder to
-  // group different url schemes in the same SiteInstance.
-  virtual GURL GetEffectiveURL(BrowserContext* browser_context,
-                               const GURL& url);
+  // group different url schemes in the same SiteInstance. If there is no
+  // effective URL for the given URL, return std::nullopt.
+  virtual std::optional<GURL> GetEffectiveURL(BrowserContext* browser_context,
+                                              const GURL& url);
 
   // Invoked during renderer process lock state transitions (e.g., invalid ->
   // allows_any_site and allows_any_site -> locked_to_site) and when renderers

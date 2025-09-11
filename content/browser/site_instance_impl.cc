@@ -1479,7 +1479,10 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstanceOrGroup(
 GURL SiteInstanceImpl::GetEffectiveURL(BrowserContext* browser_context,
                                        const GURL& url) {
   DCHECK(browser_context);
-  return GetContentClient()->browser()->GetEffectiveURL(browser_context, url);
+  return GetContentClient()
+      ->browser()
+      ->GetEffectiveURL(browser_context, url)
+      .value_or(url);
 }
 
 // static

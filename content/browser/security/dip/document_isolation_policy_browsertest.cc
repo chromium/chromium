@@ -1012,8 +1012,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   }
 }
 
-// A test to make sure that loading a page with DIP sets
-// creates an origin-keyed AgentClusterKey in the SiteInstance's SiteInfo.
+// A test to make sure that loading a page with DIP creates an origin-keyed
+// AgentClusterKey in SiteInstance's SiteInfo.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
   GURL isolated_page = GetDocumentIsolationPolicyURL("a.test");
 
@@ -1031,6 +1031,20 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
     EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
               current_si->GetSiteInfo().oac_status());
   }
+}
+
+// A test to make sure that loading a page with DIP creates a SiteInfo with an
+// AgentClusterKey that has the origin of the DIP document, not its SiteURL.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       DipAgentClusterKeyUsesOrigin) {
+  GURL isolated_page = GetDocumentIsolationPolicyURL("a.b.test");
+  url::Origin origin = url::Origin::Create(isolated_page);
+
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
+  EXPECT_EQ(origin, current_si->GetSiteInfo().agent_cluster_key().GetOrigin());
 }
 
 // Tests that main frame navigations are correctly assigned cross-origin

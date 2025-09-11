@@ -442,20 +442,27 @@ class CONTENT_EXPORT SiteInfo {
                                  const UrlInfo& url_info,
                                  bool compute_site_url);
 
-  // Returns the URL to which a process should be locked for the given UrlInfo.
-  // This is computed similarly to the site URL but without resolving effective
-  // URLs.
-  static GURL DetermineProcessLockURL(const IsolationContext& isolation_context,
-                                      const UrlInfo& url_info);
-
-  // Returns the site for the given UrlInfo, which includes only the scheme and
-  // registered domain.  Returns an empty GURL if the UrlInfo has no host.
-  // |should_use_effective_urls| specifies whether to resolve |url| to an
-  // effective URL (via ContentBrowserClient::GetEffectiveURL()) before
-  // determining the site.
-  static GURL GetSiteForURLInternal(const IsolationContext& isolation_context,
-                                    const UrlInfo& url,
-                                    bool should_use_effective_urls);
+  // Returns the AgentClusterKey (and OAC status) appropriate to use for the
+  // provided |url_info|. |effective_url| is the effective URL, which can
+  // override the real URL in |url_info| when loading hosted apps or the NTP. If
+  // an |effective_url| is provided, the AgentClusterKey will be computed based
+  // on this effective URL rather than the real URL. The |effective_url| is
+  // expected to be different from the real URL, except in the case of WebUIs
+  // (see below).
+  //
+  // Note: in the case of WebUIs, this function should first be called without
+  // an |effective_url| to compute the AgentClusterKey, and with an
+  // |effective_url| which is the real URL of the WebUI. The first call will
+  // return an AgentClusterKey whose site URL is the TLD (ie chrome://bar). The
+  // second call will be used to compute a Site URL which is the WebUIType. This
+  // allows WebUI to continue to differentiate WebUIType via SiteURL while
+  // allowing WebUI with a shared TLD to share a RenderProcessHost.
+  // TODO(crbug.com/40176090): Remove this and replace it with
+  // SiteInstanceGroups once the support lands.
+  static std::pair<AgentClusterKey, AgentClusterKey::OACStatus>
+  GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
+                           const UrlInfo& url_info,
+                           std::optional<GURL> effective_url);
 
   // Helper function for ProcessLockCompareTo(). Returns a std::tie of the
   // SiteInfo elements required for doing a ProcessLock comparison.

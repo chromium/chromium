@@ -152,10 +152,11 @@ bool ContentBrowserClient::CanShutdownGpuProcessNowOnIOThread() {
   return false;
 }
 
-GURL ContentBrowserClient::GetEffectiveURL(BrowserContext* browser_context,
-                                           const GURL& url) {
+std::optional<GURL> ContentBrowserClient::GetEffectiveURL(
+    BrowserContext* browser_context,
+    const GURL& url) {
   DCHECK(browser_context);
-  return url;
+  return std::nullopt;
 }
 
 bool ContentBrowserClient::ShouldCompareEffectiveURLsForSiteInstanceSelection(

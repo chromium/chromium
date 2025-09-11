@@ -548,12 +548,13 @@ void EffectiveURLContentBrowserClientHelper::AddTranslation(
   urls_to_modify_[url_to_modify] = url_to_return;
 }
 
-GURL EffectiveURLContentBrowserClientHelper::GetEffectiveURL(const GURL& url) {
+std::optional<GURL> EffectiveURLContentBrowserClientHelper::GetEffectiveURL(
+    const GURL& url) {
   auto it = urls_to_modify_.find(url);
   if (it != urls_to_modify_.end()) {
     return it->second;
   }
-  return url;
+  return std::nullopt;
 }
 
 bool EffectiveURLContentBrowserClientHelper::DoesSiteRequireDedicatedProcess(
@@ -602,7 +603,7 @@ void EffectiveURLContentBrowserClient::AddTranslation(
   helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
-GURL EffectiveURLContentBrowserClient::GetEffectiveURL(
+std::optional<GURL> EffectiveURLContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
   return helper_.GetEffectiveURL(url);

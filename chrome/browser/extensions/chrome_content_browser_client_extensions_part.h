@@ -57,7 +57,7 @@ class ChromeContentBrowserClientExtensionsPart
   ~ChromeContentBrowserClientExtensionsPart() override;
 
   // Corresponds to the ChromeContentBrowserClient function of the same name.
-  static GURL GetEffectiveURL(Profile* profile, const GURL& url);
+  static std::optional<GURL> GetEffectiveURL(Profile* profile, const GURL& url);
   static bool ShouldCompareEffectiveURLsForSiteInstanceSelection(
       content::BrowserContext* browser_context,
       content::SiteInstance* candidate_site_instance,

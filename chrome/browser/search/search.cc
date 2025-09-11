@@ -331,12 +331,13 @@ bool ShouldUseProcessPerSiteForInstantSiteURL(const GURL& site_url,
          site_url.host_piece() == chrome::kChromeSearchRemoteNtpHost;
 }
 
-GURL GetEffectiveURLForInstant(const GURL& url, Profile* profile) {
+std::optional<GURL> GetEffectiveURLForInstant(const GURL& url,
+                                              Profile* profile) {
   CHECK(ShouldAssignURLToInstantRenderer(url, profile))
       << "Error granting Instant access.";
 
   if (url.SchemeIs(chrome::kChromeSearchScheme)) {
-    return url;
+    return std::nullopt;
   }
 
   // Replace the scheme with "chrome-search:", and clear the port, since

@@ -401,7 +401,7 @@ class EffectiveURLContentBrowserClientHelper {
   ~EffectiveURLContentBrowserClientHelper();
 
   void AddTranslation(const GURL& url_to_modify, const GURL& url_to_return);
-  GURL GetEffectiveURL(const GURL& url);
+  std::optional<GURL> GetEffectiveURL(const GURL& url);
   bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
                                        const GURL& effective_site_url);
 
@@ -438,8 +438,8 @@ class EffectiveURLContentBrowserClient : public ContentBrowserClient {
   void AddTranslation(const GURL& url_to_modify, const GURL& url_to_return);
 
  private:
-  GURL GetEffectiveURL(BrowserContext* browser_context,
-                       const GURL& url) override;
+  std::optional<GURL> GetEffectiveURL(BrowserContext* browser_context,
+                                      const GURL& url) override;
   bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
 

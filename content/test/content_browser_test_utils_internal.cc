@@ -913,7 +913,8 @@ void EffectiveURLContentBrowserTestContentBrowserClient::AddTranslation(
   helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
-GURL EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
+std::optional<GURL>
+EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
   return helper_.GetEffectiveURL(url);

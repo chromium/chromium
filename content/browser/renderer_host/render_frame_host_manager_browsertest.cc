@@ -5471,12 +5471,12 @@ class PageEffectiveURLContentBrowserClient
   ~PageEffectiveURLContentBrowserClient() override = default;
 
  private:
-  GURL GetEffectiveURL(BrowserContext* browser_context,
-                       const GURL& url) override {
+  std::optional<GURL> GetEffectiveURL(BrowserContext* browser_context,
+                                      const GURL& url) override {
     if (url.EqualsIgnoringRef(url_to_modify_)) {
       return url_to_return_;
     }
-    return url;
+    return std::nullopt;
   }
 
   GURL url_to_modify_;
