@@ -247,7 +247,7 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     return nullptr;
   }
 
-  size_t start_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position start_cursor = scanner.GetPosition();
   ParsedPhoneFields parsed_fields;
 
   // Find the first matching grammar.
@@ -259,7 +259,7 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
       found_matching_grammar = true;
       break;
     }
-    scanner.RewindTo(start_cursor);
+    scanner.Restore(start_cursor);
     grammar_id++;
   }
   if (!found_matching_grammar)

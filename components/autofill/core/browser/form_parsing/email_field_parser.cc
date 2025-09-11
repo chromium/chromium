@@ -20,13 +20,13 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
-  const size_t saved_cursor = scanner.CursorPosition();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   // Try parsing an email field.
   const bool parsed_email =
       ParseField(context, scanner, "EMAIL_ADDRESS", &match);
   if (parsed_email) {
     // Try parsing the same field as a loyalty card field.
-    scanner.RewindTo(saved_cursor);
+    scanner.Restore(saved_cursor);
     const bool parsed_loyalty_card =
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&

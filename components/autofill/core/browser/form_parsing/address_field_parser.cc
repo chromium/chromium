@@ -51,12 +51,12 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
   std::unique_ptr<AddressFieldParser> address_field =
       base::WrapUnique(new AddressFieldParser());
   const FormFieldData& initial_field = scanner.Cursor();
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
 
   // Allow address fields to appear in any order.
-  std::optional<size_t> begin_trailing_non_labeled_fields;
+  std::optional<AutofillScanner::Position> begin_trailing_non_labeled_fields;
   while (!scanner.IsEnd()) {
-    const size_t cursor = scanner.SaveCursor();
+    const AutofillScanner::Position cursor = scanner.GetPosition();
     // Ignore "Address Lookup" field. http://crbug.com/427622
     if (ParseField(context, scanner, "ADDRESS_LOOKUP") ||
         ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -115,12 +115,12 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       address_field->street_location_ || address_field->house_number_and_apt_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (begin_trailing_non_labeled_fields) {
-      scanner.RewindTo(*begin_trailing_non_labeled_fields);
+      scanner.Restore(*begin_trailing_non_labeled_fields);
     }
     return std::move(address_field);
   }
 
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   return nullptr;
 }
 
@@ -140,7 +140,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
   }
 
   std::unique_ptr<AddressFieldParser> address_field(new AddressFieldParser());
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
 
   address_field->ParseZipCode(context, scanner);
   if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
@@ -150,7 +150,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
     return std::move(address_field);
   }
 
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   return nullptr;
 }
 
@@ -257,7 +257,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   //
   // Only if a house number and one of the extra fields are found in an
   // arbitrary order the parsing is considered successful.
-  const size_t saved_cursor_position = scanner.CursorPosition();
+  const AutofillScanner::Position saved_cursor_position = scanner.GetPosition();
 
   std::optional<FieldAndMatchInfo> old_street_location = street_location_;
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
@@ -354,7 +354,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   // This is a safety mechanism: If no field was classified, we do not want to
   // return true, because the caller assumes that the cursor position moved.
   // Otherwise, we could end up in an infinite loop.
-  if (scanner.CursorPosition() == saved_cursor_position) {
+  if (scanner.GetPosition() == saved_cursor_position) {
     return false;
   }
 
@@ -379,7 +379,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   dependent_locality_ = old_dependent_locality;
   landmark_ = old_landmark;
 
-  scanner.RewindTo(saved_cursor_position);
+  scanner.Restore(saved_cursor_position);
   return false;
 }
 
@@ -470,7 +470,7 @@ bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
     return false;
   }
 
-  const size_t saved_cursor_position = scanner.CursorPosition();
+  const AutofillScanner::Position saved_cursor_position = scanner.GetPosition();
 
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
   std::optional<FieldAndMatchInfo> old_house_number = house_number_;
@@ -497,7 +497,7 @@ bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
   house_number_ = old_house_number;
   apartment_number_ = old_apartment_number;
 
-  scanner.RewindTo(saved_cursor_position);
+  scanner.Restore(saved_cursor_position);
   return false;
 }
 
@@ -707,12 +707,12 @@ AddressFieldParser::ParseNameAndLabelSeparately(
   }
 
   std::optional<FieldAndMatchInfo> cur_match;
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   bool parsed_name = ParseField(
       context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kLabel);
       });
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   bool parsed_label = ParseField(
       context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kName);
@@ -728,7 +728,7 @@ AddressFieldParser::ParseNameAndLabelSeparately(
     return RESULT_MATCH_NAME_LABEL;
   }
 
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   if (parsed_name)
     return RESULT_MATCH_NAME;
   if (parsed_label)
@@ -995,18 +995,18 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
     return result;
   }
 
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   bool found_non_zip_suffix = ParseCity(context, scanner);
   if (found_non_zip_suffix) {
     city_.reset();
   }
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   if (!found_non_zip_suffix) {
     found_non_zip_suffix = ParseState(context, scanner);
     if (found_non_zip_suffix) {
       state_.reset();
     }
-    scanner.RewindTo(saved_cursor);
+    scanner.Restore(saved_cursor);
   }
 
   if (!found_non_zip_suffix) {
@@ -1035,10 +1035,10 @@ AddressFieldParser::ParseNameAndLabelForZipCodeSuffix(
   // At this point either the name or the label matched the ZIP_4 regex but not
   // both.
   std::optional<FieldAndMatchInfo> zip;
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   ParseNameLabelResult result_extended =
       ParseNameAndLabelSeparately(context, scanner, "ZIP_CODE", &zip);
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
 
   // If at least one field attribute matched the ZIP_4 regex and both the label
   // and name matched the ZIP_CODE regex, there is a high chance that this is a

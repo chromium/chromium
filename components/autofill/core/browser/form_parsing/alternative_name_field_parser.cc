@@ -36,7 +36,7 @@ std::unique_ptr<FormFieldParser> AlternativeFullNameField::Parse(
     ParsingContext& context,
     AutofillScanner& scanner) {
   auto v = base::WrapUnique(new AlternativeFullNameField());
-  scanner.SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
 
   while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
@@ -55,7 +55,7 @@ std::unique_ptr<FormFieldParser> AlternativeFullNameField::Parse(
     return v;
   }
 
-  scanner.Rewind();
+  scanner.Restore(position);
   return nullptr;
 }
 
@@ -92,7 +92,7 @@ std::unique_ptr<FormFieldParser> AlternativeFamilyAndGivenNameField::Parse(
     ParsingContext& context,
     AutofillScanner& scanner) {
   auto v = base::WrapUnique(new AlternativeFamilyAndGivenNameField());
-  scanner.SaveCursor();
+  const AutofillScanner::Position position = scanner.GetPosition();
 
   while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
@@ -117,7 +117,7 @@ std::unique_ptr<FormFieldParser> AlternativeFamilyAndGivenNameField::Parse(
     return v;
   }
 
-  scanner.Rewind();
+  scanner.Restore(position);
   return nullptr;
 }
 

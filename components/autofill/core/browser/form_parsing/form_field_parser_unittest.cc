@@ -374,7 +374,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
       EXPECT_EQ(matched_fields[i], &fields[testcase.expected_permutation[i]]);
     }
   } else {
-    EXPECT_EQ(scanner.CursorPosition(), 0u);
+    EXPECT_EQ(scanner.GetOffset(), 0u);
     EXPECT_THAT(matched_fields, ::testing::Each(nullptr));
   }
 }

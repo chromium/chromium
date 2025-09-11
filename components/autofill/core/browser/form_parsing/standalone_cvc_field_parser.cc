@@ -40,11 +40,11 @@ bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
     return false;
   }
 
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   const bool gift_card_match = ParseField(context, scanner, "GIFT_CARD");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
 
   return gift_card_match;
 }

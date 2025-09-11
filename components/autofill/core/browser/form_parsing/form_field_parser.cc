@@ -577,7 +577,7 @@ bool FormFieldParser::ParseInAnyOrder(
   if (scanner.IsEnd()) {
     return fields_and_parsers.empty();
   }
-  auto original_pos = scanner.SaveCursor();
+  const AutofillScanner::Position original_pos = scanner.GetPosition();
   // The implementation tries matching every permutation `p` of parsers with the
   // scanners fields. While this has a terrible runtime for general n, the only
   // planned use cases are dates (2 or 3 components).
@@ -600,7 +600,7 @@ bool FormFieldParser::ParseInAnyOrder(
     if (matches) {
       return true;
     }
-    scanner.RewindTo(original_pos);
+    scanner.Restore(original_pos);
   } while (std::next_permutation(p.begin(), p.end()));
   for (const auto& [field, parser] : fields_and_parsers) {
     *field = nullptr;

@@ -67,7 +67,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
   }
 
   auto credit_card_field = std::make_unique<CreditCardFieldParser>();
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   int nb_unknown_fields = 0;
   bool cardholder_name_match_has_low_confidence = false;
 
@@ -132,7 +132,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     // below.
 
     const FormFieldData* predecessor = scanner.Predecessor();
-    size_t cvc_pos = scanner.CursorPosition();
+    const AutofillScanner::Position cvc_pos = scanner.GetPosition();
     if (!credit_card_field->verification_ &&
         ParseField(context, scanner, "CREDIT_CARD_VERIFICATION_CODE",
                    &credit_card_field->verification_)) {
@@ -148,7 +148,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
         } else {
           // Chances that verification field is the first of a card are really
           // low.
-          scanner.RewindTo(cvc_pos);
+          scanner.Restore(cvc_pos);
           credit_card_field->verification_.reset();
         }
       } else {
@@ -176,7 +176,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
         !credit_card_field->expiration_year_ &&
         !credit_card_field->expiration_date_) {
       // Parsed a month but couldn't parse a year; give up.
-      scanner.RewindTo(saved_cursor);
+      scanner.Restore(saved_cursor);
       return nullptr;
     }
 
@@ -235,7 +235,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     return std::move(credit_card_field);
   }
 
-  scanner.RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   return nullptr;
 }
 
@@ -385,14 +385,14 @@ bool CreditCardFieldParser::IsGiftCardField(ParsingContext& context,
     return false;
   }
 
-  size_t saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
 
   if (ParseField(context, scanner, "DEBIT_CARD")) {
-    scanner.RewindTo(saved_cursor);
+    scanner.Restore(saved_cursor);
     return false;
   }
   if (ParseField(context, scanner, "DEBIT_GIFT_CARD")) {
-    scanner.RewindTo(saved_cursor);
+    scanner.Restore(saved_cursor);
     return false;
   }
 
@@ -506,7 +506,8 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   }
 
   // If that fails, do a general regex search.
-  size_t month_year_saved_cursor = scanner.SaveCursor();
+  const AutofillScanner::Position month_year_saved_cursor =
+      scanner.GetPosition();
 
   if (ParseField(context, scanner, "CREDIT_CARD_EXP_MONTH",
                  &expiration_month_) &&
@@ -516,7 +517,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   // If that fails, look for just MM and/or YY(YY) (or the Spanish/Portuguese
   // MM / AA(AA) version).
-  scanner.RewindTo(month_year_saved_cursor);
+  scanner.Restore(month_year_saved_cursor);
 
   const char* year_regex =
       base::FeatureList::IsEnabled(
@@ -531,7 +532,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   // If that fails, try to parse a combined expiration field.
   // We allow <select> fields, because they're used e.g. on qvc.com.
-  scanner.RewindTo(month_year_saved_cursor);
+  scanner.Restore(month_year_saved_cursor);
 
   // Bail out if the field cannot fit a 2-digit year expiration date.
   const uint64_t current_field_max_length = scanner.Cursor().max_length();
