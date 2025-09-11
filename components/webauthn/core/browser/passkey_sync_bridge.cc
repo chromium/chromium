@@ -364,8 +364,12 @@ bool PasskeySyncBridge::SetPasskeyHidden(const std::string& credential_id,
           [](bool hidden, base::Clock* clock,
              sync_pb::WebauthnCredentialSpecifics* passkey) -> bool {
             passkey->set_hidden(hidden);
-            passkey->set_hidden_time(
-                clock->Now().InMillisecondsSinceUnixEpoch());
+            if (hidden) {
+              passkey->set_hidden_time(
+                  clock->Now().InMillisecondsSinceUnixEpoch());
+            } else {
+              passkey->clear_hidden_time();
+            }
             return true;
           },
           hidden, clock_));

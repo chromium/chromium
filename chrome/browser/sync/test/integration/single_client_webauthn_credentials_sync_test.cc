@@ -706,23 +706,43 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                   .Wait());
 
   // Hide the passkey.
-  PasskeyChangeObservationChecker change_checker(
-      kSingleProfile,
-      {{webauthn::PasskeyModelChange::ChangeType::UPDATE, passkey.sync_id()}});
-  EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), true));
-  EXPECT_TRUE(ServerPasskeysMatchChecker(
-                  UnorderedElementsAre(AllOf(EntityHasHidden(true),
-                                             EntityHasCurrentHiddenTime())))
-                  .Wait());
-  const std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      GetModel().GetAllPasskeys();
-  ASSERT_EQ(passkeys.size(), 1u);
-  EXPECT_TRUE(passkeys[0].hidden());
+  {
+    PasskeyChangeObservationChecker change_checker(
+        kSingleProfile, {{webauthn::PasskeyModelChange::ChangeType::UPDATE,
+                          passkey.sync_id()}});
+    EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), true));
+    EXPECT_TRUE(ServerPasskeysMatchChecker(
+                    UnorderedElementsAre(AllOf(EntityHasHidden(true),
+                                               EntityHasCurrentHiddenTime())))
+                    .Wait());
+    const std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+        GetModel().GetAllPasskeys();
+    ASSERT_EQ(passkeys.size(), 1u);
+    EXPECT_TRUE(passkeys[0].hidden());
 
-  // `hidden_time` should have been updated with the current timestamp.
-  base::Time hidden_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(passkeys[0].hidden_time());
-  EXPECT_LE(base::Time::Now() - hidden_time, base::Seconds(5));
+    // `hidden_time` should have been updated with the current timestamp.
+    base::Time hidden_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(passkeys[0].hidden_time());
+    EXPECT_LE(base::Time::Now() - hidden_time, base::Seconds(5));
+  }
+
+  // Unhide the passkey.
+  {
+    PasskeyChangeObservationChecker change_checker(
+        kSingleProfile, {{webauthn::PasskeyModelChange::ChangeType::UPDATE,
+                          passkey.sync_id()}});
+    EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), false));
+    EXPECT_TRUE(
+        ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasHidden(false)))
+            .Wait());
+    const std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+        GetModel().GetAllPasskeys();
+    ASSERT_EQ(passkeys.size(), 1u);
+    EXPECT_FALSE(passkeys[0].hidden());
+
+    // `hidden_time` should have been cleared.
+    EXPECT_FALSE(passkeys[0].has_hidden_time());
+  }
 }
 
 // Tests updating a passkey.
