@@ -36,7 +36,6 @@ import shard_util
 import test_runner
 import test_runner_errors
 import variations_runner
-import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
 
@@ -172,24 +171,6 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             env_vars=env_vars)
-      elif self.args.replay_path != 'NO_PATH':
-        tr = wpr_runner.WprProxySimulatorTestRunner(
-            self.args.app,
-            self.args.host_app,
-            self.args.iossim,
-            self.args.replay_path,
-            self.args.platform,
-            self.args.version,
-            self.args.wpr_tools_path,
-            self.args.out_dir,
-            env_vars=env_vars,
-            readline_timeout=self.args.readline_timeout,
-            retries=self.args.retries,
-            clones=self.args.clones,
-            test_args=self.test_args,
-            test_cases=self.args.test_cases,
-            xctest=self.args.xctest,
-        )
       elif self.args.iossim and self.args.platform and self.args.version:
         tr = test_runner.SimulatorTestRunner(
             self.args.app,
@@ -205,7 +186,6 @@ class Runner():
             test_args=self.test_args,
             test_cases=self.args.test_cases,
             use_clang_coverage=self.args.use_clang_coverage,
-            wpr_tools_path=self.args.wpr_tools_path,
             xctest=self.args.xctest,
             output_disabled_tests=self.args.output_disabled_tests,
         )
@@ -481,14 +461,6 @@ class Runner():
               'smoke testing. Default: %(default)s'),
         default='NO_PATH',
         metavar='variations-seed-path',
-    )
-    parser.add_argument(
-        '--wpr-tools-path',
-        help=(
-            'Location of WPR test tools (should be preinstalled, e.g. as part '
-            'of a swarming task requirement). Default: %(default)s.'),
-        default='NO_PATH',
-        metavar='wpr-tools-path',
     )
     parser.add_argument(
         '--xcode-path',

@@ -206,8 +206,6 @@ src/ios/build/bots/scripts/run.py
     path/to/mac_toolchain
     --xcode-path
     path/to/Xcode.app
-    --wpr-tools-path
-    NO_PATH
     --replay-path
     NO_PATH
     --iossim

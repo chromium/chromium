@@ -301,7 +301,6 @@ def copy_trusted_certificate(cert_path, udid):
     cert_path: (str) A path for the cert
     udid: (str) UDID of a simulator.
   """
-  # TODO(crbug.com/40234635): Update wpr runner to use this function.
   if not os.path.exists(cert_path):
     LOGGER.error('Failed to find the cert path %s', cert_path)
     return

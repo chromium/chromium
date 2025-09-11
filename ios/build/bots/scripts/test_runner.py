@@ -737,7 +737,6 @@ class SimulatorTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       use_clang_coverage: Whether code coverage is enabled in this run.
-      wpr_tools_path: Path to pre-installed WPR-related tools
       xctest: Whether or not this is an XCTest.
 
     Raises:
