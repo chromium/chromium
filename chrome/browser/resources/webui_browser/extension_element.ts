@@ -18,11 +18,15 @@ export class ExtensionElement extends CrLitElement {
   static override get properties() {
     return {
       iconUrl: {type: String},
+      visible: {type: Boolean, reflect: true},
     };
   }
 
   accessor iconUrl: string = '';
+  accessor visible: boolean = false;
+
   private bar: ExtensionsBar;
+  private extensionId: string;
 
   static override get styles() {
     return getCss();
@@ -32,9 +36,9 @@ export class ExtensionElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  constructor(id: string, bar: ExtensionsBar) {
+  constructor(extensionId: string, bar: ExtensionsBar) {
     super();
-    this.id = id;
+    this.extensionId = extensionId;
     this.bar = bar;
   }
 
@@ -44,7 +48,7 @@ export class ExtensionElement extends CrLitElement {
   }
 
   protected onClick() {
-    this.bar.onClick(this.id);
+    this.bar.onClick(this.extensionId);
   }
 }
 

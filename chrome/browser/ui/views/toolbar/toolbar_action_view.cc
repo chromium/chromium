@@ -281,11 +281,15 @@ views::FocusManager* ToolbarActionView::GetFocusManagerForAccelerator() {
   return GetFocusManager();
 }
 
-views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
+views::Button* ToolbarActionView::GetReferenceButtonForPopupInternal() {
   // Browser actions in the overflow menu can still show popups, so we may need
   // a reference view other than this button's parent. If so, use the overflow
   // view which is a BrowserAppMenuButton.
   return GetVisible() ? this : delegate_->GetOverflowReferenceView();
+}
+
+views::BubbleAnchor ToolbarActionView::GetReferenceButtonForPopup() {
+  return GetReferenceButtonForPopupInternal();
 }
 
 void ToolbarActionView::ShowContextMenuAsFallback() {
@@ -301,7 +305,7 @@ void ToolbarActionView::OnPopupShown(bool by_user) {
     // This cast is safe because both will have a MenuButtonController.
     views::MenuButtonController* reference_view_controller =
         static_cast<views::MenuButtonController*>(
-            GetReferenceButtonForPopup()->button_controller());
+            GetReferenceButtonForPopupInternal()->button_controller());
     pressed_lock_ = reference_view_controller->TakeLock();
   }
 }

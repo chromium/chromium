@@ -18,6 +18,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace views {
 class NativeWidget;
 class WebView;
@@ -280,6 +284,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   views::Widget* widget() { return widget_.get(); }
 
   gfx::Rect GetContentsBoundsInScreen() const;
+  ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
 
  protected:
   // BrowserWindow:

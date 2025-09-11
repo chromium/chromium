@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/app_mode",
     "//chrome/browser/devtools",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/tab_strip_api:resources",
     "//chrome/browser/resources/webui_browser:resources",

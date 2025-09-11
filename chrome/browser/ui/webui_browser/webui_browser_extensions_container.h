@@ -10,11 +10,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/webui_browser/extensions_bar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 class Browser;
 class WebUIBrowserWindow;
@@ -67,14 +69,15 @@ class WebUIBrowserExtensionsContainer
 
   // extensions_bar::mojom::PageHandler:
   void ExecuteUserAction(const std::string& id) override;
+  void ToggleExtensionsMenuFromWebUI() override;
 
  private:
   class ActionInfo;
 
+  void NotifyActionPoppedOut(base::OnceClosure closure);
+
   void CreateActions();
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
-  extensions_bar::mojom::ExtensionActionInfoPtr ToMojom(
-      const ActionInfo& action_info);
 
   const raw_ref<Browser> browser_;
   const raw_ref<WebUIBrowserWindow> window_;
@@ -86,6 +89,13 @@ class WebUIBrowserExtensionsContainer
   mojo::Remote<extensions_bar::mojom::Page> page_;
 
   std::map<ToolbarActionsModel::ActionId, std::unique_ptr<ActionInfo>> actions_;
+  std::optional<std::string> popped_out_action_;
+
+  // The action that triggered the current popup, if any.
+  raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
+
+  // Coordinator to show and hide the ExtensionsMenuView.
+  const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_EXTENSIONS_CONTAINER_H_

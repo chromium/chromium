@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 
@@ -27,8 +28,8 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
       delete;
   ~ExtensionsMenuCoordinator() override;
 
-  // Displays the extensions menu under `anchor_view`.
-  void Show(views::View* anchor_view,
+  // Displays the extensions menu under `anchor`.
+  void Show(views::BubbleAnchor anchor,
             ExtensionsContainer* extensions_container);
 
   // Hides the currently-showing extensions menu, if it exists.
@@ -46,14 +47,14 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   }
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegateForTesting(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       ExtensionsContainer* extensions_container);
 
  private:
   // Creates the bubble contents and returns its delegate.
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegate(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       ExtensionsContainer* extensions_container);
 
   // views::ViewObserver

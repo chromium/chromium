@@ -151,6 +151,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
 WebUIBrowserWindow::~WebUIBrowserWindow() {
   browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
   web_view_ = nullptr;
+  // We want to destroy the extensions container before the `widget_` since
+  // it wants to de-register itself for focus stuff.
+  extensions_container_.reset();
   widget_->RemoveObserver(this);
   widget_.reset();
 }
@@ -439,6 +442,12 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
           kContentsContainerViewElementId,
           views::ElementTrackerViews::GetContextForWidget(widget_.get()));
   return content_region->GetScreenBounds();
+}
+
+ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
+  return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+      kExtensionsMenuButtonElementId,
+      views::ElementTrackerViews::GetContextForWidget(widget_.get()));
 }
 
 void WebUIBrowserWindow::DeleteBrowserWindow() {

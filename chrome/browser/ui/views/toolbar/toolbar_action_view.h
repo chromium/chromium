@@ -96,10 +96,13 @@ class ToolbarActionView : public views::MenuButton,
 
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override;
-  views::Button* GetReferenceButtonForPopup() override;
+  views::BubbleAnchor GetReferenceButtonForPopup() override;
   void ShowContextMenuAsFallback() override;
   void OnPopupShown(bool by_user) override;
   void OnPopupClosed() override;
+
+  // Like GetReferenceButtonForPopup but with a more precise return type.
+  views::Button* GetReferenceButtonForPopupInternal();
 
   void ButtonPressed();
 

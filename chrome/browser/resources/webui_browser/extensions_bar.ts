@@ -4,10 +4,13 @@
 
 import './extension_element.js';
 
+import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
-import {CrLitElement, css} from '//resources/lit/v3_0/lit.rollup.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ExtensionElement} from './extension_element.js';
+import {getCss} from './extensions_bar.css.js';
 import type {ExtensionActionInfo} from './extensions_bar.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './extensions_bar.mojom-webui.js';
 
@@ -17,16 +20,28 @@ export class ExtensionsBar extends CrLitElement {
   }
 
   static override get styles() {
-    return css`:host { display: flex; }`;
+    return getCss();
   }
 
   private callbackRouter: PageCallbackRouter = new PageCallbackRouter();
   private handler: PageHandlerRemote = new PageHandlerRemote();
 
   private buttons: Map<string, ExtensionElement> = new Map();
+  private extensionsMenuButton: CrIconButtonElement;
+  private trackedElementManager: TrackedElementManager;
 
   constructor() {
     super();
+    this.trackedElementManager = TrackedElementManager.getInstance();
+    this.extensionsMenuButton = new CrIconButtonElement();
+    this.extensionsMenuButton.id = 'extensionsMenuButton';
+    this.extensionsMenuButton.ironIcon =
+        'webui-browser:ExtensionChromeRefreshIcon';
+    this.extensionsMenuButton.addEventListener(
+        'click', this.extensionMenuButtonClicked.bind(this));
+    this.trackedElementManager.startTracking(
+        this.extensionsMenuButton, 'kExtensionsMenuButtonElementId');
+
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
@@ -35,6 +50,8 @@ export class ExtensionsBar extends CrLitElement {
         this.actionsAddedOrUpdated.bind(this));
     this.callbackRouter.actionRemoved.addListener(
         this.actionRemoved.bind(this));
+    this.callbackRouter.actionPoppedOut.addListener(
+        this.actionPoppedOut.bind(this));
   }
 
   // We manage the rendering directly.
@@ -42,18 +59,25 @@ export class ExtensionsBar extends CrLitElement {
     return '';
   }
 
+  protected override firstUpdated() {
+    this.shadowRoot.appendChild(this.extensionsMenuButton);
+  }
+
   private actionsAddedOrUpdated(updates: ExtensionActionInfo[]) {
     for (const update of updates) {
       if (!this.buttons.has(update.id)) {
         const extensionButton = new ExtensionElement(update.id, this);
         this.buttons.set(update.id, extensionButton);
-        this.shadowRoot.appendChild(extensionButton);
+        this.shadowRoot.insertBefore(
+            extensionButton, this.extensionsMenuButton);
       }
 
       const extensionButton = this.buttons.get(update.id);
       assert(extensionButton);
       extensionButton.iconUrl = update.dataUrlForIcon.url;
       extensionButton.setAttribute('aria-label', update.accessibleName);
+      extensionButton.setAttribute('title', update.tooltip);
+      extensionButton.visible = update.isVisible;
 
       extensionButton.requestUpdate();
     }
@@ -66,14 +90,22 @@ export class ExtensionsBar extends CrLitElement {
     extensionButton.remove();
   }
 
+  private actionPoppedOut() {
+    // TODO(webium): If we have an animation (which we ought to); this should
+    // probably consider its timing.
+    return {};
+  }
+
   onClick(id: string) {
     this.handler.executeUserAction(id);
   }
 
-  /* Initial TODO things:
-   * Extensions button, for menu
-   * Hiding things that are not pinned or otherwise visible, ref.
-   *      ExtensionsToolbarContainer::IsActionVisibleOnToolbar
+  private extensionMenuButtonClicked() {
+    this.handler.toggleExtensionsMenuFromWebUI();
+  }
+
+  /* Still TODO things:
+   * Context menus.
    * Disabled icons.
    */
 }

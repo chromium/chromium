@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_VIEW_DELEGATE_VIEWS_H_
 
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class Button;
 class FocusManager;
 }  // namespace views
 
@@ -24,7 +24,7 @@ class ToolbarActionViewDelegateViews : public ToolbarActionViewDelegate {
   // http://crbug.com/901183 to simplify the button hierarchy by migrating
   // controller logic into a separate class leaving MenuButton as an empty class
   // to be deprecated.
-  virtual views::Button* GetReferenceButtonForPopup() = 0;
+  virtual views::BubbleAnchor GetReferenceButtonForPopup() = 0;
 
  protected:
   ~ToolbarActionViewDelegateViews() override = default;

@@ -17,10 +17,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-namespace views {
-class Button;
-}  // namespace views
-
 // ExtensionsMenuButton is the single extension action button within a row in
 // the extensions menu. This includes the extension icon and name and triggers
 // the extension action.
@@ -45,7 +41,7 @@ class ExtensionsMenuButton : public HoverButton,
  private:
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override;
-  views::Button* GetReferenceButtonForPopup() override;
+  views::BubbleAnchor GetReferenceButtonForPopup() override;
   content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
   void ShowContextMenuAsFallback() override;

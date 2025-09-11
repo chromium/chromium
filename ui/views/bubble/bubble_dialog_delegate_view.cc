@@ -797,7 +797,7 @@ void BubbleDialogDelegate::UseCompactMargins() {
 
 // static
 gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-    View* anchor_view,
+    BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
     bool adjust_if_offscreen,
     BubbleFrameView::PreferredArrowAdjustment arrow_adjustment) {
@@ -816,7 +816,12 @@ gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
              .supports_global_screen_coordinates);
 #endif
 
-  gfx::Rect anchor_rect = anchor_view->GetAnchorBoundsInScreen();
+  gfx::Rect anchor_rect;
+  if (std::holds_alternative<View*>(anchor)) {
+    anchor_rect = std::get<View*>(anchor)->GetAnchorBoundsInScreen();
+  } else {
+    anchor_rect = std::get<ui::TrackedElement*>(anchor)->GetScreenBounds();
+  }
   gfx::Rect screen_rect =
       display::Screen::Get()
           ->GetDisplayNearestPoint(anchor_rect.CenterPoint())

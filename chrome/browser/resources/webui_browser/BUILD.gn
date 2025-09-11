@@ -39,6 +39,7 @@ build_webui("build") {
     "app.css",
     "bookmark_element.css",
     "content_region.css",
+    "extensions_bar.css",
     "extension_element.css",
     "side_panel.css",
     "tab_element.css",
