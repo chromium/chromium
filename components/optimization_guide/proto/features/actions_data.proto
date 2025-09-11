@@ -276,9 +276,45 @@ message ScriptToolAction {
   string input_arguments = 4 [features = { field_presence: EXPLICIT }];
 }
 
+// Play media action plays the media session.
+// Next ID: 1
+message PlayMediaAction {
+}
+
+// Pause media action pauses the media session.
+// Next ID: 1
+message PauseMediaAction {
+}
+
+// Seek media action seeks the media session to the given seek time in
+// microseconds from the beginning of the media. The seek time should be
+// non-negative.
+// Next ID: 2
+message SeekMediaAction {
+  int64 seek_time_microseconds = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Controls media session in a tab.
+// Next ID: 6
+message MediaControlAction {
+  oneof media_control_action {
+    PlayMediaAction play = 3;
+
+    PauseMediaAction pause = 4;
+
+    SeekMediaAction seek = 5;
+  }
+
+  // The document which controls the media session.
+  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
+
+  // The id of the tab which contains the document.
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 21
+// Next ID: 22
 message Action {
   oneof action {
     ClickAction click = 1;
@@ -320,6 +356,8 @@ message Action {
     ScrollToAction scroll_to = 19;
 
     ScriptToolAction script_tool = 20;
+
+    MediaControlAction media_control = 21;
   }
 }
 

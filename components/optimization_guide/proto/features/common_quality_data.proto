@@ -932,17 +932,11 @@ message FormFieldData {
   // The text of the elements denoted by the aria-labelledby attribute of field
   // or the value of its aria-label attribute, with priority given to the
   // aria-labelledby attribute.
-  // TODO(crbug.com/389631485): The client doesn't set this for model requests at the
-  // moment. But it can and should be used for inference since it is contained
-  // in the metadata pipeline.
   string aria_label = 13 [features = { field_presence: EXPLICIT }];
 
   // The text of the elements denoted by the aria-describedby attribute of field
   // or the value of its aria-description attribute, with priority given to the
   // aria-describedby attribute.
-  // TODO(crbug.com/389631485): The client doesn't set this for model requests at the
-  // moment. But it can and should be used for inference since it is contained
-  // in the metadata pipeline.
   string aria_description = 14 [features = { field_presence: EXPLICIT }];
 }
 
