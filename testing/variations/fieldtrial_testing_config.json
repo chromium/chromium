@@ -20613,6 +20613,7 @@
                         "supported_locales": "*"
                     },
                     "enable_features": [
+                        "PageContentAnnotationsPersistSalientImageMetadata",
                         "RemotePageMetadata"
                     ]
                 }
@@ -20655,6 +20656,7 @@
                         "supported_locales": "*"
                     },
                     "enable_features": [
+                        "PageContentAnnotationsPersistSalientImageMetadata",
                         "RemotePageMetadata"
                     ]
                 }
