@@ -486,7 +486,7 @@ class AutofillManager
   // Steps 2-4 described above ParseFormsAsync(), which are shared with
   // ParseFormAsync().
   void ParseFormsAsyncCommon(
-      bool force_reparse,
+      bool preserve_signatures,
       std::vector<FormData> forms,
       base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
           callback);
