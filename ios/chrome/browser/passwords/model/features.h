@@ -7,16 +7,11 @@
 
 #import "base/feature_list.h"
 
-class ProfileIOS;
-
 // Feature flag to allow users to import passwords from Safari.
 BASE_DECLARE_FEATURE(kImportPasswordsFromSafari);
 
 // Enable crowdsourcing uploads for the Password Manager. Used as a kill switch,
 // enabled by default.
 BASE_DECLARE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads);
-
-// Whether the user should see the import from Safari workflow.
-bool ShouldShowSafariImportWorkflow(ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_FEATURES_H_

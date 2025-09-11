@@ -147,7 +147,6 @@ source_set("scene") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:browser_agent",

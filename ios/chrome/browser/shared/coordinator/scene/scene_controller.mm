@@ -111,7 +111,6 @@
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -2541,7 +2540,7 @@ using UserFeedbackDataCallback =
     // Currently displaying.
     return;
   }
-  CHECK(ShouldShowSafariImportWorkflow(
+  CHECK(ShouldShowSafariDataImportEntryPoint(
       self.currentInterface.browser->GetProfile()));
   BOOL presentOverSettings = self.settingsNavigationController &&
                              entryPoint == SafariDataImportEntryPoint::kSetting;
