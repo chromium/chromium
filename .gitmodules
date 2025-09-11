@@ -145,6 +145,9 @@
 [submodule "third_party/google_benchmark/src"]
 	path = third_party/google_benchmark/src
 	url = https://chromium.googlesource.com/external/github.com/google/benchmark
+[submodule "third_party/libpfm4/src"]
+	path = third_party/libpfm4/src
+	url = https://chromium.googlesource.com/external/git.code.sf.net/p/perfmon2/libpfm4
 [submodule "third_party/boringssl/src"]
 	path = third_party/boringssl/src
 	url = https://boringssl.googlesource.com/boringssl
