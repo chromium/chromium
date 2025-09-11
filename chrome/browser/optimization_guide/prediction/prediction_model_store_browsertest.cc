@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 // Tests that two dissimilar profiles do not share the model, and the model will
 // be redownloaded.
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       DISABLED_TestDissimilarProfilesNotShareModel) {
+                       TestDissimilarProfilesNotShareModel) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
 
@@ -416,11 +416,9 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
 // Tests that two dissimilar profiles do not share the model, and the model will
 // be redownloaded, based on server returned model cache key.
-// TODO(b/444225753): Re-enable this test by converting the test to load
-// dissimilar profiles in subsequently as a PRE_ browser test.
 IN_PROC_BROWSER_TEST_F(
     PredictionModelStoreBrowserTest,
-    DISABLED_TestDissimilarProfilesNotShareModelWithServerModelCacheKey) {
+    TestDissimilarProfilesNotShareModelWithServerModelCacheKey) {
   ModelFileObserver model_file_observer_foo, model_file_observer_bar;
   {
     set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
@@ -461,10 +459,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that when a second similar profile is loaded, model is downloaded when
 // the model version has been updated. The old model should not be used.
-// TODO(b/444225753): Re-enable this test by converting the test to load the
-// next profile subsequently, as a PRE_ browser test.
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       DISABLED_TestSimilarProfilesOnModelVersionUpdate) {
+                       TestSimilarProfilesOnModelVersionUpdate) {
   ModelFileObserver model_file_observer_foo, model_file_observer_bar;
   set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
   {
@@ -598,10 +594,8 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 // Tests the case when local state is inconsistent with the model directory,
 // i.e., when model file does not exist but the local state entry is populated,
 // it will lead to redownloading of the model.
-// TODO(b/444225753): Re-enable this test by converting the test to load the
-// next profile subsequently, as a PRE_ browser test.
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       DISABLED_TestInconsistentLocalState) {
+                       TestInconsistentLocalState) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
 

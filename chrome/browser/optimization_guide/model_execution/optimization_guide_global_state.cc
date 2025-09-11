@@ -18,19 +18,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
-#include "components/services/unzip/content/unzip_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -178,17 +175,8 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService)),
-      prediction_model_store_(*g_browser_process->local_state()),
-      prediction_manager_(&prediction_model_store_,
-                          g_browser_process->shared_url_loader_factory(),
-                          g_browser_process->local_state(),
-                          g_browser_process->GetApplicationLocale(),
-                          OptimizationGuideLogger::GetInstance(),
-                          base::BindRepeating(&unzip::LaunchUnzipper)) {
+      prediction_model_store_(*g_browser_process->local_state()) {
   prediction_model_store_.Initialize(GetBaseStoreDir());
-  prediction_manager_.MaybeInitializeModelDownloads(
-      profile_download_service_tracker_, g_browser_process->local_state());
-
   // Register an observer on the component state manager after it is created but
   // before it has start up.
   component_state_manager_observer_ =

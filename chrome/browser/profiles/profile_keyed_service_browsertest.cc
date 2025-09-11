@@ -586,6 +586,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "AutofillPrivateEventRouter",
     "AutofillStrikeDatabase",
     "BackgroundContentsService",
+    "BackgroundFetchService",
     "BackgroundSyncService",
     "Blocklist",
     "BluetoothAPI",
@@ -632,9 +633,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif
     "DeveloperPrivateAPI",
     "DeviceInfoSyncService",
-#if !BUILDFLAG(IS_CHROMEOS)
     "DownloadCoreService",
-#endif
     "EventRouter",
     "EnterpriseManagementService",
     "ExtensionActionDispatcher",

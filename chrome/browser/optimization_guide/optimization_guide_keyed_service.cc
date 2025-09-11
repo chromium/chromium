@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
@@ -71,6 +72,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
@@ -199,6 +201,12 @@ OptimizationGuideKeyedService::GetJavaObject() {
 }
 #endif
 
+download::BackgroundDownloadService*
+OptimizationGuideKeyedService::BackgroundDownloadServiceProvider() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  return BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
+}
+
 void OptimizationGuideKeyedService::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -270,6 +278,14 @@ void OptimizationGuideKeyedService::Initialize() {
       MaybeCreatePushNotificationManager(profile),
       IdentityManagerFactory::GetForProfile(profile),
       optimization_guide_logger_.get());
+
+  prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
+      &optimization_guide_global_state_->prediction_model_store(),
+      g_browser_process->shared_url_loader_factory(),
+      g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale(),
+      optimization_guide_logger_.get(),
+      base::BindRepeating(&unzip::LaunchUnzipper));
 
   InitializeModelExecution(profile);
 
@@ -379,14 +395,14 @@ void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const std::optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  GetPredictionManager()->AddObserverForOptimizationTargetModel(
+  prediction_manager_->AddObserverForOptimizationTargetModel(
       optimization_target, model_metadata, observer);
 }
 
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  GetPredictionManager()->RemoveObserverForOptimizationTargetModel(
+  prediction_manager_->RemoveObserverForOptimizationTargetModel(
       optimization_target, observer);
 }
 
@@ -513,6 +529,13 @@ void OptimizationGuideKeyedService::OnProfileInitializationComplete(
     Profile* profile) {
   DCHECK(profile_observation_.IsObservingSource(profile));
   profile_observation_.Reset();
+
+  if (profile->IsOffTheRecord()) {
+    return;
+  }
+
+  GetPredictionManager()->MaybeInitializeModelDownloads(
+      g_browser_process->local_state(), BackgroundDownloadServiceProvider());
 }
 
 void OptimizationGuideKeyedService::AddHintForTesting(
@@ -551,7 +574,7 @@ void OptimizationGuideKeyedService::Shutdown() {
 void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
     std::unique_ptr<optimization_guide::ModelInfo> model_info) {
-  GetPredictionManager()->OverrideTargetModelForTesting(  // IN-TEST
+  prediction_manager_->OverrideTargetModelForTesting(  // IN-TEST
       optimization_target, std::move(model_info));
 }
 

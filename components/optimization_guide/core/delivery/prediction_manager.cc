@@ -165,7 +165,6 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
         prediction_model_download_manager) {
   prediction_model_download_manager_ =
       std::move(prediction_model_download_manager);
-  init_time_ = base::TimeTicks::Now();
 }
 
 void PredictionManager::FetchModels() {
@@ -534,14 +533,15 @@ void PredictionManager::OnPredictionModelsStored() {
 }
 
 void PredictionManager::MaybeInitializeModelDownloads(
-    ProfileDownloadServiceTracker& download_service_tracker,
-    PrefService* local_state) {
+    PrefService* local_state,
+    download::BackgroundDownloadService* background_download_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_time_ = base::TimeTicks::Now();
+
   if (!prediction_model_download_manager_) {
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(
-            local_state, download_service_tracker,
+            local_state, background_download_service,
             base::BindRepeating(
                 &PredictionManager::GetBaseModelDirForDownload,
                 // base::Unretained is safe here because the
@@ -732,11 +732,6 @@ void PredictionManager::OverrideTargetModelForTesting(
   } else {
     registry_.RemoveModel(optimization_target);
   }
-}
-
-void PredictionManager::SetUrlLoaderFactoryForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = url_loader_factory;
 }
 
 }  // namespace optimization_guide

@@ -30,6 +30,10 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/origin.h"
 
+namespace download {
+class BackgroundDownloadService;
+}  // namespace download
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -54,7 +58,6 @@ class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class PredictionModelStore;
 class ModelInfo;
-class ProfileDownloadServiceTracker;
 
 // A PredictionManager supported by the optimization guide that makes an
 // OptimizationTargetDecision by evaluating the corresponding prediction model
@@ -136,15 +139,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Initialize the model metadata fetching and downloads.
   void MaybeInitializeModelDownloads(
-      ProfileDownloadServiceTracker& profile_download_service_tracker,
-      PrefService* local_state);
+      PrefService* local_state,
+      download::BackgroundDownloadService* background_download_service);
 
   PredictionModelFetchTimer* GetPredictionModelFetchTimerForTesting() {
     return &prediction_model_fetch_timer_;
   }
-
-  void SetUrlLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  protected:
   // Process `prediction_models` to be stored in the in memory optimization

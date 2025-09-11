@@ -26,8 +26,7 @@ ChromeProfileDownloadServiceTracker::~ChromeProfileDownloadServiceTracker() =
     default;
 
 void ChromeProfileDownloadServiceTracker::OnProfileAdded(Profile* profile) {
-  if (profile->IsOffTheRecord() || profile->IsSystemProfile() ||
-      !profile->AllowsBrowserWindows()) {
+  if (profile->IsOffTheRecord()) {
     return;
   }
   active_profile_observers_.AddObservation(profile);
