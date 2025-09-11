@@ -10,7 +10,7 @@ import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
 import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
-import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
+import {StatsRatesCalculator} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
 import {UserMediaTable} from './user_media_table.js';
@@ -368,16 +368,13 @@ function addStandardStats(data) {
     statsRatesCalculator = new StatsRatesCalculator();
     statsRatesCalculatorById.set(pcId, statsRatesCalculator);
   }
-  const r = StatsReport.fromInternalsReportList(data.reports);
-  statsRatesCalculator.addStatsReport(r);
-  data.reports = statsRatesCalculator.currentReport.toInternalsReportList();
-  for (let i = 0; i < data.reports.length; ++i) {
-    const report = data.reports[i];
+  // Create a map from the stats entries so it behaves like a getStats maplike.
+  const stats = new Map(data.reports);
+  stats.forEach(report => {
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report);
-  }
-  // Determine currently connected candidate pair.
-  const stats = r.statsById;
+  });
+  statsRatesCalculator.addStatsReport(stats);
 
   let ids = [];
   stats.forEach(report => {
@@ -454,7 +451,7 @@ function addStandardStats(data) {
     }
   }
 
-  updateIceCandidateGrid(peerConnectionElement, r.statsById);
+  updateIceCandidateGrid(peerConnectionElement, stats);
 
   // Mark inactive outbound-rtp in grey.
   const inactiveStatsIds = [];

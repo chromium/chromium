@@ -82,133 +82,6 @@ class CalculatedStats {
   }
 }
 
-// Contains the metrics of an RTCStatsReport, as well as calculated metrics
-// associated with metrics from the original report. Convertible to and from the
-// "internal reports" format used by webrtc_internals.js to pass stats from C++
-// to JavaScript.
-export class StatsReport {
-  constructor() {
-    // Represents an RTCStatsReport. It is a Map RTCStats.id -> RTCStats.
-    // https://w3c.github.io/webrtc-pc/#dom-rtcstatsreport
-    this.statsById = new Map();
-    // RTCStats.id -> CalculatedStats
-    this.calculatedStatsById = new Map();
-  }
-
-  // |internalReports| is an array, each element represents an RTCStats object,
-  // but the format is a little different from the spec. This is the format:
-  // {
-  //   id: "string",
-  //   type: "string",
-  //   stats: {
-  //     timestamp: <milliseconds>,
-  //     values: ["member1", value1, "member2", value2...]
-  //   }
-  // }
-  static fromInternalsReportList(internalReports) {
-    const result = new StatsReport();
-    internalReports.forEach(internalReport => {
-      if (!internalReport.stats || !internalReport.stats.values) {
-        return;  // continue;
-      }
-      const stats = {
-        id: internalReport.id,
-        type: internalReport.type,
-        timestamp: internalReport.stats.timestamp / 1000.0  // ms -> s
-      };
-      const values = internalReport.stats.values;
-      for (let i = 0; i < values.length; i += 2) {
-        // Metric "name: value".
-        stats[values[i]] = values[i + 1];
-      }
-      result.statsById.set(stats.id, stats);
-    });
-    return result;
-  }
-
-  toInternalsReportList() {
-    const result = [];
-    for (const stats of this.statsById.values()) {
-      const internalReport = {
-        id: stats.id,
-        type: stats.type,
-        stats: {
-          timestamp: stats.timestamp * 1000.0,  // s -> ms
-          values: []
-        }
-      };
-      Object.keys(stats).forEach(metricName => {
-        if (metricName === 'id' || metricName === 'type' ||
-            metricName === 'timestamp') {
-          return;  // continue;
-        }
-        internalReport.stats.values.push(metricName);
-        internalReport.stats.values.push(stats[metricName]);
-        const calculatedMetrics =
-            this.getCalculatedMetrics(stats.id, metricName);
-        calculatedMetrics.forEach(calculatedMetric => {
-          internalReport.stats.values.push(calculatedMetric.name);
-          // Treat calculated metrics that are undefined as 0 to ensure graphs
-          // can be created anyway.
-          internalReport.stats.values.push(
-              calculatedMetric.value ? calculatedMetric.value : 0);
-        });
-      });
-      result.push(internalReport);
-    }
-    return result;
-  }
-
-  toString() {
-    let str = '';
-    for (const stats of this.statsById.values()) {
-      if (str !== '') {
-        str += ',';
-      }
-      str += JSON.stringify(stats);
-    }
-    let str2 = '';
-    for (const stats of this.calculatedStatsById.values()) {
-      if (str2 !== '') {
-        str2 += ',';
-      }
-      str2 += stats.toString();
-    }
-    return '[original:' + str + '],calculated:[' + str2 + ']';
-  }
-
-  get(id) {
-    return this.statsById.get(id);
-  }
-
-  getByType(type) {
-    const result = [];
-    for (const stats of this.statsById.values()) {
-      if (stats.type === type) {
-        result.push(stats);
-      }
-    }
-    return result;
-  }
-
-  addCalculatedMetric(id, insertAtOriginalMetricName, name, value) {
-    let calculatedStats = this.calculatedStatsById.get(id);
-    if (!calculatedStats) {
-      calculatedStats = new CalculatedStats(id);
-      this.calculatedStatsById.set(id, calculatedStats);
-    }
-    calculatedStats.addCalculatedMetric(
-        insertAtOriginalMetricName, new Metric(name, value));
-  }
-
-  getCalculatedMetrics(id, originalMetricName) {
-    const calculatedStats = this.calculatedStatsById.get(id);
-    return calculatedStats ?
-        calculatedStats.getCalculatedMetrics(originalMetricName) :
-        [];
-  }
-}
-
 // Shows a `DOMHighResTimeStamp` as a human readable date time.
 // The "metric + timestampOffsetMs" must be a time value in milliseconds with
 // Unix epoch as time origin.
@@ -638,7 +511,8 @@ export class StatsRatesCalculator {
   // bytesSent/s).
   updateCalculatedMetrics_() {
     Object.keys(this.statsCalculators).forEach(statsType => {
-      this.currentReport.getByType(statsType).forEach(stats => {
+      this.currentReport.forEach(stats => {
+        if (stats.type !== statsType) return;
         Object.keys(this.statsCalculators[statsType])
             .forEach(originalMetric => {
               let metricCalculators =
@@ -647,11 +521,11 @@ export class StatsRatesCalculator {
                 metricCalculators = [metricCalculators];
               }
               metricCalculators.forEach(metricCalculator => {
-                this.currentReport.addCalculatedMetric(
-                    stats.id, originalMetric,
-                    metricCalculator.getCalculatedMetricName(),
-                    metricCalculator.calculate(
-                        stats.id, this.previousReport, this.currentReport));
+                const name = metricCalculator.getCalculatedMetricName();
+                this.currentReport.get(stats.id)[name] =
+                    metricCalculator.calculate(stats.id,
+                                               this.previousReport,
+                                               this.currentReport);
               });
             });
       });

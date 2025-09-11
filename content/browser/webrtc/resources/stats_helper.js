@@ -3,17 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @param {!Object} statsValues The object containing stats, an
- *     array [key1, val1, key2, val2, ...] so searching a certain
- *     key needs to ensure it does not collide with a value.
+ * @param {!Object} stats A stats report.
  */
-function generateLabel(key, statsValues) {
+function generateLabel(key, stats) {
   let label = '';
-  const statIndex = statsValues.findIndex((value, index) => {
-    return value === key && index % 2 === 0;
-  });
-  if (statIndex !== -1) {
-    label += key + '=' + statsValues[statIndex + 1];
+  if (stats.hasOwnProperty(key)) {
+    label += key + '=' + stats[key];
   }
   return label;
 }
@@ -31,7 +26,7 @@ export function generateStatsLabel(report) {
   let label = report.type + ' (';
   let labels = [];
   if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
-      'remote-inbound-rtp'].includes(report.type) && report.stats.values) {
+      'remote-inbound-rtp'].includes(report.type)) {
     labels = ['kind', 'mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc',
       'frameHeight', 'contentType',
       'active', 'scalabilityMode',
@@ -52,7 +47,7 @@ export function generateStatsLabel(report) {
     labels = ['label', 'state'];
   }
   labels = labels
-    .map(stat => generateLabel(stat, report.stats.values))
+    .map(stat => generateLabel(stat, report))
     .filter(label => !!label);
   if (labels.length) {
     label += labels.join(', ') + ', ';

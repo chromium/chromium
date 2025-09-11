@@ -28,13 +28,11 @@ function isReportBlocklisted(report) {
   }
   // Unused data channels can stay in "connecting" indefinitely and their
   // counters stay zero.
-  if (report.type === 'data-channel' &&
-      readReportStat(report, 'state') === 'connecting') {
+  if (report.type === 'data-channel' && report.state === 'connecting') {
     return true;
   }
   // The same is true for transports and "new".
-  if (report.type === 'transport' &&
-      readReportStat(report, 'dtlsState') === 'new') {
+  if (report.type === 'transport' && report.dtlsState === 'new') {
     return true;
   }
   // Local and remote candidates don't change over time and there are several of
@@ -43,16 +41,6 @@ function isReportBlocklisted(report) {
     return true;
   }
   return false;
-}
-
-function readReportStat(report, stat) {
-  const values = report.stats.values;
-  for (let i = 0; i < values.length; i += 2) {
-    if (values[i] === stat) {
-      return values[i + 1];
-    }
-  }
-  return undefined;
 }
 
 function isStatBlocklisted(report, statName) {
@@ -96,26 +84,23 @@ export function drawSingleReport(
     peerConnectionElement, report) {
   const reportType = report.type;
   const reportId = report.id;
-  const stats = report.stats;
-  if (!stats || !stats.values) {
-    return;
-  }
 
   const childrenBefore = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :
       [];
 
-  for (let i = 0; i < stats.values.length - 1; i = i + 2) {
-    const rawLabel = stats.values[i];
+  Object.keys(report).forEach(property => {
+    if (['timestamp', 'id'].includes(property)) return;
+    const rawLabel = property;
     const rawDataSeriesId = reportId + '-' + rawLabel;
-    const rawValue = getNumberFromValue(rawLabel, stats.values[i + 1]);
+    const rawValue = getNumberFromValue(rawLabel, report[property]);
     if (isNaN(rawValue)) {
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
       addDataSeriesPoints(
           peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
-          [stats.timestamp], [stats.values[i + 1]]);
-      continue;
+          [report.timestamp], [report[property]]);
+      return;
     }
     let finalDataSeriesId = rawDataSeriesId;
     let finalLabel = rawLabel;
@@ -124,12 +109,12 @@ export function drawSingleReport(
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
         peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
-        [stats.timestamp], [finalValue]);
+        [report.timestamp], [finalValue]);
 
     if (isReportBlocklisted(report) || isStatBlocklisted(report, rawLabel)) {
       // We do not want to draw certain reports but still want to
       // record them in the data series.
-      continue;
+      return;
     }
 
     // Updates the graph.
@@ -149,7 +134,7 @@ export function drawSingleReport(
           graphViews[graphViewId].setScale(statsInterval);
         }
       }
-      const date = new Date(stats.timestamp);
+      const date = new Date(report.timestamp);
       graphViews[graphViewId].setDateRange(date, date);
     }
     // Ensures the stats graph title is up-to-date.
@@ -163,11 +148,11 @@ export function drawSingleReport(
       graphViews[graphViewId].addDataSeries(dataSeries);
     }
     graphViews[graphViewId].updateEndDate();
-  }
+  });
   // Add a synthetic data series for the timestamp.
   addDataSeriesPoints(
     peerConnectionElement, reportType, reportId + '-timestamp',
-    reportId + '-timestamp', [stats.timestamp], [stats.timestamp]);
+    reportId + '-timestamp', [report.timestamp], [report.timestamp]);
 
   const childrenAfter = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :

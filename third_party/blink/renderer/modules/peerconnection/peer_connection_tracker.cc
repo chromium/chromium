@@ -460,27 +460,23 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     // Used for string comparisons with const char* below.
     const std::string kTypeMediaSource = "media-source";
     for (const auto& stats : *report) {
-      // The format of "stats_subdictionary" is:
-      // {timestamp:<milliseconds>, values: [<key-value pairs>]}
+      base::Value::Dict stats_dictionary;
+      stats_dictionary.Set("id", stats.id());
+      stats_dictionary.Set("type", stats.type());
       // The timestamp unit is milliseconds but we want decimal
       // precision so we convert ourselves.
-      base::Value::Dict stats_subdictionary;
       base::TimeDelta monotonic_time =
           time_converter.MonotonicTimeToPseudoWallTime(
               ConvertToBaseTimeTicks(stats.timestamp()));
-      stats_subdictionary.Set(
+      stats_dictionary.Set(
           "timestamp",
           monotonic_time.InMicrosecondsF() /
               static_cast<double>(base::Time::kMicrosecondsPerMillisecond));
-      // Values are reported as
-      // "values": ["attribute1", value, "attribute2", value...]
-      base::Value::List name_value_pairs;
       for (const auto& attribute : stats.Attributes()) {
         if (!attribute.has_value()) {
           continue;
         }
-        name_value_pairs.Append(attribute.name());
-        name_value_pairs.Append(AttributeToValue(attribute));
+        stats_dictionary.Set(attribute.name(), AttributeToValue(attribute));
       }
       // Modify "media-source" to also contain the result of the
       // MediaStreamTrack Statistics API, if applicable.
@@ -493,29 +489,24 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
           if (it != tracks_by_id.end()) {
             MediaStreamTrackPlatform::VideoFrameStats video_frame_stats =
                 it->second->GetVideoFrameStats();
-            name_value_pairs.Append("track.deliveredFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.deliverable_frames)));
-            name_value_pairs.Append("track.discardedFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.discarded_frames)));
-            name_value_pairs.Append("track.totalFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.deliverable_frames +
-                                 video_frame_stats.discarded_frames +
-                                 video_frame_stats.dropped_frames)));
+            stats_dictionary.Set("track.deliveredFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.deliverable_frames)));
+            stats_dictionary.Set("track.discardedFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.discarded_frames)));
+            stats_dictionary.Set("track.totalFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.deliverable_frames +
+                                     video_frame_stats.discarded_frames +
+                                     video_frame_stats.dropped_frames)));
           }
         }
       }
-      stats_subdictionary.Set("values", std::move(name_value_pairs));
-
-      // The format of "stats_dictionary" is:
-      // {id:<string>, stats:<stats_subdictionary>, type:<string>}
-      base::Value::Dict stats_dictionary;
-      stats_dictionary.Set("stats", std::move(stats_subdictionary));
-      stats_dictionary.Set("id", stats.id());
-      stats_dictionary.Set("type", stats.type());
-      result_list.Append(std::move(stats_dictionary));
+      base::Value::List list;
+      list.Append(stats.id());
+      list.Append(std::move(stats_dictionary));
+      result_list.Append(std::move(list));
     }
     return result_list;
   }
