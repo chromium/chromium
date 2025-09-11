@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import shlex
+import contextlib
 from enum import Enum, StrEnum
 
 from . import command_line
@@ -40,3 +41,26 @@ class App:
         if url:
             command_parts.extend(["-d", url])
         await command_line.adb_shell(shlex.join(command_parts))
+
+
+@contextlib.asynccontextmanager
+async def additional_command_line_flags(*args):
+    """A context manager to temporarily add flags to chrome-command-line."""
+    # Ensure the file exists before reading it.
+    await command_line.adb_shell("touch",
+                                 "/data/local/tmp/chrome-command-line")
+    old_flags_str = (await command_line.adb_shell(
+        "cat", "/data/local/tmp/chrome-command-line")).stdout.strip()
+
+    try:
+        # The command-line file must start with a placeholder token. If the file
+        # is empty or doesn't start with one, we add it.
+        old_flags_list = shlex.split(old_flags_str) if old_flags_str else ['_']
+        new_flags_list = old_flags_list + list(args)
+        new_flags_str = shlex.join(new_flags_list)
+        await command_line.adb_shell(
+            "cat > /data/local/tmp/chrome-command-line", input=new_flags_str)
+        yield
+    finally:
+        await command_line.adb_shell(
+            "cat > /data/local/tmp/chrome-command-line", input=old_flags_str)

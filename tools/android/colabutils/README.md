@@ -22,13 +22,9 @@ if colabutils_path not in sys.path:
 ```
 
 ## Example: Record a perfetto trace of cold launch of Chrome
-Create a custom configuration using the Perfetto UI and then copy it into your
-notebook.
-```python
-# trace config as a multiline string copied from
-# https://ui.perfetto.dev/#!/record/cmdline
-sample_trace_config = ...
-```
+Create a custom configuration using [Perfetto
+UI](https://ui.perfetto.dev/#!/record/cmdline) and then save it as a file that
+can be accessed by the python notebook.
 
 Then, use asyncio to concurrently launch Chrome and record a trace.
 ```python
@@ -39,16 +35,12 @@ from colabutils import chrome, trace
 app = chrome.App(chrome.Channel.STABLE)
 await app.stop()
 
-# Launch chrome with a delay to ensure that the launch is captured in the trace.
-async def launch_chrome_with_delay(chrome_app, delay=2):
-  await asyncio.sleep(delay)
-  await chrome_app.start(url="https://chromium.org")
-
 # Use asyncio.gather with asyncio.create_task to run the two async functions
 # concurrently
-recorded_trace, _ = await asyncio.gather(
-    asyncio.create_task(trace.record(sample_trace_config)),
-    asyncio.create_task(launch_chrome_with_delay(app)))
+recorded_trace = trace.TraceFile("/tmp/recorded_trace.pftrace")
+async with recorded_trace.record():
+  await asyncio.sleep(2) # wait for trace recording to start
+  await app.start(url="https://chromium.org")
 ```
 
 Once you have a trace file, you can use the `perfetto_ui.open_trace` function to
@@ -94,4 +86,30 @@ import pandas as pd
 df = await recorded_trace.query(perfetto_query)
 total_duration_ms = df['dur'].sum() / 1_000_000
 print(f"Total time spent in RenderFrameHostImpl::DidCommitNavigation = {total_duration_ms} milliseconds")
+```
+
+## Example: Using Web Page Replay
+Web Page Replay (WPR) is a tool for capturing and replaying network traffic.
+This is useful for eliminating network variability. WPR can be integrated with
+other automation as shown below:
+```python
+# Create the archive file
+wpr_archive = wpr.WebPageReplayArchive(f"/tmp/wpr_archive_{session_id}.wprgo")
+
+# Record into the archive file
+async with wpr_archive.record():
+  # Run an automation that simulates the network traffic expected during replay
+  await app.stop()
+  await app.start(url="https://chromium.org")
+  await asyncio.sleep(10)
+  await app.stop()
+
+# Replay the archive file
+async with wpr_archive.replay():
+  # Run the test automation while network traffic is replayed. This example
+  # extends the previous example which records a cold launch of Chrome.
+  recorded_trace = trace.TraceFile("/tmp/recorded_trace.pftrace")
+  async with recorded_trace.record():
+    await asyncio.sleep(2) # wait for trace recording to start
+    await app.start(url="https://chromium.org")
 ```

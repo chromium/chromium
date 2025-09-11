@@ -6,6 +6,8 @@ import asyncio
 import dataclasses
 import sys
 import shlex
+import signal
+import os
 
 
 class CommandException(Exception):
@@ -37,10 +39,7 @@ class CommandResult:
     returncode: int
 
 
-async def run(command,
-              *args,
-              stdout=asyncio.subprocess.PIPE,
-              stderr=asyncio.subprocess.PIPE):
+async def run(command, *args, input="", interruption_signal=signal.SIGKILL):
     """Runs a command on the command line asynchronously.
 
     Returns stdout, stderr and return code.
@@ -48,11 +47,17 @@ async def run(command,
     """
     process = None  # Initialize process to None
     try:
-        process = await asyncio.create_subprocess_exec(command,
-                                                       *args,
-                                                       stdout=stdout,
-                                                       stderr=stderr)
-        stdout, stderr = await process.communicate()
+        # Put the process in its own process group to kill any subprocess that
+        # it might spawn (e.g. when using `go run`) before returning from the
+        # function
+        process = await asyncio.create_subprocess_exec(
+            command,
+            *args,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            preexec_fn=os.setpgrp)
+        stdout, stderr = await process.communicate(input=input.encode('utf-8'))
         returncode = process.returncode
         result = CommandResult(stdout.decode(), stderr.decode(), returncode)
         if returncode != 0:
@@ -63,15 +68,15 @@ async def run(command,
     except FileNotFoundError:
         raise CommandException("Command not found", command=(command, ) + args)
     except asyncio.CancelledError:
-        # Handle cancellation by killing the subprocess. First, check if process
-        # is running and then wait for the process to be killed unless it has
-        # already exited.
-        if process and process.returncode is None:  #
-            try:
-                process.kill()
-                await process.wait()
-            except ProcessLookupError:
-                pass
+        # Handle cancellation by killing the process group. First, check if
+        # process is running and then wait for the process to be killed unless
+        # it has already exited.
+        try:
+            os.killpg(process.pid, interruption_signal)
+            await asyncio.wait_for(asyncio.create_task(process.wait()),
+                                   timeout=10)
+        except ProcessLookupError:
+            pass
         raise
 
 

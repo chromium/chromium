@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import uuid
 import os
 import pandas as pd
 import io
+import contextlib
+import asyncio
+import signal
 
 from . import command_line
 
@@ -36,24 +38,30 @@ class TraceFile:
         # Use io.StringIO to treat the string as a file and read it with pandas
         return pd.read_csv(io.StringIO(result.stdout))
 
+    @contextlib.asynccontextmanager
+    async def record(self, config_file):
+        """Records a trace from the configured device using the specified
+        config.
 
-async def record(config, out_dir="/tmp"):
-    """Records a trace from the configured device using the specified config.
+        Args:
+            config_file: The config file to use for recording.
+        """
+        recording_task = asyncio.create_task(
+            command_line.run("third_party/perfetto/tools/record_android_trace",
+                             "-o",
+                             self.trace_file,
+                             "-c",
+                             config_file,
+                             "-n",
+                             interruption_signal=signal.SIGINT))
+        if recording_task.done():
+            Exception(f"Recording failed: {recording_task.result()}")
 
-    Args:
-        config: The config file to use for recording.
-
-    Returns:
-        A TraceFile object if recording is successful, None otherwise.
-    """
-    trace_uuid = uuid.uuid4()
-    trace_config_filename = os.path.join(out_dir, f"config_{trace_uuid}.pbtxt")
-    with open(trace_config_filename, 'w') as file:
-        file.write(config)
-
-    trace_output_filename = os.path.join(out_dir, f"trace_{trace_uuid}.pb")
-
-    await command_line.run("third_party/perfetto/tools/record_android_trace",
-                           "-o", trace_output_filename, "-c",
-                           trace_config_filename, "-n")
-    return TraceFile(trace_output_filename)
+        try:
+            yield
+        finally:
+            recording_task.cancel()
+            try:
+                await recording_task
+            except asyncio.CancelledError:
+                pass
