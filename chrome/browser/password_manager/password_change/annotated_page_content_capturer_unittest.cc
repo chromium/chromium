@@ -36,21 +36,37 @@ class AnnotatedPageContentCapturerTest
   MockGetAIPageContentFunction mock_get_page_content_;
 };
 
-TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
   base::test::TestFuture<std::optional<optimization_guide::AIPageContentResult>>
       completion_future;
-  auto capturer = CreateCapturer(completion_future.GetCallback());
-
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+      CreateCapturer(completion_future.GetCallback());
   EXPECT_CALL(mock_get_page_content_, Run)
       .WillOnce(RunOnceCallback<1>(optimization_guide::AIPageContentResult()));
   capturer->DidStopLoading();
-  EXPECT_TRUE(completion_future.Get().has_value());
+  EXPECT_FALSE(completion_future.IsReady());
+}
+
+TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
+  base::test::TestFuture<std::optional<optimization_guide::AIPageContentResult>>
+      completion_future;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+      CreateCapturer(completion_future.GetCallback());
+  optimization_guide::AIPageContentResult page_content_result;
+  page_content_result.proto.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(3);
+  EXPECT_CALL(mock_get_page_content_, Run)
+      .WillOnce(RunOnceCallback<1>(std::move(page_content_result)));
+  capturer->DidStopLoading();
+  EXPECT_TRUE(completion_future.IsReady());
 }
 
 TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
   base::test::TestFuture<std::optional<optimization_guide::AIPageContentResult>>
       completion_future;
-  auto capturer = CreateCapturer(completion_future.GetCallback());
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+      CreateCapturer(completion_future.GetCallback());
 
   optimization_guide::OnAIPageContentDone first_request_callback;
   optimization_guide::OnAIPageContentDone second_request_callback;
@@ -71,11 +87,18 @@ TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
 
   // The second `DidStopLoading` should invalidate the
   // first callback from being executed.
-  std::move(first_request_callback)
-      .Run(optimization_guide::AIPageContentResult());
+  optimization_guide::AIPageContentResult first_page_content_result;
+  first_page_content_result.proto.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(3);
+  std::move(first_request_callback).Run(std::move(first_page_content_result));
   EXPECT_FALSE(completion_future.IsReady());
 
-  std::move(second_request_callback)
-      .Run(optimization_guide::AIPageContentResult());
+  optimization_guide::AIPageContentResult second_page_content_result;
+  second_page_content_result.proto.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(5);
+  std::move(second_request_callback).Run(std::move(second_page_content_result));
+  ASSERT_TRUE(completion_future.Wait());
   EXPECT_TRUE(completion_future.Get().has_value());
 }

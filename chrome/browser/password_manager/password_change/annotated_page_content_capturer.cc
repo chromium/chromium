@@ -63,7 +63,8 @@ void AnnotatedPageContentCapturer::DidStopLoading() {
 
 void AnnotatedPageContentCapturer::CapturePageContent(
     std::optional<optimization_guide::AIPageContentResult> result) {
-  if (callback_ && result.has_value()) {
+  if (callback_ && result.has_value() &&
+      result.value().proto.ByteSizeLong() > 0) {
     std::move(callback_).Run(std::move(result));
   }
 }
