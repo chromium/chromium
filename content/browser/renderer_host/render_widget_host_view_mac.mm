@@ -566,6 +566,13 @@ void RenderWidgetHostViewMac::SetSize(const gfx::Size& size) {
 
 void RenderWidgetHostViewMac::SetBounds(const gfx::Rect& rect) {
   ns_view_->SetBounds(rect);
+
+  // Check if running with no associated NSWindow and force bounds change
+  // propagation. This occurs while running headless and causes problems with
+  // RenderDocument. See more details here: http://crbug.com/444226873.
+  if (IsHeadless()) {
+    OnWindowFrameInScreenChanged(rect);
+  }
 }
 
 gfx::NativeView RenderWidgetHostViewMac::GetNativeView() {
@@ -995,7 +1002,7 @@ void RenderWidgetHostViewMac::SpeakSelection() {
 }
 
 void RenderWidgetHostViewMac::SetWindowFrameInScreen(const gfx::Rect& rect) {
-  DCHECK(GetInProcessNSView() && ![GetInProcessNSView() window])
+  DCHECK(IsHeadless())
       << "This method should only be called in headless browser!";
   OnWindowFrameInScreenChanged(rect);
 
@@ -2402,6 +2409,10 @@ RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
     return {true, current_display_changed};
   }
   return {false, false};
+}
+
+bool RenderWidgetHostViewMac::IsHeadless() const {
+  return GetInProcessNSView() && ![GetInProcessNSView() window];
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {

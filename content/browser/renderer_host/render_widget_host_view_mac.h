@@ -564,6 +564,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // ScreenInfo element was changed.
   std::pair<bool, bool> MaybeUpdateScreenInfosForHiDPI();
 
+  // Returns true if running with no associated platform window, i.e. has NSView
+  // but no NSWindow, like when in headless.
+  bool IsHeadless() const;
+
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.
   raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSView> ns_view_ = nullptr;
