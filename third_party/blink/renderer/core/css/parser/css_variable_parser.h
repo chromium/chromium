@@ -97,6 +97,17 @@ class CORE_EXPORT CSSVariableParser {
   // https://drafts.csswg.org/css-mixins-1/#typedef-dashed-function
   static void CollectDashedFunctions(CSSParserTokenStream&,
                                      HashSet<AtomicString>& result);
+
+  // Consume the argument list of a custom function call or a mixin @apply rule,
+  // assuming you are already inside the start of the list (i.e., you have
+  // an active BlockGuard).
+  //
+  // The parse was successful if stream.AtEnd() returns true. In particular,
+  // if you have more than “max_num_arguments”, only the first ones will be
+  // parsed and AtEnd() will return false.
+  static HeapVector<String> ConsumeFunctionArguments(
+      CSSParserTokenStream& stream,
+      unsigned max_num_arguments);
 };
 
 }  // namespace blink

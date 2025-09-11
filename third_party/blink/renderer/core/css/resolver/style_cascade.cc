@@ -118,15 +118,6 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
   return false;
 }
 
-template <CSSParserTokenType... Types>
-StringView ConsumeUntilPeekedTypeIs(CSSParserTokenStream& stream) {
-  wtf_size_t value_start_offset = stream.LookAheadOffset();
-  stream.SkipUntilPeekedTypeIs<Types...>();
-  wtf_size_t value_end_offset = stream.LookAheadOffset();
-  return stream.StringRangeAt(value_start_offset,
-                              value_end_offset - value_start_offset);
-}
-
 const CSSValue* ParseAsCSSWideKeyword(const CSSVariableData& data) {
   CSSParserTokenStream stream(data.OriginalText());
   stream.ConsumeWhitespace();
@@ -443,8 +434,8 @@ const CSSUnparsedDeclarationValue* StyleCascade::ResolveSubstitutions(
   CSSParserTokenStream stream(value.VariableDataValue()->OriginalText());
   TokenSequence sequence;
   if (!cascade.ResolveTokensInto(stream, tree_scope, resolver, *context,
-                                 /*function_context=*/ nullptr,
-                                 /*stop_type=*/ kEOFToken, sequence)) {
+                                 /*function_context=*/nullptr,
+                                 /*stop_type=*/kEOFToken, sequence)) {
     return nullptr;
   }
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
@@ -1658,33 +1649,20 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   HeapHashMap<String, Member<CSSVariableData>> unresolved_defaults;
   HashMap<String, const CSSSyntaxDefinition*> local_types;
 
-  bool first_parameter = true;
+  HeapVector<String> arguments = CSSVariableParser::ConsumeFunctionArguments(
+      stream, function->GetParameters().size());
+  if (!stream.AtEnd()) {
+    return false;
+  }
+
+  unsigned parameter_idx = 0;
   for (const StyleRuleFunction::Parameter& parameter :
        function->GetParameters()) {
     local_types.insert(parameter.name, &parameter.type);
 
-    stream.ConsumeWhitespace();
-
-    if (!stream.AtEnd() &&
-        (first_parameter || stream.Peek().GetType() == kCommaToken)) {
-      first_parameter = false;
-      if (stream.Peek().GetType() == kCommaToken) {
-        stream.ConsumeIncludingWhitespace();
-      }
-      StringView argument_string;
-      // Handle {}-wrapper.
-      // https://drafts.csswg.org/css-values-5/#component-function-commas
-      if (stream.Peek().GetType() == kLeftBraceToken) {
-        CSSParserTokenStream::BlockGuard guard(stream);
-        stream.ConsumeWhitespace();
-        DCHECK(!stream.AtEnd());
-        argument_string = ConsumeUntilPeekedTypeIs<>(stream);
-      } else {
-        argument_string = ConsumeUntilPeekedTypeIs<kCommaToken>(stream);
-      }
-      DCHECK(!argument_string.empty());  // Handled parse-time.
+    if (parameter_idx < arguments.size()) {
       CSSVariableData* argument_data = CSSVariableData::Create(
-          argument_string.ToString(),
+          arguments[parameter_idx],
           /*is_animation_tainted=*/false, /*is_attr_tainted=*/false,
           /*needs_variable_resolution=*/true);
 
@@ -1722,12 +1700,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       // Argument was missing, with no default.
       return false;
     }
-  }
-
-  if (!stream.AtEnd()) {
-    // This could mean that we have more arguments than we have parameters,
-    // which isn't allowed.
-    return false;
+    ++parameter_idx;
   }
 
   // Defaulted arguments essentially resolve as typed locals in their
@@ -2260,8 +2233,9 @@ const CSSValue* StyleCascade::CoerceIntoNumericValue(
   STACK_UNINITIALIZED StyleCascade cascade(state);
   CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
   bool is_attr_tainted_unused;
-  return cascade.CoerceIntoNumericValueInternal(
-      unparsed_value, tree_scope, resolver, context, nullptr, is_attr_tainted_unused);
+  return cascade.CoerceIntoNumericValueInternal(unparsed_value, tree_scope,
+                                                resolver, context, nullptr,
+                                                is_attr_tainted_unused);
 }
 
 const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
