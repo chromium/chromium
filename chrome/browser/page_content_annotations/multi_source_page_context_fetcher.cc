@@ -52,11 +52,10 @@ namespace {
 template <typename T, typename E>
 // Conditionally emits to a given timing histogram, given the start_time.
 base::expected<T, E> EmitTimingHistogram(const std::string& histogram_name,
-                                         base::TimeTicks start_time,
+                                         base::ElapsedTimer timer,
                                          base::expected<T, E> result) {
   if (result.has_value()) {
-    base::UmaHistogramTimes(histogram_name,
-                            base::TimeTicks::Now() - start_time);
+    base::UmaHistogramTimes(histogram_name, timer.Elapsed());
   }
   return std::move(result);
 }
@@ -329,7 +328,7 @@ class PageContextFetcher : public content::WebContentsObserver {
           base::BindOnce(
               EmitTimingHistogram<const SkBitmap*, std::string>,
               "Glic.PageContextFetcher.GetScreenshot.TimeoutAgnostic",
-              elapsed_timer_.start_time())
+              elapsed_timer_)
               .Then(base::BindOnce(
                   &PageContextFetcher::ReceivedViewportBitmapOrError,
                   GetWeakPtr())));
@@ -395,7 +394,7 @@ class PageContextFetcher : public content::WebContentsObserver {
           base::BindOnce(
               EmitTimingHistogram<std::vector<uint8_t>, std::string>,
               "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
-              elapsed_timer_.start_time())
+              elapsed_timer_)
               .Then(base::BindOnce(&PageContextFetcher::ReceivedJpegScreenshot,
                                    GetWeakPtr())));
     } else {
