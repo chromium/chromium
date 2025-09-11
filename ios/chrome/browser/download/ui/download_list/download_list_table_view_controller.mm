@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -174,13 +175,26 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)setEmptyState:(BOOL)empty {
   if (empty) {
-    // Empty downloads: show small title.
+    // Empty downloads: show small title and empty view.
     self.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeNever;
+    if (!self.tableView.backgroundView) {
+      UIImage* emptyImage = [UIImage imageNamed:@"download_list_empty"];
+      TableViewIllustratedEmptyView* emptyView =
+          [[TableViewIllustratedEmptyView alloc]
+              initWithFrame:self.view.bounds
+                      image:emptyImage
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE)
+                   subtitle:l10n_util::GetNSString(
+                                IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE)];
+      self.tableView.backgroundView = emptyView;
+    }
   } else {
-    // Non-empty downloads: show large title initially.
+    // Non-empty downloads: show large title initially and hide empty view.
     self.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeAlways;
+    self.tableView.backgroundView = nil;
   }
 }
 

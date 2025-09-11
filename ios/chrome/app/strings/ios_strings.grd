@@ -2078,6 +2078,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE" desc="Warning message displayed when the user downloads a file while on Incognito.[iOS only]">
           Anyone using this device can see downloaded files
       </message>
+      <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE" desc="Message shown on the Download List screen when there are no entries, explaining the purpose of the Download List screen.">
+          You can access your downloaded files here when available
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE" desc="Title shown on the Download List screen when there are no entries.">
+          You'll find your downloads here
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANCEL_CONFIRMATION" desc="Alert title to confirm download cancellation [Length: 30em] [iOS only]">
         Stop download?
       </message>
