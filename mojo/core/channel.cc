@@ -229,16 +229,22 @@ struct TrivialMessage : public Channel::Message {
   }
   std::vector<PlatformHandleInTransit> TakeHandles() override;
 
+  // The choice of 248 as message size is to allow using the fullness of size
+  // class in PartitionAlloc (256) minus the space that can be reserved for
+  // MiraclePtr (8).
+  static constexpr size_t kIntendedMessageSize = 248;
+
  private:
   TrivialMessage() = default;
 
-  alignas(sizeof(void*)) uint8_t trivial_data_[256 - sizeof(Channel::Message)];
+  alignas(sizeof(void*)) uint8_t
+      trivial_data_[kIntendedMessageSize - sizeof(Channel::Message)];
 
   static constexpr size_t kInternalCapacity = sizeof(trivial_data_);
 };
 
-static_assert(sizeof(TrivialMessage) == 256,
-              "Expected TrivialMessage to be 256 bytes");
+static_assert(sizeof(TrivialMessage) == TrivialMessage::kIntendedMessageSize,
+              "The TrivialMessage is of wrong size");
 
 bool ShouldRecordSubsampledHistograms() {
   return base::ShouldRecordSubsampledMetric(0.001);
