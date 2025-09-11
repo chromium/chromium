@@ -417,6 +417,9 @@ extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
+extern const char kIOSAppBundlePromoEphemeralCardName[];
+extern const char kIOSAppBundlePromoEphemeralCardDescription[];
+
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 

@@ -2924,6 +2924,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-grid-empty-thumbnail", flag_descriptions::kTabGridEmptyThumbnailName,
      flag_descriptions::kTabGridEmptyThumbnailDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridEmptyThumbnail)},
+    {"ios-app-bundle-promo-magic-stack",
+     flag_descriptions::kIOSAppBundlePromoEphemeralCardName,
+     flag_descriptions::kIOSAppBundlePromoEphemeralCardDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kAppBundlePromoEphemeralCard)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

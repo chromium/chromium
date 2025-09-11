@@ -74,6 +74,10 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
+  // TODO(crbug.com/444436598): Update EG tests so that they can pass without
+  // needing to disable the App Bundle promo Magic Stack card.
+  config.features_disabled.push_back(
+      segmentation_platform::features::kAppBundlePromoEphemeralCard);
 
   return config;
 }
