@@ -19,17 +19,17 @@ import subprocess
 import sys
 from typing import Optional
 
-start_time = time.time()
-
-DEBUG = False
+_START_TIME = time.time()
+_QUIET = False
 
 
 def _log(message: str):
-    print(f"timeall.py-{time.time() - start_time:.0f}s: {message}",
-          file=sys.stderr)
+    if not _QUIET:
+        print(f"timeall.py-{time.time() - _START_TIME:.0f}s: {message}",
+              file=sys.stderr)
 
 
-def run_command(command: list[str]) -> str:
+def _run_command(command: list[str]) -> str:
     _log(f'Running: {" ".join(command)}')
     process = subprocess.run(command,
                              capture_output=True,
@@ -39,12 +39,12 @@ def run_command(command: list[str]) -> str:
     return process.stdout
 
 
-def run_command_with_repeat(command: list[str], repeat: int,
+def _run_command_with_repeat(command: list[str], repeat: int,
                             outdir_name: str) -> Optional[str]:
     _log(f"Running with {repeat=}")
     for idx in range(repeat):
         try:
-            return run_command(command)
+            return _run_command(command)
         except subprocess.CalledProcessError as e:
             _log("Stdout:")
             _log(e.stdout)
@@ -52,20 +52,21 @@ def run_command_with_repeat(command: list[str], repeat: int,
             _log(e.stderr)
             if idx != repeat - 1:
                 _log(f"Repeating... {idx + 1}/{repeat}")
-                run_command(["gn", "clean", outdir_name])
+                _run_command(["gn", "clean", outdir_name])
     return None
 
 
 @dataclasses.dataclass(frozen=True)
-class Options:
-    benchmark: str = "module_java_internal_nosig"
+class _Options:
+    benchmark: str
+    r: int # times to repeat the benchmark.
     i: bool = False  # incremental_install
     n: bool = False  # no_component_build
     s: bool = False  # server
     e: str = ""  # emulator
 
 
-def run_benchmark(options: Options):
+def _run_benchmark(options: _Options):
     outdir_name = f"out/Debug"
     if '_test_' in options.benchmark:
         target = "chrome_test_apk"
@@ -92,27 +93,21 @@ def run_benchmark(options: Options):
     if not options.s:
         cmd.append("--no-server")
     _log(f"Start {options=}")
-    output = run_command_with_repeat(cmd,
-                                     repeat=3 if not DEBUG else 1,
+    output = _run_command_with_repeat(cmd,
+                                     repeat=options.r,
                                      outdir_name=outdir_name)
     assert output is not None
-    print(output, end="", flush=True)
+    if not _QUIET:
+        print(output, end="", flush=True)
     _log(f"Done {options=}")
 
 
-def run_benchmarks(bos: list[Options], **kwargs):
+def _run_benchmarks(bos: list[_Options], **kwargs):
     for o in bos:
-        run_benchmark(dataclasses.replace(o, **kwargs))
+        _run_benchmark(dataclasses.replace(o, **kwargs))
 
 
-def main():
-    global DEBUG
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--debug", action="store_true")
-    args = argparser.parse_args()
-
-    DEBUG = args.debug
-
+def run(debug: bool):
     benchmarks = [
         "module_internal_nosig",
         "chrome_nosig",
@@ -120,7 +115,7 @@ def main():
         "cta_test_sig",
     ]
 
-    if args.debug:
+    if debug:
         benchmarks = [benchmarks[0]]
     else:
         random.shuffle(benchmarks)
@@ -129,7 +124,7 @@ def main():
         "android_34_google_apis_x64_local.textpb",
     ]
 
-    if not args.debug:
+    if not debug:
         additional_emulators = [
             "android_31_google_apis_x64_local.textpb",
             "android_33_google_apis_x64_local.textpb",
@@ -140,21 +135,36 @@ def main():
         emulators += [random.choice(additional_emulators)]
         random.shuffle(emulators)
 
+    if debug:
+        repeat = 1
+    else:
+        repeat = 3
+
     bos = [
-        Options(benchmark=benchmark, e=emulator, i=i, n=n, s=s)
+        _Options(benchmark=benchmark, r=repeat, e=emulator, i=i, n=n, s=s)
         for benchmark, emulator, i, n, s in itertools.product(
             benchmarks, emulators, [True, False], [True, False], [True, False])
     ]
 
     # shuffle bos
-    if args.debug:
+    if debug:
         bos = [bos[0]]
     else:
         random.shuffle(bos)
 
     _log(pformat(bos))
 
-    run_benchmarks(bos=bos)
+    _run_benchmarks(bos=bos)
+
+
+def main():
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--debug", action="store_true")
+    argparser.add_argument("-q", "--quiet", action="store_true")
+    args = argparser.parse_args()
+    global _QUIET
+    _QUIET = args.quiet
+    run(args.debug)
 
 
 if __name__ == "__main__":
