@@ -70,6 +70,8 @@ struct DownloadRecord {
   web::DownloadTask::State state = web::DownloadTask::State::kNotStarted;
   // Whether this download has performed background download.
   bool has_performed_background_download = false;
+  // Whether this download is from an incognito session.
+  bool is_incognito = false;
 
  private:
   // Compares all fields between records. Set `include_progress_fields` to false

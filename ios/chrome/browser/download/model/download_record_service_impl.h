@@ -90,8 +90,13 @@ class DownloadRecordServiceImpl : public DownloadRecordService,
   std::vector<DownloadRecord> GetAllFromCache();
   std::optional<DownloadRecord> GetByIdFromCache(std::string_view id);
 
-  // Database thread data, accessed on database_task_runner_.
-  std::map<std::string, DownloadRecord> database_cache_;
+  // Cache containing all download records (persistent and transient).
+  // Includes progress information and incognito downloads not stored in
+  // database. Accessed on database_task_runner_.
+  std::map<std::string, DownloadRecord> record_cache_;
+
+  // Database for persistent download records.
+  // Accessed on database_task_runner_.
   std::unique_ptr<DownloadRecordDatabase> database_;
 
   // ObserverList for download record changes.

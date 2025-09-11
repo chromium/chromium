@@ -19,7 +19,9 @@
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +69,8 @@ class DownloadRecordServiceImplTest : public PlatformTest {
 
   void TearDown() override {
     service_.reset();
+    web_states_.clear();
+    browser_states_.clear();
     PlatformTest::TearDown();
   }
 
@@ -80,6 +84,7 @@ class DownloadRecordServiceImplTest : public PlatformTest {
 
   std::unique_ptr<web::FakeDownloadTask> CreateFakeDownloadTask(
       const std::string& identifier,
+      bool is_incognito = false,
       const std::string& original_url = "https://example.com/file.pdf",
       const std::string& mime_type = "application/pdf") {
     EXPECT_FALSE(identifier.empty());
@@ -87,6 +92,19 @@ class DownloadRecordServiceImplTest : public PlatformTest {
     auto task =
         std::make_unique<web::FakeDownloadTask>(GURL(original_url), mime_type);
     task->SetIdentifier(@(identifier.c_str()));
+
+    // Set up WebState with appropriate BrowserState.
+    auto browser_state = std::make_unique<web::FakeBrowserState>();
+    browser_state->SetOffTheRecord(is_incognito);
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(browser_state.get());
+
+    task->SetWebState(web_state.get());
+
+    // Store objects to ensure they remain alive during test execution.
+    browser_states_.push_back(std::move(browser_state));
+    web_states_.push_back(std::move(web_state));
+
     EXPECT_NSEQ(@(identifier.c_str()), task->GetIdentifier());
     return task;
   }
@@ -109,16 +127,23 @@ class DownloadRecordServiceImplTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<DownloadRecordService> service_;
+
+  // Containers to maintain object lifetimes during tests
+  std::vector<std::unique_ptr<web::FakeBrowserState>> browser_states_;
+  std::vector<std::unique_ptr<web::FakeWebState>> web_states_;
 };
 
 TEST_F(DownloadRecordServiceImplTest, RecordDownload) {
-  auto task = CreateFakeDownloadTask("test_download_1");
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask("test_download_1");
   RecordDownloadAndValidate(task.get());
 }
 
 TEST_F(DownloadRecordServiceImplTest, GetAllDownloads) {
-  auto task1 = CreateFakeDownloadTask("download_1");
-  auto task2 = CreateFakeDownloadTask("download_2");
+  std::unique_ptr<web::FakeDownloadTask> task1 =
+      CreateFakeDownloadTask("download_1");
+  std::unique_ptr<web::FakeDownloadTask> task2 =
+      CreateFakeDownloadTask("download_2");
 
   RecordDownloadAndValidate(task1.get());
   RecordDownloadAndValidate(task2.get());
@@ -143,7 +168,8 @@ TEST_F(DownloadRecordServiceImplTest, GetAllDownloads) {
 
 TEST_F(DownloadRecordServiceImplTest, GetDownloadById) {
   const std::string download_id = "test_download";
-  auto task = CreateFakeDownloadTask(download_id);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
 
   base::RunLoop run_loop;
@@ -180,7 +206,8 @@ TEST_F(DownloadRecordServiceImplTest, GetNonExistentDownloadById) {
 
 TEST_F(DownloadRecordServiceImplTest, RemoveDownloadById) {
   const std::string download_id = "test_download";
-  auto task = CreateFakeDownloadTask(download_id);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
 
   StrictMock<MockDownloadRecordObserver> mock_observer;
@@ -225,7 +252,8 @@ TEST_F(DownloadRecordServiceImplTest, RemoveNonExistentDownloadById) {
 }
 
 TEST_F(DownloadRecordServiceImplTest, UpdateDownloadFilePath) {
-  auto task = CreateFakeDownloadTask(kTestDownloadId);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(kTestDownloadId);
   RecordDownloadAndValidate(task.get());
 
   // Set up observer to verify the update notification.
@@ -276,7 +304,8 @@ TEST_F(DownloadRecordServiceImplTest, UpdateNonExistentDownloadFilePath) {
 
 TEST_F(DownloadRecordServiceImplTest, UpdateDownloadStates) {
   const std::string download_id = "state_test_download";
-  auto task = CreateFakeDownloadTask(download_id);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
 
   StrictMock<MockDownloadRecordObserver> mock_observer;
@@ -312,10 +341,12 @@ TEST_F(DownloadRecordServiceImplTest, NotifiesAllObservers) {
   service_->AddObserver(&observer1);
   service_->AddObserver(&observer2);
 
-  auto task = CreateFakeDownloadTask("test_download");
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask("test_download");
 
   base::RunLoop run_loop1;
-  auto barrier = base::BarrierClosure(2, run_loop1.QuitClosure());
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(2, run_loop1.QuitClosure());
 
   // Both observers should be notified.
   EXPECT_CALL(observer1, OnDownloadAdded(_))
@@ -329,7 +360,8 @@ TEST_F(DownloadRecordServiceImplTest, NotifiesAllObservers) {
   // Removes one observer.
   service_->RemoveObserver(&observer1);
 
-  auto task2 = CreateFakeDownloadTask("test_download_2");
+  std::unique_ptr<web::FakeDownloadTask> task2 =
+      CreateFakeDownloadTask("test_download_2");
 
   base::RunLoop run_loop2;
 
@@ -343,27 +375,63 @@ TEST_F(DownloadRecordServiceImplTest, NotifiesAllObservers) {
   service_->RemoveObserver(&observer2);
 }
 
-TEST_F(DownloadRecordServiceImplTest, PersistDataInDatabase) {
-  const std::string download_id = "persistent_download";
-  auto task = CreateFakeDownloadTask(download_id);
-  RecordDownloadAndValidate(task.get());
+TEST_F(DownloadRecordServiceImplTest, PersistOnlyNonIncognitoRecords) {
+  const std::string incognito_id = "incognito_download";
+  const std::string normal_id = "normal_download";
 
-  // Creates new service instance with same database path.
+  // Record an incognito download.
+  std::unique_ptr<web::FakeDownloadTask> incognito_task =
+      CreateFakeDownloadTask(incognito_id,
+                             /*is_incognito=*/true);
+  RecordDownloadAndValidate(incognito_task.get());
+
+  // Record a normal download.
+  std::unique_ptr<web::FakeDownloadTask> normal_task =
+      CreateFakeDownloadTask(normal_id);
+  RecordDownloadAndValidate(normal_task.get());
+
+  // Verify both downloads exist in current session.
+  base::RunLoop run_loop1;
+  std::vector<DownloadRecord> result;
+  service_->GetAllDownloadsAsync(
+      base::BindLambdaForTesting([&](std::vector<DownloadRecord> records) {
+        result = std::move(records);
+        run_loop1.Quit();
+      }));
+  run_loop1.Run();
+  EXPECT_EQ(2u, result.size());
+
+  // Verify both record has correct flag.
+  bool found_incognito = false;
+  bool found_normal = false;
+  for (const auto& record : result) {
+    if (record.download_id == incognito_id) {
+      EXPECT_TRUE(record.is_incognito);
+      found_incognito = true;
+    } else if (record.download_id == normal_id) {
+      EXPECT_FALSE(record.is_incognito);
+      found_normal = true;
+    }
+  }
+  EXPECT_TRUE(found_incognito);
+  EXPECT_TRUE(found_normal);
+
+  // Restart service (simulates app restart).
   service_.reset();
+  task_environment_.RunUntilIdle();
   CreateService();
 
-  base::RunLoop verify_loop;
-  std::optional<DownloadRecord> result;
-
-  service_->GetDownloadByIdAsync(
-      download_id,
-      base::BindLambdaForTesting([&](std::optional<DownloadRecord> record) {
-        result = std::move(record);
-        verify_loop.Quit();
+  // Verify only normal download persists after restart.
+  base::RunLoop run_loop2;
+  std::vector<DownloadRecord> persistent_result;
+  service_->GetAllDownloadsAsync(
+      base::BindLambdaForTesting([&](std::vector<DownloadRecord> records) {
+        persistent_result = std::move(records);
+        run_loop2.Quit();
       }));
+  run_loop2.Run();
 
-  verify_loop.Run();
-  // Verifies download still exists.
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(download_id, result->download_id);
+  EXPECT_EQ(1u, persistent_result.size());
+  EXPECT_EQ(normal_id, persistent_result[0].download_id);
+  EXPECT_FALSE(persistent_result[0].is_incognito);
 }

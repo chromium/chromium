@@ -227,6 +227,11 @@ bool DownloadRecordServiceImpl::ShouldPersistUpdate(
     const DownloadRecord& cached_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
+  // Incognito records are not persistently stored.
+  if (cached_record.is_incognito) {
+    return false;
+  }
+
   // Persist only if critical fields have changed.
   // Progress fields (received_bytes, progress_percent) are not persisted to
   // database.
@@ -261,11 +266,11 @@ void DownloadRecordServiceImpl::LoadHistoricalRecords() {
     return;
   }
 
-  database_cache_.clear();
+  record_cache_.clear();
 
   std::vector<DownloadRecord> all_records = database_->GetAllDownloadRecords();
   for (const auto& record : all_records) {
-    database_cache_[record.download_id] = record;
+    record_cache_[record.download_id] = record;
   }
 
   CleanupInconsistentStates();
@@ -279,7 +284,7 @@ void DownloadRecordServiceImpl::CleanupInconsistentStates() {
   }
 
   std::vector<std::string> records_to_fix;
-  for (const auto& [id, record] : database_cache_) {
+  for (const auto& [id, record] : record_cache_) {
     if (record.state == web::DownloadTask::State::kInProgress ||
         record.state == web::DownloadTask::State::kNotStarted) {
       // Mark all unfinished records from previous session as failed.
@@ -297,12 +302,19 @@ void DownloadRecordServiceImpl::CleanupInconsistentStates() {
 bool DownloadRecordServiceImpl::InsertRecord(const DownloadRecord& record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
+  bool should_persist = !record.is_incognito;
+
+  if (!should_persist) {
+    record_cache_[record.download_id] = record;
+    return true;
+  }
+
   if (!database_ || !database_->IsInitialized()) {
     return false;
   }
 
   if (database_->InsertDownloadRecord(record)) {
-    database_cache_[record.download_id] = record;
+    record_cache_[record.download_id] = record;
     return true;
   }
 
@@ -322,23 +334,21 @@ std::optional<DownloadRecord> DownloadRecordServiceImpl::UpdateRecord(
   DownloadRecord record_to_update = updated_record;
   record_to_update.created_time = existing_record_opt.value().created_time;
 
-  // Checks if we need to persist this update to database.
-  bool needs_database_update =
+  // Determine if we need to persist this update to database.
+  bool should_persist =
       ShouldPersistUpdate(record_to_update, existing_record_opt.value());
 
-  if (!needs_database_update) {
-    // No database update needed, just updates cache.
-    database_cache_[updated_record.download_id] = record_to_update;
+  if (!should_persist) {
+    record_cache_[record_to_update.download_id] = record_to_update;
     return record_to_update;
   }
 
-  // Needs to update database.
   if (!database_ || !database_->IsInitialized()) {
     return std::nullopt;
   }
 
   if (database_->UpdateDownloadRecord(record_to_update)) {
-    database_cache_[updated_record.download_id] = record_to_update;
+    record_cache_[record_to_update.download_id] = record_to_update;
     return record_to_update;
   }
 
@@ -362,8 +372,8 @@ bool DownloadRecordServiceImpl::UpdateRecordsState(
   if (database_->UpdateDownloadRecordsState(download_ids, new_state)) {
     // Updates cache for all successfully updated records.
     for (const std::string& download_id : download_ids) {
-      auto it = database_cache_.find(download_id);
-      if (it != database_cache_.end()) {
+      auto it = record_cache_.find(download_id);
+      if (it != record_cache_.end()) {
         it->second.state = new_state;
       }
     }
@@ -393,19 +403,27 @@ std::optional<DownloadRecord> DownloadRecordServiceImpl::UpdateFilePathInRecord(
 bool DownloadRecordServiceImpl::DeleteRecord(std::string_view id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
+  // Check if record exists in cache.
+  auto it = record_cache_.find(std::string(id));
+  if (it == record_cache_.end()) {
+    // Consider this a success since the record doesn't exist anyway.
+    return true;
+  }
+
+  const DownloadRecord& record = it->second;
+  bool should_persist = !record.is_incognito;
+
+  if (!should_persist) {
+    record_cache_.erase(it);
+    return true;
+  }
+
   if (!database_ || !database_->IsInitialized()) {
     return false;
   }
 
-  // Checks if record exists in cache.
-  auto it = database_cache_.find(std::string(id));
-  if (it == database_cache_.end()) {
-    // Considers this a success since the record doesn't exist anyway.
-    return true;
-  }
-
   if (database_->DeleteDownloadRecord(std::string(id))) {
-    database_cache_.erase(it);
+    record_cache_.erase(it);
     return true;
   }
 
@@ -416,9 +434,9 @@ std::vector<DownloadRecord> DownloadRecordServiceImpl::GetAllFromCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   std::vector<DownloadRecord> records;
-  records.reserve(database_cache_.size());
+  records.reserve(record_cache_.size());
 
-  for (const auto& [id, record] : database_cache_) {
+  for (const auto& [id, record] : record_cache_) {
     records.push_back(record);
   }
 
@@ -429,8 +447,8 @@ std::optional<DownloadRecord> DownloadRecordServiceImpl::GetByIdFromCache(
     std::string_view download_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
-  auto it = database_cache_.find(std::string(download_id));
-  if (it != database_cache_.end()) {
+  auto it = record_cache_.find(std::string(download_id));
+  if (it != record_cache_.end()) {
     return it->second;
   }
 

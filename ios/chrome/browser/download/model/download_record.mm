@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/download/model/download_record.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 DownloadRecord::DownloadRecord() = default;
@@ -32,6 +34,7 @@ DownloadRecord::DownloadRecord(web::DownloadTask* task) {
   progress_percent = task->GetPercentComplete();
   state = task->GetState();
   has_performed_background_download = task->HasPerformedBackgroundDownload();
+  is_incognito = task->GetWebState()->GetBrowserState()->IsOffTheRecord();
 }
 
 DownloadRecord::DownloadRecord(const DownloadRecord& other) = default;
@@ -70,6 +73,7 @@ bool DownloadRecord::CompareFields(const DownloadRecord& other,
       state == other.state &&
       has_performed_background_download ==
           other.has_performed_background_download &&
+      is_incognito == other.is_incognito &&
       created_time == other.created_time &&
       completed_time == other.completed_time;
 
