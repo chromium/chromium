@@ -846,7 +846,11 @@ std::unique_ptr<ui::MotionEventAndroid> GetMotionEventAndroid(
 
 class SitePerProcessHitTestBrowserTest : public SitePerProcessBrowserTestBase {
  public:
-  SitePerProcessHitTestBrowserTest() {}
+  SitePerProcessHitTestBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitWithFeatures({kTooltips}, {});
+#endif
+  }
 
 #if defined(USE_AURA)
   void PreRunTestOnMainThread() override {
@@ -869,6 +873,9 @@ class SitePerProcessHitTestBrowserTest : public SitePerProcessBrowserTestBase {
 
 #if defined(USE_AURA)
   SystemEventRewriter event_rewriter_;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_;
 #endif
 };
 
