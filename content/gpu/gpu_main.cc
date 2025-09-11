@@ -67,6 +67,7 @@
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "sandbox/policy/linux/landlock_util.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
@@ -583,6 +584,8 @@ bool StartSandboxAndroid(gpu::GpuWatchdogThread* watchdog_thread) {
     watchdog_thread->Start();
   }
 
+  // Report Landlock status via UMA.
+  sandbox::policy::ReportLandlockStatus();
   return res;
 }
 #endif  // BUILDFLAG(IS_ANDROID)

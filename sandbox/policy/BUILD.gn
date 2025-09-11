@@ -37,6 +37,8 @@ component("policy") {
       "linux/bpf_renderer_policy_linux.h",
       "linux/landlock_gpu_policy_android.cc",
       "linux/landlock_gpu_policy_android.h",
+      "linux/landlock_util.cc",
+      "linux/landlock_util.h",
     ]
     deps += [
       "//sandbox:sandbox_buildflags",
@@ -85,6 +87,8 @@ component("policy") {
       "linux/bpf_speech_recognition_policy_linux.h",
       "linux/bpf_utility_policy_linux.cc",
       "linux/bpf_utility_policy_linux.h",
+      "linux/landlock_util.cc",
+      "linux/landlock_util.h",
       "linux/sandbox_debug_handling_linux.cc",
       "linux/sandbox_debug_handling_linux.h",
       "linux/sandbox_linux.cc",

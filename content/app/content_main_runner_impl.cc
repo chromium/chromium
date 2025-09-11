@@ -109,6 +109,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "sandbox/policy/linux/landlock_util.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -1036,7 +1037,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (process_type.empty()) {
     // Check if Landlock is supported.
-    sandbox::policy::SandboxLinux::ReportLandlockStatus();
+    sandbox::policy::ReportLandlockStatus();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

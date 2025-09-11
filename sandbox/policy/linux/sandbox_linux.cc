@@ -67,16 +67,6 @@ namespace policy {
 
 namespace {
 
-// The state of Landlock support on the system.
-// Used to report through UMA.
-enum LandlockState {
-  kEnabled = 0,
-  kDisabled = 1,
-  kNotSupported = 2,
-  kUnknown = 3,
-  kMaxValue = kUnknown,
-};
-
 void LogSandboxStarted(const std::string& sandbox_name) {
   const std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -660,36 +650,6 @@ bool SandboxLinux::EngageNamespaceSandboxInternal(bool from_zygote) {
   }
   CHECK(Credentials::SetCapabilities(proc_fd_, caps));
   return true;
-}
-
-void SandboxLinux::ReportLandlockStatus() {
-  LandlockState landlock_state = LandlockState::kUnknown;
-  const int landlock_version =
-      landlock_create_ruleset(nullptr, 0, LANDLOCK_CREATE_RULESET_VERSION);
-  if (landlock_version <= 0) {
-    const int err = errno;
-    switch (err) {
-      case ENOSYS: {
-        DVLOG(1) << "Landlock not supported by the kernel.";
-        landlock_state = LandlockState::kNotSupported;
-        break;
-      }
-      case EOPNOTSUPP: {
-        DVLOG(1) << "Landlock supported by the kernel but disabled.";
-        landlock_state = LandlockState::kDisabled;
-        break;
-      }
-      default: {
-        DVLOG(1) << "Could not determine Landlock state.";
-        landlock_state = LandlockState::kUnknown;
-      }
-    }
-  } else {
-    DVLOG(1) << "Landlock enabled; Version " << landlock_version;
-    landlock_state = LandlockState::kEnabled;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("Security.Sandbox.LandlockState", landlock_state);
 }
 
 }  // namespace policy
