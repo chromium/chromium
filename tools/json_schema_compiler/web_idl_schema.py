@@ -318,10 +318,17 @@ class Type():
         if instance_of:
           properties['isInstanceOf'] = instance_of
     elif type_details.IsA('Typeref'):
-      # For custom types the name indicates the underlying referenced type.
-      # TODO(crbug.com/340297705): We should verify this ref name is actually a
-      # custom type we have parsed from the IDL.
-      properties['$ref'] = type_details.GetName()
+      # Some common types don't actually have a custom class backing them and
+      # are just Typerefs with a string name.
+      if type_details.GetName() == 'ArrayBuffer':
+        properties['type'] = 'binary'
+        properties['isInstanceOf'] = 'ArrayBuffer'
+      else:
+        # For our own custom types defined as Dictionaries in the schema file,
+        # the name indicates the underlying referenced type.
+        # TODO(crbug.com/340297705): We should verify this ref name is actually
+        # a custom type we have parsed from the IDL.
+        properties['$ref'] = type_details.GetName()
     elif type_details.IsA('Undefined'):
       properties['type'] = UndefinedType
     elif type_details.IsA('Promise'):

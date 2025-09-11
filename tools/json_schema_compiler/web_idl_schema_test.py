@@ -912,6 +912,50 @@ class WebIdlSchemaTest(unittest.TestCase):
             'isInstanceOf': 'Entry'
         }, instance_of_params[0])
 
+  # Tests 'ArrayBuffer' types on Dictionaries.
+  def testArrayBufferTypes(self):
+    idl = web_idl_schema.Load('test/web_idl/array_buffer.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    array_buffer_dict = getType(schema, 'ArrayBufferDict')
+    self.assertEqual('object', array_buffer_dict['type'])
+    self.assertEqual(
+        {
+            'type': 'binary',
+            'name': 'requiredArrayBuffer',
+            'isInstanceOf': 'ArrayBuffer'
+        }, array_buffer_dict['properties']['requiredArrayBuffer'])
+    self.assertEqual(
+        {
+            'type': 'binary',
+            'optional': True,
+            'name': 'optionalArrayBuffer',
+            'isInstanceOf': 'ArrayBuffer'
+        }, array_buffer_dict['properties']['optionalArrayBuffer'])
+
+  # Test 'ArrayBuffer' types used as function parameters.
+  def testArrayBufferFunctionParams(self):
+    idl = web_idl_schema.Load('test/web_idl/array_buffer.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    array_buffer_params = getFunctionParameters(schema,
+                                                'arrayBufferParamFunction')
+    self.assertEqual(
+        {
+            'type': 'binary',
+            'name': 'requiredArrayBufferParam',
+            'isInstanceOf': 'ArrayBuffer'
+        }, array_buffer_params[0])
+    self.assertEqual(
+        {
+            'type': 'binary',
+            'optional': True,
+            'name': 'optionalArrayBufferParam',
+            'isInstanceOf': 'ArrayBuffer'
+        }, array_buffer_params[1])
+
 
 if __name__ == '__main__':
   unittest.main()
