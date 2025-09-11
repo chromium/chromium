@@ -1952,6 +1952,10 @@ Google Chrome is unable to recover your settings.
           desc="The label of the Lens overlay entrypoint in the omnibox offering homework help">
           Homework help
         </message>
+        <message name="IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL"
+          desc="The label of the Lens overlay entrypoint in the omnibox, allowing users to ask Google about the page">
+          Ask Google
+        </message>
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP"
           desc="The tooltip for the Lens overlay toolbar button.">
           Search with Google Lens
