@@ -56,7 +56,6 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
               objectForInfoDictionaryKey:@"CFBundleVersion"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
       process_annotations["plat"] = std::string("iOS");
-      process_annotations["crashpad"] = std::string("yes");
     }  // @autoreleasepool
     return process_annotations;
   }
