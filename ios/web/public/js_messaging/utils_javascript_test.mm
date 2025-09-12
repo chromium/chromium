@@ -81,10 +81,10 @@ TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL) {
     TestData& data = test_data[i];
     id result = web::test::ExecuteJavaScript(
         web_view(),
-        [NSString
-            stringWithFormat:
-                @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')",
-                data.input_url]);
+        [NSString stringWithFormat:
+                      @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')",
+                      data.input_url]);
     EXPECT_NSEQ(data.expected_output, result)
         << " in test " << i << ": " << base::SysNSStringToUTF8(data.input_url);
   }
@@ -100,8 +100,8 @@ TEST_F(
   web::test::ExecuteJavaScriptInWebView(
       web_view(), @"window.URL = function() { return { weird_field: 1 }; };");
 
-  NSString* apiCall =
-      @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')";
+  NSString* apiCall = @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')";
   NSString* url = @"http://foo1.com/bar";
   NSString* js = [NSString stringWithFormat:apiCall, url];
   id result = web::test::ExecuteJavaScript(web_view(), js);
@@ -118,8 +118,8 @@ TEST_F(UtilsJavaScriptTest,
       web_view(), @"window.URL = function() { return {"
                    "origin: 'o', path: 'pa', protocol: 3 }; };");
 
-  NSString* apiCall =
-      @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL('%@')";
+  NSString* apiCall = @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+                      @"removeQueryAndReferenceFromURL')('%@')";
   NSString* url = @"http://foo1.com/bar";
   NSString* js = [NSString stringWithFormat:apiCall, url];
   id result = web::test::ExecuteJavaScript(web_view(), js);
@@ -141,9 +141,9 @@ TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL_InvalidInput) {
   for (size_t i = 0; i < std::size(test_data); i++) {
     TestData& data = test_data[i];
     NSString* js = [NSString
-        stringWithFormat:
-            @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL(%@)",
-            data.input];
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                         @"getFunction('removeQueryAndReferenceFromURL')(%@)",
+                         data.input];
     id result = web::test::ExecuteJavaScript(web_view(), js);
 
     EXPECT_NSEQ(data.expected_output, result)
@@ -170,7 +170,8 @@ TEST_F(UtilsJavaScriptTest, SendWebKitMessage) {
     handler_.lastReceivedMessage = nil;
 
     NSString* js = [NSString
-        stringWithFormat:@"__gCrWeb.utils_tests.sendWebKitMessage('%@', %@)",
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                         @"getFunction('sendWebKitMessage')('%@', %@)",
                          kUtilsSampleMessageHandlerName, data.input];
     web::test::ExecuteJavaScriptInWebView(web_view(), js);
 
@@ -200,7 +201,9 @@ TEST_F(UtilsJavaScriptTest, Trim) {
   for (size_t i = 0; i < std::size(test_data); i++) {
     TestData& data = test_data[i];
     NSString* js = [NSString
-        stringWithFormat:@"__gCrWeb.utils_tests.trim(%@)", data.input_string];
+        stringWithFormat:
+            @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('trim')(%@)",
+            data.input_string];
     id result = web::test::ExecuteJavaScript(web_view(), js);
 
     EXPECT_NSEQ(data.expected_output, result)
@@ -261,7 +264,8 @@ TEST_F(UtilsJavaScriptTest, IsTextField) {
     id result = web::test::ExecuteJavaScript(
         web_view(),
         [NSString
-            stringWithFormat:@"__gCrWeb.utils_tests.isTextField("
+            stringWithFormat:@"__gCrWeb.getRegisteredApi('utils_tests')."
+                             @"getFunction('isTextField')("
                               "window.document.getElementsByName('%s')[%d])",
                              element.element_name, element.element_index]);
     EXPECT_NSEQ(element.expected_is_text_field ? @YES : @NO, result)
