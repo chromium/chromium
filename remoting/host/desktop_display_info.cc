@@ -203,7 +203,6 @@ void DesktopDisplayInfo::AddDisplayFrom(
 std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     const {
   auto layout = std::make_unique<protocol::VideoLayout>();
-  HOST_LOG << "Displays loaded:";
   for (const auto& display : displays()) {
     protocol::VideoTrackLayout* track = layout->add_video_track();
     track->set_position_x(display.x);
@@ -214,11 +213,6 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     track->set_y_dpi(display.dpi);
     track->set_screen_id(display.id);
     track->set_display_name(display.display_name);
-    HOST_LOG << "   Display: " << display.x << "," << display.y << " "
-             << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id << ", bpp=" << display.bpp
-             << ", primary=" << display.is_default
-             << ", display_name=" << display.display_name;
     if (display.is_default) {
       if (layout->has_primary_screen_id()) {
         LOG(WARNING) << "Multiple primary displays found";

@@ -1229,14 +1229,27 @@ void ClientSession::OnDesktopDisplayChanged(
   int max_y = 0;
   int dpi_x = 0;
   int dpi_y = 0;
-  LOG(INFO) << "  Scanning display info... (dips)";
+  std::string_view dips_or_physical_pixels;
+  switch (displays->pixel_type()) {
+    case protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL:
+      dips_or_physical_pixels = "DIPs";
+      break;
+    case protocol::VideoLayout::PixelType::VideoLayout_PixelType_PHYSICAL:
+      dips_or_physical_pixels = "Physical pixels";
+      break;
+    default:
+      dips_or_physical_pixels = "Unknown pixel type";
+  }
+  LOG(INFO) << "  Scanning display info... (" << dips_or_physical_pixels << ")";
   for (int display_id = 0; display_id < displays->video_track_size();
        display_id++) {
     protocol::VideoTrackLayout track = displays->video_track(display_id);
     LOG(INFO) << "   #" << display_id << " : " << track.position_x() << ","
               << track.position_y() << " " << track.width() << "x"
               << track.height() << " [" << track.x_dpi() << "," << track.y_dpi()
-              << "], screen_id=" << track.screen_id();
+              << "], screen_id=" << track.screen_id() << ", primary="
+              << (displays->has_primary_screen_id() &&
+                  track.screen_id() == displays->primary_screen_id());
     if (dpi_x == 0) {
       dpi_x = track.x_dpi();
     }
@@ -1260,7 +1273,7 @@ void ClientSession::OnDesktopDisplayChanged(
     dpi_y = default_y_dpi_;
   }
 
-  // Calc desktop scaled geometry (in DIPs)
+  // Calc desktop scaled geometry
   // See comment in OnVideoSizeChanged() for details.
   const webrtc::DesktopSize size(max_x - min_x, max_y - min_y);
 
@@ -1318,10 +1331,10 @@ void ClientSession::OnDesktopDisplayChanged(
       multiStreamEnabled ? 1 : webrtc_capture_size_.HeightAsDips());
   video_track->set_x_dpi(dpi_x);
   video_track->set_y_dpi(dpi_y);
-  LOG(INFO) << "  Webrtc capture size (DIPS) = 0,0 "
-            << default_webrtc_desktop_size_;
+  LOG(INFO) << "  Webrtc capture size (" << dips_or_physical_pixels
+            << ") = 0,0 " << default_webrtc_desktop_size_;
 
-  // Add raw geometry for entire desktop (in DIPs).
+  // Add raw geometry for entire desktop.
   video_track = layout.add_video_track();
   video_track->set_position_x(0);
   video_track->set_position_y(0);
@@ -1329,8 +1342,9 @@ void ClientSession::OnDesktopDisplayChanged(
   video_track->set_height(size.height());
   video_track->set_x_dpi(dpi_x);
   video_track->set_y_dpi(dpi_y);
-  LOG(INFO) << "  Full Desktop (DIPS) = 0,0 " << size.width() << "x"
-            << size.height() << " [" << dpi_x << "," << dpi_y << "]";
+  LOG(INFO) << "  Full Desktop (" << dips_or_physical_pixels << ") = 0,0 "
+            << size.width() << "x" << size.height() << " [" << dpi_x << ","
+            << dpi_y << "]";
 
   // Add a VideoTrackLayout entry for each separate display.
   desktop_display_info_.Reset();
@@ -1349,7 +1363,10 @@ void ClientSession::OnDesktopDisplayChanged(
     LOG(INFO) << "  Display " << display_id << " = " << display.position_x()
               << "," << display.position_y() << " " << display.width() << "x"
               << display.height() << " [" << display.x_dpi() << ","
-              << display.y_dpi() << "], screen_id=" << display.screen_id();
+              << display.y_dpi() << "], screen_id=" << display.screen_id()
+              << ", primary="
+              << (displays->has_primary_screen_id() &&
+                  display.screen_id() == displays->primary_screen_id());
   }
 
   // Set the display index, if this is the first message being processed or if
