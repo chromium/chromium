@@ -605,81 +605,84 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
 type RemoveStringPrefix<S extends string, Prefix extends string> =
     S extends `${Prefix}${infer Rest}` ? Rest : 'prefixNotFound!';
 
-type HostRequestEnumNamesType = {
-  [K in keyof HostRequestTypes as RemoveStringPrefix<K, 'glicBrowser'>]: 0;
+export type HostRequestEnumNamesType = {
+  [K in keyof HostRequestTypes as RemoveStringPrefix<K, 'glicBrowser'>]: number;
 };
 
-() => {
-  // LINT.IfChange(ApiRequestType)
-  // The sole purpose of this is to prompt you to update histograms.xml!
-  const apiRequestTypes: HostRequestEnumNamesType = {
-    WebClientCreated: 0,
-    WebClientInitialized: 0,
-    CreateTab: 0,
-    OpenGlicSettingsPage: 0,
-    ClosePanel: 0,
-    ClosePanelAndShutdown: 0,
-    ShowProfilePicker: 0,
-    GetModelQualityClientId: 0,
-    GetContextFromFocusedTab: 0,
-    GetContextFromTab: 0,
-    GetContextForActorFromTab: 0,
-    SetMaximumNumberOfPinnedTabs: 0,
-    StopActorTask: 0,
-    PauseActorTask: 0,
-    ResumeActorTask: 0,
-    CaptureScreenshot: 0,
-    ResizeWindow: 0,
-    EnableDragResize: 0,
-    SetWindowDraggableAreas: 0,
-    SetMinimumWidgetSize: 0,
-    SetMicrophonePermissionState: 0,
-    SetLocationPermissionState: 0,
-    SetTabContextPermissionState: 0,
-    SetContextAccessIndicator: 0,
-    GetUserProfileInfo: 0,
-    RefreshSignInCookies: 0,
-    AttachPanel: 0,
-    DetachPanel: 0,
-    SetAudioDucking: 0,
-    LogBeginAsyncEvent: 0,
-    LogEndAsyncEvent: 0,
-    LogInstantEvent: 0,
-    JournalClear: 0,
-    JournalSnapshot: 0,
-    JournalStart: 0,
-    JournalStop: 0,
-    JournalRecordFeedback: 0,
-    OnUserInputSubmitted: 0,
-    OnResponseRated: 0,
-    OnResponseStarted: 0,
-    OnResponseStopped: 0,
-    OnSessionTerminated: 0,
-    OnTurnCompleted: 0,
-    OnModelChanged: 0,
-    ScrollTo: 0,
-    SetSyntheticExperimentState: 0,
-    OpenOsPermissionSettingsMenu: 0,
-    GetOsMicrophonePermissionStatus: 0,
-    PinTabs: 0,
-    UnpinTabs: 0,
-    UnpinAllTabs: 0,
-    SubscribeToPinCandidates: 0,
-    UnsubscribeFromPinCandidates: 0,
-    GetZeroStateSuggestionsForFocusedTab: 0,
-    GetZeroStateSuggestionsAndSubscribe: 0,
-    SetClosedCaptioningSetting: 0,
-    DropScrollToHighlight: 0,
-    MaybeRefreshUserStatus: 0,
-    OnClosedCaptionsShown: 0,
-    CreateTask: 0,
-    PerformActions: 0,
-    OnViewChanged: 0,
-    SubscribeToPageMetadata: 0,
-  };
-  return apiRequestTypes;
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)
-};
+// LINT.IfChange(HOST_REQUEST_TYPES)
+// New values here must be added to histograms.xml and to enums.xml.
+export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
+    (() => {
+      const result = {
+        WebClientCreated: 1,
+        WebClientInitialized: 2,
+        CreateTab: 3,
+        OpenGlicSettingsPage: 4,
+        ClosePanel: 5,
+        ClosePanelAndShutdown: 6,
+        ShowProfilePicker: 7,
+        GetModelQualityClientId: 8,
+        GetContextFromFocusedTab: 9,
+        GetContextFromTab: 10,
+        GetContextForActorFromTab: 11,
+        SetMaximumNumberOfPinnedTabs: 12,
+        StopActorTask: 13,
+        PauseActorTask: 14,
+        ResumeActorTask: 15,
+        CaptureScreenshot: 16,
+        ResizeWindow: 17,
+        EnableDragResize: 18,
+        SetWindowDraggableAreas: 19,
+        SetMinimumWidgetSize: 20,
+        SetMicrophonePermissionState: 21,
+        SetLocationPermissionState: 22,
+        SetTabContextPermissionState: 23,
+        SetContextAccessIndicator: 24,
+        GetUserProfileInfo: 25,
+        RefreshSignInCookies: 26,
+        AttachPanel: 27,
+        DetachPanel: 28,
+        SetAudioDucking: 29,
+        LogBeginAsyncEvent: 30,
+        LogEndAsyncEvent: 31,
+        LogInstantEvent: 32,
+        JournalClear: 33,
+        JournalSnapshot: 34,
+        JournalStart: 35,
+        JournalStop: 36,
+        JournalRecordFeedback: 37,
+        OnUserInputSubmitted: 38,
+        OnResponseRated: 39,
+        OnResponseStarted: 40,
+        OnResponseStopped: 41,
+        OnSessionTerminated: 42,
+        OnTurnCompleted: 43,
+        OnModelChanged: 44,
+        ScrollTo: 45,
+        SetSyntheticExperimentState: 46,
+        OpenOsPermissionSettingsMenu: 47,
+        GetOsMicrophonePermissionStatus: 48,
+        PinTabs: 49,
+        UnpinTabs: 50,
+        UnpinAllTabs: 51,
+        SubscribeToPinCandidates: 52,
+        UnsubscribeFromPinCandidates: 53,
+        GetZeroStateSuggestionsForFocusedTab: 54,
+        GetZeroStateSuggestionsAndSubscribe: 55,
+        SetClosedCaptioningSetting: 56,
+        DropScrollToHighlight: 57,
+        MaybeRefreshUserStatus: 58,
+        OnClosedCaptionsShown: 59,
+        CreateTask: 60,
+        PerformActions: 61,
+        OnViewChanged: 62,
+        SubscribeToPageMetadata: 63,
+      };
+      return {...result, MAX_VALUE: Math.max(...Object.values(result))};
+    })();
+// clang-format off
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType, //tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
+// clang-format on
 
 export function requestTypeToHistogramSuffix(type: string): string|undefined {
   if (!type.startsWith('glicBrowser')) {

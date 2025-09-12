@@ -225,6 +225,76 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicGetContextFromFocusedTabError) -->
 
+<!-- LINT.IfChange(GlicHostApiRequestType) -->
+
+<enum name="GlicHostApiRequestType">
+  <int value="1" label="WebClientCreated"/>
+  <int value="2" label="WebClientInitialized"/>
+  <int value="3" label="CreateTab"/>
+  <int value="4" label="OpenGlicSettingsPage"/>
+  <int value="5" label="ClosePanel"/>
+  <int value="6" label="ClosePanelAndShutdown"/>
+  <int value="7" label="ShowProfilePicker"/>
+  <int value="8" label="GetModelQualityClientId"/>
+  <int value="9" label="GetContextFromFocusedTab"/>
+  <int value="10" label="GetContextFromTab"/>
+  <int value="11" label="GetContextForActorFromTab"/>
+  <int value="12" label="SetMaximumNumberOfPinnedTabs"/>
+  <int value="13" label="StopActorTask"/>
+  <int value="14" label="PauseActorTask"/>
+  <int value="15" label="ResumeActorTask"/>
+  <int value="16" label="CaptureScreenshot"/>
+  <int value="17" label="ResizeWindow"/>
+  <int value="18" label="EnableDragResize"/>
+  <int value="19" label="SetWindowDraggableAreas"/>
+  <int value="20" label="SetMinimumWidgetSize"/>
+  <int value="21" label="SetMicrophonePermissionState"/>
+  <int value="22" label="SetLocationPermissionState"/>
+  <int value="23" label="SetTabContextPermissionState"/>
+  <int value="24" label="SetContextAccessIndicator"/>
+  <int value="25" label="GetUserProfileInfo"/>
+  <int value="26" label="RefreshSignInCookies"/>
+  <int value="27" label="AttachPanel"/>
+  <int value="28" label="DetachPanel"/>
+  <int value="29" label="SetAudioDucking"/>
+  <int value="30" label="LogBeginAsyncEvent"/>
+  <int value="31" label="LogEndAsyncEvent"/>
+  <int value="32" label="LogInstantEvent"/>
+  <int value="33" label="JournalClear"/>
+  <int value="34" label="JournalSnapshot"/>
+  <int value="35" label="JournalStart"/>
+  <int value="36" label="JournalStop"/>
+  <int value="37" label="JournalRecordFeedback"/>
+  <int value="38" label="OnUserInputSubmitted"/>
+  <int value="39" label="OnResponseRated"/>
+  <int value="40" label="OnResponseStarted"/>
+  <int value="41" label="OnResponseStopped"/>
+  <int value="42" label="OnSessionTerminated"/>
+  <int value="43" label="OnTurnCompleted"/>
+  <int value="44" label="OnModelChanged"/>
+  <int value="45" label="ScrollTo"/>
+  <int value="46" label="SetSyntheticExperimentState"/>
+  <int value="47" label="OpenOsPermissionSettingsMenu"/>
+  <int value="48" label="GetOsMicrophonePermissionStatus"/>
+  <int value="49" label="PinTabs"/>
+  <int value="50" label="UnpinTabs"/>
+  <int value="51" label="UnpinAllTabs"/>
+  <int value="52" label="SubscribeToPinCandidates"/>
+  <int value="53" label="UnsubscribeFromPinCandidates"/>
+  <int value="54" label="GetZeroStateSuggestionsForFocusedTab"/>
+  <int value="55" label="GetZeroStateSuggestionsAndSubscribe"/>
+  <int value="56" label="SetClosedCaptioningSetting"/>
+  <int value="57" label="DropScrollToHighlight"/>
+  <int value="58" label="MaybeRefreshUserStatus"/>
+  <int value="59" label="OnClosedCaptionsShown"/>
+  <int value="60" label="CreateTask"/>
+  <int value="61" label="PerformActions"/>
+  <int value="62" label="OnViewChanged"/>
+  <int value="63" label="SubscribeToPageMetadata"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
+
 <!-- LINT.IfChange(GlicHotkeyUsage) -->
 
 <enum name="GlicHotkeyUsage">

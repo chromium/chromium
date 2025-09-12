@@ -31,7 +31,7 @@ import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
 import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
-import {ErrorWithReasonImpl, exceptionFromTransferable, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
+import {ErrorWithReasonImpl, exceptionFromTransferable, HOST_REQUEST_TYPES, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
   UNINITIALIZED,
@@ -1434,13 +1434,40 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   reportRequestCountEvent(requestType: string, event: GlicRequestEvent) {
-    const suffix = requestTypeToHistogramSuffix(requestType);
-    if (suffix === undefined) {
+    const histogramSuffix = requestTypeToHistogramSuffix(requestType);
+    if (histogramSuffix === undefined) {
+      return;
+    }
+    const requestTypeNumber: number|undefined =
+        (HOST_REQUEST_TYPES as any)[histogramSuffix];
+    if (!requestTypeNumber) {
+      console.warn(
+          `reportRequestCountEvent: invalid requestType ${histogramSuffix}`);
       return;
     }
     chrome.metricsPrivate.recordEnumerationValue(
-        `Glic.Api.RequestCounts.${suffix}`, event,
+        `Glic.Api.RequestCounts.${histogramSuffix}`, event,
         GlicRequestEvent.MAX_VALUE + 1);
+
+    switch (event) {
+      case GlicRequestEvent.REQUEST_HANDLER_EXCEPTION:
+        chrome.metricsPrivate.recordEnumerationValue(
+            `Glic.Api.RequestCounts.Error`, requestTypeNumber,
+            HOST_REQUEST_TYPES.MAX_VALUE + 1);
+        break;
+      case GlicRequestEvent.REQUEST_RECEIVED_WHILE_HIDDEN:
+        chrome.metricsPrivate.recordEnumerationValue(
+            `Glic.Api.RequestCounts.Hidden`, requestTypeNumber,
+            HOST_REQUEST_TYPES.MAX_VALUE + 1);
+        break;
+      case GlicRequestEvent.REQUEST_RECEIVED:
+        chrome.metricsPrivate.recordEnumerationValue(
+            `Glic.Api.RequestCounts.Received`, requestTypeNumber,
+            HOST_REQUEST_TYPES.MAX_VALUE + 1);
+        break;
+      default:
+        break;
+    }
   }
 }
 

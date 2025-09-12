@@ -71,6 +71,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.RequestCounts.Error" enum="GlicHostApiRequestType"
+    expires_after="2026-03-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>Recorded when a glic API fails with an exception.</summary>
+</histogram>
+
+<histogram name="Glic.Api.RequestCounts.Hidden" enum="GlicHostApiRequestType"
+    expires_after="2026-03-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when a glic API is called while the client is not being shown.
+    Reported regardless of whether the call was successful.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.RequestCounts.Received" enum="GlicHostApiRequestType"
+    expires_after="2026-03-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when a glic API is called. Reported regardless of whether the call
+    was successful.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
     enum="GlicRequestEvent" expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
