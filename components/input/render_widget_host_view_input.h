@@ -206,7 +206,10 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // the current cursor's view which was set by UpdateCursor.
   virtual void DisplayCursor(const ui::Cursor& cursor);
 
-  // Views that manage cursors for window return a CursorManager. Other views
+  // Views that manage cursors for a window return a CursorManager. In the
+  // case of nested WebContents, the RWHV for the inner frame tree may defer
+  // cursor management to the root view and returns its CursorManager as it
+  // represents the appropriate one for the window. Other views
   // return nullptr.
   virtual CursorManager* GetCursorManager();
 

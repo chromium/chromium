@@ -20,6 +20,10 @@ class LocationBarModel;
 class LocationBarTesting;
 class OmniboxView;
 
+namespace bubble_anchor_util {
+struct AnchorConfiguration;
+}
+
 namespace content {
 class WebContents;
 }
@@ -80,6 +84,11 @@ class LocationBar {
   virtual content::WebContents* GetWebContents() = 0;
 
   virtual LocationBarModel* GetLocationBarModel() = 0;
+
+  // If chip is visible in this LocationBar, return a bubble anchor config that
+  // can be used to anchor to the chip.
+  virtual std::optional<bubble_anchor_util::AnchorConfiguration>
+  GetChipAnchor() = 0;
 
   // Called when anything has changed that might affect the layout or contents
   // of the views around the edit, including the text of the edit and the

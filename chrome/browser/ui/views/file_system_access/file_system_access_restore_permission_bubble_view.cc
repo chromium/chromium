@@ -33,9 +33,9 @@ FileSystemAccessRestorePermissionBubbleView::
             FileSystemAccessPermissionRequestManager::FileRequestData>&
             file_data,
         base::OnceCallback<void(permissions::PermissionAction)> callback,
-        views::View* anchor_view,
+        views::BubbleAnchor anchor,
         content::WebContents* web_contents)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor, web_contents),
       window_title_(window_title),
       callback_(std::move(callback)) {
   // Initial set up.
@@ -139,7 +139,7 @@ FileSystemAccessRestorePermissionBubbleView::CreateAndShow(
           profile, request.origin.GetURL()));
   auto* bubble_view = new FileSystemAccessRestorePermissionBubbleView(
       window_title, request.file_request_data, std::move(callback),
-      bubble_anchor_util::GetPageInfoAnchorConfiguration(browser).anchor_view,
+      bubble_anchor_util::GetPageInfoAnchorConfiguration(browser).anchor,
       web_contents);
   bubble_view->UpdateAnchor(browser);
   views::BubbleDialogDelegateView::CreateBubble(bubble_view);
@@ -166,9 +166,9 @@ void FileSystemAccessRestorePermissionBubbleView::UpdateAnchor(
     Browser* browser) {
   auto configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(browser);
-  SetAnchorView(configuration.anchor_view);
+  SetAnchor(configuration.anchor);
   SetHighlightedButton(configuration.highlighted_button);
-  if (!configuration.anchor_view) {
+  if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser));
   }
   SetArrow(configuration.bubble_arrow);

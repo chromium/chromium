@@ -12,9 +12,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -86,13 +87,10 @@ class WebUIBrowserGuestHandler
   void StopLoading() override { web_contents_->Stop(); }
 
   void OpenPageInfoMenu() override {
-    ui::TrackedElement* location_button =
-        BrowserElements::From(window_->browser())
-            ->GetElement(kLocationIconElementId);
-    CHECK(location_button) << "Location button not found";
     std::unique_ptr<PageInfoBubbleSpecification> specification =
         PageInfoBubbleSpecification::Builder(
-            location_button, window_->GetNativeWindow(), web_contents_.get(),
+            window_->GetLocationBar()->GetChipAnchor()->anchor,
+            window_->GetNativeWindow(), web_contents_.get(),
             web_contents_->GetLastCommittedURL())
             .Build();
 

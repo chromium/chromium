@@ -33,14 +33,14 @@
 #include "url/gurl.h"
 
 SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback)
-    : PageInfoBubbleViewBase(anchor_view,
+    : PageInfoBubbleViewBase(anchor,
                              anchor_rect,
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP,
@@ -238,14 +238,14 @@ void ShowSafetyTipDialog(
       bubble_anchor_util::GetPageInfoAnchorConfiguration(
           browser, bubble_anchor_util::Anchor::kLocationBar);
   gfx::Rect anchor_rect =
-      configuration.anchor_view
-          ? gfx::Rect()
-          : bubble_anchor_util::GetPageInfoAnchorRect(browser);
+      std::holds_alternative<std::nullptr_t>(configuration.anchor)
+          ? bubble_anchor_util::GetPageInfoAnchorRect(browser)
+          : gfx::Rect();
   gfx::NativeWindow parent_window = browser->window()->GetNativeWindow();
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
   views::BubbleDialogDelegateView* bubble = new SafetyTipPageInfoBubbleView(
-      configuration.anchor_view, anchor_rect, parent_view, web_contents,
+      configuration.anchor, anchor_rect, parent_view, web_contents,
       safety_tip_status, suggested_url, std::move(close_callback));
 
   bubble->SetHighlightedButton(configuration.highlighted_button);

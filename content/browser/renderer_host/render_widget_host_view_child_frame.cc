@@ -968,6 +968,13 @@ RenderWidgetHostViewChildFrame::DidUpdateVisualProperties(
   return viz::ScopedSurfaceIdAllocator(std::move(allocation_task));
 }
 
+input::CursorManager* RenderWidgetHostViewChildFrame::GetCursorManager() {
+  if (!GetRootView()) {
+    return nullptr;
+  }
+  return GetRootView()->GetCursorManager();
+}
+
 ui::TextInputType RenderWidgetHostViewChildFrame::GetTextInputType() const {
   if (!text_input_manager_)
     return ui::TEXT_INPUT_TYPE_NONE;

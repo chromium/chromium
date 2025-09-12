@@ -103,7 +103,7 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
     content::WebContents* contents,
     std::unique_ptr<permissions::ChooserController> chooser_controller)
     : LocationBarBubbleDelegateView(
-          GetChooserAnchorConfiguration(browser).anchor_view,
+          GetChooserAnchorConfiguration(browser).anchor,
           contents) {
   // ------------------------------------
   // | Chooser bubble title             |
@@ -168,9 +168,9 @@ void ChooserBubbleUiViewDelegate::OnSelectionChanged() {
 
 void ChooserBubbleUiViewDelegate::UpdateAnchor(Browser* browser) {
   AnchorConfiguration configuration = GetChooserAnchorConfiguration(browser);
-  SetAnchorView(configuration.anchor_view);
+  SetAnchor(configuration.anchor);
   SetHighlightedButton(configuration.highlighted_button);
-  if (!configuration.anchor_view) {
+  if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(GetChooserAnchorRect(browser));
   }
   SetArrow(configuration.bubble_arrow);

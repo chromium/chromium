@@ -295,6 +295,8 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;
     content::WebContents* GetWebContents() override;
+    std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
+        override;
     void OnChanged() override {}
     void OnPopupVisibilityChanged() override {}
     void UpdateWithoutTabRestore() override {}

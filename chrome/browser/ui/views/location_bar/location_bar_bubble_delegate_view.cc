@@ -85,10 +85,10 @@ void LocationBarBubbleDelegateView::WebContentMouseHandler::OnEvent(
 }
 
 LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     bool autosize)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
                                autosize),

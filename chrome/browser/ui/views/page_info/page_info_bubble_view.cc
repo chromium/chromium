@@ -378,11 +378,13 @@ void ShowPageInfoDialogImpl(Browser* browser,
   AnchorConfiguration configuration =
       GetPageInfoAnchorConfiguration(browser, anchor);
   gfx::Rect anchor_rect =
-      configuration.anchor_view ? gfx::Rect() : GetPageInfoAnchorRect(browser);
+      std::holds_alternative<std::nullptr_t>(configuration.anchor)
+          ? GetPageInfoAnchorRect(browser)
+          : gfx::Rect();
   gfx::NativeWindow parent_window = browser->window()->GetNativeWindow();
 
   PageInfoBubbleSpecification::Builder page_info_bubble_builder(
-      configuration.anchor_view, parent_window, web_contents, virtual_url);
+      configuration.anchor, parent_window, web_contents, virtual_url);
   page_info_bubble_builder.AddAnchorRect(anchor_rect)
       .AddInitializedCallback(std::move(initialized_callback))
       .AddPageInfoClosingCallback(std::move(closing_callback));

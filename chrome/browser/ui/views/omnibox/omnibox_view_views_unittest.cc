@@ -33,6 +33,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -284,6 +285,10 @@ class TestLocationBar : public LocationBar {
     return location_bar_model_;
   }
   content::WebContents* GetWebContents() override { return nullptr; }
+  std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
+      override {
+    return {};
+  }
   void OnChanged() override {}
   void OnPopupVisibilityChanged() override {}
   void UpdateWithoutTabRestore() override {

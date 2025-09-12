@@ -211,6 +211,8 @@ class LocationBarView
   void UpdateWithoutTabRestore() override;
   LocationBarModel* GetLocationBarModel() override;
   content::WebContents* GetWebContents() override;
+  std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
+      override;
 
   // views::View:
   void AddedToWidget() override;

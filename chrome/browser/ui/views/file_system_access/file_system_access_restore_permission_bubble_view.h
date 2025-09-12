@@ -35,7 +35,7 @@ class FileSystemAccessRestorePermissionBubbleView
       const std::vector<
           FileSystemAccessPermissionRequestManager::FileRequestData>& file_data,
       base::OnceCallback<void(permissions::PermissionAction)> callback,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_content);
   FileSystemAccessRestorePermissionBubbleView(
       const FileSystemAccessRestorePermissionBubbleView&) = delete;

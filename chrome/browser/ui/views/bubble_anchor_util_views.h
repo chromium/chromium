@@ -8,10 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 class Button;
-class View;
 }  // namespace views
 
 class Browser;
@@ -19,8 +19,8 @@ class Browser;
 namespace bubble_anchor_util {
 
 struct AnchorConfiguration {
-  // The bubble anchor view.
-  raw_ptr<views::View, DanglingUntriaged> anchor_view = nullptr;
+  // The bubble anchor.
+  views::BubbleAnchor anchor = nullptr;
 
   // The view to be highlighted, or null if it should not be used.
   raw_ptr<views::Button, DanglingUntriaged> highlighted_button = nullptr;
