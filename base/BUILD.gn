@@ -4605,9 +4605,11 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessServiceDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnection.java",
+      "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
+      "android/java/src/org/chromium/base/process_launcher/LegacyChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
     ]
   }
