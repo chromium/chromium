@@ -36,11 +36,6 @@ inline constexpr char kGroupIdToggledOnHistogram[] =
 // Alphabetical list of preference names specific to the omnibox component.
 // Keep alphabetized, and document each.
 
-// Boolean that specifies whether the omnibox should be positioned at the bottom
-// of the screen.
-inline constexpr char kIsOmniboxInBottomPosition[] =
-    "omnibox.is_in_bottom_position";
-
 // Enum specifying the active behavior for the intranet redirect detector.
 // The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
 // Values are defined in omnibox::IntranetRedirectorBehavior.

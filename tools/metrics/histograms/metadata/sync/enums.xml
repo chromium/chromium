@@ -357,7 +357,6 @@ chromium-metrics-reviews@google.com.
   <int value="92" label="FingerprintingProtectionEnabled"/>
   <int value="93" label="AutofillNameAndEmailProfileSignature"/>
   <int value="94" label="AutofillNameAndEmailProfileNotSelectedCounter"/>
-  <int value="95" label="IsOmniboxInBottomPosition"/>
   <int value="96" label="AutofillAiLastVersionDeduped"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 

@@ -530,9 +530,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Bottom omnibox preferences.
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
-  registry->RegisterBooleanPref(
-      omnibox::kIsOmniboxInBottomPosition, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Preferences related to the Docking Promo feature (used only if
   // `kIOSDockingPromoForEligibleUsersOnly` is enabled).

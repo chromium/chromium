@@ -2436,12 +2436,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterDictionaryPref(prefs::kReportingEndpoints);
 
   registry->RegisterBooleanPref(prefs::kViewSourceLineWrappingEnabled, false);
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      omnibox::kIsOmniboxInBottomPosition, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
