@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.util.Size;
@@ -18,11 +19,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.base.TestActivity;
@@ -40,10 +44,13 @@ public class PinnedTabStripMediatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private GridLayoutManager mLayoutManager;
+    @Mock private TabListCoordinator mTabListCoordinator;
     private TabListModel mTabListModel;
     private TabListModel mPinnedTabsModelList;
     private PropertyModel mStripPropertyModel;
     private PinnedTabStripMediator mMediator;
+    private TestActivity mActivity;
+    private TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
 
     @Before
     public void setUp() {
@@ -51,6 +58,7 @@ public class PinnedTabStripMediatorTest {
     }
 
     void onActivity(TestActivity activity) {
+        mActivity = activity;
         mTabListModel = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
         mStripPropertyModel =
@@ -63,9 +71,16 @@ public class PinnedTabStripMediatorTest {
                 new PinnedTabStripMediator(
                         activity,
                         mLayoutManager,
+                        mTabListCoordinator,
                         mTabListModel,
                         mPinnedTabsModelList,
                         mStripPropertyModel);
+
+        ArgumentCaptor<TabListItemSizeChangedObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabListItemSizeChangedObserver.class);
+        verify(mTabListCoordinator).addTabListItemSizeChangedObserver(observerCaptor.capture());
+        mTabListItemSizeChangedObserver = observerCaptor.getValue();
+        when(mLayoutManager.getSpanCount()).thenReturn(2);
     }
 
     @Test
@@ -173,23 +188,75 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
-    public void testOnSizeChanged_setsGridCardSize() {
-        // Set up the size and trigger the size change observer.
-        final int cardWidth = 200;
-        final int cardHeight = 300;
-        final int delta = 16;
-        mMediator.onSizeChanged(new Size(cardWidth, cardHeight));
+    public void testResizePinnedTabCards_ClampedToMinWidth() {
+        // Set an initial size.
+        final int cardWidth = 150;
+        final int spanCount = 1;
+        mTabListItemSizeChangedObserver.onSizeChanged(spanCount, new Size(cardWidth, 0));
 
-        // Add a pinned tab and simulate it being scrolled off-screen.
+        // Add enough pinned tabs to trigger resizing below the minimum width.
         mTabListModel.add(createTabListItem(1, true));
-        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mTabListModel.add(createTabListItem(2, true));
+        mTabListModel.add(createTabListItem(3, true));
+        mTabListModel.add(createTabListItem(4, true));
+        mTabListModel.add(createTabListItem(5, true));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(5);
         mMediator.onScrolled();
 
-        // Verify the GRID_CARD_SIZE is set correctly.
-        assertEquals(1, mPinnedTabsModelList.size());
+        // Verify the GRID_CARD_SIZE is clamped to the minimum width.
+        assertEquals(5, mPinnedTabsModelList.size());
         PropertyModel model = mPinnedTabsModelList.get(0).model;
         Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-        assertEquals(cardWidth - delta, cardSize.getWidth());
+        int minWidth =
+                PinnedTabStripUtils.getMinAllowedWidthForPinTabStripItemPx(
+                        mActivity.getResources());
+        assertEquals(minWidth, cardSize.getWidth());
+    }
+
+    @Test
+    public void testResizePinnedTabCards_VaryingFirstVisiblePosition() {
+        // Set an initial size and span count.
+        final int cardWidth = 400;
+        final int delta = 16;
+        final int spanCount = 2;
+        mTabListItemSizeChangedObserver.onSizeChanged(spanCount, new Size(cardWidth, 0));
+
+        // Add a large number of pinned tabs to the main model.
+        final int totalPinnedTabs = 12;
+        for (int i = 0; i < totalPinnedTabs; i++) {
+            mTabListModel.add(createTabListItem(i, true));
+        }
+
+        // Iterate through different numbers of visible pinned tabs by changing the first visible
+        // position.
+        for (int i = 1; i <= totalPinnedTabs; i++) {
+            when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(i);
+            mMediator.onScrolled();
+
+            // Verify the GRID_CARD_SIZE has shrunk correctly based on the number of tabs.
+            assertEquals(i, mPinnedTabsModelList.size());
+            PropertyModel model = mPinnedTabsModelList.get(0).model;
+            Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
+            int expectedWidth =
+                    Math.round(
+                            ((cardWidth - delta)
+                                    * PinnedTabStripUtils.getWidthPercentageMultiplier(
+                                            mActivity.getResources(), mLayoutManager, i)));
+            int minWidth =
+                    PinnedTabStripUtils.getMinAllowedWidthForPinTabStripItemPx(
+                            mActivity.getResources());
+            expectedWidth = Math.max(minWidth, expectedWidth);
+
+            assertEquals(
+                    "Failed for firstVisiblePosition: " + i, expectedWidth, cardSize.getWidth());
+        }
+    }
+
+    @Test
+    public void testDestroy() {
+        mMediator.destroy();
+        verify(mTabListCoordinator)
+                .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
     }
 
     private ListItem createTabListItem(int id, boolean isPinned) {

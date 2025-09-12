@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -33,16 +32,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class PinnedTabStripCoordinator {
     private final PinnedTabStripMediator mMediator;
     private final TabListRecyclerView mPinnedTabsRecyclerView;
-    private final TabListCoordinator mTabListEditorCoordinator;
-
-    private final TabListCoordinator.TabListItemSizeChangedObserver
-            mTabListItemSizeChangedObserver =
-                    new TabListCoordinator.TabListItemSizeChangedObserver() {
-                        @Override
-                        public void onSizeChanged(int spanCount, Size cardSize) {
-                            mMediator.onSizeChanged(cardSize);
-                        }
-                    };
 
     /**
      * Constructor for PinnedTabStripCoordinator.
@@ -83,14 +72,13 @@ public class PinnedTabStripCoordinator {
                 mPinnedTabsRecyclerView,
                 PinnedTabStripViewBinder::bind);
 
-        mTabListEditorCoordinator = tabListCoordinator;
-
         RecyclerView tabGridListRecyclerView = tabListCoordinator.getContainerView();
         TabListModel tabListModel = tabListCoordinator.getTabListModel();
         mMediator =
                 createMediator(
                         activity,
                         tabGridListRecyclerView,
+                        tabListCoordinator,
                         tabListModel,
                         pinnedTabsModelList,
                         pinnedTabStripPropertyModel);
@@ -102,8 +90,6 @@ public class PinnedTabStripCoordinator {
                         mMediator.onScrolled();
                     }
                 });
-
-        tabListCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
     }
 
     /** Returns the {@link TabListRecyclerView} for the pinned tabs strip. */
@@ -114,6 +100,7 @@ public class PinnedTabStripCoordinator {
     PinnedTabStripMediator createMediator(
             Activity activity,
             RecyclerView tabGridListRecyclerView,
+            TabListCoordinator tabListCoordinator,
             TabListModel tabListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel) {
@@ -123,6 +110,7 @@ public class PinnedTabStripCoordinator {
         return new PinnedTabStripMediator(
                 activity,
                 tabGridListLayoutManager,
+                tabListCoordinator,
                 tabListModel,
                 pinnedTabsModelList,
                 stripPropertyModel);
@@ -139,7 +127,6 @@ public class PinnedTabStripCoordinator {
     }
 
     public void destroy() {
-        mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
-                mTabListItemSizeChangedObserver);
+        mMediator.destroy();
     }
 }

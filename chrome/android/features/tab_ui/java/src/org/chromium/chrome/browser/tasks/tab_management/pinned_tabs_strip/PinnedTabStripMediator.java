@@ -14,15 +14,21 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
 
-import android.app.Activity;
+import static java.lang.Math.max;
+
+import android.content.Context;
+import android.content.res.Resources;
 import android.util.Size;
 
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -39,33 +45,45 @@ import java.util.List;
 @NullMarked
 public class PinnedTabStripMediator {
 
-    private final Activity mActivity;
+    private final Context mContext;
     private final TabListModel mTabGridListModel;
+    private final TabListCoordinator mTabLisCoordinator;
     private final TabListModel mPinnedTabsModelList;
     private final GridLayoutManager mTabGridListLayoutManager;
     private final PropertyModel mStripPropertyModel;
-    private int mPinnedTabStripItemWidth = -1;
+    private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
+
+    /**
+     * The current width of a tab list item in the main tab grid. This is used to calculate the
+     * width of pinned tabs in the strip.
+     */
+    private @Px int mTabListItemCurrentWidth;
 
     /**
      * Constructor for the PinnedTabsStripMediator.
      *
-     * @param activity The current activity.
+     * @param context The current context for getting the required reources.
      * @param tabGridListLayoutManager The layout manager for the main tab grid.
+     * @param tabListCoordinator The coordinator for the main tab grid.
      * @param tabGridListModel The model for the main tab grid.
      * @param pinnedTabsModelList The model for the pinned tabs strip.
      * @param stripPropertyModel The property model for the pinned tabs strip.
      */
     public PinnedTabStripMediator(
-            Activity activity,
+            Context context,
             GridLayoutManager tabGridListLayoutManager,
+            TabListCoordinator tabListCoordinator,
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel) {
-        mActivity = activity;
+        mContext = context;
         mTabGridListLayoutManager = tabGridListLayoutManager;
         mTabGridListModel = tabGridListModel;
         mPinnedTabsModelList = pinnedTabsModelList;
         mStripPropertyModel = stripPropertyModel;
+        mTabLisCoordinator = tabListCoordinator;
+        mTabListItemSizeChangedObserver = this::onTabGridListItemSizeChanged;
+        mTabLisCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
     }
 
     /**
@@ -126,7 +144,7 @@ public class PinnedTabStripMediator {
      * @return A new ListItem for the pinned tabs strip.
      */
     private ListItem createPinnedTabListItem(PropertyModel model) {
-        Size pinnedTabSize = new Size(mPinnedTabStripItemWidth, -1);
+        Size pinnedTabSize = new Size(mTabListItemCurrentWidth, 0);
 
         PropertyModel newModel =
                 new PropertyModel.Builder(ALL_KEYS_TAB_GRID)
@@ -152,6 +170,7 @@ public class PinnedTabStripMediator {
         // Perform a granular update instead of clear() and addAll() to prevent flashing.
         for (int i = 0; i < newPinnedTabs.size(); i++) {
             ListItem newItem = newPinnedTabs.get(i);
+
             if (i < mPinnedTabsModelList.size()) {
                 if (newItem.model.get(TAB_ID) != mPinnedTabsModelList.get(i).model.get(TAB_ID)) {
                     mPinnedTabsModelList.removeAt(i);
@@ -167,8 +186,46 @@ public class PinnedTabStripMediator {
                     newPinnedTabs.size(), mPinnedTabsModelList.size() - newPinnedTabs.size());
         }
 
+        resizePinnedTabCards();
         mStripPropertyModel.set(
                 PinnedTabStripProperties.SCROLL_TO_POSITION, mPinnedTabsModelList.size() - 1);
+    }
+
+    private void onTabGridListItemSizeChanged(int spanCount, Size cardSize) {
+        // TODO(crbug.com/444221209): Find better way to handle this to avoid lot of unnecessary
+        // resource fetch calls.
+        @Px
+        int delta =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_width_delta);
+        mTabListItemCurrentWidth = cardSize.getWidth() - delta;
+        onPinnedTabStripItemWidthChanged();
+    }
+
+    private void resizePinnedTabCards() {
+        onPinnedTabStripItemWidthChanged();
+    }
+
+    /**
+     * Updates the width of the cards in the pinned tab strip. Resizes the pinned tab cards based on
+     * the available width and the number of pinned tabs. The cards will shrink as more tabs are
+     * added to the strip, up to a minimum width. This method calculates the new width percentage
+     * based on the current state and applies it to the cards.
+     */
+    private void onPinnedTabStripItemWidthChanged() {
+        if (mPinnedTabsModelList.isEmpty()) return;
+
+        Resources res = mContext.getResources();
+        @Px int minAllowedWidth = PinnedTabStripUtils.getMinAllowedWidthForPinTabStripItemPx(res);
+        float widthPercentage =
+                PinnedTabStripUtils.getWidthPercentageMultiplier(
+                        res, mTabGridListLayoutManager, mPinnedTabsModelList.size());
+
+        int newWidth = Math.round(mTabListItemCurrentWidth * widthPercentage);
+        Size newSize = new Size(max(minAllowedWidth, newWidth), 0);
+        for (ListItem item : mPinnedTabsModelList) {
+            item.model.set(GRID_CARD_SIZE, newSize);
+        }
     }
 
     /**
@@ -180,18 +237,7 @@ public class PinnedTabStripMediator {
         mStripPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, shouldBeVisible);
     }
 
-    void onSizeChanged(Size cardSize) {
-        int delta =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_width_delta);
-        mPinnedTabStripItemWidth = cardSize.getWidth() - delta;
-
-        if (!mPinnedTabsModelList.isEmpty()) {
-            Size newSize = new Size(mPinnedTabStripItemWidth, -1);
-            for (ListItem item : mPinnedTabsModelList) {
-                item.model.set(GRID_CARD_SIZE, newSize);
-            }
-        }
+    void destroy() {
+        mTabLisCoordinator.removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
     }
 }

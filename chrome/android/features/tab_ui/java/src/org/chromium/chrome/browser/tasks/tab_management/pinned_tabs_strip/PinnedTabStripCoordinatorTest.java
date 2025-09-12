@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.util.Size;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -73,6 +72,7 @@ public class PinnedTabStripCoordinatorTest {
                     PinnedTabStripMediator createMediator(
                             Activity activity,
                             RecyclerView tabGridListRecyclerView,
+                            TabListCoordinator tabListCoordinator,
                             TabListModel tabListModel,
                             TabListModel pinnedTabsModelList,
                             PropertyModel stripPropertyModel) {
@@ -106,23 +106,8 @@ public class PinnedTabStripCoordinatorTest {
     }
 
     @Test
-    public void testTabListItemSizeChangedObserver_onSizeChanged() {
-        ArgumentCaptor<TabListCoordinator.TabListItemSizeChangedObserver> observerCaptor =
-                ArgumentCaptor.forClass(TabListCoordinator.TabListItemSizeChangedObserver.class);
-        verify(mTabListCoordinator).addTabListItemSizeChangedObserver(observerCaptor.capture());
-
-        Size cardSize = new Size(100, 200);
-        observerCaptor.getValue().onSizeChanged(2, cardSize);
-        verify(mMediator).onSizeChanged(cardSize);
-    }
-
-    @Test
     public void testDestroy() {
-        ArgumentCaptor<TabListCoordinator.TabListItemSizeChangedObserver> observerCaptor =
-                ArgumentCaptor.forClass(TabListCoordinator.TabListItemSizeChangedObserver.class);
-        verify(mTabListCoordinator).addTabListItemSizeChangedObserver(observerCaptor.capture());
-
         mCoordinator.destroy();
-        verify(mTabListCoordinator).removeTabListItemSizeChangedObserver(observerCaptor.getValue());
+        verify(mMediator).destroy();
     }
 }

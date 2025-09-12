@@ -115,10 +115,10 @@ public class PinnedTabStripItemView extends FrameLayout {
     void setGridCardSize(@Nullable Size size) {
         if (size == null) return;
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        if (size.getWidth() != -1) {
+        if (size.getWidth() > 0) {
             layoutParams.width = size.getWidth();
         }
-        if (size.getHeight() != -1) {
+        if (size.getHeight() > 0) {
             layoutParams.height = size.getHeight();
         }
         setLayoutParams(layoutParams);
