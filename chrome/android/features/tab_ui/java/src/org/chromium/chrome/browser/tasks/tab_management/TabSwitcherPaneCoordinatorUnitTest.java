@@ -566,14 +566,12 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         // Verify the children of the LinearLayout.
         assertEquals(2, container.getChildCount());
-        assertTrue(
-                container.getChildAt(0)
-                        instanceof
-                        org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView);
-        assertTrue(
-                container.getChildAt(1)
-                        instanceof
-                        org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView);
+        FrameLayout pinnedTabsContainer = container.findViewById(R.id.pinned_tabs_container);
+        FrameLayout tabListContainer = container.findViewById(R.id.tab_list_container);
+        assertEquals(1, pinnedTabsContainer.getChildCount());
+        assertEquals(1, tabListContainer.getChildCount());
+        assertTrue(pinnedTabsContainer.getChildAt(0) instanceof TabListRecyclerView);
+        assertTrue(tabListContainer.getChildAt(0) instanceof TabListRecyclerView);
     }
 
     @Test
@@ -584,6 +582,10 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         // Verify that the container is a LinearLayout with the original TabListRecyclerView.
         ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
         assertTrue(container instanceof LinearLayout);
-        assertTrue(container.getChildAt(0) instanceof TabListRecyclerView);
+        FrameLayout pinnedTabsContainer = container.findViewById(R.id.pinned_tabs_container);
+        FrameLayout tabListContainer = container.findViewById(R.id.tab_list_container);
+        assertEquals(0, pinnedTabsContainer.getChildCount());
+        assertEquals(1, tabListContainer.getChildCount());
+        assertTrue(tabListContainer.getChildAt(0) instanceof TabListRecyclerView);
     }
 }

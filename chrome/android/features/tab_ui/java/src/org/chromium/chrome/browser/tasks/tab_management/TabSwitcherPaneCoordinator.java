@@ -22,6 +22,7 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
@@ -399,22 +400,24 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                             R.layout.tab_switcher_pane_layout,
                                             parentView,
                                             /* attachToParent= */ false);
-            layout.addView(recyclerView);
             parentView.addView(layout);
+
+            FrameLayout tabListContainer = layout.findViewById(R.id.tab_list_container);
+            tabListContainer.addView(recyclerView);
 
             // TODO(crbug.com/436614730): Inline the view construction once feature is launched.
             if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
                 // If the feature is enabled, create and set up the pinned tab strip, and add it as
                 // a sibling of the regular tab list. The pinned tab strip will be positioned above
-                // the regular tab list by virtue of being added to the parent `LinearLayout`
-                // first.
+                // the regular tab list.
                 mPinnedTabsCoordinator =
                         new PinnedTabStripCoordinator(mActivity, parentView, tabListCoordinator);
 
                 TabListRecyclerView pinnedTabStripRecyclerView =
                         mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
 
-                layout.addView(pinnedTabStripRecyclerView, /* index= */ 0);
+                FrameLayout pinnedTabsContainer = layout.findViewById(R.id.pinned_tabs_container);
+                pinnedTabsContainer.addView(pinnedTabStripRecyclerView);
             }
 
             if (XrUtils.isXrDevice()) {
