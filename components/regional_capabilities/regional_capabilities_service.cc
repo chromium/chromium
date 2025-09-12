@@ -483,6 +483,16 @@ void RegionalCapabilitiesService::ClearCacheForTesting() {
   program_settings_cache_.reset();
 }
 
+void RegionalCapabilitiesService::SetActiveProgramSettingsForTesting(
+    const ProgramSettings& program_settings) {
+  CHECK(!GetSearchEngineCountryOverride().has_value())
+      << "Override either country or program settings, not both.";
+  country_id_cache_ = program_settings.associated_countries.empty()
+                          ? country_codes::CountryId()
+                          : program_settings.associated_countries.front();
+  program_settings_cache_ = program_settings;
+}
+
 const ProgramSettings&
 RegionalCapabilitiesService::GetActiveProgramSettingsForTesting() {
   return GetActiveProgramSettings();

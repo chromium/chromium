@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -47,6 +46,8 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/version_info.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -320,6 +321,35 @@ bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
   return false;
 }
 
+// Checks account properties against the eligibility config to determine if the
+// account can make a choice.
+bool AccountCanMakeChoiceScreenChoice(
+    const regional_capabilities::ChoiceScreenEligibilityConfig& config,
+    const signin::IdentityManager& identity_manager) {
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+  if (config.managed_users_can_be_eligible) {
+    return true;
+  }
+
+  const auto core_account_info =
+      identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const AccountInfo account_info =
+      identity_manager.FindExtendedAccountInfo(core_account_info);
+
+  // Treat accounts with signin::Tribool::kUnknown (this covers signed-out
+  // users, and signed-in users where the capability is not known yet) as able
+  // to make a choice.
+  return account_info.capabilities
+             .can_make_chrome_search_engine_choice_screen_choice() !=
+         signin::Tribool::kFalse;
+#else
+  // TODO(crbug.com/444651029): Refactor this class and the tests to not build
+  // on Android.
+  CHECK_IS_TEST();
+  return true;
+#endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -420,7 +450,7 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   }
 
   if (!regional_capabilities_service_
-          ->IsChoiceScreenCompatibleWithCurrentLocation()) {
+           ->IsChoiceScreenCompatibleWithCurrentLocation()) {
     return SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation;
   }
 
@@ -837,11 +867,10 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
 
   // -- Stage 3: Optional program-controlled DSP checks
 
-  // 3.1: Check account eligibility based on capabilities.
-  if (!eligibility_config.managed_users_can_be_eligible) {
-    // TODO(crbug.com/434646235): Return kAccountNotEligible if the user is signed in,
-    // the capability has been fetched, and its value is false. Fall through to
-    // later checks otherwise.
+  // 3.1: Check eligibility based on account type.
+  if (!AccountCanMakeChoiceScreenChoice(eligibility_config,
+                                        *identity_manager_)) {
+    return ChoiceStatus::kAccountNotEligible;
   }
 
   // 3.2: Is it a non-prepopulated entry, that had to be explicitly user-added?

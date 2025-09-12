@@ -152,6 +152,19 @@ class RegionalCapabilitiesService : public KeyedService {
   // Returns an opaque `int` value representing the program.
   int GetSerializedActiveProgram();
 
+  // Tests can control ProgramSettings in one of two ways:
+  // 1. Overriding the country via the `switches::kSearchEngineChoiceCountry`,
+  //    in which case the program settings are determined based on the full
+  //    country/platform/form factor combination.
+  // 2. Defining the exact program settings via this setter. This allows tests
+  //    more fine-grained control over the particular attributes they are
+  //    testing, and means they are not constrained by the particular platforms
+  //    a particular program is supported on.
+  //
+  // Overriding program settings will prevent restoring the country override,
+  // and vice versa. This is enforced by a CHECK in
+  // `SetActiveProgramSettingsForTesting()`.
+  void SetActiveProgramSettingsForTesting(const ProgramSettings&);
   const ProgramSettings& GetActiveProgramSettingsForTesting();
 
 #if BUILDFLAG(IS_ANDROID)

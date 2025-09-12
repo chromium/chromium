@@ -41,6 +41,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/device_form_factor.h"
 
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+#include "components/regional_capabilities/program_settings.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#endif
+
 namespace {
 
 using country_codes::CountryId;
@@ -50,6 +55,24 @@ using search_engines::SearchEngineChoiceWipeReason;
 using search_engines::SearchEnginesTestEnvironment;
 using search_engines::WipeSearchEngineChoicePrefs;
 using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
+
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+constexpr regional_capabilities::ProgramSettings
+    kSettingsManagedUsersCanBeEligible{
+        .choice_screen_eligibility_config =
+            regional_capabilities::ChoiceScreenEligibilityConfig{
+                .managed_users_can_be_eligible = true,
+            },
+    };
+
+constexpr regional_capabilities::ProgramSettings
+    kSettingsManagedUsersCannotBeEligible{
+        .choice_screen_eligibility_config =
+            regional_capabilities::ChoiceScreenEligibilityConfig{
+                .managed_users_can_be_eligible = false,
+            },
+    };
+#endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 
 class KeywordsDatabaseHolder {
  public:
@@ -504,6 +527,100 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   // suppressed before evaluating the dynamic conditions.
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+class SearchEngineChoiceEligibilityOverriddenProgramSettingsTest
+    : public SearchEngineChoiceEligibilityTest {
+ public:
+  SearchEngineChoiceEligibilityOverriddenProgramSettingsTest() {
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kSearchEngineChoiceCountry);
+  }
+
+  void SetProgram(
+      const regional_capabilities::ProgramSettings& program_settings) {
+    regional_capabilities_service().SetActiveProgramSettingsForTesting(
+        program_settings);
+  }
+
+  void SignIn(signin::Tribool can_make_choice_capability) {
+    AccountInfo account_info =
+        search_engines_test_environment_->identity_test_env()
+            .MakePrimaryAccountAvailable("test@example.com",
+                                         signin::ConsentLevel::kSignin);
+
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    switch (can_make_choice_capability) {
+      case signin::Tribool::kTrue:
+        mutator.set_can_make_chrome_search_engine_choice_screen_choice(true);
+        break;
+      case signin::Tribool::kFalse:
+        mutator.set_can_make_chrome_search_engine_choice_screen_choice(false);
+        break;
+      case signin::Tribool::kUnknown:
+        // Do nothing.
+        break;
+    }
+    search_engines_test_environment_->identity_test_env()
+        .UpdateAccountInfoForAccount(account_info);
+  }
+};
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCanBeEligible_SignedOut_Eligible) {
+  SetProgram(kSettingsManagedUsersCanBeEligible);
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCannotBeEligible_SignedOut_Eligible) {
+  SetProgram(kSettingsManagedUsersCannotBeEligible);
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCannotBeEligible_SignedInCapabilityUnknown_Eligible) {
+  SetProgram(kSettingsManagedUsersCannotBeEligible);
+  SignIn(/*can_make_choice_capability=*/signin::Tribool::kUnknown);
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCannotBeEligible_SignedInCapabilityTrue_Eligible) {
+  SetProgram(kSettingsManagedUsersCannotBeEligible);
+  SignIn(/*can_make_choice_capability=*/signin::Tribool::kTrue);
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCannotBeEligible_SignedInCapabilityFalse_NotEligible) {
+  SetProgram(kSettingsManagedUsersCannotBeEligible);
+  SignIn(/*can_make_choice_capability=*/signin::Tribool::kFalse);
+
+  EXPECT_EQ(
+      GetStaticConditions(),
+      IfSupported(SearchEngineChoiceScreenConditions::kAccountNotEligible));
+  EXPECT_EQ(
+      GetDynamicConditions(),
+      IfSupported(SearchEngineChoiceScreenConditions::kAccountNotEligible));
+}
+#endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 
 // Specs for a multi-run test. Defines changes to on-device prefs, actions on
 // services, and expectation checks.
