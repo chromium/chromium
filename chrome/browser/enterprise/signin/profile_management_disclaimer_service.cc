@@ -48,9 +48,10 @@
 
 ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
     Profile* profile)
-    : profile_(*profile), state_(std::make_unique<ResetableState>()) {
-  CHECK(base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer));
-
+    : profile_(*profile),
+      state_(std::make_unique<ResetableState>()),
+      skip_automatic_disclaimer_(!base::FeatureList::IsEnabled(
+          switches::kEnforceManagementDisclaimer)) {
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
 
@@ -161,6 +162,16 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
+  // If there is no refresh token, we cannot register for policy updates.
+  // Wait for it to be updated.
+  if (!GetIdentityManager()->HasAccountWithRefreshToken(account_id)) {
+    state_->refresh_token_wait_timeout.Start(
+        FROM_HERE, base::Seconds(5),
+        base::BindOnce(&ProfileManagementDisclaimerService::Reset,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Account not managed, nothing to do.
   if (!signin::TriboolToBoolOrDie(info.IsManaged())) {
     Reset();
@@ -256,6 +267,9 @@ void ProfileManagementDisclaimerService::Reset() {
 
 void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  if (skip_automatic_disclaimer_) {
+    return;
+  }
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
@@ -288,8 +302,34 @@ void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
                                           state_->access_point);
 }
 
+void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (skip_automatic_disclaimer_ && state_->account_id.empty()) {
+    return;
+  }
+  if (state_->access_point == signin_metrics::AccessPoint::kUnknown) {
+    return;
+  }
+  // This would most likely happen at startup after all refresh tokens are
+  // loaded.
+  if (state_->account_id.empty() &&
+      GetPrimaryAccountInfo().account_id != account_info.account_id) {
+    return;
+  }
+  if (!state_->account_id.empty() &&
+      account_info.account_id != state_->account_id) {
+    return;
+  }
+  MaybeShowEnterpriseManagementDisclaimer(account_info.account_id,
+                                          state_->access_point);
+  state_->refresh_token_wait_timeout.Stop();
+}
+
 void ProfileManagementDisclaimerService::OnBrowserSetLastActive(
     Browser* browser) {
+  if (skip_automatic_disclaimer_ && state_->account_id.empty()) {
+    return;
+  }
   if (browser->profile() != &profile_.get()) {
     return;
   }

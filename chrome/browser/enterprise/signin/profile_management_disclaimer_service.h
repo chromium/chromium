@@ -84,6 +84,7 @@ class ProfileManagementDisclaimerService
 
     // Timeout for waiting for full information to be available.
     base::OneShotTimer extended_account_info_wait_timeout;
+    base::OneShotTimer refresh_token_wait_timeout;
 
     std::unique_ptr<ManagedProfileCreationController>
         profile_creation_controller;
@@ -137,6 +138,8 @@ class ProfileManagementDisclaimerService
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
@@ -148,6 +151,7 @@ class ProfileManagementDisclaimerService
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
   bool enable_management_disclaimer_ = true;
+  bool skip_automatic_disclaimer_ = false;
 
   std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
       policy_fetch_tracker_by_account_id_;
