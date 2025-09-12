@@ -12,7 +12,6 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -28,7 +27,6 @@
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -60,10 +58,8 @@ class AccessCodeCastIntegrationBrowserTest
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context);
 
-  // Makes user signed-in with the stub account's email and sets the
-  // |consent_level| for that account.
-  void SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel consent_level,
-                                           Profile* profile,
+  // Makes user signed-in with the stub account's email.
+  void SetUpPrimaryAccountWithHostedDomain(Profile* profile,
                                            bool sign_in_account = true);
 
   void EnableAccessCodeCasting();
@@ -148,11 +144,6 @@ class AccessCodeCastIntegrationBrowserTest
 
   MockCastMediaSinkServiceImpl* mock_cast_media_sink_service_impl() {
     return impl_;
-  }
-
-  syncer::TestSyncService* sync_service(Profile* profile) {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile));
   }
 
   static constexpr char kAccessCodeCastNewDeviceScreenplayTag[] =

@@ -23,6 +23,7 @@
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/backoff_entry.h"
 
 namespace media_router {
@@ -104,6 +105,10 @@ class AccessCodeCastSinkService : public KeyedService,
   void SetTaskRunnerForTesting(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
     task_runner_ = task_runner;
+  }
+
+  signin::IdentityManager* GetIdentityManager() const {
+    return identity_manager_;
   }
 
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);

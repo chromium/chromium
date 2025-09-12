@@ -24,7 +24,6 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -76,7 +75,6 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   void SetSinkIdForTesting(const MediaSink::Id& sink_id) { sink_id_ = sink_id; }
   void SetSinkCallbackForTesting(AddSinkCallback callback);
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
-  void SetSyncServiceForTesting(syncer::SyncService* sync_service);
 
   MediaRouteStarter* GetMediaRouteStarterForTesting() {
     return media_route_starter_.get();
@@ -124,10 +122,10 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   // Checks to see that if route already exists for the given media sink id.
   bool HasActiveRoute(const MediaSink::Id& sink_id);
 
-  // A check to verify that sync is enabled for the given profile. This is
-  // necessary to check before the access code casting discovery flow, since it
-  // will fail to make a server call if sync is not enabled.
-  bool IsAccountSyncEnabled();
+  // A check to verify that the primary account is signed in. This is necessary
+  // to check before the access code casting discovery flow, since it will fail
+  // to make a server call if the user is not signed in.
+  bool IsPrimaryAccountSignedIn();
 
   mojo::Remote<access_code_cast::mojom::Page> page_;
   mojo::Receiver<access_code_cast::mojom::PageHandler> receiver_;
@@ -140,7 +138,6 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   raw_ptr<AccessCodeCastSinkService, DanglingUntriaged>
       access_code_sink_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<syncer::SyncService> sync_service_;
 
   AddSinkCallback add_sink_callback_;
 

@@ -89,6 +89,8 @@ extern const char kCloudSearchQueryOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kDiscoveryEngineCompleteQueryOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kDiscoveryOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kGeminiOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kChromeMemexOAuth2Scope[];

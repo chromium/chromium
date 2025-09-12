@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -247,7 +248,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<std::string> discovery_scopes;
-  discovery_scopes.push_back(kDiscoveryOAuth2Scope);
+  discovery_scopes.push_back(GaiaConstants::kDiscoveryOAuth2Scope);
 
   // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
   //     removed. See ConsentLevel::kSync documentation for details.

@@ -205,6 +205,10 @@ const char kCloudSearchQueryOAuth2Scope[] =
 const char kDiscoveryEngineCompleteQueryOAuth2Scope[] =
     "https://www.googleapis.com/auth/discoveryengine.complete_query";
 
+// OAuth2 scope for Access Code Cast.
+const char kDiscoveryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast-edu-messaging";
+
 // OAuth2 scope for Gemini app.
 const char kGeminiOAuth2Scope[] = "https://www.googleapis.com/auth/gemini";
 

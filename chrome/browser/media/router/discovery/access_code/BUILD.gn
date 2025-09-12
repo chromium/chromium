@@ -76,6 +76,7 @@ if (!is_android) {
       "//components/signin/public/identity_manager",
       "//components/user_manager",
       "//content/public/browser",
+      "//google_apis",
       "//services/preferences/public/cpp",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]

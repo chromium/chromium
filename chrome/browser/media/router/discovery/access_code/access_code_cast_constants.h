@@ -11,7 +11,6 @@ void EnableCommandLineSupportForTesting();
 
 extern const char kGetMethod[];
 extern const char kContentType[];
-extern const char kDiscoveryOAuth2Scope[];
 
 extern const char kDefaultDiscoveryEndpoint[];
 

@@ -28,8 +28,6 @@ void EnableCommandLineSupportForTesting() {
 
 constexpr char kGetMethod[] = "GET";
 constexpr char kContentType[] = "application/json; charset=UTF-8";
-constexpr char kDiscoveryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cast-edu-messaging";
 
 constexpr char kDefaultDiscoveryEndpoint[] =
     "https://castedumessaging-pa.googleapis.com";

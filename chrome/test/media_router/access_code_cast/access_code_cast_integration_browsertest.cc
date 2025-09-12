@@ -88,10 +88,6 @@ class CloseObserver : public content::WebContentsObserver {
   base::RunLoop close_loop_;
 };
 
-std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
-  return std::make_unique<syncer::TestSyncService>();
-}
-
 }  // namespace
 
 namespace media_router {
@@ -135,9 +131,6 @@ void AccessCodeCastIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
 
 void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
-  SyncServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&CreateTestSyncService));
-
   media_router_ = static_cast<TestMediaRouter*>(
       media_router::MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
           context, base::BindRepeating(&TestMediaRouter::Create)));
@@ -226,18 +219,17 @@ void AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread() {
 }
 
 void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
-    signin::ConsentLevel consent_level,
     Profile* profile,
     bool sign_in_account) {
   ASSERT_TRUE(identity_test_environment_);
   // Ensure that the stub user is signed in.
   identity_test_environment_->MakePrimaryAccountAvailable(
-      user_manager::kStubUserEmail, consent_level);
+      user_manager::kStubUserEmail, signin::ConsentLevel::kSync);
 
   if (sign_in_account) {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile),
-        user_manager::kStubUserEmail, consent_level);
+        user_manager::kStubUserEmail, signin::ConsentLevel::kSync);
   }
 
   identity_test_environment_->SetAutomaticIssueOfAccessTokens(true);
@@ -246,16 +238,6 @@ void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
   AccessCodeCastSinkServiceFactory::GetForProfile(profile)
       ->SetIdentityManagerForTesting(
           identity_test_environment_->identity_manager());
-
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      sync_service(profile)->SetPersistentAuthError();
-      break;
-    case signin::ConsentLevel::kSync:
-      sync_service(profile)->SetMaxTransportState(
-          syncer::SyncService::TransportState::ACTIVE);
-      break;
-  }
 
   base::RunLoop().RunUntilIdle();
 }

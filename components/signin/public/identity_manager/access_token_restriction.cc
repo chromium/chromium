@@ -116,6 +116,9 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // Required by Omnibox / EnterpriseSearchAggregatorSuggestionsService.
       GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope,
 
+      // Required by Access Code Cast.
+      GaiaConstants::kDiscoveryOAuth2Scope,
+
       // Used by AdvancedProtectionStatusManager, as well as internally by the
       // identity system.
       GaiaConstants::kOAuth1LoginScope,

@@ -53,8 +53,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -117,8 +116,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   // Set the saved devices pref value.
   browser()->profile()->GetPrefs()->Set(

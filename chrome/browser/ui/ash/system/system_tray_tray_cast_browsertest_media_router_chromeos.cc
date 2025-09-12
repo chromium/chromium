@@ -425,7 +425,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   SetMockOpenChannelCallbackResponse(true);
 
   SetUpPrimaryAccountWithHostedDomain(
-      signin::ConsentLevel::kSync,
       ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;
@@ -484,7 +483,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   SetMockOpenChannelCallbackResponse(true);
 
   SetUpPrimaryAccountWithHostedDomain(
-      signin::ConsentLevel::kSync,
       ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;
