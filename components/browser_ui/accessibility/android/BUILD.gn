@@ -47,6 +47,7 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSeekbarPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
   ]
 
@@ -138,6 +139,7 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.components.browser_ui.accessibility"
 
   sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsSeekbarTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java",
   ]

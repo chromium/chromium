@@ -72,14 +72,19 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.accessibility_preferences);
 
-        mPageZoomDefaultZoomPref = findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        // TODO(crbug.com/439911511): Add PageZoomPreference directly to the xml file instead.
+        // Create the page zoom preference.
+        mPageZoomDefaultZoomPref = new PageZoomSeekbarPreference(getContext(), null);
+        mPageZoomDefaultZoomPref.setKey(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        mPageZoomDefaultZoomPref.setOrder(-1);
+        getPreferenceScreen().addPreference(mPageZoomDefaultZoomPref);
+
         mPageZoomAlwaysShowPref = findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
-        mPageZoomIncludeOSAdjustment =
-                findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
+        mPageZoomIncludeOSAdjustment = findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
         // Set the initial values for the page zoom settings, and set change listeners.
         mPageZoomDefaultZoomPref.setInitialValue(
-                PageZoomUtils.getDefaultZoomAsSeekBarValue(mDelegate.getBrowserContextHandle()));
+                PageZoomUtils.getDefaultZoomAsBarValue(mDelegate.getBrowserContextHandle()));
         mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
         mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
         mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
@@ -173,8 +178,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     readerModeEnabled);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
             mPageZoomLatestDefaultZoomPrefValue =
-                    PageZoomUtils.convertSeekBarValueToZoomLevel((Integer) newValue);
-            PageZoomUtils.setDefaultZoomBySeekBarValue(
+                    PageZoomUtils.convertBarValueToZoomLevel((Integer) newValue);
+            PageZoomUtils.setDefaultZoomByBarValue(
                     mDelegate.getBrowserContextHandle(), (Integer) newValue);
         } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);

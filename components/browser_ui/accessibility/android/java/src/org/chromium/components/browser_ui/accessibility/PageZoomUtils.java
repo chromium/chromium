@@ -32,11 +32,11 @@ import java.util.Arrays;
  * "zoom factor" = the internal number used by HostZoomMap, acts as the exponent. (double)
  * "zoom level" = the percentage for the zoom that is presented externally to the user. (double)
  * "zoom string" = the string that is actually presented to the user for zoom percentage. (String)
- * "zoom seek value" = an arbitrary int to map the factor to an integer value for a SeekBar. (int)
+ * "zoom bar value" = an arbitrary int to map the factor to an integer value for the bar. (int)
  *
  * For example, some common zoom values are:
  *
- *        string        factor      level      seek value
+ *        string        factor      level      bar value
  *          50%     |   -3.8    |   0.50    |      0      |
  *         100%     |    0.0    |   1.00    |     50      |
  *         250%     |   5.03    |   2.50    |    200      |
@@ -45,13 +45,10 @@ import java.util.Arrays;
  */
 @NullMarked
 public class PageZoomUtils {
-    // The default value for zoom that user can change in the accessibility settings page.
-    public static final int PAGE_ZOOM_DEFAULT_SEEK_VALUE = convertZoomFactorToSeekBarValue(0.0);
+    // The max value for the bar to help with rounding effects (not shown to user).
+    public static final int PAGE_ZOOM_MAXIMUM_BAR_VALUE = 250;
 
-    // The max value for the seek bar to help with rounding effects (not shown to user).
-    public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 250;
-
-    // The max value for the text size contrast seek bar, used in Smart Zoom feature.
+  // The max value for the text size contrast bar, used in Smart Zoom feature.
     public static final int TEXT_SIZE_CONTRAST_MAX_LEVEL = 100;
 
     // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0).
@@ -61,25 +58,25 @@ public class PageZoomUtils {
     // The timeout for when to dismiss the slider from the last user interaction
     protected static final long LAST_INTERACTION_DISMISSAL = 5000; // 5 seconds = 5 * 1000
 
-    // The range of user-readable zoom values at which the seek bar should snap to the
+    // The range of user-readable zoom values at which the bar should snap to the
     // default zoom value, (e.g. 0.03 = range of +/- 3%).
     private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
 
     /**
-     * Seekbars have values 0 to 100 by default. For simplicity, we will keep these values and
-     * convert to the correct zoom factor under-the-hood. See comment at top of class.
+     * Bars have values 0 to 100 by default. For simplicity, we will keep these values and convert
+     * to the correct zoom factor under-the-hood. See comment at top of class.
      *
-     * @param newValue  int value of the seekbar.
+     * @param newValue int value of the bar.
      * @return double
      */
-    public static double convertSeekBarValueToZoomFactor(int newValue) {
+    public static double convertBarValueToZoomFactor(int newValue) {
         // Zoom levels are from |PAGE_ZOOM_MINIMUM_ZOOM_LEVEL| to |PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL|,
-        // and these should map linearly to the seekbar's 0 - 100 range.
-        float seekbarPercent = (float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
+        // and these should map linearly to the bar's 0 - 100 range.
+        float barPercent = (float) newValue / PAGE_ZOOM_MAXIMUM_BAR_VALUE;
         float chosenZoomLevel =
                 PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
                         + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
-                                * seekbarPercent);
+                                * barPercent);
 
         // The zoom level maps internally to a zoom factor, which is the exponent that
         // |kTextSizeMultiplierRatio| = 1.2 is raised to. For example, 1.2^-3.8 = 0.50, or
@@ -92,35 +89,35 @@ public class PageZoomUtils {
     }
 
     /**
-     * This method does the reverse of the above method.
-     * Seekbars have values 0 to 100 by default. For simplicity, we will keep these values and
-     * convert to the correct zoom factor under-the-hood.
+     * This method does the reverse of the above method. Bars have values 0 to 100 by default. For
+     * simplicity, we will keep these values and convert to the correct zoom factor under-the-hood.
      *
-     * @param zoomFactor    zoom factor to get seek bar value for.
+     * @param zoomFactor zoom factor to get bar value for.
      * @return int
      */
-    public static int convertZoomFactorToSeekBarValue(double zoomFactor) {
-        // To get to a seekbar value from an index, raise the base (1.2) to the given |zoomFactor|
+    public static int convertZoomFactorToBarValue(double zoomFactor) {
+        // To get to a bar value from an index, raise the base (1.2) to the given |zoomFactor|
         // exponent to get the zoom level. Find where this level sits proportionately between the
-        // min and max level, and use that percentage as the corresponding seek value.
+        // min and max level, and use that percentage as the corresponding bar value.
         double zoomLevel = convertZoomFactorToZoomLevel(zoomFactor);
         double zoomLevelPercent =
                 (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
                         / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
 
-        return (int) Math.round(PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE * zoomLevelPercent);
+        return (int) Math.round(PAGE_ZOOM_MAXIMUM_BAR_VALUE * zoomLevelPercent);
     }
 
     /**
-     * This method converts the seekbar value to a zoom level so that the level can be displayed
-     * to the user in a human-readable format, e.g. 1.0, 1.50.
-     * @param newValue      seek bar value to convert to zoom level
+     * This method converts the bar value to a zoom level so that the level can be displayed to the
+     * user in a human-readable format, e.g. 1.0, 1.50.
+     *
+     * @param newValue bar value to convert to zoom level
      * @return double
      */
-    public static double convertSeekBarValueToZoomLevel(int newValue) {
+    public static double convertBarValueToZoomLevel(int newValue) {
         return PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
                 + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
-                        * ((float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE));
+                        * ((float) newValue / PAGE_ZOOM_MAXIMUM_BAR_VALUE));
     }
 
     /**
@@ -137,36 +134,38 @@ public class PageZoomUtils {
     }
 
     /**
-     * Returns true if the given seek bar value falls within the range at which
-     * the seek bar should be snapped to the default global zoom level. Returns false otherwise.
-     * @param seekBarValue  the seek bar value.
+     * Returns true if the given bar value falls within the range at which the bar should be snapped
+     * to the default global zoom level. Returns false otherwise.
+     *
+     * @param barValue the bar value.
      * @param defaultZoomFactor the default zoom factor to compare against.
      * @return boolean
      */
-    public static boolean shouldSnapSeekBarValueToDefaultZoom(
-            int seekBarValue, double defaultZoomFactor) {
-        double currentZoomLevel = convertSeekBarValueToZoomLevel(seekBarValue);
+    public static boolean shouldSnapBarValueToDefaultZoom(int barValue, double defaultZoomFactor) {
+        double currentZoomLevel = convertBarValueToZoomLevel(barValue);
         double defaultZoomLevel = convertZoomFactorToZoomLevel(defaultZoomFactor);
         return MathUtils.roundTwoDecimalPlaces(Math.abs(currentZoomLevel - defaultZoomLevel))
                 <= PageZoomUtils.DEFAULT_ZOOM_LEVEL_SNAP_RANGE;
     }
 
     /**
-     * Set a new user choice for default zoom level given a SeekBar value.
-     * This is part of the Profile and is set in Desktop through Settings > Appearance.
-     * @param newValue int      The new zoom by seek bar value
+     * Set a new user choice for default zoom level given a Bar value. This is part of the Profile
+     * and is set in Desktop through Settings > Appearance.
+     *
+     * @param newValue int The new zoom by bar value
      */
-    public static void setDefaultZoomBySeekBarValue(BrowserContextHandle context, int newValue) {
-        setDefaultZoomLevel(context, convertSeekBarValueToZoomFactor(newValue));
+    public static void setDefaultZoomByBarValue(BrowserContextHandle context, int newValue) {
+        setDefaultZoomLevel(context, convertBarValueToZoomFactor(newValue));
     }
 
     /**
-     * Returns the current user choice for default zoom level as a seek bar value.
-     * This is part of the Profile and is set in Desktop through Settings > Appearance.
+     * Returns the current user choice for default zoom level as a bar value. This is part of the
+     * Profile and is set in Desktop through Settings > Appearance.
+     *
      * @return int
      */
-    public static int getDefaultZoomAsSeekBarValue(BrowserContextHandle context) {
-        return convertZoomFactorToSeekBarValue(getDefaultZoomLevel(context));
+    public static int getDefaultZoomAsBarValue(BrowserContextHandle context) {
+        return convertZoomFactorToBarValue(getDefaultZoomLevel(context));
     }
 
     /**

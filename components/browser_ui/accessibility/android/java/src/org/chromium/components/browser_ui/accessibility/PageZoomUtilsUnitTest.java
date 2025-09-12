@@ -28,14 +28,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageZoomUtilsUnitTest {
     // Error messages
-    private static final String SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE =
-            "Failure to correctly convert seek bar value to zoom factor.";
-    private static final String ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE =
-            "Failure to correctly convert zoom factor to seek bar value.";
-    private static final String SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE =
-            "Failure to correctly convert seek bar value to zoom level.";
-    private static final String SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE =
-            "Failure to correctly return whether to snap seek bar value to default zoom.";
+    private static final String BAR_VALUE_TO_ZOOM_FACTOR_FAILURE =
+            "Failure to correctly convert bar value to zoom factor.";
+    private static final String ZOOM_FACTOR_TO_BAR_VALUE_FAILURE =
+            "Failure to correctly convert zoom factor to bar value.";
+    private static final String BAR_VALUE_TO_ZOOM_LEVEL_FAILURE =
+            "Failure to correctly convert bar value to zoom level.";
+    private static final String SHOULD_SNAP_BAR_VALUE_TO_DEFAULT_ZOOM_FAILURE =
+            "Failure to correctly return whether to snap bar value to default zoom.";
 
     private static final String GET_NEXT_INDEX_DECREASE_FAILURE =
             "Failure to get next index in decreasing direction.";
@@ -43,11 +43,10 @@ public class PageZoomUtilsUnitTest {
             "Failure to get next index in increasing direction.";
 
     private static final String SET_DEFAULT_FAILURE_NO_JNI =
-            "Failure in set default zoom by seekbar value. Expected 1 JNI call but none occurred.";
+            "Failure in set default zoom by bar value. Expected 1 JNI call but none occurred.";
     private static final String GET_DEFAULT_FAILURE_NO_JNI =
-            "Failure in get default zoom as seekbar value. Expected 1 JNI call but none occurred.";
-    private static final String GET_DEFAULT_FAILURE =
-            "Failure to get default zoom as seekbar value.";
+            "Failure in get default zoom as bar value. Expected 1 JNI call but none occurred.";
+    private static final String GET_DEFAULT_FAILURE = "Failure to get default zoom as bar value.";
 
     private static final String SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE =
             "Failure in should show zoom menu item method. Expected false but returned true.";
@@ -66,79 +65,79 @@ public class PageZoomUtilsUnitTest {
     }
 
     @Test
-    public void testConvertSeekBarValueToZoomFactor() {
+    public void testConvertBarValueToZoomFactor() {
         // Cached zoom factor
         Assert.assertEquals(
-                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                BAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
                 2.22,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(100),
+                PageZoomUtils.convertBarValueToZoomFactor(100),
                 0.0001);
 
         // Non-cached zoom factor
         Assert.assertEquals(
-                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                BAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
                 2.26,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(101),
+                PageZoomUtils.convertBarValueToZoomFactor(101),
                 0.0001);
     }
 
     @Test
-    public void testConvertZoomFactorToSeekBarValue() {
+    public void testConvertZoomFactorToBarValue() {
         // Cached zoom factor
         Assert.assertEquals(
-                ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE,
+                ZOOM_FACTOR_TO_BAR_VALUE_FAILURE,
                 100,
-                PageZoomUtils.convertZoomFactorToSeekBarValue(2.22));
+                PageZoomUtils.convertZoomFactorToBarValue(2.22));
 
         // Non-cached zoom factor
         Assert.assertEquals(
-                ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE,
+                ZOOM_FACTOR_TO_BAR_VALUE_FAILURE,
                 101,
-                PageZoomUtils.convertZoomFactorToSeekBarValue(2.26));
+                PageZoomUtils.convertZoomFactorToBarValue(2.26));
     }
 
     @Test
-    public void testConvertSeekBarValueToZoomLevel() {
+    public void testConvertBarValueToZoomLevel() {
         // Cached zoom level
         Assert.assertEquals(
-                SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE,
+                BAR_VALUE_TO_ZOOM_LEVEL_FAILURE,
                 1.5,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(100),
+                PageZoomUtils.convertBarValueToZoomLevel(100),
                 0.0001);
 
         // Non-cached zoom level
         Assert.assertEquals(
-                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                BAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
                 1.51,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(101),
+                PageZoomUtils.convertBarValueToZoomLevel(101),
                 0.0001);
     }
 
     @Test
-    public void testShouldSnapSeekBarValueToDefaultZoom() {
+    public void testShouldSnapBarValueToDefaultZoom() {
         Assert.assertTrue(
-                SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
-                PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(47, 0.0));
+                SHOULD_SNAP_BAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+                PageZoomUtils.shouldSnapBarValueToDefaultZoom(47, 0.0));
 
         Assert.assertFalse(
-                SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
-                PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(45, 0.0));
+                SHOULD_SNAP_BAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+                PageZoomUtils.shouldSnapBarValueToDefaultZoom(45, 0.0));
     }
 
     @Test
-    public void testSetDefaultZoomBySeekbarValue() {
-        PageZoomUtils.setDefaultZoomBySeekBarValue(mContextMock, 110);
+    public void testSetDefaultZoomByBarValue() {
+        PageZoomUtils.setDefaultZoomByBarValue(mContextMock, 110);
         verify(mHostZoomMapMock, times(1).description(SET_DEFAULT_FAILURE_NO_JNI))
                 .setDefaultZoomLevel(mContextMock, 2.58);
     }
 
     @Test
-    public void testGetDefaultZoomBySeekbarValue() {
+    public void testGetDefaultZoomByBarValue() {
         when(mHostZoomMapMock.getDefaultZoomLevel(mContextMock)).thenReturn(2.58);
         Assert.assertEquals(
                 GET_DEFAULT_FAILURE,
                 110,
-                PageZoomUtils.getDefaultZoomAsSeekBarValue(mContextMock),
+                PageZoomUtils.getDefaultZoomAsBarValue(mContextMock),
                 0.0001);
         verify(mHostZoomMapMock, times(1).description(GET_DEFAULT_FAILURE_NO_JNI))
                 .getDefaultZoomLevel(mContextMock);

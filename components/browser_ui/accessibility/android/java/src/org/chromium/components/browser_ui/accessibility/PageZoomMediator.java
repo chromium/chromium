@@ -4,8 +4,8 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
-import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_BAR_VALUE;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToBarValue;
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
@@ -36,8 +36,8 @@ public class PageZoomMediator {
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
         mModel.set(PageZoomProperties.RESET_ZOOM_CALLBACK, this::handleResetClicked);
-        mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
-        mModel.set(PageZoomProperties.MAXIMUM_SEEK_VALUE, PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
+        mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleBarValueChanged);
+        mModel.set(PageZoomProperties.MAXIMUM_BAR_VALUE, PAGE_ZOOM_MAXIMUM_BAR_VALUE);
 
         // Update the stored system font scale based on OS-level configuration. |this| will be
         // re-constructed after configuration changes, so this will be up-to-date for this session.
@@ -94,20 +94,19 @@ public class PageZoomMediator {
 
     @VisibleForTesting
     void handleResetClicked(@Nullable Void unused) {
-        // Reset as if the user moved the seekbar to the default zoom value
-        handleSeekBarValueChanged(
-                PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor));
+        // Reset as if the user moved the bar to the default zoom value
+        handleBarValueChanged(PageZoomUtils.convertZoomFactorToBarValue(mDefaultZoomFactor));
     }
 
-    void handleSeekBarValueChanged(int newValue) {
-        if (PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
-            newValue = PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor);
+    void handleBarValueChanged(int newValue) {
+        if (PageZoomUtils.shouldSnapBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
+            newValue = PageZoomUtils.convertZoomFactorToBarValue(mDefaultZoomFactor);
         }
 
-        setZoomLevel(mWebContents, PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
-        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, newValue);
-        updateButtonStates(PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
-        mLatestZoomValue = PageZoomUtils.convertSeekBarValueToZoomLevel(newValue);
+        setZoomLevel(mWebContents, PageZoomUtils.convertBarValueToZoomFactor(newValue));
+        mModel.set(PageZoomProperties.CURRENT_BAR_VALUE, newValue);
+        updateButtonStates(PageZoomUtils.convertBarValueToZoomFactor(newValue));
+        mLatestZoomValue = PageZoomUtils.convertBarValueToZoomLevel(newValue);
     }
 
     @Initializer
@@ -115,10 +114,10 @@ public class PageZoomMediator {
         // We must first fetch the current zoom factor for the given web contents.
         double currentZoomFactor = getZoomLevel(mWebContents);
 
-        // The seekbar should start at the seek value that corresponds to this zoom factor.
+        // The bar should start at the bar value that corresponds to this zoom factor.
         mModel.set(
-                PageZoomProperties.CURRENT_SEEK_VALUE,
-                convertZoomFactorToSeekBarValue(currentZoomFactor));
+                PageZoomProperties.CURRENT_BAR_VALUE,
+                convertZoomFactorToBarValue(currentZoomFactor));
 
         mDefaultZoomFactor = mModel.get(PageZoomProperties.DEFAULT_ZOOM_FACTOR);
 
@@ -130,11 +129,11 @@ public class PageZoomMediator {
 
     private void handleIndexChanged(int index) {
         double zoomFactor = AVAILABLE_ZOOM_FACTORS[index];
-        int seekBarValue = PageZoomUtils.convertZoomFactorToSeekBarValue(zoomFactor);
-        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, seekBarValue);
+        int barValue = PageZoomUtils.convertZoomFactorToBarValue(zoomFactor);
+        mModel.set(PageZoomProperties.CURRENT_BAR_VALUE, barValue);
         setZoomLevel(mWebContents, zoomFactor);
         updateButtonStates(zoomFactor);
-        mLatestZoomValue = PageZoomUtils.convertSeekBarValueToZoomLevel(seekBarValue);
+        mLatestZoomValue = PageZoomUtils.convertBarValueToZoomLevel(barValue);
     }
 
     private void updateButtonStates(double newZoomFactor) {

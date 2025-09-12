@@ -31,8 +31,8 @@ class PageZoomProperties {
     static final WritableBooleanPropertyKey INCREASE_ZOOM_ENABLED =
             new WritableBooleanPropertyKey();
 
-    static final WritableIntPropertyKey MAXIMUM_SEEK_VALUE = new WritableIntPropertyKey();
-    static final WritableIntPropertyKey CURRENT_SEEK_VALUE = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey MAXIMUM_BAR_VALUE = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey CURRENT_BAR_VALUE = new WritableIntPropertyKey();
 
     static final WritableObjectPropertyKey<Double> DEFAULT_ZOOM_FACTOR =
             new WritableObjectPropertyKey<>();
@@ -45,8 +45,8 @@ class PageZoomProperties {
         USER_INTERACTION_CALLBACK,
         DECREASE_ZOOM_ENABLED,
         INCREASE_ZOOM_ENABLED,
-        MAXIMUM_SEEK_VALUE,
-        CURRENT_SEEK_VALUE,
+        MAXIMUM_BAR_VALUE,
+        CURRENT_BAR_VALUE,
         DEFAULT_ZOOM_FACTOR
     };
 }

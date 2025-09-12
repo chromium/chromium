@@ -6,11 +6,6 @@ found in the LICENSE file.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <org.chromium.components.browser_ui.accessibility.PageZoomPreference
-        android:key="page_zoom_default_zoom"
-        android:selectable="false" />
-
     <Preference
         android:key="zoom_info"
         android:title="@string/zoom_info_preference_title"/>

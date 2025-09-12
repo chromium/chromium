@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.accessibility;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -28,7 +27,6 @@ import android.provider.Settings;
 import android.view.View;
 
 import androidx.preference.Preference;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -50,7 +48,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -60,7 +57,6 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -76,7 +72,6 @@ import org.chromium.ui.widget.ChromeImageButton;
 })
 public class AccessibilitySettingsTest {
     private AccessibilitySettings mAccessibilitySettings;
-    private PageZoomPreference mPageZoomPref;
 
     @Rule
     public BlankUiTestActivitySettingsTestRule mSettingsActivityTestRule =
@@ -210,65 +205,6 @@ public class AccessibilitySettingsTest {
                 });
     }
 
-    // Tests related to Page Zoom feature.
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_decreaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal > mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(0);
-                });
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_increaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal < mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_increaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(
-                            PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
-                });
-        onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_zoomSliderUpdatesValue() {
-        getPageZoomPref();
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
-        Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
     // Tests related to Page Zoom Enhancements (fast-follow) feature.
 
     @Test
@@ -334,116 +270,6 @@ public class AccessibilitySettingsTest {
                 osLevelAdjustmentPref.isVisible());
     }
 
-    // Tests related to the Smart Zoom feature.
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_smartZoom_hiddenWhenDisabled() {
-        getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_GONE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_visibleWhenEnabled() {
-        getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_VISIBLE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(20);
-                });
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).perform(click());
-        Assert.assertTrue(
-                startingVal > mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(0);
-                });
-        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_increaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_increase_zoom_button)).perform(click());
-        Assert.assertTrue(
-                startingVal < mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(
-                            PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
-                });
-        onView(withId(R.id.text_size_contrast_increase_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
-        getPageZoomPref();
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_slider)).perform(ViewActions.swipeRight());
-        Assert.assertNotEquals(
-                startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
     @Test
     @SmallTest
     @Feature({"Accessibility"})
@@ -479,13 +305,4 @@ public class AccessibilitySettingsTest {
                     description.appendText("View was enabled, but should have been disabled.");
                 }
             };
-
-    private void getPageZoomPref() {
-        mPageZoomPref =
-                (PageZoomPreference)
-                        mAccessibilitySettings.findPreference(
-                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
-        Assert.assertNotNull(mPageZoomPref);
-        Assert.assertTrue("Page Zoom pref should be visible.", mPageZoomPref.isVisible());
-    }
 }
