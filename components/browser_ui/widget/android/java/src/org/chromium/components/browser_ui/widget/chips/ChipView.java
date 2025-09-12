@@ -188,6 +188,7 @@ public class ChipView extends LinearLayout {
         a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
+        mStartIcon.setId(R.id.chip_view_start_icon);
         mStartIcon.setLayoutParams(new LayoutParams(iconWidth, iconHeight));
         addView(mStartIcon);
 
@@ -200,6 +201,7 @@ public class ChipView extends LinearLayout {
         int loadingViewHeightPadding = (iconHeight - loadingViewSize) / 2;
         int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
         mLoadingView = new LoadingView(getContext());
+        mLoadingView.setId(R.id.chip_view_loading_view);
         mLoadingView.setVisibility(GONE);
         mLoadingView.setIndeterminateTintList(
                 ColorStateList.valueOf(
@@ -218,6 +220,7 @@ public class ChipView extends LinearLayout {
 
         mPrimaryText =
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+        mPrimaryText.setId(R.id.chip_view_primary_text);
         mPrimaryText.setTextAppearance(primaryTextAppearance);
 
         // If false fall back to single line defined in XML styles.
@@ -346,6 +349,7 @@ public class ChipView extends LinearLayout {
         if (mEndIconWrapper != null) return;
 
         ChromeImageView endIcon = new ChromeImageView(getContext());
+        endIcon.setId(R.id.chip_view_end_icon);
         endIcon.setImageResource(R.drawable.btn_close);
         ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
 
@@ -375,6 +379,7 @@ public class ChipView extends LinearLayout {
         if (mEndIconWrapper != null) return;
 
         ChromeImageView endIcon = new ChromeImageView(getContext());
+        endIcon.setId(R.id.chip_view_end_icon);
         endIcon.setImageResource(R.drawable.mtrl_dropdown_arrow);
         ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
 
@@ -433,6 +438,7 @@ public class ChipView extends LinearLayout {
             mSecondaryText =
                     new AppCompatTextView(
                             new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+            mSecondaryText.setId(R.id.chip_view_secondary_text);
             mSecondaryText.setTextAppearance(mSecondaryTextAppearanceId);
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.

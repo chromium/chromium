@@ -19,4 +19,11 @@ found in the LICENSE file.
 
     <!-- App Menu -->
     <item type="id" name="app_menu_footer" />
+
+    <!-- ChipView -->
+    <item type="id" name="chip_view_primary_text" />
+    <item type="id" name="chip_view_secondary_text" />
+    <item type="id" name="chip_view_start_icon" />
+    <item type="id" name="chip_view_loading_view" />
+    <item type="id" name="chip_view_end_icon" />
 </resources>
