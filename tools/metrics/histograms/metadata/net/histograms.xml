@@ -697,21 +697,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.DirectoryCreateResult.{Directory}"
+<histogram name="HttpCache.NoVarySearch.DirectoryCreateResult.Dedicated"
     enum="NoVarySearchDirectoryCreateResult" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The result from checking for the existence of the {Directory} directory by
-    net::NoVarySearchCacheStorage. This is logged when an on-the-record
-    NetworkContext is created.
+    The result from trying to ensure the existence of the Cache/No_Vary_Search
+    directory by net::NoVarySearchCacheStorage. This is logged when an
+    on-the-record NetworkContext is created.
 
     Anything other than &quot;Create failed&quot; is good.
   </summary>
-  <token key="Directory">
-    <variant name="NoVarySearch" summary="no-vary-search"/>
-    <variant name="Parent" summary="parent"/>
-  </token>
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.EntriesAddedDuringLoading"
