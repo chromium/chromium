@@ -10,8 +10,7 @@
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_skeleton_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
@@ -143,7 +142,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   AddSameConstraints(_collectionView, self.view);
 }
 
-#pragma mark - HomeCustomizationBackgroundPresetGalleryPickerConsumer
+#pragma mark - HomeCustomizationBackgroundConfigurationConsumer
 
 - (void)setBackgroundCollectionConfigurations:
             (NSArray<BackgroundCollectionConfiguration*>*)
@@ -224,9 +223,8 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   _selectedBackgroundId = itemIdentifier;
 
-  [self.customizationMutator
-      applyBackgroundForConfiguration:_backgroundCustomizationConfigurationMap
-                                          [itemIdentifier]];
+  [self.mutator applyBackgroundForConfiguration:
+                    _backgroundCustomizationConfigurationMap[itemIdentifier]];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -240,7 +238,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   if (backgroundConfiguration &&
       !backgroundConfiguration.thumbnailURL.is_empty()) {
-    [self.galleryMutator
+    [self.mutator
         fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
                                                           .thumbnailURL
                                            completion:^(UIImage* image,

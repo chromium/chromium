@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"

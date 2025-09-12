@@ -12,13 +12,8 @@
 // A consumer protocol for the background picker's action sheet.
 @protocol HomeCustomizationBackgroundPickerActionSheetConsumer
 
-// Returns the UINavigationItem associated with the action sheet..
+// Returns the UINavigationItem associated with the action sheet.
 @property(nonatomic, readonly) UINavigationItem* navigationItem;
-
-// Presentation delegate for background picker UI.
-@property(nonatomic, weak)
-    id<HomeCustomizationBackgroundPickerPresentationDelegate>
-        presentationDelegate;
 
 @end
 

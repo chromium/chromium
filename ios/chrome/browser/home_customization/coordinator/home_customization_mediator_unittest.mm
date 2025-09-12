@@ -9,14 +9,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
-#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
-#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
-#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
-#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
-#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -47,13 +41,6 @@
   _toggleMap = toggleMap;
 }
 
-- (void)
-    populateBackgroundCollectionConfiguration:
-        (BackgroundCollectionConfiguration*)backgroundCollectionConfiguration
-                         selectedBackgroundId:(NSString*)selectedBackgroundId {
-  // No-op for fake implementation.
-}
-
 @end
 
 // Tests for the Home Customization mediator.
@@ -66,21 +53,11 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
     pref_service_ = profile_->GetPrefs();
     discover_feed_visibility_browser_agent_ =
         DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser);
-    customizationService_ =
-        HomeBackgroundCustomizationServiceFactory::GetForProfile(
-            profile_.get());
-    imageFetcherService_ =
-        ImageFetcherServiceFactory::GetForProfile(profile_.get());
-    userUploadedImageManager_ =
-        UserUploadedImageManagerFactory::GetForProfile(profile_.get());
 
-    mediator_ = [[HomeCustomizationMediator alloc]
-                       initWithPrefService:pref_service_
-        discoverFeedVisibilityBrowserAgent:
-            discover_feed_visibility_browser_agent_
-                         backgroundService:customizationService_
-                       imageFetcherService:imageFetcherService_
-                  userUploadedImageManager:userUploadedImageManager_];
+    mediator_ =
+        [[HomeCustomizationMediator alloc] initWithPrefService:pref_service_
+                            discoverFeedVisibilityBrowserAgent:
+                                discover_feed_visibility_browser_agent_];
   }
 
  protected:
@@ -90,12 +67,6 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
       discover_feed_visibility_browser_agent_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<HomeBackgroundCustomizationService, DanglingUntriaged>
-      customizationService_;
-  raw_ptr<image_fetcher::ImageFetcherService, DanglingUntriaged>
-      imageFetcherService_;
-  raw_ptr<UserUploadedImageManager, DanglingUntriaged>
-      userUploadedImageManager_;
 };
 
 // Tests that the mediator populates the main page data for its consumer based

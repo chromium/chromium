@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PRESET_GALLERY_PICKER_CONSUMER_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PRESET_GALLERY_PICKER_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CONFIGURATION_CONSUMER_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CONFIGURATION_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
+@class BackgroundCollectionConfiguration;
 
-// A consumer protocol that receives updates about background galleries.
-@protocol HomeCustomizationBackgroundPresetGalleryPickerConsumer
+// A consumer protocol for receiving updates about background configurations.
+@protocol HomeCustomizationBackgroundConfigurationConsumer
 
 // Set the background collection configurations, including section data and
 // the selected background identifier. This method also sets the data source
@@ -21,4 +21,4 @@
                          selectedBackgroundId:(NSString*)selectedBackgroundId;
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PRESET_GALLERY_PICKER_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CONFIGURATION_CONSUMER_H_

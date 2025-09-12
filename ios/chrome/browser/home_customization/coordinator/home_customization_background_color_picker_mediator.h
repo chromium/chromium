@@ -7,15 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
-
 @protocol HomeCustomizationBackgroundColorPickerConsumer;
 class HomeBackgroundCustomizationService;
 
 // A mediator that generates and configures background color palettes
 // for the Home customization screen, and communicates them to a consumer.
-@interface HomeCustomizationBackgroundColorPickerMediator
-    : NSObject <HomeCustomizationBackgroundColorPickerMutator>
+@interface HomeCustomizationBackgroundColorPickerMediator : NSObject
 
 // The consumer that receives the generated color palette configurations.
 @property(nonatomic, weak) id<HomeCustomizationBackgroundColorPickerConsumer>

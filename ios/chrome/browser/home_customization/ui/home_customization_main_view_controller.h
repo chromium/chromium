@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 
+@protocol HomeCustomizationBackgroundConfigurationMutator;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 @protocol HomeCustomizationDelegate;
 @protocol HomeCustomizationMutator;
@@ -17,10 +19,15 @@
 // The view controller representing the first page of the Home customization
 // menu.
 @interface HomeCustomizationMainViewController
-    : UIViewController <HomeCustomizationMainConsumer>
+    : UIViewController <HomeCustomizationBackgroundConfigurationConsumer,
+                        HomeCustomizationMainConsumer>
 
 // Mutator for communicating with the HomeCustomizationMediator.
 @property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
+
+// Mutator for communicating background customization updates
+@property(nonatomic, weak) id<HomeCustomizationBackgroundConfigurationMutator>
+    customizationMutator;
 
 // Delegate for communicating with the coordinator.
 @property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;

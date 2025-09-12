@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -71,6 +73,10 @@ CGFloat const kSheetCornerRadius = 30;
   // backgrounds.
   raw_ptr<HomeBackgroundCustomizationService, DanglingUntriaged>
       _backgroundService;
+
+  // The mediator for background configuration generation and interactions.
+  HomeCustomizationBackgroundConfigurationMediator*
+      _backgroundConfigurationMediator;
 }
 
 // The main page of the customization menu.
@@ -103,22 +109,29 @@ CGFloat const kSheetCornerRadius = 30;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  image_fetcher::ImageFetcherService* imageFetcherService =
-      ImageFetcherServiceFactory::GetForProfile(self.profile);
   _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
-  UserUploadedImageManager* userUploadedImageManager =
-      UserUploadedImageManagerFactory::GetForProfile(self.profile);
   _backgroundService =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
-                                             FromBrowser(self.browser)
-                       backgroundService:_backgroundService
-                     imageFetcherService:imageFetcherService
-                userUploadedImageManager:userUploadedImageManager];
+                                             FromBrowser(self.browser)];
   _mediator.navigationDelegate = self;
+
+  if (IsNTPBackgroundCustomizationEnabled() &&
+      !_backgroundService->IsCustomizationDisabledOrColorManagedByPolicy()) {
+    UserUploadedImageManager* userUploadedImageManager =
+        UserUploadedImageManagerFactory::GetForProfile(self.profile);
+    image_fetcher::ImageFetcherService* imageFetcherService =
+        ImageFetcherServiceFactory::GetForProfile(self.profile);
+    _backgroundConfigurationMediator =
+        [[HomeCustomizationBackgroundConfigurationMediator alloc]
+            initWithBackgroundCustomizationService:_backgroundService
+                               imageFetcherService:imageFetcherService
+                        homeBackgroundImageService:nil
+                          userUploadedImageManager:userUploadedImageManager];
+  }
 
   // The Customization menu consists of a stack of presenting view controllers.
   // Since the `baseViewController` is at the root of this stack, it is set as
@@ -129,7 +142,7 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
-  [self.mediator saveCurrentTheme];
+  [_backgroundConfigurationMediator saveCurrentTheme];
 
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 
@@ -148,6 +161,7 @@ CGFloat const kSheetCornerRadius = 30;
 - (void)updateMenuData {
   if (self.mainViewController) {
     [self.mediator configureMainPageData];
+    [_backgroundConfigurationMediator loadRecentlyUsedBackgroundConfigurations];
   }
 
   if (self.magicStackViewController) {
@@ -212,11 +226,20 @@ CGFloat const kSheetCornerRadius = 30;
           [[HomeCustomizationMainViewController alloc] init];
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
+      self.mainViewController.customizationMutator =
+          _backgroundConfigurationMediator;
       self.mainViewController.searchEngineLogoMediatorProvider = self;
       self.mainViewController.customizationDisabledByPolicy =
           _backgroundService->IsCustomizationDisabledOrColorManagedByPolicy();
       self.mediator.mainPageConsumer = self.mainViewController;
+      _backgroundConfigurationMediator.configurationConsumer =
+          self.mainViewController;
+      // Do not set self.mainViewController as
+      // _backgroundConfigurationMediator.consumer because this view should not
+      // have cancel/done buttons when the selected background changes.
       [self.mediator configureMainPageData];
+      [_backgroundConfigurationMediator
+          loadRecentlyUsedBackgroundConfigurations];
       menuPage = self.mainViewController;
       break;
     }

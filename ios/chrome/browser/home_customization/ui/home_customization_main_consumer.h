@@ -21,12 +21,6 @@
 // type is enabled, then updates the snapshot.
 - (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap;
 
-// Populates the background collection configuration data.
-- (void)
-    populateBackgroundCollectionConfiguration:
-        (BackgroundCollectionConfiguration*)backgroundCollectionConfiguration
-                         selectedBackgroundId:(NSString*)selectedBackgroundId;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MAIN_CONSUMER_H_

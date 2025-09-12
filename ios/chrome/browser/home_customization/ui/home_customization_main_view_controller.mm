@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_enterprise_policy_cell.h"
@@ -336,7 +337,8 @@
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[itemIdentifier];
 
-  [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
+  [self.customizationMutator
+      applyBackgroundForConfiguration:backgroundConfiguration];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -367,14 +369,17 @@
 
   if (backgroundConfiguration.backgroundStyle ==
       HomeCustomizationBackgroundStyle::kPreset) {
-    [self.mutator
+    void (^imageHandler)(UIImage*, NSError*) =
+        ^(UIImage* image, NSError* error) {
+          if (!error) {
+            // TODO(crbug.com/444505682): Handle error loading thumbnail image.
+          }
+          [backgroundCell updateBackgroundImage:image framingCoordinates:nil];
+        };
+    [self.customizationMutator
         fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
                                                           .thumbnailURL
-                                           completion:^(UIImage* image) {
-                                             [backgroundCell
-                                                 updateBackgroundImage:image
-                                                    framingCoordinates:nil];
-                                           }];
+                                           completion:imageHandler];
   } else if (backgroundConfiguration.backgroundStyle ==
              HomeCustomizationBackgroundStyle::kUserUploaded) {
     HomeCustomizationFramingCoordinates* framingCoordinates =
@@ -385,7 +390,7 @@
                            framingCoordinates:framingCoordinates
                                backgroundCell:backgroundCell];
     };
-    [self.mutator
+    [self.customizationMutator
         fetchBackgroundCustomizationUserUploadedImage:backgroundConfiguration
                                                           .userUploadedImagePath
                                            completion:imageHandler];
@@ -410,11 +415,16 @@
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-- (void)
-    populateBackgroundCollectionConfiguration:
-        (BackgroundCollectionConfiguration*)backgroundCollectionConfiguration
+#pragma mark - HomeCustomizationBackgroundConfigurationConsumer
+
+- (void)setBackgroundCollectionConfigurations:
+            (NSArray<BackgroundCollectionConfiguration*>*)
+                backgroundCollectionConfigurations
                          selectedBackgroundId:(NSString*)selectedBackgroundId {
-  _backgroundCollectionConfiguration = backgroundCollectionConfiguration;
+  CHECK(backgroundCollectionConfigurations.count == 1);
+
+  _backgroundCollectionConfiguration =
+      backgroundCollectionConfigurations.firstObject;
   _selectedBackgroundId = selectedBackgroundId;
 
   // Recreate the snapshot with the new items to take into account all the
@@ -508,7 +518,7 @@
   }
 
   NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
-  [self.mutator
+  [self.customizationMutator
       deleteBackgroundFromRecentlyUsed:_backgroundCollectionConfiguration
                                            .configurations[identifier]];
   [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
