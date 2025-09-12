@@ -55,7 +55,8 @@ empty test.
     TestProfileIOS, Browser, TestBrowser, and ApplicationContext) you must:
     a. Find and read its header file and its BUILD.gn file. These classes
        may have changed since the model was trained, so it is important to
-       read the latest code.
+       read the latest code. In particular, for TestProfileIOS and TestBrowser,
+       ensure you are using the correct paths, which have changed.
     b. Investigate its usage in other unit tests in the //ios/ codebase.
     c. Before writing the test file, you MUST output a "Dependency Analysis"
        summary in a bulleted list. For each dependency, this summary must
@@ -69,7 +70,8 @@ empty test.
     Add the standard boilerplate, including the copyright header, necessary
     imports, a test fixture class inheriting from `PlatformTest`, an ivar for
     an instance of the class being tested and a single `TEST_F` test case to
-    verify that the ivar was instantiated.
+    verify that the ivar was instantiated. The test class and the TEST_F
+    method should have comments.
 4.  **Update BUILD.gn**: Add the new test file to a `unit_tests` source set in
     the relevant `BUILD.gn` file. Add the class under test to the `deps`.
 5.  **Build and Verify**: Build the `ios_chrome_unittests` target. Fix any
@@ -77,6 +79,8 @@ empty test.
     statements or `BUILD.gn` dependencies.
 6.  ** Run the new test suite**: Run the new test suite and fix any errors.
     If there were errors, build, run, and fix the tests until they pass.
-7.  **Final Check**: Confirm the new unit test suite file is present. Do NOT
+7.  Once the tests pass, run `gclient runhooks` to make the new test file
+    accessible from Xcode.
+8.  **Final Check**: Confirm the new unit test suite file is present. Do NOT
     delete it when you are done.
 """
