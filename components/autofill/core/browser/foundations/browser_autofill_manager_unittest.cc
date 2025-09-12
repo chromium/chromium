@@ -994,6 +994,11 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
     return manager;
   }
 
+  autofill_metrics::FormEventLoggerBase* GetFormEventLoggerForTesting(
+      const AutofillField& field) {
+    return GetEventFormLogger(field);
+  }
+
   using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
 
   using AutofillManager::GetCurrentPageLanguage;
@@ -1541,6 +1546,55 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
 };
+
+// Test that the correct logger is returned for an address field.
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_Address) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::nullopt);
+  ASSERT_NE(manager().GetFormEventLoggerForTesting(field), nullptr);
+  EXPECT_EQ(manager()
+                .GetFormEventLoggerForTesting(field)
+                ->GetFormTypeNameForTesting(),
+            "Address");
+}
+
+// Test that the correct logger is returned for a credit card field.
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_CreditCard) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_NUMBER), std::nullopt);
+  ASSERT_NE(manager().GetFormEventLoggerForTesting(field), nullptr);
+  EXPECT_EQ(manager()
+                .GetFormEventLoggerForTesting(field)
+                ->GetFormTypeNameForTesting(),
+            "CreditCard");
+}
+
+// Test that the correct logger is returned for a credit card field.
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_CVC) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+                  std::nullopt);
+  ASSERT_NE(manager().GetFormEventLoggerForTesting(field), nullptr);
+  EXPECT_EQ(manager()
+                .GetFormEventLoggerForTesting(field)
+                ->GetFormTypeNameForTesting(),
+            "CreditCard");
+}
+
+// Test that the correct logger is returned for a one time password field.
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_OneTimePassword) {
+  AutofillField otp_field;
+  otp_field.SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+  EXPECT_EQ(manager().GetFormEventLoggerForTesting(otp_field), nullptr);
+}
+
+// Test that the correct logger is returned for a password field..
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_Password) {
+  AutofillField otp_field;
+  otp_field.SetTypeTo(AutofillType(PASSWORD), std::nullopt);
+  // The password manager is not using the logging facilities autofill provides.
+  EXPECT_EQ(manager().GetFormEventLoggerForTesting(otp_field), nullptr);
+}
 
 // Test that calling OnFormsSeen consecutively with a different set of forms
 // will query for each separately.

@@ -3399,6 +3399,8 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
       return &metrics_->credit_card_form_event_logger;
     case FormType::kLoyaltyCardForm:
       return &metrics_->loyalty_card_form_event_logger;
+      // TODO(crbug.com/443693025): Add event logger for OTP fields
+    case FormType::kOneTimePasswordForm:
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       return nullptr;
@@ -3583,6 +3585,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
       break;
     case FormType::kLoyaltyCardForm:
     case FormType::kPasswordForm:
+    case FormType::kOneTimePasswordForm:
     case FormType::kUnknownFormType:
       // FastCheckout only supports address and credit card forms.
       NOTREACHED();

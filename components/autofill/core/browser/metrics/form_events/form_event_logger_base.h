@@ -105,6 +105,10 @@ class FormEventLoggerBase {
     return fast_checkout_run_id_;
   }
 
+  // Used for testing purposes to help verify that the correct subclass is
+  // constructed.
+  std::string GetFormTypeNameForTesting() const { return form_type_name_; }
+
  protected:
   virtual ~FormEventLoggerBase();
 

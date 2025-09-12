@@ -279,6 +279,8 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
       return payments_logger_.get();
     case FormType::kPasswordForm:
       return password_logger_.get();
+    // TODO(crbug.com/443693025): Add event logger for OTP fields
+    case FormType::kOneTimePasswordForm:
     case FormType::kUnknownFormType:
       return nullptr;
   }

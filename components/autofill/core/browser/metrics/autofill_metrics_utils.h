@@ -97,6 +97,11 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
+// `FormType::kOneTimePasswordForm`.
+DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
+    const FormStructure& form);
+
+// Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kLoyaltyCardForm`.
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
     const FormStructure& form);

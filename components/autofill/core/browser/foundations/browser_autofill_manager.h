@@ -309,6 +309,11 @@ class BrowserAutofillManager : public AutofillManager {
   virtual autofill_metrics::CreditCardFormEventLogger&
   GetCreditCardFormEventLogger();
 
+  // Returns an appropriate EventFormLogger, depending on the given `field`'s
+  // type. May return nullptr.
+  autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
+      const AutofillField& field);
+
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
@@ -607,11 +612,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       OnGenerateSuggestionsCallback callback);
-
-  // Returns an appropriate EventFormLogger, depending on the given `field`'s
-  // type. May return nullptr.
-  autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
-      const AutofillField& field);
 
   // Iterate through all the fields in the form to process the log events for
   // each field and record into FieldInfo UKM event.

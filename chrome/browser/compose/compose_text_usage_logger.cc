@@ -148,6 +148,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
       case autofill::FormType::kStandaloneCvcForm:
       case autofill::FormType::kCreditCardForm:
       case autofill::FormType::kPasswordForm:
+      case autofill::FormType::kOneTimePasswordForm:
         metrics.sensitive_field = true;
         metrics.is_autofill_field_type = true;
         break;
