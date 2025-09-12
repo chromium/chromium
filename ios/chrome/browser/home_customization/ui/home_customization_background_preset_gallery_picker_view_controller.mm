@@ -216,6 +216,14 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  // Prevent background updates when a user clicks on an already selected cell.
+  if (_selectedBackgroundId == itemIdentifier) {
+    return;
+  }
+
+  _selectedBackgroundId = itemIdentifier;
+
   [self.customizationMutator
       applyBackgroundForConfiguration:_backgroundCustomizationConfigurationMap
                                           [itemIdentifier]];

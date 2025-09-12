@@ -325,6 +325,12 @@
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  // Prevent background updates when a user clicks on an already selected cell.
+  if (_selectedBackgroundId == itemIdentifier) {
+    return;
+  }
+
   _selectedBackgroundId = itemIdentifier;
 
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
