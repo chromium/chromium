@@ -255,10 +255,6 @@ class BrowserView : public BrowserWindow,
     return tab_strip_region_view_.get();
   }
 
-  TabStripRegionView* tab_strip_region_view() const {
-    return tab_strip_region_view_;
-  }
-
   VerticalTabStripRegionView* vertical_tab_strip_region_view() const {
     return vertical_tab_strip_container_;
   }
