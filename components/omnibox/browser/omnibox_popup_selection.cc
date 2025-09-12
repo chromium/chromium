@@ -183,12 +183,32 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     for (LineState line_state : all_states) {
       if (line_state == FOCUSED_BUTTON_AIM) {
         // The AIM button is included in the focus order if:
-        // - The AIM button is visible,
-        // - This is the first match (`line_number == 0`),
-        // - The match is not from a keyword (not in keyword mode),
+        // - The AIM button is visible.
+        // - This is the first match (`line_number == 0`).
+        // - The match is not from a keyword; i.e. user didn't type
+        //   'youtube<tab>query'. Checking `from_keyword` isn't strictly
+        //   necessary because `aim_button_visible` should be false in this
+        //   case, but it's good to check and not depend on button visibility
+        //   logic staying constant.
+        // - The omnibox is not tabbed into keyword mode; i.e. user didn't type
+        //   'youtube<tab>'. Otherwise, tab traversal wouldn't be consistent
+        //   when tabbing v shift+tabbing. E.g. 'youtube<tab><tab><shift+tab>'
+        //   would skip the AI button tabbing forward but not backward. Checking
+        //   `associated_keyword` suffices though it also catches the case where
+        //   before the user has tabbed into keyword mode; but that's ok since
+        //   `FOCUSED_BUTTON_AIM` is ordered after `KEYWORD_MODE` anyways.
+        // - The 2nd match isn't an instant keyword to avoid disrupting muscle
+        //   memory e.g. '@gemini<tab>'. Don't have to similarly consider
+        //   non-instant keywords since same-line `KEYWORD_MODE` is ordered
+        //   before `FOCUSED_BUTTON_AIM`.
         // - The input is not ZeroSuggest (i.e., the user has typed something).
+        bool second_match_has_instant_keyword =
+            result.size() >= 2 &&
+            result.match_at(1).HasInstantKeyword(template_url_service);
         if (aim_button_visible && line_number == 0 &&
-            !result.match_at(0).from_keyword && !input.IsZeroSuggest()) {
+            !result.match_at(0).from_keyword &&
+            !result.match_at(0).associated_keyword &&
+            !second_match_has_instant_keyword && !input.IsZeroSuggest()) {
           available_selections.emplace_back(line_number, line_state);
         }
       } else if (line_state == FOCUSED_BUTTON_ACTION) {
