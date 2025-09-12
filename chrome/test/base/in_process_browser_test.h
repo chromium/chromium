@@ -69,7 +69,6 @@ class ScopedLaunchBrowserForTesting;
 }  // namespace ash::full_restore
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class Browser;
 class BrowserWindowInterface;
 class PrefService;
 class Profile;
