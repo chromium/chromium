@@ -651,9 +651,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_DefaultDevicePref_True",
+                    "name": "Enabled_DefaultDevicePref_False",
                     "params": {
-                        "show_bookmark_bar": "true"
+                        "show_bookmark_bar": "false"
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
@@ -661,9 +661,9 @@
                     ]
                 },
                 {
-                    "name": "Enabled_DefaultDevicePref_False",
+                    "name": "Enabled_DefaultDevicePref_True",
                     "params": {
-                        "show_bookmark_bar": "false"
+                        "show_bookmark_bar": "true"
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
