@@ -212,9 +212,9 @@ class GlicWindowController {
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
   virtual std::unique_ptr<views::View> CreateViewForSidePanel(
-      tabs::TabInterface* tab) = 0;
+      tabs::TabInterface& tab) = 0;
 
-  virtual void SidePanelShown(Browser* browser) = 0;
+  virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {
     return base::FeatureList::IsEnabled(features::kGlicDetached);

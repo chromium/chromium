@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -35,7 +36,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
   GlicSidePanelCoordinatorTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kGlicRollout,
-         features::kTabstripComboButton},
+         features::kTabstripComboButton, features::kGlicMultiInstance},
         {});
   }
 
@@ -50,12 +51,15 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
     return browser()->browser_window_features()->side_panel_coordinator();
   }
   SidePanelRegistry* registry() {
-    return side_panel_coordinator()->GetWindowRegistry();
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->side_panel_registry();
   }
 
   void SetUpOnMainThread() override {
     coordinator_ = std::make_unique<TestGlicSidePanelCoordinator>(
-        browser(), side_panel_coordinator());
+        browser()->GetActiveTabInterface(), registry());
     InProcessBrowserTest::SetUpOnMainThread();
   }
 

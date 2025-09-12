@@ -332,16 +332,14 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 }
 
 std::unique_ptr<views::View>
-GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface* tab) {
-  if (!tab) {
-    return nullptr;
-  }
-  auto* instance = GetOrCreateGlicInstanceForTab(tab);
+GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
+  auto* instance = GetOrCreateGlicInstanceForTab(&tab);
   CHECK(instance);
-  return instance->CreateViewForSidePanel(tab);
+  return instance->CreateViewForSidePanel(&tab);
 }
 
-void GlicInstanceCoordinatorImpl::SidePanelShown(Browser* browser) {
+void GlicInstanceCoordinatorImpl::SidePanelShown(
+    BrowserWindowInterface* browser) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }

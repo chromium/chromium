@@ -96,6 +96,8 @@ source_set("side_panel") {
   ]
   if (enable_glic) {
     sources += [
+      "glic/glic_legacy_side_panel_coordinator.cc",
+      "glic/glic_legacy_side_panel_coordinator.h",
       "glic/glic_side_panel_coordinator.cc",
       "glic/glic_side_panel_coordinator.h",
     ]

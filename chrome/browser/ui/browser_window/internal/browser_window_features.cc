@@ -148,7 +148,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_legacy_side_panel_coordinator.h"
 #endif
 
 #if defined(USE_AURA)
@@ -570,13 +570,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     comments_side_panel_coordinator_ =
         std::make_unique<CommentsSidePanelCoordinator>(browser_view->browser());
   }
-
 #if BUILDFLAG(ENABLE_GLIC)
-  glic_side_panel_coordinator_ =
-      std::make_unique<glic::GlicSidePanelCoordinator>(
-          browser_view->browser(), side_panel_coordinator_.get());
+  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance) &&
+      glic::GlicKeyedService::Get(browser_view->GetProfile())) {
+    glic_side_panel_coordinator_ =
+        std::make_unique<glic::GlicLegacySidePanelCoordinator>(
+            browser_view->browser(), side_panel_coordinator_.get());
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-
   side_panel_coordinator_->Init(browser_view->browser());
 
   extension_side_panel_manager_ =

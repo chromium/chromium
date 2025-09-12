@@ -103,6 +103,8 @@
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+
 #endif
 namespace tabs {
 
@@ -284,6 +286,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_tab_indicator_helper_ =
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);
+    }
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      glic_side_panel_coordinator_ =
+          GetUserDataFactory().CreateInstance<glic::GlicSidePanelCoordinator>(
+              tab, &tab, side_panel_registry_.get());
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
     // TODO(crbug.com/433973411): Move this logic to a helper function.

@@ -74,6 +74,7 @@ class ExtensionSidePanelManager;
 namespace glic {
 class GlicInstanceHelper;
 class GlicTabIndicatorHelper;
+class GlicSidePanelCoordinator;
 }  // namespace glic
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -278,6 +279,12 @@ class TabFeatures {
     return ask_before_http_dialog_controller_.get();
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicSidePanelCoordinator* glic_side_panel_coordinator() {
+    return glic_side_panel_coordinator_.get();
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -393,6 +400,7 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+  std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   std::unique_ptr<memory_saver::MemorySaverChipController>

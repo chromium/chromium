@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/tabs/public/tab_interface.h"
@@ -19,7 +20,13 @@ namespace glic {
 
 GlicSidePanelUi::GlicSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
                                  GlicInstance& instance)
-    : tab_(tab), instance_(instance) {}
+    : tab_(tab), instance_(instance) {
+  if (tab_) {
+    coordinator_observation_.Observe(
+        tab_->GetTabFeatures()->glic_side_panel_coordinator());
+  }
+}
+
 GlicSidePanelUi::~GlicSidePanelUi() = default;
 
 Host::Delegate* GlicSidePanelUi::GetHostDelegate() {
@@ -27,7 +34,6 @@ Host::Delegate* GlicSidePanelUi::GetHostDelegate() {
 }
 
 const mojom::PanelState& GlicSidePanelUi::GetPanelState() const {
-  NOTIMPLEMENTED();
   return panel_state_;
 }
 
@@ -60,8 +66,19 @@ void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {
 }
 
 bool GlicSidePanelUi::IsShowing() const {
-  NOTIMPLEMENTED();
-  return false;
+  if (!tab_) {
+    return false;
+  }
+  return panel_state_.kind == mojom::PanelState_Kind::kAttached;
+}
+
+// TODO(crbug.com/444293841): Support closing multi instance.
+void GlicSidePanelUi::VisibilityChanged(bool visible) {
+  if (visible) {
+    panel_state_.kind = mojom::PanelState_Kind::kAttached;
+  } else {
+    panel_state_.kind = mojom::PanelState_Kind::kHidden;
+  }
 }
 
 void GlicSidePanelUi::Show() {

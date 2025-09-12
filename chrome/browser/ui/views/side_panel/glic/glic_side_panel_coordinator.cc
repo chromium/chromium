@@ -14,15 +14,19 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "components/tabs/public/tab_interface.h"
+#include "glic_side_panel_coordinator.h"
 #include "ui/actions/actions.h"
 
 namespace glic {
+DEFINE_USER_DATA(GlicSidePanelCoordinator);
 
 namespace {
 
@@ -37,85 +41,99 @@ actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
 }  // namespace
 
 GlicSidePanelCoordinator::GlicSidePanelCoordinator(
-    Browser* browser,
-    SidePanelCoordinator* side_panel_coordinator)
-    : browser_(browser),
-      glic_service_(
-          GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile())),
-      profile_(browser->GetProfile()),
-      glic_action_(
-          GetGlicActionItem(browser->GetActions()->root_action_item())),
-      side_panel_coordinator_(side_panel_coordinator) {
-  auto* glic_service = glic::GlicKeyedService::Get(profile_);
+    tabs::TabInterface* tab,
+    SidePanelRegistry* side_panel_registry)
+    : tab_(tab),
+      side_panel_registry_(side_panel_registry),
+      glic_action_(GetGlicActionItem(
+          tab->GetBrowserWindowInterface()->GetActions()->root_action_item())),
+      side_panel_coordinator_(tab->GetBrowserWindowInterface()
+                                  ->GetFeatures()
+                                  .side_panel_coordinator()) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab->GetBrowserWindowInterface()->GetProfile());
   if (glic_service) {
     on_glic_enabled_changed_subscription_ =
         glic_service->enabling().RegisterAllowedChanged(
             base::BindRepeating(&GlicSidePanelCoordinator::OnGlicEnabledChanged,
                                 base::Unretained(this)));
+    if (glic_service->enabling().IsAllowed()) {
+      CreateAndRegisterEntry();
+    }
   }
 }
 
-void GlicSidePanelCoordinator::CreateAndRegisterEntry(
-    Browser* browser,
-    SidePanelRegistry* global_registry) {
-  if (global_registry->GetEntryForKey(
+GlicSidePanelCoordinator::~GlicSidePanelCoordinator() = default;
+
+void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
+  if (side_panel_registry_->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {
     return;
   }
 
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
-      base::BindRepeating(&GlicSidePanelCoordinator::CreateGlicWebView,
-                          base::Unretained(this), browser),
+      base::BindRepeating(&GlicSidePanelCoordinator::CreateView,
+                          base::Unretained(this)),
       /*default_content_width_callback=*/base::NullCallback());
   entry->AddObserver(this);
-  global_registry->Register(std::move(entry));
+  side_panel_registry_->Register(std::move(entry));
 }
 
 void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  if (glic_service_) {
-    glic_service_->ClosePanel();
-  }
+  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
+  state_observers_.Notify(&StateObserver::VisibilityChanged, false);
 }
 
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
-  SidePanelEntry::Key glic_key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
-  if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
-    glic_service_->window_controller().SidePanelShown(browser_);
-  }
+  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
+  state_observers_.Notify(&StateObserver::VisibilityChanged, true);
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
-  bool isAllowed = glic::GlicEnabling::IsEnabledForProfile(profile_);
-  // Show / hide browser action.
-  glic_action_->SetVisible(isAllowed);
+  bool is_allowed = glic::GlicEnabling::IsEnabledForProfile(
+      tab_->GetBrowserWindowInterface()->GetProfile());
+
+  // Active tab sets visibility of toolbar action.
+  // TODO: Consider moving this responsibility to a browser level singleton
+  if (tab_->IsActivated()) {
+    glic_action_->SetVisible(is_allowed);
+  }
   // Register / deregister side panel entry.
-  SidePanelRegistry* global_registry =
-      side_panel_coordinator_->GetWindowRegistry();
-  if (isAllowed) {
-    CreateAndRegisterEntry(browser_, global_registry);
+  if (is_allowed) {
+    CreateAndRegisterEntry();
   } else {
     SidePanelEntry::Key glic_key =
         SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
     if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
       side_panel_coordinator_->Close();
     }
-    SidePanelEntry* glic_entry = global_registry->GetEntryForKey(glic_key);
+    SidePanelEntry* glic_entry = side_panel_registry_->GetEntryForKey(glic_key);
     if (glic_entry) {
       glic_entry->RemoveObserver(this);
     }
-    global_registry->Deregister(glic_key);
+    side_panel_registry_->Deregister(glic_key);
   }
 }
 
-std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateGlicWebView(
-    Browser* browser,
+std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
-  if (!glic_service_) {
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_->GetBrowserWindowInterface()->GetProfile());
+  if (!glic_service) {
     return nullptr;
   }
-  return glic_service_->window_controller().CreateViewForSidePanel(
-      scope.GetBrowserWindowInterface().GetActiveTabInterface());
+  return glic_service->window_controller().CreateViewForSidePanel(
+      scope.GetTabInterface());
+}
+
+void GlicSidePanelCoordinator::AddObserver(StateObserver* observer) {
+  state_observers_.AddObserver(observer);
+}
+
+void GlicSidePanelCoordinator::RemoveObserver(StateObserver* observer) {
+  state_observers_.RemoveObserver(observer);
 }
 
 }  // namespace glic
