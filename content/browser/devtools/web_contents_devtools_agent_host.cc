@@ -81,6 +81,7 @@ class WebContentsDevToolsAgentHost::AutoAttacher
   base::flat_set<scoped_refptr<DevToolsAgentHost>> UpdateAssociatedPages() {
     base::flat_set<scoped_refptr<DevToolsAgentHost>> hosts;
     if (auto_attach() && web_contents_) {
+      CHECK(!web_contents_->IsBeingDestroyed());
       auto* rfh = static_cast<RenderFrameHostImpl*>(
           web_contents_->GetPrimaryMainFrame());
       web_contents_->ForEachRenderFrameHost(
@@ -335,6 +336,9 @@ WebContentsDevToolsAgentHost::GetOrCreatePrimaryFrameAgent() {
 }
 
 void WebContentsDevToolsAgentHost::WebContentsDestroyed() {
+  // Detach auto-attacher early so it doesn't do anything weird on a
+  // half-destroyed WC while sessions are being detached below.
+  auto_attacher_->SetWebContents(nullptr);
   auto retain_this = ForceDetachAllSessionsImpl();
   InnerDetach();
 }

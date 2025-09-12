@@ -290,10 +290,13 @@ RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
   g_was_ever_attached_to_any_frame = true;
   AddRef();  // Balanced in DestroyOnRenderFrameGone.
   auto* wc = WebContentsImpl::FromRenderFrameHostImpl(frame_host);
+  CHECK(!wc->IsBeingDestroyed());
   WebContentsObserver::Observe(wc);
   SetFrameTreeNode(frame_tree_node);
   ChangeFrameHostAndObservedProcess(frame_host);
   render_frame_alive_ = frame_host_ && frame_host_->IsRenderFrameLive();
+  CHECK(!render_frame_alive_ ||
+        frame_host->GetProcess()->IsInitializedAndNotDead());
   if (frame_tree_node->GetFrameType() != FrameType::kPrimaryMainFrame &&
       frame_tree_node->GetFrameType() != FrameType::kPrerenderMainFrame) {
     render_frame_crashed_ = !render_frame_alive_;
