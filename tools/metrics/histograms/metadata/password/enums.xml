@@ -1366,6 +1366,9 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Actor task ongoing">
     An actor task is ongoing on the page.
   </int>
+  <int value="16" label="Password change ongoing">
+    Password change is ongoing on the page.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_form_metrics_recorder.h:WaitForUsernameReason) -->

@@ -260,6 +260,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (client->IsActorTaskActive() &&
              base::FeatureList::IsEnabled(features::kActorLogin)) {
     wait_for_username_reason = WaitForUsernameReason::kActorTaskOngoing;
+  } else if (client->IsPasswordChangeOngoing()) {
+    wait_for_username_reason = WaitForUsernameReason::kPasswordChangeOngoing;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant
