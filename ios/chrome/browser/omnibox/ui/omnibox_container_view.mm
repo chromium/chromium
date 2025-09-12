@@ -50,6 +50,80 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 const CGFloat kClearButtonInset = 4.0f;
 /// Clear button image size.
 const CGFloat kClearButtonImageSize = 17.0f;
+const CGFloat kClearButtonSize = 28.0f;
+
+/// Creates and configures the text field.
+OmniboxTextFieldIOS* CreateTextField(CGRect frame,
+                                     UIColor* text_color,
+                                     UIColor* tint_color,
+                                     BOOL is_lens_overlay) {
+  OmniboxTextFieldIOS* text_field =
+      [[OmniboxTextFieldIOS alloc] initWithFrame:frame
+                                       textColor:text_color
+                                       tintColor:tint_color
+                                   isLensOverlay:is_lens_overlay];
+  text_field.translatesAutoresizingMaskIntoConstraints = NO;
+  // Do not use the system clear button. Use a custom view instead.
+  text_field.clearButtonMode = UITextFieldViewModeNever;
+  return text_field;
+}
+
+/// Creates and configures the leading image view.
+UIImageView* CreateLeadingImageView(UIColor* icon_tint) {
+  UIImageView* leading_image_view = [[UIImageView alloc] init];
+  leading_image_view.translatesAutoresizingMaskIntoConstraints = NO;
+  leading_image_view.contentMode = UIViewContentModeCenter;
+  leading_image_view.tintColor = icon_tint;
+  [NSLayoutConstraint activateConstraints:@[
+    [leading_image_view.widthAnchor
+        constraintEqualToConstant:kOmniboxLeadingImageSize],
+    [leading_image_view.heightAnchor
+        constraintEqualToConstant:kOmniboxLeadingImageSize],
+  ]];
+  return leading_image_view;
+}
+
+/// Creates and configures the thumbnail button.
+OmniboxThumbnailButton* CreateThumbnailButton() {
+  OmniboxThumbnailButton* thumbnail_button =
+      [[OmniboxThumbnailButton alloc] init];
+  thumbnail_button.translatesAutoresizingMaskIntoConstraints = NO;
+  thumbnail_button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL);
+  thumbnail_button.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_HINT);
+  thumbnail_button.hidden = YES;
+  [NSLayoutConstraint activateConstraints:@[
+    [thumbnail_button.widthAnchor constraintEqualToConstant:kThumbnailWidth],
+    [thumbnail_button.heightAnchor constraintEqualToConstant:kThumbnailHeight],
+  ]];
+  return thumbnail_button;
+}
+
+/// Creates and configures the clear button.
+UIButton* CreateClearButton() {
+  UIButtonConfiguration* conf =
+      [UIButtonConfiguration plainButtonConfiguration];
+  conf.image =
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kClearButtonImageSize);
+  conf.contentInsets =
+      NSDirectionalEdgeInsetsMake(kClearButtonInset, kClearButtonInset,
+                                  kClearButtonInset, kClearButtonInset);
+  UIButton* clear_button = [UIButton buttonWithType:UIButtonTypeSystem];
+  clear_button.translatesAutoresizingMaskIntoConstraints = NO;
+  clear_button.configuration = conf;
+  clear_button.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  SetA11yLabelAndUiAutomationName(clear_button, IDS_IOS_ACCNAME_CLEAR_TEXT,
+                                  @"Clear Text");
+  clear_button.pointerInteractionEnabled = YES;
+  clear_button.pointerStyleProvider =
+      CreateLiftEffectCirclePointerStyleProvider();
+  [NSLayoutConstraint activateConstraints:@[
+    [clear_button.widthAnchor constraintEqualToConstant:kClearButtonSize],
+    [clear_button.heightAnchor constraintEqualToConstant:kClearButtonSize],
+  ]];
+  return clear_button;
+}
 
 }  // namespace
 
@@ -67,14 +141,18 @@ const CGFloat kClearButtonImageSize = 17.0f;
 @implementation OmniboxContainerView {
   /// The leading image view. Used for autocomplete icons.
   UIImageView* _leadingImageView;
-  /// Horizontal stack view containing the `_leadingImageView`,
-  /// `_thumbnailImageView`, `textField`.
-  UIStackView* _stackView;
   // The image thumnail button.
   OmniboxThumbnailButton* _thumbnailButton;
 
   /// Whether the view is presented in the lens overlay.
   BOOL _isLensOverlay;
+
+  // The constraint for the textfield's leading anchor when the thumbnail is
+  // visible.
+  NSLayoutConstraint* _textFieldLeadingToThumbnailConstraint;
+  // The constraint for the textfield's leading anchor when the thumbnail is
+  // hidden.
+  NSLayoutConstraint* _textFieldLeadingToIconConstraint;
 }
 
 #pragma mark - Public
@@ -87,102 +165,72 @@ const CGFloat kClearButtonImageSize = 17.0f;
   self = [super initWithFrame:frame];
   if (self) {
     _isLensOverlay = isLensOverlay;
-    _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
-                                                  textColor:textColor
-                                                  tintColor:textFieldTint
-                                              isLensOverlay:isLensOverlay];
-    _textField.translatesAutoresizingMaskIntoConstraints = NO;
+    self.textField =
+        CreateTextField(frame, textColor, textFieldTint, isLensOverlay);
+    _leadingImageView = CreateLeadingImageView(iconTint);
+    self.clearButton = CreateClearButton();
 
-    // Leading image view.
-    _leadingImageView = [[UIImageView alloc] init];
-    _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _leadingImageView.contentMode = UIViewContentModeCenter;
-    _leadingImageView.tintColor = iconTint;
-    [NSLayoutConstraint activateConstraints:@[
-      [_leadingImageView.widthAnchor
-          constraintEqualToConstant:kOmniboxLeadingImageSize],
-      [_leadingImageView.heightAnchor
-          constraintEqualToConstant:kOmniboxLeadingImageSize],
-    ]];
-
-    // Stack view.
-    _stackView =
-        [[UIStackView alloc] initWithArrangedSubviews:@[ _leadingImageView ]];
-    _stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    _stackView.axis = UILayoutConstraintAxisHorizontal;
-    _stackView.alignment = UIStackViewAlignmentCenter;
-    _stackView.spacing = 0;
-    _stackView.distribution = UIStackViewDistributionFill;
-    [self addSubview:_stackView];
-    AddSameConstraintsWithInsets(
-        _stackView, self,
-        NSDirectionalEdgeInsetsMake(0,
-                                    _isLensOverlay
-                                        ? kLeadingImageLeadingMarginLensOverlay
-                                        : kOmniboxLeadingImageViewEdgeOffset,
-                                    0, kTextFieldClearButtonTrailingOffset));
-
-    // Thumbnail image view.
-    if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
-      // Button to delete the thumbnail.
-      _thumbnailButton = [[OmniboxThumbnailButton alloc] init];
-      _thumbnailButton.translatesAutoresizingMaskIntoConstraints = NO;
-      _thumbnailButton.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL);
-      _thumbnailButton.accessibilityHint =
-          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_HINT);
-      _thumbnailButton.hidden = YES;
-      [NSLayoutConstraint activateConstraints:@[
-        [_thumbnailButton.widthAnchor
-            constraintEqualToConstant:kThumbnailWidth],
-        [_thumbnailButton.heightAnchor
-            constraintEqualToConstant:kThumbnailHeight],
-      ]];
-      [_stackView addArrangedSubview:_thumbnailButton];
-      // Spacing between thumbnail and text field.
-      [_stackView setCustomSpacing:kThumbnailImageTrailingMargin
-                         afterView:_thumbnailButton];
-    }
-
-    // Textfield.
-    [_stackView addArrangedSubview:_textField];
-
-    // Clear button.
-    UIButtonConfiguration* conf =
-        [UIButtonConfiguration plainButtonConfiguration];
-    conf.image = DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
-                                            kClearButtonImageSize);
-    conf.contentInsets =
-        NSDirectionalEdgeInsetsMake(kClearButtonInset, kClearButtonInset,
-                                    kClearButtonInset, kClearButtonInset);
-    _clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    _clearButton.configuration = conf;
-    _clearButton.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-    SetA11yLabelAndUiAutomationName(_clearButton, IDS_IOS_ACCNAME_CLEAR_TEXT,
-                                    @"Clear Text");
-    _clearButton.pointerInteractionEnabled = YES;
-    _clearButton.pointerStyleProvider =
-        CreateLiftEffectCirclePointerStyleProvider();
-    // Do not use the system clear button. Use a custom view instead.
-    _textField.clearButtonMode = UITextFieldViewModeNever;
-    // Note that `rightView` is an incorrect name, it's really a trailing
-    // view.
-    _textField.rightViewMode = UITextFieldViewModeAlways;
-    _textField.rightView = _clearButton;
-
-    // Spacing between image and text field.
-    [_stackView
-        setCustomSpacing:_isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
-                                        : kOmniboxTextFieldLeadingOffsetImage
-               afterView:_leadingImageView];
+    [self addSubview:_leadingImageView];
+    [self addSubview:self.textField];
+    [self addSubview:self.clearButton];
 
     // Constraints.
-    AddSameConstraintsToSides(_textField, _stackView,
-                              LayoutSides::kTop | LayoutSides::kBottom);
-    [_textField
+    [self.textField
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    [self.textField setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+    CGFloat leadingImageLeadingOffset =
+        _isLensOverlay ? kLeadingImageLeadingMarginLensOverlay
+                       : kOmniboxLeadingImageViewEdgeOffset;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_leadingImageView.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor
+                         constant:leadingImageLeadingOffset],
+      [_leadingImageView.centerYAnchor
+          constraintEqualToAnchor:self.centerYAnchor],
+      [self.textField.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [self.textField.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [self.clearButton.centerYAnchor
+          constraintEqualToAnchor:self.centerYAnchor],
+      [self.clearButton.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:-kTextFieldClearButtonTrailingOffset],
+      [self.textField.trailingAnchor
+          constraintEqualToAnchor:self.clearButton.leadingAnchor],
+    ]];
+
+    // Thumbnail image view.
+    if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+      _thumbnailButton = CreateThumbnailButton();
+      [self addSubview:_thumbnailButton];
+      [NSLayoutConstraint activateConstraints:@[
+        [_thumbnailButton.leadingAnchor
+            constraintEqualToAnchor:_leadingImageView.trailingAnchor
+                           constant:kThumbnailImageLeadingMargin],
+        [_thumbnailButton.centerYAnchor
+            constraintEqualToAnchor:self.centerYAnchor],
+      ]];
+
+      // The textfield can be anchored to the thumbnail (if visible) or the
+      // leading icon (if thumbnail is hidden).
+      _textFieldLeadingToThumbnailConstraint = [self.textField.leadingAnchor
+          constraintEqualToAnchor:_thumbnailButton.trailingAnchor
+                         constant:kThumbnailImageTrailingMargin];
+    }
+
+    CGFloat textFieldLeadingOffset =
+        _isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
+                       : kOmniboxTextFieldLeadingOffsetImage;
+    _textFieldLeadingToIconConstraint = [self.textField.leadingAnchor
+        constraintEqualToAnchor:_leadingImageView.trailingAnchor
+                       constant:textFieldLeadingOffset];
+    // By default, the thumbnail is hidden, so the text field is anchored to the
+    // leading icon.
+    _textFieldLeadingToIconConstraint.active = YES;
   }
   return self;
 }
@@ -209,15 +257,12 @@ const CGFloat kClearButtonImageSize = 17.0f;
 - (void)setThumbnailImage:(UIImage*)image {
   [_thumbnailButton setThumbnailImage:image];
   [_thumbnailButton setHidden:!image];
-  if (image) {
-    [_stackView setCustomSpacing:kThumbnailImageLeadingMargin
-                       afterView:_leadingImageView];
-  } else {
-    [_stackView
-        setCustomSpacing:_isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
-                                        : kOmniboxTextFieldLeadingOffsetImage
-               afterView:_leadingImageView];
+
+  BOOL thumbnailVisible = ![_thumbnailButton isHidden];
+  if (_textFieldLeadingToThumbnailConstraint) {
+    _textFieldLeadingToThumbnailConstraint.active = thumbnailVisible;
   }
+  _textFieldLeadingToIconConstraint.active = !thumbnailVisible;
 }
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
@@ -229,14 +274,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
 }
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
-  self.textField.rightViewMode =
-      isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
-}
-
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute {
-  [super setSemanticContentAttribute:semanticContentAttribute];
-  _stackView.semanticContentAttribute = semanticContentAttribute;
+  self.clearButton.hidden = isHidden;
 }
 
 #pragma mark - TextFieldViewContaining

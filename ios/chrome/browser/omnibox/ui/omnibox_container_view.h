@@ -51,8 +51,7 @@
 /// Sets the scale of the leading image view.
 - (void)setLeadingImageScale:(CGFloat)scaleValue;
 
-/// Hides or shows the clear button. TODO(crbug.com/325035406): cleanup with
-/// kRichAutocompletion.
+/// Hides or shows the clear button.
 - (void)setClearButtonHidden:(BOOL)isHidden;
 
 @end
