@@ -71,6 +71,7 @@ source_set("unit_tests") {
   sources = [
     "ar_quick_look_coordinator_unittest.mm",
     "download_file_preview_coordinator_unittest.mm",
+    "download_list_coordinator_unittest.mm",
     "download_list_mediator_unittest.mm",
     "download_manager_coordinator_unittest.mm",
     "download_manager_mediator_unittest.mm",
@@ -83,6 +84,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/model:test_support",
     "//ios/chrome/browser/download/ui",
