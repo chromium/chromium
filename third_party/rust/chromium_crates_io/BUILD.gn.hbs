@@ -81,6 +81,13 @@ cargo_crate("{{this.name}}") {
   }
   {{/if}}
   {{/each}}
+  {{#if extra_kv.extra_deps}}
+  deps += [
+    {{#each extra_kv.extra_deps}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
   {{#if aliased_deps}}
   aliased_deps = {
     {{#each aliased_deps}}

@@ -82,6 +82,8 @@
 #
 #     visibility: A list of targets that the crate should be visible to.
 #
+#     extra_deps: A list of dependencies to be added to the crate.
+#
 # Additional, less commonly needed options can also be discovered by reading
 # the doc comments in `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s
 # fields correspond to per-crate options like `extra_input_roots`).
