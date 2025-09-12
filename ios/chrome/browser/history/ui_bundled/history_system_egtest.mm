@@ -9,6 +9,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
@@ -36,6 +37,7 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
+using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using chrome_test_util::BrowsingDataButtonMatcher;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
@@ -179,7 +181,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Wait for the browsing data button to disappear.
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
+      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()
+                                     timeout:kWaitForClearBrowsingDataTimeout];
 }
 
 #pragma mark Tests
@@ -338,13 +341,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that if only some of the history entries are deleted from Delete
 // Browsing Data, then the history view is updated to reflect those deletions.
-// TODO(crbug.com/443700732): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPartialDeletion DISABLED_testPartialDeletion
-#else
-#define MAYBE_testPartialDeletion testPartialDeletion
-#endif
-- (void)MAYBE_testPartialDeletion {
+- (void)testPartialDeletion {
   const char olderURLString[] = "https://example.com";
   const GURL olderURL = GURL(olderURLString);
 
