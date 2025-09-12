@@ -167,10 +167,9 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
         break;
       }
       case kZoomAndPan:
-        zoom_and_pan_ = SVGZoomAndPan::Parse(ptr, end);
+        zoom_and_pan_ = SVGZoomAndPan::Parse(chars, position);
         if (zoom_and_pan_ == kSVGZoomAndPanUnknown)
           return false;
-        position = ptr - chars.data();
         break;
       case kPreserveAspectRatio: {
         auto* preserve_aspect_ratio =
