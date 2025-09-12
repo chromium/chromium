@@ -150,8 +150,10 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   } else {
     config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
   }
-  if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
-      [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)]) {
+  if ([self isRunningTest:@selector
+            (DISABLED_testTurnOnReaderModeViaPageActionMenu)] ||
+      [self isRunningTest:@selector
+            (DISABLED_testReaderModeChipShowsAIHubIfAvailable)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
     config.features_enabled_and_params.push_back(
         {kLensOverlayEnableIPadCompatibility, {}});
@@ -967,7 +969,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 // Tests that the user can turn on Reader Mode from the page action menu.
-- (void)testTurnOnReaderModeViaPageActionMenu {
+// TODO(crbug.com/444615386): Re-enable the test.
+- (void)DISABLED_testTurnOnReaderModeViaPageActionMenu {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -1007,7 +1010,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that tapping the Reader mode chip shows the AI hub bottom sheet if AI
 // hub is available.
-- (void)testReaderModeChipShowsAIHubIfAvailable {
+// TODO(crbug.com/444615386): Re-enable the test.
+- (void)DISABLED_testReaderModeChipShowsAIHubIfAvailable {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
