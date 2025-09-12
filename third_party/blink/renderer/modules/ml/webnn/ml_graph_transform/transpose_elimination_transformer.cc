@@ -67,8 +67,7 @@ std::optional<MLOperator*> TryFindEliminatableFrontTranspose(
   }
   MLOperator* cur_node = transpose->PositionalInputs()[0].Get()->Operator();
   while (true) {
-    if (cur_node->Outputs().size() != 1 || cur_node->Inputs().size() != 1 ||
-        cur_node->Outputs()[0]->DependentOperators().size() != 1) {
+    if (cur_node->Outputs().size() != 1 || cur_node->Inputs().size() != 1) {
       break;
     }
     if (cur_node->Kind() == webnn::mojom::blink::Operation::Tag::kTranspose) {
@@ -76,7 +75,8 @@ std::optional<MLOperator*> TryFindEliminatableFrontTranspose(
     }
     if (IsLayoutAgnosticNode(cur_node) &&
         cur_node->PositionalInputs()[0]->Kind() ==
-            webnn::mojom::blink::Operand::Kind::kOutput) {
+            webnn::mojom::blink::Operand::Kind::kOutput &&
+        cur_node->Outputs()[0]->DependentOperators().size() == 1) {
       cur_node = cur_node->PositionalInputs()[0].Get()->Operator();
     } else {
       break;
@@ -141,11 +141,13 @@ void TransposeEliminationTransformer::HandleTranspose(
   if (transpose->PositionalInputs()[0]->Operator() != front_transpose) {
     layout_agnostic_node_back =
         transpose->PositionalInputs()[0].Get()->Operator();
-
-    auto front_transpose_deps =
-        front_transpose->Outputs()[0]->DependentOperators();
-    CHECK_EQ(front_transpose_deps.size(), 1u);
-    layout_agnostic_node_front = front_transpose_deps.begin()->Get();
+    MLOperator* cur_node = layout_agnostic_node_back;
+    while (cur_node != front_transpose) {
+      CHECK_EQ(cur_node->Inputs().size(), 1u);
+      CHECK(IsLayoutAgnosticNode(cur_node));
+      layout_agnostic_node_front = cur_node;
+      cur_node = cur_node->PositionalInputs()[0].Get()->Operator();
+    }
   }
 
   if (layout_agnostic_node_back != nullptr) {
@@ -159,8 +161,28 @@ void TransposeEliminationTransformer::HandleTranspose(
     }
   }
 
-  RemoveUnaryOperator(front_transpose);
+  auto original_front_transpose_deps_num =
+      front_transpose->Outputs()[0]->DependentOperators().size();
+  HeapHashSet<Member<MLOperator>>& transpose_deps =
+      transpose->Outputs()[0]->DependentOperators();
+
+  HeapHashSet<Member<MLOperator>> original_transpose_deps;
+  for (auto& dep : transpose_deps) {
+    original_transpose_deps.insert(dep);
+  }
+
   RemoveUnaryOperator(transpose);
+  if (original_front_transpose_deps_num == 1) {
+    RemoveUnaryOperator(front_transpose);
+  } else if (layout_agnostic_node_front == nullptr) {
+    for (auto& transpose_dep : original_transpose_deps) {
+      SwapInput(transpose_dep.Get(), front_transpose->Outputs()[0].Get(),
+                front_transpose_input_operand);
+    }
+  } else {
+    SwapInput(layout_agnostic_node_front, front_transpose->Outputs()[0].Get(),
+              front_transpose_input_operand);
+  }
 
   if (layout_agnostic_node_back != nullptr) {
     CHECK_NE(layout_agnostic_node_front, nullptr);
