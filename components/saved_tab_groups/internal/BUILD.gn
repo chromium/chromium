@@ -176,6 +176,7 @@ source_set("unit_tests") {
     "shared_tab_group_account_data_sync_bridge_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
     "startup_helper_unittest.cc",
+    "stats_unittest.cc",
     "tab_group_sync_bridge_mediator_unittest.cc",
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
