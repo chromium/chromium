@@ -10,6 +10,7 @@
 
 #include "third_party/skia/include/core/SkColorSpace.h"
 
+#if !defined(SKIA_COLOR_SPACE_PRIMARIES_OPERATOR_EQUAL)
 bool operator==(const SkColorSpacePrimaries& a,
                 const SkColorSpacePrimaries& b) {
   return a.fRX == b.fRX && a.fRY == b.fRY && a.fGX == b.fGX && a.fGY == b.fGY &&
@@ -20,6 +21,7 @@ bool operator!=(const SkColorSpacePrimaries& a,
                 const SkColorSpacePrimaries& b) {
   return !(a == b);
 }
+#endif
 
 namespace skia {
 
