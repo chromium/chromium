@@ -267,7 +267,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Store containing account passkeys. This may be null if the feature is
   // disabled.
-  raw_ptr<webauthn::PasskeyModel> passkey_store_;
+  raw_ptr<webauthn::PasskeyModel, DanglingUntriaged> passkey_store_;
 
   // The number of stores from which no updates have been received yet.
   int pending_store_updates_ = 0;

@@ -99,7 +99,8 @@ class PasswordsGrouper {
 
   void InitializePSLExtensionList(std::vector<std::string> psl_extension_list);
 
-  raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  raw_ptr<affiliations::AffiliationService, DanglingUntriaged>
+      affiliation_service_;
 
   // Structure used to keep track of the mapping between the credential's
   // sign-on realm and the group id.
