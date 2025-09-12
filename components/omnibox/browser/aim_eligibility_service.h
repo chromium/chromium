@@ -157,12 +157,12 @@ class AimEligibilityService : public KeyedService,
   // Record histograms for eligibility response change.
   void LogEligibilityResponseChange() const;
 
-  const raw_ref<PrefService> pref_service_;
+  const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
-  const raw_ptr<TemplateURLService> template_url_service_;
+  const raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription template_url_service_subscription_;
