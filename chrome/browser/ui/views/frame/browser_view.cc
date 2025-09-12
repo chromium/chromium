@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
@@ -3736,6 +3737,11 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
       break;
     }
   }
+
+  // TabDialogManager handles updates based on web contents resizing.
+  if (change.type != SplitTabChange::Type::kVisualsChanged) {
+    UpdateTabModalDialogBounds();
+  }
 }
 
 void BrowserView::TabChangedAt(content::WebContents* contents,
@@ -4756,6 +4762,21 @@ bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
              old_contents &&
          multi_contents_view_->GetInactiveContentsView()->web_contents() ==
              new_contents;
+}
+
+void BrowserView::UpdateTabModalDialogBounds() {
+  multi_contents_view_->ExecuteOnEachVisibleContentsView(
+      base::BindRepeating([](ContentsWebView* contents_view) {
+        if (contents_view->web_contents()) {
+          tabs::TabFeatures* tab_features =
+              tabs::TabInterface::GetFromContents(contents_view->web_contents())
+                  ->GetTabFeatures();
+          // When the browser is closing, TabFeatures may be destroyed.
+          if (tab_features) {
+            tab_features->tab_dialog_manager()->UpdateModalDialogBounds();
+          }
+        }
+      }));
 }
 
 void BrowserView::MaybeUpdateStoredFocusForWebContents(
