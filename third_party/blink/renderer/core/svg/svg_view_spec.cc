@@ -133,8 +133,6 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
     return false;
   }
 
-  // TODO(crbug.com/351564777): Remove `end` and `ptr`.
-  const CharType* end = UNSAFE_TODO(chars.data() + chars.size());
   while (position < chars.size() && chars[position] != ')') {
     ViewSpecFunctionType function_type = ScanViewSpecFunction(chars, position);
     if (function_type == kUnknown)
@@ -143,7 +141,6 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
     if (!SkipExactly<CharType>(chars, '(', position)) {
       return false;
     }
-    const CharType* ptr = UNSAFE_TODO(chars.data() + position);
 
     switch (function_type) {
       case kViewBox: {
@@ -151,14 +148,16 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
         float y = 0.0f;
         float width = 0.0f;
         float height = 0.0f;
-        if (!(ParseNumber(ptr, end, x) && ParseNumber(ptr, end, y) &&
-              ParseNumber(ptr, end, width) &&
-              ParseNumber(ptr, end, height, kDisallowWhitespace)))
+        auto span = chars.subspan(position);
+        if (!(ParseNumber(span, x) && ParseNumber(span, y) &&
+              ParseNumber(span, width) &&
+              ParseNumber(span, height, kDisallowWhitespace))) {
           return false;
+        }
         if (width < 0 || height < 0)
           return false;
         view_box_ = MakeGarbageCollected<SVGRect>(x, y, width, height);
-        position = ptr - chars.data();
+        position = span.data() - chars.data();
         break;
       }
       case kViewTarget: {
