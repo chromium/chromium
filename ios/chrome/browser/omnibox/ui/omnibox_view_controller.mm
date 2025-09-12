@@ -116,20 +116,20 @@ using base::UserMetricsAction;
 
   self.view.shouldGroupAccessibilityChildren = YES;
 
-  self.textField.omniboxTextInputDelegate = self;
-  self.textField.omniboxKeyboardDelegate = self;
+  self.textInput.omniboxTextInputDelegate = self;
+  self.textInput.omniboxKeyboardDelegate = self;
 
-  SetA11yLabelAndUiAutomationName(self.textField, IDS_ACCNAME_LOCATION,
+  SetA11yLabelAndUiAutomationName(self.textInput.view, IDS_ACCNAME_LOCATION,
                                   @"Address");
 
-  [self.textField
+  [self.textInput.view
       addInteraction:[[UIScribbleInteraction alloc] initWithDelegate:self]];
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.textField.placeholder = [self currentPlaceholderText];
+  self.textInput.placeholder = [self currentPlaceholderText];
 
   [_clearButton addTarget:self
                    action:@selector(clearButtonPressed)
@@ -149,8 +149,8 @@ using base::UserMetricsAction;
 
   // Reset the text after initial layout has been forced, see comment in
   // `OmniboxTextFieldIOS`.
-  if ([self.textField.text isEqualToString:@" "]) {
-    self.textField.text = @"";
+  if ([self.textInput.text isEqualToString:@" "]) {
+    self.textInput.text = @"";
   }
   [self updateClearButtonVisibility];
   [self updateLeadingImage];
@@ -179,16 +179,16 @@ using base::UserMetricsAction;
   [super viewIsAppearing:animated];
   if (_isLensOverlay) {
     self.semanticContentAttribute =
-        [self.textField bestSemanticContentAttribute];
-    [self.textField updateTextDirection];
+        [self.textInput bestSemanticContentAttribute];
+    [self.textInput updateTextDirection];
   }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  self.textField.selectedTextRange =
-      [self.textField textRangeFromPosition:self.textField.beginningOfDocument
-                                 toPosition:self.textField.beginningOfDocument];
+  self.textInput.selectedTextRange =
+      [self.textInput textRangeFromPosition:self.textInput.beginningOfDocument
+                                 toPosition:self.textInput.beginningOfDocument];
 
   [NSNotificationCenter.defaultCenter
       removeObserver:self
@@ -216,14 +216,18 @@ using base::UserMetricsAction;
   return self.view.textField;
 }
 
+- (id<OmniboxTextInput>)textInput {
+  return self.view.textField;
+}
+
 - (void)prepareOmniboxForScribble {
   [self.mutator prepareForScribble];
-  self.textField.placeholder = nil;
+  self.textInput.placeholder = nil;
 }
 
 - (void)cleanupOmniboxAfterScribble {
   [self.mutator cleanupAfterScribble];
-  self.textField.placeholder = [self currentPlaceholderText];
+  self.textInput.placeholder = [self currentPlaceholderText];
 }
 
 #pragma mark - OmniboxTextInputDelegate
@@ -242,7 +246,7 @@ using base::UserMetricsAction;
 - (void)textInputDidChange:(id<OmniboxTextInput>)textInput {
   [self updateLeadingImage];
   [self updateClearButtonVisibility];
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   if (self.forwardingOnDidChange) {
     return;
@@ -282,7 +286,7 @@ using base::UserMetricsAction;
     self.view.thumbnailButton.selected = NO;
   }
 
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   self.omniboxInteractedWhileFocused = NO;
   [self.mutator onDidBeginEditing];
@@ -410,14 +414,14 @@ using base::UserMetricsAction;
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   return [self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction] ||
-         [self.textField canPerformKeyboardAction:keyboardAction];
+         [self.textInput canPerformKeyboardAction:keyboardAction];
 }
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
     [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
-  } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
-    [self.textField performKeyboardAction:keyboardAction];
+  } else if ([self.textInput canPerformKeyboardAction:keyboardAction]) {
+    [self.textInput performKeyboardAction:keyboardAction];
   } else {
     NOTREACHED() << "Check canPerformKeyboardAction before!";
   }
@@ -442,12 +446,12 @@ using base::UserMetricsAction;
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
   self.view.thumbnailButton.selected = NO;
-  self.textField.placeholder = [self currentPlaceholderText];
+  self.textInput.placeholder = [self currentPlaceholderText];
   [self updateReturnKeyAvailability];
 }
 
 - (void)updateReturnKeyAvailability {
-  self.textField.allowsReturnKeyWithEmptyText =
+  self.textInput.allowsReturnKeyWithEmptyText =
       !!self.view.thumbnailImage ||
       [self.popupKeyboardDelegate
           canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey];
@@ -459,7 +463,7 @@ using base::UserMetricsAction;
   }
   _searchOrTypeURLPlaceholderText = [placeholderText copy];
 
-  self.textField.placeholder = [self currentPlaceholderText];
+  self.textInput.placeholder = [self currentPlaceholderText];
 }
 
 - (void)setSearchOnlyPlaceholderText:(NSString*)placeholderText {
@@ -467,7 +471,7 @@ using base::UserMetricsAction;
     return;
   }
   _searchOnlyPlaceholderText = [placeholderText copy];
-  self.textField.placeholder = [self currentPlaceholderText];
+  self.textInput.placeholder = [self currentPlaceholderText];
 }
 
 #pragma mark - EditViewAnimatee
@@ -483,16 +487,16 @@ using base::UserMetricsAction;
 #pragma mark - LocationBarOffsetProvider
 
 - (CGFloat)xOffsetForString:(NSString*)string {
-  return [self.textField offsetForString:string];
+  return [self.textInput offsetForString:string];
 }
 
 #pragma mark - private
 
 - (void)updateLeadingImage {
-  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
+  UIImage* image = self.textInput.text.length ? self.defaultLeadingImage
                                               : self.emptyTextLeadingImage;
   NSString* accessibilityID =
-      self.textField.text.length
+      self.textInput.text.length
           ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
           : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 
@@ -521,15 +525,15 @@ using base::UserMetricsAction;
 
 #pragma mark notification callbacks
 
-// Called on UITextInputCurrentInputModeDidChangeNotification for self.textField
+// Called on UITextInputCurrentInputModeDidChangeNotification for self.textInput
 - (void)textInputModeDidChange {
   // Only respond to language changes when the omnibox is first responder.
-  if (![self.textField isFirstResponder]) {
+  if (![self.textInput.view isFirstResponder]) {
     return;
   }
 
-  [self.textField updateTextDirection];
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  [self.textInput updateTextDirection];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   [self.mutator onTextInputModeChange];
 }
@@ -576,7 +580,7 @@ using base::UserMetricsAction;
 
 // Hides the clear button if the textfield is empty; shows it otherwise.
 - (void)updateClearButtonVisibility {
-  BOOL hasText = self.textField.text.length > 0;
+  BOOL hasText = self.textInput.text.length > 0;
   [self.view setClearButtonHidden:!hasText];
 }
 
@@ -587,7 +591,7 @@ using base::UserMetricsAction;
   _semanticContentAttribute = semanticContentAttribute;
 
   self.view.semanticContentAttribute = self.semanticContentAttribute;
-  self.textField.semanticContentAttribute = self.semanticContentAttribute;
+  self.textInput.view.semanticContentAttribute = self.semanticContentAttribute;
 }
 
 #pragma mark - UIMenuItem
