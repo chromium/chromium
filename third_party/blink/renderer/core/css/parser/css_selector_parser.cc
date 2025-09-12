@@ -58,7 +58,7 @@ bool IsHostPseudoSelector(const CSSSelector& selector) {
 // left even though they are written without one. This method returns the
 // correct implicit combinator. If no new combinator should be used,
 // it returns RelationType::kSubSelector.
-CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
+CSSSelector::RelationType GetImplicitCombinatorForMatching(
     CSSSelector::PseudoType pseudo_type) {
   switch (pseudo_type) {
     case CSSSelector::PseudoType::kPseudoSlotted:
@@ -79,8 +79,8 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
   }
 }
 
-bool NeedsImplicitShadowCombinatorForMatching(const CSSSelector& selector) {
-  return GetImplicitShadowCombinatorForMatching(selector.GetPseudoType()) !=
+bool NeedsImplicitCombinatorForMatching(const CSSSelector& selector) {
+  return GetImplicitCombinatorForMatching(selector.GetPseudoType()) !=
          CSSSelector::RelationType::kSubSelector;
 }
 
@@ -1326,7 +1326,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     selector.SetRelation(CSSSelector::kSubSelector);
   }
 
-  SplitCompoundAtImplicitShadowCrossingCombinator(reset_vector.AddedElements());
+  SplitCompoundAtImplicitCombinator(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
 }
 
@@ -2263,7 +2263,7 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
       output_[start_index_of_compound_selector];
 
   if (!has_q_name && DefaultNamespace() == g_star_atom &&
-      !NeedsImplicitShadowCombinatorForMatching(compound_selector)) {
+      !NeedsImplicitCombinatorForMatching(compound_selector)) {
     return;
   }
 
@@ -2294,7 +2294,7 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
     return;
   }
   if (tag != AnyQName() || is_host_pseudo ||
-      NeedsImplicitShadowCombinatorForMatching(compound_selector)) {
+      NeedsImplicitCombinatorForMatching(compound_selector)) {
     const bool is_implicit =
         determined_prefix == g_null_atom &&
         determined_element_name == CSSSelector::UniversalSelectorAtom() &&
@@ -2315,7 +2315,7 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
 // not the video element itself, but an element somewhere down in <video>'s
 // shadow DOM tree. Note that since we store compounds right-to-left, this may
 // require rearranging elements in memory (see the comment below).
-void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
+void CSSSelectorParser::SplitCompoundAtImplicitCombinator(
     base::span<CSSSelector> selectors) {
   // The simple selectors are stored in an array that stores
   // combinator-separated compound selectors from right-to-left. Yet, within a
@@ -2342,16 +2342,16 @@ void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
   //
   // slot[name=foo]::slotted(div) -> [ ::slotted(div), slot, [name=foo] ]
   for (size_t i = 1; i < selectors.size(); ++i) {
-    if (NeedsImplicitShadowCombinatorForMatching(selectors[i])) {
+    if (NeedsImplicitCombinatorForMatching(selectors[i])) {
       CSSSelector::RelationType relation =
-          GetImplicitShadowCombinatorForMatching(selectors[i].GetPseudoType());
+          GetImplicitCombinatorForMatching(selectors[i].GetPseudoType());
       std::rotate(selectors.begin(), selectors.begin() + i, selectors.end());
 
       base::span<CSSSelector> remaining = selectors.first(selectors.size() - i);
       // We might need to split the compound multiple times, since a number of
       // the relevant pseudo-elements can be combined, and they all need an
       // implicit combinator for matching.
-      SplitCompoundAtImplicitShadowCrossingCombinator(remaining);
+      SplitCompoundAtImplicitCombinator(remaining);
       remaining.back().SetRelation(relation);
       break;
     }
