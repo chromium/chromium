@@ -103,14 +103,6 @@ void RecordCountWithAndWithoutSuffix(const std::string& metric,
                                  /*buckets=*/50);
 }
 
-void RecordTimeWithAndWithoutSuffix(const std::string& metric,
-                                    base::TimeDelta duration,
-                                    const base::FilePath& file_path) {
-  base::UmaHistogramTimes(metric, duration);
-  std::string suffix = GetUmaSuffixForStore(file_path);
-  base::UmaHistogramTimes(metric + suffix, duration);
-}
-
 void RecordApplyUpdateResult(const std::string& base_metric,
                              ApplyUpdateResult result,
                              const base::FilePath& file_path) {
@@ -154,17 +146,13 @@ void RecordRemovalsHashesCount(const std::string& base_metric,
 }
 
 void RecordApplyUpdateDuration(const std::string& base_metric,
-                               base::TimeDelta duration,
-                               const base::FilePath& file_path) {
-  RecordTimeWithAndWithoutSuffix(base_metric + kApplyUpdateDuration, duration,
-                                 file_path);
+                               base::TimeDelta duration) {
+  base::UmaHistogramTimes(base_metric + kApplyUpdateDuration, duration);
 }
 
 void RecordVerifyChecksumDuration(const std::string& base_metric,
-                                  base::TimeDelta duration,
-                                  const base::FilePath& file_path) {
-  RecordTimeWithAndWithoutSuffix(base_metric + kVerifyChecksumDuration,
-                                 duration, file_path);
+                                  base::TimeDelta duration) {
+  base::UmaHistogramTimes(base_metric + kVerifyChecksumDuration, duration);
 }
 
 void RecordStoreReadResult(StoreReadResult result) {
@@ -558,8 +546,7 @@ void V4Store::ApplyUpdate(
                                 apply_update_type);
   if (metric.has_value()) {
     RecordApplyUpdateResult(metric.value(), apply_update_result, store_path_);
-    RecordApplyUpdateDuration(metric.value(), thread_timer.Elapsed(),
-                              store_path_);
+    RecordApplyUpdateDuration(metric.value(), thread_timer.Elapsed());
   }
 
   // Posting the task should be the last thing to do in this function.
@@ -1037,13 +1024,11 @@ bool V4Store::VerifyChecksum() {
     DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
              << "; expected: " << expected_checksum_b64 << "; store: " << *this;
 #endif
-    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
-                                 store_path_);
+    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
     return false;
   }
 
-  RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
-                               store_path_);
+  RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
   return true;
 }
 
