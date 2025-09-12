@@ -1310,8 +1310,6 @@ void WebContentsAccessibilityAndroid::
         BrowserAccessibilityAndroid* node) {
   CHECK(!obj.is_null());
 
-  // TODO(crbug.com/438515096): Refactor setting of unique id for android
-  // accessibility info.
   jint unique_id = node->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(
       env, obj, info, unique_id, node->IsCheckable(), node->IsClickable(),
