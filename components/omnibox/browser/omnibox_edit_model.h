@@ -459,6 +459,8 @@ class OmniboxEditModel {
       bool include_positional_info,
       int* label_prefix_length = nullptr);
 
+  std::u16string GetPopupAccessibilityLabelForAimButton();
+
   // The IPH message that sometimes appears at the bottom of the Omnibox is
   // informational only and cannot be selected/focused. Its a11y label therefore
   // has to be read at the end of the last suggestion.  Returns the label for

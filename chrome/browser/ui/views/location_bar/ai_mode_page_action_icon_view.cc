@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -59,10 +60,10 @@ AiModePageActionIconView::AiModePageActionIconView(
   SetUseTonalColorsWhenExpanded(true);
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
 
-  // The accessible name should show the full text, independent of the what the
-  // label text is set to.
+  // The accessible name prompts the user to ask Google AI Mode.
   GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL),
+      l10n_util::GetStringUTF16(
+          IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS),
       ax::mojom::NameFrom::kAttribute);
 }
 
