@@ -2071,11 +2071,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   const base::Value& target_info_value = target_infos->front();
   const base::Value::Dict* target_info = target_info_value.GetIfDict();
   ASSERT_TRUE(target_info);
-  const std::string* target_id = target_info->FindString("target_id");
+  const std::string* target_id = target_info->FindString("targetId");
   const std::string* type = target_info->FindString("type");
   const std::string* title = target_info->FindString("title");
   const std::string* url = target_info->FindString("url");
-  EXPECT_FALSE(target_id);
+  ASSERT_TRUE(target_id);
   ASSERT_TRUE(type);
   ASSERT_TRUE(title);
   ASSERT_TRUE(url);
@@ -4514,6 +4514,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
     EXPECT_THAT(response_received.FindStringByDottedPath("response.statusText"),
                 Pointee(std::string("OK")));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpenDevTools_FailWhenUnavailable) {
+  AttachToBrowserTarget();
+
+  SendCommandSync("Target.getTargets");
+  const base::Value::List* list = result()->FindList("targetInfos");
+  EXPECT_EQ(1u, list->size());
+  const std::string targetId = *list->front().GetDict().FindString("targetId");
+
+  base::Value::Dict params;
+  params.Set("targetId", targetId);
+  SendCommandSync("Target.openDevTools", std::move(params));
+
+  EXPECT_EQ(*error()->FindString("message"),
+            "Failed to create DevTools window");
 }
 
 }  // namespace content

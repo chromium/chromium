@@ -2463,7 +2463,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtectionDisabled,
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       OpensDevTools_FailsForNonBrowserTarget) {
+                       OpensDevTools_FailsForNonBrowserTargetSession) {
   AttachToTabTarget(web_contents());
 
   const base::Value::Dict* result = SendCommandSync("Target.getTargets");
@@ -2473,9 +2473,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   base::Value::Dict params;
   params.Set("targetId", targetId);
-  result = SendCommandSync("Target.openDevTools", std::move(params));
+  SendCommandSync("Target.openDevTools", std::move(params));
 
   EXPECT_EQ(*error()->FindString("message"), "Not allowed");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       OpensDevTools_FailsForNonExistantTarget) {
+  AttachToBrowserTarget();
+
+  base::Value::Dict params;
+  params.Set("targetId", "<NonExistantTargetId>");
+  SendCommandSync("Target.openDevTools", std::move(params));
+
+  EXPECT_EQ(*error()->FindString("message"), "No target with given id found");
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensForPageTarget) {
