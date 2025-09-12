@@ -446,6 +446,31 @@ suite('PaymentsSection', function() {
     paymentsManagerProxy.assertExpectations(expectations);
   });
 
+  // Regression test for https://crbug.com/442105451, to make sure that the
+  // mandatory auth pref is only updated via payment_section.ts and not the
+  // general settings pref code.
+  test('verifyMandatoryAuthToggleHasNoSetPref', async function() {
+    loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+          payment_methods_mandatory_reauth: {value: false},
+        });
+
+    const mandatoryAuthToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mandatoryAuthToggle');
+
+    // <if expr="is_win or is_macosx">
+    assertTrue(!!mandatoryAuthToggle);
+    assertTrue(mandatoryAuthToggle.hasAttribute('no-set-pref'));
+    // </if>
+    // <if expr="not is_win and not is_macosx">
+    assertFalse(!!mandatoryAuthToggle);
+    // </if>
+  });
+
   // --------- End of Reauth Tests ---------
 
   test('verifyCvcStorageToggleIsShown', async function() {
