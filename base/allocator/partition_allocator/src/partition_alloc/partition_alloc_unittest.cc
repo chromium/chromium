@@ -5367,12 +5367,12 @@ TEST_P(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
-#if PA_BUILDFLAG(IS_FUCHSIA)
-// TODO: https://crbug.com/331366007 - re-enable on Fuchsia once bug is fixed.
+#if PA_BUILDFLAG(IS_FUCHSIA) || PA_BUILDFLAG(IS_CHROMEOS)
+// TODO: https://crbug.com/331366007 - re-enable once bug is fixed.
 TEST_P(PartitionAllocTest, DISABLED_CheckReservationType) {
 #else
 TEST_P(PartitionAllocTest, CheckReservationType) {
-#endif  // PA_BUILDFLAG(IS_FUCHSIA)
+#endif  // PA_BUILDFLAG(IS_FUCHSIA) || PA_BUILDFLAG(IS_CHROMEOS)
   ReservationOffsetTable table = allocator.root()->GetReservationOffsetTable();
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
