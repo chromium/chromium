@@ -1231,46 +1231,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source);
     return;
   }
-  // Suggestion generators lifespan should be limited to only when they are
-  // needed.
-  suggestion_generators_.clear();
-  // TODO(crbug.com/409962888): Populate `suggestion_generators_` here.
-  suggestion_generators_.push_back(
-      std::make_unique<AutofillAiSuggestionGenerator>(client()));
-  suggestion_generators_.push_back(std::make_unique<IbanSuggestionGenerator>());
-  suggestion_generators_.push_back(
-      std::make_unique<MerchantPromoCodeSuggestionGenerator>());
-  if (client().GetAutocompleteHistoryManager()) {
-    suggestion_generators_.push_back(
-        std::make_unique<AutocompleteSuggestionGenerator>(
-            client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
-  }
-  if (client().GetValuablesDataManager()) {
-  suggestion_generators_.push_back(
-      std::make_unique<LoyaltyCardSuggestionGenerator>(
-          client().GetValuablesDataManager()->GetWeakPtr(),
-          client().GetLastCommittedPrimaryMainFrameURL()));
-  }
-  if (client().GetComposeDelegate()) {
-    suggestion_generators_.push_back(
-        std::make_unique<ComposeSuggestionGenerator>(
-            client().GetComposeDelegate(), trigger_source));
-  }
-  if (auto* delegate = client().GetIdentityCredentialDelegate()) {
-    if (auto suggestion_generator =
-            delegate->GetIdentityCredentialSuggestionGenerator()) {
-      suggestion_generators_.push_back(std::move(suggestion_generator));
-    }
-  }
-  if (PasswordManagerDelegate* password_delegate =
-          client().GetPasswordManagerDelegate(field.global_id())) {
-    suggestion_generators_.push_back(
-        std::make_unique<PasskeyAutofillSuggestionGenerator>(
-            *password_delegate));
-  }
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
+  InitializeSuggestionGenerators(context, field.global_id());
 
   auto barrier_callback = base::BarrierCallback<
       std::pair<SuggestionGenerator::SuggestionDataSource,
@@ -3590,6 +3554,64 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
     case FormType::kUnknownFormType:
       // FastCheckout only supports address and credit card forms.
       NOTREACHED();
+  }
+}
+
+void BrowserAutofillManager::InitializeSuggestionGenerators(
+    const SuggestionsContext& context,
+    FieldGlobalId field_id) {
+  // Suggestion generators lifespan should be limited to only when they are
+  // needed.
+  suggestion_generators_.clear();
+  const DenseSet<FillingProduct> relevant_filling_products =
+      context.GetFillingProductsToSuggest();
+
+  if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
+    suggestion_generators_.push_back(
+        std::make_unique<AutofillAiSuggestionGenerator>(client()));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kIban)) {
+    suggestion_generators_.push_back(
+        std::make_unique<IbanSuggestionGenerator>());
+  }
+  if (relevant_filling_products.contains(FillingProduct::kMerchantPromoCode)) {
+    suggestion_generators_.push_back(
+        std::make_unique<MerchantPromoCodeSuggestionGenerator>());
+  }
+  if (relevant_filling_products.contains(FillingProduct::kAutocomplete) &&
+      client().GetAutocompleteHistoryManager()) {
+    suggestion_generators_.push_back(
+        std::make_unique<AutocompleteSuggestionGenerator>(
+            client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kLoyaltyCard) &&
+      client().GetValuablesDataManager()) {
+    suggestion_generators_.push_back(
+        std::make_unique<LoyaltyCardSuggestionGenerator>(
+            client().GetValuablesDataManager()->GetWeakPtr(),
+            client().GetLastCommittedPrimaryMainFrameURL()));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kCompose) &&
+      client().GetComposeDelegate()) {
+    suggestion_generators_.push_back(
+        std::make_unique<ComposeSuggestionGenerator>(
+            client().GetComposeDelegate(), context.trigger_source));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kIdentityCredential)) {
+    if (auto* delegate = client().GetIdentityCredentialDelegate()) {
+      if (auto suggestion_generator =
+              delegate->GetIdentityCredentialSuggestionGenerator()) {
+        suggestion_generators_.push_back(std::move(suggestion_generator));
+      }
+    }
+  }
+  if (relevant_filling_products.contains(FillingProduct::kPasskey)) {
+    if (PasswordManagerDelegate* password_delegate =
+            client().GetPasswordManagerDelegate(field_id)) {
+      suggestion_generators_.push_back(
+          std::make_unique<PasskeyAutofillSuggestionGenerator>(
+              *password_delegate));
+    }
   }
 }
 

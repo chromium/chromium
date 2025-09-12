@@ -659,6 +659,11 @@ class BrowserAutofillManager : public AutofillManager {
       autofill_metrics::FormEventLoggerBase::FormIdentificationTime
           identification_time);
 
+  // Populates `suggestion_generators_` with those capable of producing
+  // suggestions for field with `field_id` given `context`.
+  void InitializeSuggestionGenerators(const SuggestionsContext& context,
+                                      FieldGlobalId field_id);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_ =
