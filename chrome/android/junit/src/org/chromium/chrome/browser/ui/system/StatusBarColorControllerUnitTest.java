@@ -31,7 +31,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
@@ -218,9 +217,6 @@ public class StatusBarColorControllerUnitTest {
 
     private void initialize(
             boolean isTablet, boolean isInDesktopWindow, boolean supportEdgeToEdge) {
-        OneshotSupplierImpl<DesktopWindowStateManager> desktopWindowStateManagerSupplier =
-                new OneshotSupplierImpl<>();
-        desktopWindowStateManagerSupplier.set(mDesktopWindowStateManager);
         AppHeaderUtils.setAppInDesktopWindowForTesting(isInDesktopWindow);
         mStatusBarColorController =
                 new StatusBarColorController(
@@ -233,7 +229,7 @@ public class StatusBarColorControllerUnitTest {
                         mActivityTabProvider,
                         mTopUiThemeColorProvider,
                         mSystemBarColorHelper,
-                        desktopWindowStateManagerSupplier,
+                        mDesktopWindowStateManager,
                         mOverviewColorSupplier,
                         supportEdgeToEdge);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

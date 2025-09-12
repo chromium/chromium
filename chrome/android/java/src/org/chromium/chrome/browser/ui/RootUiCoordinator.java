@@ -244,8 +244,6 @@ public class RootUiCoordinator
 
     protected final ActivityTabProvider mActivityTabProvider;
     protected ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    protected final OneshotSupplierImpl<DesktopWindowStateManager>
-            mDesktopWindowStateManagerSupplier = new OneshotSupplierImpl<>();
 
     protected @Nullable FindToolbarManager mFindToolbarManager;
     private @Nullable FindToolbarObserver mFindToolbarObserver;
@@ -537,6 +535,7 @@ public class RootUiCoordinator
                         shouldAllowBrightThemeColors(),
                         shouldAllowThemingOnTablets());
 
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mStatusBarColorController =
                 new StatusBarColorController(
                         mActivity.getWindow(),
@@ -548,7 +547,7 @@ public class RootUiCoordinator
                         mActivityTabProvider,
                         mTopUiThemeColorProvider,
                         edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
-                        mDesktopWindowStateManagerSupplier,
+                        mDesktopWindowStateManager,
                         mOverviewColorSupplier,
                         NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(mIsTablet));
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -581,10 +580,6 @@ public class RootUiCoordinator
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsManager);
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
-        mDesktopWindowStateManager = desktopWindowStateManager;
-        if (mDesktopWindowStateManager != null) {
-            mDesktopWindowStateManagerSupplier.set(mDesktopWindowStateManager);
-        }
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             mExclusiveAccessManager =
