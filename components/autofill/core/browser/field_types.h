@@ -886,9 +886,10 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
   NOTREACHED();
 }
 
+namespace internal {
 consteval std::array<FieldTypeSet,
                      base::to_underlying(FieldTypeGroup::kMaxValue) + 1>
-FieldTypesByGroupValue() {
+FieldTypesByGroupHelper() {
   constexpr auto kMaxValue = base::to_underlying(FieldTypeGroup::kMaxValue);
   std::array<FieldTypeSet, kMaxValue + 1> map{};
   for (FieldType field_type : FieldTypeSet::all()) {
@@ -897,9 +898,10 @@ FieldTypesByGroupValue() {
   }
   return map;
 }
+}  // namespace internal
 
 constexpr FieldTypeSet FieldTypesOfGroup(FieldTypeGroup group) {
-  return FieldTypesByGroupValue()[base::to_underlying(group)];
+  return internal::FieldTypesByGroupHelper()[base::to_underlying(group)];
 }
 
 }  // namespace autofill
