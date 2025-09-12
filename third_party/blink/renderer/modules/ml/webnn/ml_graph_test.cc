@@ -759,7 +759,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*where_value=*/{webnn::SupportedDataTypes::All(), kMaxRank}});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),
-        blink::WebNNContextToken());
+        blink::WebNNContextToken(), mojo::ScopedDataPipeProducerHandle());
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

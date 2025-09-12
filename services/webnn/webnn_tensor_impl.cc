@@ -72,7 +72,10 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   }
 
   // TODO(https://crbug.com/40278771): Generate error using MLContext.
-  if (PackedByteLength() < src_buffer.size()) {
+  // The size of src_buffer should be either equal to the packed byte length of
+  // the tensor, or zero, which requires a valid write tensor consumer.
+  if ((src_buffer.size() != PackedByteLength() && src_buffer.size() != 0) ||
+      (src_buffer.size() == 0 && !context_->HasValidWriteTensorConsumer())) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }

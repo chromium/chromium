@@ -27,6 +27,7 @@ class ContextImplOrt final : public WebNNContextImpl {
                  WebNNContextProviderImpl* context_provider,
                  const EpWorkarounds& ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
+                 mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
                  scoped_refptr<Environment> env,
                  gpu::CommandBufferId command_buffer_id,
                  std::unique_ptr<ScopedSequence> sequence,

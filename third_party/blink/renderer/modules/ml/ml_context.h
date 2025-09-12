@@ -125,6 +125,10 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   void OnGraphCreated(MLGraph* graph);
 
+  const mojo::ScopedDataPipeProducerHandle& write_tensor_producer() const {
+    return write_tensor_producer_;
+  }
+
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
 
@@ -147,6 +151,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // hardware accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNContext> context_remote_;
   webnn::ContextProperties properties_;
+
+  mojo::ScopedDataPipeProducerHandle write_tensor_producer_;
 
   // Identifies this `WebNNContext` mojo instance in the service process.
   const blink::WebNNContextToken webnn_handle_;

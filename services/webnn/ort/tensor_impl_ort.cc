@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
@@ -87,23 +88,26 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
       /*exclusive_resources=*/
       std::move(exclusive_resources),
       base::BindOnce(
-          [](scoped_refptr<QueueableResourceState<BufferContentOrt>>
+          [](base::WeakPtr<WebNNContextImpl> context,
+             scoped_refptr<QueueableResourceState<BufferContentOrt>>
                  buffer_state,
              mojo_base::BigBuffer src_buffer, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
-            scoped_trace.AddStep("Begin write");
-            // Memory copies are fast, avoid the overhead of posting a task to
-            // the thread pool and do the work synchronously.
-            base::span<uint8_t> buffer_span =
-                buffer_state->GetExclusivelyLockedResource()->AsSpan();
-            CHECK_EQ(src_buffer.size(), buffer_span.size());
-            buffer_span.copy_from(src_buffer);
-
-            scoped_trace.AddStep("End write");
+            if (context) {
+              scoped_trace.AddStep("Begin write");
+              // Memory copies are fast, avoid the overhead of posting a task to
+              // the thread pool and do the work synchronously.
+              base::span<uint8_t> buffer_span =
+                  buffer_state->GetExclusivelyLockedResource()->AsSpan();
+              context->ReadDataFromBigBufferOrDataPipe(std::move(src_buffer),
+                                                       buffer_span);
+              scoped_trace.AddStep("End write");
+            }
             // Unlock the buffer contents.
             std::move(completion_closure).Run();
           },
-          buffer_state_, std::move(src_buffer), std::move(scoped_trace)));
+          context_->AsWeakPtr(), buffer_state_, std::move(src_buffer),
+          std::move(scoped_trace)));
   task->Enqueue();
 }
 

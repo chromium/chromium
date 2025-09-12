@@ -587,6 +587,7 @@ ContextImplDml::ContextImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     gpu::CommandBufferId command_buffer_id,
@@ -596,6 +597,7 @@ ContextImplDml::ContextImplDml(
                        context_provider,
                        GetProperties(adapter->max_supported_feature_level()),
                        std::move(options),
+                       std::move(write_tensor_consumer),
                        command_buffer_id,
                        std::move(sequence),
                        std::move(task_runner)),
@@ -866,7 +868,8 @@ void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
   if (!is_uma_mapping_allowed || !adapter_->IsUMA() ||
       adapter_->command_queue()->GetCompletedValue() <
           dst_tensor->last_submission_fence_value()) {
-    hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
+    hr = CreateUploadBuffer(adapter_->d3d12_device(),
+                            dst_tensor->PackedByteLength(),
                             L"WebNN_Upload_Buffer", buffer_to_map);
     if (FAILED(hr)) {
       HandleContextLostOrCrash("Failed to create the upload buffer.", hr);
@@ -887,9 +890,10 @@ void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
   CHECK(mapped_buffer_data);
 
   // SAFETY: `buffer_to_map` was constructed with size `src_buffer.size()`.
-  UNSAFE_BUFFERS(
-      base::span(static_cast<uint8_t*>(mapped_buffer_data), src_buffer.size()))
-      .copy_from(src_buffer);
+  ReadDataFromBigBufferOrDataPipe(
+      std::move(src_buffer),
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(mapped_buffer_data),
+                                dst_tensor->PackedByteLength())));
 
   buffer_to_map->Unmap(0, nullptr);
 
@@ -902,7 +906,7 @@ void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
     }
 
     command_recorder_->UploadTensorWithBarrier(
-        dst_tensor, std::move(buffer_to_map), src_buffer.size());
+        dst_tensor, std::move(buffer_to_map), dst_tensor->PackedByteLength());
 
     // TODO(crbug.com/40278771): consider not submitting after every write.
     // CloseAndExecute() only needs to be called once, when the tensor is read

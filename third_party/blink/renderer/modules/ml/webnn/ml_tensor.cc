@@ -263,7 +263,14 @@ void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
   }
 
   // Copy src data.
-  remote_tensor_->WriteTensor(src_data);
+  if (ml_context_->write_tensor_producer() &&
+      src_data.size() > mojo_base::BigBuffer::kMaxInlineBytes &&
+      ml_context_->write_tensor_producer()->WriteAllData(src_data) ==
+          MOJO_RESULT_OK) {
+    remote_tensor_->WriteTensor({});
+  } else {
+    remote_tensor_->WriteTensor(src_data);
+  }
 }
 
 void MLTensor::OnConnectionError() {

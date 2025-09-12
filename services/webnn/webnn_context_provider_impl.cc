@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -45,6 +46,9 @@
 namespace webnn {
 
 namespace {
+
+// Whether to use mojo data pipe for transferring tensor data between processes.
+BASE_FEATURE(kWebNNUseDataPipe, base::FEATURE_ENABLED_BY_DEFAULT);
 
 WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
 
@@ -185,6 +189,17 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   RecordDeviceType(options->device);
 
+  mojo::ScopedDataPipeProducerHandle write_tensor_producer;
+  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer;
+  if (base::FeatureList::IsEnabled(kWebNNUseDataPipe)) {
+    constexpr base::ByteCount kDataPipeSize = base::MiB(16);
+    MojoResult result = mojo::CreateDataPipe(
+        kDataPipeSize.InBytes(), write_tensor_producer, write_tensor_consumer);
+    if (result != MOJO_RESULT_OK) {
+      LOG(WARNING) << "Failed to create a mojo data pipe.";
+    }
+  }
+
 #if BUILDFLAG(IS_WIN)
   if (ort::ShouldCreateOrtContext(*options)) {
     base::expected<scoped_refptr<ort::Environment>, std::string>
@@ -196,16 +211,16 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       context_impl = base::MakeRefCounted<ort::ContextImplOrt>(
           std::move(receiver), this,
           env_creation_results.value()->GetEpWorkarounds(options->device),
-          std::move(options), std::move(env_creation_results.value()),
-          command_buffer_id, std::move(sequence),
-          std::move(scheduler_task_runner));
+          std::move(options), std::move(write_tensor_consumer),
+          std::move(env_creation_results.value()), command_buffer_id,
+          std::move(sequence), std::move(scheduler_task_runner));
     }
   } else if (dml::ShouldCreateDmlContext(*options)) {
     base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
         context_creation_results = dml::CreateContextFromOptions(
-            std::move(options), gpu_feature_info_, gpu_info_,
-            shared_context_state_.get(), std::move(receiver), this,
-            command_buffer_id, std::move(sequence),
+            std::move(options), std::move(write_tensor_consumer),
+            gpu_feature_info_, gpu_info_, shared_context_state_.get(),
+            std::move(receiver), this, command_buffer_id, std::move(sequence),
             std::move(scheduler_task_runner));
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
@@ -223,6 +238,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         && base::mac::GetCPUType() == base::mac::CPUType::kArm
 #endif  // BUILDFLAG(IS_MAC)
     ) {
+      // Using mojo data pipe is not yet implemented in CoreML backend.
+      write_tensor_producer.reset();
+      write_tensor_consumer.reset();
       context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
           std::move(receiver), this, std::move(options), command_buffer_id,
           std::move(sequence), std::move(scheduler_task_runner));
@@ -233,7 +251,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {
     context_impl = base::MakeRefCounted<tflite::ContextImplTflite>(
-        std::move(receiver), this, std::move(options), command_buffer_id,
+        std::move(receiver), this, std::move(options),
+        std::move(write_tensor_consumer), command_buffer_id,
         std::move(sequence), std::move(scheduler_task_runner));
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
@@ -251,9 +270,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   const blink::WebNNContextToken& context_handle = context_impl->handle();
   impls_.emplace(std::move(context_impl));
 
-  auto success = mojom::CreateContextSuccess::New(std::move(remote),
-                                                  std::move(context_properties),
-                                                  std::move(context_handle));
+  auto success = mojom::CreateContextSuccess::New(
+      std::move(remote), std::move(context_properties),
+      std::move(context_handle), std::move(write_tensor_producer));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }
