@@ -253,7 +253,8 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
       // then no scrolling really ever occurs (even though we still send
       // GestureScrollBegin).
       touch_scroll_started_sent_ = true;
-      touch_event_queue_.PrependTouchScrollNotification();
+      touch_event_queue_.PrependTouchScrollNotification(
+          gesture_event.event.primary_unique_touch_event_id);
     }
   }
 

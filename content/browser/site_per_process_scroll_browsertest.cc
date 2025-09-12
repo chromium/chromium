@@ -7,11 +7,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_per_process_browsertest.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/public/common/content_switches.h"
@@ -24,6 +26,8 @@
 #include "content/test/render_document_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/native_theme/features/native_theme_features.h"
@@ -919,8 +923,171 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollLocalSubframeInOOPIF) {
   ack_observer.Wait();
 }
 
+class OOPIFScrollBubblingTest : public SitePerProcessBrowserTest {
+ public:
+  OOPIFScrollBubblingTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kAsyncTouchMovesImmediatelyAfterScroll,
+        /* enabled= */ true);
+  }
+  ~OOPIFScrollBubblingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
+ public:
+  TouchMoveInjectingObserver(
+      RenderWidgetHost* target_widget,
+      base::WeakPtr<SyntheticGestureController> synthetic_gesture_controller,
+      base::RunLoop* run_loop)
+      : target_rwh_(static_cast<RenderWidgetHostImpl*>(target_widget)),
+        gesture_controller_(synthetic_gesture_controller),
+        run_loop_(run_loop) {}
+
+  TouchMoveInjectingObserver(const TouchMoveInjectingObserver&) = delete;
+  TouchMoveInjectingObserver& operator=(const TouchMoveInjectingObserver&) =
+      delete;
+
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
+    const RenderWidgetHostViewBase* view =
+        static_cast<const RenderWidgetHostViewBase*>(widget.GetView());
+    bool is_child_view = view->IsRenderWidgetHostViewChildFrame();
+    if (is_child_view) {
+      OnInputEventOnChildFrame(event);
+      return;
+    }
+    OnInputEventOnRootFrame(event);
+  }
+
+  bool root_view_has_seen_gsu_for_async_touch_move() const {
+    return root_view_has_seen_gsu_for_async_touch_move_;
+  }
+
+ private:
+  void OnInputEventOnChildFrame(const blink::WebInputEvent& event) {
+    if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput})
+          ->PostTask(FROM_HERE, base::BindOnce(
+                                    [](base::WeakPtr<SyntheticGestureController>
+                                           gesture_controller) {
+                                      if (!gesture_controller) {
+                                        return;
+                                      }
+                                      gesture_controller->DispatchNextEvent(
+                                          base::TimeTicks::Now());
+                                    },
+                                    gesture_controller_));
+      has_seen_gesture_scroll_begin_ = true;
+      return;
+    }
+    if (event.GetType() == blink::WebInputEvent::Type::kTouchMove &&
+        has_seen_gesture_scroll_begin_ &&
+        first_touch_move_after_scroll_begin_id_ == -1) {
+      first_touch_move_after_scroll_begin_id_ =
+          static_cast<const blink::WebTouchEvent&>(event).unique_touch_event_id;
+      return;
+    }
+  }
+
+  void OnInputEventOnRootFrame(const blink::WebInputEvent& event) {
+    if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollUpdate) {
+      return;
+    }
+    const blink::WebGestureEvent& gesture_event =
+        static_cast<const blink::WebGestureEvent&>(event);
+    if (gesture_event.unique_touch_event_id ==
+        first_touch_move_after_scroll_begin_id_) {
+      ASSERT_FALSE(root_view_has_seen_gsu_for_async_touch_move_);
+      root_view_has_seen_gsu_for_async_touch_move_ = true;
+      run_loop_->Quit();
+    }
+  }
+  int first_touch_move_after_scroll_begin_id_ = -1;
+  bool root_view_has_seen_gsu_for_async_touch_move_ = false;
+  bool has_seen_gesture_scroll_begin_ = false;
+  raw_ptr<RenderWidgetHostImpl> target_rwh_;
+  base::WeakPtr<SyntheticGestureController> gesture_controller_;
+  raw_ptr<base::RunLoop> run_loop_;
+};
+
+// The test is flaky on Android, see crbug.com/443928502
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ScrollBubblingWithTouchMoveInjection \
+  DISABLED_ScrollBubblingWithTouchMoveInjection
+#else
+#define MAYBE_ScrollBubblingWithTouchMoveInjection \
+  ScrollBubblingWithTouchMoveInjection
+#endif
+IN_PROC_BROWSER_TEST_P(OOPIFScrollBubblingTest,
+                       MAYBE_ScrollBubblingWithTouchMoveInjection) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/scrollable_page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  RenderWidgetHostImpl* root_rwh =
+      root->current_frame_host()->GetRenderWidgetHost();
+  RenderWidgetHostViewBase* root_view =
+      static_cast<RenderWidgetHostViewBase*>(root_rwh->GetView());
+
+  FrameTreeNode* iframe_node = root->child_at(0);
+  GURL url_domain_b(embedded_test_server()->GetURL(
+      "b.com", "/body_overflow_hidden_blocking_touch_handlers.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, url_domain_b));
+  WaitForHitTestData(iframe_node->current_frame_host());
+  RenderWidgetHostImpl* iframe_rwh =
+      iframe_node->current_frame_host()->GetRenderWidgetHost();
+
+  gfx::Rect iframe_bounds =
+      iframe_node->current_frame_host()->GetView()->GetViewBounds();
+  float scale_factor =
+      frame_observer.LastRenderFrameMetadata().page_scale_factor;
+  gfx::PointF scroll_pos(
+      std::ceil((iframe_bounds.x() - root_view->GetViewBounds().x() + 10) *
+                scale_factor),
+      std::ceil((iframe_bounds.y() - root_view->GetViewBounds().y() + 10) *
+                scale_factor));
+
+  SyntheticSmoothScrollGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor = scroll_pos;
+  params.distances.push_back(gfx::Vector2d(0, -200));  // Scroll down.
+  params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
+
+  auto gesture = std::make_unique<SyntheticSmoothScrollGesture>(params);
+
+  base::RunLoop run_loop;
+  root_rwh->CreateSyntheticGestureControllerIfNecessary();
+  root_rwh->SyntheticGestureControllerForTesting()
+      ->SetRendererInitializedForTesting(true);
+  root_rwh->QueueSyntheticGesture(std::move(gesture), base::DoNothing());
+
+  TouchMoveInjectingObserver observer(
+      iframe_rwh,
+      root_rwh->SyntheticGestureControllerForTesting()->GetWeakPtr(),
+      &run_loop);
+
+  root->current_frame_host()->GetRenderWidgetHost()->AddInputEventObserver(
+      &observer);
+  iframe_rwh->AddInputEventObserver(&observer);
+  run_loop.Run();
+
+  EXPECT_TRUE(observer.root_view_has_seen_gsu_for_async_touch_move());
+
+  root->current_frame_host()->GetRenderWidgetHost()->RemoveInputEventObserver(
+      &observer);
+  iframe_rwh->RemoveInputEventObserver(&observer);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ScrollingIntegrationTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         OOPIFScrollBubblingTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessScrollAnchorTest,

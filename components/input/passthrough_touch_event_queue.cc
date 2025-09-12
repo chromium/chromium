@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/input/touch_timeout_handler.h"
 #include "components/input/web_touch_event_traits.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -117,9 +119,16 @@ void PassthroughTouchEventQueue::QueueEvent(
   SendTouchEventImmediately(&cloned_event, true, dispatch_callback);
 }
 
-void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
+void PassthroughTouchEventQueue::PrependTouchScrollNotification(
+    uint32_t primary_unique_touch_event_id) {
   TRACE_EVENT0("input",
                "PassthroughTouchEventQueue::PrependTouchScrollNotification");
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
+    send_touch_events_async_ = true;
+    SetAckStateForPendingTouchMovesFromSequence(primary_unique_touch_event_id);
+  }
 
   TouchEventWithLatencyInfo touch(
       WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
@@ -130,6 +139,35 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
     ScopedDispatchToRendererCallback dispatch_callback(
         client_->GetDispatchToRendererCallback());
     SendTouchEventImmediately(&touch, true, dispatch_callback.callback);
+  }
+}
+
+void PassthroughTouchEventQueue::SetAckStateForPendingTouchMovesFromSequence(
+    uint32_t primary_unique_touch_event_id) {
+  if (curr_sequence_down_event_id_ != primary_unique_touch_event_id) {
+    // The touch sequence that started scroll has ended.
+    return;
+  }
+
+  CHECK(processing_acks_, base::NotFatalUntil::M143);
+
+  // Ack all outstanding touches in the current sequence to unblock the
+  // browser.
+  for (auto& it : outstanding_touches_) {
+    if (it.event.GetType() != WebInputEvent::Type::kTouchMove) {
+      break;
+    }
+
+    auto& outstanding_touch =
+        const_cast<TouchEventWithLatencyInfoAndAckState&>(it);
+    if (it.ack_state() == blink::mojom::InputEventResultState::kUnknown) {
+      // Based on the CHECK above we are already in middle of processing acks,
+      // we can just set them ignored here and the existing loop can process
+      // acks for these events as well.
+      outstanding_touch.set_ack_info(
+          blink::mojom::InputEventResultSource::kBrowser,
+          blink::mojom::InputEventResultState::kIgnored);
+    }
   }
 }
 
@@ -303,6 +341,12 @@ void PassthroughTouchEventQueue::SendTouchEventImmediately(
       *last_sent_touchevent_ = touch->event;
     else
       last_sent_touchevent_ = std::make_unique<WebTouchEvent>(touch->event);
+  }
+
+  if (touch->event.IsTouchSequenceStart()) {
+    curr_sequence_down_event_id_ = touch->event.unique_touch_event_id;
+  } else if (touch->event.IsTouchSequenceEnd()) {
+    curr_sequence_down_event_id_.reset();
   }
 
   if (timeout_handler_)
