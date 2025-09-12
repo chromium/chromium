@@ -65,7 +65,8 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
       std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>;
 
   // The ProfileAttributesStorageIOS owned by this instance.
-  MutableProfileAttributesStorageIOS profile_attributes_storage_;
+  std::unique_ptr<MutableProfileAttributesStorageIOS>
+      profile_attributes_storage_;
 
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 

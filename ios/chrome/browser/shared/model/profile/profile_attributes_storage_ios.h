@@ -13,7 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -127,7 +127,7 @@ class ProfileAttributesStorageIOS {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  protected:
-  raw_ptr<PrefService> prefs_;
+  const raw_ref<PrefService> prefs_;
 
   base::ObserverList<ProfileAttributesStorageObserverIOS, /*check_empty=*/true>
       observers_;

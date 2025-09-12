@@ -17,9 +17,15 @@
 #import "ios/chrome/test/testing_application_context.h"
 
 TestProfileManagerIOS::TestProfileManagerIOS()
-    : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
-      profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
+    : profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
+  CHECK(GetApplicationContext()->GetLocalState())
+      << "The LocalState PrefService must exist! You probably want to "
+         "instantiate an IOSChromeScopedTestingLocalState before this class.";
   CHECK_EQ(GetApplicationContext()->GetProfileManager(), nullptr);
+
+  profile_attributes_storage_ =
+      std::make_unique<MutableProfileAttributesStorageIOS>(
+          GetApplicationContext()->GetLocalState());
 
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
@@ -87,7 +93,7 @@ std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() const {
 }
 
 bool TestProfileManagerIOS::HasProfileWithName(std::string_view name) const {
-  return profile_attributes_storage_.HasProfileWithName(name);
+  return profile_attributes_storage_->HasProfileWithName(name);
 }
 
 bool TestProfileManagerIOS::CanCreateProfileWithName(
@@ -96,12 +102,12 @@ bool TestProfileManagerIOS::CanCreateProfileWithName(
 }
 
 std::string TestProfileManagerIOS::ReserveNewProfileName() {
-  return profile_attributes_storage_.ReserveNewProfileName();
+  return profile_attributes_storage_->ReserveNewProfileName();
 }
 
 bool TestProfileManagerIOS::CanDeleteProfileWithName(
     std::string_view name) const {
-  return profile_attributes_storage_.CanDeleteProfileWithName(name);
+  return profile_attributes_storage_->CanDeleteProfileWithName(name);
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(
@@ -135,7 +141,7 @@ bool TestProfileManagerIOS::CreateProfileAsync(
 }
 
 void TestProfileManagerIOS::MarkProfileForDeletion(std::string_view name) {
-  profile_attributes_storage_.MarkProfileForDeletion(name);
+  profile_attributes_storage_->MarkProfileForDeletion(name);
 
   // If the profile is not loaded, return.
   auto iter = profiles_map_.find(name);
@@ -161,31 +167,31 @@ void TestProfileManagerIOS::PurgeProfilesMarkedForDeletion(
 
 ProfileAttributesStorageIOS*
 TestProfileManagerIOS::GetProfileAttributesStorage() {
-  return &profile_attributes_storage_;
+  return profile_attributes_storage_.get();
 }
 
 base::FilePath TestProfileManagerIOS::GetProfilePath(std::string_view name) {
-  CHECK(profile_attributes_storage_.HasProfileWithName(name));
+  CHECK(profile_attributes_storage_->HasProfileWithName(name));
   return profile_data_dir_.Append(name);
 }
 
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
   const std::string profile_name = builder.GetEffectiveName();
-  if (profile_attributes_storage_.HasProfileWithName(profile_name)) {
+  if (profile_attributes_storage_->HasProfileWithName(profile_name)) {
     CHECK(profile_attributes_storage_
-              .GetAttributesForProfileWithName(profile_name)
+              ->GetAttributesForProfileWithName(profile_name)
               .IsNewProfile());
   } else {
     // The ProfileAttributesStorage entry needs to be created before the actual
     // profile initialization gets kicked off, because the AccountProfileMapper
     // depends on it.
-    profile_attributes_storage_.AddProfile(profile_name);
+    profile_attributes_storage_->AddProfile(profile_name);
   }
 
   // If this is the first profile ever loaded, mark it as the personal profile.
-  if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
-    profile_attributes_storage_.SetPersonalProfileName(
+  if (profile_attributes_storage_->GetPersonalProfileName().empty()) {
+    profile_attributes_storage_->SetPersonalProfileName(
         builder.GetEffectiveName());
   }
 
@@ -203,7 +209,7 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
 
   // Before notifying observers that the profile was loaded, mark it as
   // no-longer-new.
-  profile_attributes_storage_.UpdateAttributesForProfileWithName(
+  profile_attributes_storage_->UpdateAttributesForProfileWithName(
       profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
       }));
