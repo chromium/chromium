@@ -16,6 +16,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
@@ -114,7 +116,8 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
       // The test always starts from an empty state so the Print Management app
       // will always be the first browser.
       ASSERT_FALSE(BrowserList::GetInstance()->empty());
-      chrome::Reload(BrowserList::GetInstance()->get(0),
+      chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                         ->GetBrowserForMigrationOnly(),
                      WindowOpenDisposition::CURRENT_TAB);
     });
   }

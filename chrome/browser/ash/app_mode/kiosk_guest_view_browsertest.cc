@@ -10,8 +10,9 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -193,10 +194,9 @@ class WebKioskGuestViewTest : public MixinBasedInProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebKioskGuestViewTest,
                        AddingMimeHandlerGuestViewDoesNotCrash) {
-  auto* web_contents = BrowserList::GetInstance()
-                           ->get(0)
-                           ->tab_strip_model()
-                           ->GetActiveWebContents();
+  auto* const web_contents = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                                 ->GetTabStripModel()
+                                 ->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   if (web_contents->IsLoading()) {
     content::WaitForLoadStop(web_contents);

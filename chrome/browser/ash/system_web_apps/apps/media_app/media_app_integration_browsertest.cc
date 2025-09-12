@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -505,13 +506,17 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   image_params.launch_paths = {TestFile(kFilePng800x600),
                                TestFile(kFileJpeg640x480)};
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   LaunchAndWait(image_params);
+  BrowserWindowInterface* const system_app_browser =
+      new_browser_observer.Wait();
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
 
   content::TitleWatcher watcher(
-      browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
+      system_app_browser->GetTabStripModel()->GetActiveWebContents(),
       u"image.png");
   EXPECT_EQ(u"image.png", watcher.WaitAndGetTitle());
   ExpectProductSurveyData({.open_image = "1"});
@@ -522,18 +527,23 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   ash::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
 
+  // BrowserChangeObserver will report the most recently added browser, which
+  // will be the pdf img browser specified above.
+  ui_test_utils::BrowserChangeObserver pdf_img_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   LaunchAndWait(pdf_params);
-
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(3u, browser_list->size());
+  EXPECT_EQ(3u, BrowserList::GetInstance()->size());
+
+  Browser* const pdf_img_browser = pdf_img_observer.Wait();
+  Browser* const pdf_tall_browser =
+      ui_test_utils::GetBrowserNotInSet({browser(), pdf_img_browser});
 
   content::TitleWatcher watcher1(
-      browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
+      pdf_tall_browser->GetTabStripModel()->GetActiveWebContents(),
       u"tall.pdf");
   content::TitleWatcher watcher2(
-      browser_list->get(2)->tab_strip_model()->GetActiveWebContents(),
-      u"img.pdf");
+      pdf_img_browser->GetTabStripModel()->GetActiveWebContents(), u"img.pdf");
   EXPECT_EQ(u"tall.pdf", watcher1.WaitAndGetTitle());
   EXPECT_EQ(u"img.pdf", watcher2.WaitAndGetTitle());
   ExpectProductSurveyData({});  // Only images and video are tracked.

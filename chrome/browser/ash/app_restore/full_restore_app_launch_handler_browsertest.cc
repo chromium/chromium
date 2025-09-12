@@ -60,6 +60,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -835,7 +837,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // The restored browser's bounds should be the bounds saved by Full Restore,
   // i.e. |kCurrentBounds|.
   const gfx::Rect& browser_bounds =
-      browser_list->get(0u)->window()->GetNativeWindow()->bounds();
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetWindow()
+          ->GetNativeWindow()
+          ->bounds();
   EXPECT_EQ(kCurrentBounds, browser_bounds);
 }
 
@@ -857,7 +862,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Verify there is new browser launched.
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  Browser* browser_from_full_restore = BrowserList::GetInstance()->get(0);
+  BrowserWindowInterface* const browser_from_full_restore =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   // We're now going to create a new desk and a browser in that desk.
   AutotestDesksApi().CreateNewDesk();
@@ -914,25 +920,27 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
 
-  Browser* browser_from_template = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser_from_full_restore) {
-      browser_from_template = b;
-      break;
-    }
-  }
+  BrowserWindowInterface* browser_from_template = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser != browser_from_full_restore) {
+          browser_from_template = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
 
   ASSERT_TRUE(browser_from_template);
   // Verify that the browser has the same bounds as was captured.
-  EXPECT_EQ(expected_bounds, browser_from_template->window()->GetBounds());
+  EXPECT_EQ(expected_bounds, browser_from_template->GetWindow()->GetBounds());
   // Verify that the browser has a tab with the expected URL.
-  EXPECT_EQ(1, browser_from_template->tab_strip_model()->count());
-  EXPECT_EQ(expected_url, browser_from_template->tab_strip_model()
+  EXPECT_EQ(1, browser_from_template->GetTabStripModel()->count());
+  EXPECT_EQ(expected_url, browser_from_template->GetTabStripModel()
                               ->GetWebContentsAt(0)
                               ->GetVisibleURL());
   // Verify that the browser window has a negative restore window ID (and lower
   // than the special value -1).
-  EXPECT_LT(browser_from_template->window()->GetNativeWindow()->GetProperty(
+  EXPECT_LT(browser_from_template->GetWindow()->GetNativeWindow()->GetProperty(
                 ::app_restore::kRestoreWindowIdKey),
             -1);
 }

@@ -18,6 +18,8 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -124,7 +126,9 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   ASSERT_TRUE(GetPolicyValueInPrefs(profile));
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser& initial_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
+  Browser& initial_browser =
+      CHECK_DEREF(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                      ->GetBrowserForMigrationOnly());
 
   Browser& popup =
       CreatePopupBrowser(profile, WebAppWindowName(TheKioskWebApp()));

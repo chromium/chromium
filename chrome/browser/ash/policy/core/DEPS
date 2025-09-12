@@ -85,6 +85,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_list_observer.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/tabs",
     "+chrome/browser/ui/webui/ash/login",
     "+chrome/browser/ui/webui/certificates_handler.h",

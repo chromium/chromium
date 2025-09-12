@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,10 +90,10 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
   void ExpectOnlyKioskAppOpen() const {
     // The initial browser should exist in the web kiosk session.
     ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-    Browser* kiosk_browser = BrowserList::GetInstance()->get(0);
-    ASSERT_EQ(kiosk_browser->tab_strip_model()->count(), 1);
-    content::WebContents* contents =
-        kiosk_browser->tab_strip_model()->GetActiveWebContents();
+    BrowserWindowInterface* const kiosk_browser = browser();
+    ASSERT_EQ(kiosk_browser->GetTabStripModel()->count(), 1);
+    content::WebContents* const contents =
+        kiosk_browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(contents);
     if (contents->IsLoading()) {
       content::WaitForLoadStop(contents);

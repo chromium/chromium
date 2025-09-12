@@ -12,6 +12,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -55,11 +57,11 @@ void RestoreOnStartupTest::GetPolicySettings(
 }
 
 void RestoreOnStartupTest::VerifyStartUpURLs() {
-  const BrowserList* const browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(1U, browser_list->size());
-  const Browser* const browser = browser_list->get(0);
+  ASSERT_EQ(1U, BrowserList::GetInstance()->size());
+  const BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
-  const TabStripModel* tabs = browser->tab_strip_model();
+  const TabStripModel* const tabs = browser->GetTabStripModel();
   ASSERT_TRUE(tabs);
   ASSERT_EQ(2, tabs->count());
   EXPECT_EQ(GURL(kStartUpURL1), tabs->GetWebContentsAt(0)->GetURL());

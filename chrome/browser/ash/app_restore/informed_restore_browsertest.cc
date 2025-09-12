@@ -30,10 +30,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -520,14 +523,21 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
   test::InstallSystemAppsForTesting(profile);
   test::CreateSystemWebApp(profile, SystemWebAppType::MEDIA);
   test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
+
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   test::CreateSystemWebApp(profile, SystemWebAppType::CAMERA);
+  BrowserWindowInterface* const camera_app_browser =
+      new_browser_observer.Wait();
+
   test::CreateSystemWebApp(profile, SystemWebAppType::PRINT_MANAGEMENT);
   auto* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(4u, browser_list->size());
 
   // Activate the Camera app so it appears at the front of the activation list.
-  browser_list->get(2u)->window()->Activate();
-  ASSERT_EQ(browser_list->GetLastActive(), browser_list->get(2u));
+  camera_app_browser->GetWindow()->Activate();
+  ASSERT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            camera_app_browser);
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();

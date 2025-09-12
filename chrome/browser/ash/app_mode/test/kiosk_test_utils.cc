@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/function_ref.h"
 #include "base/notimplemented.h"
 #include "base/scoped_multi_source_observation.h"
@@ -36,6 +37,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -310,8 +313,23 @@ void CloseAppWindow(const KioskApp& app) {
     case KioskAppType::kWebApp:
     case KioskAppType::kIsolatedWebApp: {
       EXPECT_GE(BrowserList::GetInstance()->size(), 1u);
-      auto& web_app_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
-      web_app_browser.window()->Close();
+      BrowserWindowInterface* web_app_browser = nullptr;
+      // TODO(crbug.com/444072535): Picking a Browser from the global browser
+      // list is flaky and very test dependent. This should be updated to
+      // instead close the Browser instance specifically associated with `app`.
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [&web_app_browser](BrowserWindowInterface* browser) {
+            if ((browser->GetType() ==
+                 BrowserWindowInterface::Type::TYPE_APP) ||
+                (browser->GetType() ==
+                 BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
+              web_app_browser = browser;
+              return false;
+            }
+            return true;
+          });
+      CHECK(web_app_browser);
+      web_app_browser->GetWindow()->Close();
       break;
     }
     case KioskAppType::kArcvmApp:

@@ -84,7 +84,11 @@ specific_include_rules = {
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
   ],
+  "kiosk_guest_view_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window/public",
+  ],
   "kiosk_troubleshooting_tools_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/views/task_manager_view.h",
   ],
 }
