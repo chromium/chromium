@@ -4539,6 +4539,7 @@ chromium-metrics-reviews@google.com.
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, across all frames.
@@ -4625,6 +4626,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-01-21">
   <owner>kjarosz@google.com</owner>
   <owner>polonium@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, across all frames.
@@ -4646,6 +4648,7 @@ chromium-metrics-reviews@google.com.
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, for main frame documents.
@@ -4750,6 +4753,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-02-01">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     parser started, for main frame documents.
