@@ -176,6 +176,20 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
 
 HistorySyncOptinHelper::~HistorySyncOptinHelper() = default;
 
+void HistorySyncOptinHelper::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void HistorySyncOptinHelper::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void HistorySyncOptinHelper::NotifyFlowFinished() {
+  for (Observer& observer : observers_) {
+    observer.OnHistorySyncOptinHelperFlowFinished();
+  }
+}
+
 void HistorySyncOptinHelper::StartHistorySyncOptinFlow() {
   account_state_fetcher_->FetchAccountInfo();
 }
@@ -209,14 +223,16 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
   if (GetSyncService(profile_)) {
-    delegate_->ShowHistorySyncOptinScreen(profile());
+    delegate_->ShowHistorySyncOptinScreen(
+        profile(), base::BindOnce(&HistorySyncOptinHelper::NotifyFlowFinished,
+                                  weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   // TODO(crbug.com/435191375): If the purpose of the flow is to enable
   // history sync we may want to show an error when sync is disabled. Otherwise,
   // if the goal is to sign in the user, we can skip the history
   // optin screen.
-  delegate_->FinishFlowWithoutHistorySyncOptin();
+  FinishFlowWithoutHistorySyncOptin();
 }
 
 signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
@@ -225,6 +241,11 @@ signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
     return account_info.IsManaged();
   }
   return signin::Tribool::kUnknown;
+}
+
+void HistorySyncOptinHelper::FinishFlowWithoutHistorySyncOptin() {
+  delegate_->FinishFlowWithoutHistorySyncOptin();
+  NotifyFlowFinished();
 }
 
 // HistorySyncOptinHelperInBrowser
@@ -279,7 +300,7 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
     ResumeShowHistorySyncOptinScreenFlow(signin::Tribool::kTrue);
     return;
   }
-  delegate()->FinishFlowWithoutHistorySyncOptin();
+  FinishFlowWithoutHistorySyncOptin();
 }
 
 // HistorySyncOptinHelperInProfilePicker
@@ -355,7 +376,7 @@ void HistorySyncOptinHelperInProfilePicker::OnAccountManagementScreenClosed(
       // kept or removed and proceed with the flow which should open the
       // browser.
       enterprise_util::SetUserAcceptedAccountManagement(profile(), false);
-      delegate()->FinishFlowWithoutHistorySyncOptin();
+      FinishFlowWithoutHistorySyncOptin();
       return;
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       // Mark the user having accepted the management.

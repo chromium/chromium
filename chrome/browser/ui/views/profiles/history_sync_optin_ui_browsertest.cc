@@ -77,7 +77,7 @@ class HistorySyncOptinUIDialogPixelTest
         "SigninViewControllerDelegateViews");
 
     auto* controller = browser()->GetFeatures().signin_view_controller();
-    controller->ShowModalHistorySyncOptInDialog();
+    controller->ShowModalHistorySyncOptInDialog(base::DoNothing());
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }

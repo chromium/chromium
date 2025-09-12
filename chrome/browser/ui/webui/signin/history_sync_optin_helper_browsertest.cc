@@ -45,7 +45,10 @@ namespace {
 class MockHistorySyncOptinHelperDelegate
     : public HistorySyncOptinHelper::Delegate {
  public:
-  MOCK_METHOD(void, ShowHistorySyncOptinScreen, (Profile*), (override));
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinScreen,
+              (Profile*, base::OnceClosure history_optin_completed_closure),
+              (override));
   MOCK_METHOD(void,
               ShowAccountManagementScreen,
               (signin::SigninChoiceCallback),
@@ -158,7 +161,8 @@ IN_PROC_BROWSER_TEST_P(
   AccountInfo account_info = MakeAccountInfoAvailable();
   MockHistorySyncOptinHelperDelegate delegate;
 
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile())).Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
+      .Times(1);
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
@@ -202,8 +206,11 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen)
-      .WillOnce(
-          testing::Invoke([&](Profile* profile) { future.SetValue(profile); }));
+      .WillOnce(testing::Invoke(
+          [&](Profile* profile,
+              base::OnceClosure history_optin_completed_closure) {
+            future.SetValue(profile);
+          }));
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
@@ -279,7 +286,8 @@ IN_PROC_BROWSER_TEST_P(
   history_sync_optin_helper->StartHistorySyncOptinFlow();
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile())).Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
+      .Times(1);
   history_sync_optin_helper->GetAccountStateFetcherForTesting()
       ->EnforceTimeoutReachedForTesting();
 
@@ -311,7 +319,8 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
 
   // When sync becomes active, thepl flow resumes to showing the history sync
   // optin screen.
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile())).Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
+      .Times(1);
   GetTestSyncService()->SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   GetTestSyncService()->FireStateChanged();

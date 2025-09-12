@@ -687,7 +687,7 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
       }
       browser->GetFeatures()
           .signin_view_controller()
-          ->ShowModalHistorySyncOptInDialog();
+          ->ShowModalHistorySyncOptInDialog(base::DoNothing());
     }
     return;
   }

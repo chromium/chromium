@@ -48,7 +48,13 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
   CHECK(identity_manager_);
 }
 
-HistorySyncOptinHandler::~HistorySyncOptinHandler() = default;
+HistorySyncOptinHandler::~HistorySyncOptinHandler() {
+  if (history_optin_completed_closure_) {
+    // Runs the callback in case the dialog is not dismissed via the buttons,
+    // but e.g. using an accelerator or close button.
+    std::move(history_optin_completed_closure_).Run();
+  }
+}
 
 void HistorySyncOptinHandler::Accept() {
   AddHistorySyncConsent();

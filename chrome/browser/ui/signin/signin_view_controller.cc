@@ -477,13 +477,15 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void SigninViewController::ShowModalHistorySyncOptInDialog() {
+void SigninViewController::ShowModalHistorySyncOptInDialog(
+    base::OnceClosure history_optin_completed_closure) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(
           browser_->GetBrowserForMigrationOnly(),
-          HistorySyncOptinLaunchContext::kModal),
+          HistorySyncOptinLaunchContext::kModal,
+          std::move(history_optin_completed_closure)),
       GetOnModalDialogClosedCallback());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

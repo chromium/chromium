@@ -21,7 +21,10 @@
 class MockHistorySyncOptinHelperDelegate
     : public HistorySyncOptinHelper::Delegate {
  public:
-  MOCK_METHOD(void, ShowHistorySyncOptinScreen, (Profile*), (override));
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinScreen,
+              (Profile*, base::OnceClosure history_optin_completed_closure),
+              (override));
   MOCK_METHOD(void,
               ShowAccountManagementScreen,
               (signin::SigninChoiceCallback),
@@ -47,7 +50,6 @@ class HistorySyncOptinServiceTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     service_ = std::make_unique<HistorySyncOptinService>(profile_.get());
-    delegate_ = std::make_unique<MockHistorySyncOptinHelperDelegate>();
   }
 
   AccountInfo MakePrimaryAccountAvailable() {
@@ -75,6 +77,50 @@ class HistorySyncOptinServiceTest : public testing::Test {
 
 TEST_F(HistorySyncOptinServiceTest, StartFlow) {
   AccountInfo account_info = MakePrimaryAccountAvailable();
-  EXPECT_CALL(*delegate_, ShowHistorySyncOptinScreen(profile_.get())).Times(1);
-  service_->StartHistorySyncOptinFlow(account_info, std::move(delegate_));
+  auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr,
+              ShowHistorySyncOptinScreen(profile_.get(), testing::_))
+      .Times(1);
+  bool flow_started =
+      service_->StartHistorySyncOptinFlow(account_info, std::move(delegate));
+  EXPECT_TRUE(flow_started);
+}
+
+TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
+  AccountInfo account_info = MakePrimaryAccountAvailable();
+  auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+
+  base::OnceClosure captured_closure;
+  EXPECT_CALL(*delegate_ptr,
+              ShowHistorySyncOptinScreen(profile_.get(), testing::_))
+      .WillOnce(testing::Invoke(
+          [&](Profile* profile,
+              base::OnceClosure history_optin_completed_closure) {
+            captured_closure = std::move(history_optin_completed_closure);
+          }));
+
+  // Start the first flow.
+  bool flow_started =
+      service_->StartHistorySyncOptinFlow(account_info, std::move(delegate));
+  EXPECT_TRUE(flow_started);
+
+  // A second flow cannot be started.
+  flow_started = service_->StartHistorySyncOptinFlow(
+      account_info, std::make_unique<MockHistorySyncOptinHelperDelegate>());
+  EXPECT_FALSE(flow_started);
+
+  // Complete the first flow.
+  std::move(captured_closure).Run();
+
+  // After the previous flow finished a new one can be started.
+  auto second_delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
+  auto* second_delegate_ptr = second_delegate.get();
+  EXPECT_CALL(*second_delegate_ptr,
+              ShowHistorySyncOptinScreen(profile_.get(), testing::_))
+      .Times(1);
+  flow_started = service_->StartHistorySyncOptinFlow(
+      account_info, std::move(second_delegate));
+  EXPECT_TRUE(flow_started);
 }

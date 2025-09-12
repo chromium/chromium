@@ -453,6 +453,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/signin",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

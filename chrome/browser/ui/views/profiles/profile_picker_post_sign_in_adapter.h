@@ -130,7 +130,9 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
                            const input::NativeWebKeyboardEvent& event) override;
 
   // HistorySyncOptinHelper::Delegate implementation:
-  void ShowHistorySyncOptinScreen(Profile*) override;
+  void ShowHistorySyncOptinScreen(
+      Profile*,
+      base::OnceClosure history_optin_completed_closure) override;
   void ShowAccountManagementScreen(
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;

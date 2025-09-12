@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -93,11 +95,22 @@ class HistorySyncOptinHelper {
   // `kInBrowser`: The flow is running in a browser window.
   enum class LaunchContext : int { kInProfilePicker = 0, kInBrowser = 1 };
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the HistorySyncOptinHelper completes its flow.
+    virtual void OnHistorySyncOptinHelperFlowFinished() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
     // Displays the history sync optin screen.
-    virtual void ShowHistorySyncOptinScreen(Profile* profile) = 0;
+    virtual void ShowHistorySyncOptinScreen(
+        Profile* profile,
+        base::OnceClosure history_optin_completed_closure) = 0;
     // Displays the account management screen.
     virtual void ShowAccountManagementScreen(
         signin::SigninChoiceCallback on_account_management_screen_closed) = 0;
@@ -116,6 +129,9 @@ class HistorySyncOptinHelper {
       LaunchContext launch_context);
 
   virtual ~HistorySyncOptinHelper();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   void StartHistorySyncOptinFlow();
 
@@ -144,6 +160,8 @@ class HistorySyncOptinHelper {
 
   void SetProfile(Profile* profile) { profile_ = profile; }
 
+  void FinishFlowWithoutHistorySyncOptin();
+
   // Accessors.
   Profile* profile() { return profile_.get(); }
   const AccountInfo& account_info() const { return account_info_; }
@@ -153,8 +171,11 @@ class HistorySyncOptinHelper {
   }
 
  private:
+  void NotifyFlowFinished();
+
   signin::Tribool AccountIsManaged(const AccountInfo& account_info);
 
+  base::ObserverList<Observer> observers_;
   raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;

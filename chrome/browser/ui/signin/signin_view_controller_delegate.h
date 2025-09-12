@@ -55,7 +55,8 @@ class SigninViewControllerDelegate {
   // delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncHistoryOptInDelegate(
       Browser* browser,
-      HistorySyncOptinLaunchContext launch_context);
+      HistorySyncOptinLaunchContext launch_context,
+      base::OnceClosure history_optin_completed_closure);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Returns a platform-specific SigninViewControllerDelegate instance that

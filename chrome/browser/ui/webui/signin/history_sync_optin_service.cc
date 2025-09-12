@@ -21,13 +21,15 @@ HistorySyncOptinServiceDefaultDelegate::
     ~HistorySyncOptinServiceDefaultDelegate() = default;
 
 void HistorySyncOptinServiceDefaultDelegate::ShowHistorySyncOptinScreen(
-    Profile* profile) {
+    Profile* profile,
+    base::OnceClosure history_optin_completed_closure) {
   CHECK(profile);
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   CHECK(browser);
   browser->GetFeatures()
       .signin_view_controller()
-      ->ShowModalHistorySyncOptInDialog();
+      ->ShowModalHistorySyncOptInDialog(
+          std::move(history_optin_completed_closure));
 }
 
 void HistorySyncOptinServiceDefaultDelegate::ShowAccountManagementScreen(
@@ -45,13 +47,12 @@ HistorySyncOptinService::HistorySyncOptinService(Profile* profile)
 
 HistorySyncOptinService::~HistorySyncOptinService() = default;
 
-void HistorySyncOptinService::StartHistorySyncOptinFlow(
+bool HistorySyncOptinService::StartHistorySyncOptinFlow(
     const AccountInfo& account_info,
     std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate) {
   if (history_sync_optin_helper_) {
-    // TODO(crbug.com/443260244): Another flow is already in progress, abort the
-    // new flow.
-    return;
+    // Another flow is already in progress, abort the new flow.
+    return false;
   }
   history_sync_optin_delegate_ = std::move(delegate);
 
@@ -62,10 +63,17 @@ void HistorySyncOptinService::StartHistorySyncOptinFlow(
       identity_manager, profile_, account_info,
       history_sync_optin_delegate_.get(),
       HistorySyncOptinHelper::LaunchContext::kInBrowser);
+  history_sync_optin_observation_.Observe(history_sync_optin_helper_.get());
   history_sync_optin_helper_->StartHistorySyncOptinFlow();
+  return true;
 }
 
 void HistorySyncOptinService::Shutdown() {
+  history_sync_optin_observation_.Reset();
   history_sync_optin_helper_.reset();
   history_sync_optin_delegate_.reset();
+}
+
+void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
+  Shutdown();
 }

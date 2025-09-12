@@ -130,7 +130,15 @@ void ProfilePickerPostSignInAdapter::Init(
       std::move(on_sync_screen_closed_closure_));
 }
 
-void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(Profile*) {
+void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(
+    Profile*,
+    base::OnceClosure history_optin_completed_closure) {
+  CHECK(history_optin_completed_closure);
+  CHECK(on_sync_screen_closed_closure_);
+  on_sync_screen_closed_closure_ =
+      std::move(on_sync_screen_closed_closure_)
+          .Then(std::move(history_optin_completed_closure));
+
   // Finishes the sign-in process by moving to the history sync optin screen.
   CHECK(IsInitialized());
   host_->ShowScreen(

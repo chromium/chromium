@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -18,11 +18,13 @@ struct AccountInfo;
 class HistorySyncOptinServiceDefaultDelegate
     : public HistorySyncOptinHelper::Delegate {
  public:
-  explicit HistorySyncOptinServiceDefaultDelegate();
+  HistorySyncOptinServiceDefaultDelegate();
   ~HistorySyncOptinServiceDefaultDelegate() override;
 
   // HistorySyncOptinHelper::Delegate:
-  void ShowHistorySyncOptinScreen(Profile* profile) override;
+  void ShowHistorySyncOptinScreen(
+      Profile* profile,
+      base::OnceClosure history_optin_completed_closure) override;
   void ShowAccountManagementScreen(
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;
@@ -30,7 +32,8 @@ class HistorySyncOptinServiceDefaultDelegate
 };
 
 // Service responsible for managing the History Sync Opt-in flow.
-class HistorySyncOptinService : public KeyedService {
+class HistorySyncOptinService : public KeyedService,
+                                public HistorySyncOptinHelper::Observer {
  public:
   explicit HistorySyncOptinService(Profile* profile);
   ~HistorySyncOptinService() override;
@@ -38,20 +41,25 @@ class HistorySyncOptinService : public KeyedService {
   HistorySyncOptinService& operator=(const HistorySyncOptinService&) = delete;
 
   // Starts the history sync opt-in flow.
-  void StartHistorySyncOptinFlow(
+  bool StartHistorySyncOptinFlow(
       const AccountInfo& account_info,
       std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate);
-
-  void SetDelegateForTesting(HistorySyncOptinHelper::Delegate* delegate);
 
  private:
   // KeyedService implementation:
   void Shutdown() override;
 
+  // HistorySyncOptinHelper::Observer implementation:
+  void OnHistorySyncOptinHelperFlowFinished() override;
+
   std::unique_ptr<HistorySyncOptinHelper::Delegate>
       history_sync_optin_delegate_ = nullptr;
   std::unique_ptr<HistorySyncOptinHelper> history_sync_optin_helper_ = nullptr;
   raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<HistorySyncOptinHelper,
+                          HistorySyncOptinHelper::Observer>
+      history_sync_optin_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_HISTORY_SYNC_OPTIN_SERVICE_H_
