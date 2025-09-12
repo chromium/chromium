@@ -1186,8 +1186,8 @@ EntityInstance GetFlightReservationEntityInstance(
   return EntityInstance(
       EntityType(EntityTypeName::kFlightReservation), std::move(attributes),
       EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
-      options.use_count,
+      std::string(options.nickname),
+      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
       /*use_date=*/base::Time::FromTimeT(0), options.record_type,
       options.are_attributes_read_only);
 }

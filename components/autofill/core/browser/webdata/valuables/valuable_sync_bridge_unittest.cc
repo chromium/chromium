@@ -97,6 +97,14 @@ EntityInstance GetServerVehicleEntityInstance(
   return test::GetVehicleEntityInstance(options);
 }
 
+EntityInstance GetServerFlightEntityInstance(
+    test::FlightReservationOptions options = {}) {
+  options.nickname = "";
+  options.date_modified = {};
+  options.record_type = EntityInstance::RecordType::kServerWallet;
+  return test::GetFlightReservationEntityInstance(options);
+}
+
 }  // namespace
 
 class ValuableSyncBridgeTest : public testing::Test {
@@ -104,6 +112,7 @@ class ValuableSyncBridgeTest : public testing::Test {
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
     feature_list_.InitWithFeatures({syncer::kSyncMoveValuablesToProfileDb,
+                                    syncer::kSyncWalletFlightReservations,
                                     syncer::kSyncWalletVehicleRegistrations},
                                    /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -531,6 +540,22 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_AddsVehicles) {
 
   EXPECT_THAT(GetAllEntityInstancesFromTable(),
               UnorderedElementsAre(vehicle1, vehicle2));
+}
+
+// Tests that `SetEntities()` correctly adds flight reservations to the table.
+TEST_F(ValuableSyncBridgeTest, SetEntities_AddsFlights) {
+  const EntityInstance flight1 = GetServerFlightEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance flight2 = GetServerFlightEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_TRUE(SyncEntityInstances({flight1, flight2}));
+
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(flight1, flight2));
 }
 
 // Tests that `SetEntities()` clears any existing entities before adding new

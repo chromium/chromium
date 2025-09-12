@@ -318,6 +318,9 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
   bool success = entity_table->DeleteEntityInstances(
       EntityInstance::RecordType::kServerWallet);
 
+  const bool is_sync_wallet_flight_reservations_enabled =
+      IsSyncWalletFlightReservationsEnabled();
+
   const bool is_sync_wallet_vehicle_registrations_enabled =
       IsSyncWalletVehicleRegistrationsEnabled();
 
@@ -326,7 +329,11 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
         is_sync_wallet_vehicle_registrations_enabled) {
       success &= entity_table->AddOrUpdateEntityInstance(entity);
     }
-    // TODO(crbug.com/436547381): Add flight reservations.
+
+    if (entity.type().name() == EntityTypeName::kFlightReservation &&
+        is_sync_wallet_flight_reservations_enabled) {
+      success &= entity_table->AddOrUpdateEntityInstance(entity);
+    }
   }
 
   return success ? ValuableDatabaseOperationResult::kDataChanged
@@ -353,14 +360,12 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
                 CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable));
             break;
           }
+          case sync_pb::AutofillValuableSpecifics::kFlightReservation:
           case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecifics(autofill_valuable)) {
               entities.push_back(std::move(*entity));
             }
-            break;
-          case sync_pb::AutofillValuableSpecifics::kFlightReservation:
-            // TODO(crbug.com/436547381): Handle flight reservation.
             break;
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.
