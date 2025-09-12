@@ -25,7 +25,7 @@ class ScreenNotification {
 }  // namespace display
 
 @interface ScreenObserver : NSObject {
-  raw_ptr<display::ScreenNotification> _notifier;
+  raw_ptr<display::ScreenNotification, DanglingUntriaged> _notifier;
 }
 - (void)mainScreenChanged;
 @end
