@@ -11,17 +11,19 @@ import android.content.Intent;
 import android.net.Uri;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /**
  * Triggered when user interaction with WebAPK install notifications.
  *
- * Lifecycle: This BroadcastReceiver is started when an Intent arrives, performs a small amount of
- * work (dismissing a notification and post task to retry the install) and is destroyed.
+ * <p>Lifecycle: This BroadcastReceiver is started when an Intent arrives, performs a small amount
+ * of work (dismissing a notification and post task to retry the install) and is destroyed.
  *
- * Thread safety: {@link #onReceive} is called on the main thread by the Android framework.
+ * <p>Thread safety: {@link #onReceive} is called on the main thread by the Android framework.
  */
+@NullMarked
 public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "webapk";
 
@@ -35,14 +37,15 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        assert intent != null && intent.hasExtra(NOTIFICATION_ID);
-
+        assert intent != null;
         String id = IntentUtils.safeGetStringExtra(intent, NOTIFICATION_ID);
-        String startUrl = IntentUtils.safeGetStringExtra(intent, WEBAPK_START_URL);
+        assert id != null;
 
         WebApkInstallService.cancelNotification(id);
 
         if (ACTION_OPEN_IN_BROWSER.equals(intent.getAction())) {
+            String startUrl = IntentUtils.safeGetStringExtra(intent, WEBAPK_START_URL);
+            assert startUrl != null;
             openInChrome(context, startUrl);
         }
     }
