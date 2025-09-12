@@ -168,20 +168,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="InterestGroupJoin">
-  <owner>qingxinwu@google.com</owner>
-  <metric name="Result" enum="InterestGroupJoinPermissionResult">
-    <summary>
-      The result of the permission check for the joinAdInterestGroup operation.
-      The DWA content key for this event corresponds to the interest group
-      owner's origin.
-
-      See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-      version of the FLEDGE explainer.
-    </summary>
-  </metric>
-</event>
-
 <event name="PrivacySandbox.AggregationService.ReportSenderAttempt">
   <owner>alexmt@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>

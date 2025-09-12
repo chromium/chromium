@@ -17,10 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
-#include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,7 +25,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
@@ -306,79 +302,6 @@ TEST_F(InterestGroupManagerImplTest,
     EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
     EXPECT_EQ("metadata1", ad.metadata);
     EXPECT_EQ(ad.selectable_buyer_and_seller_reporting_ids, std::nullopt);
-  }
-}
-
-TEST_F(InterestGroupManagerImplTest, DwaMetricRecordsJoinPermissionResult) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(metrics::dwa::kDwaFeature);
-
-  metrics::dwa::DwaRecorder* recorder = metrics::dwa::DwaRecorder::Get();
-  recorder->EnableRecording();
-
-  const url::Origin frame_origin =
-      url::Origin::Create(GURL("https://page.test"));
-
-  const struct ExpectedRequest {
-    const char* owner_host;
-    bool permission_granted;
-    int expected_result_metric;
-  } kExpectedRequests[] = {
-      {"owner1.test", /*permission_granted=*/true,
-       /*expected_result_metric=*/0},
-      {"owner2.test", /*permission_granted=*/false,
-       /*expected_result_metric=*/1},
-  };
-
-  for (const auto& test_case : kExpectedRequests) {
-    recorder->Purge();
-    ASSERT_THAT(recorder->GetEntriesForTesting(), testing::IsEmpty());
-
-    const url::Origin owner = url::Origin::Create(
-        GURL(base::StrCat({"https://", test_case.owner_host})));
-    const GURL permissions_url(
-        base::StrCat({"https://", test_case.owner_host,
-                      "/.well-known/interest-group/permissions/?origin=",
-                      base::EscapeQueryParamValue(frame_origin.Serialize(),
-                                                  /*use_plus=*/false)}));
-
-    auto head = network::mojom::URLResponseHead::New();
-    head->headers = net::HttpResponseHeaders::TryToCreate(
-        "HTTP/1.1 200 OK\nContent-Type: application/json\n");
-    head->headers->SetHeader("Access-Control-Allow-Origin", "*");
-    head->mime_type = "application/json";
-
-    const std::string response_body =
-        base::StringPrintf(R"({"joinAdInterestGroup": %s})",
-                           test_case.permission_granted ? "true" : "false");
-    test_url_loader_factory_.AddResponse(
-        permissions_url, std::move(head), response_body,
-        network::URLLoaderCompletionStatus(net::OK));
-
-    base::RunLoop run_loop;
-    interest_group_manager_->CheckPermissionsAndJoinInterestGroup(
-        NewInterestGroup(owner, "bar"), frame_origin.GetURL(), frame_origin,
-        net::NetworkIsolationKey(), /*report_result_only=*/false,
-        test_url_loader_factory_,
-        base::BindRepeating(
-            [](const std::vector<url::Origin>&) { return true; }),
-        base::BindOnce(
-            [](base::RunLoop* run_loop, bool /* failed_well_known_check */) {
-              run_loop->Quit();
-            },
-            &run_loop));
-    run_loop.Run();
-
-    const auto& granted_entries = recorder->GetEntriesForTesting();
-    ASSERT_EQ(granted_entries.size(), 1u);
-    EXPECT_EQ(granted_entries[0]->event_hash,
-              base::HashMetricName("InterestGroupJoin"));
-    EXPECT_EQ(granted_entries[0]->content_hash,
-              base::HashMetricName(test_case.owner_host));
-    EXPECT_THAT(
-        granted_entries[0]->metrics,
-        testing::UnorderedElementsAre(testing::Pair(
-            base::HashMetricName("Result"), test_case.expected_result_metric)));
   }
 }
 
