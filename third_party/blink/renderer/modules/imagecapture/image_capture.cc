@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_metering_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_photo_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_photo_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
@@ -576,18 +577,22 @@ bool ToBooleanMode(EyeGazeCorrectionMode mode) {
   NOTREACHED();
 }
 
-WebString ToString(MeteringMode value) {
+V8MeteringMode::Enum ToV8MeteringMode(MeteringMode value) {
   switch (value) {
     case MeteringMode::NONE:
-      return WebString::FromUTF8("none");
+      return V8MeteringMode::Enum::kNone;
     case MeteringMode::MANUAL:
-      return WebString::FromUTF8("manual");
+      return V8MeteringMode::Enum::kManual;
     case MeteringMode::SINGLE_SHOT:
-      return WebString::FromUTF8("single-shot");
+      return V8MeteringMode::Enum::kSingleShot;
     case MeteringMode::CONTINUOUS:
-      return WebString::FromUTF8("continuous");
+      return V8MeteringMode::Enum::kContinuous;
   }
   NOTREACHED();
+}
+
+String ToString(MeteringMode value) {
+  return V8MeteringMode(ToV8MeteringMode(value)).AsString();
 }
 
 V8FillLightMode ToV8FillLightMode(FillLightMode value) {
@@ -602,14 +607,14 @@ V8FillLightMode ToV8FillLightMode(FillLightMode value) {
   NOTREACHED();
 }
 
-WebString ToString(RedEyeReduction value) {
+V8RedEyeReduction::Enum ToV8RedEyeReduction(RedEyeReduction value) {
   switch (value) {
     case RedEyeReduction::NEVER:
-      return WebString::FromUTF8("never");
+      return V8RedEyeReduction::Enum::kNever;
     case RedEyeReduction::ALWAYS:
-      return WebString::FromUTF8("always");
+      return V8RedEyeReduction::Enum::kAlways;
     case RedEyeReduction::CONTROLLABLE:
-      return WebString::FromUTF8("controllable");
+      return V8RedEyeReduction::Enum::kControllable;
   }
   NOTREACHED();
 }
@@ -2631,7 +2636,7 @@ void ImageCapture::OnMojoGetPhotoState(
 
   photo_capabilities_ = MakeGarbageCollected<PhotoCapabilities>();
   photo_capabilities_->setRedEyeReduction(
-      ToString(photo_state->red_eye_reduction));
+      ToV8RedEyeReduction(photo_state->red_eye_reduction));
   if (photo_state->height->min != 0 || photo_state->height->max != 0) {
     photo_capabilities_->setImageHeight(
         ToMediaSettingsRange(*photo_state->height));
