@@ -50,6 +50,16 @@ template("chrome_app") {
       output_name = "${_target_name}_framework"
       transparent = use_blink
 
+      # When variants are present, the ios_app_bundle rule has logic to copy
+      # bundle_deps from the first variant. Replicate that logic here as well.
+      if (!transparent) {
+        if (defined(invoker.variants) && invoker.variants != []) {
+          _variants = invoker.variants
+          _default_variant = _variants[0]
+          bundle_deps += _default_variant.bundle_deps
+        }
+      }
+
       info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
     }
   }
