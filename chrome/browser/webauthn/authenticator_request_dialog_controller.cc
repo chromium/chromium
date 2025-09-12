@@ -1665,11 +1665,6 @@ void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
   }
 }
 
-void AuthenticatorRequestDialogController::
-    set_is_active_profile_authenticator_user(bool is_active) {
-  is_active_profile_authenticator_user_ = is_active;
-}
-
 void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
     bool is_enabled) {
   has_icloud_drive_enabled_ = is_enabled;

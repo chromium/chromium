@@ -557,11 +557,6 @@ class AuthenticatorRequestDialogController
   // only be recorded if a start event was recorded first.
   bool did_record_macos_start_histogram_ = false;
 
-  // is_active_profile_authenticator_user_ is true if the current profile has
-  // recently used the platform authenticator on macOS that saves credentials
-  // into the profile.
-  bool is_active_profile_authenticator_user_ = false;
-
   // has_icloud_drive_enabled_ is true if the current system has iCloud Drive
   // enabled. This is used as an approximation for whether iCloud Keychain
   // syncing is enabled.

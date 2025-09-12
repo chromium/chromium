@@ -1238,8 +1238,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
   dialog_controller_->set_allow_icloud_keychain(
       request_source == RequestSource::kWebAuthentication);
   dialog_controller_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
-  dialog_controller_->set_is_active_profile_authenticator_user(
-      is_active_profile_authenticator_user);
   dialog_controller_->set_should_create_in_icloud_keychain(
       ShouldCreateInICloudKeychain(
           request_source, is_active_profile_authenticator_user,
