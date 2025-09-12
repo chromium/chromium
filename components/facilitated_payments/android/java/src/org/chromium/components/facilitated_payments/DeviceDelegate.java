@@ -4,6 +4,7 @@
 
 package org.chromium.components.facilitated_payments;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +19,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -30,6 +34,14 @@ import java.util.Map;
 @JNINamespace("payments::facilitated")
 @NullMarked
 public class DeviceDelegate {
+    private static final int A2A_TRANSACTION_OUTCOME_SUCCEED = 1;
+    private static final int A2A_TRANSACTION_OUTCOME_CANCELED = 2;
+    private static final int A2A_TRANSACTION_OUTCOME_FAILED = 3;
+    private static final String A2A_TRANSACTION_OUTCOME = "A2A_TRANSACTION_OUTCOME";
+    private static final String CANCELED = "Canceled";
+    private static final String UNKNOWN = "Unknown";
+    private static final String SUCCEEDED = "Succeeded";
+    private static final String FAILED = "Failed";
     private static final String A2A_INTENT_ACTION_NAME =
             "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
@@ -106,6 +118,7 @@ public class DeviceDelegate {
      *
      * @param packageName The package name of the payment app.
      * @param activityName The activity name of the payment app.
+     * @param paymentLinkScheme The payment link url scheme for the payment app.
      * @param paymentLinkUrl The payment link URL to be included as data in the intent.
      * @param windowAndroid The {@link WindowAndroid} for launching the intent.
      * @return True if the intent was shown successfully, false otherwise.
@@ -114,6 +127,7 @@ public class DeviceDelegate {
     static boolean invokePaymentApp(
             String packageName,
             String activityName,
+            String paymentLinkScheme,
             GURL paymentLinkUrl,
             WindowAndroid windowAndroid) {
         if (windowAndroid == null) {
@@ -126,7 +140,14 @@ public class DeviceDelegate {
         // showIntent returns true if the intent was shown successfully.
         // TODO(crbug.com/432821264): Handle returned transaction result and specify the `errorId`.
         return windowAndroid.showIntent(
-                intent, /* callback= */ (resultCode, data) -> {}, /* errorId= */ null);
+                intent,
+                (resultCode, resultIntent) ->
+                        onInvokePaymentAppCallback(
+                                resultCode,
+                                resultIntent,
+                                TimeUtils.elapsedRealtimeMillis(),
+                                paymentLinkScheme),
+                /* errorId= */ null);
     }
 
     @VisibleForTesting
@@ -171,5 +192,48 @@ public class DeviceDelegate {
             return false;
         }
         return true;
+    }
+
+    private static void onInvokePaymentAppCallback(
+            int resultCode,
+            @Nullable Intent resultIntent,
+            long startTimeMs,
+            String paymentLinkScheme) {
+        long lapsedTimeMs = TimeUtils.elapsedRealtimeMillis() - startTimeMs;
+        StringBuilder histogramNameBuilder = new StringBuilder("FacilitatedPayments.A2A.");
+
+        if (resultCode == Activity.RESULT_OK) {
+            int transactionOutcomeCode = -1;
+            if (resultIntent != null && resultIntent.getExtras() != null) {
+                transactionOutcomeCode =
+                        resultIntent
+                                .getExtras()
+                                .getInt(A2A_TRANSACTION_OUTCOME, transactionOutcomeCode);
+            }
+            switch (transactionOutcomeCode) {
+                case A2A_TRANSACTION_OUTCOME_SUCCEED:
+                    histogramNameBuilder.append(SUCCEEDED);
+                    break;
+                case A2A_TRANSACTION_OUTCOME_CANCELED:
+                    histogramNameBuilder.append(CANCELED);
+                    break;
+                case A2A_TRANSACTION_OUTCOME_FAILED:
+                    histogramNameBuilder.append(FAILED);
+                    break;
+                default:
+                    histogramNameBuilder.append(UNKNOWN);
+                    break;
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            histogramNameBuilder.append(CANCELED);
+        } else {
+            histogramNameBuilder.append(UNKNOWN);
+        }
+
+        histogramNameBuilder.append(".Latency");
+        RecordHistogram.recordTimesHistogram(histogramNameBuilder.toString(), lapsedTimeMs);
+
+        histogramNameBuilder.append(".").append(paymentLinkScheme);
+        RecordHistogram.recordTimesHistogram(histogramNameBuilder.toString(), lapsedTimeMs);
     }
 }

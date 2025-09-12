@@ -19,6 +19,13 @@ reviewer.
 
 <histograms>
 
+<variants name="A2ATransactionResult">
+  <variant name="Canceled" summary="Canceled A2A transaction."/>
+  <variant name="Failed" summary="Failed A2A transaction."/>
+  <variant name="Succeeded" summary="Succeeded A2A transaction."/>
+  <variant name="Unknown" summary="No result returned from the payment app."/>
+</variants>
+
 <variants name="BooleanResult">
   <variant name="Failure" summary="failure"/>
   <variant name="Success" summary="success"/>
@@ -121,6 +128,45 @@ reviewer.
     A2A payflow was exited early. [Frequency] Logged at most once per A2A
     payflow.
   </summary>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.A2A.{A2ATransactionResult}.Latency"
+    units="ms" expires_after="2026-06-01">
+  <owner>joshuatan@google.com</owner>
+  <owner>junhuihe@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the overall
+    latency for the A2A transaction. The latency is measured from when the
+    payment app is opened to when Chrome receives a callback after the
+    transaction. The result of the transaction is {A2ATransactionResult}.
+    [Frequency] Logged at most once per A2A payflow. [Trigger] The histogram is
+    logged when the result of the A2A transaction is received.
+  </summary>
+  <token key="A2ATransactionResult" variants="A2ATransactionResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.A2A.{A2ATransactionResult}.Latency.{Scheme}"
+    units="ms" expires_after="2026-06-01">
+  <owner>joshuatan@google.com</owner>
+  <owner>junhuihe@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the overall
+    latency for the A2A transaction. The latency is measured from when the
+    payment app is opened to when Chrome receives a callback after the
+    transaction. The result of the transaction is {A2ATransactionResult}. The
+    payment is supported by {Scheme}. [Frequency] Logged at most once per A2A
+    payflow. [Trigger] The histogram is logged when the result of the A2A
+    transaction is received.
+  </summary>
+  <token key="A2ATransactionResult" variants="A2ATransactionResult"/>
   <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
