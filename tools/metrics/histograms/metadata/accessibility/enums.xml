@@ -1730,7 +1730,7 @@ Unknown properties are collapsed to zero. -->
   <int value="41" label="View page source (not implemented)"/>
   <int value="42" label="Open task manager"/>
   <int value="43" label="Save page"/>
-  <int value="44" label="Show downloads (not implemented)"/>
+  <int value="44" label="Show downloads"/>
   <int value="45" label="Open history"/>
   <int value="46" label="Go back in history"/>
   <int value="47" label="Go forward in history"/>
