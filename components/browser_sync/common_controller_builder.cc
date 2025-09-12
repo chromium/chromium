@@ -50,7 +50,7 @@
 #include "components/password_manager/core/browser/sync/password_local_data_batch_uploader.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/core/browser/sync_utils/plus_address_data_type_controller.h"
-#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"

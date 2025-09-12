@@ -300,7 +300,7 @@ test("components_unittests") {
     "//components/plus_addresses/core/browser:unit_tests",
     "//components/plus_addresses/core/browser/metrics:unit_tests",
     "//components/plus_addresses/core/browser/settings:unit_tests",
-    "//components/plus_addresses/webdata:unit_tests",
+    "//components/plus_addresses/core/browser/webdata:unit_tests",
     "//components/policy/core/browser:unit_tests",
     "//components/policy/core/common:unit_tests",
     "//components/power_bookmarks/core:unit_tests",

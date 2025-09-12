@@ -17,7 +17,7 @@
 #import "components/network_time/network_time_tracker.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"

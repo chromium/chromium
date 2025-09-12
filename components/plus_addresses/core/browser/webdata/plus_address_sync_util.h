@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
-#define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
 
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/sync/protocol/entity_data.h"
@@ -19,4 +19,4 @@ syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile);
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_

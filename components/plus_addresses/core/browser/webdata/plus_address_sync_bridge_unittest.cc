@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_sync_bridge.h"
 
 #include <memory>
 #include <string>
@@ -15,8 +15,8 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/webdata/plus_address_sync_util.h"
-#include "components/plus_addresses/webdata/plus_address_table.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_sync_util.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_table.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"

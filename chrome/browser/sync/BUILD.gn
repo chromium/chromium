@@ -125,7 +125,7 @@ source_set("sync") {
     "//components/password_manager/core/browser/sharing",
     "//components/performance_manager",
     "//components/plus_addresses/core/browser/settings",
-    "//components/plus_addresses/webdata",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/saved_tab_groups/public",

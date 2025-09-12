@@ -72,7 +72,7 @@
 #include "components/browser_sync/common_controller_builder.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
-#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"

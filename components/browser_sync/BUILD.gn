@@ -42,7 +42,7 @@ static_library("browser_sync") {
     "//components/password_manager/core/browser/sharing",
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/core/browser/sync_utils",
-    "//components/plus_addresses/webdata",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/prefs",
     "//components/reading_list/core",
     "//components/saved_tab_groups/public",

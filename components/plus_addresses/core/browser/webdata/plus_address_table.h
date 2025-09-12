@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
-#define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_TABLE_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_TABLE_H_
 
 #include <optional>
 #include <string_view>
@@ -117,4 +117,4 @@ class PlusAddressTable : public WebDatabaseTable,
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_TABLE_H_

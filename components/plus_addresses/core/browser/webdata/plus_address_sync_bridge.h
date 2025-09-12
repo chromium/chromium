@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
-#define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -78,4 +78,4 @@ class PlusAddressSyncBridge : public syncer::DataTypeSyncBridge {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_

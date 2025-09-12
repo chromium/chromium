@@ -12,7 +12,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/search_engines/keyword_web_data_service.h"
 #import "components/signin/public/webdata/token_web_data.h"
 #import "components/webdata_services/web_data_service_wrapper.h"

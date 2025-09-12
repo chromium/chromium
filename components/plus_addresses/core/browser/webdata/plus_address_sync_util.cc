@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/webdata/plus_address_sync_util.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_sync_util.h"
 
 #include "base/check.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"

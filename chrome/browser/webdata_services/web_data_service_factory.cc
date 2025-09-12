@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/base/signin_pref_names.h"

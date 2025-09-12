@@ -18,7 +18,7 @@
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/engine/net/http_bridge.h"
