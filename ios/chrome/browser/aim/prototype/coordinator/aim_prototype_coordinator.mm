@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/variations/model/client/variations_client_service.h"
@@ -42,6 +44,22 @@
   id<VoiceSearchController> _voiceSearchController;
   /// The prewarmed picker as it takes time to appear.
   PHPickerViewController* _picker;
+  /// The entrypoing from which the coordinator was invoked.
+  AIMPrototypeEntrypoint _entrypoint;
+  /// Optional query inserted into the omnibox at start.
+  NSString* _query;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                entrypoint:(AIMPrototypeEntrypoint)entrypoint
+                                     query:(NSString*)query {
+  self = [super initWithBaseViewController:baseViewController browser:browser];
+  if (self) {
+    _entrypoint = entrypoint;
+    _query = query;
+  }
+  return self;
 }
 
 - (void)start {
@@ -115,7 +133,9 @@
 
 - (void)aimPrototypeViewControllerDidTapCloseButton:
     (AIMPrototypeViewController*)viewController {
-  [self.delegate aimPrototypeCoordinatorDidFinish:self];
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [commands hideAIMPrototype];
 }
 
 - (void)aimPrototypeViewControllerDidTapMicButton:
@@ -221,7 +241,9 @@
 #pragma mark - AIMPrototypeMediatorDelegate
 
 - (void)dismissAimPrototype {
-  [self.delegate aimPrototypeCoordinatorDidFinish:self];
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [commands hideAIMPrototype];
 }
 
 @end

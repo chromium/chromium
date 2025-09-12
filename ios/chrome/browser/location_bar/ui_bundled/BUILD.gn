@@ -39,6 +39,7 @@ source_set("ui_bundled") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/aim/prototype/coordinator",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/badges/ui_bundled:public",

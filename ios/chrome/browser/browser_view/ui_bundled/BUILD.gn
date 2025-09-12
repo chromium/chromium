@@ -54,6 +54,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ai_prototyping/coordinator",
+    "//ios/chrome/browser/aim/prototype/coordinator",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/app_store_rating/ui_bundled:features",
     "//ios/chrome/browser/authentication/ui_bundled",

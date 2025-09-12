@@ -221,6 +221,10 @@ BASE_FEATURE(kNTPMIAEntrypoint,
 // contains temporary UI exploration for AIM.
 BASE_FEATURE(kAIMPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kAIMPrototypeParam[] = "AIMPrototypeParam";
+const char kAIMPrototypeParamAllOmniboxEntrypoints[] =
+    "AIMPrototypeAllOmniboxEntrypoints";
+
 BASE_FEATURE(kOmniboxDRSPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTraitCollectionWorkAround,

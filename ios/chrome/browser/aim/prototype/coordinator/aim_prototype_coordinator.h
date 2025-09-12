@@ -11,19 +11,22 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class AIMPrototypeCoordinator;
+class Browser;
+enum class AIMPrototypeEntrypoint;
 
-/// Delegate for the AIM prototype coordinator.
-@protocol AIMPrototypeCoordinatorDelegate
-/// Called when the coordinator is finished and should be stopped.
-- (void)aimPrototypeCoordinatorDidFinish:(AIMPrototypeCoordinator*)coordinator;
-@end
-
-/// AIMPrototypeCoordinator presents the public interface for the Lens Overlay.
+/// AIMPrototypeCoordinator presents AIM with an omnibox.
 @interface AIMPrototypeCoordinator : ChromeCoordinator
 
-/// The delegate for this coordinator.
-@property(nonatomic, weak) id<AIMPrototypeCoordinatorDelegate> delegate;
+/// Init the AIM Prototype opened from `entrypoint` with an optional `query` in
+/// the omnibox.
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                entrypoint:(AIMPrototypeEntrypoint)entrypoint
+                                     query:(NSString*)query
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

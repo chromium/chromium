@@ -190,6 +190,14 @@ const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
      std::size(kNTPMIAEntrypointEnlargedFakeboxNoIncognito), nullptr},
 };
 
+const FeatureEntry::FeatureParam kAIMPrototypeAllOmniboxEntrypoints[] = {
+    {kAIMPrototypeParam, kAIMPrototypeParamAllOmniboxEntrypoints}};
+
+const FeatureEntry::FeatureVariation kAIMPrototypeVariations[] = {
+    {"for all Omnibox entrypoints", kAIMPrototypeAllOmniboxEntrypoints,
+     std::size(kAIMPrototypeAllOmniboxEntrypoints), nullptr},
+};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -2786,7 +2794,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kDiamondPrototype)},
     {"aim-prototype-ios", flag_descriptions::kAIMPrototypeName,
      flag_descriptions::kAIMPrototypeDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAIMPrototype)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototype,
+                                    kAIMPrototypeVariations,
+                                    "AIMPrototypeVariations")},
     {"omnibox-drs-prototype", flag_descriptions::kOmniboxDRSPrototypeName,
      flag_descriptions::kOmniboxDRSPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxDRSPrototype)},

@@ -41,6 +41,7 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -707,6 +708,9 @@ enum class ToolbarKind {
   // itself.
   base::ScopedClosureRunner _activityOverlayCallback;
 
+  // Coordinator for the AIM prototype.
+  AIMPrototypeCoordinator* _aimPrototypeCoordinator;
+
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
   QuickDeleteCoordinator* _quickDeleteCoordinator;
@@ -980,6 +984,11 @@ enum class ToolbarKind {
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
+
+  // The aim prototype replaces the omnibox.
+  if (dismissOmnibox) {
+    [self hideAIMPrototype];
+  }
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -1788,6 +1797,7 @@ enum class ToolbarKind {
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
+  [self hideAIMPrototype];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2593,6 +2603,28 @@ enum class ToolbarKind {
 - (void)performReauthToRetrieveTrustedVaultKey:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
+}
+
+- (void)showAIMPrototypeFromEntrypoint:(AIMPrototypeEntrypoint)entrypoint
+                             withQuery:(NSString*)query {
+  CHECK(base::FeatureList::IsEnabled(kAIMPrototype));
+  if (_aimPrototypeCoordinator) {
+    return;
+  }
+  _aimPrototypeCoordinator = [[AIMPrototypeCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      entrypoint:entrypoint
+                           query:query];
+  [_aimPrototypeCoordinator start];
+}
+
+- (void)hideAIMPrototype {
+  if (!_aimPrototypeCoordinator) {
+    return;
+  }
+  [_aimPrototypeCoordinator stop];
+  _aimPrototypeCoordinator = nil;
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

@@ -19,6 +19,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_availability.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
@@ -485,6 +486,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
+    if (MaybeShowAIMPrototype(self.browser, AIMPrototypeEntrypoint::kOther,
+                              /*query=*/query)) {
+      return;
+    }
     [self focusOmnibox];
     [self.omniboxCoordinator
         insertTextToOmnibox:base::SysUTF16ToNSString(sanitizedQuery)];
@@ -528,10 +533,17 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - OmniboxCommands
 
 - (void)focusOmniboxFromFakebox {
+  if (MaybeShowAIMPrototype(self.browser,
+                            AIMPrototypeEntrypoint::kNTPFakebox)) {
+    return;
+  }
   [self.omniboxCoordinator focusOmnibox];
 }
 
 - (void)focusOmnibox {
+  if (MaybeShowAIMPrototype(self.browser, AIMPrototypeEntrypoint::kOther)) {
+    return;
+  }
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
@@ -550,6 +562,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)cancelOmniboxEdit {
+  if (base::FeatureList::IsEnabled(kAIMPrototype)) {
+    id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [commands hideAIMPrototype];
+  }
   if (self.isCancellingOmniboxEdit) {
     return;
   }

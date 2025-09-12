@@ -310,6 +310,10 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
 // contains temporary UI exploration for AIM.
 BASE_DECLARE_FEATURE(kAIMPrototype);
 
+// Variations of AIM prototype.
+extern const char kAIMPrototypeParam[];
+extern const char kAIMPrototypeParamAllOmniboxEntrypoints[];
+
 // Feature for the DRS prototype.
 BASE_DECLARE_FEATURE(kOmniboxDRSPrototype);
 
