@@ -99,7 +99,8 @@ class OfferNotificationBubbleControllerImpl
   // Hides the bubble if it is visible and resets the bubble shown timestamp.
   // `should_show_icon` decides whether the icon should be visible after the
   // bubble is dismissed.
-  void HideBubbleAndClearTimestamp(bool should_show_icon);
+  void HideBubbleAndClearTimestamp(bool should_show_icon,
+                                   bool show_next_bubble);
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {

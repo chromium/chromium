@@ -230,7 +230,7 @@ class ManagePasswordsUIController
 
   // BubbleControllerBase:
   void ShowBubble() override;
-  void HideBubble() override;
+  void HideBubble(bool show_next_bubble) override;
   autofill::BubbleType GetBubbleType() const override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
@@ -416,6 +416,10 @@ class ManagePasswordsUIController
 
   // Whether the mouse is currently hovering over the bubble.
   bool is_mouse_hovered_ = false;
+
+  // Indicates to the bubble manager whether to show the next bubble when the
+  // password manager bubble is hidden.
+  std::optional<bool> show_next_bubble_;
 
   // Bool to indicate that the bubble is shown by the user gesture. This value
   // is cached when the bubble is requested to be shown.

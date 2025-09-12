@@ -62,7 +62,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.
   if (bubble_view()) {
-    HideBubble();
+    HideBubble(/*show_next_bubble=*/true);
   }
 
   if (!MaySetUpBubble()) {
@@ -231,7 +231,7 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
 
 void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  SetBubbleViewAndInformBubbleManager(nullptr);
+  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
 
   // Log bubble result according to the closed reason.
   autofill_metrics::FilledCardInformationBubbleResult metric;
@@ -355,7 +355,7 @@ void FilledCardInformationBubbleControllerImpl::PrimaryPageChanged(
   should_icon_be_visible_ = false;
   bubble_has_been_shown_ = false;
   UpdatePageActionIcon();
-  HideBubble();
+  HideBubble(/*show_next_bubble=*/true);
 }
 
 void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
@@ -367,7 +367,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
       should_icon_be_visible_) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*show_next_bubble=*/false);
   }
 }
 
@@ -386,11 +386,10 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleViewAndInformBubbleManager(
-      browser->window()
-          ->GetAutofillBubbleHandler()
-          ->ShowFilledCardInformationBubble(web_contents(), this,
-                                            is_user_gesture_));
+  SetBubbleView(browser->window()
+                    ->GetAutofillBubbleHandler()
+                    ->ShowFilledCardInformationBubble(web_contents(), this,
+                                                      is_user_gesture_));
   DCHECK(bubble_view());
   bubble_has_been_shown_ = true;
 

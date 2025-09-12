@@ -97,7 +97,9 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
     autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
   }
 #else  // !BUILDFLAG(IS_ANDROID)
-  HideIconAndBubble();
+  HideBubble(/*show_next_bubble=*/false);
+  ResetBubble();
+  UpdatePageActionIcon();
   if (result == PaymentsRpcResult::kClientSideTimeout) {
     return;
   }
@@ -134,7 +136,7 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardBubbleView() const {
 
 #if !BUILDFLAG(IS_ANDROID)
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
-  HideBubble();
+  HideBubble(/*show_next_bubble=*/true);
   ResetBubble();
   UpdatePageActionIcon();
 }
@@ -206,7 +208,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  SetBubbleViewAndInformBubbleManager(nullptr);
+  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
   UpdatePageActionIcon();
 
   // If the dialog is to be shown again because user clicked on links, do not
@@ -303,7 +305,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*show_next_bubble=*/false);
     if (bubble_state_ != BubbleState::kShowingIcon) {
       bubble_state_ = BubbleState::kHidden;
     }
@@ -328,7 +330,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view()) {
-    HideBubble();
+    HideBubble(/*show_next_bubble=*/false);
   }
 
   bubble_state_ = BubbleState::kShowingIconAndBubble;
@@ -339,7 +341,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    SetBubbleViewAndInformBubbleManager(
+    SetBubbleView(
         browser->window()
             ->GetAutofillBubbleHandler()
             ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
@@ -350,11 +352,10 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    SetBubbleViewAndInformBubbleManager(
-        browser->window()
-            ->GetAutofillBubbleHandler()
-            ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                          user_gesture_reprompt));
+    SetBubbleView(browser->window()
+                      ->GetAutofillBubbleHandler()
+                      ->ShowVirtualCardEnrollBubble(web_contents(), this,
+                                                    user_gesture_reprompt));
   }
   DCHECK(bubble_view());
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()

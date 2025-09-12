@@ -22,20 +22,20 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     : content::WebContentsObserver(web_contents) {}
 
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
-  HideBubble();
+  HideBubble(/*show_next_bubble=*/false);
 }
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*show_next_bubble=*/false);
   }
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    SetBubbleViewAndInformBubbleManager(nullptr);
+    ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/false);
   }
 }
 
@@ -56,10 +56,10 @@ void AutofillBubbleControllerBase::ShowBubble() {
   UpdatePageActionIcon();
 }
 
-void AutofillBubbleControllerBase::HideBubble() {
+void AutofillBubbleControllerBase::HideBubble(bool show_next_bubble) {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    SetBubbleViewAndInformBubbleManager(nullptr);
+    ResetBubbleViewAndInformBubbleManager(show_next_bubble);
   }
 }
 
@@ -99,20 +99,25 @@ void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
   ShowBubble();
 }
 
-void AutofillBubbleControllerBase::SetBubbleViewAndInformBubbleManager(
+void AutofillBubbleControllerBase::SetBubbleView(
     AutofillBubbleBase* bubble_view) {
+  bubble_view_ = bubble_view;
+}
+
+void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(
+    bool show_next_bubble) {
 #if !BUILDFLAG(IS_ANDROID)
   const bool was_showing = IsShowingBubble();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  bubble_view_ = bubble_view;
+  bubble_view_ = nullptr;
 
 #if !BUILDFLAG(IS_ANDROID)
-  const bool is_hiding = was_showing && !IsShowingBubble();
-  if (is_hiding && base::FeatureList::IsEnabled(
-                       features::kAutofillShowBubblesBasedOnPriorities)) {
+  if (was_showing && base::FeatureList::IsEnabled(
+                         features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(*this);
+      manager->OnBubbleHiddenByController(
+          *this, /*show_next_bubble=*/show_next_bubble);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

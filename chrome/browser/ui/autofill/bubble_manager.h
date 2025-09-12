@@ -80,8 +80,11 @@ class BubbleManager {
                                      bool force_show) = 0;
 
   // Called by the controller when its HideBubble() method is invoked.
+  // `show_next_bubble` indicates whether to show the next pending bubble or
+  // not.
   virtual void OnBubbleHiddenByController(
-      BubbleControllerBase& controller_to_hide) = 0;
+      BubbleControllerBase& controller_to_hide,
+      bool show_next_bubble) = 0;
 
   // Returns true if there is a pending bubble that has not timed out, of the
   // specified `bubble_type` in the queue. Always returns false for the bubble

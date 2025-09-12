@@ -38,7 +38,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   // BubbleControllerBase:
   void ShowBubble() override;
-  void HideBubble() override;
+  void HideBubble(bool show_next_bubble) override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
 
@@ -65,9 +65,11 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // irrespective of its priority.
   void QueueOrShowBubble(bool force_show = false);
 
-  // Sets the `bubble_view_` and informs the bubble manager when the
-  // `bubble_view_` becomes null.
-  void SetBubbleViewAndInformBubbleManager(AutofillBubbleBase* bubble_view);
+  // Setter for `bubble_view`.
+  void SetBubbleView(AutofillBubbleBase* bubble_view);
+
+  // Resets the `bubble_view` and informs the bubble manager about it.
+  void ResetBubbleViewAndInformBubbleManager(bool show_next_bubble);
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
 

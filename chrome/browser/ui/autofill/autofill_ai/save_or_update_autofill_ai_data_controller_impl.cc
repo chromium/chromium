@@ -331,7 +331,7 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
   if (bubble_view()) {
     EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(), close_reason);
   }
-  SetBubbleViewAndInformBubbleManager(nullptr);
+  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
   UpdatePageActionIcon();
   if (!save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)
@@ -349,10 +349,9 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetPageActionIconType() {
 
 void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleViewAndInformBubbleManager(
-      browser->window()
-          ->GetAutofillBubbleHandler()
-          ->ShowSaveAutofillAiDataBubble(web_contents(), this));
+  SetBubbleView(browser->window()
+                    ->GetAutofillBubbleHandler()
+                    ->ShowSaveAutofillAiDataBubble(web_contents(), this));
   CHECK(bubble_view());
 }
 
