@@ -68,6 +68,8 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
     // `std::nullopt` means the account chooser was canceled. It only simulates
     // the action for the first call to the account chooser following it.
     void SimulateAccountChooserAction(std::optional<AccountInfo> account_info);
+    // It will never return `nullptr` before the `flow_` runs.
+    content::RenderFrameHost* rfh();
 
    private:
     base::WeakPtr<SaveToDriveFlow> flow_;

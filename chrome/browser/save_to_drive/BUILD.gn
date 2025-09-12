@@ -57,6 +57,7 @@ source_set("browser_tests") {
   sources = [
     "pdf_content_reader_browsertest.cc",
     "save_to_drive_event_dispatcher_browsertest.cc",
+    "save_to_drive_flow_browsertest.cc",
   ]
   deps = [
     ":save_to_drive",
@@ -77,7 +78,6 @@ source_set("unit_tests") {
   sources = [
     "drive_uploader_unittest.cc",
     "multipart_drive_uploader_unittest.cc",
-    "save_to_drive_flow_unittest.cc",
     "time_remaining_calculator_unittest.cc",
   ]
   deps = [

@@ -4,24 +4,30 @@
 
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/drive_uploader.h"
 #include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "content/public/test/browser_test.h"
+#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -71,23 +77,43 @@ class MockContentReader : public ContentReader {
   MOCK_METHOD(void, Close, (), (override));
 };
 
-class SaveToDriveFlowTest : public testing::Test {
+class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
+                                   public PDFExtensionTestBase {
  public:
-  void SetUp() override {
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment();
-    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+  SaveToDriveFlowBrowserTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  SaveToDriveFlowBrowserTest(const SaveToDriveFlowBrowserTest&) = delete;
+  SaveToDriveFlowBrowserTest& operator=(const SaveToDriveFlowBrowserTest&) =
+      delete;
+  ~SaveToDriveFlowBrowserTest() override = default;
+
+  bool UseOopif() const override { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    PDFExtensionTestBase::SetUpOnMainThread();
+
+    GURL page_url = ui_test_utils::GetTestUrl(
+        base::FilePath(FILE_PATH_LITERAL("pdf")),
+        base::FilePath(FILE_PATH_LITERAL("test.pdf")));
+    auto* rfh = LoadPdfGetExtensionHost(page_url);
+    ASSERT_TRUE(rfh);
+
     auto event_dispatcher =
         std::make_unique<testing::StrictMock<MockSaveToDriveEventDispatcher>>(
-            rfh(), GURL("https://example.com/stream"),
+            rfh, GURL("https://example.com/stream"),
             std::make_unique<TimeRemainingCalculator>());
     auto content_reader =
         std::make_unique<testing::StrictMock<MockContentReader>>();
 
-    SaveToDriveFlow::CreateForCurrentDocument(
-        rfh(), std::move(event_dispatcher), std::move(content_reader));
+    SaveToDriveFlow::CreateForCurrentDocument(rfh, std::move(event_dispatcher),
+                                              std::move(content_reader));
     test_api_ = std::make_unique<SaveToDriveFlow::TestApi>(
-        SaveToDriveFlow::GetForCurrentDocument(rfh()));
+        SaveToDriveFlow::GetForCurrentDocument(rfh));
+  }
+
+  void TearDownOnMainThread() override {
+    test_api_.reset();
+    PDFExtensionTestBase::TearDownOnMainThread();
   }
 
   const MockSaveToDriveEventDispatcher& event_dispatcher() const {
@@ -99,23 +125,23 @@ class SaveToDriveFlowTest : public testing::Test {
     return *static_cast<const MockContentReader*>(test_api_->content_reader());
   }
 
-  content::RenderFrameHost* rfh() const {
-    return web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh() { return test_api_->rfh(); }
+
+  void SimulateAccountChooserAction(std::optional<AccountInfo> account_info) {
+    test_api_->SimulateAccountChooserAction(std::move(account_info));
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<SaveToDriveFlow::TestApi> test_api_;
-  content::TestWebContentsFactory web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
-TEST_F(SaveToDriveFlowTest, AccountChooserCanceled) {
-  test_api_->SimulateAccountChooserAction(std::nullopt);
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
+  SimulateAccountChooserAction(std::nullopt);
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kInitiated))));
+                                 SaveToDriveStatus::kInitiated),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kNoError))));
   EXPECT_CALL(
       event_dispatcher(),
       Notify(AllOf(
@@ -125,13 +151,16 @@ TEST_F(SaveToDriveFlowTest, AccountChooserCanceled) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-TEST_F(SaveToDriveFlowTest, ContentReadFails) {
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
   AccountInfo account_info = CreateAccountInfo();
   account_info.hosted_domain = "example.com";
-  test_api_->SimulateAccountChooserAction(std::move(account_info));
+  SimulateAccountChooserAction(std::move(account_info));
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kInitiated))));
+                                 SaveToDriveStatus::kInitiated),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kNoError))));
+
   EXPECT_CALL(content_reader(), Open)
       .WillOnce(base::test::RunOnceCallback<0>(/*success=*/false));
   EXPECT_CALL(content_reader(), Read).Times(0);
@@ -146,11 +175,15 @@ TEST_F(SaveToDriveFlowTest, ContentReadFails) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-TEST_F(SaveToDriveFlowTest, CreatesMultipartUploaderForSmallFile) {
-  test_api_->SimulateAccountChooserAction(CreateAccountInfo());
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+                       CreatesMultipartUploaderForSmallFile) {
+  SimulateAccountChooserAction(CreateAccountInfo());
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kInitiated))));
+                                 SaveToDriveStatus::kInitiated),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kNoError))));
+
   // Since IdentityManager is not set up, the OAuth fetch will fail.
   EXPECT_CALL(
       event_dispatcher(),
@@ -172,11 +205,14 @@ TEST_F(SaveToDriveFlowTest, CreatesMultipartUploaderForSmallFile) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-TEST_F(SaveToDriveFlowTest, CreatesResumableUploaderForLargeFile) {
-  test_api_->SimulateAccountChooserAction(CreateAccountInfo());
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+                       CreatesResumableUploaderForLargeFile) {
+  SimulateAccountChooserAction(CreateAccountInfo());
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kInitiated))));
+                                 SaveToDriveStatus::kInitiated),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kNoError))));
   // Since IdentityManager is not set up, the OAuth fetch will fail.
   EXPECT_CALL(
       event_dispatcher(),
@@ -198,5 +234,7 @@ TEST_F(SaveToDriveFlowTest, CreatesResumableUploaderForLargeFile) {
   EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(5 * 1024 * 1024 + 1));
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveToDriveFlowBrowserTest);
 
 }  // namespace save_to_drive

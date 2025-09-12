@@ -187,6 +187,10 @@ void SaveToDriveFlow::TestApi::SimulateAccountChooserAction(
   }
 }
 
+content::RenderFrameHost* SaveToDriveFlow::TestApi::rfh() {
+  return flow_ ? &flow_->render_frame_host() : nullptr;
+}
+
 DOCUMENT_USER_DATA_KEY_IMPL(SaveToDriveFlow);
 
 }  // namespace save_to_drive
