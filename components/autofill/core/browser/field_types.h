@@ -595,8 +595,9 @@ template <>
 struct DenseSetTraits<FieldType>
     : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {
   static constexpr bool is_valid(FieldType x) {
-    return ToSafeFieldType(base::to_underlying(x), NO_SERVER_DATA) !=
-           NO_SERVER_DATA;
+    return x == NO_SERVER_DATA ||
+           ToSafeFieldType(base::to_underlying(x), NO_SERVER_DATA) !=
+               NO_SERVER_DATA;
   }
 };
 
@@ -606,9 +607,10 @@ struct DenseSetTraits<HtmlFieldType>
                          HtmlFieldType(0),
                          HtmlFieldType::kMaxValue> {
   static constexpr bool is_valid(HtmlFieldType x) {
-    return ToSafeHtmlFieldType(base::to_underlying(x),
+    return x == HtmlFieldType::kUnrecognized ||
+           ToSafeHtmlFieldType(base::to_underlying(x),
                                HtmlFieldType::kUnrecognized) !=
-           HtmlFieldType::kUnrecognized;
+               HtmlFieldType::kUnrecognized;
   }
 };
 
