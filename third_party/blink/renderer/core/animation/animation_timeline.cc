@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
 
 namespace blink {
 
@@ -285,11 +286,7 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
               // TODO(crbug.com/c/429392773): This attaches all triggers of
               // matching names. When a resolution for resolving triggers with
               // the same name has been reached, we should update this.
-              // TODO(crbug.com/441408561): Update this when the
-              // AnimationTrigger interface supports the explicit
-              // action/behavior params contained in
-              // attachment.ActionBehaviorPairs().
-              trigger->addAnimation(animation, ASSERT_NO_EXCEPTION);
+              attachment->Attach(*trigger, *animation);
             }
           }
         }

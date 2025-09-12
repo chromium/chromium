@@ -117,7 +117,6 @@ interface AnimationTimeline
     method getCurrentTime
 interface AnimationTrigger
     attribute @@toStringTag
-    getter behavior
     method addAnimation
     method constructor
     method removeAnimation

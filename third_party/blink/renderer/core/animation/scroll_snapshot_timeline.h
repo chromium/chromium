@@ -109,7 +109,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
 
  protected:
   // For access to TimelineState.
-  friend class AnimationTrigger;
+  friend class TimelineTrigger;
 
   PhaseAndTime CurrentPhaseAndTime() override;
 

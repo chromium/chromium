@@ -2662,7 +2662,7 @@ TEST_P(AnimationAnimationTestCompositing,
   const HeapHashSet<WeakMember<AnimationTimeline>>& timelines =
       GetDocument().GetDocumentAnimations().GetTimelinesForTesting();
   EXPECT_TRUE(timelines.Contains(timeline));
-  AnimationTrigger* trigger;
+  TimelineTrigger* trigger;
   Animation* animation;
   {
     // Create an animation.
@@ -2681,12 +2681,14 @@ TEST_P(AnimationAnimationTestCompositing,
         MakeGarbageCollected<TimelineTrigger::RangeBoundary>(dummy_offset);
     trigger = MakeGarbageCollected<TimelineTrigger>(
         timeline,
-        AnimationTrigger::Behavior(AnimationTrigger::Behavior::Enum::kRepeat),
         dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
         dummy_range_boundary);
 
     // Attach the trigger to the animation.
-    trigger->addAnimation(animation, ASSERT_NO_EXCEPTION);
+    trigger->addAnimation(
+        animation, AtomicString(TimelineTriggerAction::kEnter),
+        V8AnimationTriggerBehavior(V8AnimationTriggerBehavior::Enum::kPlay),
+        ASSERT_NO_EXCEPTION);
     EXPECT_EQ(animation->CalculateAnimationPlayState(),
               V8AnimationPlayState::Enum::kPaused);
 
@@ -2770,7 +2772,7 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
           rangeStart: "contain 0%",
           rangeEnd: "contain 100%"});
 
-        trigger.addAnimation(animation);
+        trigger.addAnimation(animation, "enter", "play-forwards");
       }
 
       setupTriggeredAnimation();

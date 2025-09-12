@@ -12,6 +12,9 @@
 
 namespace blink {
 
+class Animation;
+class AnimationTrigger;
+
 // This class represents a configuration for attaching a CSS animation to an
 // animation trigger. It maps 1:1 with CSSTriggerAttachmentValue.
 class StyleTriggerAttachment : public GarbageCollected<StyleTriggerAttachment> {
@@ -28,6 +31,8 @@ class StyleTriggerAttachment : public GarbageCollected<StyleTriggerAttachment> {
       const {
     return action_behavior_pairs_;
   }
+
+  void Attach(AnimationTrigger& trigger, Animation& animation) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(trigger_name_);

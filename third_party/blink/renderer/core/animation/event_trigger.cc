@@ -30,12 +30,8 @@ class TriggerEventListener : public NativeEventListener {
 
 }  // namespace
 
-EventTrigger::EventTrigger(AnimationTrigger::Behavior behavior,
-                           String event_type,
-                           EventTarget& event_target)
-    : AnimationTrigger(behavior),
-      event_type_(event_type),
-      event_target_(&event_target) {}
+EventTrigger::EventTrigger(String event_type, EventTarget& event_target)
+    : event_type_(event_type), event_target_(&event_target) {}
 
 /* static */
 EventTrigger* EventTrigger::Create(ExecutionContext* execution_context,
@@ -46,8 +42,8 @@ EventTrigger* EventTrigger::Create(ExecutionContext* execution_context,
         "EventTrigger must have a non-empty eventType");
     return nullptr;
   }
-  return MakeGarbageCollected<EventTrigger>(
-      options->behavior(), options->eventType(), *options->eventTarget());
+  return MakeGarbageCollected<EventTrigger>(options->eventType(),
+                                            *options->eventTarget());
 }
 
 bool EventTrigger::CanTrigger() const {
@@ -59,50 +55,7 @@ bool EventTrigger::IsEventTrigger() const {
 }
 
 void EventTrigger::Invoke() {
-  switch (behavior().AsEnum()) {
-    case Behavior::Enum::kOnce:
-      for (Animation* animation : animations()) {
-        animation->play();
-      }
-      event_target_.Clear();
-      event_listener_.Clear();
-      break;
-    case Behavior::Enum::kRepeat:
-      for (Animation* animation : animations()) {
-        switch (animation->CalculateAnimationPlayState()) {
-          case V8AnimationPlayState::Enum::kRunning:
-          case V8AnimationPlayState::Enum::kPaused:
-            animation->finish();
-            break;
-          default:
-            break;
-        }
-        animation->play();
-      }
-      break;
-    case Behavior::Enum::kAlternate:
-      for (Animation* animation : animations()) {
-        if (animation->CalculateAnimationPlayState() ==
-            V8AnimationPlayState::Enum::kIdle) {
-          animation->play();
-        } else {
-          animation->reverse();
-        }
-      }
-      break;
-    case Behavior::Enum::kState:
-      for (Animation* animation : animations()) {
-        if (animation->CalculateAnimationPlayState() ==
-            V8AnimationPlayState::Enum::kRunning) {
-          animation->pause();
-        } else {
-          animation->play();
-        }
-      }
-      break;
-    default:
-      NOTREACHED();
-  }
+  PerformActionOnAnimations(AtomicString(event_type_));
 }
 
 void EventTrigger::Trace(Visitor* visitor) const {
@@ -112,11 +65,13 @@ void EventTrigger::Trace(Visitor* visitor) const {
 }
 
 void EventTrigger::DidAddAnimation(Animation* animation,
+                                   const AtomicString& action,
+                                   std::optional<Behavior> old_behavior,
+                                   Behavior new_behavior,
                                    ExceptionState& exception_state) {
   if (event_target_ && !event_listener_) {
     auto* options = MakeGarbageCollected<AddEventListenerOptionsResolved>();
     options->SetAnimationTrigger(true);
-    options->setOnce(behavior() == Behavior::Enum::kOnce);
     event_listener_ = MakeGarbageCollected<TriggerEventListener>(*this);
     event_target_->addEventListener(AtomicString(event_type_),
                                     event_listener_.Get(), options);
@@ -124,7 +79,7 @@ void EventTrigger::DidAddAnimation(Animation* animation,
 }
 
 void EventTrigger::DidRemoveAnimation(Animation* animation) {
-  if (event_target_ && event_listener_ && animations().empty()) {
+  if (event_target_ && event_listener_ && ActionsMap().empty()) {
     event_target_->removeEventListener(AtomicString(event_type_),
                                        event_listener_.Get(),
                                        /*use_capture=*/false);

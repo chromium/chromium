@@ -6,7 +6,6 @@
 
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -1324,10 +1323,7 @@ void VerifyTriggerRangeBoundary(
 
 class CSSAnimationsTriggerTest : public CSSAnimationsTest {
  public:
-  using Behavior = AnimationTrigger::Behavior;
-
   void TestTimelineTrigger(TimelineTrigger* trigger,
-                           AnimationTrigger::Behavior expected_behavior,
                            std::optional<bool> expect_view_timeline,
                            TimelineTrigger::RangeBoundary* expected_start,
                            TimelineTrigger::RangeBoundary* expected_end,
@@ -1402,14 +1398,12 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsTriggerTest);
 
 void CSSAnimationsTriggerTest::TestTimelineTrigger(
     TimelineTrigger* trigger,
-    AnimationTrigger::Behavior expected_behavior,
     std::optional<bool> expect_view_timeline,
     TimelineTrigger::RangeBoundary* expected_start,
     TimelineTrigger::RangeBoundary* expected_end,
     TimelineTrigger::RangeBoundary* expected_exit_start,
     TimelineTrigger::RangeBoundary* expected_exit_end) {
   EXPECT_NE(trigger, nullptr);
-  EXPECT_EQ(trigger->behavior(), expected_behavior);
 
   AnimationTimeline* timeline = trigger->timeline();
   if (!expect_view_timeline.has_value()) {
@@ -1480,7 +1474,6 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
   TimelineTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
   TestTimelineTrigger(trigger,
-                      V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
                       /* expect_view_timeline */ std::nullopt, normal, normal,
                       auto_offset, auto_offset);
 }
@@ -1529,7 +1522,6 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewOnly) {
   TimelineTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
   TestTimelineTrigger(trigger,
-                      V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
                       /* expect_view_timeline */ true, normal, normal,
                       auto_offset, auto_offset);
 }
@@ -1580,9 +1572,9 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerScrollOnce) {
   TimelineTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
 
-  TestTimelineTrigger(
-      trigger, V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
-      /* expect_view_timeline */ false, pct25, pct75, auto_offset, auto_offset);
+  TestTimelineTrigger(trigger,
+                      /* expect_view_timeline */ false, pct25, pct75,
+                      auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewAlternate) {
@@ -1632,7 +1624,6 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewAlternate) {
       MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
 
   TestTimelineTrigger(trigger,
-                      V8AnimationTriggerBehavior(Behavior::Enum::kAlternate),
                       /* expect_view_timeline */ true, contain10, contain90,
                       auto_offset, auto_offset);
 }
@@ -1686,9 +1677,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewRepeat) {
   TimelineTrigger::RangeBoundary* cover99 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 99);
 
-  TestTimelineTrigger(trigger,
-                      V8AnimationTriggerBehavior(Behavior::Enum::kRepeat), true,
-                      contain10, contain90, cover1, cover99);
+  TestTimelineTrigger(trigger, true, contain10, contain90, cover1, cover99);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
@@ -1736,8 +1725,6 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
-
-  EXPECT_EQ(trigger->behavior(), V8AnimationTriggerBehavior::Enum::kRepeat);
 
   EXPECT_FALSE(trigger->GetTimelineInternal()->IsScrollTimeline());
   EXPECT_TRUE(trigger->timeline()->IsViewTimeline());
@@ -1810,65 +1797,6 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
   EXPECT_FALSE(scroll_trigger->GetTimelineInternal()->IsScrollTimeline());
   EXPECT_FALSE(scroll_trigger->timeline()->IsViewTimeline());
   EXPECT_TRUE(scroll_trigger->timeline()->IsScrollTimeline());
-}
-
-TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeBehavior) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes stretch {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(5); }
-      }
-      #target {
-        height: 50px;
-        width: 50px;
-        animation: stretch 1s;
-      }
-      .repeat_trigger {
-        timeline-trigger: --trigger view() repeat contain 10% contain 90%;
-      }
-      .once_trigger {
-        timeline-trigger: --trigger view() once contain 10% contain 90%;
-      }
-     .scroller {
-        overflow-y: scroll;
-        height: 500px;
-        width: 500px;
-        border: solid 1px;
-        position: relative;
-      }
-      #space {
-        width: 50px;
-        height: 600px;
-      }
-    </style>
-    <div id="wrapper">
-      <div id="scroller" class="scroller">
-        <div id="space"></div>
-        <div id="target"></div>
-        <div id="space"></div>
-      </div>
-    </div>
-  )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
-
-  target->classList().Add(AtomicString("repeat_trigger"));
-  UpdateAllLifecyclePhasesForTest();
-
-  TimelineTrigger* repeat_trigger = DynamicTo<TimelineTrigger>(
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
-  EXPECT_EQ(repeat_trigger->behavior(),
-            AnimationTrigger::Behavior::Enum::kRepeat);
-
-  target->classList().Remove(AtomicString("repeat_trigger"));
-  target->classList().Add(AtomicString("once_trigger"));
-  UpdateAllLifecyclePhasesForTest();
-
-  TimelineTrigger* once_trigger = DynamicTo<TimelineTrigger>(
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
-  EXPECT_NE(once_trigger, repeat_trigger);
-  EXPECT_EQ(once_trigger->behavior(), AnimationTrigger::Behavior::Enum::kOnce);
 }
 
 void CSSAnimationsTriggerTest::TestRangeStartChange(

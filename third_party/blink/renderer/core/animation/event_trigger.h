@@ -23,9 +23,7 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
                               EventTriggerOptions* options,
                               ExceptionState& exception_state);
 
-  EventTrigger(AnimationTrigger::Behavior behavior,
-               String event_type,
-               EventTarget& event_target);
+  EventTrigger(String event_type, EventTarget& event_target);
 
   void Invoke();
 
@@ -41,6 +39,9 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
 
  private:
   void DidAddAnimation(Animation* animation,
+                       const AtomicString& action,
+                       std::optional<Behavior> old_behavior,
+                       Behavior new_behavior,
                        ExceptionState& exception_state) override;
   void DidRemoveAnimation(Animation* animation) override;
   void ClearListenerIfNecessary();

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -24,32 +25,6 @@
 namespace blink {
 
 namespace {
-
-enum class UpdateType { kNone, kPlay, kPause, kReverse, kUnpause, kReset };
-
-void UpdateAnimation(Animation* animation, UpdateType update_type) {
-  switch (update_type) {
-    case UpdateType::kPlay:
-      animation->PlayInternal(Animation::AutoRewind::kEnabled,
-                              ASSERT_NO_EXCEPTION);
-      break;
-    case UpdateType::kPause:
-      animation->PauseInternal(ASSERT_NO_EXCEPTION);
-      break;
-    case UpdateType::kReverse:
-      animation->ReverseInternal(ASSERT_NO_EXCEPTION);
-      break;
-    case UpdateType::kUnpause:
-      animation->Unpause();
-      break;
-    case UpdateType::kReset:
-      animation->ResetPlayback();
-      break;
-    case UpdateType::kNone:
-    default:
-      NOTREACHED();
-  };
-}
 
 bool HasPausedCSSPlayState(Animation* animation) {
   if (!animation->IsCSSAnimation()) {
@@ -145,13 +120,11 @@ double ComputeTriggerBoundary(std::optional<TimelineOffset> offset,
 }  // namespace
 
 TimelineTrigger::TimelineTrigger(AnimationTimeline* timeline,
-                                 Behavior behavior,
                                  RangeBoundary* range_start,
                                  RangeBoundary* range_end,
                                  RangeBoundary* exit_range_start,
                                  RangeBoundary* exit_range_end)
-    : AnimationTrigger(behavior),
-      timeline_(timeline),
+    : timeline_(timeline),
       range_start_(range_start),
       range_end_(range_end),
       exit_range_start_(exit_range_start),
@@ -180,7 +153,7 @@ TimelineTrigger* TimelineTrigger::Create(ExecutionContext* execution_context,
     timeline = &To<LocalDOMWindow>(execution_context)->document()->Timeline();
   }
   return MakeGarbageCollected<TimelineTrigger>(
-      timeline, options->behavior(), options->rangeStart(), options->rangeEnd(),
+      timeline, options->rangeStart(), options->rangeEnd(),
       options->exitRangeStart(), options->exitRangeEnd());
 }
 
@@ -352,48 +325,15 @@ void TimelineTrigger::Update() {
   }
   state_ = *new_state;
 
-  UpdateType update_type = UpdateType::kNone;
-
-  switch (behavior().AsEnum()) {
-    case Behavior::Enum::kOnce:
-      if (state_ == State::kPrimary) {
-        update_type = UpdateType::kUnpause;
-      }
+  switch (state_) {
+    case State::kPrimary:
+      PerformActionOnAnimations(AtomicString(TimelineTriggerAction::kEnter));
       break;
-    case Behavior::Enum::kRepeat:
-      if (state_ == State::kPrimary) {
-        update_type = UpdateType::kPlay;
-      } else {
-        update_type = UpdateType::kReset;
-      }
-      break;
-    case Behavior::Enum::kAlternate:
-      if (old_state == State::kIdle) {
-        update_type = UpdateType::kPlay;
-      } else {
-        update_type = UpdateType::kReverse;
-      }
-      break;
-    case Behavior::Enum::kState:
-      if (state_ == State::kPrimary) {
-        update_type = UpdateType::kUnpause;
-      } else {
-        update_type = UpdateType::kPause;
-      }
+    case State::kInverse:
+      PerformActionOnAnimations(AtomicString(TimelineTriggerAction::kExit));
       break;
     default:
       NOTREACHED();
-  };
-
-  if (update_type == UpdateType::kNone) {
-    return;
-  }
-
-  for (Animation* animation : animations()) {
-    if (HasPausedCSSPlayState(animation)) {
-      continue;
-    }
-    UpdateAnimation(animation, update_type);
   }
 }
 
@@ -407,63 +347,85 @@ void TimelineTrigger::Trace(Visitor* visitor) const {
 }
 
 void TimelineTrigger::HandlePostTripAdd(Animation* animation,
+                                        const AtomicString& action,
+                                        Behavior new_behavior,
                                         ExceptionState& exception_state) {
   DCHECK_NE(state_, State::kIdle);
-
   if (HasPausedCSSPlayState(animation)) {
     return;
   }
 
-  if (state_ == State::kPrimary) {
-    animation->PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-    return;
+  switch (state_) {
+    case State::kPrimary:
+      // kPrimary corresponds to the last action being an "enter". If this
+      // add request is for an "exit", do nothing.
+      if (action == AtomicString(TimelineTriggerAction::kEnter)) {
+        AnimationTrigger::PerformActionOnAnimation(*animation, action,
+                                                   exception_state);
+      }
+      break;
+    case State::kInverse:
+      // kInverse corresponds to the last action being an "exit". If this
+      // add request is for an "enter", do nothing.
+      if (action == AtomicString(TimelineTriggerAction::kExit)) {
+        AnimationTrigger::PerformActionOnAnimation(*animation, action,
+                                                   exception_state);
+      }
+      break;
+    default:
+      NOTREACHED();
   }
-
-  switch (behavior().AsEnum()) {
-    case Behavior::Enum::kOnce:
-      animation->PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-      break;
-    case Behavior::Enum::kRepeat:
-      animation->ResetPlayback();
-      animation->SetPausedForTrigger(true);
-      break;
-    case Behavior::Enum::kAlternate:
-      animation->ReverseInternal(exception_state);
-      break;
-    case Behavior::Enum::kState:
-      animation->PauseInternal(exception_state);
-      animation->SetPausedForTrigger(true);
-  };
 }
 
-void TimelineTrigger::WillAddAnimation(Animation* animation,
+bool TimelineTrigger::WillAddAnimation(Animation* animation,
+                                       const AtomicString& action,
                                        ExceptionState& exception_state) {
-  animation->PauseInternal(exception_state);
+  if (action != AtomicString(TimelineTriggerAction::kEnter) &&
+      action != AtomicString(TimelineTriggerAction::kExit)) {
+    // TimelineTrigger only supports enter and exit actions.
+    return false;
+  }
+
+  if (animation->CalculateAnimationPlayState() ==
+      V8AnimationPlayState::Enum::kIdle) {
+    animation->PauseInternal(exception_state);
+    if (exception_state.HadException()) {
+      return false;
+    }
+    animation->SetPausedForTrigger(true);
+  }
+
+  return true;
 }
 
 void TimelineTrigger::DidAddAnimation(Animation* animation,
+                                      const AtomicString& action,
+                                      std::optional<Behavior> old_behavior,
+                                      Behavior new_behavior,
                                       ExceptionState& exception_state) {
-  if (timeline_ && animations().size() == 1) {
-    timeline_->AddTrigger(this);
+  if (state_ != State::kIdle && old_behavior != new_behavior) {
+    HandlePostTripAdd(animation, action, new_behavior, exception_state);
   }
 
-  if (state_ == State::kIdle) {
-    animation->SetPausedForTrigger(true);
-  } else {
-    HandlePostTripAdd(animation, exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+
   animation->UpdateIfNecessary();
+
+  if (timeline_ && ActionsMap().size() == 1) {
+    timeline_->AddTrigger(this);
+  }
 }
 
 void TimelineTrigger::DidRemoveAnimation(Animation* animation) {
-  if (timeline_ && animations().empty()) {
+  if (timeline_ && ActionsMap().empty()) {
     timeline_->RemoveTrigger(this);
   }
 }
 
 bool TimelineTrigger::CanTrigger() const {
-  return timeline_ && timeline_->IsActive() &&
-         (state_ == State::kIdle || behavior() != Behavior::Enum::kOnce);
+  return timeline_ && timeline_->IsActive();
 }
 
 bool TimelineTrigger::IsTimelineTrigger() const {

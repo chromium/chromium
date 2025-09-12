@@ -5,7 +5,6 @@
 // https://drafts.csswg.org/web-animations-2/#the-animationtriggeroptions-dictionary
 
 dictionary EventTriggerOptions {
-  AnimationTriggerBehavior behavior = "once";
   DOMString eventType;
   EventTarget eventTarget;
 };

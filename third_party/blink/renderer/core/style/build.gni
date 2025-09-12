@@ -131,6 +131,7 @@ blink_core_sources_style = [
   "style_svg_resource.cc",
   "style_svg_resource.h",
   "style_timeline.h",
+  "style_trigger_attachment.cc",
   "style_trigger_attachment.h",
   "style_variables.cc",
   "style_variables.h",

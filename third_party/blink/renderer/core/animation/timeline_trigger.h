@@ -21,11 +21,11 @@ enum class TimelineTriggerState {
   kInverse,
 };
 
-enum class TimelineTriggerAction {
+struct TimelineTriggerAction {
   // The action to take when entering the trigger range.
-  kEnter,
+  static constexpr const char kEnter[] = "enter";
   // The action to take when exiting the exit range.
-  kExit
+  static constexpr const char kExit[] = "exit";
 };
 
 class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
@@ -36,7 +36,6 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   using State = TimelineTriggerState;
 
   TimelineTrigger(AnimationTimeline* timeline,
-                  AnimationTrigger::Behavior behavior,
                   RangeBoundary* range_start,
                   RangeBoundary* range_end,
                   RangeBoundary* exit_range_start,
@@ -92,16 +91,28 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
     return ComputeTriggerBoundaries(current_offset, timeline_source, timeline);
   }
 
+  using TimelineState = ScrollSnapshotTimeline::TimelineState;
+
  private:
-  void WillAddAnimation(Animation* animation,
+  bool WillAddAnimation(Animation* animation,
+                        const AtomicString& action,
                         ExceptionState& exception_state) override;
   void DidAddAnimation(Animation* animation,
+                       const AtomicString& action,
+                       std::optional<Behavior> old_behavior,
+                       Behavior new_behavior,
                        ExceptionState& exception_state) override;
   void DidRemoveAnimation(Animation* animation) override;
 
   // Handles playing an animation which is added to a trigger which has already
   // tripped.
-  void HandlePostTripAdd(Animation* animation, ExceptionState& exception_state);
+  void HandlePostTripAdd(Animation* animation,
+                         const AtomicString& action,
+                         Behavior behavior,
+                         ExceptionState& exception_state);
+
+  std::optional<TimelineTrigger::TriggerBoundaries>
+  CalculateTriggerBoundaries();
 
   TriggerBoundaries ComputeTriggerBoundaries(double current_offset,
                                              Element& timeline_source,

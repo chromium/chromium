@@ -1638,10 +1638,6 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   if (!new_timeline) {
     new_timeline = &element->GetDocument().Timeline();
   }
-  EAnimationTriggerBehavior behavior = CSSAnimationData::GetRepeated(
-      data->TimelineTriggerBehaviorList(), animation_index);
-  V8AnimationTriggerBehavior new_behavior =
-      AnimationTrigger::ToV8TriggerBehavior(behavior);
 
   const std::optional<TimelineOffset>& new_start_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerRangeStartList(),
@@ -1667,16 +1663,14 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
 
   bool need_new_trigger = !existing_trigger ||
                           existing_timeline != new_timeline ||
-                          existing_trigger->behavior() != new_behavior ||
                           !TimelineTriggerRangeBoundariesUnchanged(
                               existing_trigger, new_range_start, new_range_end,
                               new_exit_range_start, new_exit_range_end);
 
-  return need_new_trigger
-             ? MakeGarbageCollected<TimelineTrigger>(
-                   new_timeline, new_behavior, new_range_start, new_range_end,
-                   new_exit_range_start, new_exit_range_end)
-             : existing_trigger;
+  return need_new_trigger ? MakeGarbageCollected<TimelineTrigger>(
+                                new_timeline, new_range_start, new_range_end,
+                                new_exit_range_start, new_exit_range_end)
+                          : existing_trigger;
 }
 
 CSSAnimations::CSSAnimations() = default;

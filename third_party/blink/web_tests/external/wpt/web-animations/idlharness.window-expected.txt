@@ -107,7 +107,7 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AnimationTrigger interface: attribute timeline
   assert_true: The prototype object must have a property "timeline" expected true got false
 [FAIL] AnimationTrigger interface: attribute behavior
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "behavior" expected true got false
 [FAIL] AnimationTrigger interface: attribute rangeStart
   assert_true: The prototype object must have a property "rangeStart" expected true got false
 [FAIL] AnimationTrigger interface: attribute rangeEnd

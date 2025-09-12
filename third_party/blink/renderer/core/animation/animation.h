@@ -473,6 +473,11 @@ class CORE_EXPORT Animation : public EventTarget,
   void AddTrigger(AnimationTrigger* trigger);
   void RemoveTrigger(AnimationTrigger* trigger);
 
+  // Playback rate that will take effect once any pending tasks are resolved.
+  // If there are no pending tasks, then the effective playback rate equals the
+  // active playback rate.
+  double EffectivePlaybackRate() const;
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -490,10 +495,6 @@ class CORE_EXPORT Animation : public EventTarget,
   AnimationTimeDelta EffectEnd() const;
   bool Limited(std::optional<AnimationTimeDelta> current_time) const;
 
-  // Playback rate that will take effect once any pending tasks are resolved.
-  // If there are no pending tasks, then the effective playback rate equals the
-  // active playback rate.
-  double EffectivePlaybackRate() const;
   void ApplyPendingPlaybackRate();
 
   std::optional<AnimationTimeDelta> CalculateStartTime(
