@@ -83,13 +83,9 @@ declare_args() {
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
-  # Disabled in iOS cronet builds since build step cronet_static_complete
-  # wants to build a .a file consumable by external clients, and they won't
-  # have the same LLVM revisions as us, making bitcode useless to them.
   use_thin_lto =
       is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-                 (is_linux || is_win || is_mac ||
-                  (is_ios && use_lld && !is_cronet_build) ||
+                 (is_linux || is_win || is_mac || (is_ios && use_lld) ||
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
 

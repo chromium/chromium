@@ -845,7 +845,6 @@
                   'use_hashed_jni_names=true '
                   'default_min_sdk_version=23 '
                   'clang_use_default_sample_profile=false '
-                  'use_thin_lto=false '  # https://crbug.com/1136963
                   'enable_resource_allowlist_generation=false '),
       # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_android)
     },
