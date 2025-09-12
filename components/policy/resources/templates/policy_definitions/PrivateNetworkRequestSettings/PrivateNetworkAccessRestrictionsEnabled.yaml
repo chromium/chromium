@@ -9,7 +9,7 @@ deprecated: true
 
 desc: |-
   When this policy is set to Enabled, any time when a warning is supposed to be
-  displayed in the <ph name="DEV_TOOLS_NAME">DevTools</ph> due to <ph
+  displayed in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> due to <ph
   name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> checks failing, the
   main request will be blocked instead.
 

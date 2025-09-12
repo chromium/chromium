@@ -1,7 +1,7 @@
-caption: Settings for DevTools Generative AI Features
+caption: Settings for <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> Generative AI Features
 
 desc: |-
-  These features in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s DevTools employ generative AI models to provide additional debugging information. To use these features, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> has to collect data such as error messages, stack traces, code snippets, and network requests and send them to a server owned by Google, which runs a generative AI model. Response body or authentication and cookie headers in network requests are not included in the data sent to the server.
+  These features in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> employ generative AI models to provide additional debugging information. To use these features, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> has to collect data such as error messages, stack traces, code snippets, and network requests and send them to a server owned by Google, which runs a generative AI model. Response body or authentication and cookie headers in network requests are not included in the data sent to the server.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
 
@@ -11,7 +11,7 @@ desc: |-
 
   If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
 
-  DevTools Generative AI features include:
+  <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> Generative AI features include:
 
   - Console Insights: explains console messages and offers suggestions on how to fix console errors.
 
@@ -24,13 +24,13 @@ features:
   dynamic_refresh: true
   per_profile: true
 items:
-- caption: Allow DevTools Generative AI Features and improve AI models.
+- caption: Allow <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> Generative AI Features and improve AI models.
   name: Allowed
   value: 0
-- caption: Allow DevTools Generative AI Features without improving AI models.
+- caption: Allow <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> Generative AI Features without improving AI models.
   name: AllowedWithoutLogging
   value: 1
-- caption: Do not allow DevTools Generative AI Features.
+- caption: Do not allow <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> Generative AI Features.
   name: Disabled
   value: 2
 owners:

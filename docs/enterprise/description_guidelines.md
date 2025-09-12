@@ -198,6 +198,7 @@ avoid validation errors.
 * Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
 * Chrome Remote Desktop: `<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`
+* Chrome DevTools: `<ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>`
 
 #### Google Product
 
@@ -211,6 +212,7 @@ avoid validation errors.
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
+* Google Developer Program `<ph name="GDP_NAME">Google Developer Program</ph>`
 
 #### Operating System
 
