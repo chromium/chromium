@@ -328,26 +328,6 @@ NativeThemeWin::NativeThemeWin() {
                                 color_scheme);
 }
 
-void NativeThemeWin::ConfigureWebInstance() {
-  // Add the web native theme as an observer to stay in sync with color scheme
-  // changes.
-  color_scheme_observer_ =
-      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
-          NativeTheme::GetInstanceForWeb());
-  AddObserver(color_scheme_observer_.get());
-
-  // Initialize the native theme web instance with the system color info.
-  NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
-  web_instance->set_forced_colors(forced_colors());
-  web_instance->set_preferred_color_scheme(preferred_color_scheme());
-  web_instance->SetPreferredContrast(preferred_contrast());
-  web_instance->set_prefers_reduced_transparency(
-      prefers_reduced_transparency());
-  web_instance->set_system_colors(system_colors());
-  web_instance->set_should_use_system_accent_color(
-      should_use_system_accent_color());
-}
-
 std::optional<base::TimeDelta> NativeThemeWin::GetPlatformCaretBlinkInterval()
     const {
   static const size_t system_value =

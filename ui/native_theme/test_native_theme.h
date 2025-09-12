@@ -37,11 +37,6 @@ class TestNativeTheme : public NativeTheme {
   gfx::Rect GetNinePatchAperture(Part part) const override;
 
   void SetPreferredColorScheme(PreferredColorScheme color_scheme);
-  void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
-
- private:
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 };
 
 }  // namespace ui

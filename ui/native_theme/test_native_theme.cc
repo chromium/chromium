@@ -43,12 +43,4 @@ void TestNativeTheme::SetPreferredColorScheme(
   set_preferred_color_scheme(color_scheme);
 }
 
-void TestNativeTheme::AddColorSchemeNativeThemeObserver(
-    NativeTheme* theme_to_update) {
-  color_scheme_observer_ =
-      std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
-          theme_to_update);
-  AddObserver(color_scheme_observer_.get());
-}
-
 }  // namespace ui

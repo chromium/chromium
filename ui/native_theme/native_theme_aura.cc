@@ -83,15 +83,6 @@ NativeThemeAura::NativeThemeAura(SystemTheme system_theme)
 
 NativeThemeAura::~NativeThemeAura() = default;
 
-void NativeThemeAura::ConfigureWebInstance() {
-  // Add the web native theme as an observer to stay in sync with color scheme
-  // changes.
-  color_scheme_observer_ =
-      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
-          NativeTheme::GetInstanceForWeb());
-  AddObserver(color_scheme_observer_.get());
-}
-
 void NativeThemeAura::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,

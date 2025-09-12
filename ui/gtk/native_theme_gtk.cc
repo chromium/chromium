@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
 
 using base::StrCat;
@@ -88,6 +89,32 @@ void PaintWidget(cc::PaintCanvas* canvas,
                     rect.x(), rect.y());
 }
 
+void UpdateNativeUiInstance(const ui::NativeTheme* native_theme) {
+  auto* const ui_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  bool updated = false;
+  if (ui_theme->forced_colors() != native_theme->forced_colors()) {
+    ui_theme->set_forced_colors(native_theme->forced_colors());
+    updated = true;
+  }
+  if (ui_theme->page_colors() != native_theme->page_colors()) {
+    ui_theme->set_page_colors(native_theme->page_colors());
+    updated = true;
+  }
+  if (ui_theme->preferred_color_scheme() !=
+      native_theme->preferred_color_scheme()) {
+    ui_theme->set_preferred_color_scheme(
+        native_theme->preferred_color_scheme());
+    updated = true;
+  }
+  if (ui_theme->preferred_contrast() != native_theme->preferred_contrast()) {
+    ui_theme->SetPreferredContrast(native_theme->preferred_contrast());
+    updated = true;
+  }
+  if (updated) {
+    ui_theme->NotifyOnNativeThemeUpdated();
+  }
+}
+
 }  // namespace
 
 // static
@@ -136,23 +163,12 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
   // such, Aura must be updated with this information before we call
   // NotifyOnNativeThemeUpdated().
-  if (auto* native_theme_aura = ui::NativeTheme::GetInstanceForNativeUi();
-      native_theme_aura->UpdateContrastRelatedStates(*this)) {
-    native_theme_aura->NotifyOnNativeThemeUpdated();
-  }
-
+  UpdateNativeUiInstance(this);
   NativeTheme::NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeGtk::NotifyOnPreferredContrastUpdated() {
-  // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
-  // such, Aura must be updated with this information before we call
-  // NotifyOnPreferredContrastUpdated().
-  if (auto* native_theme_aura = ui::NativeTheme::GetInstanceForNativeUi();
-      native_theme_aura->UpdateContrastRelatedStates(*this)) {
-    native_theme_aura->NotifyOnNativeThemeUpdated();
-  }
-
+  UpdateNativeUiInstance(this);
   NativeTheme::NotifyOnPreferredContrastUpdated();
 }
 

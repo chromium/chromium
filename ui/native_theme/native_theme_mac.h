@@ -136,8 +136,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
 
   void InitializeDarkModeStateAndObserver();
 
-  void ConfigureWebInstance() override;
-
   enum ScrollbarPart {
     kThumb,
     kTrack,
@@ -162,11 +160,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   }
 
   bool prefers_non_blinking_cursor_for_testing_ = false;
-
-  // Used to notify the web native theme of changes to dark mode and high
-  // contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 
   std::unique_ptr<ObjCMembers> objc_members_;
 };

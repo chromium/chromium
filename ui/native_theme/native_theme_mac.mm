@@ -516,12 +516,11 @@ void NativeThemeMac::PaintMenuItemBackground(
   }
 }
 
-// static
-static void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
-                                                       void*,
-                                                       CFStringRef,
-                                                       const void*,
-                                                       CFDictionaryRef) {
+void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
+                                                void*,
+                                                CFStringRef,
+                                                const void*,
+                                                CFDictionaryRef) {
   NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
 }
 
@@ -561,6 +560,19 @@ NativeThemeMac::NativeThemeMac() {
                     usingBlock:^(NSNotification* notification) {
                       theme->NotifyOnNativeThemeUpdated();
                     }];
+  }
+
+  if (static bool initialized = false; !initialized) {
+    // Observe caption style changes. Technically these notify the web instance
+    // rather than `this`, but there's a 1:1 relationship between the two, and
+    // putting this code here allows simpler cross-platform
+    // `GetInstanceFor...()` implementations.
+    CFNotificationCenterAddObserver(
+        CFNotificationCenterGetLocalCenter(), nullptr,
+        CaptionSettingsChangedNotificationCallback,
+        kMACaptionAppearanceSettingsChangedNotification, nullptr,
+        CFNotificationSuspensionBehaviorDeliverImmediately);
+    initialized = true;
   }
 }
 
@@ -618,29 +630,6 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
         theme->set_preferred_color_scheme(GetPreferredColorScheme());
         theme->NotifyOnNativeThemeUpdated();
       }];
-}
-
-void NativeThemeMac::ConfigureWebInstance() {
-  // NativeThemeAura is used as web instance so we need to initialize its state.
-  NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
-  web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
-  web_instance->SetPreferredContrast(CalculatePreferredContrast());
-  web_instance->set_prefers_reduced_transparency(PrefersReducedTransparency());
-  web_instance->set_inverted_colors(InvertedColors());
-
-  // Add the web native theme as an observer to stay in sync with color scheme
-  // changes.
-  color_scheme_observer_ =
-      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
-          NativeTheme::GetInstanceForWeb());
-  AddObserver(color_scheme_observer_.get());
-
-  // Observe caption style changes.
-  CFNotificationCenterAddObserver(
-      CFNotificationCenterGetLocalCenter(), this,
-      CaptionSettingsChangedNotificationCallback,
-      kMACaptionAppearanceSettingsChangedNotification, nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 }  // namespace ui

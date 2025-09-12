@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class PrefRegistrySimple;
 class PrefService;

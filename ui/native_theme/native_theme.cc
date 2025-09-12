@@ -102,21 +102,22 @@ using WebUiTheme = NativeThemeMobile;
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeUiTheme> s_native_theme;
-  static bool initialized = false;
-  if (!initialized) {
-    s_native_theme->ConfigureWebInstance();
-    initialized = true;
-  }
   return s_native_theme.get();
 }
 
 NativeTheme* NativeTheme::GetInstanceForWeb() {
 #if defined(USE_AURA)
-  return GetInstanceForWebImpl();
+  NativeTheme* const native_theme = GetInstanceForWebImpl();
 #else
   static base::NoDestructor<WebUiTheme> s_web_theme;
-  return s_web_theme.get();
+  NativeTheme* const native_theme = s_web_theme.get();
 #endif
+  static bool initialized = false;
+  if (!initialized) {
+    GetInstanceForNativeUi()->SetAssociatedWebInstance(native_theme);
+    initialized = true;
+  }
+  return native_theme;
 }
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
@@ -202,8 +203,8 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   // Reset the ColorProviderManager's cache so that ColorProviders requested
   // from this point onwards incorporate the changes to the system theme.
   color_provider_manager.ResetColorProviderCache();
-  native_theme_observers_.Notify(&NativeThemeObserver::OnNativeThemeUpdated,
-                                 this);
+
+  NotifyOnNativeThemeUpdatedImpl();
 
   RecordNumColorProvidersInitializedDuringOnNativeThemeUpdated(
       color_provider_manager.num_providers_initialized() -
@@ -224,8 +225,7 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  native_theme_observers_.Notify(
-      &NativeThemeObserver::OnPreferredContrastChanged, this);
+  NotifyOnPreferredContrastUpdatedImpl();
 }
 
 // static
@@ -357,105 +357,139 @@ void NativeTheme::set_system_colors(
   system_colors_ = colors;
 }
 
-NativeTheme::ColorSchemeNativeThemeObserver::ColorSchemeNativeThemeObserver(
-    NativeTheme* theme_to_update)
-    : theme_to_update_(theme_to_update) {}
-
-NativeTheme::ColorSchemeNativeThemeObserver::~ColorSchemeNativeThemeObserver() =
-    default;
-
-void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
-  const bool new_inverted_colors = observed_theme->inverted_colors();
-  const base::TimeDelta new_caret_blink_interval =
-      observed_theme->GetCaretBlinkInterval();
-  bool notify_observers = false;
-
-  if (theme_to_update_->inverted_colors() != new_inverted_colors) {
-    theme_to_update_->set_inverted_colors(new_inverted_colors);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetCaretBlinkInterval() != new_caret_blink_interval) {
-    theme_to_update_->set_caret_blink_interval(new_caret_blink_interval);
-    notify_observers = true;
-  }
-
-  notify_observers |=
-      theme_to_update_->UpdateContrastRelatedStates(*observed_theme);
-
-  if (notify_observers) {
-    theme_to_update_->NotifyOnNativeThemeUpdated();
+void NativeTheme::SetAssociatedWebInstance(
+    NativeTheme* associated_web_instance) {
+  if (associated_web_instance_ != associated_web_instance) {
+    associated_web_instance_ = associated_web_instance;
+    if (UpdateWebInstance()) {
+      associated_web_instance_->NotifyOnNativeThemeUpdatedImpl();
+    }
   }
 }
 
-void NativeTheme::ColorSchemeNativeThemeObserver::OnPreferredContrastChanged(
-    ui::NativeTheme* observed_theme) {
-  if (theme_to_update_->UpdateContrastRelatedStates(*observed_theme)) {
-    theme_to_update_->NotifyOnNativeThemeUpdated();
+bool NativeTheme::UpdateWebInstance() const {
+  if (!associated_web_instance_) {
+    return false;
   }
-}
 
-bool NativeTheme::UpdateContrastRelatedStates(
-    const NativeTheme& observed_theme) {
-  bool new_forced_colors = observed_theme.forced_colors();
-  PageColors new_page_colors = observed_theme.page_colors();
-  PreferredContrast new_preferred_contrast =
-      observed_theme.preferred_contrast();
-  PreferredColorScheme new_preferred_color_scheme =
-      observed_theme.preferred_color_scheme();
-  bool new_prefers_reduced_transparency =
-      observed_theme.prefers_reduced_transparency();
-  bool states_updated = false;
+  bool new_forced_colors = forced_colors();
+  PreferredContrast new_preferred_contrast = preferred_contrast();
+  PreferredColorScheme new_preferred_color_scheme = preferred_color_scheme();
 
   const auto default_page_colors =
       new_forced_colors ? PageColors::kHighContrast : PageColors::kOff;
-  if (new_page_colors != default_page_colors) {
-    if (new_page_colors == PageColors::kOff) {
+  if (page_colors() != default_page_colors) {
+    if (page_colors() == PageColors::kOff) {
       new_forced_colors = false;
       new_preferred_contrast = PreferredContrast::kNoPreference;
-    } else if (new_page_colors != PageColors::kHighContrast) {
+    } else if (page_colors() != PageColors::kHighContrast) {
       // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
       // `kNightSky`, `kWhite`, or `kAquatic`). This block is only executed when
       // one of these themes is chosen. `kHighContrast` is not a valid theme
       // here, as it is only available in forced colors mode.
-      CHECK_NE(new_page_colors, ui::NativeTheme::PageColors::kOff);
-      CHECK_NE(new_page_colors, ui::NativeTheme::PageColors::kHighContrast);
+      CHECK_NE(page_colors(), ui::NativeTheme::PageColors::kOff);
+      CHECK_NE(page_colors(), ui::NativeTheme::PageColors::kHighContrast);
       new_forced_colors = true;
       new_preferred_contrast = PreferredContrast::kMore;
     }
   }
 
-  if (forced_colors() != new_forced_colors) {
-    set_forced_colors(new_forced_colors);
-    states_updated = true;
-  }
-  if (page_colors() != new_page_colors) {
-    set_page_colors(new_page_colors);
-    states_updated = true;
-  }
   // Only update the color scheme if page colors is a selected theme.
-  if (new_page_colors != PageColors::kOff &&
-      new_page_colors != PageColors::kHighContrast) {
-    const bool is_dark_theme = new_page_colors == PageColors::kNightSky ||
-                               new_page_colors == PageColors::kDusk ||
-                               new_page_colors == PageColors::kAquatic;
+  if (page_colors() != PageColors::kOff &&
+      page_colors() != PageColors::kHighContrast) {
+    const bool is_dark_theme = page_colors() == PageColors::kNightSky ||
+                               page_colors() == PageColors::kDusk ||
+                               page_colors() == PageColors::kAquatic;
     new_preferred_color_scheme = is_dark_theme ? PreferredColorScheme::kDark
                                                : PreferredColorScheme::kLight;
   }
-  if (preferred_color_scheme() != new_preferred_color_scheme) {
-    set_preferred_color_scheme(new_preferred_color_scheme);
-    states_updated = true;
-  }
-  if (preferred_contrast() != new_preferred_contrast) {
-    SetPreferredContrast(new_preferred_contrast);
-    states_updated = true;
-  }
-  if (prefers_reduced_transparency() != new_prefers_reduced_transparency) {
-    set_prefers_reduced_transparency(new_prefers_reduced_transparency);
-    states_updated = true;
-  }
 
-  return states_updated;
+  // NOTE: Intentionally does not copy the native "overlay scrollbar" setting to
+  // the web instance, as the web instance often wants to differ there.
+  // TODO(crbug.com/444399080): If we had a notion somewhere about "web wants
+  // overlay scrollbars even when native doesn't", we could probably copy the
+  // setting fearlessly here (and have that override it on the web instance
+  // side), making callers who want to toggle overlay scrollbars on/off globally
+  // simpler and safer.
+
+  bool updated_web_instance = false;
+  if (associated_web_instance_->system_colors() != system_colors()) {
+    associated_web_instance_->system_colors_ = system_colors();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->should_use_system_accent_color() !=
+      should_use_system_accent_color()) {
+    associated_web_instance_->should_use_system_accent_color_ =
+        should_use_system_accent_color();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->forced_colors() != new_forced_colors) {
+    associated_web_instance_->forced_colors_ = new_forced_colors;
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->page_colors() != page_colors()) {
+    associated_web_instance_->page_colors_ = page_colors();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->preferred_color_scheme() !=
+      new_preferred_color_scheme) {
+    associated_web_instance_->preferred_color_scheme_ =
+        new_preferred_color_scheme;
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->preferred_contrast() !=
+      new_preferred_contrast) {
+    associated_web_instance_->preferred_contrast_ = new_preferred_contrast;
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->prefers_reduced_transparency() !=
+      prefers_reduced_transparency()) {
+    associated_web_instance_->prefers_reduced_transparency_ =
+        prefers_reduced_transparency();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->inverted_colors() != inverted_colors()) {
+    associated_web_instance_->inverted_colors_ = inverted_colors();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->GetCaretBlinkInterval() !=
+      GetCaretBlinkInterval()) {
+    associated_web_instance_->caret_blink_interval_ = GetCaretBlinkInterval();
+    updated_web_instance = true;
+  }
+  return updated_web_instance;
+}
+
+void NativeTheme::NotifyOnNativeThemeUpdatedImpl() {
+  // Update any associated web instance's settings before notifying observers,
+  // since those observers may attempt to override the web instance's settings
+  // (e.g. to implement web-content-specific forced colors).
+  const bool updated_web_instance = UpdateWebInstance();
+
+  native_theme_observers_.Notify(&NativeThemeObserver::OnNativeThemeUpdated,
+                                 this);
+
+  // If the web instance was modified above, also notify its observers. This is
+  // done last so any of our observers that modify the web instance will have
+  // already run.
+  //
+  // NOTE: If any above observers already called `NotifyOnNativeThemeUpdated()`
+  // on the web theme, this is unnecessary jank; however, it's not worth the
+  // hassle to try to detect this.
+  if (updated_web_instance) {
+    // Calling `NotifyOnNativeThemeUpdated()` here would unnecessarily churn the
+    // color provider cache.
+    associated_web_instance_->NotifyOnNativeThemeUpdatedImpl();
+  }
+}
+
+void NativeTheme::NotifyOnPreferredContrastUpdatedImpl() {
+  const bool updated_web_instance = UpdateWebInstance();
+  native_theme_observers_.Notify(
+      &NativeThemeObserver::OnPreferredContrastChanged, this);
+  if (updated_web_instance) {
+    associated_web_instance_->NotifyOnPreferredContrastUpdatedImpl();
+  }
 }
 
 int NativeTheme::GetPaintedScrollbarTrackInset() const {

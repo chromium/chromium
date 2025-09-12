@@ -73,7 +73,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   friend class base::NoDestructor<NativeThemeWin>;
 
   // NativeTheme:
-  void ConfigureWebInstance() override;
   std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
 
   NativeThemeWin();
@@ -212,11 +211,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
       gfx::SingletonHwnd::GetInstance()->RegisterCallback(
           base::BindRepeating(&NativeThemeWin::OnWndProc,
                               base::Unretained(this)));
-
-  // Used to notify the web native theme of changes to dark mode, high
-  // contrast, preferred color scheme, and preferred contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 
   bool in_dark_mode_ = false;
 };

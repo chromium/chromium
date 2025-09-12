@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/native_theme/native_theme_observer.h"
 
 namespace cc {
 class PaintCanvas;
@@ -34,6 +33,7 @@ class PaintCanvas;
 namespace ui {
 
 class ColorProvider;
+class NativeThemeObserver;
 
 // This class supports drawing UI controls (like buttons, text fields, lists,
 // comboboxes, etc) that look like the native UI controls of the underlying
@@ -435,15 +435,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
       bool use_custom_frame = true) const;
 
-  // Returns a shared instance of the default native theme for native UI.
+  // Returns shared instances of the default native theme for native UI or the
+  // web, respectively.
   static NativeTheme* GetInstanceForNativeUi();
-
-  // Returns a shared instance of the native theme that should be used for web
-  // rendering. Do not use it in a normal application context (i.e. browser).
-  // The returned object should not be deleted by the caller. This function is
-  // not thread safe and should only be called from the UI thread. Each port of
-  // NativeTheme should provide its own implementation of this function,
-  // returning the port's subclass.
   static NativeTheme* GetInstanceForWeb();
 
   // Whether OS-level dark mode is available in the current OS.
@@ -487,12 +481,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns the OS-level inverted colors setting. (Classic invert NOT smart
   // invert)
   bool inverted_colors() const { return inverted_colors_; }
-
-  // Updates contrast-related theme states such as `forced_colors_`,
-  // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
-  // based on the `observed_theme`. Returns true if there's an update to any of
-  // these states.
-  bool UpdateContrastRelatedStates(const NativeTheme& observed_theme);
 
   const std::map<SystemThemeColor, SkColor>& system_colors() const {
     return system_colors_;
@@ -588,42 +576,24 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Calculates and returns the current user preferred contrast.
   virtual PreferredContrast CalculatePreferredContrast() const;
 
-  // A function to be called by native theme instances that need to set state
-  // or listeners with the webinstance in order to provide correct native
-  // platform behaviors.
-  virtual void ConfigureWebInstance() {}
-
   // Gets the platform caret blink interval if it exists.
   virtual std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const;
 
-  // Allows one native theme to observe changes in another. For example, the
-  // web native theme for Windows observes the corresponding ui native theme in
-  // order to receive changes regarding the state of dark mode, forced colors
-  // mode, preferred color scheme and preferred contrast.
-  class COMPONENT_EXPORT(NATIVE_THEME) ColorSchemeNativeThemeObserver
-      : public NativeThemeObserver {
-   public:
-    ColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
+  // Instructs this theme instance to mirror various appearance settings to
+  // `associated_web_instance` when they change.
+  void SetAssociatedWebInstance(NativeTheme* associated_web_instance);
 
-    ColorSchemeNativeThemeObserver(const ColorSchemeNativeThemeObserver&) =
-        delete;
-    ColorSchemeNativeThemeObserver& operator=(
-        const ColorSchemeNativeThemeObserver&) = delete;
-
-    ~ColorSchemeNativeThemeObserver() override;
-
-   private:
-    // ui::NativeThemeObserver:
-    void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-    void OnPreferredContrastChanged(ui::NativeTheme* observed_theme) override;
-
-    // The theme that gets updated when OnNativeThemeUpdated() is called.
-    const raw_ptr<NativeTheme> theme_to_update_;
-  };
+  // Updates the settings of any `associated_web_instance_` to match this
+  // instance's current settings. Returns whether anything was changed.
+  bool UpdateWebInstance() const;
 
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
+  // Updates web instance and notifies observers something has changed.
+  void NotifyOnNativeThemeUpdatedImpl();
+  void NotifyOnPreferredContrastUpdatedImpl();
+
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
 
@@ -648,6 +618,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
   std::optional<base::TimeDelta> caret_blink_interval_;
   bool use_overlay_scrollbars_ = false;
+
+  raw_ptr<NativeTheme> associated_web_instance_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

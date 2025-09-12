@@ -26,9 +26,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
 
   ~NativeThemeAura() override;
 
-  // Overridden from NativeTheme:
-  void ConfigureWebInstance() override;
-
   // NativeThemeBase:
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
@@ -87,11 +84,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
                                      const SkScalar lower_right_radius,
                                      const SkScalar lower_left_radius,
                                      const cc::PaintFlags& flags);
-
-  // Used to notify the web native theme of changes to dark mode, high
-  // contrast, preferred color scheme, and preferred contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 };
 
 }  // namespace ui
