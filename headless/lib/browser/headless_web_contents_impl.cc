@@ -62,9 +62,7 @@ namespace features {
 
 // Enables prerendering (Speculation Rules API) in the headless mode. This is
 // enabled by default but kept as a kill-switch.
-BASE_FEATURE(kPrerender2InHeadlessMode,
-             "Prerender2InHeadlessMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2InHeadlessMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

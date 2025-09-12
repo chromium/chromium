@@ -92,7 +92,7 @@ namespace features {
 // decoding and rendering. Audio plays in real time and does not respect virtual
 // time, and video tracks are kept in sync with audio. For virtual time to work
 // with video playback, audio must be suppressed.
-BASE_FEATURE(kVirtualTime, "VirtualTime", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVirtualTime, base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 const base::FilePath::CharType kDefaultProfileName[] =
