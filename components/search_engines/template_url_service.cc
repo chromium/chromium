@@ -476,7 +476,7 @@ class TemplateURLService::Scoper {
 
  private:
   std::unique_ptr<KeywordWebDataService::BatchModeScoper> batch_mode_scoper_;
-  raw_ptr<TemplateURLService> service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> service_;
 };
 
 // TemplateURLService::PreLoadingProviders -------------------------------------
