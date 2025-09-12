@@ -115,16 +115,10 @@ void ExtensionUninstallDialog::ConfirmUninstall(
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   show_report_abuse_checkbox_ =
       extension_management->UpdatesFromWebstore(*extension_);
-#else   // BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/404069731): Enable checkboxes on Desktop Android. Currently
-  // it is not supported by ModalDialogWrapper.
-  show_report_abuse_checkbox_ = false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Track that extension uninstalled externally.
   registry_observation_.Observe(ExtensionRegistry::Get(profile_));
