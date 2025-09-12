@@ -53,7 +53,7 @@ void GdpServiceHandler::CanMakeRequest(
 }
 
 GURL GdpServiceHandler::BaseURL() const {
-  return GURL("https://staging-developers.sandbox.googleapis.com");
+  return GURL("https://developers.googleapis.com");
 }
 
 signin::ScopeSet GdpServiceHandler::OAuthScopes() const {
