@@ -242,11 +242,10 @@ bool CanShowTabStrip(UITraitCollection* traitCollection) {
   if (IsRegularXRegularSizeClass(traitCollection)) {
     return true;
   }
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   }
-#endif
+
   return false;
 }
 
@@ -504,11 +503,9 @@ NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
       UITraitVerticalSizeClass.class
     ] mutableCopy];
 
-#if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
     if (@available(iOS 18, *)) {
       [mutableTraits addObject:UITraitListEnvironment.class];
     }
-#endif
 
     everyUIMutableTrait = [NSArray arrayWithArray:mutableTraits];
   });
