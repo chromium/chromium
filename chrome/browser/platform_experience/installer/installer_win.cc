@@ -67,8 +67,10 @@ enum class UserInstallerLaunchStatus {
   kSuccess = 0,
   kFileNotFound = 1,
   kAccessDenied = 2,
-  kOtherFailure = 3,
-  kMaxValue = kOtherFailure,
+  kOtherFailure = 3,  // This is a catch-all for all other failures.
+  kInvalidParameter = 4,
+  kElevationRequired = 5,
+  kMaxValue = kElevationRequired,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:UserInstallerLaunchStatus)
 
@@ -157,10 +159,17 @@ void MaybeInstallPlatformExperienceHelper() {
   if (!process.IsValid()) {
     switch (::GetLastError()) {
       case ERROR_FILE_NOT_FOUND:
+      case ERROR_PATH_NOT_FOUND:
         status = UserInstallerLaunchStatus::kFileNotFound;
         break;
       case ERROR_ACCESS_DENIED:
         status = UserInstallerLaunchStatus::kAccessDenied;
+        break;
+      case ERROR_INVALID_PARAMETER:
+        status = UserInstallerLaunchStatus::kInvalidParameter;
+        break;
+      case ERROR_ELEVATION_REQUIRED:
+        status = UserInstallerLaunchStatus::kElevationRequired;
         break;
       default:
         status = UserInstallerLaunchStatus::kOtherFailure;

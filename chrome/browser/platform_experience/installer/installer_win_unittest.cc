@@ -266,8 +266,40 @@ TEST_F(PlatformExperienceInstallerWinTest,
       /*UserInstallerLaunchStatus::kAccessDenied*/ 2, 1);
 }
 
-// Test user install failure due to an error other than file not found or
-// access denied.
+// Test user install failure due to ERROR_INVALID_PARAMETER.
+TEST_F(PlatformExperienceInstallerWinTest,
+       UserInstall_LaunchFails_InvalidParameter) {
+  EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))
+      .WillOnce([](const auto&, const auto&) {
+        ::SetLastError(ERROR_INVALID_PARAMETER);
+        return base::Process();  // Return invalid process
+      });
+
+  RunMaybeInstallForSystem(/*is_system_install=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.InstallerLaunchStatus.User",
+      /*UserInstallerLaunchStatus::kInvalidParameter*/ 4, 1);
+}
+
+// Test user install failure due to ERROR_ELEVATION_REQUIRED.
+TEST_F(PlatformExperienceInstallerWinTest,
+       UserInstall_LaunchFails_ElevationRequired) {
+  EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))
+      .WillOnce([](const auto&, const auto&) {
+        ::SetLastError(ERROR_ELEVATION_REQUIRED);
+        return base::Process();  // Return invalid process
+      });
+
+  RunMaybeInstallForSystem(/*is_system_install=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.InstallerLaunchStatus.User",
+      /*UserInstallerLaunchStatus::kElevationRequired*/ 5, 1);
+}
+
+// Test user install failure due to an error other than the specific ones
+// handled.
 TEST_F(PlatformExperienceInstallerWinTest,
        UserInstall_LaunchFails_OtherFailure) {
   EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))

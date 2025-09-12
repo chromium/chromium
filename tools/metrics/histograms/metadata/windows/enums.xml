@@ -179,6 +179,8 @@ and the result of attempting to pin to taskbar when user requests it.
   <int value="1" label="File not found"/>
   <int value="2" label="Access denied"/>
   <int value="3" label="Other failure"/>
+  <int value="4" label="Invalid parameter"/>
+  <int value="5" label="Elevation required"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/platform_experience/installer/installer_win.cc:UserInstallerLaunchStatus) -->
