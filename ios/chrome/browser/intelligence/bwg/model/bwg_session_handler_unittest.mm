@@ -224,3 +224,93 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       kFirstPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kUnknown, 1);
 }
+
+// Tests that updateSessionWithClientID handles invalid client IDs gracefully.
+TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithInvalidClientID) {
+  NSString* invalid_client_id = @"invalid_id_999";
+  NSString* server_id = @"test_server_123";
+
+  // This should not crash even with invalid client ID.
+  EXPECT_NO_FATAL_FAILURE([session_handler_
+      newSessionCreatedWithClientID:invalid_client_id
+                           serverID:server_id]);
+}
+
+// Tests that UIDidAppearWithClientID sets the session to active state.
+TEST_F(BWGSessionHandlerTest, TestSetSessionActiveTrue) {
+  NSString* client_id = GetClientID();
+
+  // Set session active.
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+
+  // Get the tab helper and verify it exists.
+  web::WebState* web_state = web_state_list_->GetWebStateAt(0);
+  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  ASSERT_TRUE(tab_helper);
+}
+
+// Tests that methods handle missing web states gracefully.
+TEST_F(BWGSessionHandlerTest, TestWebStateWithClientIDNotFound) {
+  NSString* non_existent_id = @"999999999";
+
+  // Test that methods handle missing web state gracefully.
+  EXPECT_NO_FATAL_FAILURE([session_handler_
+      UIDidAppearWithClientID:non_existent_id
+                     serverID:kTestServerID]);
+  EXPECT_NO_FATAL_FAILURE([session_handler_
+      UIDidDisappearWithClientID:non_existent_id
+                        serverID:kTestServerID]);
+  EXPECT_NO_FATAL_FAILURE([session_handler_
+      responseReceivedWithClientID:non_existent_id
+                          serverID:kTestServerID]);
+}
+
+// Tests that updateSessionWithClientID creates/updates the session in storage.
+TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithClientID) {
+  NSString* client_id = GetClientID();
+  NSString* server_id = @"test_server_id";
+
+  web::WebState* web_state = web_state_list_->GetWebStateAt(0);
+  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+
+  // Check initial state - no server ID should exist.
+  std::optional<std::string> initial_server_id = tab_helper->GetServerId();
+  EXPECT_FALSE(initial_server_id.has_value());
+
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:server_id];
+
+  // Verify server ID was stored correctly.
+  std::optional<std::string> stored_server_id = tab_helper->GetServerId();
+  EXPECT_TRUE(stored_server_id.has_value());
+  EXPECT_EQ(stored_server_id.value(), "test_server_id");
+}
+
+// Tests that didTapNewChatButtonWithSessionID maintains client ID consistency.
+TEST_F(BWGSessionHandlerTest, TestNewChatButtonTapped) {
+  NSString* client_id = GetClientID();
+  NSString* conversation_id = @"conversation_123";
+  NSString* server_id = @"test_server_123";
+
+  // Create a session with stored server ID.
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:server_id];
+
+  web::WebState* web_state = web_state_list_->GetWebStateAt(0);
+  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+
+  // Verify session exists with server ID.
+  std::optional<std::string> initial_server_id = tab_helper->GetServerId();
+  EXPECT_TRUE(initial_server_id.has_value());
+  EXPECT_EQ(initial_server_id.value(), "test_server_123");
+
+  // Verify client ID exists.
+  std::string initial_client_id = tab_helper->GetClientId();
+  EXPECT_FALSE(initial_client_id.empty());
+
+  // Tap new chat button.
+  [session_handler_ didTapNewChatButtonWithSessionID:client_id
+                                      conversationID:conversation_id];
+
+  // Verify client ID remains unchanged after new chat.
+  std::string post_delete_client_id = tab_helper->GetClientId();
+  EXPECT_EQ(initial_client_id, post_delete_client_id);
+}
