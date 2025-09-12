@@ -701,7 +701,7 @@ void LocalFrameUkmAggregator::EndForcedLayout(
       break;
 
     case DocumentUpdateReason::kCanvas:
-    case DocumentUpdateReason::kCanvasDrawHTML:
+    case DocumentUpdateReason::kCanvasDrawElementImage:
     case DocumentUpdateReason::kPlugin:
     case DocumentUpdateReason::kSVGImage:
       sub_metric = kContentDocumentUpdate;

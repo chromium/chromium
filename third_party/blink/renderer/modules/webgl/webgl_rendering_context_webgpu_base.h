@@ -599,13 +599,13 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                   MaybeShared<DOMArrayBufferView> data,
                   int64_t src_offset);
 
-  void texHTML2D(GLenum target,
-                 GLint level,
-                 GLint internalformat,
-                 GLenum format,
-                 GLenum type,
-                 Element* element,
-                 ExceptionState& exception_state);
+  void texElementImage2D(GLenum target,
+                         GLint level,
+                         GLint internalformat,
+                         GLenum format,
+                         GLenum type,
+                         Element* element,
+                         ExceptionState& exception_state);
 
   void texElement2D(GLenum target,
                     GLint level,

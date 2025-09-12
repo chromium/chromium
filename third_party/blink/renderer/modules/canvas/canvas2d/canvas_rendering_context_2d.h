@@ -240,16 +240,16 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    double dwidth,
                    double dheight,
                    ExceptionState& exception_state);
-  void drawHTML(Element* element,
-                double x,
-                double y,
-                ExceptionState& exception_state);
-  void drawHTML(Element* element,
-                double x,
-                double y,
-                double dwidth,
-                double dheight,
-                ExceptionState& exception_state);
+  void drawElementImage(Element* element,
+                        double x,
+                        double y,
+                        ExceptionState& exception_state);
+  void drawElementImage(Element* element,
+                        double x,
+                        double y,
+                        double dwidth,
+                        double dheight,
+                        ExceptionState& exception_state);
   void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
                          ExceptionState& exception_state);
 

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>drawElementImage draws selection - ref</title>
+<script src="/wpt_internal/css/support/markers.js"></script>
+<style>
+  :focus {
+    outline: none;
+  }
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+  }
+  #canvas {
+    background: grey;
+  }
+  ::selection {
+    background-color: lime;
+    color: green;
+    text-decoration: 2px red underline;
+    text-shadow: pink 2px 5px;
+  }
+</style>
+<canvas id=canvas width="200" height="200"></canvas>
+<div id="child">
+  <div id="editable" contenteditable="true">Many things can happen.</div>
+</div>
+<script>
+  function runTest() {
+    setSelection(editable, 5, 11)
+  }
+
+  onload = () => runTest();
+</script>

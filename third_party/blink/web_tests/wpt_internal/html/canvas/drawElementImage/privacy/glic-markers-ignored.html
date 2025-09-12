@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="UTF-8">
+<title>drawElementImage does not draw GLIC markers</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="glic-markers-ignored-ref.html">
+<meta name="assert" value="When preserving privacy for readback, do not draw markers for GLIC.">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+</style>
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true">Text added by GLIC.</div>
+  </div>
+</canvas>
+<script>
+  function runTest() {
+    if (typeof internals !== 'undefined') {
+      // To run this test from content_shell you can use
+      // "--expose-internals-for-testing" command flag.
+      const range = createRangeForTextOnly(editable, 0, 18);
+      internals.setMarker(document, range, "glic");
+    }
+    setTimeout(() => {
+      canvas.getContext("2d").drawElementImage(child, 0, 0);
+      takeScreenshot();
+    }, 500);
+  }
+
+  onload = () => runTest();
+</script>

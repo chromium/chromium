@@ -35,8 +35,8 @@ enum : unsigned {
   // Used to paint SVG resource subtree for masks.
   kPaintingSVGMask = 1 << 5,
 
-  // Used for painting [2D or WebGL canvas context].drawHTML().
-  kPaintingCanvasDrawHTML = 1 << 6,
+  // Used for painting drawElementImage/texElementImage2D.
+  kPaintingCanvasDrawElementImage = 1 << 6,
 
   // Used to suppress painting of PII and other sensitive content, allowing
   // the result to be used in WebGL, WebGPU and non-tainting 2D Canvas.

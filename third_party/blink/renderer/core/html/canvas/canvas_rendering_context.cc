@@ -80,7 +80,7 @@ void CanvasRenderingContext::Dispose() {
   }
 }
 
-bool CanvasRenderingContext::IsDrawHTMLEligible(
+bool CanvasRenderingContext::IsDrawElementImageEligible(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) {
@@ -156,7 +156,8 @@ bool CanvasRenderingContext::ConvertHitTestRegionsToHTMLCanvasRegions(
     const String& func_name,
     ExceptionState& exception_state) {
   for (const auto& region : hit_test_regions) {
-    if (!IsDrawHTMLEligible(region->element(), func_name, exception_state)) {
+    if (!IsDrawElementImageEligible(region->element(), func_name,
+                                    exception_state)) {
       return false;
     }
 

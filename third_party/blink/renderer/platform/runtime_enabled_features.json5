@@ -853,12 +853,12 @@
     },
     {
       // https://github.com/WICG/html-in-canvas/blob/main/README.md
-      // Note the API name has changed to `drawHTML`.
+      // Note the API name has changed to `drawElementImage`.
       name: "CanvasDrawElement",
       status: "test",
     },
     {
-      // Remove the restriction that drawHTML can only draw immediate children
+      // Remove the restriction that drawElementImage can only draw immediate children
       // of the canvas, and allow drawing canvas descendants.
       name: "CanvasDrawElementInSubtree",
       depends_on: ["CanvasDrawElement"],
