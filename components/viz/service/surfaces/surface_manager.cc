@@ -14,6 +14,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/queue.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -125,15 +126,21 @@ Surface* SurfaceManager::CreateSurface(
 
   // We should not be asked to create a surface that already exists.
   auto it = surface_map_.find(surface_info.id());
-  if (it != surface_map_.end())
+  if (it != surface_map_.end()) {
+    SCOPED_CRASH_KEY_STRING32("viz", "Create surface fail reason",
+                              "surface already exists");
     return nullptr;
+  }
 
   SurfaceAllocationGroup* allocation_group =
       GetOrCreateAllocationGroupForSurfaceId(surface_info.id());
   // GetOrCreateAllocationGroupForSurfaceId can fail if two FrameSinkIds use the
   // same embed token.
-  if (!allocation_group)
+  if (!allocation_group) {
+    SCOPED_CRASH_KEY_STRING32("viz", "Create surface fail reason",
+                              "Cannot reuse embed token across frame sinks");
     return nullptr;
+  }
 
   std::unique_ptr<Surface> surface = std::make_unique<Surface>(
       surface_info, this, allocation_group, surface_client,
