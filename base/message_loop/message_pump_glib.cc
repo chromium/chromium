@@ -10,10 +10,12 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
+#include "base/task/current_thread.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
@@ -252,6 +254,68 @@ bool RunningOnMainThread() {
 // 4.2.1: DoWork uses its own work item, so no ScopedDoWorkItems are active in
 //        this case.
 
+class FdWatchImpl : public IOWatcher::FdWatch,
+                    public MessagePumpForIO::FdWatcher {
+ public:
+  FdWatchImpl(IOWatcher::FdWatcher* fd_watcher, const Location& location)
+      : fd_watcher_(fd_watcher), controller_(location) {}
+
+  ~FdWatchImpl() override { controller_.StopWatchingFileDescriptor(); }
+
+  MessagePumpGlib::FdWatchController& controller() { return controller_; }
+
+ private:
+  // MessagePumpForIO::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdReadable(fd);
+  }
+
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdWritable(fd);
+  }
+
+  const raw_ptr<IOWatcher::FdWatcher> fd_watcher_;
+  MessagePumpGlib::FdWatchController controller_;
+};
+
+// Implements IOWatcher to allow any UI thread using a glib message pump to
+// watch arbitrary file descriptors for I/O events.
+class IOWatcherImpl : public IOWatcher {
+ public:
+  explicit IOWatcherImpl() : thread_(CurrentUIThread::Get()) {}
+
+  // IOWatcher:
+  std::unique_ptr<IOWatcher::FdWatch> WatchFileDescriptorImpl(
+      int fd,
+      FdWatchDuration duration,
+      FdWatchMode mode,
+      IOWatcher::FdWatcher& watcher,
+      const Location& location) override {
+    MessagePumpForIO::Mode io_mode;
+    switch (mode) {
+      case FdWatchMode::kRead:
+        io_mode = MessagePumpForIO::WATCH_READ;
+        break;
+      case FdWatchMode::kWrite:
+        io_mode = MessagePumpForIO::WATCH_WRITE;
+        break;
+      case FdWatchMode::kReadWrite:
+        io_mode = MessagePumpForIO::WATCH_READ_WRITE;
+        break;
+    }
+    const bool is_persistent = duration == FdWatchDuration::kPersistent;
+    auto watch = std::make_unique<FdWatchImpl>(&watcher, location);
+    if (!thread_->WatchFileDescriptor(fd, is_persistent, io_mode,
+                                      &watch->controller(), watch.get())) {
+      return nullptr;
+    }
+    return watch;
+  }
+
+ private:
+  CurrentUIThread thread_;
+};
+
 struct WorkSource : public GSource {
   raw_ptr<MessagePumpGlib> pump;
 };
@@ -333,8 +397,7 @@ gboolean FdWatchSourceDispatch(GSource* gsource,
                                GSourceFunc unused_func,
                                gpointer unused_data) {
   auto* source = static_cast<FdWatchSource*>(gsource);
-  source->pump->HandleFdWatchDispatch(source->controller);
-  return TRUE;
+  return source->pump->HandleFdWatchDispatch(source->controller) ? TRUE : FALSE;
 }
 
 void FdWatchSourceFinalize(GSource* gsource) {
@@ -424,6 +487,7 @@ MessagePumpGlib::MessagePumpGlib()
 
 MessagePumpGlib::~MessagePumpGlib() {
   work_source_.reset();
+  io_watcher_.reset();
   close(wakeup_pipe_read_);
   close(wakeup_pipe_write_);
   context_ = nullptr;
@@ -435,9 +499,6 @@ MessagePumpGlib::FdWatchController::FdWatchController(const Location& location)
 
 MessagePumpGlib::FdWatchController::~FdWatchController() {
   if (IsInitialized()) {
-    auto* source = static_cast<FdWatchSource*>(source_);
-    source->controller = nullptr;
-
     CHECK(StopWatchingFileDescriptor());
   }
   if (was_destroyed_) {
@@ -451,6 +512,7 @@ bool MessagePumpGlib::FdWatchController::StopWatchingFileDescriptor() {
     return false;
   }
 
+  static_cast<FdWatchSource*>(source_)->controller = nullptr;
   g_source_destroy(source_);
   g_source_unref(source_.ExtractAsDangling());
   watcher_ = nullptr;
@@ -462,6 +524,7 @@ bool MessagePumpGlib::FdWatchController::IsInitialized() const {
 }
 
 bool MessagePumpGlib::FdWatchController::InitOrUpdate(int fd,
+                                                      bool persistent,
                                                       int mode,
                                                       FdWatcher* watcher) {
   gushort event_flags = 0;
@@ -496,6 +559,7 @@ bool MessagePumpGlib::FdWatchController::InitOrUpdate(int fd,
   g_source_set_priority(source_, kPriorityFdWatch);
 
   watcher_ = watcher;
+  is_persistent_ = persistent;
   return true;
 }
 
@@ -540,7 +604,7 @@ bool MessagePumpGlib::WatchFileDescriptor(int fd,
   // threadsafe, so the watcher may never be registered.
   DCHECK_CALLED_ON_VALID_THREAD(watch_fd_caller_checker_);
 
-  if (!controller->InitOrUpdate(fd, mode, watcher)) {
+  if (!controller->InitOrUpdate(fd, persistent, mode, watcher)) {
     DPLOG(ERROR) << "FdWatchController init failed (fd=" << fd << ")";
     return false;
   }
@@ -745,18 +809,33 @@ void MessagePumpGlib::ScheduleDelayedWork(
   ScheduleWork();
 }
 
+IOWatcher* MessagePumpGlib::GetIOWatcher() {
+  if (!io_watcher_) {
+    io_watcher_ = std::make_unique<IOWatcherImpl>();
+  }
+  return io_watcher_.get();
+}
+
 bool MessagePumpGlib::HandleFdWatchCheck(FdWatchController* controller) {
   DCHECK(controller);
   gushort flags = controller->poll_fd_->revents;
   return (flags & G_IO_IN) || (flags & G_IO_OUT);
 }
 
-void MessagePumpGlib::HandleFdWatchDispatch(FdWatchController* controller) {
+bool MessagePumpGlib::HandleFdWatchDispatch(FdWatchController* controller) {
   DCHECK(controller);
   DCHECK(controller->poll_fd_);
   gushort flags = controller->poll_fd_->revents;
-  if ((flags & G_IO_IN) && (flags & G_IO_OUT)) {
-    // Both callbacks will be called. It is necessary to check that
+
+  // The contract for a one-shot (i.e. is_persistent is false) watch is exactly
+  // one event fires, doesn't matter if it's read or write. This implementation
+  // reports writes before reads.
+  const bool is_persistent = controller->is_persistent_;
+  const bool can_write = flags & G_IO_OUT;
+  const bool can_read = flags & G_IO_IN && (is_persistent || !can_write);
+
+  if (can_read && can_write) {
+    // In case both callbacks can be called, it's necessary to check that
     // |controller| is not destroyed.
     bool controller_was_destroyed = false;
     controller->was_destroyed_ = &controller_was_destroyed;
@@ -767,11 +846,12 @@ void MessagePumpGlib::HandleFdWatchDispatch(FdWatchController* controller) {
     if (!controller_was_destroyed) {
       controller->was_destroyed_ = nullptr;
     }
-  } else if (flags & G_IO_IN) {
-    controller->NotifyCanRead();
-  } else if (flags & G_IO_OUT) {
+  } else if (can_write) {
     controller->NotifyCanWrite();
+  } else if (can_read) {
+    controller->NotifyCanRead();
   }
+  return is_persistent;
 }
 
 bool MessagePumpGlib::ShouldQuit() const {

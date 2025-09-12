@@ -41,6 +41,9 @@ enum class FdIOCapableMessagePumpType {
 #if BUILDFLAG(IS_ANDROID)
   kAndroid,
 #endif
+#if defined(USE_GLIB)
+  kDefaultUI
+#endif
 };
 
 std::pair<ScopedFD, ScopedFD> CreateSocketPair() {
@@ -105,6 +108,14 @@ class IOWatcherFdTest
         java_thread_.emplace("Java thread");
         java_thread_->Start();
         io_task_runner_ = java_thread_->task_runner();
+        break;
+#endif
+
+#if defined(USE_GLIB)
+      case FdIOCapableMessagePumpType::kDefaultUI:
+        thread_.emplace("UI thread");
+        thread_->StartWithOptions(Thread::Options(MessagePumpType::UI, 0));
+        io_task_runner_ = thread_->task_runner();
         break;
 #endif
     }
@@ -394,6 +405,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(
 #if BUILDFLAG(IS_ANDROID)
                              FdIOCapableMessagePumpType::kAndroid,
+#endif
+#if defined(USE_GLIB)
+                             FdIOCapableMessagePumpType::kDefaultUI,
 #endif
                              FdIOCapableMessagePumpType::kDefaultIO));
 
