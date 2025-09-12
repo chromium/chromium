@@ -10,6 +10,7 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
@@ -78,17 +79,18 @@ UIImage* GeneratePDFPreview(NSData* pdf_data) {
 }
 
 // Creates an initial ContextualInputData object using the information from the
-// passed in `page_context` and `web_state`. Note that an image snapshot is not
-// populated as part of this function.
-std::unique_ptr<lens::ContextualInputData> CreateInputDataFromPageContext(
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context,
+// passed in `annotated_page_content` and `web_state`.
+std::unique_ptr<lens::ContextualInputData>
+CreateInputDataFromAnnotatedPageContent(
+    std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
+        annotated_page_content,
     web::WebState* web_state) {
-  if (!page_context || !web_state) {
+  if (!annotated_page_content || !web_state) {
     return nullptr;
   }
 
   std::string serialized_context;
-  page_context->SerializeToString(&serialized_context);
+  annotated_page_content->SerializeToString(&serialized_context);
 
   std::vector<uint8_t> vector_data(serialized_context.begin(),
                                    serialized_context.end());
@@ -405,10 +407,14 @@ std::unique_ptr<lens::ContextualInputData> CreateInputDataFromPageContext(
   [self.consumer setItems:_items];
   __block const base::UnguessableToken& token = item.fileToken;
 
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(pageContextResponse.value());
+
   web::WebState* webState = _webStateList->GetActiveWebState();
   __block std::unique_ptr<lens::ContextualInputData> input_data =
-      CreateInputDataFromPageContext(std::move(pageContextResponse.value()),
-                                     webState);
+      CreateInputDataFromAnnotatedPageContent(
+          base::WrapUnique(page_context->release_annotated_page_content()),
+          webState);
 
   __weak __typeof(self) weakSelf = self;
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
