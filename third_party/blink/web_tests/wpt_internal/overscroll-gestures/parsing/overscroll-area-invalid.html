@@ -10,10 +10,14 @@
 
 <script>
 test_invalid_value("overscroll-area", "none --foo");
+test_invalid_value("overscroll-area", "none, --foo");
 test_invalid_value("overscroll-area", "-foo");
 test_invalid_value("overscroll-area", "foo");
 test_invalid_value("overscroll-area", "foo --bar");
+test_invalid_value("overscroll-area", "foo, --bar");
 test_invalid_value("overscroll-area", "--foo bar");
+test_invalid_value("overscroll-area", "--foo, bar");
 test_invalid_value("overscroll-area", "--foo none");
+test_invalid_value("overscroll-area", "--foo, none");
 </script>
 

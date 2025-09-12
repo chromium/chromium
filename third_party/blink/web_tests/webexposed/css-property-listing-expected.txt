@@ -320,6 +320,7 @@ All changes to this list should go through Blink's feature review process: http:
     overscroll-behavior-inline
     overscroll-behavior-x
     overscroll-behavior-y
+    overscroll-position
     padding-block-end
     padding-block-start
     padding-bottom

@@ -7659,6 +7659,28 @@ const CSSValue* OverscrollArea::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+// overscroll-position: none | <dashed-ident>
+const CSSValue* OverscrollPosition::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeDashedIdent(stream, context);
+}
+const CSSValue* OverscrollPosition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (!style.OverscrollPosition()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  return MakeGarbageCollected<CSSCustomIdentValue>(*style.OverscrollPosition());
+}
+
 const CSSValue* OverscrollBehaviorX::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

@@ -604,6 +604,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.OverscrollBehaviorX() == b.OverscrollBehaviorX();
     case CSSPropertyID::kOverscrollBehaviorY:
       return a.OverscrollBehaviorY() == b.OverscrollBehaviorY();
+    case CSSPropertyID::kOverscrollPosition:
+      return base::ValuesEquivalent(a.OverscrollPosition(),
+                                    b.OverscrollPosition());
     case CSSPropertyID::kPaddingBottom:
       return a.PaddingBottom() == b.PaddingBottom();
     case CSSPropertyID::kPaddingLeft:

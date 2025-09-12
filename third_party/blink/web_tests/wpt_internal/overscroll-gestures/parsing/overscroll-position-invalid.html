@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>Overscroll Position Parsing Test - invalid</title>
+<meta name="assert" content="overscroll-position supports the full grammar 'none | <dashed-ident>'.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_invalid_value("overscroll-position", "none --foo");
+test_invalid_value("overscroll-position", "-foo");
+test_invalid_value("overscroll-position", "foo");
+test_invalid_value("overscroll-position", "foo --bar");
+test_invalid_value("overscroll-position", "--foo bar");
+test_invalid_value("overscroll-position", "--foo none");
+test_invalid_value("overscroll-position", "--foo, --bar");
+</script>
+

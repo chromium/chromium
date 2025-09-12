@@ -8046,6 +8046,7 @@ Called by update_use_counter_css.py.-->
   <int value="881" label="max-lines"/>
   <int value="882" label="block-ellipsis"/>
   <int value="883" label="overscroll-area"/>
+  <int value="884" label="overscroll-position"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
