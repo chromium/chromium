@@ -32,9 +32,6 @@ class TestDialogController : public ToolbarActionsBarBubbleDelegate {
   std::u16string GetBodyText() override { return u"body"; }
   std::u16string GetActionButtonText() override { return u"action"; }
   std::u16string GetDismissButtonText() override { return u"dismiss"; }
-  ui::mojom::DialogButton GetDefaultDialogButton() override {
-    return ui::mojom::DialogButton::kNone;
-  }
   std::string GetAnchorActionId() override { return action_id_; }
   void OnBubbleShown() override {}
   void OnBubbleClosed(CloseAction action) override {}
