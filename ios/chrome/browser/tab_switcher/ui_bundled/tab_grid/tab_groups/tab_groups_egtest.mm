@@ -872,7 +872,6 @@ void TapTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
       performAction:grey_tap()];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (iOS26_OR_ABOVE()) {
     [[EarlGrey
         selectElementWithMatcher:GREYAccessibilityID(@"PopoverDismissRegion")]
@@ -881,13 +880,6 @@ void TapTabGridEditButton() {
     [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
         performAction:grey_tap()];
   }
-#else
-  // Cancel the action by tapping the close button (= outside the delete
-  // button). We have a cancel button only on iPhones with iOS versions smaller
-  // than iOS26.
-  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
-      performAction:grey_tap()];
-#endif
 
   // Check that `Tab 1` tab cell still exists in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]

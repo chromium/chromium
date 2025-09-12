@@ -35,9 +35,8 @@ namespace {
 // Font size for the selection string.
 const CGFloat kSelectionFontSize = 17;
 // Horizontal margin between the elements.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kHorizontalMarginiOS26 = 8;
-#endif
+
 const CGFloat kHorizontalMarginPre26 = 4;
 const CGFloat kLeadingTrailingMargin = 12;
 // Button minimal width.
@@ -48,11 +47,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 // Returns the horizontal margin to be used, depending on the OS version.
 CGFloat HorizontalMargin() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return kHorizontalMarginiOS26;
   }
-#endif
+
   return kHorizontalMarginPre26;
 }
 
@@ -197,19 +195,15 @@ CGFloat HorizontalMargin() {
       l10n_util::GetNSString(selectAll ? IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON
                                        : IDS_IOS_TAB_GRID_DESELECT_ALL_BUTTON);
   UIButton* selectAllButton = _selectAllButton;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIButtonConfiguration* conf = _selectAllButton.configuration;
     conf.title = title;
     _selectAllButton.configuration = conf;
   } else {
-#endif
     [UIView performWithoutAnimation:^{
       [selectAllButton setTitle:title forState:UIControlStateNormal];
     }];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
 }
 
 - (void)highlightPageControlItem:(TabGridPage)page {
@@ -221,26 +215,20 @@ CGFloat HorizontalMargin() {
 }
 
 - (void)hide {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
-#endif
     self.backgroundColor = UIColor.blackColor;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   self.pageControl.alpha = 0.0;
 }
 
 - (void)show {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
-#endif
     self.backgroundColor = UIColor.clearColor;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   self.pageControl.alpha = 1.0;
 }
 
@@ -320,7 +308,6 @@ CGFloat HorizontalMargin() {
                     targetSelector:(SEL)targetSelector {
   UIButton* button;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIButtonConfiguration* buttonConfiguration;
     if ([UIButtonConfiguration
@@ -336,14 +323,12 @@ CGFloat HorizontalMargin() {
                                  primaryAction:nil];
     button.tintColor = TabGridGlassButtonTintColor();
   } else {
-#endif
     button = [UIButton systemButtonWithPrimaryAction:nil];
     button.tintColor = UIColor.whiteColor;
     [button setTitle:title forState:UIControlStateNormal];
     [button setImage:image forState:UIControlStateNormal];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   [button.heightAnchor constraintGreaterThanOrEqualToConstant:kButtonMinWidth]
@@ -422,17 +407,13 @@ CGFloat HorizontalMargin() {
   [self setStandardAppearance:appearance];
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
-#endif
     self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     [self createScrolledBackgrounds];
     [self setShadowImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
 
   UIView* containerView = [[UIStackView alloc] init];
   containerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -500,22 +481,19 @@ CGFloat HorizontalMargin() {
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCHBAR_PLACEHOLDER);
   _searchBar.accessibilityIdentifier = kTabGridSearchBarIdentifier;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     _cancelSearchButton =
         [self createButtonWithImage:DefaultCloseButtonForToolbar()
                               title:nil
                      targetSelector:@selector(cancelSearchButtonTapped:)];
   } else {
-#endif
     _cancelSearchButton =
         [self createButtonWithImage:nil
                               title:l10n_util::GetNSString(
                                         IDS_IOS_TAB_GRID_CANCEL_BUTTON)
                      targetSelector:@selector(cancelSearchButtonTapped:)];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   _cancelSearchButton.accessibilityIdentifier = kTabGridCancelButtonIdentifier;
 
   [self setUpConstraintsForContainerView:containerView];
@@ -526,15 +504,12 @@ CGFloat HorizontalMargin() {
   [self addSubview:containerView];
   UILayoutGuide* safeAreaLayoutGuide = self.safeAreaLayoutGuide;
   CGFloat containerSideMargin;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     containerSideMargin = 0;
   } else {
-#endif
     containerSideMargin = kLeadingTrailingMargin;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
+
   [NSLayoutConstraint activateConstraints:@[
     [containerView.leadingAnchor
         constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor
@@ -628,11 +603,10 @@ CGFloat HorizontalMargin() {
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return;
   }
-#endif
+
   if (IsIOSSoftLockEnabled()) {
     _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
     _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;

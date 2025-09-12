@@ -65,14 +65,12 @@
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 @interface UIScrollEdgeElementContainerInteraction (Compatibility)
 - (void)_setScrollView:(UIScrollView*)scrollView;
 - (void)setScrollView:(UIScrollView*)scrollView;
 - (void)_setEdge:(UIRectEdge)edge;
 - (void)setEdge:(UIRectEdge)edge;
 @end
-#endif
 
 namespace {
 
@@ -780,7 +778,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIScrollEdgeElementContainerInteraction* edgeEffect =
         [[UIScrollEdgeElementContainerInteraction alloc] init];
@@ -796,7 +793,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     }
     [topToolbar addInteraction:edgeEffect];
   }
-#endif
 }
 
 // Adds the app bar.
@@ -842,7 +838,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIScrollEdgeElementContainerInteraction* edgeEffect =
         [[UIScrollEdgeElementContainerInteraction alloc] init];
@@ -858,7 +853,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     }
     [bottomToolbar addInteraction:edgeEffect];
   }
-#endif
 }
 
 // Adds the PinnedTabsViewController and sets constraints.

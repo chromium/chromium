@@ -229,14 +229,11 @@
 + (void)insertElements:(NSArray<UIMenuElement*>*)childElements
     atStartOfMenuForIdentifier:(UIMenuIdentifier)parentIdentifier
                      inBuilder:(id<UIMenuBuilder>)builder {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     [builder insertElements:childElements
         atStartOfMenuForIdentifier:parentIdentifier];
     return;
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
   [builder
       replaceChildrenOfMenuForIdentifier:parentIdentifier
                        fromChildrenBlock:^(NSArray<UIMenuElement*>* elements) {
