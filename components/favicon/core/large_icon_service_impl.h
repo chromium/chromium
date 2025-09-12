@@ -140,7 +140,7 @@ class LargeIconServiceImpl : public LargeIconService {
       MayBeDangling<base::CancelableTaskTracker> tracker,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
-  const raw_ptr<FaviconService> favicon_service_;
+  const raw_ptr<FaviconService, DanglingUntriaged> favicon_service_;
 
   const std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
