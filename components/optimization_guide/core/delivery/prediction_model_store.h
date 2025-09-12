@@ -149,7 +149,8 @@ class PredictionModelStore {
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const raw_ref<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<PrefService, DanglingUntriaged> local_state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
