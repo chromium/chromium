@@ -887,6 +887,10 @@ export class SearchboxElement extends SearchboxElementBase {
         !this.isInputEmpty());
   }
 
+  hasThumbnail(): boolean {
+    return !!this.thumbnailUrl_;
+  }
+
   private onRemoveThumbnailClick_() {
     /* Remove thumbnail, focus input, and notify browser. */
     this.thumbnailUrl_ = '';

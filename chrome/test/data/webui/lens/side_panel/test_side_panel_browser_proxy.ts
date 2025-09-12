@@ -19,6 +19,7 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
       'onScrollToMessage',
       'requestSendFeedback',
       'onAimMessage',
+      'onImageQueryWithEmptyText',
     ]);
   }
 
@@ -45,6 +46,10 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
 
   requestSendFeedback() {
     this.methodCalled('requestSendFeedback');
+  }
+
+  onImageQueryWithEmptyText() {
+    this.methodCalled('onImageQueryWithEmptyText');
   }
 }
 

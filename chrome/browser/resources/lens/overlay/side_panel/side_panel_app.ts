@@ -326,6 +326,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
     });
+    this.eventTracker_.add(this.$.searchbox, 'keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        this.onSearchboxEnter();
+      }
+    });
     this.eventTracker_.add(
         document, 'query-autocomplete',
         this.handleQueryAutocomplete.bind(this));
@@ -352,6 +357,12 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onBackArrowClick() {
     this.pageHandler.popAndLoadQueryFromHistory();
+  }
+
+  private onSearchboxEnter() {
+    if (this.$.searchbox.isInputEmpty() && this.$.searchbox.hasThumbnail()) {
+      this.browserProxy.handler.onImageQueryWithEmptyText();
+    }
   }
 
   private setIsLoadingResults(isLoading: boolean) {

@@ -160,6 +160,7 @@ class LensOverlaySidePanelCoordinator
       uint32_t pdf_page_number) override;
   void RequestSendFeedback() override;
   void OnAimMessage(const std::vector<uint8_t>& message) override;
+  void OnImageQueryWithEmptyText() override;
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is

@@ -37,6 +37,9 @@ interface LensSidePanelPageHandler {
   // Called when the WebUI received a message from the remote AIM UI. This is
   // assumed to be a binary serialized AimToClientMessage proto.
   OnAimMessage(array<uint8> message);
+
+  // Called when the user submits a query with empty text.
+  OnImageQueryWithEmptyText();
 };
 
 // Enumerates the semantic events that can be logged by the Lens Overlay.

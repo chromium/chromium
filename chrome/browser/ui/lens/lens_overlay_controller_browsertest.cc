@@ -9292,6 +9292,131 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       EmptyImagePlusTextQueryTest) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // 1. Initial Image Query
+  // Open the overlay with a pre-selected region and image.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+
+  // Wait for the overlay and side panel to fully load.
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  ASSERT_TRUE(controller->GetSidePanelWebContentsForTesting());
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Check that the loaded query is image-only.
+  auto image_only_query = GetLoadedSearchQuery();
+  ASSERT_TRUE(image_only_query.has_value());
+  EXPECT_TRUE(image_only_query->search_query_text_.empty());
+  EXPECT_EQ(image_only_query->lens_selection_type_, lens::INJECTED_IMAGE);
+  EXPECT_TRUE(image_only_query->selected_region_);
+  EXPECT_FALSE(image_only_query->selected_region_bitmap_.drawsNothing());
+
+  // 2. Add Text Query (Multimodal)
+  // Issue a text search request from the search box.
+  const std::string test_text = "cats";
+  content::TestNavigationObserver multimodal_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      kTestTime, test_text, AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  multimodal_observer.WaitForNavigationFinished();
+
+  // Check that the loaded query is now multimodal.
+  auto multimodal_query = GetLoadedSearchQuery();
+  ASSERT_TRUE(multimodal_query.has_value());
+  EXPECT_EQ(multimodal_query->search_query_text_, test_text);
+  EXPECT_EQ(multimodal_query->lens_selection_type_, lens::MULTIMODAL_SEARCH);
+  EXPECT_TRUE(multimodal_query->selected_region_);
+  EXPECT_FALSE(multimodal_query->selected_region_thumbnail_uri_.empty());
+
+  // 3. Add Empty Text Query (Should revert to Image-Only)
+  // Issue an empty text search request from the search box.
+  const std::string empty_test_text = std::string();
+  controller->results_side_panel_coordinator()->OnImageQueryWithEmptyText();
+  content::TestNavigationObserver empty_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->results_side_panel_coordinator()->OnImageQueryWithEmptyText();
+  empty_observer.Wait();
+
+  // Check that the loaded query state reverted to image-only.
+  auto empty_multimodal_query = GetLoadedSearchQuery();
+  ASSERT_TRUE(empty_multimodal_query.has_value());
+  EXPECT_TRUE(empty_multimodal_query->search_query_text_.empty());
+  EXPECT_EQ(empty_multimodal_query->lens_selection_type_,
+            lens::MULTIMODAL_SELECTION_CLEAR);
+  EXPECT_TRUE(empty_multimodal_query->selected_region_);
+  EXPECT_FALSE(empty_multimodal_query->selected_region_thumbnail_uri_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ConsecutiveImageNoTextQueryTest) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // 1. Initial Image Query
+  // Open the overlay with a pre-selected region and image.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+
+  // Wait for the overlay and side panel to fully load.
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  ASSERT_TRUE(controller->GetSidePanelWebContentsForTesting());
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify the side panel is showing Lens results.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Check that the loaded query is image-only.
+  auto image_only_query = GetLoadedSearchQuery();
+  ASSERT_TRUE(image_only_query.has_value());
+  EXPECT_TRUE(image_only_query->search_query_text_.empty());
+  EXPECT_EQ(image_only_query->lens_selection_type_, lens::INJECTED_IMAGE);
+  EXPECT_TRUE(image_only_query->selected_region_);
+  EXPECT_FALSE(image_only_query->selected_region_bitmap_.drawsNothing());
+
+  // 2. Send the textless image query again
+  const std::string empty_test_text = std::string();
+  controller->results_side_panel_coordinator()->OnImageQueryWithEmptyText();
+  content::TestNavigationObserver empty_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->results_side_panel_coordinator()->OnImageQueryWithEmptyText();
+  empty_observer.Wait();
+
+  // Check that the loaded query state reverted to image-only.
+  auto empty_multimodal_query = GetLoadedSearchQuery();
+  ASSERT_TRUE(empty_multimodal_query.has_value());
+  EXPECT_TRUE(empty_multimodal_query->search_query_text_.empty());
+  EXPECT_EQ(empty_multimodal_query->lens_selection_type_, lens::INJECTED_IMAGE);
+  EXPECT_TRUE(empty_multimodal_query->selected_region_);
+  EXPECT_FALSE(empty_multimodal_query->selected_region_thumbnail_uri_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordInitializationTimingHistograms) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
