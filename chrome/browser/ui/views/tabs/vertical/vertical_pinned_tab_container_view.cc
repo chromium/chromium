@@ -60,7 +60,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
                                  (child_width + kTabVerticalPadding)) +
                       1;
     // Allocate extra space to the tabs.
-    available_width -= (children_on_row * child_width) -
+    available_width -= (children_on_row * child_width) +
                        (kTabVerticalPadding * (children_on_row - 1));
     child_width += std::floor(available_width / children_on_row);
   }

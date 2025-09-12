@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/resize_area.h"
@@ -86,4 +88,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   EXPECT_LE(
       region_view()->pinned_tabs_container_for_testing()->bounds().height(),
       region_view()->unpinned_tabs_container_for_testing()->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       PinnedTabsStayWithinBoundingWidth) {
+  // Add 10 pinned tabs.
+  for (auto i = 0; i < 10; ++i) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+    const int index =
+        browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents);
+    browser()->tab_strip_model()->SetTabPinned(index, true);
+  }
+
+  for (const auto child :
+       region_view()->pinned_tabs_container_for_testing()->children()) {
+    child->SetPreferredSize(gfx::Size(50, 60));
+  }
+  views::SizeBounds bounds;
+  auto verify_for_width = [&](int width) {
+    bounds.set_width(width);
+    EXPECT_LE(region_view()
+                  ->pinned_tabs_container_for_testing()
+                  ->CalculateProposedLayout(bounds)
+                  .host_size.width(),
+              bounds.width());
+  };
+  // Test for a variety of bounding widths.
+  verify_for_width(200);
+  verify_for_width(205);
+  verify_for_width(195);
+  verify_for_width(140);
+  verify_for_width(75);
 }
