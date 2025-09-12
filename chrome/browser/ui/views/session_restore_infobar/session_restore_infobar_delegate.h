@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -43,10 +42,9 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Creates a session restore infobar and adds it to the provided
   // `infobar_manager`. The `infobar_manager` will own the returned infobar.
-  static infobars::InfoBar* Show(
-      infobars::ContentInfoBarManager* infobar_manager,
-      base::OnceCallback<void()> close_cb,
-      InfobarMessageType message_type);
+  static void Show(content::WebContents* contents,
+                   base::OnceCallback<void()> close_cb,
+                   InfobarMessageType message_type);
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

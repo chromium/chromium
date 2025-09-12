@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
-#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,10 +22,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace session_restore_infobar {
 
@@ -55,24 +52,10 @@ class SessionRestoreInfobarControllerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  void CreateInfobar(bool was_restarted, bool is_post_crash_launch) {
-    auto controller = std::make_unique<SessionRestoreInfobarController>();
-    controller->MaybeShowInfoBar(*browser()->profile(), was_restarted,
-                                 is_post_crash_launch);
-  }
-
-  content::WebContents* AddNewTab(int index) {
-    browser()->tab_strip_model()->InsertWebContentsAt(
-        index,
-        content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile())),
-        AddTabTypes::ADD_ACTIVE);
-    return browser()->tab_strip_model()->GetWebContentsAt(index);
-  }
-
-  infobars::ContentInfoBarManager* GetInfoBarManager(
-      content::WebContents* web_contents) {
-    return infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  void CreateInfobar() {
+    auto controller = std::make_unique<SessionRestoreInfobarController>(
+        *browser()->profile(), false, false);
+    controller->CreateOrDestroySessionRestoreInfobar(*web_contents_);
   }
 
   SessionRestoreInfoBarDelegate* GetDelegate() {
@@ -91,7 +74,7 @@ class SessionRestoreInfobarControllerBrowserTest : public InProcessBrowserTest {
 // untouched session restore preference shows the correct message.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
                        InfobarUntouchedSessionRestoreDefaultPref) {
-  CreateInfobar(false, false);
+  CreateInfobar();
   EXPECT_EQ(1u, infobar_manager_->infobars().size());
 
   SessionRestoreInfoBarDelegate* delegate = GetDelegate();
@@ -106,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
                        InfobarShownForSessionRestore) {
   browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
 
-  CreateInfobar(false, false);
+  CreateInfobar();
   EXPECT_EQ(1u, infobar_manager_->infobars().size());
 }
 
@@ -116,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
                        InfobarNotShownForOtherSettings) {
   browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
 
-  CreateInfobar(false, false);
+  CreateInfobar();
   EXPECT_EQ(0u, infobar_manager_->infobars().size());
 }
 
@@ -125,52 +108,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
                        InfobarMessageValueForRestart) {
   browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
-  CreateInfobar(true, false);
+  CreateInfobar();
 
   EXPECT_EQ(1u, infobar_manager_->infobars().size());
   SessionRestoreInfoBarDelegate* delegate = GetDelegate();
   ASSERT_TRUE(delegate);
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringUTF16(
-                IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART));
-}
-
-// Test that the session restore infobar is global and appears on all tabs.
-IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
-                       InfobarIsGlobal) {
-  CreateInfobar(false, false);
-  EXPECT_EQ(1u, infobar_manager_->infobars().size());
-
-  // Check that the infobar is also shown on new tabs.
-  content::WebContents* web_contents2 = AddNewTab(1);
-  EXPECT_EQ(1u, GetInfoBarManager(web_contents2)->infobars().size());
-
-  content::WebContents* web_contents3 = AddNewTab(2);
-  EXPECT_EQ(1u, GetInfoBarManager(web_contents3)->infobars().size());
-}
-
-// Test that dismissing one infobar dismisses all other infobars.
-IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarControllerBrowserTest,
-                       DismissOneInfobarDismissesAll) {
-  CreateInfobar(false, false);
-  EXPECT_EQ(1u, infobar_manager_->infobars().size());
-
-  content::WebContents* web_contents2 = AddNewTab(1);
-  infobars::ContentInfoBarManager* infobar_manager2 =
-      GetInfoBarManager(web_contents2);
-  EXPECT_EQ(1u, infobar_manager2->infobars().size());
-
-  content::WebContents* web_contents3 = AddNewTab(2);
-  infobars::ContentInfoBarManager* infobar_manager3 =
-      GetInfoBarManager(web_contents3);
-  EXPECT_EQ(1u, infobar_manager3->infobars().size());
-
-  // All infobars are removed.
-  SessionRestoreInfoBarManager::GetInstance()->CloseAllInfoBars();
-
-  EXPECT_EQ(0u, infobar_manager_->infobars().size());
-  EXPECT_EQ(0u, infobar_manager2->infobars().size());
-  EXPECT_EQ(0u, infobar_manager3->infobars().size());
+                IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION));
 }
 
 }  // namespace session_restore_infobar

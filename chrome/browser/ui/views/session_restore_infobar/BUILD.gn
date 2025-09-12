@@ -6,13 +6,11 @@ source_set("session_restore_infobar") {
   public = [
     "session_restore_infobar_controller.h",
     "session_restore_infobar_delegate.h",
-    "session_restore_infobar_manager.h",
     "session_restore_infobar_model.h",
   ]
   sources = [
     "session_restore_infobar_controller.cc",
     "session_restore_infobar_delegate.cc",
-    "session_restore_infobar_manager.cc",
     "session_restore_infobar_model.cc",
   ]
   public_deps = [ "//base" ]
@@ -25,11 +23,8 @@ source_set("session_restore_infobar") {
     "//chrome/browser/sessions",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/startup",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/infobars",
     "//chrome/common",
     "//components/infobars/content",
