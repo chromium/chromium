@@ -406,6 +406,7 @@ source_set("unit_tests") {
     "module_system_test.cc",
     "module_system_test.h",
     "module_system_unittest.cc",
+    "native_extension_bindings_system_unittest.cc",
     "safe_builtins_unittest.cc",
     "scoped_web_frame.cc",
     "scoped_web_frame.h",
@@ -441,7 +442,6 @@ source_set("unit_tests") {
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
       "bindings/declarative_event_unittest.cc",
-      "native_extension_bindings_system_unittest.cc",
       "storage_area_unittest.cc",
     ]
   }

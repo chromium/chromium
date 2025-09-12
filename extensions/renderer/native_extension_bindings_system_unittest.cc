@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
@@ -28,6 +29,8 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -456,6 +459,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestEventRegistration) {
       "idle.onStateChanged", script_context));
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 TEST_F(NativeExtensionBindingsSystemUnittest,
        TestPrefixedApiEventsAndAppBinding) {
   scoped_refptr<const Extension> app =
@@ -494,6 +498,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   RunFunctionOnGlobal(use_app_runtime, context, 0, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 TEST_F(NativeExtensionBindingsSystemUnittest,
        TestPrefixedApiMethodsAndSystemBinding) {
@@ -852,8 +857,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that a context having access to an aliased API (like networking.onc)
 // does not allow for accessing the source API (networkingPrivate) directly.
+// Android does not support networking.onc, nor any other aliased API.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
   const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
@@ -952,6 +959,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
       &equal));
   EXPECT_FALSE(equal);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that script can overwrite the value of an API.
 TEST_F(NativeExtensionBindingsSystemUnittest, CanOverwriteAPIs) {
