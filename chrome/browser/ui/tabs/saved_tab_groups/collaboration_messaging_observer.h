@@ -81,6 +81,8 @@ class CollaborationMessagingObserver
                            InstantMessageManagesSharingWithClosedGroup);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            InstantMessageForTabGroupRemoved);
+  FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
+                           IgnoresUnsupportedTabMessages);
 
   // MessagingBackendService::PersistentMessageObserver
   void OnMessagingBackendServiceInitialized() override;

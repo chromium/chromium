@@ -439,6 +439,34 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
+                       IgnoresUnsupportedTabMessages) {
+  WaitForTabGroupSyncServiceInitialized();
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Observer is initialized
+  EXPECT_NE(observer(), nullptr);
+
+  auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // CHIP messages set the message in TabFeatures
+  auto tab0_id =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+
+  // Prevent network request.
+  GetTabDataAtIndex(browser(), 0)->set_mocked_avatar_for_testing(gfx::Image());
+
+  auto message =
+      CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
+                    PersistentNotificationType::TOMBSTONED, tab0_id, group_id);
+
+  // No messages are delivered.
+  EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+  observer()->DisplayPersistentMessage(message);
+  EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+}
+
+IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
                        InstantMessageReopensTab) {
   WaitForTabGroupSyncServiceInitialized();
 
