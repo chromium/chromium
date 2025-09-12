@@ -791,7 +791,7 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
                                    kDriveShortcutChromeRefreshIcon);
   SetElementIdentifierAt(GetItemCount() - 1, AppMenuModel::kCreateShortcutItem);
   if (!sharing_hub::SharingIsDisabledByPolicy(browser->profile()) ||
-      media_router::MediaRouterEnabled(browser->profile())) {
+      sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_SHARE));
     if (!sharing_hub::SharingIsDisabledByPolicy(browser->profile())) {
@@ -804,11 +804,11 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
                                        IDS_APP_MENU_CREATE_QR_CODE,
                                        kQrCodeChromeRefreshIcon);
     }
-  }
-  if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHARING_HUB_SCREENSHOT,
-                                     IDS_SHARING_HUB_SCREENSHOT_LABEL,
-                                     kSharingHubScreenshotIcon);
+    if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
+      AddItemWithStringIdAndVectorIcon(this, IDC_SHARING_HUB_SCREENSHOT,
+                                       IDS_SHARING_HUB_SCREENSHOT_LABEL,
+                                       kSharingHubScreenshotIcon);
+    }
   }
 }
 

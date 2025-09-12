@@ -18,6 +18,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -353,6 +355,35 @@ TEST_F(AppMenuModelTest, GlicItem) {
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 #endif
+
+TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+#if !BUILDFLAG(IS_CHROMEOS)
+  prefs->SetBoolean(prefs::kDesktopSharingHubEnabled, false);
+#endif
+  prefs->SetBoolean(prefs::kDisableScreenshots, true);
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU));
+  ui::MenuModel* submenu = model.GetSubmenuModelAt(
+      model.GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU).value());
+  ASSERT_NE(submenu, nullptr);
+
+  size_t expected_item_count = 7;
+  if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile()) ||
+      sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+    expected_item_count += 2;
+    if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile())) {
+      expected_item_count += 3;
+    }
+    if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+      expected_item_count += 1;
+    }
+  }
+  EXPECT_EQ(expected_item_count, submenu->GetItemCount());
+}
 
 TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
