@@ -2028,10 +2028,21 @@ std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
 
   // In the case of inner WebContents, we still allow this method to be called,
   // but the semantics of the values being returned are "outermost
-  // within this WebContents" as opposed to truly outermost. We would not expect
-  // any other outermost pages besides the primary page in the case of inner
-  // WebContents.
-  DCHECK(!GetOuterWebContents() || (result.size() == 1));
+  // within this WebContents" as opposed to truly outermost. When this method is
+  // called for an inner WebContents in a normal browser, we would not expect
+  // any other outermost pages besides the primary page.
+  //
+  // Note that for an inner WebContents in a WebUIBrowser (detectable here when
+  // the AttachUnownedInnerWebContents feature is enabled), `result.size()` may
+  // sometimes exceed 1. For example, for WebUIBrowser, when a prerendering code
+  // path is triggered, a prerender frame tree is generated, but the path to
+  // activate or discard it does not run before this point.
+  //
+  // TODO(webium): Fix prerendering and bfcache for WebUIBrowser, which are not
+  // yet fully enabled.
+  DCHECK(
+      !GetOuterWebContents() || (result.size() == 1) ||
+      base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
 
   return result;
 }
