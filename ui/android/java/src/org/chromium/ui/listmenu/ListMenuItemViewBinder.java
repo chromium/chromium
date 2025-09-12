@@ -101,6 +101,8 @@ public class ListMenuItemViewBinder {
             // by the component using this binder and not the binder itself.
         } else if (propertyKey == ListMenuItemProperties.HOVER_LISTENER) {
             view.setOnHoverListener(model.get(ListMenuItemProperties.HOVER_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.IS_HIGHLIGHTED) {
+            view.setHovered(model.get(ListMenuItemProperties.IS_HIGHLIGHTED));
         } else if (propertyKey == ListMenuItemProperties.INTENT) {
             // Not tracked intentionally because it's mainly for setting a custom intent
             // for an item. The intent will be expected to be retrieved and used

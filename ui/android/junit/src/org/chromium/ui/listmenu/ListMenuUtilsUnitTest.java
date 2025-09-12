@@ -20,6 +20,7 @@ import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
@@ -89,6 +90,7 @@ public class ListMenuUtilsUnitTest {
                                 .with(ENABLED, true)
                                 .with(TITLE, SUBMENU_1_CHILD_0)
                                 .with(CLICK_LISTENER, mItemClickListener)
+                                .with(IS_HIGHLIGHTED, false)
                                 .build());
 
         mSubmenuLevel1 =
@@ -98,6 +100,7 @@ public class ListMenuUtilsUnitTest {
                                 .with(TITLE, SUBMENU_LEVEL_1)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mListItemWithModelClickCallback))
+                                .with(IS_HIGHLIGHTED, false)
                                 .build());
 
         mSubmenu0Child1 =
@@ -107,6 +110,7 @@ public class ListMenuUtilsUnitTest {
                                 .with(TITLE, SUBMENU_0_CHILD_1)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
+                                .with(IS_HIGHLIGHTED, false)
                                 .build());
         mSubmenuLevel0 =
                 new ListItem(
@@ -115,6 +119,7 @@ public class ListMenuUtilsUnitTest {
                                 .with(TITLE, SUBMENU_LEVEL_0)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mSubmenuLevel1, mSubmenu0Child1))
+                                .with(IS_HIGHLIGHTED, false)
                                 .build());
         mModelList.add(mSubmenuLevel0);
 
@@ -126,6 +131,7 @@ public class ListMenuUtilsUnitTest {
                                 .with(TITLE, TOP_LEVEL_ITEM)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
+                                .with(IS_HIGHLIGHTED, false)
                                 .build());
         mModelList.add(mListItemWithoutModelClickCallback);
 
@@ -435,6 +441,106 @@ public class ListMenuUtilsUnitTest {
         // Level 2 popup should be removed, but level 1 popup should remain.
         verify(mFlyoutHandler).removeFlyoutWindows(2);
         dialogs.subList(2, dialogs.size()).clear();
+    }
+
+    @Test
+    public void testHighlightPath_UpdatesOnHoverSequentially() {
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                mFlyoutHandler,
+                /* drillDownOverrideValue= */ false);
+
+        // Case 1: Hover root item 1 ("Submenu level 0")
+        activateHoverListener(mSubmenuLevel0);
+        assertEquals(
+                "mSubmenuLevel0 should be highlighted",
+                true,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Sibling should not be highlighted",
+                false,
+                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
+
+        // Case 2: Hover a child ("Submenu level 1")
+        activateHoverListener(mSubmenuLevel1);
+        assertEquals(
+                "Parent mSubmenuLevel0 should stay highlighted",
+                true,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Child mSubmenuLevel1 should be highlighted",
+                true,
+                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Sibling of parent should not be highlighted",
+                false,
+                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
+
+        // Case 3: Hover a "niece" ("Submenu 0 child 1")
+        activateHoverListener(mSubmenu0Child1);
+        assertEquals(
+                "Common ancestor mSubmenuLevel0 should stay highlighted",
+                true,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Old branch mSubmenuLevel1 should be de-highlighted",
+                false,
+                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "New branch mSubmenu0Child1 should be highlighted",
+                true,
+                mSubmenu0Child1.model.get(IS_HIGHLIGHTED));
+
+        // Case 4: Hover a grandchild ("Submenu 1 child 0")
+        activateHoverListener(mListItemWithModelClickCallback);
+        assertEquals(
+                "Ancestor mSubmenuLevel0 should stay highlighted",
+                true,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Old branch mSubmenu0Child1 should be de-highlighted",
+                false,
+                mSubmenu0Child1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Parent mSubmenuLevel1 should be highlighted",
+                true,
+                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Grandchild item should be highlighted",
+                true,
+                mListItemWithModelClickCallback.model.get(IS_HIGHLIGHTED));
+
+        // Case 5: Hover an ancestor ("Submenu level 1")
+        activateHoverListener(mSubmenuLevel1);
+        assertEquals(
+                "Ancestor mSubmenuLevel0 should stay highlighted",
+                true,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Item mSubmenuLevel1 should stay highlighted",
+                true,
+                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Old child mListItemWithModelClickCallback should be de-highlighted",
+                false,
+                mListItemWithModelClickCallback.model.get(IS_HIGHLIGHTED));
+
+        // Case 6: Hover a sibling of the root ("Top level item")
+        activateHoverListener(mListItemWithoutModelClickCallback);
+        assertEquals(
+                "Old root mSubmenuLevel0 should be de-highlighted",
+                false,
+                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "Old child mSubmenuLevel1 should be de-highlighted",
+                false,
+                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
+        assertEquals(
+                "New root mListItemWithoutModelClickCallback should be highlighted",
+                true,
+                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
     }
 
     private void activateClickListener(ListItem item) {

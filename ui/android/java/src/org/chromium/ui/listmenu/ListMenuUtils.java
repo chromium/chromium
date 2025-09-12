@@ -8,6 +8,7 @@ import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
@@ -46,6 +47,7 @@ import java.util.Set;
 public class ListMenuUtils {
     private static @Nullable Runnable sFlyoutAfterDelayRunnable;
     private static @Nullable WeakReference<View> sPendingFlyoutParentView;
+    private static List<ListItem> sLastHighlightedPath = new ArrayList<ListItem>();
 
     /**
      * Defines a contract for managing a series of flyout popups, typically used for nested context
@@ -241,12 +243,15 @@ public class ListMenuUtils {
         }
     }
 
-    private static void onItemWithSubmenuHovered(
+    private static void onItemHovered(
             ListItem item,
             View view,
             FlyoutHandler flyoutHandler,
             int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue) {
+            @Nullable Boolean drillDownOverrideValue,
+            List<ListItem> highlightPath) {
+        updateHighlightPath(highlightPath);
+
         if (shouldUseDrillDown(drillDownOverrideValue)) {
             return;
         }
@@ -266,6 +271,28 @@ public class ListMenuUtils {
         handler.postDelayed(
                 sFlyoutAfterDelayRunnable,
                 view.getContext().getResources().getInteger(R.integer.flyout_menu_delay_in_ms));
+    }
+
+    private static void updateHighlightPath(List<ListItem> highlightPath) {
+        int forkIndex = -1;
+
+        for (int i = 0; i < Math.min(sLastHighlightedPath.size(), highlightPath.size()); i++) {
+            if (sLastHighlightedPath.get(i) == highlightPath.get(i)) {
+                forkIndex = i;
+            } else {
+                break;
+            }
+        }
+
+        for (int i = forkIndex + 1; i < sLastHighlightedPath.size(); i++) {
+            sLastHighlightedPath.get(i).model.set(IS_HIGHLIGHTED, false);
+        }
+
+        for (int i = forkIndex + 1; i < highlightPath.size(); i++) {
+            highlightPath.get(i).model.set(IS_HIGHLIGHTED, true);
+        }
+
+        sLastHighlightedPath = highlightPath;
     }
 
     private static void onFlyoutAfterDelay(
@@ -345,8 +372,12 @@ public class ListMenuUtils {
             Runnable dismissDialog,
             @Nullable FlyoutHandler flyoutHandler,
             int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue) {
+            @Nullable Boolean drillDownOverrideValue,
+            List<ListItem> ancestorPath) {
         if (item.model == null) return;
+
+        List<ListItem> highlightPath = new ArrayList<ListItem>(ancestorPath);
+        highlightPath.add(item);
 
         // We add `HOVER_LISTENER` to items without submenus too because we might need to dismiss
         // open flyout popups.
@@ -356,23 +387,26 @@ public class ListMenuUtils {
                     (view, event) -> {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_HOVER_ENTER:
-                                onItemWithSubmenuHovered(
+                                onItemHovered(
                                         item,
                                         view,
                                         flyoutHandler,
                                         levelOfHoveredItem,
-                                        drillDownOverrideValue);
-                                break;
+                                        drillDownOverrideValue,
+                                        highlightPath);
+                                return true;
                             case MotionEvent.ACTION_HOVER_EXIT:
+                                if (item.model.get(IS_HIGHLIGHTED)) {
+                                    updateHighlightPath(ancestorPath);
+                                }
                                 cancelFlyoutDelay(view);
                                 // We only want to remove the flyout popups when the user hovers
                                 // over another item. We don't close the flyout popup even when the
                                 // item itself loses hover.
-                                break;
+                                return true;
                             default:
-                                break;
+                                return false;
                         }
-                        return false;
                     });
         }
 
@@ -394,7 +428,8 @@ public class ListMenuUtils {
                         dismissDialog,
                         flyoutHandler,
                         levelOfHoveredItem + 1,
-                        drillDownOverrideValue);
+                        drillDownOverrideValue,
+                        highlightPath);
             }
         } else {
             // Note: SUBMENU_HEADER items should be (and are) excluded by this, because
@@ -434,7 +469,8 @@ public class ListMenuUtils {
                         dismissDialog,
                         flyoutHandler,
                         /* levelOfHoveredItem= */ 0,
-                        drillDownOverrideValue);
+                        drillDownOverrideValue,
+                        new ArrayList<ListItem>());
             }
         }
         for (ListItem listItem : contentModelList) {
@@ -445,7 +481,8 @@ public class ListMenuUtils {
                     dismissDialog,
                     flyoutHandler,
                     /* levelOfHoveredItem= */ 0,
-                    drillDownOverrideValue);
+                    drillDownOverrideValue,
+                    new ArrayList<ListItem>());
         }
         RecordHistogram.recordTimesHistogram(
                 "ListMenuUtils.SetupCallbacksRecursively.Duration",
