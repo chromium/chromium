@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -31,8 +30,6 @@
 #endif
 
 class Browser;
-class BrowserList;
-class BrowserWindowInterface;
 class FullscreenController;
 class Profile;
 
@@ -87,8 +84,7 @@ enum BrowserTestWaitFlags {
 };
 
 // Puts the current tab title in |title|. Returns true on success.
-bool GetCurrentTabTitle(const BrowserWindowInterface* browser,
-                        std::u16string* title);
+bool GetCurrentTabTitle(const Browser* browser, std::u16string* title);
 
 // NavigateToURL* functions navigate the given |browser| to |url| according the
 // provided parameters and block until ready (by default - until loading stops,
@@ -117,20 +113,19 @@ void NavigateToURL(NavigateParams* params);
 
 // Navigate current tab of the |browser| to |url| using POST request, simulating
 // form submission.
-void NavigateToURLWithPost(BrowserWindowInterface* browser, const GURL& url);
+void NavigateToURLWithPost(Browser* browser, const GURL& url);
 
 // Navigate current tab of the |browser| to |url|, simulating a user typing
 // |url| into the omnibox.
-[[nodiscard]] content::RenderFrameHost* NavigateToURL(
-    BrowserWindowInterface* browser,
-    const GURL& url);
+[[nodiscard]] content::RenderFrameHost* NavigateToURL(Browser* browser,
+                                                      const GURL& url);
 
 // Same as |NavigateToURL|, but:
 // - |disposition| allows to specify in which tab navigation should happen
 // - |browser_test_flags| allows to specify a different condition this function
 //   would wait until, see BrowserTestWaitFlags for details.
 content::RenderFrameHost* NavigateToURLWithDisposition(
-    BrowserWindowInterface* browser,
+    Browser* browser,
     const GURL& url,
     WindowOpenDisposition disposition,
     int browser_test_flags);
@@ -138,7 +133,7 @@ content::RenderFrameHost* NavigateToURLWithDisposition(
 // Same as |NavigateToURL|, but wait for a given number of navigations to
 // complete instead of the tab to finish loading.
 content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
-    BrowserWindowInterface* browser,
+    Browser* browser,
     const GURL& url,
     int number_of_navigations);
 
@@ -146,7 +141,7 @@ content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
 // |NavigateToURLBlockUntilNavigationsComplete|.
 content::RenderFrameHost*
 NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-    BrowserWindowInterface* browser,
+    Browser* browser,
     const GURL& url,
     int number_of_navigations,
     WindowOpenDisposition disposition,
@@ -176,9 +171,7 @@ void WaitForWebModalDialog(content::WebContents* web_contents);
 
 #if defined(TOOLKIT_VIEWS)
 // Blocks until the given view attains the given visibility state.
-void WaitForViewVisibility(BrowserWindowInterface* browser,
-                           ViewID vid,
-                           bool visible);
+void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible);
 #endif
 
 // Performs a find in the page of the specified tab. Returns the number of
@@ -201,36 +194,35 @@ Browser* WaitForBrowserToOpen();
 // Blocks until a Browser is removed from the BrowserList. If |browser| is null,
 // the removal of any browser will suffice; otherwise the removed browser must
 // match |browser|.
-void WaitForBrowserToClose(BrowserWindowInterface* browser = nullptr);
+void WaitForBrowserToClose(Browser* browser = nullptr);
 
 // Download the given file and waits for the download to complete.
-void DownloadURL(BrowserWindowInterface* browser, const GURL& download_url);
+void DownloadURL(Browser* browser, const GURL& download_url);
 
 // Waits until the autocomplete controller reaches its done state.
-void WaitForAutocompleteDone(BrowserWindowInterface* browser);
+void WaitForAutocompleteDone(Browser* browser);
 
 // Waits until the window gets minimized.
 // Returns success or not.
-bool WaitForMinimized(BrowserWindowInterface* browser);
+bool WaitForMinimized(Browser* browser);
 
 // Waits until the window gets maximized.
 // Returns success or not.
-bool WaitForMaximized(BrowserWindowInterface* browser);
+bool WaitForMaximized(Browser* browser);
 
 // See comment on views::AsyncWidgetRequestWaiter.
 [[nodiscard]] views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
-    BrowserWindowInterface& browser);
+    Browser& browser);
 
 // SetAndWaitForBounds sets the given `bounds` on `browser` and waits until the
 // bounds update will be observable from all parts of the client (on Wayland).
 // This does not verify the resulting bounds.
-void SetAndWaitForBounds(BrowserWindowInterface& browser,
-                         const gfx::Rect& bounds);
+void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds);
 
 // Maximizes the browser window and wait until the window is maximized and all
 // related visible UI effects are applied and observable from chrome.
 // Returns true if succeeded.
-bool MaximizeAndWaitUntilUIUpdateDone(BrowserWindowInterface& browser);
+bool MaximizeAndWaitUntilUIUpdateDone(Browser& browser);
 
 // Waits for fullscreen state to be updated.
 // There're two variation of fullscreen concepts, browser fullscreen and
@@ -259,7 +251,7 @@ class FullscreenWaiter : public FullscreenObserver {
       .tab_fullscreen = false,
   };
 
-  FullscreenWaiter(BrowserWindowInterface* browser, Expectation expecation);
+  FullscreenWaiter(Browser* browser, Expectation expecation);
 
   FullscreenWaiter(const FullscreenWaiter&) = delete;
   FullscreenWaiter& operator=(const FullscreenWaiter&) = delete;
@@ -309,7 +301,7 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
   // OnBrowserSetLastActive is observed by passing
   // |wait_for_set_last_active_observed| being true.
   explicit BrowserSetLastActiveWaiter(
-      BrowserWindowInterface* browser,
+      Browser* browser,
       bool wait_for_set_last_active_observed = false);
   BrowserSetLastActiveWaiter(const BrowserSetLastActiveWaiter&) = delete;
   BrowserSetLastActiveWaiter& operator=(const BrowserSetLastActiveWaiter&) =
@@ -324,22 +316,20 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
   void OnBrowserSetLastActive(Browser* browser) override;
 
  private:
-  const raw_ptr<BrowserWindowInterface> browser_;  // not_owned
+  const raw_ptr<Browser> browser_;  // not_owned
   bool satisfied_ = false;
   bool wait_for_set_last_active_observed_ = false;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 };
 
 // Toggles browser fullscreen mode, then wait for its completion.
-void ToggleFullscreenModeAndWait(BrowserWindowInterface* browser);
+void ToggleFullscreenModeAndWait(Browser* browser);
 
 // Waits until |browser| becomes active.
-void WaitUntilBrowserBecomeActive(BrowserWindowInterface* browser);
+void WaitUntilBrowserBecomeActive(Browser* browser);
 
 // Returns true if |browser| is active.
-bool IsBrowserActive(BrowserWindowInterface* browser);
+bool IsBrowserActive(Browser* browser);
 
 // Opens a new browser window with chrome::NewEmptyWindow() and wait until it
 // becomes active.
@@ -365,18 +355,17 @@ Browser* OpenNewEmptyWindowAndWaitUntilActivated(
 // tests, BrowserList::GetLastActive() is incorrectly used to verify the
 // expected browser being the active browser, see b/345848530.
 void WaitForBrowserSetLastActive(
-    BrowserWindowInterface* browser,
+    Browser* browser,
     bool wait_for_set_last_active_observed = false);
 
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
-    BrowserWindowInterface* browser,
+    Browser* browser,
     const std::string& input,
     base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
 // Gets the first browser that is not in the specified set.
-Browser* GetBrowserNotInSet(
-    const std::set<BrowserWindowInterface*>& excluded_browsers);
+Browser* GetBrowserNotInSet(const std::set<Browser*>& excluded_browsers);
 
 // Gets the size and value of the cookie string for |url| in the given tab.
 // Can be called from any thread.
@@ -451,7 +440,7 @@ class AllTabsObserver : public TabStripModelObserver,
       std::map<const content::WebContents*, TabNavigationMapEntry>;
 
   // Add all tabs from `browser`, and start watching for changes.
-  void AddBrowser(BrowserWindowInterface* browser);
+  void AddBrowser(const Browser* browser);
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -459,7 +448,7 @@ class AllTabsObserver : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // BrowserListObserver:
+  // BrowserListObserver
   void OnBrowserAdded(Browser* browser) override;
 
   // Called for every WebContents.  Notifies the subclass, and sets up observers
@@ -480,9 +469,6 @@ class AllTabsObserver : public TabStripModelObserver,
   bool added_all_browsers_ = false;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 };
 
 // Observer which waits for navigation events and blocks until a specific URL is
@@ -529,7 +515,7 @@ class UrlLoadObserver : public AllTabsObserver {
 // A helper that will wait until a tab is added to a specific Browser.
 class TabAddedWaiter : public TabStripModelObserver {
  public:
-  explicit TabAddedWaiter(BrowserWindowInterface* browser);
+  explicit TabAddedWaiter(Browser* browser);
   TabAddedWaiter(const TabAddedWaiter&) = delete;
   TabAddedWaiter& operator=(const TabAddedWaiter&) = delete;
   ~TabAddedWaiter() override = default;
@@ -575,8 +561,6 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   // The last tab that was added.
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -603,7 +587,7 @@ class BrowserChangeObserver : public BrowserListObserver {
     kRemoved,
   };
 
-  BrowserChangeObserver(BrowserWindowInterface* browser, ChangeType type);
+  BrowserChangeObserver(Browser* browser, ChangeType type);
   BrowserChangeObserver(const BrowserChangeObserver&) = delete;
   BrowserChangeObserver& operator=(const BrowserChangeObserver&) = delete;
   ~BrowserChangeObserver() override;
@@ -616,11 +600,9 @@ class BrowserChangeObserver : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   ChangeType type_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 };
 
 // Encapsulates waiting for the browser window to change state. This is
