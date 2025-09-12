@@ -1121,7 +1121,6 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//gpu/ipc/service",
-    "//ipc:test_support",
     "//mojo/core/embedder",
     "//skia",
     "//ui/accessibility:test_support",

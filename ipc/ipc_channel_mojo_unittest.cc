@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -27,6 +28,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -40,6 +42,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
@@ -47,6 +50,10 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "ipc/ipc_channel.h"
+#include "ipc/ipc_channel_factory.h"
+#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
@@ -54,8 +61,9 @@
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message.h"
 #include "ipc/ipc_test.test-mojom.h"
-#include "ipc/ipc_test_base.h"
 #include "ipc/urgent_message_observer.h"
+#include "mojo/core/test/mojo_test_base.h"
+#include "mojo/core/test/multiprocess_test_helper.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/features.h"
@@ -74,6 +82,111 @@
 
 namespace ipc_channel_mojo_unittest {
 namespace {
+
+class IPCChannelMojoTestBase : public testing::Test {
+ public:
+  IPCChannelMojoTestBase() = default;
+
+  IPCChannelMojoTestBase(const IPCChannelMojoTestBase&) = delete;
+  IPCChannelMojoTestBase& operator=(const IPCChannelMojoTestBase&) = delete;
+
+  ~IPCChannelMojoTestBase() override = default;
+
+  void Init(const std::string& test_client_name) {
+    handle_ = helper_.StartChild(test_client_name);
+  }
+
+  bool WaitForClientShutdown() { return helper_.WaitForChildTestShutdown(); }
+
+  void TearDown() override { base::RunLoop().RunUntilIdle(); }
+
+  void CreateChannel(IPC::Listener* listener) {
+    channel_ =
+        IPC::Channel::Create(TakeHandle(), IPC::Channel::MODE_SERVER, listener,
+                             base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+
+  bool ConnectChannel() { return channel_->Connect(); }
+
+  void DestroyChannel() { channel_.reset(); }
+
+  IPC::Channel* channel() { return channel_.get(); }
+  const base::Process& client_process() const { return helper_.test_child(); }
+
+ protected:
+  mojo::ScopedMessagePipeHandle TakeHandle() { return std::move(handle_); }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  mojo::ScopedMessagePipeHandle handle_;
+  mojo::core::test::MultiprocessTestHelper helper_;
+
+  std::unique_ptr<IPC::Channel> channel_;
+};
+
+class IpcChannelMojoTestClient {
+ public:
+  IpcChannelMojoTestClient() = default;
+  ~IpcChannelMojoTestClient() = default;
+
+  void Init(mojo::ScopedMessagePipeHandle handle) {
+    handle_ = std::move(handle);
+  }
+
+  void Connect(IPC::Listener* listener) {
+    channel_ = IPC::Channel::Create(
+        std::move(handle_), IPC::Channel::MODE_CLIENT, listener,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    CHECK(channel_->Connect());
+  }
+
+  void Close() {
+    channel_->Close();
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  IPC::Channel* channel() const { return channel_.get(); }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  mojo::ScopedMessagePipeHandle handle_;
+  std::unique_ptr<IPC::Channel> channel_;
+};
+
+// Use this to declare the client side for tests using IPCChannelMojoTestBase
+// when a custom test fixture class is required in the client. |test_base| must
+// be derived from IpcChannelMojoTestClient.
+#define DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(client_name,   \
+                                                                test_base)     \
+  class client_name##_MainFixture : public test_base {                         \
+   public:                                                                     \
+    void Main();                                                               \
+  };                                                                           \
+  MULTIPROCESS_TEST_MAIN_WITH_SETUP(                                           \
+      client_name##TestChildMain,                                              \
+      ::mojo::core::test::MultiprocessTestHelper::ChildSetup) {                \
+    client_name##_MainFixture test;                                            \
+    test.Init(                                                                 \
+        std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe)); \
+    test.Main();                                                               \
+    return (::testing::Test::HasFatalFailure() ||                              \
+            ::testing::Test::HasNonfatalFailure())                             \
+               ? 1                                                             \
+               : 0;                                                            \
+  }                                                                            \
+  void client_name##_MainFixture::Main()
+
+// Use this to declare the client side for tests using IPCChannelMojoTestBase.
+#define DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(client_name)   \
+  DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE( \
+      client_name, IpcChannelMojoTestClient)
 
 class TestListenerBase : public IPC::Listener {
  public:

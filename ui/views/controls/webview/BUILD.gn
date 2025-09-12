@@ -76,7 +76,6 @@ static_library("test_support") {
     "//base",
     "//content",
     "//content/test:test_support",
-    "//ipc:test_support",
     "//skia",
     "//testing/gtest",
     "//ui/base",

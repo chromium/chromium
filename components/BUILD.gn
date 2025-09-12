@@ -1144,7 +1144,6 @@ if (use_blink) {
       "//content/test:test_support",
       "//device/bluetooth",
       "//google_apis",
-      "//ipc:test_support",
       "//net:test_support",
       "//printing/buildflags",
       "//services/device/public/cpp:test_support",

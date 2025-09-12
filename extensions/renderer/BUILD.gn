@@ -427,7 +427,6 @@ source_set("unit_tests") {
     "//extensions/common",
     "//gin",
     "//gin:gin_test",
-    "//ipc:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

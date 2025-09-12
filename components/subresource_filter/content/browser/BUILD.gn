@@ -175,7 +175,6 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//ipc",
-    "//ipc:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//url",

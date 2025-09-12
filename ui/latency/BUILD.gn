@@ -49,7 +49,6 @@ test("latency_unittests") {
       "mojom/mojom_traits_unittest.cc",
     ]
     deps += [
-      "//ipc:test_support",
       "//mojo/public/cpp/bindings",
       "//ui/gfx/ipc/geometry",
       "//ui/latency/ipc",

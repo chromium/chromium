@@ -12,9 +12,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "ipc/ipc.mojom.h"
-#include "ipc/ipc_test_base.h"
 #include "mojo/core/test/multiprocess_test_helper.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace {
 

@@ -260,7 +260,6 @@ if (use_blink) {
       ":run_all_unittests",
       ":test_interfaces",
       ":test_proto",
-      ":test_support",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
@@ -288,28 +287,12 @@ if (use_blink) {
     deps = [
       ":ipc",
       ":test_interfaces",
-      ":test_support",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//mojo/core/test:test_support",
       "//mojo/core/test:test_support_impl",
-      "//testing/gtest",
-    ]
-  }
-
-  static_library("test_support") {
-    testonly = true
-    sources = [
-      "ipc_test_base.cc",
-      "ipc_test_base.h",
-    ]
-    public_deps = [ ":ipc" ]
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//mojo/core/test:test_support",
       "//testing/gtest",
     ]
   }

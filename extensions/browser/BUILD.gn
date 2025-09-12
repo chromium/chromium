@@ -978,7 +978,6 @@ source_set("unit_tests") {
     "//extensions/common:test_support",
     "//extensions/common/api",
     "//extensions/strings",
-    "//ipc:test_support",
     "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/mojom",
