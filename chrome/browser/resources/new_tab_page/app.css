@@ -286,21 +286,11 @@ ntp-lens-upload-dialog {
 }
 
 #composeboxScrim {
-  animation: background-fade-in 1s ease;
   background: var(--color-new-tab-page-composebox-scrim-background);
   inset: 0;
   opacity: 1;
   position: fixed;
   z-index: 1;
-}
-
-@keyframes background-fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 #webstoreToast {

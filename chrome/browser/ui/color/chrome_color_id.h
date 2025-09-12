@@ -258,7 +258,6 @@
   E_CPONLY(kColorNewTabPageComposeboxErrorScrimForeground) \
   E_CPONLY(kColorNewTabPageComposeboxHover) \
   E_CPONLY(kColorNewTabPageComposeboxInputIcon) \
-  E_CPONLY(kColorNewTabPageComposeboxLabel) \
   E_CPONLY(kColorNewTabPageComposeboxOutlineHcm) \
   E_CPONLY(kColorNewTabPageComposeboxResultsBackgroundHovered) \
   E_CPONLY(kColorNewTabPageComposeboxResultsIcon) \

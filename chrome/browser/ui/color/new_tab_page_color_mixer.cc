@@ -288,15 +288,11 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
                 : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
   mixer[kColorNewTabPageComposeboxInputIcon] = {ui::kColorRefNeutral30};
-  mixer[kColorNewTabPageComposeboxLabel] = {
-      ui::SetAlpha({ui::kColorRefNeutral10}, 0x60)};
   mixer[kColorNewTabPageComposeboxOutlineHcm] = {
       dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
                 : SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorNewTabPageComposeboxResultsIcon] = {ui::kColorRefNeutral10};
-  mixer[kColorNewTabPageComposeboxScrimBackground] = {
-      dark_mode ? SkColorSetRGB(0x10, 0x12, 0x18)
-                : SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+  mixer[kColorNewTabPageComposeboxScrimBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPageComposeboxSubmitButton] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
   mixer[kColorNewTabPageComposeboxSuggestionActivity] = {
