@@ -94,12 +94,13 @@ class CanvasHibernationHandlerTest
     CanvasHibernationHandler::CompressionAlgorithm algorithm = GetParam();
     switch (algorithm) {
       case CanvasHibernationHandler::CompressionAlgorithm::kZlib:
-        scoped_feature_list_.InitWithFeatures({},
+        scoped_feature_list_.InitWithFeatures({features::kCanvas2DHibernation},
                                               {kCanvasHibernationSnapshotZstd});
         break;
       case blink::CanvasHibernationHandler::CompressionAlgorithm::kZstd:
-        scoped_feature_list_.InitWithFeatures({kCanvasHibernationSnapshotZstd},
-                                              {});
+        scoped_feature_list_.InitWithFeatures(
+            {features::kCanvas2DHibernation, kCanvasHibernationSnapshotZstd},
+            {});
         break;
     }
   }
@@ -214,8 +215,6 @@ INSTANTIATE_TEST_SUITE_P(
                       CanvasHibernationHandler::CompressionAlgorithm::kZstd));
 
 TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
   base::HistogramTester histogram_tester;
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
@@ -271,9 +270,6 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -296,9 +292,6 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -325,9 +318,6 @@ TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -354,9 +344,6 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -395,9 +382,6 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -428,9 +412,6 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
@@ -451,9 +432,6 @@ TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
@@ -488,9 +466,6 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   auto handler = std::make_unique<CanvasHibernationHandler>(delegate);
