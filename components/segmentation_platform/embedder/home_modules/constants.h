@@ -41,7 +41,7 @@ inline constexpr char kAppBundleAppsInstalledCount[] =
 inline constexpr char kIsDefaultBrowserChromeIos[] =
     "is_default_browser_chrome_ios";
 inline constexpr char kNumPriceDropsInShoppingList[] =
-    "kNumPriceDropsInShoppingList";
+    "num_price_drops_in_shopping_list";
 
 // Input Context keys for emphemeral android modules.
 const char kIsUserSignedIn[] = "is_user_signed_in";
