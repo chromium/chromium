@@ -42,7 +42,6 @@ const char kFakeSignalMacAddr3[] = "A0-B1-C2-D3-E4-F5";
 
 #if BUILDFLAG(IS_WIN)
 const char kFakeSignalAvName[] = "AV_name_from_signals";
-const char kFakeSignalAvId[] = "AV_id_from_signals";
 
 const char kFakeFirstHotfix[] = "hotfix_1";
 const char kFakeSecondHotfix[] = "hotfix_2";
@@ -110,7 +109,6 @@ void VerifyReportContent(
 #if BUILDFLAG(IS_WIN)
     auto av_info = os_report.antivirus_info(0);
     EXPECT_EQ(av_info.display_name(), kFakeSignalAvName);
-    EXPECT_EQ(av_info.product_id(), kFakeSignalAvId);
     EXPECT_EQ(av_info.state(), em::AntiVirusProduct::EXPIRED);
 
     auto first_hotfix = os_report.hotfixes(0);
@@ -227,7 +225,6 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
 #if BUILDFLAG(IS_WIN)
   device_signals::AvProduct av_product;
   av_product.display_name = kFakeSignalAvName;
-  av_product.product_id = kFakeSignalAvId;
   av_product.state = device_signals::AvProductState::kExpired;
   device_signals::AntiVirusSignalResponse av_response;
   av_response.av_products.push_back(av_product);
