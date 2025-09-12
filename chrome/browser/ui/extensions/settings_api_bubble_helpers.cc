@@ -114,8 +114,9 @@ void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
   }
 
   bubble_delegate->PendingShow();
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
-      std::move(bubble_delegate));
+  ShowControlledHomeDialog(browser->profile(),
+                           browser->window()->GetNativeWindow(),
+                           std::move(bubble_delegate));
 #endif
 }
 

@@ -26,9 +26,7 @@ class Extension;
 // than the NTP).
 // TODO(crbug.com/40946250): Have this class use the new dialog builders
 // and remove ToolbarActionsBarBubbleDelegate.
-class ControlledHomeBubbleDelegate
-    : public ToolbarActionsBarBubbleDelegate,
-      public extensions::ExtensionRegistryObserver {
+class ControlledHomeBubbleDelegate : public ToolbarActionsBarBubbleDelegate {
  public:
   explicit ControlledHomeBubbleDelegate(Browser* browser);
 
@@ -54,7 +52,7 @@ class ControlledHomeBubbleDelegate
   ui::mojom::DialogButton GetDefaultDialogButton() override;
   std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() override;
   std::string GetAnchorActionId() override;
-  void OnBubbleShown(base::OnceClosure close_bubble_callback) override;
+  void OnBubbleShown() override;
   void OnBubbleClosed(CloseAction action) override;
 
   const extensions::Extension* extension_for_testing() {
@@ -69,15 +67,6 @@ class ControlledHomeBubbleDelegate
   // Returns true if we should add the policy indicator to the bubble.
   bool IsPolicyIndicationNeeded() const;
 
-  // ExtensionRegistryObserver:
-  void OnShutdown(extensions::ExtensionRegistry* registry) override;
-  void OnExtensionUnloaded(content::BrowserContext* browser_context,
-                           const extensions::Extension* extension,
-                           extensions::UnloadedExtensionReason reason) override;
-  void OnExtensionUninstalled(content::BrowserContext* browser_context,
-                              const extensions::Extension* extension,
-                              extensions::UninstallReason reason) override;
-
   // Checks whether `extension` corresponds to this bubble's extension and,
   // if so, closes the bubble.
   void HandleExtensionUnloadOrUninstall(const extensions::Extension* extension);
@@ -91,13 +80,6 @@ class ControlledHomeBubbleDelegate
   // The extension controlling the home page, if any. This is null'd out when
   // the extension is uninstalled.
   scoped_refptr<const extensions::Extension> extension_;
-  // A closure to close the native view for the bubble. Populated in
-  // `OnBubbleShown()`.
-  base::OnceClosure close_bubble_callback_;
-
-  base::ScopedObservation<extensions::ExtensionRegistry,
-                          extensions::ExtensionRegistryObserver>
-      extension_registry_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_CONTROLLED_HOME_BUBBLE_DELEGATE_H_

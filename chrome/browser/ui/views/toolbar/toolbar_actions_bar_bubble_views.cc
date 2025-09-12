@@ -193,10 +193,6 @@ void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
   }
 
   observer_notified_of_show_ = true;
-  // Using Unretained is safe here because the delegate (which might invoke the
-  // callback) is owned by this object.
-  delegate_->OnBubbleShown(
-      base::BindOnce(&views::Widget::Close, base::Unretained(GetWidget())));
 }
 
 BEGIN_METADATA(ToolbarActionsBarBubbleViews)

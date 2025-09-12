@@ -99,6 +99,7 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     sources += [
+      "controlled_home_dialog.cc",
       "extension_install_blocked_dialog.cc",
       "extension_install_ui.cc",
       "extension_multiple_uninstall_dialog.cc",
@@ -109,6 +110,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/profiles:profile",
+      "//components/vector_icons",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {

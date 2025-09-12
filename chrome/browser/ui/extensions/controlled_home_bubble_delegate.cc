@@ -92,10 +92,7 @@ void AcknowledgeExtension(Profile& profile,
 ControlledHomeBubbleDelegate::ControlledHomeBubbleDelegate(Browser* browser)
     : browser_(browser),
       profile_(browser->profile()),
-      extension_(GetExtensionToWarnAbout(*profile_)) {
-  extension_registry_observation_.Observe(
-      extensions::ExtensionRegistry::Get(profile_));
-}
+      extension_(GetExtensionToWarnAbout(*profile_)) {}
 
 ControlledHomeBubbleDelegate::~ControlledHomeBubbleDelegate() {
   GetPendingProfileSet().erase(profile_);
@@ -182,23 +179,12 @@ std::string ControlledHomeBubbleDelegate::GetAnchorActionId() {
   return extension_->id();
 }
 
-void ControlledHomeBubbleDelegate::OnBubbleShown(
-    base::OnceClosure close_bubble_callback) {
+void ControlledHomeBubbleDelegate::OnBubbleShown() {
   DCHECK_EQ(0u, GetShownProfileSet().count(profile_));
   DCHECK_EQ(1u, GetPendingProfileSet().count(profile_));
 
   GetShownProfileSet().insert(profile_);
   GetPendingProfileSet().erase(profile_);
-  close_bubble_callback_ = std::move(close_bubble_callback);
-
-  // It's possible the extension was removed while the bubble was getting ready
-  // to show. If that happens, close the bubble "immediately" (after a post
-  // task) when it's shown. We post a task just so we don't enter a CloseWidget
-  // cycle in the same series as it being shown.
-  if (!extension_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(close_bubble_callback_));
-  }
 }
 
 void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
@@ -212,7 +198,6 @@ void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
   }
 
   close_action_ = action;
-  extension_registry_observation_.Reset();
 
   if (action == CLOSE_DISMISS_DEACTIVATION) {
     return;  // Do nothing if the bubble was dismissed due to focus loss.
@@ -273,43 +258,4 @@ ControlledHomeBubbleDelegate::GetExtraViewInfo() {
 
 bool ControlledHomeBubbleDelegate::IsPolicyIndicationNeeded() const {
   return extensions::Manifest::IsPolicyLocation(extension_->location());
-}
-
-void ControlledHomeBubbleDelegate::OnExtensionUnloaded(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UnloadedExtensionReason reason) {
-  HandleExtensionUnloadOrUninstall(extension);
-}
-
-void ControlledHomeBubbleDelegate::OnExtensionUninstalled(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UninstallReason reason) {
-  HandleExtensionUnloadOrUninstall(extension);
-}
-
-void ControlledHomeBubbleDelegate::HandleExtensionUnloadOrUninstall(
-    const extensions::Extension* extension) {
-  if (extension != extension_) {
-    return;
-  }
-
-  // Null out `extension_` to indicate it was removed.
-  extension_ = nullptr;
-
-  // If the callback is set, then that means that OnShown() was called, and the
-  // bubble was displayed. Close it, since the extension is gone.
-  if (close_bubble_callback_) {
-    std::move(close_bubble_callback_).Run();
-  }
-}
-
-void ControlledHomeBubbleDelegate::OnShutdown(
-    extensions::ExtensionRegistry* registry) {
-  // It is possible that the extension registry is destroyed before the
-  // controller. In such case, the controller should no longer observe the
-  // registry.
-  DCHECK(extension_registry_observation_.IsObservingSource(registry));
-  extension_registry_observation_.Reset();
 }

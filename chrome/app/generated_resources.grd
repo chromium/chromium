@@ -6701,6 +6701,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_DESCRIPTION" desc="Text of a dialog warning users warning users when an extension has changed the home page, and we are not pointing to its icon.">
         "<ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>" has changed what page is shown when you click the Home button.
       </message>
+      <message name="IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_LEARN_MORE_LINK" desc="Placeholder for the link displayed in a dialog warning users when an extension has changed the home page.">
+        <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
       <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was just the search engine. The triple single quotes are needed to preserve the space before and after the sentence which is needed when the language (Chrome is being translated to) uses space as word separator. Please preserve them, unless the language being translated to does not use space as word separator.">
         ''' It also controls what page is shown when you search from the Omnibox.'''
       </message>

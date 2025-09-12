@@ -172,14 +172,9 @@ TEST_F(ControlledHomeBubbleDelegateTest, ClickingExecuteDisablesTheExtension) {
   EXPECT_TRUE(bubble_delegate->ShouldShow());
   EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
 
-  bool did_close_programmatically = false;
-  auto close_callback = base::BindLambdaForTesting(
-      [&did_close_programmatically]() { did_close_programmatically = true; });
-
   bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown(std::move(close_callback));
+  bubble_delegate->OnBubbleShown();
 
-  EXPECT_FALSE(did_close_programmatically);
   bubble_delegate->OnBubbleClosed(
       ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE);
 
@@ -201,14 +196,9 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   EXPECT_TRUE(bubble_delegate->ShouldShow());
   EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
 
-  bool did_close_programmatically = false;
-  auto close_callback = base::BindLambdaForTesting(
-      [&did_close_programmatically]() { did_close_programmatically = true; });
-
   bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown(std::move(close_callback));
+  bubble_delegate->OnBubbleShown();
 
-  EXPECT_FALSE(did_close_programmatically);
   bubble_delegate->OnBubbleClosed(
       ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_USER_ACTION);
 
@@ -229,14 +219,9 @@ TEST_F(ControlledHomeBubbleDelegateTest,
     EXPECT_TRUE(bubble_delegate->ShouldShow());
     EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
 
-    bool did_close_programmatically = false;
-    auto close_callback = base::BindLambdaForTesting(
-        [&did_close_programmatically]() { did_close_programmatically = true; });
-
     bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown(std::move(close_callback));
+    bubble_delegate->OnBubbleShown();
 
-    EXPECT_FALSE(did_close_programmatically);
     bubble_delegate->OnBubbleClosed(
         ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION);
   }
@@ -265,45 +250,14 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   EXPECT_TRUE(bubble_delegate->ShouldShow());
   EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
 
-  bool did_close_programmatically = false;
-  auto close_callback = base::BindLambdaForTesting(
-      [&did_close_programmatically]() { did_close_programmatically = true; });
-
   bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown(std::move(close_callback));
+  bubble_delegate->OnBubbleShown();
 
-  EXPECT_FALSE(did_close_programmatically);
   bubble_delegate->OnBubbleClosed(
       ToolbarActionsBarBubbleDelegate::CLOSE_LEARN_MORE);
 
   EXPECT_TRUE(IsExtensionEnabled(extension->id()));
   EXPECT_TRUE(IsExtensionAcknowledged(extension->id()));
-}
-
-TEST_F(ControlledHomeBubbleDelegateTest, DisablingTheExtensionClosesTheBubble) {
-  scoped_refptr<const extensions::Extension> extension =
-      LoadExtensionOverridingHome();
-  ASSERT_TRUE(extension);
-
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
-  EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
-
-  bool did_close_programmatically = false;
-  auto close_callback = base::BindLambdaForTesting(
-      [&did_close_programmatically]() { did_close_programmatically = true; });
-
-  bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown(std::move(close_callback));
-
-  extension_registrar()->DisableExtension(
-      extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
-
-  // The bubble should close as part of the extension being unloaded.
-  EXPECT_TRUE(did_close_programmatically);
-  // And it should remain unacknowledged.
-  EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 }
 
 TEST_F(ControlledHomeBubbleDelegateTest,
@@ -358,12 +312,8 @@ TEST_F(ControlledHomeBubbleDelegateTest,
     // (`extension2`).
     EXPECT_EQ(extension2, bubble_delegate->extension_for_testing());
 
-    bool did_close_programmatically = false;
-    auto close_callback = base::BindLambdaForTesting(
-        [&did_close_programmatically]() { did_close_programmatically = true; });
-
     bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown(std::move(close_callback));
+    bubble_delegate->OnBubbleShown();
 
     // Close the bubble with the "execute" action.
     bubble_delegate->OnBubbleClosed(
@@ -402,12 +352,8 @@ TEST_F(ControlledHomeBubbleDelegateTest,
     EXPECT_TRUE(bubble_delegate->ShouldShow());
     EXPECT_EQ(extension2, bubble_delegate->extension_for_testing());
 
-    bool did_close_programmatically = false;
-    auto close_callback = base::BindLambdaForTesting(
-        [&did_close_programmatically]() { did_close_programmatically = true; });
-
     bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown(std::move(close_callback));
+    bubble_delegate->OnBubbleShown();
 
     // Dismiss the bubble; this acknowledges the extension.
     bubble_delegate->OnBubbleClosed(

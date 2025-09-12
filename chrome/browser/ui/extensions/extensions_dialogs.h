@@ -22,6 +22,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
+class ToolbarActionsBarBubbleDelegate;
 class SettingsOverriddenDialogController;
 class Profile;
 
@@ -41,6 +42,7 @@ namespace extensions {
 
 class Extension;
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionInstallFrictionLearnMoreLink);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogManageButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
@@ -62,6 +64,13 @@ void ShowExtensionInstallBlockedDialog(
     const gfx::ImageSkia& icon,
     content::WebContents* web_contents,
     base::OnceClosure done_callback);
+
+// Shows a dialog to notify the user when an extension has changed the home
+// page.
+void ShowControlledHomeDialog(
+    Profile* profile,
+    gfx::NativeWindow parent,
+    std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller);
 
 // Shows a modal dialog to Enhanced Safe Browsing users before the extension
 // install dialog if the extension is not included in the Safe Browsing CRX

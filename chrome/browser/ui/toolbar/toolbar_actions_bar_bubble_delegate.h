@@ -17,6 +17,10 @@ struct VectorIcon;
 }
 
 // A delegate for a generic bubble that hangs off the toolbar actions bar.
+// TODO(crbug.com/40946250): Rename class after removing
+// ToolbarActionsBarBubbleViews, which won't be needed after refactoring
+// controlled home bubble dialog to use DialogModel as part of
+// crbug.com/441590893.
 class ToolbarActionsBarBubbleDelegate {
  public:
   enum CloseAction {
@@ -73,9 +77,8 @@ class ToolbarActionsBarBubbleDelegate {
   // bubble should point to the center of the actions container.
   virtual std::string GetAnchorActionId() = 0;
 
-  // Called when the bubble is shown. Accepts a callback from platform-specifc
-  // ui code to close the bubble.
-  virtual void OnBubbleShown(base::OnceClosure close_bubble_callback) = 0;
+  // Called when the bubble is shown.
+  virtual void OnBubbleShown() = 0;
 
   // Called when the bubble is closed with the type of action the user took.
   virtual void OnBubbleClosed(CloseAction action) = 0;

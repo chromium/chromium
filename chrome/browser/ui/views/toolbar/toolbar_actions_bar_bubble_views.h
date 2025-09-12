@@ -20,6 +20,8 @@ class ImageButton;
 class Label;
 }  // namespace views
 
+// TODO(crbug.com/40946250): Rename class last usage of it, controlled home
+// dialog, now DialogModel.
 class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
                                      public views::WidgetObserver {
   METADATA_HEADER(ToolbarActionsBarBubbleViews, views::BubbleDialogDelegateView)
