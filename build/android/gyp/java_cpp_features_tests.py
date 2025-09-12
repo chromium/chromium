@@ -121,57 +121,6 @@ BASE_FEATURE(kMaybeEnabled, "MaybeEnabled",
     self.assertEqual('MAYBE_ENABLED', features[3].name)
     self.assertEqual('"MaybeEnabled"', features[3].value)
 
-  # Old 2-arg macro without k prefix
-  def testOldTwoArgumentMacro(self):
-    test_data = """
-// Old 2-arg BASE_FEATURE macro
-BASE_FEATURE(MyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Old 2-arg macro over multiple lines
-BASE_FEATURE(AnotherFeature,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Mix of Old 2-arg and 3-arg.
-BASE_FEATURE(kOldStyleFeature, "OldStyleFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(NewStyleFeature, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Old 2-arg macro where value depends on build config
-BASE_FEATURE(MaybeEnabledFeature,
-#if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
-// Comments in old 2-arg macro definition
-BASE_FEATURE(kCommentsInFeatureDefinition,
-// Add the following line to confuse the parser.
-// TODO(crrev.com/c/12345678): BASE_FEATURE(Foo, ...)
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-""".split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(6, len(features))
-    self.assertEqual('MY_FEATURE', features[0].name)
-    self.assertEqual('"MyFeature"', features[0].value)
-    self.assertEqual('ANOTHER_FEATURE', features[1].name)
-    self.assertEqual('"AnotherFeature"', features[1].value)
-    self.assertEqual('OLD_STYLE_FEATURE', features[2].name)
-    self.assertEqual('"OldStyleFeature"', features[2].value)
-    self.assertEqual('NEW_STYLE_FEATURE', features[3].name)
-    self.assertEqual('"NewStyleFeature"', features[3].value)
-    self.assertEqual('MAYBE_ENABLED_FEATURE', features[4].name)
-    self.assertEqual('"MaybeEnabledFeature"', features[4].value)
-    self.assertEqual('COMMENTS_IN_FEATURE_DEFINITION', features[5].name)
-    self.assertEqual('"CommentsInFeatureDefinition"', features[5].value)
 
   def testTwoArgumentMacro(self):
     test_data = """
@@ -244,9 +193,9 @@ BASE_FEATURE(kNamedAfterConstant, kNamedStringConstant,
 // Not currently supported: 2-arg macro name depends on C++ directive
 BASE_FEATURE(
 #if BUILDFLAG(IS_ANDROID)
-    MyAndroidFeature,
+    kMyAndroidFeature,
 #else
-    MyDesktopFeature,
+    kMyDesktopFeature,
 #endif
     base::FEATURE_DISABLED_BY_DEFAULT);
 """.split('\n')
