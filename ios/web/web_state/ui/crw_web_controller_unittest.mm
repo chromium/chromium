@@ -676,7 +676,6 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
       }
       OCMStub([mock_download originalRequest]).andReturn(request);
 
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
       if (@available(iOS 18.2, *)) {
         CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
         frame_info.mainFrame = YES;
@@ -684,7 +683,6 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
         frame_info.webView = mock_web_view_;
         OCMStub([mock_download originatingFrame]).andReturn(frame_info);
       }
-#endif
 
       OCMStub([mock_download cancel:[OCMArg any]])
           .andDo(^(NSInvocation* invocation) {

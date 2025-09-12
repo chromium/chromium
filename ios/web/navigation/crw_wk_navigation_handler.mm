@@ -692,7 +692,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                             userInfo:userInfo];
   }
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
         error.code == web::kWebKitErrorCannotShowUrl &&
@@ -711,7 +710,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                               userInfo:userInfo];
     }
   }
-#endif
 
   // Handle load cancellation for directly cancelled navigations without
   // handling their potential errors. Otherwise, handle the error.

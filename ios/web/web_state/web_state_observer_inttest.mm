@@ -1266,11 +1266,9 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
   int32_t nav_id = 0;
 
   BOOL ios26 = NO;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     ios26 = YES;
   }
-#endif
 
   // iOS 26 fails earlier and does not issue these callbacks.
   if (!ios26) {
