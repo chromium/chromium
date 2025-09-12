@@ -55,7 +55,7 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/install_button"
-            style="@style/LocationBarActionButton"
+            style="@style/LocationBarActionButton.AdaptiveDensity"
             android:src="@drawable/ic_add_to_home_screen"
             android:visibility="gone"
             android:contentDescription="@string/app_banner_install"
