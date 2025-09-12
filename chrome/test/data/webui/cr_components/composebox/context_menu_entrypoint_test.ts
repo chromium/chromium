@@ -4,7 +4,7 @@
 
 import {ContextMenuEntrypointElement} from 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ContextMenuEntrypoint', () => {
   let entrypoint: ContextMenuEntrypointElement;
@@ -25,21 +25,29 @@ suite('ContextMenuEntrypoint', () => {
     assertTrue(entrypoint.$.menu.open);
   });
 
-  ['#fileUpload', '#imageUpload'].forEach((selector) => {
-    test(`clicking ${selector} hides context menu`, async () => {
-      // Arrange.
-      entrypoint.$.entrypoint.click();
-      await microtasksFinished();
-      assertTrue(entrypoint.$.menu.open);
+  ([
+    ['#fileUpload', 'open-file-upload'],
+    ['#imageUpload', 'open-image-upload'],
+  ] as Array<[string, string]>)
+      .forEach(([selector, eventName]) => {
+        test(
+            `clicking ${selector} propagates ${eventName} before closing menu`,
+            async () => {
+              // Arrange.
+              entrypoint.$.entrypoint.click();
+              await microtasksFinished();
+              assertTrue(entrypoint.$.menu.open);
 
-      // Act.
-      const button = $$(entrypoint, selector);
-      assertTrue(!!button);
-      button.click();
-      await microtasksFinished();
+              // Act.
+              const eventFired = eventToPromise(eventName, entrypoint);
+              const button = $$(entrypoint, selector);
+              assertTrue(!!button);
+              button.click();
+              await eventFired;
 
-      // Assert.
-      assertFalse(entrypoint.$.menu.open);
-    });
-  });
+              // Assert.
+              assertTrue(!!eventFired);
+              assertFalse(entrypoint.$.menu.open);
+            });
+      });
 });

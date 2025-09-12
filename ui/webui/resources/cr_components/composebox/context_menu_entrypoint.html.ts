@@ -11,6 +11,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
   return html`<!--_html_template_start_-->
   <cr-button id="entrypoint"
       @click="${this.onEntrypointClick_}"
+      ?disabled="${this.inputsDisabled}"
       title="$i18n{addContextTitle}">
     <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
     <span id="description">$i18n{addContext}</span>
@@ -22,12 +23,12 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <hr/>
     `: ''}
     <cr-button id="imageUpload" class="dropdown-item"
-        @click="${this.openImageUpload_}">
+        @click="${this.openImageUpload}">
       <cr-icon icon="composebox:imageUpload" slot="prefix-icon"></cr-icon>
       $i18n{addImage}
     </cr-button>
     <cr-button id="fileUpload" class="dropdown-item"
-        @click="${this.openFileUpload_}">
+        @click="${this.openFileUpload}">
       <cr-icon icon="composebox:fileUpload" slot="prefix-icon"></cr-icon>
       $i18n{uploadFile}
     </cr-button>

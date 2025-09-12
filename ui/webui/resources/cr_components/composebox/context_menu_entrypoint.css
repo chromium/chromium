@@ -13,13 +13,8 @@
   --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
 }
 
-#entrypoint,
-#tabHeader,
-.dropdown-item {
-  color: var(--color-searchbox-results-foreground);
-}
-
 #entrypoint {
+  --cr-button-text-color: currentColor;
   border: initial;
   gap: 2px;
 }

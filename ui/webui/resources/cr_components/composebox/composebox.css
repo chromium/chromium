@@ -286,6 +286,7 @@ ntp-composebox-dropdown {
 
 
 #contextEntrypoint {
+  color: var(--color-searchbox-results-foreground);
   margin-inline-start: 6px;
   margin-top: 8px;
 }
