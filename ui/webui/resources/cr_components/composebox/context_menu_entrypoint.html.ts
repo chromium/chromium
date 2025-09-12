@@ -18,8 +18,15 @@ export function getHtml(this: ContextMenuEntrypointElement) {
   </cr-button>
 
   <cr-action-menu id="menu" role-description="$i18n{menu}">
-    ${this.hasTabSuggestions_ ? html`
+    ${this.tabSuggestions_.length > 0 ? html`
       <h4 id="tabHeader">$i18n{addTab}</h4>
+      ${this.tabSuggestions_.map(tab => html`
+        <cr-button class="dropdown-item" title="${tab.title}">
+          <composebox-tab-favicon .url="${tab.url.url}" slot="prefix-icon">
+          </composebox-tab-favicon>
+          <span class="tab-title">${tab.title}</span>
+        </cr-button>
+      `)}
       <hr/>
     `: ''}
     <cr-button id="imageUpload" class="dropdown-item"

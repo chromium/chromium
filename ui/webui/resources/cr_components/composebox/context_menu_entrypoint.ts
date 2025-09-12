@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './composebox_tab_favicon.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -12,6 +13,7 @@ import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TabInfo} from './composebox.mojom-webui.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -42,14 +44,13 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   static override get properties() {
     return {
       inputsDisabled: {type: Boolean},
-      hasTabSuggestions_: {type: Boolean},
+      tabSuggestions_: {type: Array},
     };
   }
 
   accessor inputsDisabled: boolean = false;
-  // TODO(crbug.com/442575942): Set `hasTabSuggestions_` to false by default,
-  // and add actual logic for setting it true.
-  protected accessor hasTabSuggestions_: boolean = true;
+
+  protected accessor tabSuggestions_: TabInfo[] = [];
 
   protected onEntrypointClick_() {
     this.$.menu.showAt(this.$.entrypointIcon, {
