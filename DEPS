@@ -3023,7 +3023,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'a6a448bd5688cbaaf070fdb271b66f5cc1e45d54',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '4d098efeac50c44a7c03e6feb1794908db4c3158',
 
   'src/third_party/libei/cipd': {
 

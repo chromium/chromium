@@ -59,8 +59,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f16-f32-vcvt_x64",
     ":f16-f32acc-gemm_f16c-fma-avx2",
     ":f16-f32acc-igemm_f16c-fma-avx2",
+    ":f16-f32acc-rdsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
+    ":f16-f32acc-rdsum2_f16c-no-avx2-no-fma",
     ":f16-f32acc-rdsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":f16-f32acc-rdsum_f16c-no-avx2-no-fma",
+    ":f16-f32acc-rsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
+    ":f16-f32acc-rsum2_f16c-no-avx2-no-fma",
     ":f16-f32acc-rsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":f16-f32acc-rsum_f16c-no-avx2-no-fma",
     ":f16-ibilinear_f16c-fma-no-avx2",
@@ -163,6 +167,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rdminmax_avx512f",
     ":f32-rdminmax_sse2-no-sse3",
     ":f32-rdminmax_x64",
+    ":f32-rdsum2_avx-no-avx2-no-f16c-no-fma",
+    ":f32-rdsum2_avx512f",
+    ":f32-rdsum2_sse2-no-sse3",
+    ":f32-rdsum2_x64",
     ":f32-rdsum_avx-no-avx2-no-f16c-no-fma",
     ":f32-rdsum_avx512f",
     ":f32-rdsum_sse2-no-sse3",
@@ -171,6 +179,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rminmax_avx512f",
     ":f32-rminmax_sse-no-sse2",
     ":f32-rminmax_x64",
+    ":f32-rsum2_avx-no-avx2-no-f16c-no-fma",
+    ":f32-rsum2_avx512f",
+    ":f32-rsum2_sse2-no-sse3",
+    ":f32-rsum2_x64",
     ":f32-rsum_avx-no-avx2-no-f16c-no-fma",
     ":f32-rsum_avx512f",
     ":f32-rsum_sse2-no-sse3",
@@ -335,8 +347,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":qs8-packw_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni",
     ":qs8-packw_x64",
     ":qs8-qc4w-gemm_avx-no-avx2-no-f16c-no-fma",
+    ":qs8-qc4w-gemm_avx2-avxvnni-f16c-fma",
     ":qs8-qc4w-gemm_f16c-fma-avx2",
     ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
+    ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni",
     ":qs8-qc4w-gemm_ssse3-no-sse4.1",
     ":qs8-qc4w-gemm_x64",
     ":qs8-qc8w-dwconv_avx-no-avx2-no-f16c-no-fma",
@@ -565,8 +579,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-f32-vcvt_x64_standalone",
       ":f16-f32acc-gemm_f16c-fma-avx2_standalone",
       ":f16-f32acc-igemm_f16c-fma-avx2_standalone",
+      ":f16-f32acc-rdsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
+      ":f16-f32acc-rdsum2_f16c-no-avx2-no-fma_standalone",
       ":f16-f32acc-rdsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
       ":f16-f32acc-rdsum_f16c-no-avx2-no-fma_standalone",
+      ":f16-f32acc-rsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
+      ":f16-f32acc-rsum2_f16c-no-avx2-no-fma_standalone",
       ":f16-f32acc-rsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
       ":f16-f32acc-rsum_f16c-no-avx2-no-fma_standalone",
       ":f16-ibilinear_f16c-fma-no-avx2_standalone",
@@ -669,6 +687,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-rdminmax_avx512f_standalone",
       ":f32-rdminmax_sse2-no-sse3_standalone",
       ":f32-rdminmax_x64_standalone",
+      ":f32-rdsum2_avx-no-avx2-no-f16c-no-fma_standalone",
+      ":f32-rdsum2_avx512f_standalone",
+      ":f32-rdsum2_sse2-no-sse3_standalone",
+      ":f32-rdsum2_x64_standalone",
       ":f32-rdsum_avx-no-avx2-no-f16c-no-fma_standalone",
       ":f32-rdsum_avx512f_standalone",
       ":f32-rdsum_sse2-no-sse3_standalone",
@@ -677,6 +699,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-rminmax_avx512f_standalone",
       ":f32-rminmax_sse-no-sse2_standalone",
       ":f32-rminmax_x64_standalone",
+      ":f32-rsum2_avx-no-avx2-no-f16c-no-fma_standalone",
+      ":f32-rsum2_avx512f_standalone",
+      ":f32-rsum2_sse2-no-sse3_standalone",
+      ":f32-rsum2_x64_standalone",
       ":f32-rsum_avx-no-avx2-no-f16c-no-fma_standalone",
       ":f32-rsum_avx512f_standalone",
       ":f32-rsum_sse2-no-sse3_standalone",
@@ -841,7 +867,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":qs8-packw_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone",
       ":qs8-packw_x64_standalone",
       ":qs8-qc4w-gemm_avx-no-avx2-no-f16c-no-fma_standalone",
+      ":qs8-qc4w-gemm_avx2-avxvnni-f16c-fma_standalone",
       ":qs8-qc4w-gemm_f16c-fma-avx2_standalone",
+      ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone",
       ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
       ":qs8-qc4w-gemm_ssse3-no-sse4.1_standalone",
       ":qs8-qc4w-gemm_x64_standalone",
@@ -1066,7 +1094,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f16-dwconv2d-chw_arch=armv8.2-a+fp16",
     ":f16-dwconv_arch=armv8.2-a+fp16",
     ":f16-f32-vcvt_arm64",
+    ":f16-f32acc-rdsum2_arch=armv8.2-a+fp16",
     ":f16-f32acc-rdsum_arch=armv8.2-a+fp16",
+    ":f16-f32acc-rsum2_arch=armv8.2-a+fp16",
     ":f16-f32acc-rsum_arch=armv8.2-a+fp16",
     ":f16-gemm_arch=armv8.2-a+fp16",
     ":f16-gemm_arch=armv8.2-a+fp16+dotprod",
@@ -1128,8 +1158,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-qu8-vcvt_arm64",
     ":f32-raddstoreexpminusmax_arm64",
     ":f32-rdminmax_arm64",
+    ":f32-rdsum2_arm64",
     ":f32-rdsum_arm64",
     ":f32-rminmax_arm64",
+    ":f32-rsum2_arm64",
     ":f32-rsum_arm64",
     ":f32-spmm_arm64",
     ":f32-vapproxgelu_arm64",
@@ -1283,7 +1315,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-dwconv2d-chw_arch=armv8.2-a+fp16_standalone",
       ":f16-dwconv_arch=armv8.2-a+fp16_standalone",
       ":f16-f32-vcvt_arm64_standalone",
+      ":f16-f32acc-rdsum2_arch=armv8.2-a+fp16_standalone",
       ":f16-f32acc-rdsum_arch=armv8.2-a+fp16_standalone",
+      ":f16-f32acc-rsum2_arch=armv8.2-a+fp16_standalone",
       ":f16-f32acc-rsum_arch=armv8.2-a+fp16_standalone",
       ":f16-gemm_arch=armv8.2-a+fp16+dotprod_standalone",
       ":f16-gemm_arch=armv8.2-a+fp16_standalone",
@@ -1345,8 +1379,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-qu8-vcvt_arm64_standalone",
       ":f32-raddstoreexpminusmax_arm64_standalone",
       ":f32-rdminmax_arm64_standalone",
+      ":f32-rdsum2_arm64_standalone",
       ":f32-rdsum_arm64_standalone",
       ":f32-rminmax_arm64_standalone",
+      ":f32-rsum2_arm64_standalone",
       ":f32-rsum_arm64_standalone",
       ":f32-spmm_arm64_standalone",
       ":f32-vapproxgelu_arm64_standalone",
@@ -1532,10 +1568,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-raddstoreexpminusmax_arch=rv64gcv-abi=lp64d",
     ":f32-raddstoreexpminusmax_riscv64",
     ":f32-rdminmax_riscv64",
+    ":f32-rdsum2_riscv64",
     ":f32-rdsum_arch=rv64gcv-abi=lp64d",
     ":f32-rdsum_riscv64",
     ":f32-rminmax_arch=rv64gcv-abi=lp64d",
     ":f32-rminmax_riscv64",
+    ":f32-rsum2_riscv64",
     ":f32-rsum_riscv64",
     ":f32-spmm_arch=rv64gcv-abi=lp64d",
     ":f32-spmm_riscv64",
@@ -1704,10 +1742,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-raddstoreexpminusmax_arch=rv64gcv-abi=lp64d_standalone",
       ":f32-raddstoreexpminusmax_riscv64_standalone",
       ":f32-rdminmax_riscv64_standalone",
+      ":f32-rdsum2_riscv64_standalone",
       ":f32-rdsum_arch=rv64gcv-abi=lp64d_standalone",
       ":f32-rdsum_riscv64_standalone",
       ":f32-rminmax_arch=rv64gcv-abi=lp64d_standalone",
       ":f32-rminmax_riscv64_standalone",
+      ":f32-rsum2_riscv64_standalone",
       ":f32-rsum_riscv64_standalone",
       ":f32-spmm_arch=rv64gcv-abi=lp64d_standalone",
       ":f32-spmm_riscv64_standalone",
@@ -2719,6 +2759,138 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   source_set(
+      "f16-f32acc-rdsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-avx512skx.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set(
+        "f16-f32acc-rdsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
+      cflags = [
+        "-mavx512bw",
+        "-mavx512cd",
+        "-mavx512dq",
+        "-mavx512f",
+        "-mavx512vl",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-avx512skx.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f16-f32acc-rdsum2_f16c-no-avx2-no-fma") {
+    cflags = [
+      "-mf16c",
+      "-mno-avx2",
+      "-mno-fma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-f16c.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-f32acc-rdsum2_f16c-no-avx2-no-fma_standalone") {
+      cflags = [
+        "-mf16c",
+        "-mno-avx2",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-f16c.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set(
       "f16-f32acc-rdsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
     cflags = [
       "-mavx512bw",
@@ -2828,6 +3000,138 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-u32.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set(
+      "f16-f32acc-rsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-avx512skx.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set(
+        "f16-f32acc-rsum2_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
+      cflags = [
+        "-mavx512bw",
+        "-mavx512cd",
+        "-mavx512dq",
+        "-mavx512f",
+        "-mavx512vl",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-avx512skx.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f16-f32acc-rsum2_f16c-no-avx2-no-fma") {
+    cflags = [
+      "-mf16c",
+      "-mno-avx2",
+      "-mno-fma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-f16c.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-f32acc-rsum2_f16c-no-avx2-no-fma_standalone") {
+      cflags = [
+        "-mf16c",
+        "-mno-avx2",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-f16c.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9178,6 +9482,234 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
+  source_set("f32-rdsum2_avx-no-avx2-no-f16c-no-fma") {
+    cflags = [
+      "-mavx",
+      "-mno-avx2",
+      "-mno-f16c",
+      "-mno-fma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-avx.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_avx-no-avx2-no-f16c-no-fma_standalone") {
+      cflags = [
+        "-mavx",
+        "-mno-avx2",
+        "-mno-f16c",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-avx.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rdsum2_avx512f") {
+    cflags = [ "-mavx512f" ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-avx512f.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_avx512f_standalone") {
+      cflags = [ "-mavx512f" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-avx512f.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rdsum2_sse2-no-sse3") {
+    cflags = [
+      "-mno-sse3",
+      "-msse2",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-sse2.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_sse2-no-sse3_standalone") {
+      cflags = [
+        "-mno-sse3",
+        "-msse2",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-sse2.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rdsum2_x64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_x64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("f32-rdsum_avx-no-avx2-no-f16c-no-fma") {
     cflags = [
       "-mavx",
@@ -9628,6 +10160,234 @@ if (current_cpu == "x64" || current_cpu == "x86") {
         "src/src/f32-rminmax/gen/f32-rmax-scalar-u4-acc4.c",
         "src/src/f32-rminmax/gen/f32-rmin-scalar-u4-acc4.c",
         "src/src/f32-rminmax/gen/f32-rminmax-scalar-u4-acc4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_avx-no-avx2-no-f16c-no-fma") {
+    cflags = [
+      "-mavx",
+      "-mno-avx2",
+      "-mno-f16c",
+      "-mno-fma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-avx-u8.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_avx-no-avx2-no-f16c-no-fma_standalone") {
+      cflags = [
+        "-mavx",
+        "-mno-avx2",
+        "-mno-f16c",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-avx-u8.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_avx512f") {
+    cflags = [ "-mavx512f" ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-avx512f-u16.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_avx512f_standalone") {
+      cflags = [ "-mavx512f" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-avx512f-u16.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_sse2-no-sse3") {
+    cflags = [
+      "-mno-sse3",
+      "-msse2",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-sse2-u4.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_sse2-no-sse3_standalone") {
+      cflags = [
+        "-mno-sse3",
+        "-msse2",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-sse2-u4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_x64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_x64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -19946,6 +20706,71 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
+  source_set("qs8-qc4w-gemm_avx2-avxvnni-f16c-fma") {
+    cflags = [
+      "-mavx2",
+      "-mavxvnni",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-avxvnni-prfm.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-5x8c8-minmax-avxvnni-prfm.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("qs8-qc4w-gemm_avx2-avxvnni-f16c-fma_standalone") {
+      cflags = [
+        "-mavx2",
+        "-mavxvnni",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-avxvnni-prfm.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-5x8c8-minmax-avxvnni-prfm.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("qs8-qc4w-gemm_f16c-fma-avx2") {
     cflags = [
       "-mavx2",
@@ -20023,7 +20848,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x16c8-minmax-fp32-avx512skx-madd-prfm.c",
       "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x16c8-minmax-fp32-avx512skx-madd-prfm.c",
       "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256skx-madd-prfm.c",
     ]
 
@@ -20058,8 +20885,85 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x16c8-minmax-fp32-avx512skx-madd-prfm.c",
         "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x16c8-minmax-fp32-avx512skx-madd-prfm.c",
         "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set(
+      "qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256vnni-prfm.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256vnni-prfm.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set(
+        "qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone") {
+      cflags = [
+        "-mavx512bw",
+        "-mavx512cd",
+        "-mavx512dq",
+        "-mavx512f",
+        "-mavx512vl",
+        "-mavx512vnni",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256vnni-prfm.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256vnni-prfm.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -20148,7 +21052,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -20173,7 +21078,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33402,6 +34308,59 @@ if (current_cpu == "arm64") {
     }
   }
 
+  source_set("f16-f32acc-rdsum2_arch=armv8.2-a+fp16") {
+    cflags = [ "-march=armv8.2-a+fp16" ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-minmax-neonfp16arith.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-f32acc-rdsum2_arch=armv8.2-a+fp16_standalone") {
+      cflags = [ "-march=armv8.2-a+fp16" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rdsum2/gen/f16-f32acc-rdsum2-7p7x-minmax-neonfp16arith.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("f16-f32acc-rdsum_arch=armv8.2-a+fp16") {
     cflags = [ "-march=armv8.2-a+fp16" ]
 
@@ -33433,6 +34392,59 @@ if (current_cpu == "arm64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-minmax-neonfp16arith-u16.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f16-f32acc-rsum2_arch=armv8.2-a+fp16") {
+    cflags = [ "-march=armv8.2-a+fp16" ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-neonfp16arith.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-f32acc-rsum2_arch=armv8.2-a+fp16_standalone") {
+      cflags = [ "-march=armv8.2-a+fp16" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-f32acc-rsum2/gen/f16-f32acc-rsum2-neonfp16arith.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37092,6 +38104,61 @@ if (current_cpu == "arm64") {
     }
   }
 
+  source_set("f32-rdsum2_arm64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-neon.c",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_arm64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-neon.c",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("f32-rdsum_arm64") {
     cflags = []
 
@@ -37188,6 +38255,61 @@ if (current_cpu == "arm64") {
         "src/src/f32-rminmax/gen/f32-rmin-scalar-u4-acc4.c",
         "src/src/f32-rminmax/gen/f32-rminmax-neon-u16-acc4.c",
         "src/src/f32-rminmax/gen/f32-rminmax-scalar-u4-acc4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_arm64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-neon.c",
+      "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_arm64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-neon.c",
+        "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -41258,7 +42380,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -41283,7 +42406,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -47799,6 +48923,59 @@ if (current_cpu == "riscv64") {
     }
   }
 
+  source_set("f32-rdsum2_riscv64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rdsum2_riscv64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rdsum2/gen/f32-rdsum2-7p7x-minmax-scalar.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("f32-rdsum_arch=rv64gcv-abi=lp64d") {
     cflags = [
       "-mabi=lp64d",
@@ -48009,6 +49186,59 @@ if (current_cpu == "riscv64") {
         "src/src/f32-rminmax/gen/f32-rmax-scalar-u4-acc4.c",
         "src/src/f32-rminmax/gen/f32-rmin-scalar-u4-acc4.c",
         "src/src/f32-rminmax/gen/f32-rminmax-scalar-u4-acc4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  source_set("f32-rsum2_riscv64") {
+    cflags = []
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f32-rsum2_riscv64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f32-rsum2/gen/f32-rsum2-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -50502,7 +51732,8 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -50527,7 +51758,8 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-qc4w-gemm/qs8-qc4w-gemm-1x2-minmax-fp32-scalar-lrintf.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x4-minmax-fp32-scalar-fmagic.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-3x4-minmax-fp32-scalar-fmagic.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
