@@ -46,18 +46,13 @@ cargo_crate("lib") {
   allow_unsafe = true
 
   deps = [
-    "//third_party/rust/combine/v4:lib",
-    "//third_party/rust/jiff_tzdb/v0_1:lib",
     "//third_party/rust/tinystr/v0_8:lib",
-    "//third_party/rust/tzif/v0_4:lib",
     "//third_party/rust/zerotrie/v0_2:lib",
     "//third_party/rust/zerovec/v0_11:lib",
     "//third_party/rust/zoneinfo64/v0_2:lib",
   ]
   features = [
     "default",
-    "std",
-    "tzif",
     "zoneinfo64",
   ]
 

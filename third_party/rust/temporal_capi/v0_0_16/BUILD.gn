@@ -54,7 +54,6 @@ cargo_crate("lib") {
     "//third_party/rust/zoneinfo64/v0_2:lib",
   ]
   features = [
-    "compiled_data",
     "yoke",
     "zoneinfo64",
   ]

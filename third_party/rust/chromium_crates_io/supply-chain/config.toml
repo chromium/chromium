@@ -98,9 +98,6 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."codespan-reporting:0.12.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."combine:4.6.7"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."core_maths:0.1.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -252,9 +249,6 @@ criteria = ["crypto-safe", "safe-to-run"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."ixdtf:0.6.3"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."jiff-tzdb:0.1.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."lazy_static:1.5.0"]
@@ -426,9 +420,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."toktrie:1.2.0"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."tzif:0.4.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-ident:1.0.18"]

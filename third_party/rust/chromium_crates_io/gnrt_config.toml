@@ -155,9 +155,6 @@ allow_unsafe = true
 [crate.codespan-reporting]
 extra_kv = { allow_unsafe = false }
 
-[crate.combine.extra_kv]
-allow_unsafe = true
-
 [crate.core_maths.extra_kv]
 allow_unsafe = false
 
@@ -354,9 +351,6 @@ allow_unsafe = true
 
 [crate.ixdtf.extra_kv]
 allow_unsafe = false
-
-[crate.jiff-tzdb]
-extra_kv = { allow_unsafe = false }
 
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
@@ -555,9 +549,6 @@ extra_kv = { allow_unsafe = true }
 allow_unsafe = true
 
 [crate.toktrie.extra_kv]
-allow_unsafe = false
-
-[crate.tzif.extra_kv]
 allow_unsafe = false
 
 [crate.unicode-ident.extra_kv]

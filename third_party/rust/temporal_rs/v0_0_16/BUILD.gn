@@ -82,11 +82,6 @@ cargo_crate("lib") {
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/writeable/v0_6:lib",
   ]
-  features = [
-    "compiled_data",
-    "std",
-    "tzdb",
-  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
