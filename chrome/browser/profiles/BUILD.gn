@@ -236,6 +236,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/autofill",
     "//chrome/browser/background",
+    "//chrome/browser/background_fetch",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",

@@ -201,12 +201,6 @@ static_library("browser") {
     "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
-    "background_fetch/background_fetch_delegate_factory.cc",
-    "background_fetch/background_fetch_delegate_factory.h",
-    "background_fetch/background_fetch_delegate_impl.cc",
-    "background_fetch/background_fetch_delegate_impl.h",
-    "background_fetch/background_fetch_permission_context.cc",
-    "background_fetch/background_fetch_permission_context.h",
     "background_sync/background_sync_controller_factory.cc",
     "background_sync/background_sync_controller_factory.h",
     "background_sync/background_sync_delegate_impl.cc",
@@ -1835,6 +1829,13 @@ static_library("browser") {
     # - c/b/notifications/system_notification_helper.h"
     # - c/b/profiles/profile_manager.h"
     "//chrome/browser/usb:impl",
+
+    # headers are componentized:
+    # - c/b/download/download_request_limiter.h
+    # - c/b/download/background_download_service_factory.h
+    # - c/b/offline_items_collection/offline_content_aggregator_factory.h
+    # - c/b/metrics/ukm_background_recorder_service.h
+    "//chrome/browser/background_fetch:impl",
   ]
 
   public_deps = [
@@ -1890,6 +1891,8 @@ static_library("browser") {
     "//chrome/browser/autofill",
     "//chrome/browser/background",
     "//chrome/browser/background:impl",
+    "//chrome/browser/background_fetch",
+    "//chrome/browser/background_fetch:impl",
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
