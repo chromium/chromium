@@ -734,4 +734,8 @@ void PredictionManager::OverrideTargetModelForTesting(
   }
 }
 
+void PredictionManager::SetUrlLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = url_loader_factory;
+}
 }  // namespace optimization_guide

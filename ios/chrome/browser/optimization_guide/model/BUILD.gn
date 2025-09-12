@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations:test_support",
     "//ios/chrome/browser/download/model/background_service",
+    "//ios/chrome/browser/profile/model:test_support",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/application_context",

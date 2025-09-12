@@ -146,6 +146,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
     return &prediction_model_fetch_timer_;
   }
 
+  void SetUrlLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  protected:
   // Process `prediction_models` to be stored in the in memory optimization
   // target prediction model map for immediate use and asynchronously write the
