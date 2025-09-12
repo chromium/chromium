@@ -709,8 +709,11 @@ bool DecodeString(std::string_view* slice, std::u16string* value) {
     return true;
   }
 
+  if (slice->size() % sizeof(char16_t)) {
+    return false;
+  }
+
   // Backing store is UTF-16BE, convert to host endianness.
-  DCHECK(!(slice->size() % sizeof(char16_t)));
   size_t length = slice->size() / sizeof(char16_t);
   std::u16string decoded;
   decoded.reserve(length);
