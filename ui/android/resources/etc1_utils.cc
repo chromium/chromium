@@ -27,7 +27,6 @@ namespace ui {
 // Used at callsites, to lower thread priority to background while compression
 // is happening.
 BASE_FEATURE(kCompressBitmapAtBackgroundPriority,
-             "CompressBitmapAtBackgroundPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

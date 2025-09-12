@@ -45,13 +45,11 @@ constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 // break DWM optimizations for MF fullscreen letterboxing in
 // `PresentDCOMPSurface`. These optimizations require `dest_size` to match the
 // monitor size in order for MF to handle fullscreen letterboxing of videos.
-BASE_FEATURE(kDisableVPBLTUpscale,
-             "DisableVPBLTUpscale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableVPBLTUpscale, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This flag attempts to enable MPO for P010 SDR video content. The feature
 // should only be enabled when P010 MPO is detected as supported.
-BASE_FEATURE(kP010MPOForSDR, "P010MPOForSDR", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kP010MPOForSDR, base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {

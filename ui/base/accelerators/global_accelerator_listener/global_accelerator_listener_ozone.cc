@@ -23,9 +23,7 @@ using content::BrowserThread;
 
 namespace {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-BASE_FEATURE(kGlobalShortcutsPortal,
-             "GlobalShortcutsPortal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlobalShortcutsPortal, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kChannelEnvVar[] = "CHROME_VERSION_EXTRA";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

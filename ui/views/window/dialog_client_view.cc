@@ -45,9 +45,7 @@ namespace views {
 namespace features {
 // Gates the ability of the Dialog to use a vertical button layout, if other
 // conditions permit. This is a killswitch and is on by default.
-BASE_FEATURE(kDialogVerticalButtonFallback,
-             "DialogVerticalButtonFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDialogVerticalButtonFallback, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {

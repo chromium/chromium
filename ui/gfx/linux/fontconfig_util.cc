@@ -24,9 +24,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace features {
-BASE_FEATURE(kFontConfigFontationsIndexing,
-             "FontConfigFontationsIndexing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFontConfigFontationsIndexing, base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 namespace gfx {

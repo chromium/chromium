@@ -48,7 +48,6 @@ const char kNoXshm[] = "no-xshm";
 
 namespace features {
 BASE_FEATURE(kOddHeightMultiPlanarBuffers,
-             "OddHeightMultiPlanarBuffers",
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -57,7 +56,6 @@ BASE_FEATURE(kOddHeightMultiPlanarBuffers,
 );
 
 BASE_FEATURE(kOddWidthMultiPlanarBuffers,
-             "OddWidthMultiPlanarBuffers",
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -65,10 +63,8 @@ BASE_FEATURE(kOddWidthMultiPlanarBuffers,
 #endif
 );
 
-BASE_FEATURE(kUseSmartRefForGPUFenceHandle,
-             "UseSmartRefForGPUFenceHandle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSmartRefForGPUFenceHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHdrAgtm, "HdrAgtm", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHdrAgtm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

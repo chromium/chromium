@@ -33,9 +33,7 @@ namespace {
 
 // If enabled, adds a delay to GL program link whose value is given by the
 // feature param. Used for an ablation study.
-BASE_FEATURE(kAddDelayToGLProgramLink,
-             "AddDelayToGLProgramLink",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAddDelayToGLProgramLink, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGLProgramLinkDelayMicroseconds{
     &kAddDelayToGLProgramLink, /*name=*/"GLProgramLinkDelayMicroseconds",
     /*default_value=*/1000};

@@ -23,9 +23,7 @@ namespace features {
 
 // If enabled, generates an empty GestureScrollUpdate if the preceding TouchMove
 // event had no gestures and sends both events together.
-BASE_FEATURE(kSendEmptyGestureScrollUpdate,
-             "SendEmptyGestureScrollUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSendEmptyGestureScrollUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates,
                    &kSendEmptyGestureScrollUpdate,
@@ -34,20 +32,16 @@ BASE_FEATURE_PARAM(bool,
 
 #if BUILDFLAG(IS_WIN)
 // If enabled, calculate native window occlusion - Windows-only.
-BASE_FEATURE(kCalculateNativeWinOcclusion,
-             "CalculateNativeWinOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCalculateNativeWinOcclusion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Once enabled, the exact behavior is dictated by the field trial param
 // name `kApplyNativeOcclusionToCompositorType`.
 BASE_FEATURE(kApplyNativeOcclusionToCompositor,
-             "ApplyNativeOcclusionToCompositor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, native window occlusion tracking will always be used, even if
 // CHROME_HEADLESS is set.
 BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
-             "AlwaysTrackNativeWindowOcclusionForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
@@ -72,16 +66,13 @@ BASE_FEATURE(kSettingsShowsPerKeyboardSettings,
              "InputMethodIntegratedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeprecateAltClick,
-             "DeprecateAltClick",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeprecateAltClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDeprecateAltClickEnabled() {
   return base::FeatureList::IsEnabled(kDeprecateAltClick);
 }
 
 BASE_FEATURE(kNotificationsIgnoreRequireInteraction,
-             "NotificationsIgnoreRequireInteraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNotificationsIgnoreRequireInteractionEnabled() {
@@ -90,9 +81,7 @@ bool IsNotificationsIgnoreRequireInteractionEnabled() {
 
 // Enables settings that allow users to remap the F11 and F12 keys in the
 // "Customize keyboard keys" page.
-BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
-             "SupportF11AndF12KeyShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupportF11AndF12KeyShortcuts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreF11AndF12ShortcutsEnabled() {
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
@@ -112,18 +101,13 @@ bool AreF11AndF12ShortcutsEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
-BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
-             "OzoneBubblesUsePlatformWidgets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOzoneBubblesUsePlatformWidgets, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether support for Wayland's linux-drm-syncobj is enabled.
-BASE_FEATURE(kWaylandLinuxDrmSyncobj,
-             "WaylandLinuxDrmSyncobj",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWaylandLinuxDrmSyncobj, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
-             "WaylandPerSurfaceScale",
 #if BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -132,14 +116,10 @@ BASE_FEATURE(kWaylandPerSurfaceScale,
 );
 
 // Controls whether Wayland text-input-v3 protocol support is enabled.
-BASE_FEATURE(kWaylandTextInputV3,
-             "WaylandTextInputV3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWaylandTextInputV3, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Wayland session management protocol is enabled.
-BASE_FEATURE(kWaylandSessionManagement,
-             "WaylandSessionManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWaylandSessionManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 // When enabled, the feature will query the OS for a default cursor size,
@@ -147,7 +127,6 @@ BASE_FEATURE(kWaylandSessionManagement,
 // blink. Currently enabled by default on Windows only.
 // TODO(crbug.com/40845719) - Implement for other platforms.
 BASE_FEATURE(kSystemCursorSizeSupported,
-             "SystemCursorSizeSupported",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -160,13 +139,10 @@ bool IsSystemCursorSizeSupported() {
 }
 
 // Allows system keyboard event capture via the keyboard lock API.
-BASE_FEATURE(kSystemKeyboardLock,
-             "SystemKeyboardLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSystemKeyboardLock, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 BASE_FEATURE(kUiGpuRasterization,
-             "UiGpuRasterization",
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -181,7 +157,6 @@ bool IsUiGpuRasterizationEnabled() {
 
 // Enables scrolling with layers under ui using the ui::Compositor.
 BASE_FEATURE(kUiCompositorScrollWithLayers,
-             "UiCompositorScrollWithLayers",
 // TODO(crbug.com/40471184): Use composited scrolling on all platforms.
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -192,14 +167,11 @@ BASE_FEATURE(kUiCompositorScrollWithLayers,
 
 // TODO(crbug.com/389771428): Switch the ui::Compositor to use
 // cc::PropertyTrees and layer lists rather than layer trees.
-BASE_FEATURE(kUiCompositorUsesLayerLists,
-             "UiCompositorUsesLayerLists",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUiCompositorUsesLayerLists, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of a touch fling curve that is based on the behavior of
 // native apps on Windows.
 BASE_FEATURE(kExperimentalFlingAnimation,
-             "ExperimentalFlingAnimation",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -210,7 +182,6 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 #if !BUILDFLAG(IS_APPLE)
 // Cached in Java as well, make sure defaults are updated together.
 BASE_FEATURE(kElasticOverscroll,
-             "ElasticOverscroll",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else  // BUILDFLAG(IS_ANDROID)
@@ -221,17 +192,12 @@ BASE_FEATURE(kElasticOverscroll,
 
 // Limits the scroll delta to the size of the scroller when scrolled using the
 // mouse wheel only.
-BASE_FEATURE(kLimitScrollDeltaToScrollerSize,
-             "LimitScrollDeltaToScrollerSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLimitScrollDeltaToScrollerSize, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables focus follow follow cursor (sloppyfocus).
-BASE_FEATURE(kFocusFollowsCursor,
-             "FocusFollowsCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFocusFollowsCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText,
-             "DragDropOnlySynthesizeHttpOrHttpsUrlsFromText",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -255,7 +221,6 @@ bool IsImprovedKeyboardShortcutsEnabled() {
 // first, then possibly also enable some parts for other platforms later.
 // TODO(b/262297017): Clean up after touch text editing redesign ships.
 BASE_FEATURE(kTouchTextEditingRedesign,
-             "TouchTextEditingRedesign",
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -269,7 +234,6 @@ bool IsTouchTextEditingRedesignEnabled() {
 
 // This feature enables drag and drop using touch input devices.
 BASE_FEATURE(kTouchDragAndDrop,
-             "TouchDragAndDrop",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -284,7 +248,7 @@ bool IsTouchDragAndDropEnabled() {
 }
 
 // Enables forced colors mode for web content.
-BASE_FEATURE(kForcedColors, "ForcedColors", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kForcedColors, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsForcedColorsEnabled() {
   static const bool forced_colors_enabled =
@@ -296,7 +260,6 @@ bool IsForcedColorsEnabled() {
 // and Linux. This feature will be released for other platforms in later
 // milestones.
 BASE_FEATURE(kEyeDropper,
-             "EyeDropper",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -313,9 +276,7 @@ bool IsEyeDropperEnabled() {
 // (i.e., inside Blink). See
 // ::views::features::kKeyboardAccessibleTooltipInViews for
 // keyboard-accessible tooltips in Views UI.
-BASE_FEATURE(kKeyboardAccessibleTooltip,
-             "KeyboardAccessibleTooltip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyboardAccessibleTooltip, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsKeyboardAccessibleTooltipEnabled() {
   static const bool keyboard_accessible_tooltip_enabled =
@@ -323,16 +284,13 @@ bool IsKeyboardAccessibleTooltipEnabled() {
   return keyboard_accessible_tooltip_enabled;
 }
 
-BASE_FEATURE(kSynchronousPageFlipTesting,
-             "SynchronousPageFlipTesting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSynchronousPageFlipTesting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSynchronousPageFlipTestingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousPageFlipTesting);
 }
 
 BASE_FEATURE(kResamplingScrollEventsExperimentalPrediction,
-             "ResamplingScrollEventsExperimentalPrediction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPredictorNameLsq[] = "lsq";
@@ -350,9 +308,7 @@ const char kPredictionTypeDefaultFramesVariation1[] = "0.25";
 const char kPredictionTypeDefaultFramesVariation2[] = "0.375";
 const char kPredictionTypeDefaultFramesVariation3[] = "0.5";
 
-BASE_FEATURE(kSwipeToMoveCursor,
-             "SwipeToMoveCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSwipeToMoveCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUIDebugTools,
              "ui-debug-tools",
@@ -371,7 +327,7 @@ bool IsSwipeToMoveCursorEnabled() {
 }
 
 // Enable raw draw for tiles.
-BASE_FEATURE(kRawDraw, "RawDraw", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRawDraw, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Tile size = viewport size * TileSizeFactor
 const base::FeatureParam<double> kRawDrawTileSizeFactor{&kRawDraw,
@@ -391,12 +347,8 @@ bool IsRawDrawUsingMSAA() {
   return kIsRawDrawUsingMSAA.Get();
 }
 
-BASE_FEATURE(kVariableRefreshRateAvailable,
-             "VariableRefreshRateAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableVariableRefreshRate,
-             "EnableVariableRefreshRate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVariableRefreshRateAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableVariableRefreshRate, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateEnabled() {
   if (base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn)) {
     return true;
@@ -415,28 +367,21 @@ bool IsVariableRefreshRateEnabled() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
 }
 BASE_FEATURE(kEnableVariableRefreshRateAlwaysOn,
-             "EnableVariableRefreshRateAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateAlwaysOn() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
 }
 
-BASE_FEATURE(kBubbleMetricsApi,
-             "BubbleMetricsApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBubbleMetricsApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUseGammaContrastRegistrySettings,
-             "UseGammaContrastRegistrySettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
-             "BubbleFrameViewTitleIsHeading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBubbleFrameViewTitleIsHeading, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGestureBeginEndTypes,
-             "EnableGestureBeginEndTypes",
 #if !BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -444,24 +389,16 @@ BASE_FEATURE(kEnableGestureBeginEndTypes,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 );
 
-BASE_FEATURE(kUseUtf8EncodingForSvgImage,
-             "UseUtf8EncodingForSvgImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseUtf8EncodingForSvgImage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables copy bookmark and writes url format to clipboard with empty title.
-BASE_FEATURE(kWriteBookmarkWithoutTitle,
-             "WriteBookmarkWithoutTitle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWriteBookmarkWithoutTitle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, fullscreen window state is updated asynchronously.
-BASE_FEATURE(kAsyncFullscreenWindowState,
-             "AsyncFullscreenWindowState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAsyncFullscreenWindowState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature flag for enabling platform clipboard monitoring.
-BASE_FEATURE(kPlatformClipboardMonitor,
-             "PlatformClipboardMonitor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPlatformClipboardMonitor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, all draw commands recorded on canvas are done in pixel aligned
 // measurements. This also enables scaling of all elements in views and layers
@@ -480,7 +417,6 @@ bool IsPixelCanvasRecordingEnabled() {
 }
 
 BASE_FEATURE(kHandleIMESpanChangesOnUpdateComposition,
-             "HandleIMESpanChangesOnUpdateComposition",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsHandleIMESpanChangesOnUpdateCompositionEnabled() {
@@ -488,8 +424,6 @@ bool IsHandleIMESpanChangesOnUpdateCompositionEnabled() {
       features::kHandleIMESpanChangesOnUpdateComposition);
 }
 
-BASE_FEATURE(kUseSystemDefaultAccentColors,
-             "UseSystemDefaultAccentColors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSystemDefaultAccentColors, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

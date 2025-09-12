@@ -17,9 +17,7 @@ namespace {
 
 constexpr uint32_t kMinVersion = 1;
 
-BASE_FEATURE(kWaylandWpColorManagerV1,
-             "WaylandWpColorManagerV1",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWaylandWpColorManagerV1, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::optional<wp_color_manager_v1_primaries> ColorSpaceToPrimaries(
     gfx::ColorSpace::PrimaryID primary_id) {

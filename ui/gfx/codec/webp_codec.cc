@@ -9,9 +9,7 @@
 #include "base/feature_list.h"
 #include "ui/gfx/codec/vector_wstream.h"
 
-BASE_FEATURE(kUseLosslessWebPCompression,
-             "UseLosslessWebPCompression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseLosslessWebPCompression, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace gfx {
 

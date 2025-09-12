@@ -8,8 +8,6 @@
 
 namespace ui {
 
-BASE_FEATURE(kLegacyKeyRepeatSynthesis,
-             "LegacyKeyRepeatSynthesis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLegacyKeyRepeatSynthesis, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ui

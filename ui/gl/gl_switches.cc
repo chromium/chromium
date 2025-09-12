@@ -217,30 +217,24 @@ namespace features {
 //
 // Please be aware that some of these visualizations result in quickly flashing
 // colors.
-BASE_FEATURE(kDCompDebugVisualization,
-             "DCompDebugVisualization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDCompDebugVisualization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use BufferCount of 3 for direct composition video swap chains.
 BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
-             "DCompTripleBufferVideoSwapChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow overlay swapchain to present on all GPUs even if they only support
 // software overlays. GPU deny lists limit it to NVIDIA only at the moment.
 BASE_FEATURE(kDirectCompositionSoftwareOverlays,
-             "DirectCompositionSoftwareOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Detect and mark a single full screen video during overlay processing.
 BASE_FEATURE(kEarlyFullScreenVideoOptimization,
-             "EarlyFullScreenVideoOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adjust the letterbox video size and position to the center of the screen so
 // that DWM power optimization can be turned on.
 BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
-             "DirectCompositionLetterboxVideoOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Remove the topmost desktop plane for Media Foundation full screen
@@ -248,7 +242,6 @@ BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
 // optimization for Media Foundation Renderer, which should be enabled by
 // default when crbug.com/406175378 is resolved.
 BASE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox,
-             "DesktopPlaneRemovalForMFFullScreenLetterbox",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Do not consider hardware YUV overlay count when promoting quads to DComp
@@ -256,14 +249,12 @@ BASE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox,
 // a performance hit compared to drawing all the videos into a single swap
 // chain. This feature is intended for testing and debugging.
 BASE_FEATURE(kDirectCompositionUnlimitedOverlays,
-             "DirectCompositionUnlimitedOverlays",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.
 BASE_FEATURE(kEGLDualGPURendering,
-             "EGLDualGPURendering",
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -271,18 +262,13 @@ BASE_FEATURE(kEGLDualGPURendering,
 #endif
 
 // Allow overlay swapchain to use Intel video processor for super resolution.
-BASE_FEATURE(kIntelVpSuperResolution,
-             "IntelVpSuperResolution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIntelVpSuperResolution, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Metal backend.
-BASE_FEATURE(kDefaultANGLEMetal,
-             "DefaultANGLEMetal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultANGLEMetal, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Vulkan backend.
 BASE_FEATURE(kDefaultANGLEVulkan,
-             "DefaultANGLEVulkan",
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -292,13 +278,10 @@ BASE_FEATURE(kDefaultANGLEVulkan,
 // Track current program's shaders at glUseProgram() call for crash report
 // purpose. Only effective on Windows because the attached shaders may only
 // be reliably retrieved with ANGLE backend.
-BASE_FEATURE(kTrackCurrentShaders,
-             "TrackCurrentShaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackCurrentShaders, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
 BASE_FEATURE(kVulkanFromANGLE,
-             "VulkanFromANGLE",
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -445,9 +428,7 @@ bool IsDefaultANGLEVulkan() {
 }
 
 // Use waitable swap chain on Windows to reduce display latency.
-BASE_FEATURE(kDXGIWaitableSwapChain,
-             "DXGIWaitableSwapChain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDXGIWaitableSwapChain, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If using waitable swap chain, specify the maximum number of queued frames.
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
@@ -457,9 +438,7 @@ const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
 // on the previously presented frame instead of synchronizing with vblank(s).
 // Frames may be discarded if they are presented more frequently than one per
 // vblank.
-BASE_FEATURE(kDXGISwapChainPresentInterval0,
-             "DXGISwapChainPresentInterval0",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDXGISwapChainPresentInterval0, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SupportsEGLDualGPURendering() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

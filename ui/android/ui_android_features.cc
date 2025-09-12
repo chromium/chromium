@@ -7,62 +7,39 @@
 
 namespace ui {
 
-BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHDR, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
-             "AndroidUseCorrectDisplayWorkArea",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidUseCorrectWindowBounds,
-             "AndroidUseCorrectWindowBounds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidUseCorrectWindowBounds, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidWindowManagementWebApi,
-             "AndroidWindowManagementWebApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidWindowOcclusion,
-             "AndroidWindowOcclusion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidWindowOcclusion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCheckIntentCallerPermission,
-             "CheckIntentCallerPermission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCheckIntentCallerPermission, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeprecatedExternalPickerFunction,
-             "DeprecatedExternalPickerFunction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
-             "DisablePhotoPickerForVideoCapture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFormFactorUseMaxWindowMetrics,
-             "FormFactorUseMaxWindowMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFormFactorUseMaxWindowMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMirrorBackForwardGesturesInRTL,
-             "MirrorBackForwardGesturesInRTL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMirrorBackForwardGesturesInRTL, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportBottomOverscrolls,
-             "ReportBottomOverscrolls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kReportBottomOverscrolls, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRequireLeadingInTextViewWithLeading,
-             "RequireLeadingInTextViewWithLeading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSelectFileOpenDocument,
-             "SelectFileOpenDocument",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSelectFileOpenDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTouchMovesToEventForwarderObservers,
-             "SendTouchMovesToEventForwarderObservers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseNewEtc1Encoder,
-             "UseNewEtc1Encoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseNewEtc1Encoder, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ui

@@ -31,9 +31,7 @@ namespace ui {
 namespace {
 
 // Stop switch for the AutoCloseDialogEventHandler.
-BASE_FEATURE(kAutoCloseFileDialogs,
-             "AutoCloseFileDialogs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAutoCloseFileDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // RAII wrapper around AutoCloseDialogEventHandler.
 class ScopedAutoCloseDialogEventHandler {

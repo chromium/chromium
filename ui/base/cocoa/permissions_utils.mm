@@ -19,13 +19,9 @@
 namespace ui {
 namespace {
 
-BASE_FEATURE(kWarmScreenCaptureSonoma,
-             "WarmScreenCaptureSonoma",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWarmScreenCaptureSonoma, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWarmScreenCaptureSequoia,
-             "WarmScreenCaptureSequoia",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWarmScreenCaptureSequoia, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldWarmScreenCapture() {
   const int macos_version = base::mac::MacOSVersion();

@@ -52,9 +52,7 @@ constexpr int kOverlayScrollbarCenterPatchSize = 1;
 const SkScalar kScrollbarArrowRadius = 1;
 // Killswitch for the changed behavior (only drawing rounded corner for form
 // controls). Should remove after M120 ships.
-BASE_FEATURE(kNewScrollbarArrowRadius,
-             "NewScrollbarArrowRadius",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNewScrollbarArrowRadius, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
