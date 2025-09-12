@@ -157,12 +157,8 @@ bool IsV3() {
 }
 
 - (void)disconnect {
-  if (_personalDataManager && _personalDataManagerObserver.get()) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-    _personalDataManagerObserver.reset();
-  }
-
   _scopedPersonalDataManagerObservation.reset();
+  _personalDataManagerObserver.reset();
 
   _webStateListObservation.reset();
   _webStateListObserver.reset();
