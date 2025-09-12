@@ -481,7 +481,7 @@ class DenseSet {
   constexpr ~DenseSet() = default;
 
   // Returns a set containing all valid values from `kMinValue` to `kMaxValue`.
-  static constexpr DenseSet all() {
+  static consteval DenseSet all() {
     DenseSet set;
     for (Index x = value_to_index(Traits::kMinValue);
          x <= value_to_index(Traits::kMaxValue); ++x) {
