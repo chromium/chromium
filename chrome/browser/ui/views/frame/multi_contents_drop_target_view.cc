@@ -23,6 +23,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -67,9 +68,12 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
                                    views::MaximumFlexSizeRule::kUnbounded));
 
   auto inner_container = std::make_unique<views::View>();
-
-  inner_container->SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSurface3, kInnerCornerRadius));
+  inner_container->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  inner_container->layer()->SetName(
+      "MultiContentsDropTargetView/InnerContainer");
+  inner_container->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kInnerCornerRadius));
+  inner_container->layer()->SetIsFastRoundedCorner(true);
 
   inner_container_layout_ =
       &inner_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -85,9 +89,18 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
 
   icon_view_ =
       inner_container->AddChildView(std::make_unique<views::ImageView>());
+  icon_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
+  icon_view_->layer()->SetFillsBoundsOpaquely(false);
+  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      kAddCircleIcon, ui::kColorSysPrimary, kIconSize));
+
   label_ = inner_container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL)));
+  label_->SetPaintToLayer(ui::LAYER_TEXTURED);
+  label_->layer()->SetFillsBoundsOpaquely(false);
+  label_->SetEnabledColor(ui::kColorSysPrimary);
   label_->SetElideBehavior(gfx::NO_ELIDE);
+  label_->SetSubpixelRenderingEnabled(false);
 
   // This ensures that the height of the label is collapsed whenever its
   // width doesn't fit in the available space. This ensures the icon is
@@ -260,12 +273,8 @@ bool MultiContentsDropTargetView::ShouldShowAnimation() const {
 
 void MultiContentsDropTargetView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const SkColor primary_color =
-      GetColorProvider()->GetColor(ui::kColorSysPrimary);
-  const ui::ImageModel icon_image_model =
-      ui::ImageModel::FromVectorIcon(kAddCircleIcon, primary_color, kIconSize);
-  icon_view_->SetImage(icon_image_model);
-  label_->SetEnabledColor(primary_color);
+  inner_container_->layer()->SetColor(
+      GetColorProvider()->GetColor(ui::kColorSysSurface3));
 }
 
 bool MultiContentsDropTargetView::GetDropFormats(

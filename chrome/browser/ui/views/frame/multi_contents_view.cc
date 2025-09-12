@@ -78,17 +78,17 @@ MultiContentsView::MultiContentsView(
           *drop_target_view_, *delegate_);
 
   contents_separators_.top_separator =
-      AddChildView(std::make_unique<ContentsSeparator>());
+      AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());
   contents_separators_.top_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTopEdgeElementId);
 
   contents_separators_.leading_separator =
-      AddChildView(std::make_unique<ContentsSeparator>());
+      AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());
   contents_separators_.leading_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorLeadingEdgeElementId);
 
   contents_separators_.trailing_separator =
-      AddChildView(std::make_unique<ContentsSeparator>());
+      AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());
   contents_separators_.trailing_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTrailingEdgeElementId);
 

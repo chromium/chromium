@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_SEPARATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_SEPARATOR_H_
 
+#include <memory>
+
 #include "ui/views/view.h"
 
 // BrowserView uses a solid background instead of a views::Separator. The latter
@@ -15,7 +17,14 @@ class ContentsSeparator : public views::View {
   METADATA_HEADER(ContentsSeparator, views::View)
 
  public:
-  ContentsSeparator();
+  static std::unique_ptr<ContentsSeparator> CreateLayerBasedContentsSeparator();
+  static std::unique_ptr<ContentsSeparator> CreateContentsSeparator();
+
+ private:
+  explicit ContentsSeparator(bool create_layer);
+
+  // views::View:
+  void OnThemeChanged() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_SEPARATOR_H_

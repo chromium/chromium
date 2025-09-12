@@ -84,7 +84,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_view_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
+        AddChildView(ContentsSeparator::CreateContentsSeparator());
     new_tab_footer_view_separator_->SetVisible(false);
     new_tab_footer_view_separator_->SetProperty(
         views::kElementIdentifierKey, kFooterWebViewSeparatorElementId);

@@ -1002,8 +1002,8 @@ BrowserView::BrowserView(Browser* browser)
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
 
-  top_container_separator_ =
-      top_container_->AddChildView(std::make_unique<ContentsSeparator>());
+  top_container_separator_ = top_container_->AddChildView(
+      ContentsSeparator::CreateContentsSeparator());
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
 
@@ -1019,13 +1019,13 @@ BrowserView::BrowserView(Browser* browser)
   // `MultiContentsView` owns separators when `SideBySide` is enabled.
   if (!multi_contents_view_) {
     right_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
+        AddChildView(ContentsSeparator::CreateContentsSeparator());
     right_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kRightAlignedSidePanelSeparatorViewElementId);
 
     left_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
+        AddChildView(ContentsSeparator::CreateContentsSeparator());
     left_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kLeftAlignedSidePanelSeparatorViewElementId);
