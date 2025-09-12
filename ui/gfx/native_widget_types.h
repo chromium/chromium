@@ -120,8 +120,13 @@ using NativeCursor = void*;
 using NativeView = base::apple::WeakUIView;
 using NativeWindow = base::apple::WeakUIWindow;
 #if BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(IS_IOS_TVOS)
+using NativeEvent =
+    std::variant<base::apple::OwnedUIEvent, base::apple::OwnedUIPress>;
+#else
 using NativeEvent =
     std::variant<base::apple::OwnedUIEvent, base::apple::OwnedBEKeyEntry>;
+#endif  // BUILDFLAG(IS_IOS_TVOS)
 #else
 using NativeEvent = base::apple::OwnedUIEvent;
 #endif  // BUILDFLAG(USE_BLINK)

@@ -4,7 +4,6 @@
 
 #import "ui/events/keycodes/keyboard_code_conversion_ios.h"
 
-#import <BrowserEngineKit/BrowserEngineKit.h>
 #import <UIKit/UIKit.h>
 
 #include <algorithm>
@@ -19,8 +18,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "build/build_config.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+#import <BrowserEngineKit/BrowserEngineKit.h>
+#endif
 
 namespace ui {
 
@@ -209,6 +213,87 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_IOS_TVOS)
+KeyboardCode KeyboardCodeFromUIKeyCode(UIKeyboardHIDUsage key_code) {
+  // Refer to:
+  // https://developer.apple.com/documentation/uikit/uikeyboardhidusage?language=objc
+  constexpr auto kMap =
+      base::MakeFixedFlatMap<UIKeyboardHIDUsage, KeyboardCode>(
+          {{UIKeyboardHIDUsageKeyboardLeftArrow, KeyboardCode::VKEY_LEFT},
+           {UIKeyboardHIDUsageKeyboardRightArrow, KeyboardCode::VKEY_RIGHT},
+           {UIKeyboardHIDUsageKeyboardUpArrow, KeyboardCode::VKEY_UP},
+           {UIKeyboardHIDUsageKeyboardDownArrow, KeyboardCode::VKEY_DOWN},
+           {UIKeyboardHIDUsageKeyboardHome, KeyboardCode::VKEY_HOME},
+           {UIKeyboardHIDUsageKeyboardEnd, KeyboardCode::VKEY_END},
+           {UIKeyboardHIDUsageKeyboardDeleteForward, KeyboardCode::VKEY_DELETE},
+           {UIKeyboardHIDUsageKeyboardDeleteOrBackspace,
+            KeyboardCode::VKEY_BACK},
+           {UIKeyboardHIDUsageKeyboardEscape, KeyboardCode::VKEY_ESCAPE},
+           {UIKeyboardHIDUsageKeyboardInsert, KeyboardCode::VKEY_INSERT},
+           {UIKeyboardHIDUsageKeyboardReturn, KeyboardCode::VKEY_RETURN},
+           {UIKeyboardHIDUsageKeyboardTab, KeyboardCode::VKEY_TAB},
+           {UIKeyboardHIDUsageKeyboardF1, KeyboardCode::VKEY_F1},
+           {UIKeyboardHIDUsageKeyboardF2, KeyboardCode::VKEY_F2},
+           {UIKeyboardHIDUsageKeyboardF3, KeyboardCode::VKEY_F3},
+           {UIKeyboardHIDUsageKeyboardF4, KeyboardCode::VKEY_F4},
+           {UIKeyboardHIDUsageKeyboardF5, KeyboardCode::VKEY_F5},
+           {UIKeyboardHIDUsageKeyboardF6, KeyboardCode::VKEY_F6},
+           {UIKeyboardHIDUsageKeyboardF7, KeyboardCode::VKEY_F7},
+           {UIKeyboardHIDUsageKeyboardF8, KeyboardCode::VKEY_F8},
+           {UIKeyboardHIDUsageKeyboardF9, KeyboardCode::VKEY_F9},
+           {UIKeyboardHIDUsageKeyboardF10, KeyboardCode::VKEY_F10},
+           {UIKeyboardHIDUsageKeyboardF11, KeyboardCode::VKEY_F11},
+           {UIKeyboardHIDUsageKeyboardF12, KeyboardCode::VKEY_F12},
+           {UIKeyboardHIDUsageKeyboardF13, KeyboardCode::VKEY_F13},
+           {UIKeyboardHIDUsageKeyboardF14, KeyboardCode::VKEY_F14},
+           {UIKeyboardHIDUsageKeyboardF15, KeyboardCode::VKEY_F15},
+           {UIKeyboardHIDUsageKeyboardF16, KeyboardCode::VKEY_F16},
+           {UIKeyboardHIDUsageKeyboardF17, KeyboardCode::VKEY_F17},
+           {UIKeyboardHIDUsageKeyboardF18, KeyboardCode::VKEY_F18},
+           {UIKeyboardHIDUsageKeyboardF19, KeyboardCode::VKEY_F19},
+           {UIKeyboardHIDUsageKeyboardF20, KeyboardCode::VKEY_F20},
+           {UIKeyboardHIDUsageKeyboardF21, KeyboardCode::VKEY_F21},
+           {UIKeyboardHIDUsageKeyboardF22, KeyboardCode::VKEY_F22},
+           {UIKeyboardHIDUsageKeyboardF23, KeyboardCode::VKEY_F23},
+           {UIKeyboardHIDUsageKeyboardF24, KeyboardCode::VKEY_F24}});
+
+  auto it = kMap.find(key_code);
+  if (it != kMap.end()) {
+    return it->second;
+  }
+  return KeyboardCode::VKEY_UNKNOWN;
+}
+
+DomCode DomCodeFromUIPress(UIPress* press, KeyboardCode key_code) {
+  // TODO(https://crbug.com/391914246): Fix the assumption of the keyboard
+  // layout being the US layout.
+  DomKey dom_key = DomKeyFromKeyboardCode(press, key_code);
+  return ui::UsLayoutDomKeyToDomCode(dom_key);
+}
+
+DomKey DomKeyFromKeyboardCode(UIPress* press, KeyboardCode key_code) {
+  // TODO(https://crbug.com/391914246): Need to complete the implementation.
+  NSString* characters =
+      press.key.characters.precomposedStringWithCanonicalMapping;
+  NSString* prefix_to_remove = @"UIKeyboardHIDUsageKeyboard";
+  // Remove `prefix_to_remove` from `characters` in order to get a character
+  // that can be utilized for detecting DomKey.
+  NSString* updated_characters =
+      [characters stringByReplacingOccurrencesOfString:prefix_to_remove
+                                            withString:@""];
+  char32_t character = ReadLastUnicodeCharacter(updated_characters);
+  // Get DomKey from `character` only when the string length after removing the
+  // prefix is 1. (e.g., the last character, 'A', in
+  // "UIKeyboardHIDUsageKeyboardA" is useful to get DomKey from character code,
+  // but the last character, 'w', in "UIKeyboardHIDUsageKeyboardUpArrow" for the
+  // up arrow key is not useful for getting DomKey.)
+  if ([updated_characters length] == 1 && IsDomKeyUnicodeCharacter(character)) {
+    return DomKeyFromNsCharCode(character);
+  }
+  // Map non-character keys based on the physical key identifier.
+  return DomKeyFromKeyCode(key_code);
+}
+#else
 DomCode DomCodeFromBEKeyEntry(BEKeyEntry* entry) {
   // TODO(https://crbug.com/388320178): Fix the assumption of the keyboard
   // layout being the US layout.
@@ -232,5 +317,6 @@ DomKey DomKeyFromBEKeyEntry(BEKeyEntry* entry) {
   // Map non-character keys based on the physical key identifier.
   return DomKeyFromKeyCode(entry.key.keyCode);
 }
+#endif  // BUILDFLAG(IS_IOS_TVOS)
 
 }  // namespace ui

@@ -192,12 +192,10 @@ component("events_base") {
   }
 
   if (is_ios && use_blink) {
-    if (target_platform == "iphoneos") {
-      sources += [
-        "keycodes/keyboard_code_conversion_ios.h",
-        "keycodes/keyboard_code_conversion_ios.mm",
-      ]
-    }
+    sources += [
+      "keycodes/keyboard_code_conversion_ios.h",
+      "keycodes/keyboard_code_conversion_ios.mm",
+    ]
   }
 
   if (is_fuchsia) {

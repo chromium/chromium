@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
 
+#include "base/apple/owned_objc.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -278,8 +279,13 @@ NavigationDirection navigationDirectionFromPressType(UIPressType type) {
   for (UIPress* press in presses) {
     NavigationDirection direction =
         navigationDirectionFromPressType(press.type);
+    // TODO(391914246): Handle other buttons such as UIPressTypePlayPause from
+    // the remote control.
     if (direction == kNone) {
-      [super pressesBegan:presses withEvent:event];
+      // Since UIPress has key information from the physical keyboard,
+      // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
+      [self sendKeyboardEvent:press
+                    eventType:blink::WebInputEvent::Type::kKeyDown];
       continue;
     }
     [self sendKeyEventWithDirection:direction
@@ -292,13 +298,29 @@ NavigationDirection navigationDirectionFromPressType(UIPressType type) {
   for (UIPress* press in presses) {
     NavigationDirection direction =
         navigationDirectionFromPressType(press.type);
+    // TODO(391914246): Handle other buttons such as UIPressTypePlayPause from
+    // the remote control.
     if (direction == kNone) {
-      [super pressesEnded:presses withEvent:event];
+      // Since UIPress has key information from the physical keyboard,
+      // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
+      [self sendKeyboardEvent:press
+                    eventType:blink::WebInputEvent::Type::kKeyUp];
       continue;
     }
     [self sendKeyEventWithDirection:direction
                           eventType:blink::WebInputEvent::Type::kKeyUp];
   }
+}
+
+// Helper method to send the keyboard event.
+- (void)sendKeyboardEvent:(UIPress*)press
+                eventType:(blink::WebInputEvent::Type)type {
+  input::NativeWebKeyboardEvent native_event =
+      input::NativeWebKeyboardEvent(base::apple::OwnedUIPress(press));
+  if (!blink::WebInputEvent::IsKeyboardEventType(native_event.GetType())) {
+    return;
+  }
+  _view->SendKeyEvent(native_event);
 }
 
 // Helper method to generate WebKeyboardEvent with `direction`.
