@@ -148,30 +148,6 @@ CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              delegate) {}
 
-CanvasResourceProviderBitmap::~CanvasResourceProviderBitmap() = default;
-
-bool CanvasResourceProviderBitmap::IsValid() const {
-  return GetSkSurface();
-}
-bool CanvasResourceProviderBitmap::IsAccelerated() const {
-  return false;
-}
-bool CanvasResourceProviderBitmap::SupportsDirectCompositing() const {
-  return false;
-}
-bool CanvasResourceProviderBitmap::IsSingleBuffered() const {
-  return false;
-}
-void CanvasResourceProviderBitmap::ExternalCanvasDrawHelper(
-    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
-  draw_callback(Canvas());
-}
-
-scoped_refptr<CanvasResource>
-CanvasResourceProviderBitmap::ProduceCanvasResource(FlushReason) {
-  return nullptr;  // Does not support direct compositing
-}
-
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
     FlushReason reason,
     ImageOrientation orientation) {

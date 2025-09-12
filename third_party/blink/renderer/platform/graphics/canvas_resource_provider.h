@@ -516,22 +516,27 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
                                const gfx::ColorSpace& color_space,
                                Delegate* delegate);
 
-  ~CanvasResourceProviderBitmap() override;
+  ~CanvasResourceProviderBitmap() override = default;
 
-  bool IsValid() const override;
-  bool IsAccelerated() const final;
-  bool SupportsDirectCompositing() const override;
-  bool IsSingleBuffered() const override;
+  bool IsValid() const override { return GetSkSurface(); }
+  bool IsAccelerated() const override { return false; }
+  bool SupportsDirectCompositing() const override { return false; }
+  bool IsSingleBuffered() const override { return false; }
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
-      override;
+      override {
+    draw_callback(Canvas());
+  }
 
  private:
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
+  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
+    // Production of CanvasResources is used with direct compositing, which is
+    // not supported by this class.
+    return nullptr;
+  }
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation orientation) override;
-
   sk_sp<SkSurface> CreateSkSurface() const override;
 };
 
