@@ -151,17 +151,24 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     return batch;
   }
 
+  const bool is_sync_flight_reservations_enabled =
+      IsSyncWalletFlightReservationsEnabled();
+
   const bool is_sync_vehicle_registrations_enabled =
       IsSyncWalletVehicleRegistrationsEnabled();
 
   for (const EntityInstance& instance : GetEntityTable()->GetEntityInstances(
            EntityInstance::RecordType::kServerWallet)) {
+    if (instance.type().name() == EntityTypeName::kFlightReservation &&
+        is_sync_flight_reservations_enabled) {
+      const std::string& id = instance.guid().value();
+      batch->Put(id, CreateEntityDataFromEntityInstance(instance));
+    }
     if (instance.type().name() == EntityTypeName::kVehicle &&
         is_sync_vehicle_registrations_enabled) {
       const std::string& id = instance.guid().value();
       batch->Put(id, CreateEntityDataFromEntityInstance(instance));
     }
-    // TODO(crbug.com/436547381) Include flight reservations.
   }
 
   return batch;

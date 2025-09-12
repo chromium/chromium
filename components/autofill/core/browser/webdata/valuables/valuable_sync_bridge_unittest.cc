@@ -512,6 +512,19 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
   EXPECT_THAT(entities, ElementsAre(server_vehicle));
 }
 
+// Tests that `GetAllDataForDebugging()` returns all flight reservations.
+TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForFlightReservations) {
+  const EntityInstance flight1 = GetServerFlightEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance flight2 = GetServerFlightEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+  AddEntities({flight1, flight2});
+
+  std::vector<EntityInstance> entities =
+      ExtractEntitiesFromDataBatch(bridge().GetAllDataForDebugging());
+  EXPECT_THAT(entities, ElementsAre(flight1, flight2));
+}
+
 // Tests that `SetEntities()` does not add vehicle entities when the vehicle
 // sync feature is disabled.
 TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
