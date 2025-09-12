@@ -1373,6 +1373,21 @@
             ]
         }
     ],
+    "AppBundlePromoMagicStackStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppBundlePromoEphemeralCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [

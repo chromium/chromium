@@ -5996,6 +5996,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "ios-app-bundle-promo-magic-stack",
+    "owners": ["ericekey@google.com", "bling-pandamonium@google.com"],
+    "expiry_milestone": 144
+  },
+  {
     "name": "ios-best-features-screen",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 138
@@ -6167,7 +6172,7 @@
   },
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
-    "owners": [ "ericekey@google.com", "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 144
   },
   {

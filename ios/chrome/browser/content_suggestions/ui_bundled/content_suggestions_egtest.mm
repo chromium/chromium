@@ -130,6 +130,15 @@ void TapMagicStackEditButton() {
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
   }
+
+  // TODO(crbug.com/444436598): Update EG tests so that they can pass without
+  // needing to disable the App Bundle promo Magic Stack card.
+  if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
+      [self isRunningTest:@selector(testMagicStackLongPressHide)]) {
+    config.features_disabled.push_back(
+        segmentation_platform::features::kAppBundlePromoEphemeralCard);
+  }
+
   return config;
 }
 
