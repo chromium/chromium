@@ -75,6 +75,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   NativeThemeWin();
   ~NativeThemeWin() override;
 
+  void OnToolkitSettingsChanged(bool force_notify) override;
+
   PreferredColorScheme CalculatePreferredColorScheme() const;
   void set_in_dark_mode_for_testing(bool in_dark_mode) {
     in_dark_mode_ = in_dark_mode;
@@ -192,16 +194,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   HANDLE GetThemeHandle(ThemeName theme_name) const;
 
   void RegisterThemeRegkeyObserver();
-  void RegisterColorFilteringRegkeyObserver();
   void UpdateDarkModeStatus();
-  void UpdatePrefersReducedTransparency();
-  void UpdateInvertedColors();
 
-  // Dark Mode/Transparency registry key.
+  // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
-
-  // Inverted colors registry key
-  base::win::RegKey hkcu_color_filtering_regkey_;
 
   // A cache of open theme handles.
   mutable HANDLE theme_handles_[LAST];

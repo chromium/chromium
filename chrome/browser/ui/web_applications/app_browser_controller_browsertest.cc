@@ -10,7 +10,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace web_app {
 
@@ -25,11 +27,11 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
 
   // Enable high contrast theme.
   static constexpr SkColor kWindowColor = SK_ColorBLUE;
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  const std::map<ui::NativeTheme::SystemThemeColor, SkColor> kSystemColors(
-      {{ui::NativeTheme::SystemThemeColor::kWindow, kWindowColor}});
-  native_theme->set_system_colors(kSystemColors);
-  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
+  ui::MockOsSettingsProvider os_settings_provider;
+  os_settings_provider.SetColor(ui::OsSettingsProvider::ColorId::kWindow,
+                                kWindowColor);
+  ui::NativeTheme::GetInstanceForNativeUi()->SetPreferredContrast(
+      ui::NativeTheme::PreferredContrast::kMore);
   EXPECT_EQ(controller->GetThemeColor(), kWindowColor);
 }
 

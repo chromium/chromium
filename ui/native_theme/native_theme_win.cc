@@ -28,7 +28,6 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -62,6 +61,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace ui {
 
@@ -69,12 +69,12 @@ namespace {
 
 void SetCheckerboardShader(SkPaint* paint, const RECT& align_rect) {
   // Create a 2x2 checkerboard pattern using the 3D face and highlight colors.
-  const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
-  using enum NativeTheme::SystemThemeColor;
-  const SkColor face = native_theme->GetSystemThemeColor(kButtonFace)
+  const auto& os_settings_provider = OsSettingsProvider::Get();
+  using enum OsSettingsProvider::ColorId;
+  const SkColor face = os_settings_provider.Color(kButtonFace)
                            .value_or(SkColorSetRGB(0xC0, 0xC0, 0xC0));
-  const SkColor highlight = native_theme->GetSystemThemeColor(kButtonHighlight)
-                                .value_or(SK_ColorWHITE);
+  const SkColor highlight =
+      os_settings_provider.Color(kButtonHighlight).value_or(SK_ColorWHITE);
   SkColor buffer[] = {face, highlight, highlight, face};
   // Confusing bit: we first create a temporary bitmap with our desired pattern,
   // then copy it to another bitmap.  The temporary bitmap doesn't take
@@ -165,22 +165,7 @@ base::win::RegKey OpenThemeRegKey(REGSAM access) {
   return hkcu_themes_regkey;
 }
 
-base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
-  base::win::RegKey hkcu_color_filtering_regkey;
-  // Validity is checked at time-of-use.
-  std::ignore = hkcu_color_filtering_regkey.Open(
-      HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering", access);
-  return hkcu_color_filtering_regkey;
-}
-
 }  // namespace
-
-// static
-bool NativeTheme::SystemDarkModeSupported() {
-  static bool system_supports_dark_mode =
-      ([]() { return OpenThemeRegKey(KEY_READ).Valid(); })();
-  return system_supports_dark_mode;
-}
 
 // static
 void NativeThemeWin::CloseHandles() {
@@ -288,26 +273,14 @@ NativeThemeWin::NativeThemeWin() {
       if (!IsForcedDarkMode() && !IsForcedHighContrast()) {
         UpdateDarkModeStatus();
       }
-      UpdatePrefersReducedTransparency();
       if (observers_can_operate) {
         RegisterThemeRegkeyObserver();
-      }
-    }
-
-    hkcu_color_filtering_regkey_ =
-        OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_color_filtering_regkey_.Valid()) {
-      UpdateInvertedColors();
-      if (observers_can_operate) {
-        RegisterColorFilteringRegkeyObserver();
       }
     }
 
     if (!IsForcedHighContrast()) {
       set_forced_colors(IsUsingHighContrastThemeInternal());
     }
-
-    UpdateSystemColors();
   }
 
   set_preferred_color_scheme(CalculatePreferredColorScheme());
@@ -340,6 +313,11 @@ NativeThemeWin::~NativeThemeWin() {
   // CloseHandles();
 }
 
+void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
+  CloseHandles();
+  NativeTheme::OnToolkitSettingsChanged(force_notify);
+}
+
 bool NativeThemeWin::IsUsingHighContrastThemeInternal() const {
   HIGHCONTRAST result;
   result.cbSize = sizeof(HIGHCONTRAST);
@@ -360,12 +338,10 @@ void NativeThemeWin::OnWndProc(HWND hwnd,
                                UINT message,
                                WPARAM wparam,
                                LPARAM lparam) {
-  if (message != WM_SYSCOLORCHANGE &&
-      (message != WM_SETTINGCHANGE || wparam != SPI_SETHIGHCONTRAST)) {
+  if (message != WM_SETTINGCHANGE || wparam != SPI_SETHIGHCONTRAST) {
     return;
   }
 
-  UpdateSystemColors();
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
   }
@@ -379,26 +355,6 @@ void NativeThemeWin::OnAccentColorMaybeChanged() {
   if (user_color() != accent_color) {
     set_user_color(accent_color);
     NotifyOnNativeThemeUpdated();
-  }
-}
-
-void NativeThemeWin::UpdateSystemColors() {
-  static constexpr auto kColors =
-      std::to_array<std::pair<SystemThemeColor, ui::ColorId>>(
-          {{SystemThemeColor::kButtonFace, kColorNativeBtnFace},
-           {SystemThemeColor::kButtonHighlight, kColorNativeBtnHighlight},
-           {SystemThemeColor::kButtonText, kColorNativeBtnText},
-           {SystemThemeColor::kGrayText, kColorNativeGrayText},
-           {SystemThemeColor::kHighlight, kColorNativeHighlight},
-           {SystemThemeColor::kHighlightText, kColorNativeHighlightText},
-           {SystemThemeColor::kHotlight, kColorNativeHotlight},
-           {SystemThemeColor::kMenuHighlight, kColorNativeMenuHilight},
-           {SystemThemeColor::kScrollbar, kColorNativeScrollbar},
-           {SystemThemeColor::kWindow, kColorNativeWindow},
-           {SystemThemeColor::kWindowText, kColorNativeWindowText}});
-  const auto sys_colors = GetCurrentSysColors();
-  for (const auto& entry : kColors) {
-    system_colors_[entry.first] = sys_colors.at(entry.second);
   }
 }
 
@@ -670,7 +626,8 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
     // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
     // LAB lightness. The Canvas color is mapped to the Window system color.
     // https://www.w3.org/TR/css-color-adjust-1/#forced
-    if (const auto bg_color = GetSystemThemeColor(SystemThemeColor::kWindow)) {
+    if (const auto bg_color = OsSettingsProvider::Get().Color(
+            OsSettingsProvider::ColorId::kWindow)) {
       const SkColor srgb_legacy = bg_color.value();
       const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
                                                    SkColorGetG(srgb_legacy),
@@ -721,8 +678,10 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   // [1]
   // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
   // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
-  if (const auto bg_color = GetSystemThemeColor(SystemThemeColor::kWindow),
-      fg_color = GetSystemThemeColor(SystemThemeColor::kWindowText);
+  const auto& os_settings_provider = OsSettingsProvider::Get();
+  using enum OsSettingsProvider::ColorId;
+  if (const auto bg_color = os_settings_provider.Color(kWindow),
+      fg_color = os_settings_provider.Color(kWindowText);
       bg_color.has_value() && fg_color.has_value()) {
     const float contrast_ratio =
         color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
@@ -971,10 +930,11 @@ void NativeThemeWin::PaintScrollbarTrackClassic(
     HDC hdc,
     RECT* rect,
     const ScrollbarTrackExtraParams& extra) const {
-  if ((system_colors_[SystemThemeColor::kScrollbar] !=
-       system_colors_[SystemThemeColor::kButtonFace]) &&
-      (system_colors_[SystemThemeColor::kScrollbar] !=
-       system_colors_[SystemThemeColor::kWindow])) {
+  const auto& os_settings_provider = OsSettingsProvider::Get();
+  using enum OsSettingsProvider::ColorId;
+  if (const auto scrollbar_color = os_settings_provider.Color(kScrollbar);
+      (scrollbar_color != os_settings_provider.Color(kButtonFace)) &&
+      (scrollbar_color != os_settings_provider.Color(kWindow))) {
     FillRect(hdc, rect, reinterpret_cast<HBRUSH>(COLOR_SCROLLBAR + 1));
   } else {
     SkPaint paint;
@@ -1598,9 +1558,10 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
       handle = OpenThemeData(nullptr, L"Combobox");
       break;
     case SCROLLBAR:
-      handle = OpenThemeData(nullptr, base::win::IsDarkModeAvailable()
-                                          ? L"Explorer::Scrollbar"
-                                          : L"Scrollbar");
+      handle = OpenThemeData(
+          nullptr, OsSettingsProvider::Get().DarkColorSchemeAvailable()
+                       ? L"Explorer::Scrollbar"
+                       : L"Scrollbar");
       break;
     case STATUS:
       handle = OpenThemeData(nullptr, L"Status");
@@ -1636,23 +1597,9 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateDarkModeStatus();
-        native_theme->UpdatePrefersReducedTransparency();
         // RegKey::StartWatching only provides one notification. Reregistration
         // is required to get future notifications.
         native_theme->RegisterThemeRegkeyObserver();
-      },
-      base::Unretained(this)));
-}
-
-void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
-  DCHECK(hkcu_color_filtering_regkey_.Valid());
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
-  hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
-      [](NativeThemeWin* native_theme) {
-        native_theme->UpdateInvertedColors();
-        // RegKey::StartWatching only provides one notification. Reregistration
-        // is required to get future notifications.
-        native_theme->RegisterColorFilteringRegkeyObserver();
       },
       base::Unretained(this)));
 }
@@ -1666,41 +1613,6 @@ void NativeThemeWin::UpdateDarkModeStatus() {
     in_dark_mode_ = (apps_use_light_theme == 0);
   }
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  CloseHandlesInternal();
-  NotifyOnNativeThemeUpdated();
-}
-
-void NativeThemeWin::UpdatePrefersReducedTransparency() {
-  bool prefers_reduced_transparency = false;
-  if (hkcu_themes_regkey_.Valid()) {
-    DWORD enable_transparency = 1;
-    hkcu_themes_regkey_.ReadValueDW(L"EnableTransparency",
-                                    &enable_transparency);
-    prefers_reduced_transparency = (enable_transparency == 0);
-  }
-  set_prefers_reduced_transparency(prefers_reduced_transparency);
-  CloseHandlesInternal();
-  NotifyOnNativeThemeUpdated();
-}
-
-void NativeThemeWin::UpdateInvertedColors() {
-  bool inverted_colors = false;
-  if (hkcu_color_filtering_regkey_.Valid()) {
-    DWORD active = 0;
-    hkcu_color_filtering_regkey_.ReadValueDW(L"Active", &active);
-    if (active == 1) {
-      // 0 = Greyscale
-      // 1 = Invert
-      // 2 = Greyscale Inverted
-      // 3 = Deuteranopia
-      // 4 = Protanopia
-      // 5 = Tritanopia
-      DWORD filter_type = 0;
-      hkcu_color_filtering_regkey_.ReadValueDW(L"FilterType", &filter_type);
-      inverted_colors = (filter_type == 1);
-    }
-  }
-  set_inverted_colors(inverted_colors);
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }

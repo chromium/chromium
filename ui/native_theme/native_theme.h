@@ -413,22 +413,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // when the part is resized.
   virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
 
-  enum class SystemThemeColor {
-    kNotSupported,
-    kButtonFace,
-    kButtonHighlight,
-    kButtonText,
-    kGrayText,
-    kHighlight,
-    kHighlightText,
-    kHotlight,
-    kMenuHighlight,
-    kScrollbar,
-    kWindow,
-    kWindowText,
-    kMaxValue = kWindowText,
-  };
-
   // Returns the key corresponding to this native theme object.
   // Use `use_custom_frame` == true when Chromium renders the titlebar.
   // False when the window manager renders the titlebar (currently GTK only).
@@ -440,9 +424,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // web, respectively.
   static NativeTheme* GetInstanceForNativeUi();
   static NativeTheme* GetInstanceForWeb();
-
-  // Whether OS-level dark mode is available in the current OS.
-  static bool SystemDarkModeSupported();
 
   // Registers this instance as an observer of `OsSettingsProvider` changes.
   // This should not be called on an instance marked as the "associated web
@@ -489,16 +470,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // invert)
   bool inverted_colors() const { return inverted_colors_; }
 
-  const std::map<SystemThemeColor, SkColor>& system_colors() const {
-    return system_colors_;
-  }
-
-  std::optional<SkColor> GetSystemThemeColor(
-      SystemThemeColor theme_color) const;
-
-  bool HasDifferentSystemColors(
-      const std::map<SystemThemeColor, SkColor>& colors) const;
-
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
@@ -507,11 +478,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   void set_prefers_reduced_transparency(bool prefers_reduced_transparency) {
     prefers_reduced_transparency_ = prefers_reduced_transparency;
   }
-  void set_inverted_colors(bool inverted_colors) {
-    inverted_colors_ = inverted_colors;
-  }
   void SetPreferredContrast(PreferredContrast preferred_contrast);
-  void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
   ui::SystemTheme system_theme() const { return system_theme_; }
 
   // Set the user_color for ColorProviderKey.
@@ -578,8 +545,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   virtual PreferredContrast CalculatePreferredContrast() const;
 
   // Called when toolkit settings change. Updates affected variables. If
-  // anything changes, notifies observers.
-  virtual void OnToolkitSettingsChanged();
+  // anything changes or `force_notify` is set, notifies observers.
+  virtual void OnToolkitSettingsChanged(bool force_notify);
 
   // Instructs this theme instance to mirror various appearance settings to
   // `associated_web_instance` when they change.
@@ -588,8 +555,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Updates the settings of any `associated_web_instance_` to match this
   // instance's current settings. Returns whether anything was changed.
   bool UpdateWebInstance() const;
-
-  mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
   // Updates web instance and notifies observers something has changed.

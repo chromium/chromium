@@ -8,7 +8,9 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/os_settings_provider.h"
 
 namespace ui {
@@ -23,12 +25,24 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
   ~MockOsSettingsProvider() override;
 
   // OsSettingsProvider:
+  bool DarkColorSchemeAvailable() const override;
+  bool PrefersReducedTransparency() const override;
+  bool PrefersInvertedColors() const override;
+  std::optional<SkColor> Color(ColorId color_id) const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
   // Setters for all the above settings.
+  void SetDarkColorSchemeAvailable(bool dark_color_scheme_available);
+  void SetPrefersReducedTransparency(bool prefers_reduced_transparency);
+  void SetPrefersInvertedColors(bool prefers_inverted_colors);
+  void SetColor(ColorId color_id, SkColor color);
   void SetCaretBlinkInterval(base::TimeDelta caret_blink_interval);
 
  private:
+  bool dark_color_scheme_available_ = true;
+  bool prefers_reduced_transparency_ = false;
+  bool prefers_inverted_colors_ = false;
+  base::flat_map<ColorId, SkColor> colors_;
   base::TimeDelta caret_blink_interval_ = kDefaultCaretBlinkInterval;
 };
 

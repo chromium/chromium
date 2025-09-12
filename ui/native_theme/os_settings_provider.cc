@@ -19,7 +19,9 @@
 
 // `OsSettingsProviderImpl` is an alias to a forward-declared type; to construct
 // it in `Get()` below, we must have the full type definition.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/native_theme/os_settings_provider_android.h"
+#elif BUILDFLAG(IS_MAC)
 #include "ui/native_theme/os_settings_provider_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
@@ -52,7 +54,9 @@ std::forward_list<OsSettingsProvider*>& GetOsSettingsProviders(
 // not a non-static member of `OsSettingsProvider` since callers of
 // `RegisterCallback` should be agnostic to changes in the active provider (e.g.
 // when tests override it).
-base::RepeatingClosureList* GetOsSettingsChangedCallbacks() {
+using CallbackList =
+    base::RepeatingCallbackList<OsSettingsProvider::SettingsChangedCallbackT>;
+CallbackList* GetOsSettingsChangedCallbacks() {
   // All `OsSettingsProvider`s must access on the same thread to avoid data
   // races on the list below.
 #if DCHECK_IS_ON()  // Guard to avoid assertion failure from `NoDestructor`.
@@ -60,7 +64,7 @@ base::RepeatingClosureList* GetOsSettingsChangedCallbacks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(*s_sequence_checker);
 #endif
 
-  static base::NoDestructor<base::RepeatingClosureList> s_callbacks;
+  static base::NoDestructor<CallbackList> s_callbacks;
   return s_callbacks.get();
 }
 
@@ -125,18 +129,34 @@ OsSettingsProvider& OsSettingsProvider::Get() {
 // static
 base::CallbackListSubscription
 OsSettingsProvider::RegisterOsSettingsChangedCallback(
-    base::RepeatingClosure cb) {
+    base::RepeatingCallback<SettingsChangedCallbackT> cb) {
   return GetOsSettingsChangedCallbacks()->Add(std::move(cb));
+}
+
+bool OsSettingsProvider::DarkColorSchemeAvailable() const {
+  return true;
+}
+
+bool OsSettingsProvider::PrefersReducedTransparency() const {
+  return false;
+}
+
+bool OsSettingsProvider::PrefersInvertedColors() const {
+  return false;
+}
+
+std::optional<SkColor> OsSettingsProvider::Color(ColorId color_id) const {
+  return std::nullopt;
 }
 
 base::TimeDelta OsSettingsProvider::CaretBlinkInterval() const {
   return kDefaultCaretBlinkInterval;
 }
 
-void OsSettingsProvider::NotifyOnSettingsChanged() {
+void OsSettingsProvider::NotifyOnSettingsChanged(bool force_notify) {
   // Don't notify if this provider isn't the active one.
   if (&Get() == this) {
-    GetOsSettingsChangedCallbacks()->Notify();
+    GetOsSettingsChangedCallbacks()->Notify(force_notify);
   }
 }
 

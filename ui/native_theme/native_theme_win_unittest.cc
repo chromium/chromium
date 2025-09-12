@@ -9,19 +9,16 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 namespace ui {
 
 using ColorMode = ColorProviderKey::ColorMode;
 using PrefScheme = NativeTheme::PreferredColorScheme;
-using SystemThemeColor = NativeTheme::SystemThemeColor;
 
 class TestNativeThemeWin : public NativeThemeWin {
  public:
-  TestNativeThemeWin() = default;
-  TestNativeThemeWin& operator=(const TestNativeThemeWin&) = delete;
-
-  ~TestNativeThemeWin() override = default;
+  TestNativeThemeWin() { BeginObservingOsSettingChanges(); }
 
   ColorMode GetColorMode() const {
     return GetColorProviderKey(/*custom_theme=*/nullptr).color_mode;
@@ -37,8 +34,8 @@ class TestNativeThemeWin : public NativeThemeWin {
     UpdateColorSchemeAndContrast();
   }
 
-  void SetSystemColor(SystemThemeColor system_color, SkColor color) {
-    system_colors_[system_color] = color;
+  void SetSystemColor(OsSettingsProvider::ColorId color_id, SkColor color) {
+    os_settings_provider_.SetColor(color_id, color);
     UpdateColorSchemeAndContrast();
   }
 
@@ -47,9 +44,13 @@ class TestNativeThemeWin : public NativeThemeWin {
     set_preferred_color_scheme(CalculatePreferredColorScheme());
     SetPreferredContrast(CalculatePreferredContrast());
   }
+
+  MockOsSettingsProvider os_settings_provider_;
 };
 
 TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
+  using enum OsSettingsProvider::ColorId;
+
   TestNativeThemeWin theme;
 
   theme.SetForcedColors(false);
@@ -60,16 +61,16 @@ TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
   theme.SetForcedColors(true);
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
+  theme.SetSystemColor(kWindow, SK_ColorBLACK);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
+  theme.SetSystemColor(kWindow, SK_ColorWHITE);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLUE);
+  theme.SetSystemColor(kWindow, SK_ColorBLUE);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorYELLOW);
+  theme.SetSystemColor(kWindow, SK_ColorYELLOW);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
   theme.SetForcedColors(false);
@@ -78,6 +79,7 @@ TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
 
 TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   using PrefContrast = NativeTheme::PreferredContrast;
+  using enum OsSettingsProvider::ColorId;
 
   TestNativeThemeWin theme;
 
@@ -85,18 +87,18 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kNoPreference);
 
   theme.SetForcedColors(true);
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorWHITE);
+  theme.SetSystemColor(kWindow, SK_ColorBLACK);
+  theme.SetSystemColor(kWindowText, SK_ColorWHITE);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kMore);
 
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorBLACK);
+  theme.SetSystemColor(kWindow, SK_ColorWHITE);
+  theme.SetSystemColor(kWindowText, SK_ColorBLACK);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kMore);
 
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorRED);
+  theme.SetSystemColor(kWindowText, SK_ColorRED);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kCustom);
 
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorYELLOW);
+  theme.SetSystemColor(kWindowText, SK_ColorYELLOW);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kLess);
 
   theme.SetForcedColors(false);

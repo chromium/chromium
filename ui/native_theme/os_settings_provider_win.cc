@@ -6,14 +6,69 @@
 
 #include <windows.h>
 
+#include <array>
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/win/dark_mode_support.h"
+#include "base/win/registry.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/win/native_color_mixers_win.h"
 
 namespace ui {
 
 OsSettingsProviderWin::OsSettingsProviderWin()
-    : OsSettingsProvider(PriorityLevel::kProduction) {}
+    : OsSettingsProvider(PriorityLevel::kProduction) {
+  // If there's no sequenced task runner handle, we can't be called back for
+  // registry changes. This generally happens in tests.
+  const bool observers_can_operate =
+      base::SequencedTaskRunner::HasCurrentDefault();
+
+  // Set initial state, and register for future changes if applicable.
+  if (hkcu_themes_regkey_.Open(
+          HKEY_CURRENT_USER,
+          L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+          KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS) {
+    UpdateForThemesRegkey();
+    if (observers_can_operate) {
+      RegisterThemesRegkeyObserver();
+    }
+  }
+  if (hkcu_color_filtering_regkey_.Open(
+          HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering",
+          KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS) {
+    UpdateForColorFilteringRegkey();
+    if (observers_can_operate) {
+      RegisterColorFilteringRegkeyObserver();
+    }
+  }
+  UpdateColors();
+}
 
 OsSettingsProviderWin::~OsSettingsProviderWin() = default;
+
+bool OsSettingsProviderWin::DarkColorSchemeAvailable() const {
+  return base::win::IsDarkModeAvailable();
+}
+
+bool OsSettingsProviderWin::PrefersReducedTransparency() const {
+  return prefers_reduced_transparency_;
+}
+
+bool OsSettingsProviderWin::PrefersInvertedColors() const {
+  return prefers_inverted_colors_;
+}
+
+std::optional<SkColor> OsSettingsProviderWin::Color(ColorId color_id) const {
+  const auto entry = colors_.find(color_id);
+  return (entry == colors_.end()) ? std::nullopt
+                                  : std::make_optional(entry->second);
+}
 
 base::TimeDelta OsSettingsProviderWin::CaretBlinkInterval() const {
   // Unfortunately Windows does not seem to have any way to monitor changes to
@@ -29,6 +84,94 @@ base::TimeDelta OsSettingsProviderWin::CaretBlinkInterval() const {
   }
   return (caret_blink_time == INFINITE) ? base::TimeDelta()
                                         : base::Milliseconds(caret_blink_time);
+}
+
+void OsSettingsProviderWin::RegisterThemesRegkeyObserver() {
+  CHECK(hkcu_themes_regkey_.Valid());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  hkcu_themes_regkey_.StartWatching(base::BindOnce(
+      [](OsSettingsProviderWin* provider) {
+        const bool old_prefers_reduced_transparency =
+            provider->PrefersReducedTransparency();
+        provider->UpdateForThemesRegkey();
+        if (provider->PrefersReducedTransparency() !=
+            old_prefers_reduced_transparency) {
+          provider->NotifyOnSettingsChanged();
+        }
+
+        // `StartWatching()`'s callback is one-shot and must be re-registered
+        // for future notifications.
+        provider->RegisterThemesRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
+void OsSettingsProviderWin::RegisterColorFilteringRegkeyObserver() {
+  CHECK(hkcu_color_filtering_regkey_.Valid());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
+      [](OsSettingsProviderWin* provider) {
+        const bool old_prefers_inverted_colors =
+            provider->PrefersInvertedColors();
+        provider->UpdateForColorFilteringRegkey();
+        if (provider->PrefersInvertedColors() != old_prefers_inverted_colors) {
+          provider->NotifyOnSettingsChanged();
+        }
+
+        // `StartWatching()`'s callback is one-shot and must be re-registered
+        // for future notifications.
+        provider->RegisterColorFilteringRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
+void OsSettingsProviderWin::UpdateForThemesRegkey() {
+  CHECK(hkcu_themes_regkey_.Valid());
+
+  DWORD enable_transparency = 1;
+  hkcu_themes_regkey_.ReadValueDW(L"EnableTransparency", &enable_transparency);
+  prefers_reduced_transparency_ = !enable_transparency;
+}
+
+void OsSettingsProviderWin::UpdateForColorFilteringRegkey() {
+  CHECK(hkcu_color_filtering_regkey_.Valid());
+
+  DWORD active = 0, filter_type = 0;
+  hkcu_color_filtering_regkey_.ReadValueDW(L"Active", &active);
+  if (active == 1) {
+    hkcu_color_filtering_regkey_.ReadValueDW(L"FilterType", &filter_type);
+  }
+  // 0 = Greyscale
+  // 1 = Invert
+  // 2 = Greyscale Inverted
+  // 3 = Deuteranopia
+  // 4 = Protanopia
+  // 5 = Tritanopia
+  prefers_inverted_colors_ = filter_type == 1;
+}
+
+void OsSettingsProviderWin::UpdateColors() {
+  static constexpr auto kColors =
+      std::to_array<std::pair<ColorId, ui::ColorId>>(
+          {{ColorId::kButtonFace, kColorNativeBtnFace},
+           {ColorId::kButtonHighlight, kColorNativeBtnHighlight},
+           {ColorId::kScrollbar, kColorNativeScrollbar},
+           {ColorId::kWindow, kColorNativeWindow},
+           {ColorId::kWindowText, kColorNativeWindowText}});
+  const auto sys_colors = GetCurrentSysColors();
+  for (const auto& entry : kColors) {
+    colors_[entry.first] = sys_colors.at(entry.second);
+  }
+}
+
+void OsSettingsProviderWin::OnWndProc(HWND hwnd,
+                                      UINT message,
+                                      WPARAM wparam,
+                                      LPARAM lparam) {
+  if (message == WM_SYSCOLORCHANGE) {
+    UpdateColors();
+    NotifyOnSettingsChanged(true);
+  }
 }
 
 }  // namespace ui

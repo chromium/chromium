@@ -407,29 +407,6 @@ void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
   NotifyWebContentsPreferencesChanged();
 }
 
-void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(
-    bool enabled) {
-  // We need to call into GetInstanceForWeb on the UI thread,
-  // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  native_theme->set_inverted_colors(enabled);
-  native_theme->NotifyOnNativeThemeUpdated();
-}
-
-void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
-    bool highContrastEnabled) {
-  // We need to call into GetInstanceForWeb on the UI thread,
-  // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  native_theme->SetPreferredContrast(
-      highContrastEnabled ? ui::NativeTheme::PreferredContrast::kMore
-                          : ui::NativeTheme::PreferredContrast::kNoPreference);
-  native_theme->set_prefers_reduced_transparency(highContrastEnabled);
-  native_theme->NotifyOnNativeThemeUpdated();
-}
-
 void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {
   bool is_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
   static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(

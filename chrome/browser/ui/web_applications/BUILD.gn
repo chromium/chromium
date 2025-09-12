@@ -301,6 +301,7 @@ source_set("browser_tests") {
     "//components/webapps/browser",
     "//components/webapps/common",
     "//components/webapps/isolated_web_apps/test_support",
+    "//ui/native_theme:test_support",
   ]
 
   if (is_chromeos) {

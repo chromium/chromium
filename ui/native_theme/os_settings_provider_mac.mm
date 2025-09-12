@@ -17,6 +17,7 @@ namespace ui {
 
 struct OsSettingsProviderMac::ObjCMembers {
   id __strong non_blinking_cursor_token;
+  id __strong display_accessibility_notification_token;
 };
 
 OsSettingsProviderMac::OsSettingsProviderMac()
@@ -35,13 +36,34 @@ OsSettingsProviderMac::OsSettingsProviderMac()
                       provider->NotifyOnSettingsChanged();
                     }];
   }
+
+  objc_members_->display_accessibility_notification_token =
+      [NSWorkspace.sharedWorkspace.notificationCenter
+          addObserverForName:
+              NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+                      object:nil
+                       queue:nil
+                  usingBlock:^(NSNotification* notification) {
+                    provider->NotifyOnSettingsChanged();
+                  }];
 }
 
 OsSettingsProviderMac::~OsSettingsProviderMac() {
+  [NSNotificationCenter.defaultCenter
+      removeObserver:objc_members_->display_accessibility_notification_token];
   if (@available(macOS 15.0, *)) {
     [NSNotificationCenter.defaultCenter
         removeObserver:objc_members_->non_blinking_cursor_token];
   }
+}
+
+bool OsSettingsProviderMac::PrefersReducedTransparency() const {
+  return NSWorkspace.sharedWorkspace
+      .accessibilityDisplayShouldReduceTransparency;
+}
+
+bool OsSettingsProviderMac::PrefersInvertedColors() const {
+  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldInvertColors;
 }
 
 base::TimeDelta OsSettingsProviderMac::CaretBlinkInterval() const {

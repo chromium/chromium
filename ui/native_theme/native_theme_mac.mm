@@ -44,17 +44,8 @@ ui::NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
              : ui::NativeTheme::PreferredColorScheme::kLight;
 }
 
-bool PrefersReducedTransparency() {
-  return NSWorkspace.sharedWorkspace
-      .accessibilityDisplayShouldReduceTransparency;
-}
-
 bool IsHighContrast() {
   return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
-}
-
-bool InvertedColors() {
-  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldInvertColors;
 }
 
 }  // namespace
@@ -104,11 +95,6 @@ struct EnumArray {
 }  // namespace
 
 namespace ui {
-
-// static
-bool NativeTheme::SystemDarkModeSupported() {
-  return true;
-}
 
 struct NativeThemeMac::ObjCMembers {
   id __strong display_accessibility_notification_token;
@@ -526,27 +512,20 @@ NativeThemeMac::NativeThemeMac() {
 
   InitializeDarkModeStateAndObserver();
 
-  set_prefers_reduced_transparency(PrefersReducedTransparency());
-  set_inverted_colors(InvertedColors());
   if (!IsForcedHighContrast()) {
     SetPreferredContrast(CalculatePreferredContrast());
-  }
-  __block auto theme = this;
-  objc_members_->display_accessibility_notification_token =
-      [NSWorkspace.sharedWorkspace.notificationCenter
-          addObserverForName:
-              NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
-                      object:nil
-                       queue:nil
-                  usingBlock:^(NSNotification* notification) {
-                    if (!IsForcedHighContrast()) {
+    __block auto theme = this;
+    objc_members_->display_accessibility_notification_token =
+        [NSWorkspace.sharedWorkspace.notificationCenter
+            addObserverForName:
+                NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+                        object:nil
+                         queue:nil
+                    usingBlock:^(NSNotification* notification) {
                       theme->SetPreferredContrast(CalculatePreferredContrast());
-                    }
-                    theme->set_prefers_reduced_transparency(
-                        PrefersReducedTransparency());
-                    theme->set_inverted_colors(InvertedColors());
-                    theme->NotifyOnNativeThemeUpdated();
-                  }];
+                      theme->NotifyOnNativeThemeUpdated();
+                    }];
+  }
 
   if (static bool initialized = false; !initialized) {
     // Observe caption style changes. Technically these notify the web instance

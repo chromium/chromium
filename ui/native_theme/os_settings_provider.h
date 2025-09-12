@@ -12,10 +12,14 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ui {
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID)
+class OsSettingsProviderAndroid;
+using OsSettingsProviderImpl = OsSettingsProviderAndroid;
+#elif BUILDFLAG(IS_MAC)
 class OsSettingsProviderMac;
 using OsSettingsProviderImpl = OsSettingsProviderMac;
 #elif BUILDFLAG(IS_WIN)
@@ -30,9 +34,19 @@ using OsSettingsProviderImpl = OsSettingsProvider;
 // Callers should use `Get()` to obtain the current instance.
 class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
  public:
+  using SettingsChangedCallbackT = void(bool force_notify);
+
   // Higher-numbered (i.e. higher-priority) providers override lower-priority
   // ones. Within a priority class, the most-recently-created provider wins.
   enum class PriorityLevel { kProduction = 0, kTesting, kLast = kTesting };
+
+  enum class ColorId {
+    kButtonFace,
+    kButtonHighlight,
+    kScrollbar,
+    kWindow,
+    kWindowText,
+  };
 
   // The caret blink interval reported when the OS provides no value.
   static constexpr auto kDefaultCaretBlinkInterval = base::Milliseconds(500);
@@ -71,7 +85,21 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // not affect the default `ColorProviderKey`, but affects the values of colors
   // inside that key's provider, would set this to `true`.
   static base::CallbackListSubscription RegisterOsSettingsChangedCallback(
-      base::RepeatingClosure cb);
+      base::RepeatingCallback<SettingsChangedCallbackT> cb);
+
+  // Returns whether the dark color scheme is available at an OS level.
+  // NOTE: Even if this is false, it may be reasonable for Chrome to use a dark
+  // theme; see comments on `PreferredColorScheme()` below.
+  virtual bool DarkColorSchemeAvailable() const;
+
+  // Returns whether the OS prefers reduced transparency.
+  virtual bool PrefersReducedTransparency() const;
+
+  // Returns whether the OS prefers inverted colors.
+  virtual bool PrefersInvertedColors() const;
+
+  // Returns OS-level colors, if available.
+  virtual std::optional<SkColor> Color(ColorId color_id) const;
 
   // Returns the interval between caret blinks. If this is zero, the caret will
   // not blink.
@@ -79,7 +107,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
 
  protected:
   // Invokes all registered callbacks.
-  void NotifyOnSettingsChanged();
+  void NotifyOnSettingsChanged(bool force_notify = false);
 
  private:
   PriorityLevel priority_level_;

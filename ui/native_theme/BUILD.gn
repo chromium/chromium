@@ -46,6 +46,15 @@ component("native_theme") {
     "//ui/resources",
   ]
 
+  if (is_android) {
+    sources += [
+      "os_settings_provider_android.cc",
+      "os_settings_provider_android.h",
+    ]
+
+    deps += [ "//ui/accessibility:ax_base_android" ]
+  }
+
   if (is_android || is_ios) {
     sources += [
       "native_theme_mobile.cc",

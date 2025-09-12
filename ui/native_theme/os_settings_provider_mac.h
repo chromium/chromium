@@ -21,6 +21,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderMac
   ~OsSettingsProviderMac() override;
 
   // OsSettingsProvider:
+  bool PrefersReducedTransparency() const override;
+  bool PrefersInvertedColors() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
  private:

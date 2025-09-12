@@ -69,6 +69,7 @@
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -545,12 +546,11 @@ void AppBrowserController::PrimaryPageChanged(content::Page& page) {
 }
 
 std::optional<SkColor> AppBrowserController::GetThemeColor() const {
-  if (ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-      native_theme->preferred_contrast() ==
+  if (ui::NativeTheme::GetInstanceForNativeUi()->preferred_contrast() ==
       ui::NativeTheme::PreferredContrast::kMore) {
     if (const std::optional<SkColor> window_color =
-            native_theme->GetSystemThemeColor(
-                ui::NativeTheme::SystemThemeColor::kWindow)) {
+            ui::OsSettingsProvider::Get().Color(
+                ui::OsSettingsProvider::ColorId::kWindow)) {
       return window_color;
     }
   }

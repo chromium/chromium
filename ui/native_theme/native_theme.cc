@@ -121,13 +121,6 @@ NativeTheme* NativeTheme::GetInstanceForWeb() {
   return native_theme;
 }
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
-// static
-bool NativeTheme::SystemDarkModeSupported() {
-  return false;
-}
-#endif
-
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
@@ -328,28 +321,8 @@ NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
                                 : PreferredContrast::kNoPreference;
 }
 
-std::optional<SkColor> NativeTheme::GetSystemThemeColor(
-    SystemThemeColor theme_color) const {
-  auto color = system_colors_.find(theme_color);
-  if (color != system_colors_.end()) {
-    return color->second;
-  }
-
-  return std::nullopt;
-}
-
-bool NativeTheme::HasDifferentSystemColors(
-    const std::map<NativeTheme::SystemThemeColor, SkColor>& colors) const {
-  return system_colors_ != colors;
-}
-
-void NativeTheme::set_system_colors(
-    const std::map<NativeTheme::SystemThemeColor, SkColor>& colors) {
-  system_colors_ = colors;
-}
-
-void NativeTheme::OnToolkitSettingsChanged() {
-  if (UpdateVariablesForToolkitSettings()) {
+void NativeTheme::OnToolkitSettingsChanged(bool force_notify) {
+  if (UpdateVariablesForToolkitSettings() || force_notify) {
     NotifyOnNativeThemeUpdated();
   }
 }
@@ -415,10 +388,6 @@ bool NativeTheme::UpdateWebInstance() const {
   // Refactor to a settings struct or similar.
 
   bool updated_web_instance = false;
-  if (associated_web_instance_->system_colors() != system_colors()) {
-    associated_web_instance_->system_colors_ = system_colors();
-    updated_web_instance = true;
-  }
   if (associated_web_instance_->should_use_system_accent_color() !=
       should_use_system_accent_color()) {
     associated_web_instance_->should_use_system_accent_color_ =
