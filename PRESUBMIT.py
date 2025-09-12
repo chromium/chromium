@@ -3833,6 +3833,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^fuchsia_web/shell/.*\.cc$",
             r"^headless/app/headless_shell\.cc$",
             r"^ipc/ipc_logging\.cc$",
+            r"^ios/chrome/app/perf_tests_hook_logging\.mm$",
             r"^remoting/base/logging\.h$",
             r"^remoting/host/.*",
             r"^sandbox/linux/.*",

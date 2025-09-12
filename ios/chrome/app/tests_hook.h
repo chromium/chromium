@@ -25,6 +25,10 @@ namespace collaboration {
 class CollaborationService;
 }  // namespace collaboration
 
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
@@ -139,6 +143,11 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 // Allows overriding the TabGroupSyncService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ProfileIOS* profile);
+
+// Allows overriding the ShoppingService factory. The real factory will be used
+// if this hook returns null.
+std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
     ProfileIOS* profile);
 
 // Allows additional test setup for the DataSharingService.

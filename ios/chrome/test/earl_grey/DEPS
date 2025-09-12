@@ -50,13 +50,14 @@ specific_include_rules = {
   ],
 
   "eg_tests_hook\.mm": [
+   "+components/commerce/core",
    "+components/data_sharing/public",
    "+components/data_sharing/test_support",
    "+components/feature_engagement/public/feature_activation.h",
+   "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
+   "+components/password_manager/ios",
+   "+components/plus_addresses/fake_plus_address_service.h",
    "+components/saved_tab_groups",
    "+components/signin/internal/identity_manager",
-   "+components/password_manager/ios",
-   "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
-   "+components/plus_addresses/fake_plus_address_service.h",
   ],
 }

@@ -42,6 +42,7 @@ source_set("hooks") {
   sources = [ "xcuitests_hook.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:tests_hook",

@@ -26,6 +26,8 @@ source_set("hooks") {
     ":switches",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/feature_engagement/public",
