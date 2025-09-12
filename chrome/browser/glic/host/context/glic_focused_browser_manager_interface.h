@@ -7,7 +7,9 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window.h"  // nogncheck
+
+namespace glic {
 
 // Responsible for managing which browser window is considered "focused".
 class GlicFocusedBrowserManagerInterface {
@@ -33,5 +35,7 @@ class GlicFocusedBrowserManagerInterface {
   // browser that belongs to a different profile.
   virtual BrowserWindowInterface* GetActiveBrowser() const = 0;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_FOCUSED_BROWSER_MANAGER_INTERFACE_H_

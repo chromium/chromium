@@ -6,10 +6,22 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_CONTEXT_GLIC_SHARING_MANAGER_H_
 
 #include "base/containers/span.h"
+#include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
+
+// The error returned by the GlicSharingManager when requesting context.
+struct GlicGetContextError {
+  GlicGetContextFromFocusedTabError error_code;
+  std::string message;
+};
+
+// The result passed from the sharing manager up to the page handler.
+using GlicGetContextResult =
+    base::expected<mojom::GetContextResultPtr, GlicGetContextError>;
 
 // Responsible for managing all shared context (focused tabs, explicitly-shared
 // tabs).
@@ -41,6 +53,17 @@ class GlicSharingManager {
   // was not available. This may also contain a tab candidate along with details
   // as to why it cannot be focused. Virtual for testing.
   virtual FocusedTabData GetFocusedTabData() = 0;
+
+  // Callback for changes to the focused browser (if it is potentially valid
+  // for sharing).
+  using FocusedBrowserChangedCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription AddFocusedBrowserChangedCallback(
+      FocusedBrowserChangedCallback callback) = 0;
+  virtual BrowserWindowInterface* GetFocusedBrowser() const = 0;
+
+  // TODO(b:444463509): remove direct access to underlying manager.
+  virtual GlicFocusedBrowserManagerInterface& focused_browser_manager() = 0;
 
   // Registers a callback to be invoked when the pinned status of a tab changes.
   using TabPinningStatusChangedCallback =
@@ -85,11 +108,31 @@ class GlicSharingManager {
   // Gets the current number of pinned tabs.
   virtual int32_t GetNumPinnedTabs() const = 0;
 
+  // Sets the limit on the number of pinned tabs. Returns the effective number
+  // of pinned tabs. Can differ due to supporting fewer tabs than requested or
+  // having more tabs currently pinned than requested.
+  virtual int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) = 0;
+
   // Fetches the current list of pinned tabs.
   virtual std::vector<content::WebContents*> GetPinnedTabs() const = 0;
 
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
+
+  virtual void GetContextFromTab(
+      tabs::TabHandle tab_handle,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(GlicGetContextResult)> callback) = 0;
+
+  virtual void GetContextForActorFromTab(
+      tabs::TabHandle tab_handle,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(GlicGetContextResult)> callback) = 0;
+
+  // Subscribes to changes in pin candidates.
+  virtual void SubscribeToPinCandidates(
+      mojom::GetPinCandidatesOptionsPtr options,
+      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) = 0;
 };
 
 }  // namespace glic

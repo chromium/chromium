@@ -155,6 +155,11 @@ BrowserWindowInterface* GlicSharingManagerImpl::GetFocusedBrowser() const {
   return focused_browser_manager_.GetFocusedBrowser();
 }
 
+GlicFocusedBrowserManagerInterface&
+GlicSharingManagerImpl::focused_browser_manager() {
+  return focused_browser_manager_;
+}
+
 base::CallbackListSubscription
 GlicSharingManagerImpl::AddFocusedTabDataChangedCallback(
     FocusedTabDataChangedCallback callback) {

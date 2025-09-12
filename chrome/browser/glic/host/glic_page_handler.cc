@@ -39,7 +39,6 @@
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
-#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
@@ -49,6 +48,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/page_metadata_manager.h"
 #include "chrome/browser/glic/media/glic_media_link_helper.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -519,8 +519,7 @@ class GlicWebClientHandler
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         window_controller_(&glic_service_->window_controller()),
-        glic_sharing_manager_(static_cast<GlicSharingManagerImpl&>(
-            glic_service_->sharing_manager())),
+        glic_sharing_manager_(glic_service_->sharing_manager()),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&glic_service_->window_controller()),
         browser_is_open_calculator_(profile_, this),
@@ -1518,7 +1517,7 @@ class GlicWebClientHandler
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<GlicWindowController> window_controller_;
-  raw_ref<GlicSharingManagerImpl> glic_sharing_manager_;
+  raw_ref<GlicSharingManager> glic_sharing_manager_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
