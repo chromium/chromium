@@ -672,6 +672,10 @@ export class CdpTarget {
       promises.push(this.setExtraHeaders(config.extraHeaders));
     }
 
+    if (config.userAgent !== undefined) {
+      promises.push(this.setUserAgent(config.userAgent));
+    }
+
     if (config.scriptingEnabled !== undefined) {
       promises.push(this.setScriptingEnabled(config.scriptingEnabled));
     }
@@ -868,6 +872,12 @@ export class CdpTarget {
   async setExtraHeaders(headers: Protocol.Network.Headers): Promise<void> {
     await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
       headers,
+    });
+  }
+
+  async setUserAgent(userAgent: string | null): Promise<void> {
+    await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
+      userAgent: userAgent ?? '',
     });
   }
 }

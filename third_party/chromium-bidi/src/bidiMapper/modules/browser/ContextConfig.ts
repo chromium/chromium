@@ -44,6 +44,7 @@ export class ContextConfig {
   scriptingEnabled?: false | null;
   // Timezone is kept in CDP format with GMT prefix for offset values.
   timezone?: string | null;
+  userAgent?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
 
   /**
