@@ -70,6 +70,11 @@ bool MigrateBtmSchemaToLatestVersion(sql::Database& db,
           return false;
         }
         break;
+      case 11:
+        if (!migrator.MigrateSchemaVersionFrom10To11()) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -373,6 +378,29 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom9To10() {
   return meta_table_->SetVersionNumber(10) &&
          meta_table_->SetCompatibleVersionNumber(
              std::min(10, BtmDatabase::kMinCompatibleSchemaVersion));
+}
+
+bool BtmDatabaseMigrator::MigrateSchemaVersionFrom10To11() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  static constexpr char kDeleteEmptyRowsSql[] =  //clang-format off
+      "DELETE FROM bounces "
+      "WHERE "
+      "(first_user_activation_time IS NULL "
+      "OR last_user_activation_time IS NULL)"
+      "AND (first_bounce_time IS NULL OR last_bounce_time IS NULL)"
+      "AND (first_web_authn_assertion_time IS NULL "
+      "OR last_web_authn_assertion_time IS NULL)";
+  //clang-format on
+  DCHECK(db_->IsSQLValid(kDeleteEmptyRowsSql));
+  if (!db_->Execute(kDeleteEmptyRowsSql)) {
+    return false;
+  }
+
+  return meta_table_->SetVersionNumber(11) &&
+         meta_table_->SetCompatibleVersionNumber(
+             std::min(11, BtmDatabase::kMinCompatibleSchemaVersion));
 }
 
 }  // namespace content

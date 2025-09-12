@@ -66,6 +66,10 @@ class CONTENT_EXPORT BtmDatabaseMigrator {
   // removes the `site_storage` and `stateful_bounce` columns.
   bool MigrateSchemaVersionFrom9To10();
 
+  // Migrates from v10 to v11 of the DIPS database schema. This migration
+  // removes the rows that became empty after the v9 to v10 migration.
+  bool MigrateSchemaVersionFrom10To11();
+
   BtmDatabaseMigrator(const BtmDatabaseMigrator&) = delete;
   BtmDatabaseMigrator& operator=(const BtmDatabaseMigrator&) = delete;
 

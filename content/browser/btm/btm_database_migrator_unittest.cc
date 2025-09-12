@@ -154,6 +154,7 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToLatestVersion) {
 
     EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
+              "site-storage-stateful-bounce-drop.test|1|1|0|0|0|0|0|0\n"
               "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
               "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
               "storage.test|1|1|4|4|0|0|0|0");
@@ -236,6 +237,7 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToV2) {
     // These values are all set in v1.sql.
     EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
+              "site-storage-stateful-bounce-drop.test|1|1|0|0|0|0|0|0\n"
               "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
               "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
               "storage.test|1|1|4|4|0|0|0|0");
@@ -292,6 +294,7 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToV2) {
     // Verify that all 0s were transformed to NULLs.
     EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|1|6\n"
+              "site-storage-stateful-bounce-drop.test|1|1||||||\n"
               "stateful-bounce.test|||4|4|1|1|1|1\n"
               "stateless-bounce.test|||4|4|||1|1\n"
               "storage.test|1|1|4|4||||");
@@ -688,6 +691,48 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV9ToV10) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 10);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 10);
+  }
+}
+
+TEST_F(BtmDatabaseMigrationTest, MigrateV10ToV11) {
+  ASSERT_TRUE(LoadDatabase("v10.sql"));
+
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Verify pre-migration conditions.
+
+    ASSERT_EQ(GetDatabaseVersion(&db), 10);
+    ASSERT_EQ(GetDatabaseLastCompatibleVersion(&db), 10);
+    EXPECT_EQ(DbBouncesToString(&db),
+              "both-bounce-kinds.test|4|4|2|6||\n"
+              "site-storage-stateful-bounce-drop.test||||||\n"
+              "stateful-bounce.test|4|4||||\n"
+              "stateless-bounce.test|4|4|1|1||\n"
+              "storage.test|4|4||||");
+
+    // Migrate.
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 10, 10));
+
+    sql::Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    BtmDatabaseMigrator migrator(&db, &meta_table);
+    ASSERT_TRUE(migrator.MigrateSchemaVersionFrom10To11());
+    ASSERT_TRUE(transaction.Commit());
+
+    // Verify empty row is removed.
+
+    EXPECT_EQ(DbBouncesToString(&db),
+              "both-bounce-kinds.test|4|4|2|6||\n"
+              "stateful-bounce.test|4|4||||\n"
+              "stateless-bounce.test|4|4|1|1||\n"
+              "storage.test|4|4||||");
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 11);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 11);
   }
 }
 
