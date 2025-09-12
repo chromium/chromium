@@ -96,4 +96,8 @@ public class ContentFeatureList {
     // Make the spare renderer of the lowest priority so as not to kill other processes during OOM.
     public static final MutableBooleanParamWithSafeDefault sSpareRendererLowestRanking =
             sSpareRendererProcessPriority.newBooleanParam("lowest-ranking", false);
+
+    // Skip the timeout when removing the VISIBLE and STRONG binding for the spare renderer.
+    public static final MutableBooleanParamWithSafeDefault sSpareRendererRemoveBindingNoTimeout =
+            sSpareRendererProcessPriority.newBooleanParam("remove-binding-no-timeout", false);
 }
