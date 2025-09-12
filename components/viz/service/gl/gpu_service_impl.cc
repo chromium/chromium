@@ -428,12 +428,7 @@ void GpuServiceImpl::InitializeWithHost(
   }
 
   if (!shared_image_manager) {
-#if BUILDFLAG(IS_OZONE)
-    shared_image_manager =
-        CreateSharedImageManager(creation_params->supports_overlays);
-#else
     shared_image_manager = CreateSharedImageManager();
-#endif
   }
 
   if (!scheduler) {
