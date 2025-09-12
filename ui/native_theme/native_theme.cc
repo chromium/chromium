@@ -454,6 +454,10 @@ bool NativeTheme::UpdateWebInstance() const {
     associated_web_instance_->inverted_colors_ = inverted_colors();
     updated_web_instance = true;
   }
+  if (associated_web_instance_->user_color() != user_color()) {
+    associated_web_instance_->user_color_ = user_color();
+    updated_web_instance = true;
+  }
   if (associated_web_instance_->caret_blink_interval() !=
       caret_blink_interval()) {
     associated_web_instance_->caret_blink_interval_ = caret_blink_interval();

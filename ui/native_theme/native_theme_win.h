@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // Called by `hwnd_subscription_`.
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
+  // Updates `accent_color_`. If it changed, notifies callbacks.
+  void OnAccentColorMaybeChanged();
+
   // Update the locally cached set of system colors.
   void UpdateSystemColors();
 
@@ -208,6 +211,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
       gfx::SingletonHwnd::GetInstance()->RegisterCallback(
           base::BindRepeating(&NativeThemeWin::OnWndProc,
                               base::Unretained(this)));
+
+  // Accent color subscription.
+  base::CallbackListSubscription accent_color_subscription_;
 
   bool in_dark_mode_ = false;
 };

@@ -18,12 +18,12 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/views_features.h"
 
 namespace {
@@ -101,25 +101,12 @@ FrameTransforms GetFrameTransforms(const ui::ColorProviderKey& key) {
   return frame_transforms;
 }
 
-// Updates the NativeTheme's user_color to reflect the system accent color.
-// TODO(crbug.com/40280436): Explore moving logic into NativeThemeWin.
-void UpdateUserColor() {
-  const auto accent_color = ui::AccentColorObserver::Get()->accent_color();
-  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
-  ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
-}
-
-void OnAccentColorUpdated() {
-  UpdateUserColor();
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
-  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
-}
-
-void UpdateUserColorWhenAccentColorStateChanges() {
-  UpdateUserColor();
+void EnsureColorProviderCacheWillBeResetWhenAccentColorStateChanges() {
   static base::NoDestructor<base::CallbackListSubscription> subscription(
-      ui::AccentColorObserver::Get()->Subscribe(
-          base::BindRepeating(&OnAccentColorUpdated)));
+      ui::AccentColorObserver::Get()->Subscribe(base::BindRepeating(
+          // CAUTION: Do not bind directly to `ui::ColorProviderManager::Get()`
+          // here, as tests may reset that value!
+          [] { ui::ColorProviderManager::Get().ResetColorProviderCache(); })));
 }
 
 SkColor GetAccentBorderColor() {
@@ -264,8 +251,18 @@ void AddNativeNonHighContrastColors(ui::ColorMixer& mixer,
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderKey& key) {
-  UpdateUserColorWhenAccentColorStateChanges();
-
+  // If anything related to the accent color state changes, the color provider
+  // cache should be reset, so that changes to the recipes below are picked up
+  // even if the browser frame's color provider key does not change.
+  //
+  // When `ui::AccentColorObserver::accent_color()` itself changes, this happens
+  // anyway, because the change results in a call to
+  // `ui::NativeTheme::NotifyOnNativeThemeUpdated()`, which will also reset the
+  // cache. However, changes to other accent-color-related state (e.g.
+  // `ui::AccentColorObserver::accent_border_color()`) will not (and should not)
+  // trigger this codepath, but can still affect the recipes below and thus
+  // require a reset.
+  EnsureColorProviderCacheWillBeResetWhenAccentColorStateChanges();
   ui::ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorAccentBorderActive] = {GetAccentBorderColor()};

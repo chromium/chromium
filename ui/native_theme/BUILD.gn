@@ -80,6 +80,8 @@ component("native_theme") {
       "os_settings_provider_win.h",
     ]
 
+    deps += [ "//ui/color:accent_color_observer" ]
+
     libs = [ "uxtheme.lib" ]
   }
 

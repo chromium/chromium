@@ -52,6 +52,7 @@
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/win/accent_color_observer.h"
 #include "ui/color/win/native_color_mixers_win.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/color_conversions.h"
@@ -272,6 +273,11 @@ NativeThemeWin::NativeThemeWin() {
   // The below code attempts calls to user32.dll, so avoid it if those calls are
   // not possible.
   if (base::win::IsUser32AndGdi32Available()) {
+    set_user_color(AccentColorObserver::Get()->accent_color());
+    accent_color_subscription_ = AccentColorObserver::Get()->Subscribe(
+        base::BindRepeating(&NativeThemeWin::OnAccentColorMaybeChanged,
+                            base::Unretained(this)));
+
     // If there's no sequenced task runner handle, we can't be called back for
     // registry changes. This generally happens in tests.
     const bool observers_can_operate =
@@ -366,6 +372,14 @@ void NativeThemeWin::OnWndProc(HWND hwnd,
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   SetPreferredContrast(CalculatePreferredContrast());
   NotifyOnNativeThemeUpdated();
+}
+
+void NativeThemeWin::OnAccentColorMaybeChanged() {
+  const auto accent_color = AccentColorObserver::Get()->accent_color();
+  if (user_color() != accent_color) {
+    set_user_color(accent_color);
+    NotifyOnNativeThemeUpdated();
+  }
 }
 
 void NativeThemeWin::UpdateSystemColors() {
