@@ -56,8 +56,6 @@ void WebUIBrowserSidePanelUI::Toggle(SidePanelEntryKey key,
 
 void WebUIBrowserSidePanelUI::OpenInNewTab() {}
 
-void WebUIBrowserSidePanelUI::UpdatePinState() {}
-
 content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForTest(
     SidePanelEntryId id) {
   return nullptr;

@@ -70,7 +70,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void OpenInNewTab() override;
-  void UpdatePinState() override;
+
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
   // Returns the web contents in a side panel if one exists.
@@ -80,8 +80,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
   void UpdateNewTabButtonState();
-
-  void UpdateHeaderPinButtonState();
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting();
 
@@ -116,6 +114,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
                            ShowEmptyUserNoteSidePanel);
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
+
+  void UpdatePinState();
+  void UpdateHeaderPinButtonState();
 
   void OnClosed();
 

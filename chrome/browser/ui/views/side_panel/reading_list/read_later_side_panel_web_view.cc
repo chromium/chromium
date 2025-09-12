@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
+#include "chrome/browser/ui/views/side_panel/reading_list/read_later_side_panel_web_view.h"
 
 #include <memory>
 

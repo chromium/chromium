@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -49,4 +49,4 @@ class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
   base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READ_LATER_SIDE_PANEL_WEB_VIEW_H_

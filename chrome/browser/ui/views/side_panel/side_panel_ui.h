@@ -39,10 +39,6 @@ class SidePanelUI {
   // header button, when it's visible.
   virtual void OpenInNewTab() = 0;
 
-  // Toggle the pin state. This is called by the header button, when it's
-  // visible.
-  virtual void UpdatePinState() = 0;
-
   // Get the current entry id if the side panel is open.
   virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
 
