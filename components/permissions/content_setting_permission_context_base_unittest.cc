@@ -1054,7 +1054,7 @@ TEST_F(PermissionContextBaseTests, ActorBypass_WhenActive_DeniesPermission) {
                                            ContentSettingsType::GEOLOCATION);
   GURL url("https://www.google.com");
   SetUpUrl(url);
-
+  base::HistogramTester histograms;
   // Pre-condition: User has granted the permission.
   auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
@@ -1069,6 +1069,12 @@ TEST_F(PermissionContextBaseTests, ActorBypass_WhenActive_DeniesPermission) {
 
   EXPECT_EQ(PermissionStatus::DENIED, result.status);
   EXPECT_EQ(content::PermissionStatusSource::ACTOR_OVERRIDE, result.source);
+  histograms.ExpectBucketCount(
+      "Permissions.Experimental.Usage." +
+          PermissionUtil::GetPermissionString(
+              permission_context.content_settings_type()) +
+          ".IsBlockedDueToActuation",
+      true, 1);
 }
 
 TEST_F(PermissionContextBaseTests,
@@ -1082,7 +1088,7 @@ TEST_F(PermissionContextBaseTests,
                                            ContentSettingsType::GEOLOCATION);
   GURL url("https://www.google.com");
   SetUpUrl(url);
-
+  base::HistogramTester histograms;
   // Pre-condition: User has granted the permission.
   auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
@@ -1097,6 +1103,12 @@ TEST_F(PermissionContextBaseTests,
 
   // The original user setting of GRANTED is respected.
   EXPECT_EQ(PermissionStatus::GRANTED, result.status);
+  histograms.ExpectBucketCount(
+      "Permissions.Experimental.Usage." +
+          PermissionUtil::GetPermissionString(
+              permission_context.content_settings_type()) +
+          ".IsBlockedDueToActuation",
+      false, 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

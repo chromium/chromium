@@ -2239,4 +2239,15 @@ void PermissionUmaUtil::RecordPredictionServiceTimeout(bool timeout) {
   base::UmaHistogramBoolean("Permissions.PredictionService.Timeout", timeout);
 }
 
+// static
+void PermissionUmaUtil::RecordPermissionAutoRejectForActor(
+    ContentSettingsType permission,
+    bool is_actor_operating) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Permissions.Experimental.Usage.",
+                    PermissionUtil::GetPermissionString(permission),
+                    ".IsBlockedDueToActuation"}),
+      is_actor_operating);
+}
+
 }  // namespace permissions

@@ -869,6 +869,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Experimental.Usage.{PermissionType}.IsBlockedDueToActuation"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>michelleabreo@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded on each permission status check for a user-prompted permission
+    type, but only when the kGlicActorPermissionsAutoReject feature is enabled.
+    Records whether an actor was active, causing the permission to be blocked
+    (true), or if no agent was active (false). This allows for calculating the
+    rate at which the agent denies permission checks.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram
     name="Permissions.Experimental.Usage.{PermissionType}.IsCrossOriginFrame"
     enum="Boolean" expires_after="2025-12-28">
   <owner>tungnh@chromium.org</owner>
