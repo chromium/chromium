@@ -47,7 +47,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 static const char kDownloadPath[] = "c:\\\\path\\to\\download";
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 static const char kDownloadPath[] = "/path/to/download";
 #endif  // BUILDFLAG(IS_WIN)
 

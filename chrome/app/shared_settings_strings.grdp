@@ -242,18 +242,9 @@
   <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF" desc="The label of the checkbox to enable/disable crash and user metrics logging. This string does not need a Chromium counter-part because it will only be visible if Google-branded.">
     Help improve Chrome's features and performance
   </message>
-  <if expr="is_fuchsia">
-    <then>
-      <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
-        Automatically sends usage statistics to Google. You can turn crash reports on or off in your device's settings.
-      </message>
-    </then>
-    <else>
-      <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
-        Automatically sends usage statistics and crash reports to Google
-      </message>
-    </else>
-  </if>
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
+    Automatically sends usage statistics and crash reports to Google
+  </message>
   <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
     Improve search suggestions
   </message>

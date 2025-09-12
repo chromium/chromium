@@ -92,6 +92,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
@@ -436,10 +437,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
-#endif
-
-#if !BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -981,9 +978,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   HistoryClustersServiceFactory::EnsureFactoryBuilt();
   HistoryEmbeddingsServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_FUCHSIA)
   HistoryServiceFactory::GetInstance();
-#endif
   HistoryUiFaviconRequestHandlerFactory::GetInstance();
   HostContentSettingsMapFactory::GetInstance();
   HttpsEngagementServiceFactory::GetInstance();

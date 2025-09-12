@@ -2259,7 +2259,6 @@ static_library("browser_tests_runner") {
   deps = [
     ":chrome_test_launcher",
     ":test_support",
-    "//ui/gfx:gfx_switches",  # Used by Fuchsia.
   ]
 
   if (is_chromeos) {

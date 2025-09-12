@@ -90,7 +90,7 @@ class MediaCaptureDevicesDispatcher
                                  content::MediaResponseCallback callback,
                                  const extensions::Extension* extension);
 
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+#if defined(TOOLKIT_VIEWS)
   void ProcessSelectAudioOutputRequest(
       Browser* browser,
       const content::SelectAudioOutputRequest& request,

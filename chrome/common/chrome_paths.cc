@@ -131,7 +131,6 @@ bool PathProvider(int key, base::FilePath* result) {
       return base::PathService::Get(chrome::DIR_USER_DATA, result);
 #else
       // Debug builds write next to the binary (in the build tree)
-      // TODO(crbug.com/40202595): implement workable solution for Fuchsia.
 #if BUILDFLAG(IS_MAC)
       // Apps may not write into their own bundle.
       if (base::apple::AmIBundled()) {
@@ -349,8 +348,7 @@ bool PathProvider(int key, base::FilePath* result) {
       }
 #else
       // If we're not bundled on mac or Android, resources.pak should be in
-      // the "assets" location (e.g. next to the binary, on many platforms, or
-      // in /pkg/data under Fuchsia, etc).
+      // the "assets" location (e.g. next to the binary, on many platforms).
       if (!base::PathService::Get(base::DIR_ASSETS, &cur)) {
         return false;
       }

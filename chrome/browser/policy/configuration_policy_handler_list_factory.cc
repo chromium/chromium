@@ -2402,11 +2402,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kReduceAcceptLanguageEnabled,
     prefs::kReduceAcceptLanguageEnabled,
     base::Value::Type::BOOLEAN },
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID)
   { key::kBuiltInAIAPIsEnabled,
     policy_prefs::kBuiltInAIAPIsEnabled,
     base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   { key::kNTPFooterManagementNoticeEnabled,
     prefs::kNTPFooterManagementNoticeEnabled,

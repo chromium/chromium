@@ -1142,8 +1142,6 @@ class NavCaptureParameterizedBrowserTest
     base::File exclusive_file = base::File(
         lock_file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
 
-// Fuchsia doesn't support file locking.
-#if !BUILDFLAG(IS_FUCHSIA)
     {
       SCOPED_TRACE("Attempting to gain exclusive lock of " +
                    lock_file_path.MaybeAsASCII());
@@ -1152,7 +1150,6 @@ class NavCaptureParameterizedBrowserTest
                base::File::FILE_OK;
       });
     }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
     // Re-read expectations to catch changes from other parallel runs of
     // rebaselining.
@@ -1160,9 +1157,7 @@ class NavCaptureParameterizedBrowserTest
 
     return base::ScopedClosureRunner(base::BindOnce(
         [](base::File lock_file) {
-#if !BUILDFLAG(IS_FUCHSIA)
           EXPECT_EQ(lock_file.Unlock(), base::File::FILE_OK);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
           lock_file.Close();
         },
         std::move(exclusive_file)));

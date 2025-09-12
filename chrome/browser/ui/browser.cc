@@ -2871,7 +2871,7 @@ void Browser::RequestMediaAccessPermission(
 void Browser::ProcessSelectAudioOutput(
     const content::SelectAudioOutputRequest& request,
     content::SelectAudioOutputCallback callback) {
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+#if defined(TOOLKIT_VIEWS)
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessSelectAudioOutputRequest(
       this, request, std::move(callback));
 #else

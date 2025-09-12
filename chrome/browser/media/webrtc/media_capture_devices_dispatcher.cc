@@ -163,7 +163,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
                           nullptr);
 }
 
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+#if defined(TOOLKIT_VIEWS)
 void MediaCaptureDevicesDispatcher::ProcessSelectAudioOutputRequest(
     Browser* browser,
     const content::SelectAudioOutputRequest& request,

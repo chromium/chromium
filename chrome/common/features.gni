@@ -43,7 +43,7 @@ declare_args() {
   enable_background_mode = !is_android && !is_chromeos
 
   # Enables usage of notifications via Chrome's MessageCenter.
-  enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
+  enable_chrome_notifications = is_mac || is_win || is_linux
 
   # Enables inclusion of glic in the build.
   enable_glic = is_mac || is_win || is_linux

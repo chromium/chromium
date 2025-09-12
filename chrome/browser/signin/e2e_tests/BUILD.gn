@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (!is_android && !is_fuchsia) {
-  # webui dependency makes this not available for android or fuchsia.
+assert(!is_fuchsia)
+
+if (!is_android) {
+  # webui dependency makes this not available for android.
   static_library("test_support") {
     testonly = true
     sources = [

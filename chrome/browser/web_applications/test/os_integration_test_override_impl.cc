@@ -322,7 +322,7 @@ bool OsIntegrationTestOverrideImpl::SimulateDeleteShortcutsByUser(
   CHECK(base::PathExists(desktop_shortcut_path));
   return base::DeleteFile(desktop_shortcut_path);
 #else
-  NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
+  NOTREACHED() << "Not implemented on ChromeOS";
 #endif
 }
 
@@ -390,7 +390,7 @@ bool OsIntegrationTestOverrideImpl::IsRunOnOsLoginEnabled(
       chrome_apps_folder().Append(shortcut_filename);
   return startup_enabled_[app_shortcut_path];
 #else
-  NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
+  NOTREACHED() << "Not implemented on ChromeOS";
 #endif
 }
 
@@ -489,7 +489,7 @@ std::optional<SkBitmap> OsIntegrationTestOverrideImpl::GetShortcutIcon(
   return IconManagerReadIconForSize(provider->icon_manager(), app_id,
                                     suggested_size_px);
 #else
-  NOTREACHED() << "Not implemented on Fuchsia";
+  NOTREACHED() << "Not implemented";
 #endif
 }
 
@@ -577,7 +577,7 @@ bool OsIntegrationTestOverrideImpl::IsShortcutCreated(
       GetShortcutPath(profile, desktop(), app_id, app_name);
   return base::PathExists(desktop_shortcut_path);
 #else
-  NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
+  NOTREACHED() << "Not implemented on ChromeOS";
 #endif
 }
 
