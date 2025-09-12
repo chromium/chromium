@@ -188,6 +188,8 @@ component("webnn_service") {
       "ort/context_provider_ort.h",
       "ort/environment.cc",
       "ort/environment.h",
+      "ort/ep_selection.cc",
+      "ort/ep_selection.h",
       "ort/external_weights_manager.cc",
       "ort/external_weights_manager.h",
       "ort/graph_builder_ort.cc",
