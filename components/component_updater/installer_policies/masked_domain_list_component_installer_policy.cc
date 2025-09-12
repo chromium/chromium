@@ -15,8 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
-#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "services/network/public/cpp/features.h"
 
 namespace {
@@ -39,26 +37,9 @@ constexpr char kExperimentalVersionAttributeName[] =
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
 
-constexpr char kMaskedDomainListProto[] = "masked_domain_list.MaskedDomainList";
-
 }  // namespace
 
 namespace component_updater {
-
-// Helper class to read file to named proto class for mojo wrapper.
-class ReadMaskedDomainListProto {
- public:
-  static std::optional<mojo_base::ProtoWrapper> ReadFile(
-      const base::FilePath& pb_path) {
-    auto file_contents = base::ReadFileToBytes(pb_path);
-    if (file_contents.has_value()) {
-      return mojo_base::ProtoWrapper(
-          file_contents.value(), kMaskedDomainListProto,
-          mojo_base::ProtoWrapperBytes::GetPassKey());
-    }
-    return std::nullopt;
-  }
-};
 
 MaskedDomainListComponentInstallerPolicy::
     MaskedDomainListComponentInstallerPolicy(
@@ -116,8 +97,20 @@ void MaskedDomainListComponentInstallerPolicy::ComponentReady(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadMaskedDomainListProto::ReadFile,
-                     GetInstalledPath(install_dir)),
+      base::BindOnce(
+          [](const base::FilePath& pb_path)
+              -> std::optional<masked_domain_list::MaskedDomainList> {
+            std::string file_contents;
+            if (!base::ReadFileToString(pb_path, &file_contents)) {
+              return std::nullopt;
+            }
+            masked_domain_list::MaskedDomainList mdl;
+            if (!mdl.ParseFromString(file_contents)) {
+              return std::nullopt;
+            }
+            return mdl;
+          },
+          GetInstalledPath(install_dir)),
       base::BindOnce(on_list_ready_, version));
 }
 

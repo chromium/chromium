@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace base {
 class Version;
@@ -19,7 +19,7 @@ class ComponentUpdateService;
 
 void OnMaskedDomainListReady(
     base::Version version,
-    std::optional<mojo_base::ProtoWrapper> masked_domain_list);
+    std::optional<masked_domain_list::MaskedDomainList> masked_domain_list);
 void RegisterMaskedDomainListComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater

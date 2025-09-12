@@ -17,10 +17,9 @@
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
-#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "net/base/features.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
@@ -32,7 +31,6 @@ namespace component_updater {
 namespace {
 using ::testing::_;
 
-constexpr char kMaskedDomainListProto[] = "masked_domain_list.MaskedDomainList";
 constexpr char kUpdateSuccessHistogram[] =
     "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess";
 constexpr char kFlatbufferBuildTimeHistogram[] =
@@ -48,7 +46,7 @@ class MaskedDomainListComponentInstallerTest : public ::testing::Test {
     content::GetNetworkService();  // Initializes Network Service.
   }
 
-  mojo_base::ProtoWrapper FakeMdl() {
+  masked_domain_list::MaskedDomainList FakeMdl() {
     masked_domain_list::MaskedDomainList mdl;
     masked_domain_list::ResourceOwner* resource_owner =
         mdl.add_resource_owners();
@@ -56,11 +54,7 @@ class MaskedDomainListComponentInstallerTest : public ::testing::Test {
     resource_owner->add_owned_properties("property.example.com");
     resource_owner->add_owned_resources()->set_domain("resource.example.com");
 
-    std::string proto_str;
-    EXPECT_TRUE(mdl.SerializeToString(&proto_str));
-    return mojo_base::ProtoWrapper(base::as_byte_span(proto_str),
-                                   kMaskedDomainListProto,
-                                   mojo_base::ProtoWrapperBytes::GetPassKey());
+    return mdl;
   }
 
  protected:

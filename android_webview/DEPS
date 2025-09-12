@@ -23,6 +23,7 @@ include_rules = [
   "+components/origin_matcher",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/prefs",
+  "+components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h",
   "+components/services/heap_profiling/public",
   "+components/url_formatter",
   "+components/version_info",

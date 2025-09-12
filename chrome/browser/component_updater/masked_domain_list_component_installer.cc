@@ -29,7 +29,6 @@
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -51,13 +50,13 @@ struct BuildFlatbufferResult {
 };
 
 void BuildFlatbufferAndSendToNetworkService(
-    std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
+    std::optional<masked_domain_list::MaskedDomainList> masked_domain_list) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       // Build the flatbuffer file in a thread, as it does some CPU-intensive
       // processing and writes to disk, which can block.
       base::BindOnce(
-          [](std::optional<mojo_base::ProtoWrapper> masked_domain_list)
+          [](std::optional<masked_domain_list::MaskedDomainList> mdl)
               -> std::optional<BuildFlatbufferResult> {
             base::FilePath user_data_path;
             if (!base::PathService::Get(chrome::DIR_USER_DATA,
@@ -71,10 +70,8 @@ void BuildFlatbufferAndSendToNetworkService(
             base::FilePath regular_browsing_mdl_file_path =
                 user_data_path.Append(kRegularBrowsingMdlFileName);
 
-            std::optional<masked_domain_list::MaskedDomainList> mdl =
-                masked_domain_list->As<masked_domain_list::MaskedDomainList>();
             if (!mdl.has_value()) {
-              VLOG(1) << "Masked Domain List was empty";
+              VLOG(1) << "Masked Domain List was empty or failed to parse";
               return std::nullopt;
             }
             ip_protection::Telemetry().MdlSize(mdl->ByteSizeLong());
@@ -143,7 +140,7 @@ void BuildFlatbufferAndSendToNetworkService(
 
 void OnMaskedDomainListReady(
     base::Version version,
-    std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
+    std::optional<masked_domain_list::MaskedDomainList> masked_domain_list) {
   ip_protection::Telemetry().MdlUpdateSuccess(masked_domain_list.has_value());
   if (masked_domain_list.has_value()) {
     VLOG(1) << "Received Masked Domain List";
@@ -160,7 +157,7 @@ void RegisterMaskedDomainListComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering Masked Domain List component.";
 
   auto policy = std::make_unique<MaskedDomainListComponentInstallerPolicy>(
-      base::BindRepeating(OnMaskedDomainListReady));
+      base::BindRepeating(&OnMaskedDomainListReady));
 
   base::MakeRefCounted<ComponentInstaller>(std::move(policy),
                                            /*action_handler=*/nullptr,

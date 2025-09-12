@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 generate_jni("nonembedded_jni_headers") {
   sources = [
@@ -206,6 +207,7 @@ source_set("nonembedded") {
     "//components/component_updater/android:embedded_component_loader",
     "//components/component_updater/installer_policies:installer_policies_no_content_deps",
     "//components/prefs",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//components/update_client",
     "//components/update_client:in_process_patcher",
     "//components/update_client:in_process_unzipper",

@@ -17,13 +17,13 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "components/component_updater/android/loader_policies/masked_domain_list_component_loader_policy.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "content/public/browser/network_service_instance.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
-void UpdateMaskedDomainList(mojo_base::ProtoWrapper mdl,
+void UpdateMaskedDomainList(masked_domain_list::MaskedDomainList mdl,
                             const std::vector<std::string>& exclusion_list) {
   // TODO(crbug.com/422115607): Add support for Flatbuffers
   DLOG(ERROR)
@@ -48,7 +48,7 @@ void LoadMaskedDomainListComponent(ComponentLoaderPolicyVector& policies) {
                      component_updater::MaskedDomainListComponentLoaderPolicy>(
       /* on_list_ready=*/base::BindRepeating(
           [](base::Version version,
-             std::optional<mojo_base::ProtoWrapper> mdl) {
+             std::optional<masked_domain_list::MaskedDomainList> mdl) {
             auto exclusion_policy = static_cast<AppDefinedDomainCriteria>(
                 features::kWebViewIpProtectionExclusionCriteria.Get());
 

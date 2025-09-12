@@ -316,6 +316,7 @@ source_set("browser") {
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//components/profile_metrics",
     "//components/safe_browsing/android:remote_database_manager",
     "//components/safe_browsing/content/browser",

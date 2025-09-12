@@ -20,34 +20,33 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
-#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace {
 
 // Persisted to logs, should never change.
 constexpr char kMaskedDomainListComponentMetricsSuffix[] = "MaskedDomainList";
 
-constexpr char kMaskedDomainListProto[] = "masked_domain_list.MaskedDomainList";
-
 }  // namespace
 
 namespace component_updater {
+namespace {
 
-// Helper class to read file to named proto class for mojo wrapper.
-class ReadMaskedDomainListProto {
- public:
-  static std::optional<mojo_base::ProtoWrapper> ReadFile(base::ScopedFD fd) {
-    std::string raw_mdl;
-    if (base::ReadStreamToString(
-            base::FileToFILE(base::File(std::move(fd)), "r"), &raw_mdl)) {
-      return mojo_base::ProtoWrapper(
-          base::as_byte_span(raw_mdl), kMaskedDomainListProto,
-          mojo_base::ProtoWrapperBytes::GetPassKey());
-    }
+std::optional<masked_domain_list::MaskedDomainList> ReadMdlFromFile(
+    base::ScopedFD fd) {
+  std::string file_contents;
+  if (!base::ReadStreamToString(
+          base::FileToFILE(base::File(std::move(fd)), "r"), &file_contents)) {
     return std::nullopt;
   }
-};
+  masked_domain_list::MaskedDomainList mdl;
+  if (!mdl.ParseFromString(file_contents)) {
+    return std::nullopt;
+  }
+  return mdl;
+}
+
+}  // namespace
 
 MaskedDomainListComponentLoaderPolicy::MaskedDomainListComponentLoaderPolicy(
     ListReadyRepeatingCallback on_list_ready)
@@ -70,8 +69,7 @@ void MaskedDomainListComponentLoaderPolicy::ComponentLoaded(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadMaskedDomainListProto::ReadFile,
-                     std::move(keys_fd_iterator->second)),
+      base::BindOnce(&ReadMdlFromFile, std::move(keys_fd_iterator->second)),
       base::BindOnce(on_list_ready_, version));
 }
 

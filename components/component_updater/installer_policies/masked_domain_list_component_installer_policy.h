@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace base {
 class FilePath;
@@ -32,9 +32,8 @@ class ComponentUpdateService;
 class MaskedDomainListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
-  using ListReadyRepeatingCallback =
-      base::RepeatingCallback<void(base::Version,
-                                   std::optional<mojo_base::ProtoWrapper>)>;
+  using ListReadyRepeatingCallback = base::RepeatingCallback<
+      void(base::Version, std::optional<masked_domain_list::MaskedDomainList>)>;
 
   // |on_list_ready| will be called on the UI thread when the list is ready. It
   // is exposed here for testing.

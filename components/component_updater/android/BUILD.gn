@@ -131,6 +131,7 @@ static_library("loader_policies") {
     "//base",
     "//components/component_updater",
     "//components/component_updater/installer_policies",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//mojo/public/cpp/base:protobuf_support",
   ]
 }

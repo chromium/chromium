@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +56,8 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   const base::Version version = base::Version("0.0.1");
   const std::string expectation = "owner-1";
   std::string proto_bytes = FakeMDL(expectation);
-  base::test::RepeatingTestFuture<base::Version,
-                                  std::optional<mojo_base::ProtoWrapper>>
+  base::test::RepeatingTestFuture<
+      base::Version, std::optional<masked_domain_list::MaskedDomainList>>
       future;
   auto policy = MaskedDomainListComponentInstallerPolicy(future.GetCallback());
 
@@ -70,21 +69,19 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   policy.ComponentReady(version, component_install_dir_.GetPath(),
                         base::Value::Dict());
 
-  std::tuple<base::Version, std::optional<mojo_base::ProtoWrapper>> got =
-      future.Take();
-  EXPECT_TRUE(std::get<0>(got).IsValid());
-  EXPECT_EQ(std::get<0>(got), version);
-  EXPECT_TRUE(std::get<1>(got).has_value());
-  auto mdl = std::get<1>(got)->As<masked_domain_list::MaskedDomainList>();
-  EXPECT_EQ(mdl->resource_owners()[0].owner_name(), expectation);
+  auto [version_got, mdl_got] = future.Take();
+  EXPECT_TRUE(version_got.IsValid());
+  EXPECT_EQ(version_got, version);
+  EXPECT_TRUE(mdl_got.has_value());
+  EXPECT_EQ(mdl_got->resource_owners()[0].owner_name(), expectation);
 }
 
 TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
   scoped_feature_list_.InitAndEnableFeature(
       network::features::kMaskedDomainList);
 
-  base::test::RepeatingTestFuture<base::Version,
-                                  std::optional<mojo_base::ProtoWrapper>>
+  base::test::RepeatingTestFuture<
+      base::Version, std::optional<masked_domain_list::MaskedDomainList>>
       future;
   auto policy = MaskedDomainListComponentInstallerPolicy(future.GetCallback());
 
@@ -101,13 +98,11 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
       proto_bytes_v1));
   policy.ComponentReady(version1, dir_v1.GetPath(), base::Value::Dict());
 
-  std::tuple<base::Version, std::optional<mojo_base::ProtoWrapper>> got =
-      future.Take();
-  EXPECT_TRUE(std::get<0>(got).IsValid());
-  EXPECT_EQ(std::get<0>(got), version1);
-  EXPECT_TRUE(std::get<1>(got).has_value());
-  auto mdl_v1 = std::get<1>(got)->As<masked_domain_list::MaskedDomainList>();
-  EXPECT_EQ(mdl_v1->resource_owners()[0].owner_name(), list_v1);
+  auto [version1_got, mdl1_got] = future.Take();
+  EXPECT_TRUE(version1_got.IsValid());
+  EXPECT_EQ(version1_got, version1);
+  EXPECT_TRUE(mdl1_got.has_value());
+  EXPECT_EQ(mdl1_got->resource_owners()[0].owner_name(), list_v1);
 
   // Install newer version of the component, which should be picked up
   // when calling ComponentReady again.
@@ -123,13 +118,11 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
       proto_bytes_v2));
   policy.ComponentReady(version2, dir_v2.GetPath(), base::Value::Dict());
 
-  std::tuple<base::Version, std::optional<mojo_base::ProtoWrapper>> got2 =
-      future.Take();
-  EXPECT_TRUE(std::get<0>(got2).IsValid());
-  EXPECT_EQ(std::get<0>(got2), version2);
-  EXPECT_TRUE(std::get<1>(got2).has_value());
-  auto mdl_v2 = std::get<1>(got2)->As<masked_domain_list::MaskedDomainList>();
-  EXPECT_EQ(mdl_v2->resource_owners()[0].owner_name(), list_v2);
+  auto [version2_got, mdl2_got] = future.Take();
+  EXPECT_TRUE(version2_got.IsValid());
+  EXPECT_EQ(version2_got, version2);
+  EXPECT_TRUE(mdl2_got.has_value());
+  EXPECT_EQ(mdl2_got->resource_owners()[0].owner_name(), list_v2);
 
   env_.RunUntilIdle();
 }
