@@ -848,7 +848,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 // Starts the export passwords flow after the user confirmed the corresponding
 // alert.
 - (void)onStartExportFlowConfirmed {
-  [_mediator userDidStartExportFlow];
+  [_mediator
+      userDidStartExportFlow:_passwordSettingsViewController.view.window];
 }
 
 // Cancels the password export flow.

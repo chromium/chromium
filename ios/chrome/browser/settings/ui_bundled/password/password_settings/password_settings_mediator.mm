@@ -22,12 +22,14 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_exporter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/webauthn/model/credential_exporter.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -226,10 +228,16 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _savedPasswordsPresenter->DeleteAllData(base::DoNothing());
 }
 
-- (void)userDidStartExportFlow {
-  std::vector<CredentialUIEntry> passwords =
-      _savedPasswordsPresenter->GetSavedPasswords();
-  [_passwordExporter startExportFlow:passwords];
+- (void)userDidStartExportFlow:(UIWindow*)window {
+  if (CredentialExchangeEnabled()) {
+    CredentialExporter* credentialExporter =
+        [[CredentialExporter alloc] initWithWindow:window];
+    [credentialExporter startExport];
+  } else {
+    std::vector<CredentialUIEntry> passwords =
+        _savedPasswordsPresenter->GetSavedPasswords();
+    [_passwordExporter startExportFlow:passwords];
+  }
 }
 
 - (void)userDidCompleteExportFlow {

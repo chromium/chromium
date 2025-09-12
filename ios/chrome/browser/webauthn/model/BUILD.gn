@@ -2,12 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+
 source_set("model") {
   sources = [
+    "credential_exporter.h",
+    "credential_exporter.mm",
     "ios_passkey_model_factory.cc",
     "ios_passkey_model_factory.h",
   ]
   deps = [
+    ":credential_export_manager_swift",
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
@@ -18,5 +23,13 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/web/public",
+  ]
+}
+
+swift_source_set("credential_export_manager_swift") {
+  sources = [ "credential_export_manager.swift" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
   ]
 }

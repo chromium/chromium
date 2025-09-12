@@ -53,7 +53,7 @@ include_rules = [
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/web/model/features.h",
-  "+ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h",
+  "+ios/chrome/browser/webauthn/model",
 ]
 
 specific_include_rules = {

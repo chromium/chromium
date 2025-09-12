@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_bulk_move_handler.h"
@@ -67,8 +68,9 @@ struct CredentialCounts {
 // Indicates that the user triggered the deletion flow.
 - (void)userDidStartDeleteFlow;
 
-// Indicates that the user triggered the export flow.
-- (void)userDidStartExportFlow;
+// Indicates that the user triggered the export flow. `window` is used as an
+// anchor for the OS views in the Credential Exchange feature flow.
+- (void)userDidStartExportFlow:(UIWindow*)window;
 
 // Indicates that the user completed the export flow.
 - (void)userDidCompleteExportFlow;
