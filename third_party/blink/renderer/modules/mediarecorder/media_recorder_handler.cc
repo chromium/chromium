@@ -1210,8 +1210,17 @@ void MediaRecorderHandler::Trace(Visitor* visitor) const {
 void MediaRecorderHandler::OnVideoEncodingError(
     media::EncoderStatus error_status) {
   if (recorder_) {
-    recorder_->OnError(DOMExceptionCode::kEncodingError,
-                       String(media::EncoderStatusCodeToString(error_status)));
+    // The MediaRecorder::OnError callback stops the MediaRecorderHandler,
+    // which in turn invalidates a reference to the calling VideoTrackRecorder
+    // instance. To avoid access to an unallocated object, this operation is
+    // deferred to a subsequent task.
+    // See https://crbug.com/441921804 for more details.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        blink::BindOnce(
+            &MediaRecorder::OnError, WrapWeakPersistent(recorder_.Get()),
+            DOMExceptionCode::kEncodingError,
+            String(media::EncoderStatusCodeToString(error_status))));
   }
 }
 
