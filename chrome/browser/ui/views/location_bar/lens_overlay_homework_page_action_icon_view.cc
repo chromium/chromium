@@ -49,7 +49,7 @@ LensOverlayHomeworkPageActionIconView::LensOverlayHomeworkPageActionIconView(
               kLensOverlayHomeworkPageActionIconElementId);
 
   SetLabel(l10n_util::GetStringUTF16(
-      IDS_CONTENT_LENS_OVERLAY_HOMEWORK_ENTRYPOINT_LABEL));
+      IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL));
   // Elide behavior must be set to allow label to collapse.
   SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
   SetUseTonalColorsWhenExpanded(true);
