@@ -38,6 +38,7 @@ PasswordChangeHats::~PasswordChangeHats() = default;
 void PasswordChangeHats::MaybeLaunchSurvey(
     const std::string& trigger,
     std::optional<base::TimeDelta> password_change_duration,
+    std::optional<bool> blocking_challenge_detected,
     content::WebContents* web_contents) {
   if (!hats_service_) {
     return;
@@ -69,13 +70,19 @@ void PasswordChangeHats::MaybeLaunchSurvey(
             base::ToString(bucketed_runtime);
   }
 
+  SurveyBitsData survey_bits_data = {
+      {password_manager::features_util::
+           kPasswordChangeSuggestedPasswordsAdoption,
+       adopted_generated_passwords_}};
+  if (blocking_challenge_detected.has_value()) {
+    survey_bits_data[password_manager::features_util::
+                         kPasswordChangeBlockingChallengeDetected] =
+        *blocking_challenge_detected;
+  }
+
   hats_service_->LaunchDelayedSurveyForWebContents(
       trigger, web_contents,
-      /*timeout_ms=*/0, /*product_specific_bits_data=*/
-      {{password_manager::features_util::
-            kPasswordChangeSuggestedPasswordsAdoption,
-        adopted_generated_passwords_}},
-      survey_string_data);
+      /*timeout_ms=*/0, survey_bits_data, survey_string_data);
 }
 
 void PasswordChangeHats::OnGetPasswordStoreResultsOrErrorFrom(

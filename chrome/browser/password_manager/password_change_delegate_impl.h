@@ -170,6 +170,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
+  // Whether a blocking challenge (e.g. an OTP) was detected in the main tab.
+  bool blocking_challenge_detected_ = false;
+
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };
 

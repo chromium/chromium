@@ -219,7 +219,9 @@ void MaybeTriggerPasswordChangeDelayedSurvey(
             }
             password_change_hats->MaybeLaunchSurvey(
                 kHatsSurveyTriggerPasswordChangeDelayed,
-                /*password_change_duration=*/std::nullopt, web_contents.get());
+                /*password_change_duration=*/std::nullopt,
+                /*blocking_challenge_detected=*/std::nullopt,
+                web_contents.get());
           },
           std::move(password_change_hats), web_contents),
       base::Seconds(1));
