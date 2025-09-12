@@ -2493,6 +2493,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11_amd_890m_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "1002:150e-32.0.21025.10016",
+            "os": "Windows-11-26100",
+            "display_attached": "1",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11_amd_rx_7600_stable",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.

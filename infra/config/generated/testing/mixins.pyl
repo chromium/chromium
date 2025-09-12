@@ -921,6 +921,17 @@
       },
     },
   },
+  'win11_amd_890m_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:150e-32.0.21025.10016',
+        'os': 'Windows-11-26100',
+        'display_attached': '1',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'win11_amd_rx_7600_stable': {
     'fail_if_unused': False,
     'swarming': {

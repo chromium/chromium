@@ -984,6 +984,7 @@
     "gpu-fyi-try-win11-nvidia-4070-rel-64": "try/gpu-fyi-try-win11-nvidia-4070-rel-64/gn-args.json",
     "gpu-fyi-try-win11-qualcomm-rel-64": "try/gpu-fyi-try-win11-qualcomm-rel-64/gn-args.json",
     "gpu-fyi-try-win11-x64-amd-780m-exp": "try/gpu-fyi-try-win11-x64-amd-780m-exp/gn-args.json",
+    "gpu-fyi-try-win11-x64-amd-890m-exp": "try/gpu-fyi-try-win11-x64-amd-890m-exp/gn-args.json",
     "gpu-fyi-try-win11-x64-intel-arc-140v-exp": "try/gpu-fyi-try-win11-x64-intel-arc-140v-exp/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "linux-win-cross-rel": "try/linux-win-cross-rel/gn-args.json",

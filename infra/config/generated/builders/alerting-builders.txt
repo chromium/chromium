@@ -247,6 +247,7 @@ ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
+ci/Win11 FYI x64 Experimental Release (AMD 890M)
 ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)
 ci/Win11 FYI x64 Release (AMD RX 7600)
 ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
@@ -555,6 +556,7 @@ try/gpu-fyi-try-win11-nvidia-4070-exp-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
+try/gpu-fyi-try-win11-x64-amd-890m-exp
 try/gpu-fyi-try-win11-x64-intel-arc-140v-exp
 try/gpu-try-android-pixel-2-64
 try/gpu-try-linux-nvidia-rel
