@@ -5367,12 +5367,7 @@ TEST_P(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
-#if PA_BUILDFLAG(IS_FUCHSIA) || PA_BUILDFLAG(IS_CHROMEOS)
-// TODO: https://crbug.com/331366007 - re-enable once bug is fixed.
-TEST_P(PartitionAllocTest, DISABLED_CheckReservationType) {
-#else
 TEST_P(PartitionAllocTest, CheckReservationType) {
-#endif  // PA_BUILDFLAG(IS_FUCHSIA) || PA_BUILDFLAG(IS_CHROMEOS)
   ReservationOffsetTable table = allocator.root()->GetReservationOffsetTable();
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
@@ -5458,6 +5453,21 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   address_to_check =
       partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
 
+  EXPECT_FALSE(
+      IsManagedByNormalBucketsForTesting(address_to_check, allocator.root()));
+  EXPECT_FALSE(
+      IsManagedByDirectMapForTesting(address_to_check, allocator.root()));
+  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMapForTesting(address_to_check,
+                                                             allocator.root()));
+
+  // Since death test launches a new process, it may cause memory allocation
+  // and the allocated memory may contain the system pages which have been
+  // just freed, c.f. `allocator.root()->Free(ptr)`. In the case,
+  //   EXPECT_FALSE(
+  //   IsManagedByNormalBucketsForTesting(address_to_check, allocator.root()));
+  // will fail because the `address_to_check` points to an allocated memory
+  // region. This will cause flaky test failure of `CheckReservationType`.
+
   // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
     (!defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG))
@@ -5466,12 +5476,6 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
 #endif  //  PA_BUILDFLAG(DCHECKS_ARE_ON) && (!defined(OFFICIAL_BUILD) ||
         //  PA_BUILDFLAG(IS_DEBUG))
 
-  EXPECT_FALSE(
-      IsManagedByNormalBucketsForTesting(address_to_check, allocator.root()));
-  EXPECT_FALSE(
-      IsManagedByDirectMapForTesting(address_to_check, allocator.root()));
-  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMapForTesting(address_to_check,
-                                                             allocator.root()));
 }
 
 // Test for crash http://crbug.com/1169003.
