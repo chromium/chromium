@@ -162,11 +162,6 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
                   candidate_refresh_endpoint));
 
   for (const auto& cred : params.credentials) {
-    if (cred.name.empty()) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kInvalidCredentials});
-    }
-
     std::optional<CookieCraving> craving = CookieCraving::Create(
         params.fetcher_url, cred.name, cred.attributes, base::Time::Now());
     if (craving) {

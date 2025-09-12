@@ -903,6 +903,75 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
+TEST_F(RegistrationTest, CredEntryWithoutAttributes) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie"
+  }]
+})";
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+}
+
+TEST_F(RegistrationTest, CredEntryWithEmptyName) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kInvalidCredentials);
+}
+
 TEST_F(RegistrationTest, ReturnTextFile) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnTextResponse));

@@ -85,13 +85,15 @@ ParseCredentials(const base::Value::List& credentials_list) {
           SessionError{SessionError::ErrorType::kInvalidCredentials});
     }
     const std::string* name = credential_dict->FindString("name");
-    const std::string* attributes = credential_dict->FindString("attributes");
-    if (!name || !attributes) {
+    std::string attributes =
+        FindStringWithDefault(*credential_dict, "attributes", "");
+    if (!name || name->empty()) {
       return base::unexpected(
           SessionError{SessionError::ErrorType::kInvalidCredentials});
     }
 
-    cookie_credentials.push_back(SessionParams::Credential{*name, *attributes});
+    cookie_credentials.push_back(
+        SessionParams::Credential{*name, std::move(attributes)});
   }
 
   return cookie_credentials;
