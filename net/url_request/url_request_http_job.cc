@@ -2139,11 +2139,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
           base::UmaHistogramTimes(
               "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached",
               total_time);
-          base::UmaHistogramTimes(
-              base::StrCat(
-                  {"Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached.Chain",
-                   base::NumberToString(proxy_chain.ip_protection_chain_id())}),
-              total_time);
           base::UmaHistogramCustomCounts(
               "Net.HttpJob.IpProtection.Fallback.BytesSent",
               GetTotalSentBytes(), 1, 50000000, 50);
