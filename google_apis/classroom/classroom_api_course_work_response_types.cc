@@ -39,12 +39,6 @@ constexpr char kDueTimeMinutesComponent[] = "minutes";
 constexpr char kDueTimeSecondsComponent[] = "seconds";
 constexpr char kDueTimeNanosComponent[] = "nanos";
 
-constexpr char kApiResponseCourseWorkItemMaterialDriveKey[] = "driveFile";
-constexpr char kApiResponseCourseWorkItemMaterialYoutubeVideoKey[] =
-    "youtubeVideo";
-constexpr char kApiResponseCourseWorkItemMaterialLinkKey[] = "link";
-constexpr char kApiResponseCourseWorkItemMaterialFormKey[] = "form";
-
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
 constexpr char kAssignmentCourseWorkItemType[] = "ASSIGNMENT";
 constexpr char kShortAnswerQuestionCourseWorkItemType[] =
@@ -121,76 +115,6 @@ std::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
 }
 
 }  // namespace
-
-// ----- Material -----
-
-Material::Material() = default;
-
-Material::~Material() = default;
-
-// static
-bool Material::ConvertMaterial(const base::Value* input, Material* output) {
-  const base::Value::Dict* dict = input->GetIfDict();
-  if (!dict) {
-    return false;
-  }
-
-  const auto* const sharedDriveFile =
-      dict->FindDict(kApiResponseCourseWorkItemMaterialDriveKey);
-  const auto* const youtubeVideo =
-      dict->FindDict(kApiResponseCourseWorkItemMaterialYoutubeVideoKey);
-  const auto* const link =
-      dict->FindDict(kApiResponseCourseWorkItemMaterialLinkKey);
-  const auto* const form =
-      dict->FindDict(kApiResponseCourseWorkItemMaterialFormKey);
-  if (sharedDriveFile) {
-    const auto* const driveFile =
-        sharedDriveFile->FindDict(kApiResponseCourseWorkItemMaterialDriveKey);
-    if (!driveFile) {
-      // Shared drive file should contain a drive file.
-      return false;
-    }
-    const std::string* title =
-        driveFile->FindString(kApiResponseCourseWorkItemTitleKey);
-    if (!title) {
-      // Title is required field.
-      return false;
-    }
-    output->title_ = *title;
-    output->type_ = Material::Type::kSharedDriveFile;
-  } else if (youtubeVideo) {
-    const std::string* title =
-        youtubeVideo->FindString(kApiResponseCourseWorkItemTitleKey);
-    if (!title) {
-      // Title is required field.
-      return false;
-    }
-    output->title_ = *title;
-    output->type_ = Material::Type::kYoutubeVideo;
-  } else if (link) {
-    const std::string* title =
-        link->FindString(kApiResponseCourseWorkItemTitleKey);
-    if (!title) {
-      // Title is required field.
-      return false;
-    }
-    output->title_ = *title;
-    output->type_ = Material::Type::kLink;
-  } else if (form) {
-    const std::string* title =
-        form->FindString(kApiResponseCourseWorkItemTitleKey);
-    if (!title) {
-      // Title is required field.
-      return false;
-    }
-    output->title_ = *title;
-    output->type_ = Material::Type::kForm;
-  } else {
-    output->type_ = Material::Type::kUnknown;
-  }
-
-  return true;
-}
 
 // ----- CourseWorkItem -----
 
