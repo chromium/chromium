@@ -39,7 +39,7 @@
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -60,7 +60,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Used in tests for apps, which are not supported on Android.
 constexpr char kManifest[] =
     R"({
@@ -92,7 +92,7 @@ bool ExpectChromeAppsDefaultEnabled() {
   return true;
 #endif
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -247,8 +247,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, GenerateAppForLink) {
   web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-// Skipped on Android because it does not support Chrome apps.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371332103): Determine if this needs to be supported on desktop
+// Android. Chrome apps are not supported, but the replacement_web_app key can
+// be used (rarely) by extensions.
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
   InstallReplacementWebAppApiTest()
@@ -418,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
   RunInstallableWebAppTest(kAppManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {

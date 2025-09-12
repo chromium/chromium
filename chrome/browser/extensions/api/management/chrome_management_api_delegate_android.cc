@@ -5,15 +5,15 @@
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 
 namespace extensions {
 
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const Extension* extension,
     content::BrowserContext* context) const {
-  // Return false to to cause the chrome.management API call to return an error.
-  // This is similar to how we behave with Chrome Apps on Win/Mac/Linux.
-  return false;
+  // chrome.management.launchApp() is disabled at the API impl level.
+  NOTREACHED();
 }
 
 std::unique_ptr<InstallPromptDelegate>
@@ -34,8 +34,8 @@ bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
     ManagementCreateAppShortcutFunction* function,
     const Extension* extension,
     std::string* error) const {
-  NOTIMPLEMENTED();
-  return false;
+  // chrome.management.createAppShortcut() is disabled at the API impl level.
+  NOTREACHED();
 }
 
 std::unique_ptr<AppForLinkDelegate>
@@ -44,8 +44,8 @@ ChromeManagementAPIDelegate::GenerateAppForLinkFunctionDelegate(
     content::BrowserContext* context,
     const std::string& title,
     const GURL& launch_url) const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // chrome.management.generateAppForLink() is disabled at the API impl level.
+  NOTREACHED();
 }
 
 bool ChromeManagementAPIDelegate::CanContextInstallWebApps(

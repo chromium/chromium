@@ -85,6 +85,15 @@ bool ShouldExposeViaManagementAPI(const Extension& extension) {
   return !Manifest::IsComponentLocation(extension.location());
 }
 
+// Utility function to make the code below less ifdef-y.
+bool IsRunningOnAndroid() {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
 std::vector<std::string> CreateWarningsList(const Extension* extension) {
   std::vector<std::string> warnings_list;
   for (const PermissionMessage& msg :
@@ -398,6 +407,9 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
 }
 
 ExtensionFunction::ResponseAction ManagementLaunchAppFunction::Run() {
+  if (IsRunningOnAndroid()) {
+    return RespondNow(Error(keys::kLaunchAppNotSupported));
+  }
   std::optional<management::LaunchApp::Params> params =
       management::LaunchApp::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -898,6 +910,10 @@ void ManagementCreateAppShortcutFunction::OnCloseShortcutPrompt(bool created) {
 }
 
 ExtensionFunction::ResponseAction ManagementCreateAppShortcutFunction::Run() {
+  if (IsRunningOnAndroid()) {
+    return RespondNow(Error(keys::kCreateAppShortcutNotSupported));
+  }
+
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode()) {
     return RespondNow(Error(keys::kNotAllowedInKioskError));
   }
@@ -1029,6 +1045,10 @@ void ManagementGenerateAppForLinkFunction::FinishCreateWebApp(
 }
 
 ExtensionFunction::ResponseAction ManagementGenerateAppForLinkFunction::Run() {
+  if (IsRunningOnAndroid()) {
+    return RespondNow(Error(keys::kGenerateAppForLinkNotSupported));
+  }
+
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode()) {
     return RespondNow(Error(keys::kNotAllowedInKioskError));
   }
