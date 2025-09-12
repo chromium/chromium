@@ -7,13 +7,13 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 
 namespace skia {
 

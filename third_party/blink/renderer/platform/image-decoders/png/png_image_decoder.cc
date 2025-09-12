@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace blink {

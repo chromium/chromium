@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "third_party/skia/include/encode/SkWebpEncoder.h"
 
 namespace blink {

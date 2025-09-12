@@ -37,8 +37,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 
 namespace blink {
 

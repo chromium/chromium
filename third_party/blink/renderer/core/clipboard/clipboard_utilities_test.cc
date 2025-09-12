@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 
 namespace blink {
 

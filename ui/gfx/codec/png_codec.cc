@@ -12,11 +12,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
 

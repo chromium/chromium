@@ -17,9 +17,9 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/recording_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/gfx/geometry/rect.h"
 
 constexpr size_t kMaxScreenshotFileSize = 50 * 1000L * 1000L;  // 50 MB.

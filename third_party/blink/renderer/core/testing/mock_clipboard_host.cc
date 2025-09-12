@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
