@@ -119,6 +119,17 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
+  self.alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.alertScreen.view.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor],
+    [self.alertScreen.view.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [self.alertScreen.view.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.alertScreen.view.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
   presentationController.preferredCornerRadius = kPreferredCornerRadius;
 }
 
