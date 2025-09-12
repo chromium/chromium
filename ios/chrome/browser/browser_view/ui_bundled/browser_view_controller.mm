@@ -1046,16 +1046,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   }
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateUIOnTraitChange:previousTraitCollection];
-}
-#endif
-
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -1765,15 +1755,6 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-  // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
-  // forwarded because in some cases the presented view controller isn't a child
-  // of the BVC in the view controller hierarchy (some intervening object isn't
-  // a view controller).
-  [self.presentedViewController
-      traitCollectionDidChange:previousTraitCollection];
-#endif
-
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =
         self.currentWebState->GetWebViewProxy().contentInset;
@@ -1853,7 +1834,6 @@ const CGFloat kTopDynamicIslandInset = 24;
 
 // On iOS 26, returns the top inset with corner adapation, otherwise returns 0.
 - (CGFloat)topInsetWithCornerAdaptation {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIViewLayoutRegion* safeAreaRegion =
         [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:
@@ -1862,7 +1842,7 @@ const CGFloat kTopDynamicIslandInset = 24;
         directionalEdgeInsetsForLayoutRegion:safeAreaRegion];
     return calculatedInsets.top;
   }
-#endif
+
   return 0;
 }
 
@@ -1870,7 +1850,6 @@ const CGFloat kTopDynamicIslandInset = 24;
 // of the tab strip. This is needed on iPad when the app is windowed and pinned
 // to the top with fullscreen is enabled.
 - (void)configureTopBackgroundView {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if (self.tabStripView) {
       _topBackgroundView = [[UIView alloc] init];
@@ -1892,7 +1871,6 @@ const CGFloat kTopDynamicIslandInset = 24;
       ]];
     }
   }
-#endif
 }
 
 #pragma mark - Private Methods: Tap handling
@@ -2166,14 +2144,13 @@ const CGFloat kTopDynamicIslandInset = 24;
 // progress of 1.0 fully shows the headers and a progress of 0.0 fully hides
 // them.
 - (void)updateHeadersForFullscreenProgress:(CGFloat)progress {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if (self.tabStripView) {
       self.tabStripView.alpha = progress;
       _fakeStatusBarView.alpha = progress;
     }
   }
-#endif
+
   CGFloat offset =
       AlignValueToPixel((1.0 - progress) * [self primaryToolbarHeightDelta]);
   [self setFramesForHeaders:[self headerViews] atOffset:offset];
