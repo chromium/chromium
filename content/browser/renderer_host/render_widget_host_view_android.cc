@@ -2520,7 +2520,9 @@ void RenderWidgetHostViewAndroid::OnPointerLockRelease() {
 
 bool RenderWidgetHostViewAndroid::LockKeyboard(
     std::optional<base::flat_set<ui::DomCode>> codes) {
-  CHECK(!keyboard_locked_);
+  if (keyboard_locked_) {
+    return true;
+  }
 
   if (!base::FeatureList::IsEnabled(features::kKeyboardLockApiOnAndroid)) {
     return false;
