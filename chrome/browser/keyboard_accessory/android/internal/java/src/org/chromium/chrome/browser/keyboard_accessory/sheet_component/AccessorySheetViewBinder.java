@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Observes {@link AccessorySheetProperties} changes (like a newly available tab) and triggers the
  * {@link AccessorySheetViewBinder} which will modify the view accordingly.
  */
+@NullMarked
 class AccessorySheetViewBinder {
     static void bind(PropertyModel model, View sheetView, PropertyKey propertyKey) {
         AccessorySheetView view = (AccessorySheetView) sheetView;

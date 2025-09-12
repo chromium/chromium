@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -25,6 +26,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * keyboard accessory bar. It sets up and triggers relevant IPH libraries and is not supposed to
  * keep any state or perform any logic.
  */
+@NullMarked
 class KeyboardAccessoryIphUtils {
     /**
      * Emits a filling event that matches the given feature. Noop if no tracker is available yet.
@@ -91,8 +93,8 @@ class KeyboardAccessoryIphUtils {
      * @param tracker The {@link Tracker} associated with the current session.
      * @return True iff any IPH prompting to use a chip was shown before.
      */
-    static boolean hasShownAnyAutofillIphBefore(Tracker tracker) {
-        if (!tracker.isInitialized()) return false;
+    static boolean hasShownAnyAutofillIphBefore(@Nullable Tracker tracker) {
+        if (tracker == null || !tracker.isInitialized()) return false;
         return tracker.getTriggerState(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE)
                         == TriggerState.HAS_BEEN_DISPLAYED
                 || tracker.getTriggerState(
@@ -117,7 +119,7 @@ class KeyboardAccessoryIphUtils {
      * @return The boolean value indicating whether the IPH has been shown.
      */
     static boolean showHelpBubble(
-            Tracker tracker,
+            @Nullable Tracker tracker,
             String feature,
             RectProvider rectProvider,
             Context context,
@@ -142,7 +144,11 @@ class KeyboardAccessoryIphUtils {
      * @return The boolean value indicating whether the IPH has been shown.
      */
     static boolean showHelpBubble(
-            Tracker tracker, String feature, View view, View rootView, @Nullable String helpText) {
+            @Nullable Tracker tracker,
+            String feature,
+            View view,
+            View rootView,
+            @Nullable String helpText) {
         TextBubble helpBubble =
                 createBubble(
                         tracker,
@@ -163,13 +169,14 @@ class KeyboardAccessoryIphUtils {
         return true;
     }
 
-    private static TextBubble createBubble(
-            Tracker tracker,
+    private static @Nullable TextBubble createBubble(
+            @Nullable Tracker tracker,
             String feature,
             RectProvider rectProvider,
             Context context,
             View rootView,
             @Nullable String helpText) {
+        if (tracker == null) return null;
         if (!tracker.isInitialized()) return null;
         if (!tracker.shouldTriggerHelpUi(feature)) return null; // This call records the IPH intent.
         TextBubble helpBubble;
@@ -252,11 +259,12 @@ class KeyboardAccessoryIphUtils {
      * @return True if IPH is triggered, and false if no IPH should be triggered.
      */
     static boolean maybeShowIph(
-            Tracker tracker,
+            @Nullable Tracker tracker,
             KeyboardAccessoryProperties.AutofillBarItem item,
             View chipView,
             View rootView) {
         String iphFeature = item.getFeatureForIph();
+        if (tracker == null) return false;
         if (iphFeature == null) return false;
 
         if ((iphFeature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)

@@ -12,6 +12,8 @@ import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -24,6 +26,7 @@ import java.util.HashMap;
  * This component reflects the state of selected tabs in the keyboard accessory. It can be assigned
  * to multiple {@link KeyboardAccessoryButtonGroupView}s and will keep them in sync.
  */
+@NullMarked
 public class KeyboardAccessoryButtonGroupCoordinator {
     private final PropertyModel mModel =
             new PropertyModel.Builder(TABS, ACTIVE_TAB, BUTTON_SELECTION_CALLBACKS)
@@ -54,6 +57,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     public interface AccessoryTabObserver {
         /**
          * Called when the active tab changes.
+         *
          * @param activeTab The index of the active tab.
          */
         void onActiveTabChanged(Integer activeTab);
@@ -65,8 +69,9 @@ public class KeyboardAccessoryButtonGroupCoordinator {
      */
     public interface SheetOpenerCallbacks {
         /**
-         * Called when the this item is bound to a view. It's useful for setting up MCPs that
-         * need the view for initialization.
+         * Called when the this item is bound to a view. It's useful for setting up MCPs that need
+         * the view for initialization.
+         *
          * @param sheetOpenerView The {@link View} representing this item.
          */
         void onViewBound(View sheetOpenerView);
@@ -80,7 +85,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
 
     private class TemporarySheetOpenerBindings {
         private final PropertyModelChangeProcessor mMcp;
-        private ViewPager.OnPageChangeListener mOnPageChangeListener;
+        private @MonotonicNonNull ViewPager.OnPageChangeListener mOnPageChangeListener;
 
         TemporarySheetOpenerBindings(View view) {
             mMcp =
@@ -92,6 +97,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
             mMediator.addPageChangeListener(mOnPageChangeListener);
         }
 
+        @SuppressWarnings("NullAway")
         void destroy() {
             mMediator.removePageChangeListener(mOnPageChangeListener);
             mMcp.destroy();
@@ -100,9 +106,10 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     }
 
     /**
-     * Creates the {@link KeyboardAccessoryButtonGroupViewBinder} that is linked to the
-     * {@link ListModelChangeProcessor} that connects the given
-     * {@link KeyboardAccessoryButtonGroupView} to the given tab list.
+     * Creates the {@link KeyboardAccessoryButtonGroupViewBinder} that is linked to the {@link
+     * ListModelChangeProcessor} that connects the given {@link KeyboardAccessoryButtonGroupView} to
+     * the given tab list.
+     *
      * @param model the {@link PropertyModel} with {@link KeyboardAccessoryButtonGroupProperties}.
      * @param inflatedView the {@link KeyboardAccessoryButtonGroupView}.
      * @return Returns a fully initialized and wired {@link KeyboardAccessoryButtonGroupViewBinder}.
@@ -129,6 +136,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
 
     /**
      * Returns a delegate that executes on several tab-related actions.
+     *
      * @return A {@link KeyboardAccessoryCoordinator.TabSwitchingDelegate}.
      */
     public KeyboardAccessoryCoordinator.TabSwitchingDelegate getTabSwitchingDelegate() {
@@ -137,6 +145,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
 
     /**
      * Adds a {@link AccessoryTabObserver} that is notified about events emitted when a tab changes.
+     *
      * @param accessoryTabObserver The component to be notified of tab changes.
      */
     public void setTabObserver(AccessoryTabObserver accessoryTabObserver) {
@@ -147,6 +156,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
      * Returns an OnPageChangeListener that remains the same even if the assigned views changes.
      * This is useful if multiple views are bound to this component or if the view may temporarily
      * be destroyed (like in a RecyclerView).
+     *
      * @return A stable {@link ViewPager.OnPageChangeListener}.
      */
     public ViewPager.OnPageChangeListener getStablePageChangeListener() {

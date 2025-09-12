@@ -10,21 +10,24 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.recordSheetTrigger;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * This class provides helpers to record general metrics about accessory sheets.
- * It sets up an observers to observe {@link AccessorySheetProperties}-based models and records
- * metrics accordingly.
+ * This class provides helpers to record general metrics about accessory sheets. It sets up an
+ * observers to observe {@link AccessorySheetProperties}-based models and records metrics
+ * accordingly.
  */
+@NullMarked
 class AccessorySheetMetricsRecorder {
     /** The Recorder itself should be stateless and have no need for an instance. */
     private AccessorySheetMetricsRecorder() {}
 
     /**
      * Registers an observer to the given model that records changes for all properties.
+     *
      * @param accessorySheetModel The observable {@link AccessorySheetProperties}.
      */
     static void registerAccessorySheetModelMetricsObserver(PropertyModel accessorySheetModel) {
