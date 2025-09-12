@@ -51,19 +51,15 @@ WebNNContextImpl::WebNNContextImpl(
       scheduler_task_runner_(std::move(task_runner)),
       write_tensor_consumer_(std::move(write_tensor_consumer)) {
   CHECK(context_provider_);
-  // Safe to use base::Unretained because `this` is sequence-bound to
-  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
-  // pending tasks - including this one - before the object is destroyed.
-  on_lost_callback_ = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      [](WebNNContextImpl* self, const std::string& reason) {
-        self->GetMojoReceiver().ResetWithReason(/*custom_reason=*/0, reason);
-        self->PostTaskToOwningTaskRunner(base::BindOnce(
-            &WebNNContextImpl::OnDisconnect, base::Unretained((self))));
-      },
-      base::Unretained(this)));
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
+  // Close all tensor pipes explicitly so no response callbacks are pending as
+  // Mojo forbids callbacks that are pending during destruction.
+  for (auto impl : tensor_impls_) {
+    impl->ResetMojoReceiver();
+  }
+
   // Note: ShutDown() prevents new tasks from being scheduled and drops existing
   // ones from executing.
   scheduler_task_runner_->ShutDown();
@@ -237,8 +233,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
   // Must be a scheduled task since this depends on shared image creation task.
-  scheduler_task_runner()->PostTask(
-      FROM_HERE,
+  PostTaskToOwningTaskRunner(
       base::BindOnce(
           [](base::WeakPtr<WebNNContextImpl> self,
              mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -285,7 +280,15 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  std::move(on_lost_callback_).Run(reason);
+  // Safe to use base::Unretained because `this` is sequence-bound to
+  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
+  // pending tasks - including this one - before the object is destroyed.
+  PostTaskToOwningTaskRunner(base::BindOnce(
+      [](WebNNContextImpl* self, const std::string& reason) {
+        self->GetMojoReceiver().ResetWithReason(/*custom_reason=*/0, reason);
+        self->OnDisconnect();
+      },
+      base::Unretained(this), reason));
 }
 
 scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
