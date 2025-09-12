@@ -273,7 +273,7 @@ Network.requestWillBeSentExtraInfo{
     connectTiming : <object>
     headers : {
         Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-        Accept-Encoding : gzip, deflate, br
+        Accept-Encoding : gzip, deflate, br, zstd
         Connection : keep-alive
         Host : localhost:8443
         Referer : https://127.0.0.1:8443/
