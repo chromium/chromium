@@ -121,6 +121,13 @@ export function getHtml(this: ComposeboxElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
+  ${this.shouldShowSuggestionActivityLink_() ? html`
+    <div id="suggestionActivity">
+      <localized-link
+        localized-string="${this.i18nAdvanced('suggestionActivityLink')}">
+      </localized-link>
+    </div>
+  `: ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

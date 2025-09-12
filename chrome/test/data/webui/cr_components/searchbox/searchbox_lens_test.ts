@@ -34,6 +34,7 @@ function createAutocompleteMatch(): AutocompleteMatch {
     descriptionClass: [{offset: 0, style: 0}],
     destinationUrl: {url: ''},
     inlineAutocompletion: stringToMojoString16(''),
+    isNoncannedAimSuggestion: false,
     fillIntoEdit: stringToMojoString16(''),
     iconPath: '',
     iconUrl: {url: ''},

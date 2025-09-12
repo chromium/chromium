@@ -569,3 +569,14 @@ ntp-composebox-dropdown {
     border-width: 0;
   }
 }
+
+#suggestionActivity {
+  color: var(--color-new-tab-page-composebox-suggestion-activity);
+  font-size: 12px;
+  font-weight: 400;
+  left: 50%;
+  line-height: 18px;
+  margin-top: 38px;
+  position: absolute;
+  transform: translate(-50%);
+}

@@ -59,6 +59,8 @@ struct AutocompleteMatch {
   // The image url for entity suggestions. |image_url| is an external url or
   // a data URI.
   string image_url;
+  // Used to determine if the match is a non-canned AI suggestion.
+  bool is_noncanned_aim_suggestion;
   // Used to determine if the match has an image, calculator answer,
   // suggestion answer, or enterprise search aggregator people suggestion.
   bool is_rich_suggestion;

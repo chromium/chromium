@@ -123,6 +123,7 @@ suite('NewTabPageComposeboxTest', () => {
       iconUrl: {url: ''},
       imageDominantColor: '',
       imageUrl: '',
+      isNoncannedAimSuggestion: false,
       removeButtonA11yLabel: {data: []},
       type: '',
       isRichSuggestion: false,

@@ -264,6 +264,7 @@
   E_CPONLY(kColorNewTabPageComposeboxResultsIcon) \
   E_CPONLY(kColorNewTabPageComposeboxScrimBackground) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButton) \
+  E_CPONLY(kColorNewTabPageComposeboxSuggestionActivity) \
   E_CPONLY(kColorNewTabPageComposeboxUploadButton) \
   E_CPONLY(kColorNewTabPageComposeboxUploadButtonDisabled) \
   E_CPONLY(kColorNewTabPageComposeboxFileChipBackground) \

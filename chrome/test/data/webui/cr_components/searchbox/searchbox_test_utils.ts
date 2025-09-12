@@ -26,6 +26,7 @@ export function createAutocompleteMatch(): AutocompleteMatch {
     iconUrl: {url: ''},
     imageDominantColor: '',
     imageUrl: '',
+    isNoncannedAimSuggestion: false,
     removeButtonA11yLabel: {data: []},
     type: '',
     isRichSuggestion: false,
