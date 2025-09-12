@@ -1337,8 +1337,9 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
   // Assemble clientDataJSON.
-  ClientDataJsonParams client_data_json_params(
-      ClientDataRequestType::kWebAuthnCreate, req_state_->caller_origin,
+  webauthn::ClientDataJsonParams client_data_json_params(
+      webauthn::ClientDataRequestType::kWebAuthnCreate,
+      req_state_->caller_origin,
       GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
       options->challenge, is_cross_origin_iframe);
   if (options->remote_desktop_client_override) {
@@ -1711,12 +1712,12 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
   // Assemble clientDataJSON.
-  ClientDataJsonParams client_data_json_params(
-      ClientDataRequestType::kWebAuthnGet, caller_origin,
+  webauthn::ClientDataJsonParams client_data_json_params(
+      webauthn::ClientDataRequestType::kWebAuthnGet, caller_origin,
       GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
       public_key_options->challenge, is_cross_origin_iframe);
   if (payment_options) {
-    client_data_json_params.type = ClientDataRequestType::kPaymentGet;
+    client_data_json_params.type = webauthn::ClientDataRequestType::kPaymentGet;
   } else if (public_key_options->extensions->remote_desktop_client_override) {
     client_data_json_params.origin =
         public_key_options->extensions->remote_desktop_client_override->origin;
@@ -3222,7 +3223,7 @@ void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
 }
 
 void AuthenticatorCommonImpl::UpdateChallengeFromUrl(
-    ClientDataJsonParams params,
+    webauthn::ClientDataJsonParams params,
     blink::mojom::PaymentOptionsPtr payment_options,
     std::string payment_rp,
     std::optional<base::span<const uint8_t>> challenge) {

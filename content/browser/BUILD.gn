@@ -159,6 +159,7 @@ source_set("browser") {
     "//components/viz/common",
     "//components/viz/host",
     "//components/web_package",
+    "//components/webauthn/core/browser:client_data",
     "//components/webauthn/core/browser:common_utils",
     "//content:content_resources",
     "//content/browser/aggregation_service/proto:aggregatable_report_proto",
@@ -3721,7 +3722,7 @@ group("for_content_tests") {
 
 if (is_android) {
   java_cpp_enum("client_data_json_generated_enum") {
-    sources = [ "webauth/client_data_json.h" ]
+    sources = [ "//components/webauthn/core/browser/client_data_json.h" ]
   }
 }
 

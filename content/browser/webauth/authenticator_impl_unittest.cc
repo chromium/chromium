@@ -306,7 +306,7 @@ url::Origin GetTestOrigin() {
   return url::Origin::Create(test_relying_party_url);
 }
 
-std::string GetTestClientDataJSON(ClientDataRequestType type) {
+std::string GetTestClientDataJSON(webauthn::ClientDataRequestType type) {
   return BuildClientDataJson({std::move(type), GetTestOrigin(), GetTestOrigin(),
                               GetTestChallengeBytes(),
                               /*is_cross_origin_iframe=*/false});
@@ -646,7 +646,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
-      BuildClientDataJson({ClientDataRequestType::kWebAuthnCreate,
+      BuildClientDataJson({webauthn::ClientDataRequestType::kWebAuthnCreate,
                            GetTestOrigin(), GetTestOrigin(), challenge_bytes,
                            false})
           .find(
@@ -656,28 +656,28 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 
   // Second, check that a generic JSON parser correctly parses the result.
   static const struct {
-    const ClientDataRequestType type;
+    const webauthn::ClientDataRequestType type;
     url::Origin origin;
     url::Origin top_origin;
     std::vector<uint8_t> challenge;
     bool is_cross_origin;
   } kTestCases[] = {
       {
-          ClientDataRequestType::kWebAuthnGet,
+          webauthn::ClientDataRequestType::kWebAuthnGet,
           GetTestOrigin(),
           GetTestOrigin(),
           {1, 2, 3},
           false,
       },
       {
-          ClientDataRequestType::kPaymentGet,
+          webauthn::ClientDataRequestType::kPaymentGet,
           GetTestOrigin(),
           GetTestOrigin(),
           {1, 2, 3},
           false,
       },
       {
-          ClientDataRequestType::kWebAuthnCreate,
+          webauthn::ClientDataRequestType::kWebAuthnCreate,
           GetTestOrigin(),
           url::Origin::Create(GURL("https://toplevel.example")),
           {1, 2, 3},
@@ -698,15 +698,15 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     std::string type_key;
     std::string expected_type;
     switch (test.type) {
-      case ClientDataRequestType::kWebAuthnCreate:
+      case webauthn::ClientDataRequestType::kWebAuthnCreate:
         type_key = "type";
         expected_type = "webauthn.create";
         break;
-      case ClientDataRequestType::kWebAuthnGet:
+      case webauthn::ClientDataRequestType::kWebAuthnGet:
         type_key = "type";
         expected_type = "webauthn.get";
         break;
-      case ClientDataRequestType::kPaymentGet:
+      case webauthn::ClientDataRequestType::kPaymentGet:
         type_key = "type";
         expected_type = "payment.get";
         break;
@@ -915,13 +915,13 @@ static void CheckJSONIsSubsetOfJSON(std::string_view subset_str,
 TEST(ClientDataSerializationTest, Register) {
   CheckJSONIsSubsetOfJSON(
       kTestRegisterClientDataJsonString,
-      GetTestClientDataJSON(ClientDataRequestType::kWebAuthnCreate));
+      GetTestClientDataJSON(webauthn::ClientDataRequestType::kWebAuthnCreate));
 }
 
 TEST(ClientDataSerializationTest, Sign) {
   CheckJSONIsSubsetOfJSON(
       kTestSignClientDataJsonString,
-      GetTestClientDataJSON(ClientDataRequestType::kWebAuthnGet));
+      GetTestClientDataJSON(webauthn::ClientDataRequestType::kWebAuthnGet));
 }
 
 TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {

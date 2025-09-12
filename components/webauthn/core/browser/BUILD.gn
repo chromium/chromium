@@ -66,6 +66,18 @@ source_set("passkey_model") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("client_data") {
+  sources = [
+    "client_data_json.cc",
+    "client_data_json.h",
+  ]
+  deps = [
+    ":common_utils",
+    "//base",
+    "//url",
+  ]
+}
+
 source_set("common_utils") {
   sources = [
     "common_utils.cc",

@@ -9,6 +9,7 @@ source_set("ios") {
   deps = [
     ":passkey_controller_js",
     "//base",
+    "//components/webauthn/core/browser:client_data",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

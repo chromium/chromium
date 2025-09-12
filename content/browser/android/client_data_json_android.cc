@@ -56,8 +56,8 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
     const base::android::JavaParamRef<jobject>& joptions_byte_buffer,
     const base::android::JavaParamRef<jstring>& jrelying_party_id,
     const base::android::JavaParamRef<jobject>& jtop_origin) {
-  ClientDataRequestType type =
-      static_cast<ClientDataRequestType>(jclient_data_request_type);
+  webauthn::ClientDataRequestType type =
+      static_cast<webauthn::ClientDataRequestType>(jclient_data_request_type);
   std::string caller_origin =
       base::android::ConvertJavaStringToUTF8(env, jcaller_origin);
   std::vector<uint8_t> challenge;
@@ -73,7 +73,7 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
           ? base::android::ConvertJavaStringToUTF8(env, jrelying_party_id)
           : "";
 
-  ClientDataJsonParams client_data_json_params(
+  webauthn::ClientDataJsonParams client_data_json_params(
       /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
       /*top_origin=*/url::Origin::FromJavaObject(env, jtop_origin),
       /*challenge=*/challenge, /*is_cross_origin_iframe=*/is_cross_origin);
