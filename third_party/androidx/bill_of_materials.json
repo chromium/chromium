@@ -487,12 +487,12 @@
     {
         "name": "emoji2",
         "group": "androidx.emoji2",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.6.0"
     },
     {
         "name": "emoji2-views-helper",
         "group": "androidx.emoji2",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.6.0"
     },
     {
         "name": "emoji",
@@ -912,22 +912,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0"
     },
     {
         "name": "savedstate",
@@ -962,22 +962,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "startup-runtime",
@@ -1297,12 +1297,12 @@
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "5.3.11"
+        "version": "5.4.0"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "5.3.11"
+        "version": "5.4.0"
     },
     {
         "name": "javawriter",
@@ -1421,6 +1421,16 @@
     },
     {
         "name": "kotlinx-serialization-core-jvm",
+        "group": "org.jetbrains.kotlinx",
+        "version": "1.7.3"
+    },
+    {
+        "name": "kotlinx-serialization-json",
+        "group": "org.jetbrains.kotlinx",
+        "version": "1.7.3"
+    },
+    {
+        "name": "kotlinx-serialization-json-jvm",
         "group": "org.jetbrains.kotlinx",
         "version": "1.7.3"
     },

@@ -1240,7 +1240,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_room_room_runtime_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_room_room_runtime_android/room-runtime-android-2.8.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_room_room_runtime_android/room-runtime.aar"
     info_path = "../androidx/committed/libs/androidx_room_room_runtime_android/androidx_room_room_runtime_android.info"
     enable_bytecode_checks = false
     deps = [
@@ -1281,7 +1281,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_sqlite_sqlite_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_sqlite_sqlite_android/sqlite-android-2.6.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_sqlite_sqlite_android/sqlite.aar"
     info_path = "../androidx/committed/libs/androidx_sqlite_sqlite_android/androidx_sqlite_sqlite_android.info"
     enable_bytecode_checks = false
     deps = [
@@ -2459,6 +2459,7 @@ if (!limit_android_deps) {
       ":androidx_datastore_datastore_core_java",
       "//third_party/android_deps:com_squareup_okio_okio_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_json_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -2555,8 +2556,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_emoji2_emoji2_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_emoji2_emoji2/emoji2-1.6.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2/emoji2-1.6.0.aar"
     info_path = "../androidx/committed/libs/androidx_emoji2_emoji2/androidx_emoji2_emoji2.info"
     enable_bytecode_checks = false
 
@@ -2578,7 +2578,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_emoji2_emoji2_views_helper_java") {
-    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2_views_helper/emoji2-views-helper-1.6.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2_views_helper/emoji2-views-helper-1.6.0.aar"
     info_path = "../androidx/committed/libs/androidx_emoji2_emoji2_views_helper/androidx_emoji2_emoji2_views_helper.info"
     enable_bytecode_checks = false
 
@@ -3172,6 +3172,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_compose_runtime_runtime_annotation_java",
       ":androidx_core_core_viewtree_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
@@ -3374,7 +3375,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_room_room_common_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.8.0-SNAPSHOT.jar"
+    jar_path = "../androidx/cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.8.0.jar"
     output_name = "androidx_room_room_common_jvm"
     supports_android = true
     requires_android = true
@@ -3489,7 +3490,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_sqlite_sqlite_framework_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_sqlite_sqlite_framework_android/sqlite-framework-android-2.6.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_sqlite_sqlite_framework_android/sqlite-framework.aar"
     info_path = "../androidx/committed/libs/androidx_sqlite_sqlite_framework_android/androidx_sqlite_sqlite_framework_android.info"
     enable_bytecode_checks = false
 
