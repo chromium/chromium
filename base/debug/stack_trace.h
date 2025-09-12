@@ -45,6 +45,9 @@ BASE_EXPORT bool EnableInProcessStackDumping();
 // Returns `true` if EnableInProcessStackDumping() was called and succeeded.
 // Only supported on Windows.
 BASE_EXPORT bool InProcessStackDumpingEnabled();
+
+// Allows tests to exercise code that runs when symbolization is not available.
+BASE_EXPORT bool DisableInProcessStackDumpingForTesting();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX)

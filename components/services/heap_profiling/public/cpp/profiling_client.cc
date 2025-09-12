@@ -107,8 +107,12 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
   using base::trace_event::AllocationContextTracker;
   using CaptureMode = base::trace_event::AllocationContextTracker::CaptureMode;
 
-  // Must be done before hooking any functions that make stack traces.
+#if !BUILDFLAG(IS_WIN) || !defined(OFFICIAL_BUILD)
+  // Must be done before hooking any functions that make stack traces. Windows
+  // release builds crash if symbols are requested after sandbox lockdown, but
+  // will still produce address-only stacks if this function not called.
   base::debug::EnableInProcessStackDumping();
+#endif
 
   if (params->stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES) {
     g_include_thread_names = true;

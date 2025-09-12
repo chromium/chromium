@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
-#include "base/containers/span.h"
+#include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -23,6 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -465,6 +466,19 @@ TEST(StackTraceTest, EnabledStackTraces) {
   // it ensures we are exercising the InProcessStackDumpingEnabled() path.
   EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
   EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+}
+
+TEST(StackTraceTest, UnsymbolizedStackTraces) {
+  EXPECT_TRUE(base::debug::DisableInProcessStackDumpingForTesting());
+  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabled());
+
+  StackTrace trace;
+  auto as_string = trace.ToString();
+  EXPECT_THAT(as_string,
+              ::testing::ContainsRegex("Dumping unresolved backtrace"));
+
+  // Restore global state.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
