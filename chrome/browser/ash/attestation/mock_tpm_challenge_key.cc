@@ -24,11 +24,11 @@ void MockTpmChallengeKey::EnableFake() {
 void MockTpmChallengeKey::EnableFakeError(
     TpmChallengeKeyResultCode error_code) {
   ON_CALL(*this, BuildResponse)
-      .WillByDefault(WithArgs<2>(
-          Invoke([this, error_code](TpmChallengeKeyCallback callback) {
+      .WillByDefault(
+          WithArgs<2>([this, error_code](TpmChallengeKeyCallback callback) {
             MockTpmChallengeKey::FakeBuildResponseError(std::move(callback),
                                                         error_code);
-          })));
+          }));
 }
 
 void MockTpmChallengeKey::FakeBuildResponseSuccess(
