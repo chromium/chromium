@@ -4269,7 +4269,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3914173277599553213">Gerekli</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> klasörünü aç</translation>
 <translation id="3914894336972817683">Yüklenemiyor. Dosya boş görünüyor.</translation>
-<translation id="3915280005470252504">Sese göre ara</translation>
+<translation id="3915280005470252504">Sesle arama</translation>
 <translation id="3916445069167113093">Bu türden bir dosya bilgisayarınıza zarar verebilir. <ph name="FILE_NAME" /> adlı dosyayı yine de saklamak istiyor musunuz?</translation>
 <translation id="3917184139185490151">Bilgisayarınızda, ChromeOS'teki pek çok kritik güvenlik özelliğini uygulamak için kullanılan bir güvenli modül bulunmaktadır. Daha fazla bilgi edinmek için Chromebook Yardım Merkezi'ni ziyaret edin: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Dosyalarınızı senkronize etmek için yeterli depolama alanı yok. Depolama alanında yer açmayı deneyin.</translation>
@@ -9795,7 +9795,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> dosya, <ph name="CLOUD_PROVIDER" /> hedefine kopyalanıp açılsın mı?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Kaydedilen özel kelimeler burada görünür</translation>
-<translation id="7834832693620032149">Ses paylaşmak için bunun yerine bir sekme veya ekran paylaşın</translation>
+<translation id="7834832693620032149">Ses paylaşmak için bunun yerine bir sekme veya pencere paylaşın</translation>
 <translation id="7836577093182643605">Engellediğiniz ve sitelerle paylaşılmasını istemediğiniz konuların listesi</translation>
 <translation id="7836850009646241041">Güvenlik anahtarınıza tekrar dokunmayı deneyin</translation>
 <translation id="7838838951812478896">"<ph name="NETWORK_NAME" />", <ph name="DEVICE_NAME" /> cihazından kaydedilemedi</translation>
@@ -10385,7 +10385,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8230134520748321204"><ph name="ORIGIN" /> için şifreniz kaydedilsin mi?</translation>
 <translation id="8230326817897075865">Sil: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Sitelerin resim göstermesine izin verme</translation>
-<translation id="8231438895476693774">Yeni Bölünmüş Görünüme Sekme Ekle</translation>
+<translation id="8231438895476693774">Sekmeyi Yeni Bölünmüş Görünüme Ekle</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> verilerinizi silin</translation>
 <translation id="8233028084277069927">Şimdi Açık</translation>
 <translation id="8234795456569844941">Lütfen mühendislerimizin bu sorunu çözmesine yardımcı olun. Profil hata mesajını almadan hemen önce ne yaptığınızı belirtin:</translation>
@@ -10398,7 +10398,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8239932336306009582">Bildirim göndermesine izin verilmeyenler</translation>
 <translation id="8241040075392580210">Parçalı Bulutlu</translation>
 <translation id="8241338426526905580">Sertifika yok</translation>
-<translation id="8241650983304689286">Yeni bölünmüş görünüme sekme ekle</translation>
+<translation id="8241650983304689286">Sekmeyi yeni bölünmüş görünüme ekle</translation>
 <translation id="8241806945692107836">Cihaz yapılandırması belirleniyor...</translation>
 <translation id="8241868517363889229">Yer işaretlerinizi okuma ve değiştirme</translation>
 <translation id="8242273718576931540">Cihazınız bu ağa bağlanamıyor. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -2528,7 +2528,7 @@
 <translation id="5190072300954988691">Доступ к камере и микрофону запрещен</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191315092027169558">Вашим профилем управляет <ph name="DOMAIN" /></translation>
-<translation id="51918995459521422"><ph name="ORIGIN" /> хочет скачать несколько файлов</translation>
+<translation id="51918995459521422">Сайт <ph name="ORIGIN" /> запрашивает разрешение на скачивание нескольких файлов.</translation>
 <translation id="5200063972779787617">Сохранить адрес в аккаунте</translation>
 <translation id="5201306358585911203">Подтвердите действие</translation>
 <translation id="5203716867500274632">Администратор включил синхронизацию следующих параметров между предыдущим и текущим сеансами на ваших устройствах с ChromeOS:</translation>
@@ -2667,7 +2667,7 @@
 <translation id="5421408724705443535">Рок-музыка</translation>
 <translation id="5423269318075950257">Отслеживание цен</translation>
 <translation id="5425082381151187189">Обустройство дома и отделка помещений</translation>
-<translation id="5426179911063097041">С сайта <ph name="SITE" /> поступил запрос на отправку уведомлений.</translation>
+<translation id="5426179911063097041">Сайт <ph name="SITE" /> запрашивает разрешение на отправку уведомлений.</translation>
 <translation id="5430298929874300616">Удалить закладку</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5433756542371550806">Модификации для командной строки</translation>
