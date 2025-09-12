@@ -2810,6 +2810,10 @@ interface ElementInternals
     setter ariaVirtualContent
     setter role
     setter type
+interface EmailVerifiedEvent : Event
+    attribute @@toStringTag
+    getter presentationToken
+    method constructor
 interface EncodedAudioChunk
     attribute @@toStringTag
     getter byteLength
