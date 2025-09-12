@@ -30,15 +30,8 @@ void IpProtectionTokenMojoFetcher::TryGetAuthTokens(
     uint32_t batch_size,
     ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
-  core_host_remote_->core_host()->TryGetAuthTokens(
-      batch_size, proxy_layer,
-      base::BindOnce(
-          [](TryGetAuthTokensCallback callback,
-             const std::optional<std::vector<BlindSignedAuthToken>>& tokens,
-             const std::optional<base::Time> try_again_after) {
-            std::move(callback).Run(tokens, try_again_after);
-          },
-          std::move(callback)));
+  core_host_remote_->core_host()->TryGetAuthTokens(batch_size, proxy_layer,
+                                                   std::move(callback));
 }
 
 }  // namespace ip_protection

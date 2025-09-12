@@ -90,7 +90,7 @@ class AwIpProtectionCoreHostTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::TestFuture<
-      const std::optional<std::vector<ip_protection::BlindSignedAuthToken>>&,
+      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>,
       std::optional<base::Time>>
       tokens_future_;
 

@@ -149,19 +149,8 @@ void IpProtectionCoreHost::TryGetAuthTokens(
     return;
   }
 
-  // The mojo callback requires `std::optional<..>&`, while the fetcher callback
-  // provides arguments by value. This seemingly-redundant lambda converts the
-  // two.
-  auto callback_with_refs = base::BindOnce(
-      [](TryGetAuthTokensCallback callback,
-         std::optional<std::vector<ip_protection::BlindSignedAuthToken>> tokens,
-         std::optional<::base::Time> try_again_after) {
-        std::move(callback).Run(tokens, try_again_after);
-      },
-      std::move(callback));
-
   ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, proxy_layer,
-                                                 std::move(callback_with_refs));
+                                                 std::move(callback));
 }
 
 void IpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
@@ -222,8 +211,8 @@ void IpProtectionCoreHost::TryGetProbabilisticRevealTokens(
 
 void IpProtectionCoreHost::RecycleTokens(
     ip_protection::ProxyLayer proxy_layer,
-    const std::vector<ip_protection::BlindSignedAuthToken>& tokens) {
-  recycled_tokens_[proxy_layer] = tokens;
+    std::vector<ip_protection::BlindSignedAuthToken> tokens) {
+  recycled_tokens_[proxy_layer] = std::move(tokens);
 }
 
 IpProtectionCoreHost::IpProtectionTokenCache

@@ -278,9 +278,8 @@ class IpProtectionCoreHostTest : public testing::Test {
   // Run on the UI thread.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::TestFuture<
-      const std::optional<std::vector<BlindSignedAuthToken>>&,
-      std::optional<base::Time>>
+  base::test::TestFuture<std::optional<std::vector<BlindSignedAuthToken>>,
+                         std::optional<base::Time>>
       tokens_future_;
 
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
@@ -735,9 +734,8 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
-  base::test::TestFuture<
-      const std::optional<std::vector<BlindSignedAuthToken>>&,
-      std::optional<base::Time>>
+  base::test::TestFuture<std::optional<std::vector<BlindSignedAuthToken>>,
+                         std::optional<base::Time>>
       tokens_future;
   core_host_->TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB,
                                tokens_future.GetCallback());

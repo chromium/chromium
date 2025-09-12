@@ -70,7 +70,7 @@ class AwIpProtectionCoreHost
   // Return a batch of unused blind-signed auth tokens.
   void RecycleTokens(
       ip_protection::ProxyLayer proxy_layer,
-      const std::vector<ip_protection::BlindSignedAuthToken>& tokens) override;
+      const std::vector<ip_protection::BlindSignedAuthToken> tokens) override;
 
   // PRTs are not supported in WebView. This method is here to make
   // build work.

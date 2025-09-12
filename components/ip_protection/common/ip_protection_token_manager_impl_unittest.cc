@@ -216,8 +216,8 @@ class FakeCoreHost : public ip_protection::mojom::CoreHost {
     NOTREACHED();
   }
   void RecycleTokens(ip_protection::ProxyLayer proxy_layer,
-                     const std::vector<BlindSignedAuthToken>& tokens) override {
-    returned_tokens_[proxy_layer] = tokens;
+                     std::vector<BlindSignedAuthToken> tokens) override {
+    returned_tokens_[proxy_layer] = std::move(tokens);
   }
 
   const absl::flat_hash_map<ip_protection::ProxyLayer,

@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
-  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>,
                          std::optional<base::Time>>
       future;
   auto* ipp_control = getter->last_remote_for_testing();
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Request tokens from both contexts and ensure that the "don't retry"
   // cooldown time is returned. The provider should do this itself, so the
   // interceptors won't be used for this part.
-  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>,
                          std::optional<base::Time>>
       future;
   main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
@@ -639,10 +639,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 
   // Request tokens from both contexts and ensure that the "don't retry"
   // cooldown time is returned.
-  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>,
                          std::optional<base::Time>>
       main_profile_verification_future;
-  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>,
                          std::optional<base::Time>>
       incognito_profile_verification_future;
 

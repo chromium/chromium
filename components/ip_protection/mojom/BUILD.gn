@@ -25,6 +25,7 @@ mojom("mojom") {
         {
           mojom = "ip_protection.mojom.BlindSignedAuthToken"
           cpp = "::ip_protection::BlindSignedAuthToken"
+          move_only = true
         },
         {
           mojom = "ip_protection.mojom.GeoHint"

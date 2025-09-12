@@ -81,7 +81,7 @@ class IpProtectionCoreHost
   // Receives recycled tokens from the network service and caches them.
   void RecycleTokens(
       ip_protection::ProxyLayer proxy_layer,
-      const std::vector<ip_protection::BlindSignedAuthToken>& tokens) override;
+      std::vector<ip_protection::BlindSignedAuthToken> tokens) override;
 
   // Called by `ProfileNetworkContextService` to get the tokens recycled from a
   // previous Incognito session. This method moves the tokens out of the cache,

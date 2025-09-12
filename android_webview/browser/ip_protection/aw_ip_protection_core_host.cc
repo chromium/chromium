@@ -163,7 +163,7 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
 
 void AwIpProtectionCoreHost::RecycleTokens(
     ip_protection::ProxyLayer proxy_layer,
-    const std::vector<ip_protection::BlindSignedAuthToken>& tokens) {
+    std::vector<ip_protection::BlindSignedAuthToken> tokens) {
   // Not yet implemented for WebView.
   NOTIMPLEMENTED();
 }
