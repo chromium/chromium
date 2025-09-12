@@ -8,6 +8,43 @@ import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
 
 component("sync") {
+  # New code should use os_crypt async.
+  visibility = [
+    "//chrome/browser",
+    "//chrome/browser/prefs:impl",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser",
+    "//components/cookie_config",
+    "//components/gcm_driver",
+    "//components/os_crypt/async/browser:dpapi_key_provider",
+    "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+    "//components/os_crypt/async/browser:secret_portal_key_provider",
+    "//components/os_crypt/async/browser:unit_tests",
+    "//components/os_crypt/async/common",
+    "//components/os_crypt/async/common:unit_tests",
+    "//components/os_crypt/sync:test_support",
+    "//components/os_crypt/sync:unit_tests",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:hash_password_manager",
+    "//components/password_manager/core/browser:unit_tests",
+    "//components/password_manager/core/browser/password_store:password_store_impl",
+    "//components/password_manager/core/browser/password_store:unit_tests",
+    "//components/signin/core/browser",
+    "//components/sync:unit_tests",
+    "//components/sync/nigori",
+    "//components/sync/service",
+    "//components/trusted_vault",
+    "//components/trusted_vault:unit_tests",
+    "//content/browser",
+    "//headless:headless_non_renderer",
+    "//headless:headless_shell_lib",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//services/network:network_service",
+    "//services/test/echo:lib",
+  ]
+
   sources = [
     "os_crypt.h",
     "os_crypt_metrics.cc",
