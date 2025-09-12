@@ -1968,6 +1968,7 @@ static_library("browser") {
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/privacy_sandbox/incognito",
+    "//chrome/browser/private_inference",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_downloader",
