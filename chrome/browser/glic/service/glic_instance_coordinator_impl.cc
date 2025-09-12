@@ -253,10 +253,7 @@ bool GlicInstanceCoordinatorImpl::IsWarmed() const {
 }
 
 base::WeakPtr<GlicWindowController> GlicInstanceCoordinatorImpl::GetWeakPtr() {
-  // TODO(crbug.com/441542357) - remove from public interface.
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 GlicView* GlicInstanceCoordinatorImpl::GetGlicView() const {
