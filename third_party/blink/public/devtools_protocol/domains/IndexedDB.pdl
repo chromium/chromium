@@ -159,8 +159,8 @@ experimental domain IndexedDB
       string databaseName
       # Object store name.
       string objectStoreName
-      # Index name, empty string for object store data requests.
-      string indexName
+      # Index name. If not specified or empty string, it performs an object store data request.
+      optional string indexName
       # Number of records to skip.
       integer skipCount
       # Number of records to fetch.

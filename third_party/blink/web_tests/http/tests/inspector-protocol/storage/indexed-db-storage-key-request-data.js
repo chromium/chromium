@@ -46,14 +46,13 @@
 
     const storageBucket = await bucketPromise;
     const requestDataResult =
-      (await dp.IndexedDB.requestData({
-        storageBucket,
-        databaseName: 'test-database',
-        objectStoreName: 'test-store',
-        indexName: '',
-        skipCount: 1,
-        pageSize: 3
-      })).result.objectStoreDataEntries.map(entry => entry.value.value);
+        (await dp.IndexedDB.requestData({
+          storageBucket,
+          databaseName: 'test-database',
+          objectStoreName: 'test-store',
+          skipCount: 1,
+          pageSize: 3
+        })).result.objectStoreDataEntries.map(entry => entry.value.value);
 
     testRunner.log(requestDataResult, 'data key values equal');
 

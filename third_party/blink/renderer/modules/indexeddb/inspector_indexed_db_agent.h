@@ -75,7 +75,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
       std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
       const String& database_name,
       const String& object_store_name,
-      const String& index_name,
+      std::optional<String> index_name,
       int skip_count,
       int page_size,
       std::unique_ptr<protocol::IndexedDB::KeyRange>,
