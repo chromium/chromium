@@ -68,4 +68,6 @@ mojom("ui_base_types") {
     "menu_source_type.mojom",
     "window_show_state.mojom",
   ]
+  webui_module_path = "chrome://resources/mojo/ui/base/mojom"
+  generate_legacy_js_bindings = true
 }

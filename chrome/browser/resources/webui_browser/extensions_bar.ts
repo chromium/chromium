@@ -9,6 +9,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
 import {ExtensionElement} from './extension_element.js';
 import {getCss} from './extensions_bar.css.js';
@@ -101,6 +102,10 @@ export class ExtensionsBar extends CrLitElement {
 
   onClick(id: string) {
     this.handler.executeUserAction(id);
+  }
+
+  onContextMenu(source: MenuSourceType, id: string) {
+    this.handler.showContextMenu(source, id);
   }
 
   private extensionMenuButtonClicked() {

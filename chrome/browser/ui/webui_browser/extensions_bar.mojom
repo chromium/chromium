@@ -5,6 +5,7 @@
 module extensions_bar.mojom;
 
 import "url/mojom/url.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
 
 // Data of a toolbar button for dealing with extensions.
 struct ExtensionActionInfo {
@@ -36,6 +37,11 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Runs the action with given ID.
   ExecuteUserAction(string id);
+
+  // Show the context menu for the toolbar button corresponding to the
+  // given action ID. `source` denotes the type of input that produced the
+  // request.
+  ShowContextMenu(ui.mojom.MenuSourceType source, string id);
 
   // Asks the browser to flip show/hide status of extensions menu.
   ToggleExtensionsMenuFromWebUI();

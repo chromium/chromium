@@ -19,6 +19,10 @@
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 class WebUIBrowserExtensionsContainer::ActionInfo
     : public ToolbarActionViewDelegateViews {
@@ -49,6 +53,10 @@ class WebUIBrowserExtensionsContainer::ActionInfo
   }
 
   views::BubbleAnchor GetReferenceButtonForPopup() override {
+    return GetAnchor();
+  }
+
+  ui::TrackedElement* GetAnchor() {
     // TODO(webium): Use the proper button once TrackedElement supports
     // dynamic ids or the like. See https://crbug.com/444237074
     return extensions_container_->window_->GetExtensionsMenuButtonAnchor();
@@ -88,6 +96,76 @@ class WebUIBrowserExtensionsContainer::ActionInfo
   std::unique_ptr<ExtensionActionViewController> controller_;
 };
 
+// This is based on ExtensionContextMenuController.
+class WebUIBrowserExtensionsContainer::ContextMenu {
+ public:
+  static std::unique_ptr<ContextMenu> MaybeCreate(
+      WebUIBrowserExtensionsContainer& extensions_container,
+      const std::string& action_id) {
+    auto it = extensions_container.actions_.find(action_id);
+    CHECK(it != extensions_container.actions_.end());
+
+    ui::MenuModel* model = it->second->controller()->GetContextMenu(
+        extensions::ExtensionContextMenuModel::ContextMenuSource::
+            kToolbarAction);
+
+    // It's possible the action doesn't have a context menu.
+    if (!model) {
+      return nullptr;
+    }
+
+    return base::WrapUnique(new ContextMenu(action_id, *it->second, model));
+  }
+
+  // This is in two steps so that `context_menu_` in the container gets
+  // updated.
+  void Show(views::Widget* main_widget, ui::mojom::MenuSourceType source) {
+    int run_types =
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+
+    std::unique_ptr<views::MenuItemView> menu = menu_adapter_->CreateMenu();
+    menu_runner_ =
+        std::make_unique<views::MenuRunner>(std::move(menu), run_types);
+
+    action_info_->controller()->OnContextMenuShown(
+        extensions::ExtensionContextMenuModel::ContextMenuSource::
+            kToolbarAction);
+
+    menu_runner_->RunMenuAt(main_widget, nullptr,
+                            action_info_->GetAnchor()->GetScreenBounds(),
+                            views::MenuAnchorPosition::kTopLeft, source);
+  }
+
+  const std::string& action_id() const { return action_id_; }
+
+ private:
+  ContextMenu(const std::string& action_id,
+              ActionInfo& action_info,
+              ui::MenuModel* model)
+      : action_id_(action_id), action_info_(action_info) {
+    menu_adapter_ = std::make_unique<views::MenuModelAdapter>(
+        model, base::BindRepeating(&ContextMenu::OnMenuClosed,
+                                   weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnMenuClosed() {
+    menu_runner_.reset();
+    menu_adapter_.reset();
+
+    // This will delete us.
+    action_info_->controller()->OnContextMenuClosed(
+        extensions::ExtensionContextMenuModel::ContextMenuSource::
+            kToolbarAction);
+  }
+
+  std::string action_id_;
+  const raw_ref<ActionInfo> action_info_;
+  std::unique_ptr<views::MenuModelAdapter> menu_adapter_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  base::WeakPtrFactory<ContextMenu> weak_ptr_factory_{this};
+};
+
 WebUIBrowserExtensionsContainer::WebUIBrowserExtensionsContainer(
     Browser& browser,
     WebUIBrowserWindow& window)
@@ -119,18 +197,20 @@ WebUIBrowserExtensionsContainer::GetPoppedOutActionId() const {
 
 void WebUIBrowserExtensionsContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(action_id, context_menu_->action_id());
+  NotifyOfOneAction(action_id);
 }
 
 void WebUIBrowserExtensionsContainer::OnContextMenuClosedFromToolbar() {
-  NOTIMPLEMENTED();
+  std::string prev_context_menu_id = context_menu_->action_id();
+  context_menu_.reset();
+  NotifyOfOneAction(prev_context_menu_id);
 }
 
 bool WebUIBrowserExtensionsContainer::IsActionVisibleOnToolbar(
     const std::string& action_id) const {
-  // TODO(webium): Context menu, anchored widgets.
-  // See https://crbug.com/444237074
-  return model_->IsActionPinned(action_id) || popped_out_action_ == action_id;
+  return model_->IsActionPinned(action_id) || popped_out_action_ == action_id ||
+         (context_menu_ && context_menu_->action_id() == action_id);
 }
 
 void WebUIBrowserExtensionsContainer::UndoPopOut() {
@@ -216,6 +296,9 @@ void WebUIBrowserExtensionsContainer::OnToolbarActionRemoved(
   if (popped_out_action_ == id) {
     popped_out_action_ = std::nullopt;
   }
+  if (context_menu_ && context_menu_->action_id() == id) {
+    context_menu_.reset();
+  }
   actions_[id]->controller()->UnregisterCommand();
   actions_.erase(id);
   if (page_) {
@@ -289,6 +372,15 @@ void WebUIBrowserExtensionsContainer::ExecuteUserAction(const std::string& id) {
   CHECK(it != actions_.end());
   it->second->controller()->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);
+}
+
+void WebUIBrowserExtensionsContainer::ShowContextMenu(
+    ui::mojom::MenuSourceType source,
+    const std::string& id) {
+  context_menu_ = ContextMenu::MaybeCreate(*this, id);
+  if (context_menu_) {
+    context_menu_->Show(window_->widget(), source);
+  }
 }
 
 void WebUIBrowserExtensionsContainer::ToggleExtensionsMenuFromWebUI() {

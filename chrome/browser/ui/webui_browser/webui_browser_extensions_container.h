@@ -67,10 +67,13 @@ class WebUIBrowserExtensionsContainer
 
   // extensions_bar::mojom::PageHandler:
   void ExecuteUserAction(const std::string& id) override;
+  void ShowContextMenu(ui::mojom::MenuSourceType source,
+                       const std::string& id) override;
   void ToggleExtensionsMenuFromWebUI() override;
 
  private:
   class ActionInfo;
+  class ContextMenu;
 
   void NotifyActionPoppedOut(base::OnceClosure closure);
 
@@ -88,6 +91,7 @@ class WebUIBrowserExtensionsContainer
 
   std::map<ToolbarActionsModel::ActionId, std::unique_ptr<ActionInfo>> actions_;
   std::optional<std::string> popped_out_action_;
+  std::unique_ptr<ContextMenu> context_menu_;
 
   // The action that triggered the current popup, if any.
   raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
