@@ -224,7 +224,15 @@ bool ReduceComplexity(const cc::Region& region,
   return true;
 }
 
-bool CanContributeToOcclusion(const SharedQuadState* shared_quad_state) {
+bool CanContributeToOcclusion(const SharedQuadState* shared_quad_state,
+                              bool is_for_rpdq) {
+  // Skip if sqs is for AggregatedRenderPassDrawQuad because it is a
+  // special type of DrawQuad where the visible_rect of shared quad state
+  // is not entirely covered by draw quads in it.
+  if (is_for_rpdq) {
+    return false;
+  }
+
   // TODO(yiyix): For transforms that don't preserve axis-alignmement, find a
   // rect interior to each transformed quad.
   return shared_quad_state->opacity == 1 &&
@@ -272,10 +280,6 @@ void OcclusionCuller::UpdateDeviceScaleFactor(float device_scale_factor) {
 }
 
 void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
-  if (frame->render_pass_list.empty()) {
-    return;
-  }
-
   base::flat_map<AggregatedRenderPassId, gfx::Rect> backdrop_filter_rects;
   for (const auto& pass : frame->render_pass_list) {
     if (!pass->backdrop_filters.IsEmpty() &&
@@ -290,7 +294,11 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
 
   for (const auto& pass : frame->render_pass_list) {
     const SharedQuadState* last_sqs = nullptr;
+    bool last_sqs_is_for_rpdq = false;
+
     cc::Region occlusion_in_target_space;
+    // TODO(b:424284352): Remove after
+    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
     cc::Region backdrop_filters_in_target_space;
     bool current_sqs_intersects_occlusion = false;
 
@@ -306,30 +314,28 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
     }
 
     auto quad_list_end = pass->quad_list.end();
+
     cc::Region occlusion_in_quad_content_space;
+    // TODO(b:424284352): Remove after
+    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
     gfx::Rect render_pass_quads_in_content_space;
-    cc::Region backdrop_filters_in_content_space;
 
     for (auto quad = pass->quad_list.begin(); quad != quad_list_end;) {
       // Sanity check: we should not have a Compositor
       // CompositorRenderPassDrawQuad here.
       DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
 
-      // Skip quad if it is a AggregatedRenderPassDrawQuad because it is a
-      // special type of DrawQuad where the visible_rect of shared quad state is
-      // not entirely covered by draw quads in it.
-      if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
-        // A RenderPass with backdrop filters may apply to a quad underlying
-        // RenderPassQuad. These regions should be tracked so that correctly
-        // handle splitting and occlusion of the underlying quad.
-        auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
-        if (it != backdrop_filter_rects.end()) {
-          auto& [_, rect_in_target] = *it;
-          backdrop_filters_in_target_space.Union(rect_in_target);
-        }
+      if (!features::IsBackdropFiltersCullingOptimizationEnabled()) {
+        if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+          auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
+          if (it != backdrop_filter_rects.end()) {
+            auto& [_, rect_in_target] = *it;
+            backdrop_filters_in_target_space.Union(rect_in_target);
+          }
 
-        ++quad;
-        continue;
+          ++quad;
+          continue;
+        }
       }
 
       // Also skip quad if the DrawQuad is inside a 3d object.
@@ -338,15 +344,17 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         continue;
       }
 
+      auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>();
       if (!last_sqs) {
         last_sqs = quad->shared_quad_state;
+        last_sqs_is_for_rpdq = !!rpdq;
       }
 
       const gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
 
       if (last_sqs != quad->shared_quad_state) {
-        if (CanContributeToOcclusion(last_sqs)) {
+        if (CanContributeToOcclusion(last_sqs, last_sqs_is_for_rpdq)) {
           cc::Region sqs_region_in_target(
               cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                   last_sqs->quad_to_target_transform,
@@ -375,13 +383,27 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           }
         }
 
+        if (features::IsBackdropFiltersCullingOptimizationEnabled() && rpdq) {
+          // A RenderPass with backdrop filters may apply to a quad underlying
+          // RenderPassQuad. These regions should be tracked so that correctly
+          // handle splitting and occlusion of the underlying quad.
+          auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
+          if (it != backdrop_filter_rects.end()) {
+            auto& [_, rect_in_target] = *it;
+            occlusion_in_target_space.Subtract(rect_in_target);
+            MaybeReduceOccluderComplexity(
+                occlusion_in_target_space,
+                settings_.maximum_occluder_complexity);
+          }
+        }
+
         // If the visible_rect of the current shared quad state does not
         // intersect with the occlusion rect, we can skip draw occlusion checks
         // for quads in the current SharedQuadState.
         last_sqs = quad->shared_quad_state;
+        last_sqs_is_for_rpdq = !!rpdq;
         occlusion_in_quad_content_space.Clear();
         render_pass_quads_in_content_space = gfx::Rect();
-        backdrop_filters_in_content_space.Clear();
 
         const auto current_sqs_in_target_space =
             cc::MathUtil::MapEnclosingClippedRect(
@@ -429,33 +451,23 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // A render pass quad may apply some filter or transform to an
           // underlying quad. Do not split quads when they intersect with a
           // render pass quad.
-          if (current_sqs_in_target_space.Intersects(
+          if (!features::IsBackdropFiltersCullingOptimizationEnabled() &&
+              current_sqs_in_target_space.Intersects(
                   backdrop_filters_in_target_space.bounds())) {
             for (auto rect_in_target_space : backdrop_filters_in_target_space) {
               const auto rect_in_content =
                   cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                       reverse_transform, rect_in_target_space);
-              if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
-                backdrop_filters_in_content_space.Union(
-                    SafeConvertRectForRegion(rect_in_content));
-              } else {
                 render_pass_quads_in_content_space.Union(rect_in_content);
-              }
             }
           }
         }
       }
 
-      if (!current_sqs_intersects_occlusion) {
+      // TODO(zoraiznaeem): Enable occlusion culling on render pass draw quads.
+      if (rpdq || !current_sqs_intersects_occlusion) {
         ++quad;
         continue;
-      }
-
-      if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
-        // Backdrop filters can effect the pixels underneath it, so do not
-        // remove/split quads where they intersect with any backdrop filters.
-        occlusion_in_quad_content_space.Subtract(
-            backdrop_filters_in_content_space);
       }
 
       if (occlusion_in_quad_content_space.Contains(quad->visible_rect)) {
