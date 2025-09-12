@@ -20,7 +20,7 @@ found in the LICENSE file.
     <style name="LocationBarActionButton.AdaptiveDensity" parent="LocationBarActionButton">
         <item name="android:layout_width">?attr/locationBarActionButtonWidth</item>
         <item name="android:layout_height">?attr/locationBarActionButtonHeight</item>
-        <item name="android:layout_marginVertical">?attr/locationBarActionButtonMarginVertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:layout_marginHorizontal">?attr/locationBarActionButtonMarginHorizontal</item>
     </style>
     <style name="LocationBarActionButtonForFakeSearchBox" parent="LocationBarActionButton">

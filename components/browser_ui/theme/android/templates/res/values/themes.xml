@@ -164,7 +164,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height</item>
         <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal</item>
-        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical</item>
 
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width</item>
@@ -342,7 +341,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width_desktop</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height_desktop</item>
         <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal_desktop</item>
-        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical_desktop</item>
 
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>

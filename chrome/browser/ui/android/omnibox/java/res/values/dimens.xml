@@ -66,9 +66,7 @@ found in the LICENSE file.
         @dimen/search_box_icon_background_height
     </dimen>
     <dimen name="location_bar_action_icon_margin_horizontal">0dp</dimen>
-    <dimen name="location_bar_action_icon_margin_vertical">0dp</dimen>
     <dimen name="location_bar_action_icon_margin_horizontal_desktop">4dp</dimen>
-    <dimen name="location_bar_action_icon_margin_vertical_desktop">12dp</dimen>
     <dimen name="location_bar_icon_margin_end">4dp</dimen>
     <dimen name="location_bar_lock_icon_width">
         @dimen/min_touch_target_size
