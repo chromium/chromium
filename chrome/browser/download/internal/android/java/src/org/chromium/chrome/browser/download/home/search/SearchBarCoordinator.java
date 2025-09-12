@@ -47,7 +47,7 @@ public class SearchBarCoordinator {
                     @Override
                     public void afterTextChanged(Editable s) {
                         mQueryCallback.onResult(s.toString());
-                        mClearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                        mClearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.INVISIBLE);
                     }
                 });
 
