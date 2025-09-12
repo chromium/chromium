@@ -4565,6 +4565,12 @@ const char kZeroCopyName[] = "Zero-copy rasterizer";
 const char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kZeroCopyVideoEncodingName[] = "Zero copy video encoding";
+const char kZeroCopyVideoEncodingDescription[] =
+    "Enables zero-copy video encoding via GL rendering on the input surface.";
+#endif
+
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 

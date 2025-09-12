@@ -2637,6 +2637,11 @@ extern const char kWebXrIncubationsDescription[];
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kZeroCopyVideoEncodingName[];
+extern const char kZeroCopyVideoEncodingDescription[];
+#endif
+
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 

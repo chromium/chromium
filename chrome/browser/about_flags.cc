@@ -5532,6 +5532,11 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(media::kMediaFoundationD3D11VideoCapture),
     },
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+    {"zero-copy-video-encoding", flag_descriptions::kZeroCopyVideoEncodingName,
+     flag_descriptions::kZeroCopyVideoEncodingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kEnableSurfaceInputForAndroidVEA)},
+#endif  // BUILDFLAG(IS_ANDROID)
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,

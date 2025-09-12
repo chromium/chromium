@@ -10785,5 +10785,10 @@
       "video-performance-team@google.com"
     ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "zero-copy-video-encoding",
+    "owners": [ "eugene@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 150
   }
 ]

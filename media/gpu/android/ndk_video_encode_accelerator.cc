@@ -596,8 +596,9 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
     }
   }
 
-  encoder_info_.implementation_name =
-      "NdkVideoEncodeAccelerator(" + codec_name + ")";
+  encoder_info_.implementation_name = base::StringPrintf(
+      "NdkVideoEncodeAccelerator(%s) input: %s", codec_name.c_str(),
+      use_surface_as_input_ ? "surface" : "buffer");
   encoder_info_.supports_native_handle = false;
   encoder_info_.has_trusted_rate_controller = false;
   encoder_info_.is_hardware_accelerated = IsHardwareCodec(codec_name);
@@ -860,14 +861,13 @@ void NdkVideoEncodeAccelerator::FeedInput() {
         return;
       }
       next_encode.sync_state = SyncState::kSyncInProgress;
-      auto sync_done_callback =
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &NdkVideoEncodeAccelerator::OnSyncDone,
-              weak_ptr_factory_.GetWeakPtr(), next_encode.frame->unique_id()));
+      auto sync_done_callback = base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&NdkVideoEncodeAccelerator::OnSyncDone,
+                         weak_ptr_factory_.GetWeakPtr(), frame->unique_id()));
       gpu_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&WaitForSyncTokenOnGpuThread, command_buffer_helper_,
-                         next_encode.frame->acquire_sync_token(),
+                         frame->acquire_sync_token(),
                          std::move(sync_done_callback)));
       return;
     }
@@ -1051,6 +1051,8 @@ void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
       gl_renderer_->RenderVideoFrame(frame, timestamp + base::TimeTicks());
   if (!render_status.is_ok()) {
     NotifyErrorStatus(std::move(render_status));
+    MEDIA_LOG(ERROR, log_) << "Most recent frame: "
+                           << frame->AsHumanReadableString();
     return;
   }
 }
