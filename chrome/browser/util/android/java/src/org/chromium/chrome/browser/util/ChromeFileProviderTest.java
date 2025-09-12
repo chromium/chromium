@@ -37,7 +37,7 @@ public class ChromeFileProviderTest {
         try {
             provider.openFile(uri, "r");
         } catch (FileNotFoundException e) {
-            assert false : "Failed to open file.";
+            throw new AssertionError("Failed to open file.");
         }
         return file;
     }

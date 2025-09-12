@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments.secure_payment_confirmation;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -279,7 +281,9 @@ public class SecurePaymentConfirmationRenderTest {
         int[] blueBitmapArray = new int[100];
         Arrays.fill(blueBitmapArray, Color.BLUE);
 
-        assert (0 <= numberOfPaymentEntitiesLogos) && (numberOfPaymentEntitiesLogos < 3);
+        assertThat(numberOfPaymentEntitiesLogos).isAtLeast(0);
+        assertThat(numberOfPaymentEntitiesLogos).isLessThan(3);
+
         List<PaymentEntityLogo> paymentEntityLogos =
                 switch (numberOfPaymentEntitiesLogos) {
                     case 1 -> List.of(

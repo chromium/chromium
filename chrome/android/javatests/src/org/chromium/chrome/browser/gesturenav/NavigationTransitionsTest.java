@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.graphics.Bitmap;
@@ -233,7 +235,8 @@ public class NavigationTransitionsTest {
     }
 
     private void invokeNavigateGesture(@BackGestureEventSwipeEdge int edge) {
-        assert edge == BackEventCompat.EDGE_LEFT || edge == BackEventCompat.EDGE_RIGHT;
+        assertThat(edge).isAnyOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT);
+
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             float width_px =
                     getWebContents().getWidth()
@@ -251,8 +254,10 @@ public class NavigationTransitionsTest {
                 toX = width_px - fromEdgeStart - dragDistance;
             }
 
-            assert fromX > 0 && fromX < width_px;
-            assert toX > 0 && toX < width_px;
+            assertThat(fromX).isGreaterThan(0);
+            assertThat(fromX).isLessThan(width_px);
+            assertThat(toX).isGreaterThan(0);
+            assertThat(toX).isLessThan(width_px);
 
             // These are arbitrary values that drag far enough to cause the back gesture to invoke.
             //
@@ -286,7 +291,7 @@ public class NavigationTransitionsTest {
 
     private ReleaseController performNavigationTransitionAndHold(
             String expectedUrl, @BackGestureEventSwipeEdge int edge) {
-        assert edge == BackEventCompat.EDGE_LEFT || edge == BackEventCompat.EDGE_RIGHT;
+        assertThat(edge).isAnyOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT);
         final float width_px =
                 getWebContents().getWidth()
                         * Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
@@ -302,8 +307,10 @@ public class NavigationTransitionsTest {
                             ? fromEdgeStart + dragDistance
                             : width_px - fromEdgeStart - dragDistance;
 
-            assert fromX > 0 && fromX < width_px;
-            assert toX > 0 && toX < width_px;
+            assertThat(fromX).isGreaterThan(0);
+            assertThat(fromX).isLessThan(width_px);
+            assertThat(toX).isGreaterThan(0);
+            assertThat(toX).isLessThan(width_px);
 
             long downTime = TimeUtils.currentTimeMillis();
             TouchCommon.dragStart(mActivityTestRule.getActivity(), fromX, 400.0f, downTime);

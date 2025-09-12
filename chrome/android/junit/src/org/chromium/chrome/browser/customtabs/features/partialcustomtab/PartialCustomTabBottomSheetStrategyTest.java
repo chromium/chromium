@@ -8,6 +8,8 @@ import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STA
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -267,13 +269,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     /**
      * Simulate dragging the tab and lifting the finger at the end.
+     *
      * @param handleStrategy {@link PartialCustomTabHandleStrategy} object.
      * @param ypos Series of y positions simulating the events.
      * @return Window attributes after the dragging finishes.
      */
     private WindowManager.LayoutParams dragTab(HandleStrategy handleStrategy, int... ypos) {
         int npos = ypos.length;
-        assert npos >= 2;
+        assertThat(npos).isAtLeast(2);
         long timestamp = SystemClock.uptimeMillis();
 
         // ACTION_DOWN -> ACTION_MOVE * (npos-1) -> ACTION_UP

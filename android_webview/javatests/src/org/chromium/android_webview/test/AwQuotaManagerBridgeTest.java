@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.annotation.SuppressLint;
 import android.util.Pair;
 import android.webkit.WebSettings;
@@ -76,7 +78,7 @@ public class AwQuotaManagerBridgeTest extends AwParameterizedTest {
         }
 
         public long getValue() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mValue;
         }
     }

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -381,7 +383,7 @@ public class TouchToFillControllerTest {
         List<Integer> postedTasksTraits = new ArrayList();
         ShadowPostTask.setTestImpl(
                 (taskTraits, task, delay) -> {
-                    assert delay == 0;
+                    assertThat(delay).isEqualTo(0);
                     // Store the traits to test that tasks are posted to the proper traits.
                     postedTasksTraits.add(taskTraits);
                     task.run();

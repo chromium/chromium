@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.styles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -76,7 +78,7 @@ public final class OmniboxImageSupplierUnitTest {
         mFaviconSize =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
-        assert mFaviconSize != 0;
+        assertThat(mFaviconSize).isNotEqualTo(0);
         mSupplier = new OmniboxImageSupplier(context);
         mSupplier.setRoundedIconGeneratorForTesting(mIconGenerator);
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -218,7 +220,7 @@ public class ShareHelperMultiInstanceUnitTest {
 
         public SingleWindowTestInstance completeShareWithComponent(ComponentName componentName)
                 throws SendIntentException {
-            assert mShareIntent != null;
+            assertThat(mShareIntent).isNotNull();
             Intent sendBackIntent =
                     new Intent().putExtra(Intent.EXTRA_CHOSEN_COMPONENT, componentName);
             IntentSender sender =
@@ -235,7 +237,7 @@ public class ShareHelperMultiInstanceUnitTest {
         }
 
         public SingleWindowTestInstance cancelShare() throws SendIntentException {
-            assert mShareIntent != null;
+            assertThat(mShareIntent).isNotNull();
 
             mIntentRequestTracker.onActivityResult(
                     mShareIntent.requestCode, Activity.RESULT_CANCELED, null);

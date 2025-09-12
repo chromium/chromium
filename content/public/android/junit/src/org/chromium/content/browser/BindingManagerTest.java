@@ -9,6 +9,8 @@ import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
@@ -115,9 +117,8 @@ public class BindingManagerTest {
         checkConnections(connections, connected);
     }
 
-    private void checkConnections(
-            ChildProcessConnection[] connections, boolean[] connected) {
-        assert connections.length == connected.length;
+    private void checkConnections(ChildProcessConnection[] connections, boolean[] connected) {
+        assertThat(connections.length).isEqualTo(connected.length);
         for (int i = 0; i < connections.length; i++) {
             Assert.assertEquals(
                     "isVisibleBindingBound check failed for connection " + i,

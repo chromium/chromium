@@ -604,8 +604,8 @@ public class BackPressManagerUnitTest {
         // Fail if the BackPressManager calls the fallback method, which it shouldn't.
         manager.setFallbackOnBackPressed(
                 () -> {
-                    assert false
-                            : "BackPressManager should not call fallback on escape key presses.";
+                    throw new AssertionError(
+                            "BackPressManager should not call fallback on escape key presses.");
                 });
 
         manager.addHandler(h1, 3);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -140,7 +142,7 @@ public class TabPersistentStoreUnitTest {
             if (!mockingDetails(runner).isMock()) {
                 runner.execute(() -> flushed.set(true));
                 BaseRobolectricTestRule.runAllBackgroundAndUi();
-                assert flushed.get();
+                assertThat(flushed.get()).isTrue();
             }
         }
     }

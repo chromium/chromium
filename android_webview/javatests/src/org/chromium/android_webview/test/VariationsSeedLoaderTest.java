@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Intent;
@@ -62,7 +64,7 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
         private volatile boolean mSeedRequested;
 
         public boolean wasSeedRequested() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mSeedRequested;
         }
 

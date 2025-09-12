@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -169,7 +171,7 @@ public class FullscreenAlertDialogUnitTest {
     }
 
     private void launchActivity() {
-        assert mActivity == null;
+        assertThat(mActivity).isNull();
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }

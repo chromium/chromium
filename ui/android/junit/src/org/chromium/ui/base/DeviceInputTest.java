@@ -11,6 +11,8 @@ import static android.view.InputDevice.SOURCE_KEYBOARD;
 import static android.view.InputDevice.SOURCE_MOUSE;
 import static android.view.InputDevice.SOURCE_TOUCHPAD;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.util.SparseArray;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -274,7 +276,7 @@ public class DeviceInputTest {
         private final ArrayList<InputDevice.MotionRange> mMotionRanges = new ArrayList<>();
 
         public static ShadowInputDevice attach(int deviceId) {
-            assert sDevicesById.indexOfKey(deviceId) < 0;
+            assertThat(sDevicesById.indexOfKey(deviceId)).isLessThan(0);
 
             InputDevice device = Shadow.newInstanceOf(InputDevice.class);
             sDevicesById.put(deviceId, device);

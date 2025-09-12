@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webauth;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -297,7 +299,7 @@ public class Fido2CredentialRequestTest {
                 mNextResult = null;
                 callback.onResult(result);
             } else {
-                assert mCallback == null;
+                assertThat(mCallback).isNull();
                 mCallback = callback;
             }
             mShowIntentCalled.open();

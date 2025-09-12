@@ -6953,7 +6953,7 @@ public class StripLayoutHelperTest {
         @Override
         public void removeTab(
                 @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
-            assert false : "Not reached.";
+            throw new AssertionError("Not reached.");
         }
     }
 }

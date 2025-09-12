@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
@@ -80,7 +83,9 @@ public class AndroidPaymentAppFinderTest
          * @param url The URL of the test server.
          */
         /* package */ void setTestServerUrl(GURL url) {
-            assert mTestServerUrl == null : "Test server URL should be set only once";
+            assertWithMessage("Test server URL should be set only once")
+                    .that(mTestServerUrl)
+                    .isNull();
             mTestServerUrl = url;
         }
 
@@ -106,8 +111,7 @@ public class AndroidPaymentAppFinderTest
             GURL changedUrl =
                     new GURL(url.getSpec().replaceAll("https://", mTestServerUrl.getSpec()));
             if (!changedUrl.isValid()) {
-                assert false;
-                return null;
+                throw new AssertionError();
             }
             return changedUrl;
         }
@@ -1835,8 +1839,8 @@ public class AndroidPaymentAppFinderTest
                                     /* factory= */ null);
                     AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
                     if (appStorePackageName != null) {
-                        assert appStorePaymentMethod != null;
-                        assert appStorePaymentMethod.isValid();
+                        assertThat(appStorePaymentMethod).isNotNull();
+                        assertThat(appStorePaymentMethod.isValid()).isTrue();
                         finder.addAppStoreForTest(appStorePackageName, appStorePaymentMethod);
                     }
                     finder.findAndroidPaymentApps();

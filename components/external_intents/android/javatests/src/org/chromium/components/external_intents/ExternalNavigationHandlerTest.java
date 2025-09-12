@@ -4,6 +4,8 @@
 
 package org.chromium.components.external_intents;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
@@ -3389,7 +3391,7 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         public void setPackageForTrustedCallingApp(Intent intent) {
-            assert mIsCallingAppTrusted;
+            assertThat(mIsCallingAppTrusted).isTrue();
             if (mTargetPackageName != null) {
                 intent.setPackage(mTargetPackageName);
             }

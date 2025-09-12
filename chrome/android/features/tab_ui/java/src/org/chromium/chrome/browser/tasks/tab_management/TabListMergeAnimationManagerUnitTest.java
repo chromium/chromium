@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -88,7 +90,7 @@ public class TabListMergeAnimationManagerUnitTest {
         doCallback(
                         0,
                         runnable -> {
-                            assert runnable instanceof Runnable;
+                            assertThat(runnable).isInstanceOf(Runnable.class);
                             ((Runnable) runnable).run();
                         })
                 .when(mRecyclerView)
@@ -103,7 +105,7 @@ public class TabListMergeAnimationManagerUnitTest {
         doCallback(
                         0,
                         item -> {
-                            assert item instanceof Rect;
+                            assertThat(item).isInstanceOf(Rect.class);
                             Rect rect = (Rect) item;
                             if (isVisible) {
                                 rect.set(0, 0, 50, FULL_HEIGHT);

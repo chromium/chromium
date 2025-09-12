@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -65,7 +67,7 @@ public class AccountManagerFacadeTest {
         }
 
         void blockGetAccount() {
-            assert mGetAccountsLatch == null;
+            assertThat(mGetAccountsLatch).isNull();
             mGetAccountsLatch = new CountDownLatch(1);
         }
 
@@ -80,7 +82,7 @@ public class AccountManagerFacadeTest {
         }
 
         void blockGetAuthToken() {
-            assert mGetAuthTokenLatch == null;
+            assertThat(mGetAuthTokenLatch).isNull();
             mGetAuthTokenLatch = new CountDownLatch(1);
         }
 

@@ -124,7 +124,7 @@ public class EmbeddedPermissionPromptTest {
                 mActivityTestRule.runJavaScriptCodeInCurrentTab("checkGeolocation();");
             }
             default -> {
-                assert false : "Unreached";
+                throw new AssertionError("Unreached");
             }
         }
         permissionUpdateWaiter.waitForNumUpdates(0);
@@ -275,7 +275,7 @@ public class EmbeddedPermissionPromptTest {
                             PermissionTestRule.PromptDecision.ALLOW_ONCE, activity);
                 }
                 default -> {
-                    assert false : "Unexpected response ";
+                    throw new AssertionError("Unexpected response ");
                 }
             }
             waitForTitleUpdate(expectedTitle, activity);
@@ -391,9 +391,8 @@ public class EmbeddedPermissionPromptTest {
             case "geolocation":
                 return getGeolocationType();
             default:
-                assert false : "Unreached";
+                throw new AssertionError("Unreached");
         }
-        return ContentSettingsType.DEFAULT;
     }
 
     @Test

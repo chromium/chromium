@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;
@@ -483,7 +485,7 @@ public class HistoricalTabSaverImplTest {
 
         Assert.assertEquals("Entry count mismatch.", expectedEntries.size(), actualEntries.size());
         for (int i = 0; i < expectedEntries.size(); ++i) {
-            assert expectedEntries.get(i).size() != 0;
+            assertThat(expectedEntries.get(i)).isNotEmpty();
 
             if (expectedEntries.get(i).size() != 1) {
                 assertBulkClosureEquals(i, expectedEntries.get(i), actualEntries.get(i));

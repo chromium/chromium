@@ -221,7 +221,7 @@ public class KeyboardAccessoryViewTest {
 
         @Override
         public void addOnInitializedCallback(Callback<Boolean> callback) {
-            assert false : "Implement addOnInitializedCallback if you need it.";
+            throw new AssertionError("Implement addOnInitializedCallback if you need it.");
         }
     }
 

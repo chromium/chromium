@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -320,7 +322,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
             }
             // IssuerIcon#mBitmap must not be set when
             // AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
-            assert icon.mBitmap == null;
+            assertThat(icon.mBitmap).isNull();
             return new BitmapDrawable(mIconBitmapLookup.get(icon));
         }
     }

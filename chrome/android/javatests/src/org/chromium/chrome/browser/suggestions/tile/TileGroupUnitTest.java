@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -608,9 +610,9 @@ public class TileGroupUnitTest {
     }
 
     private void refreshData(TileGroup tileGroup, TilesLinearLayout tilesLayout) {
-        assert tileGroup.getTileSections().size() == 1;
+        assertThat(tileGroup.getTileSections().size()).isEqualTo(1);
         List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
-        assert tiles != null;
+        assertThat(tiles).isNotNull();
         mTileRenderer.renderTileSection(tiles, tilesLayout, tileGroup.getTileSetupDelegate());
         tileGroup.notifyTilesRendered();
     }

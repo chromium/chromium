@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -551,7 +553,7 @@ public class ShowNtpAtStartupTest {
     }
 
     private static void waitForNtpLoaded(final Tab tab) {
-        assert !tab.isIncognito();
+        assertThat(tab.isIncognito()).isFalse();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));

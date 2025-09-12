@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -265,9 +267,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Test
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached() {
         createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
-                : "When animation is disabled, then the max count should be set to 10, as there's"
-                        + " no double counting anymore.";
+        assertWithMessage(
+                        "When animation is disabled, then the max count should be set to 10, as"
+                                + " there's no double counting anymore.")
+                .that(mIncognitoReauthPromoMessageService.mMaxPromoMessageCount)
+                .isEqualTo(10);
 
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);

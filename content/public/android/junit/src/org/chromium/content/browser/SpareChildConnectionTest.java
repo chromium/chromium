@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -71,7 +73,7 @@ public class SpareChildConnectionTest {
                 boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             // We expect to create only one connection in these tests.
-            assert mConnection == null;
+            assertThat(mConnection).isNull();
             mConnection =
                     new TestChildProcessConnection(
                             serviceName, bindToCaller, bindAsExternalService, serviceBundle);

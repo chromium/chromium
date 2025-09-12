@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -495,7 +497,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         doAnswer(
                         invocation -> {
                             Tab tab = mModel.getTabById(captor.getValue());
-                            assert tab != null;
+                            assertThat(tab).isNotNull();
                             Token tabGroupId = tab.getTabGroupId();
                             int count = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
                             when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId))

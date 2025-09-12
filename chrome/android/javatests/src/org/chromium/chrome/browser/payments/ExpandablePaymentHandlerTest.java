@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -158,8 +160,8 @@ public class ExpandablePaymentHandlerTest {
         String longOrigin = server.getURL("/");
         String begin = "https://";
         String end = "/";
-        assert longOrigin.startsWith(begin);
-        assert longOrigin.endsWith(end);
+        assertThat(longOrigin).startsWith(begin);
+        assertThat(longOrigin).endsWith(end);
         return longOrigin.substring(begin.length(), longOrigin.length() - end.length());
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.os.Bundle;
 import android.os.SystemClock;
 
@@ -623,14 +625,14 @@ public class AwPrefetchTest extends AwParameterizedTest {
             private @Nullable Bundle mExtras;
 
             public int getStatusCode() {
-                assert getCallCount() > 0;
+                assertThat(getCallCount()).isGreaterThan(0);
                 return mStatusCode;
             }
 
             @Keep
             @Nullable
             public Bundle getExtras() {
-                assert getCallCount() > 0;
+                assertThat(getCallCount()).isGreaterThan(0);
                 return mExtras;
             }
 
@@ -645,7 +647,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             private Throwable mError;
 
             public Throwable getError() {
-                assert getCallCount() > 0;
+                assertThat(getCallCount()).isGreaterThan(0);
                 return mError;
             }
 

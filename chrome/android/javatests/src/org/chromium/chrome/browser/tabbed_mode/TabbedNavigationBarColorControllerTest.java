@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -373,7 +375,7 @@ public class TabbedNavigationBarColorControllerTest {
     }
 
     private void testNavBarColorAnimationsDisabled() {
-        assert mTabbedNavigationBarColorController != null;
+        assertThat(mTabbedNavigationBarColorController).isNotNull();
 
         // Create spies from real instances and inject the spies back.
         EdgeToEdgeSystemBarColorHelper spyEdgeToEdgeSystemBarColorHelper =
@@ -400,7 +402,7 @@ public class TabbedNavigationBarColorControllerTest {
     }
 
     private void testNavBarColorAnimations() {
-        assert mTabbedNavigationBarColorController != null;
+        assertThat(mTabbedNavigationBarColorController).isNotNull();
 
         // Create spies from real instances and inject the spies back.
         EdgeToEdgeSystemBarColorHelper spyEdgeToEdgeSystemBarColorHelper =

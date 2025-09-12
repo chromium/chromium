@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
@@ -98,13 +100,13 @@ public class TabGroupMetadataUnitTest {
             // Read back the metadata.
             parcel.setDataPosition(0);
             Bundle bundle = parcel.readBundle(getClass().getClassLoader());
-            assert bundle != null;
+            assertThat(bundle).isNotNull();
             @SuppressLint("VisibleForTests")
             ArrayList<?> deserializedList =
                     (ArrayList<?>) bundle.getSerializable(TabGroupMetadata.KEY_TAB_IDS_TO_URLS);
 
             // Verify the ordering is retained.
-            assert deserializedList != null;
+            assertThat(deserializedList).isNotNull();
             for (int i = 0; i < TAB_IDS_TO_URLS.size(); i++) {
                 assertEquals(
                         "Unexpected ordering after deserialization.",

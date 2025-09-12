@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safe_browsing;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -72,7 +74,7 @@ public class AdvancedProtectionMediatorTest {
 
         @Override
         public void addObserver(Observer observer) {
-            assert mObserver == null;
+            assertThat(mObserver).isNull();
             mObserver = observer;
         }
 

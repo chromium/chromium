@@ -909,8 +909,7 @@ public class NavigateTest {
             return JavaScriptUtils.executeJavaScriptAndWaitForResult(
                     tab.getWebContents(), "document.body.innerText");
         } catch (Exception ex) {
-            assert false : "Unexpected Exception";
+            throw new AssertionError(ex);
         }
-        return null;
     }
 }

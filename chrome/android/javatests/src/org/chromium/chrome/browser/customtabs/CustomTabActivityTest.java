@@ -14,6 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -275,7 +277,7 @@ public class CustomTabActivityTest {
         private T mValue;
 
         public T getValue() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mValue;
         }
 
@@ -2293,8 +2295,9 @@ public class CustomTabActivityTest {
         WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
         assertNotEquals("The window should have non-full height", fullHeight, attrs.height);
 
-        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
-                instanceof BaseCustomTabRootUiCoordinator);
+        assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
+                .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
+
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator)
                         mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
@@ -2353,13 +2356,15 @@ public class CustomTabActivityTest {
         rotateCustomTabActivity(
                 mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
 
-        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
-                instanceof BaseCustomTabRootUiCoordinator);
+        assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
+                .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
+
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator)
                         mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-        assert (coordinator.getCustomTabSizeStrategyForTesting()
-                instanceof PartialCustomTabDisplayManager);
+        assertThat(coordinator.getCustomTabSizeStrategyForTesting())
+                .isInstanceOf(PartialCustomTabDisplayManager.class);
+
         PartialCustomTabDisplayManager displayManager =
                 (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
         if (displayManager.getActiveStrategyType()
@@ -2413,13 +2418,15 @@ public class CustomTabActivityTest {
         int devicePortraitWidthDp = (int) (displayMetrics.widthPixels / displayMetrics.density);
         int deviceLandscapeWidthDp = (int) (displayMetrics.heightPixels / displayMetrics.density);
 
-        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
-                instanceof BaseCustomTabRootUiCoordinator);
+        assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
+                .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
+
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator)
                         mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-        assert (coordinator.getCustomTabSizeStrategyForTesting()
-                instanceof PartialCustomTabDisplayManager);
+        assertThat(coordinator.getCustomTabSizeStrategyForTesting())
+                .isInstanceOf(PartialCustomTabDisplayManager.class);
+
         PartialCustomTabDisplayManager displayManager =
                 (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
 
@@ -2446,13 +2453,15 @@ public class CustomTabActivityTest {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
-                instanceof BaseCustomTabRootUiCoordinator);
+        assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
+                .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
+
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator)
                         mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-        assert (coordinator.getCustomTabSizeStrategyForTesting()
-                instanceof PartialCustomTabDisplayManager);
+        assertThat(coordinator.getCustomTabSizeStrategyForTesting())
+                .isInstanceOf(PartialCustomTabDisplayManager.class);
+
         PartialCustomTabDisplayManager displayManager =
                 (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
         int fullWidth = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -2497,12 +2506,14 @@ public class CustomTabActivityTest {
         DisplayMetrics displayMetrics = resultActivity.getResources().getDisplayMetrics();
         int devicePortraitWidthDp = (int) (displayMetrics.widthPixels / displayMetrics.density);
 
-        assert (resultActivity.getRootUiCoordinatorForTesting()
-                instanceof BaseCustomTabRootUiCoordinator);
+        assertThat(resultActivity.getRootUiCoordinatorForTesting())
+                .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
+
         BaseCustomTabRootUiCoordinator coordinator =
                 (BaseCustomTabRootUiCoordinator) resultActivity.getRootUiCoordinatorForTesting();
-        assert (coordinator.getCustomTabSizeStrategyForTesting()
-                instanceof PartialCustomTabDisplayManager);
+        assertThat(coordinator.getCustomTabSizeStrategyForTesting())
+                .isInstanceOf(PartialCustomTabDisplayManager.class);
+
         PartialCustomTabDisplayManager displayManager =
                 (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
 

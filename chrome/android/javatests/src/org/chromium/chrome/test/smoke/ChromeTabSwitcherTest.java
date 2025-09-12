@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.smoke;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -112,7 +114,7 @@ public class ChromeTabSwitcherTest {
         mFirstRunNavigator.navigateThroughFRE();
 
         Log.i(TAG, "Waiting for omnibox to show URL");
-        assert url.startsWith("http://");
+        assertThat(url).startsWith("http://");
         String urlWithoutScheme = url.substring(7);
         IUi2Locator dataUrlText = Ui2Locators.withText(urlWithoutScheme);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(dataUrlText);

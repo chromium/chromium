@@ -9,6 +9,9 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -272,7 +275,7 @@ public class ManualFillingControllerTest {
          */
         Action getFirstRecordedAction() {
             int firstNonTabLayoutAction = 0;
-            assert mRecordedActions.size() >= firstNonTabLayoutAction;
+            assertThat(mRecordedActions.size()).isAtLeast(firstNonTabLayoutAction);
             return mRecordedActions.get(firstNonTabLayoutAction);
         }
 
@@ -280,12 +283,12 @@ public class ManualFillingControllerTest {
          * @return First password in a sheet captured by {@link #record(int, AccessorySheetData)}.
          */
         String getFirstRecordedPassword() {
-            assert getRecordedSheetData() != null;
-            assert getRecordedSheetData().getUserInfoList() != null;
+            assertThat(getRecordedSheetData()).isNotNull();
+            assertThat(getRecordedSheetData().getUserInfoList()).isNotNull();
             UserInfo info = getRecordedSheetData().getUserInfoList().get(0);
-            assert info != null;
-            assert info.getFields() != null;
-            assert info.getFields().size() > 1;
+            assertThat(info).isNotNull();
+            assertThat(info.getFields()).isNotNull();
+            assertThat(info.getFields().size()).isGreaterThan(1);
             return info.getFields().get(1).getDisplayText();
         }
 
@@ -1750,7 +1753,9 @@ public class ManualFillingControllerTest {
      * @return A {@link ManualFillingState} that is never null.
      */
     private ManualFillingState getStateForBrowserTab() {
-        assert mLastMockWebContents != null : "In testing, WebContents should never be null!";
+        assertWithMessage("In testing, WebContents should never be null!")
+                .that(mLastMockWebContents)
+                .isNotNull();
         return mCache.getStateFor(mLastMockWebContents);
     }
 

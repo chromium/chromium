@@ -138,7 +138,7 @@ public final class PrivacySandboxDialogTest {
                                 ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(v));
                                 mRenderTestRule.render(v, renderId);
                             } catch (IOException e) {
-                                assert false : "Render test failed due to " + e;
+                                throw new AssertionError(e);
                             }
                         });
     }

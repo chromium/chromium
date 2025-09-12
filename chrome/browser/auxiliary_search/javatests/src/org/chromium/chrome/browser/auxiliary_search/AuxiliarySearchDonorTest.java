@@ -174,7 +174,7 @@ public final class AuxiliarySearchDonorTest {
                                             webPage.getFavicon().getBytes()));
                         }
                     } catch (AppSearchException e) {
-                        assert false;
+                        throw new AssertionError();
                     }
                 });
     }

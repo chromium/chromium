@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -115,7 +117,7 @@ public class BrowserStartupControllerTest {
 
         @Override
         public void onFailure() {
-            assert !mHasStartupResult;
+            assertThat(mHasStartupResult).isFalse();
             mWasFailure = true;
             mHasStartupResult = true;
         }

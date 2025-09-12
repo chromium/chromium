@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -298,7 +300,7 @@ public class PlayerFrameMediatorTest {
     private static void assertViewportStateIs(Matrix matrix, PlayerFrameViewport viewport) {
         float[] matrixValues = new float[9];
         matrix.getValues(matrixValues);
-        assert matrixValues[Matrix.MSCALE_X] == matrixValues[Matrix.MSCALE_Y];
+        assertThat(matrixValues[Matrix.MSCALE_X]).isEqualTo(matrixValues[Matrix.MSCALE_Y]);
         assertViewportStateIs(
                 matrixValues[Matrix.MSCALE_X],
                 matrixValues[Matrix.MTRANS_X],

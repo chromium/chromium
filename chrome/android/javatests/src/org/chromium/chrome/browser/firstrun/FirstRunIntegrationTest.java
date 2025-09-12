@@ -9,6 +9,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -1262,7 +1264,7 @@ public class FirstRunIntegrationTest {
         FirstRunPagesTestCase setShouldSignIn(boolean shouldSignIn) {
             mShouldSignIn = shouldSignIn;
             // The history sync screen can only appear if the user is signed in.
-            assert mShouldSignIn || !mShowHistorySyncPromo;
+            assertThat(mShouldSignIn || !mShowHistorySyncPromo).isTrue();
             return this;
         }
 

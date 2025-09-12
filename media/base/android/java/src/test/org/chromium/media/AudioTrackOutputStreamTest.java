@@ -4,6 +4,8 @@
 
 package org.chromium.media;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -84,12 +86,12 @@ public class AudioTrackOutputStreamTest {
         private ObservableAudioTrack mAudioTrack;
 
         DataProvider(int bufferCount) {
-            assert bufferCount > 0;
+            assertThat(bufferCount).isGreaterThan(0);
             mDoneSignal = new CountDownLatch(bufferCount + 1);
         }
 
         public void updateBufferCount(int bufferCount) {
-            assert bufferCount > 0;
+            assertThat(bufferCount).isGreaterThan(0);
             mDoneSignal = new CountDownLatch(bufferCount + 1);
         }
 

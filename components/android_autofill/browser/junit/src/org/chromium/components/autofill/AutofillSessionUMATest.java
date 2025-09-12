@@ -90,8 +90,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -134,8 +133,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -178,8 +176,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -221,8 +218,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =

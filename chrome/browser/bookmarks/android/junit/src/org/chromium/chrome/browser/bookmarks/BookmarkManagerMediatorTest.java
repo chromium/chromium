@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -357,8 +359,8 @@ public class BookmarkManagerMediatorTest {
         // This just runs all of those posts synchronously to simplify test code.
         ShadowPostTask.setTestImpl(
                 (taskTraits, task, delay) -> {
-                    assert delay == 0;
-                    assert taskTraits >= TaskTraits.UI_TRAITS_START;
+                    assertThat(delay).isEqualTo(0);
+                    assertThat(taskTraits).isAtLeast(TaskTraits.UI_TRAITS_START);
                     task.run();
                 });
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);

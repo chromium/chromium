@@ -59,7 +59,7 @@ public class WebContentsStateBridgeTest {
             outputStream = new FileOutputStream(file);
             outputStream.write(data);
         } catch (FileNotFoundException e) {
-            assert false : "Failed to create " + filename;
+            throw new AssertionError("Failed to create " + filename);
         } finally {
             StreamUtil.closeQuietly(outputStream);
         }

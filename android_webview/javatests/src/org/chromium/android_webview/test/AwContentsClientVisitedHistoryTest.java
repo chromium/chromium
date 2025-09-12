@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -32,7 +34,7 @@ public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
         private boolean mSaveCallback;
 
         public Callback<String[]> getCallback() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mCallback;
         }
 

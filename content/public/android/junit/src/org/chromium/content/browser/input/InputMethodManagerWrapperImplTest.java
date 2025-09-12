@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
@@ -45,11 +47,11 @@ public class InputMethodManagerWrapperImplTest {
         @Override
         protected int getDisplayId(Context context) {
             if (context == mContext) {
-                assert mContextDisplayId != -1;
+                assertThat(mContextDisplayId).isNotEqualTo(-1);
                 return mContextDisplayId;
             }
             if (context == mActivity) {
-                assert mActivityDisplayId != -1;
+                assertThat(mActivityDisplayId).isNotEqualTo(-1);
                 return mActivityDisplayId;
             }
             return super.getDisplayId(context);

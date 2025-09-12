@@ -17,6 +17,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
@@ -1435,7 +1437,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void checkCollapsedAccountListForWebSignin(AccountInfo accountInfo) {
-        assert mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN;
+        assertThat(mSigninAccessPoint).isEqualTo(SigninAccessPoint.WEB_SIGNIN);
         checkCollapsedAccountList(accountInfo);
     }
 

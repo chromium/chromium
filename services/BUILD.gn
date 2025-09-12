@@ -192,6 +192,7 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/google-truth:google_truth_java",
     ]
   }
 
@@ -218,6 +219,7 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",

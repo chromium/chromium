@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.SystemClock;
@@ -318,7 +320,8 @@ public class MessageBannerViewTest {
                                     sActivity,
                                     menuItems,
                                     (PropertyModel menuItem) -> {
-                                        assert menuItem == menuItems.get(0).model;
+                                        assertThat(menuItem)
+                                                .isSameInstanceAs(menuItems.get(0).model);
                                         called.set(true);
                                     });
 

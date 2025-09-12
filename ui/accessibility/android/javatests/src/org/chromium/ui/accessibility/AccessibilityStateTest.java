@@ -4,6 +4,8 @@
 
 package org.chromium.ui.accessibility;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK;
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK_HEURISTIC;
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
@@ -471,7 +473,7 @@ public class AccessibilityStateTest {
             AccessibilityServiceInfo service =
                     constructAccessibilityServiceInfo(resolveInfo, mContext);
             setCapabilities(service, mCapabilities);
-            assert service != null;
+            assertThat(service).isNotNull();
             service.eventTypes = mEventTypes;
             service.feedbackType = mFeedbackType;
             service.flags = mFlags;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1342,8 +1344,9 @@ public class TabModelImplTest {
     private void assertMoveTabToIndex(
             int oldIndex, int newIndex, int expectedIndex, boolean movingInsideGroup) {
         Tab oldIndexTab = mTabModelJni.getTabAt(oldIndex);
-        assert movingInsideGroup || oldIndexTab.getTabGroupId() == null
-                : "This is not a single tab movement";
+        assertWithMessage("This is not a single tab movement")
+                .that(movingInsideGroup || oldIndexTab.getTabGroupId() == null)
+                .isTrue();
         if (ENABLE_DEBUG_LOGGING) {
             logTabModelStructure(mTabModelJni, "Before move");
             Log.i(

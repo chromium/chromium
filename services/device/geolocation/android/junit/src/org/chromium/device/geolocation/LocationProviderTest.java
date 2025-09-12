@@ -120,7 +120,7 @@ public class LocationProviderTest {
         } else if (mApi == LocationProviderType.GMS_CORE) {
             setLocationProviderGmsCore();
         } else {
-            assert false;
+            throw new AssertionError();
         }
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -465,7 +467,7 @@ public class AutofillOptionsTest {
 
     private void verifyOptionReflectedInView(
             @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int selectedOption) {
-        assert selectedOption == DEFAULT || selectedOption == USE_3P;
+        assertThat(selectedOption).isAnyOf(DEFAULT, USE_3P);
         assertNotNull(getRadioButtonComponent());
         boolean uses_third_party = selectedOption == USE_3P;
         assertEquals(getRadioButtonComponent().getSelectedOption(), selectedOption);

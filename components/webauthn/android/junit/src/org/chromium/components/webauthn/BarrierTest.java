@@ -254,7 +254,7 @@ public class BarrierTest {
                 verify(mErrorCallback, times(0)).onResult(anyInt());
                 break;
             default:
-                assert false : "Unhandled expectation " + mExpectation;
+                throw new AssertionError(mExpectation);
         }
     }
 }

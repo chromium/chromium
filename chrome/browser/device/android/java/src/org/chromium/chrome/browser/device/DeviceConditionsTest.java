@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.device;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -95,11 +97,13 @@ public class DeviceConditionsTest {
     }
 
     private void setBatteryStatus(int batteryStatus) {
-        assert batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING
-                || batteryStatus == BatteryManager.BATTERY_STATUS_DISCHARGING
-                || batteryStatus == BatteryManager.BATTERY_STATUS_FULL
-                || batteryStatus == BatteryManager.BATTERY_STATUS_NOT_CHARGING
-                || batteryStatus == BatteryManager.BATTERY_STATUS_UNKNOWN;
+        assertThat(batteryStatus)
+                .isAnyOf(
+                        BatteryManager.BATTERY_STATUS_CHARGING,
+                        BatteryManager.BATTERY_STATUS_DISCHARGING,
+                        BatteryManager.BATTERY_STATUS_FULL,
+                        BatteryManager.BATTERY_STATUS_NOT_CHARGING,
+                        BatteryManager.BATTERY_STATUS_UNKNOWN);
 
         mBatteryStatus.putExtra(BatteryManager.EXTRA_STATUS, batteryStatus);
     }
@@ -117,10 +121,12 @@ public class DeviceConditionsTest {
     }
 
     private void setNetworkInfoConnectionType(int connectionType) {
-        assert connectionType == ConnectivityManager.TYPE_WIFI
-                || connectionType == ConnectivityManager.TYPE_MOBILE
-                || connectionType == ConnectivityManager.TYPE_BLUETOOTH
-                || connectionType == ConnectivityManager.TYPE_DUMMY;
+        assertThat(connectionType)
+                .isAnyOf(
+                        ConnectivityManager.TYPE_WIFI,
+                        ConnectivityManager.TYPE_MOBILE,
+                        ConnectivityManager.TYPE_BLUETOOTH,
+                        ConnectivityManager.TYPE_DUMMY);
 
         doReturn(true).when(mNetworkInfo).isConnectedOrConnecting();
         doReturn(connectionType).when(mNetworkInfo).getType();

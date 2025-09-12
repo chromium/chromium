@@ -168,8 +168,7 @@ public class ReaderModeBottomSheetRenderTest {
             case Theme.DARK:
                 return Color.parseColor("#BF9A73");
             default:
-                assert false;
-                return Color.parseColor("#F5F5F5");
+                throw new AssertionError();
         }
     }
 
@@ -185,8 +184,7 @@ public class ReaderModeBottomSheetRenderTest {
             case Theme.DARK:
                 return BrandedColorScheme.DARK_BRANDED_THEME;
             default:
-                assert false;
-                return BrandedColorScheme.LIGHT_BRANDED_THEME;
+                throw new AssertionError();
         }
     }
 }

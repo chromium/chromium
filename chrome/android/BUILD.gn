@@ -2505,6 +2505,7 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
     ]

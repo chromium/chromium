@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -495,7 +497,7 @@ public class ChildProcessLauncherHelperTest {
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection) {
-        assert doSetupConnection || blockingPolicy != BLOCK_UNTIL_SETUP;
+        assertThat(doSetupConnection || blockingPolicy != BLOCK_UNTIL_SETUP).isTrue();
         ChildProcessLauncherHelperImpl launcher =
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                         new Callable<ChildProcessLauncherHelperImpl>() {
@@ -512,7 +514,7 @@ public class ChildProcessLauncherHelperTest {
                             }
                         });
         if (blockingPolicy != DONT_BLOCK) {
-            assert blockingPolicy == BLOCK_UNTIL_CONNECTED || blockingPolicy == BLOCK_UNTIL_SETUP;
+            assertThat(blockingPolicy).isAnyOf(BLOCK_UNTIL_CONNECTED, BLOCK_UNTIL_SETUP);
             blockUntilConnected(launcher);
             if (blockingPolicy == BLOCK_UNTIL_SETUP) {
                 blockUntilSetup(launcher);

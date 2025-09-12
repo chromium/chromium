@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -56,7 +58,7 @@ public class ChildProcessLauncherTest {
         private ChildProcessConnection.ServiceCallback mServiceCallback;
 
         public void setServiceCallback(ChildProcessConnection.ServiceCallback serviceCallback) {
-            assert mServiceCallback == null;
+            assertThat(mServiceCallback).isNull();
             mServiceCallback = serviceCallback;
         }
 

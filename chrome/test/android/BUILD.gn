@@ -89,6 +89,7 @@ android_test_apk("baseline_profile_test_apk") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]

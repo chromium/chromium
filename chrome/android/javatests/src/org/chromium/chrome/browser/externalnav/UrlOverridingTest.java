@@ -8,6 +8,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -38,7 +40,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -67,6 +68,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -2557,8 +2559,8 @@ public class UrlOverridingTest {
                             new ActivityStateListener() {
                                 @Override
                                 public void onActivityStateChange(Activity activity, int newState) {
-                                    assert CustomTabActivity.class.isAssignableFrom(
-                                            activity.getClass());
+                                    assertThat(activity.getClass())
+                                            .isAssignableTo(CustomTabActivity.class);
                                     if (newState == ActivityState.CREATED) {
                                         // We need to add the ActivityMonitor after the activity
                                         // starts or we'll block the intent, as the filter matches

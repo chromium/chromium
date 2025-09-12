@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -62,13 +64,13 @@ public class DialogManagerTest {
 
         @Override
         public void show(FragmentManager manager, String tag) {
-            assert mState == NEW;
+            assertThat(mState).isEqualTo(NEW);
             mState = SHOWING;
         }
 
         @Override
         public void dismiss() {
-            assert mState == SHOWING;
+            assertThat(mState).isEqualTo(SHOWING);
             mState = DISMISSED;
         }
     }

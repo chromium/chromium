@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,11 +72,16 @@ public class ReaderModePrefsViewTest {
     @SmallTest
     public void testInitialState() {
         // Verify that the initial state of the view is correct.
-        assert ((MaterialButton) mReaderModePrefsView.findViewById(R.id.light_mode)).isChecked();
-        assert ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
-                .isChecked();
+        assertThat(
+                        ((MaterialButton) mReaderModePrefsView.findViewById(R.id.light_mode))
+                                .isChecked())
+                .isTrue();
+        assertThat(
+                        ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
+                                .isChecked())
+                .isTrue();
         Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
-        assert slider.getValue() == 1.0f;
+        assertThat(slider.getValue()).isEqualTo(1.0f);
     }
 
     @Test

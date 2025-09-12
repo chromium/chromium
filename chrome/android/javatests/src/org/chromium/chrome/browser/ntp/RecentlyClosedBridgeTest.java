@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.when;
 
 import android.os.Build;
@@ -1714,7 +1716,7 @@ public class RecentlyClosedBridgeTest {
     }
 
     private void assertTabsAre(List<RecentlyClosedTab> tabs, String[] titles, String[] urls) {
-        assert titles.length == urls.length;
+        assertThat(titles.length).isEqualTo(urls.length);
         Assert.assertEquals("Unexpected number of tabs.", titles.length, tabs.size());
         for (int i = 0; i < titles.length; i++) {
             Assert.assertEquals("Tab " + i + " title mismatch.", titles[i], tabs.get(i).getTitle());
@@ -1729,19 +1731,19 @@ public class RecentlyClosedBridgeTest {
             String[] groupTitles,
             String[] titles,
             String[] urls) {
-        assert titles.length == urls.length;
+        assertThat(titles.length).isEqualTo(urls.length);
         Assert.assertTrue(
                 "Entry was " + entry.getClass() + " wanted " + cls, cls.isInstance(entry));
 
         if (cls == RecentlyClosedTab.class) {
-            assert groupTitles.length == 0;
-            assert titles.length == 1;
+            assertThat(groupTitles.length).isEqualTo(0);
+            assertThat(titles.length).isEqualTo(1);
             RecentlyClosedTab tab = (RecentlyClosedTab) entry;
             assertTabsAre(Collections.singletonList(tab), titles, urls);
             return;
         }
         if (cls == RecentlyClosedGroup.class) {
-            assert groupTitles.length == 1;
+            assertThat(groupTitles.length).isEqualTo(1);
             RecentlyClosedGroup group = (RecentlyClosedGroup) entry;
             Assert.assertEquals(groupTitles[0], group.getTitle());
             assertTabsAre(group.getTabs(), titles, urls);

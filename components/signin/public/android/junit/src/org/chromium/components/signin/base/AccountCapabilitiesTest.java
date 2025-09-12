@@ -82,10 +82,9 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
-            /** keep-sorted end */
+                /** keep-sorted end */
         }
-        assert false : "Capability name is not known.";
-        return -1;
+        throw new AssertionError("Capability name is not known.");
     }
 
     /** Populates all capabilities with the given response value. */

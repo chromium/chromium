@@ -132,7 +132,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
             verify(mPendingIntent)
                     .send(any(), eq(0), any(Intent.class), any(), isNull(), isNull(), any());
         } catch (PendingIntent.CanceledException e) {
-            assert false;
+            throw new AssertionError();
         }
     }
 

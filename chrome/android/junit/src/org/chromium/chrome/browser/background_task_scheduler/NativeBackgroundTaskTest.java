@@ -300,7 +300,7 @@ public class NativeBackgroundTaskTest {
                         .handlePostNativeStartup(eq(true), any(BrowserParts.class));
                 break;
             default:
-                assert false;
+                throw new AssertionError();
         }
     }
 

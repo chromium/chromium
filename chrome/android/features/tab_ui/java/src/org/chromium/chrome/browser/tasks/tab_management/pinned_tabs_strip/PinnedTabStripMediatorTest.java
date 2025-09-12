@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -90,7 +92,7 @@ public class PinnedTabStripMediatorTest {
         mMediator.onScrolled(); // First scroll to populate the pinned list.
 
         mMediator.onScrolled(); // Second scroll should do nothing.
-        assert mPinnedTabsModelList.size() == 1;
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(1, false));
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.isEmpty();
+        assertThat(mPinnedTabsModelList.isEmpty()).isTrue();
     }
 
     @Test
@@ -106,7 +108,7 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(1, true));
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.isEmpty();
+        assertThat(mPinnedTabsModelList.isEmpty()).isTrue();
     }
 
     @Test
@@ -115,8 +117,8 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(2, false));
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.size() == 1;
-        assert mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID) == 1;
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
+        assertThat(mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID)).isEqualTo(1);
     }
 
     @Test
@@ -133,11 +135,11 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(1, true));
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.size() == 1;
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
 
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.isEmpty();
+        assertThat(mPinnedTabsModelList.isEmpty()).isTrue();
     }
 
     @Test
@@ -146,14 +148,14 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(2, true));
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.size() == 1;
-        assert mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID) == 1;
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
+        assertThat(mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID)).isEqualTo(1);
 
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
         mMediator.onScrolled();
-        assert mPinnedTabsModelList.size() == 2;
-        assert mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID) == 1;
-        assert mPinnedTabsModelList.get(1).model.get(TabProperties.TAB_ID) == 2;
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(2);
+        assertThat(mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID)).isEqualTo(1);
+        assertThat(mPinnedTabsModelList.get(1).model.get(TabProperties.TAB_ID)).isEqualTo(2);
     }
 
     @Test

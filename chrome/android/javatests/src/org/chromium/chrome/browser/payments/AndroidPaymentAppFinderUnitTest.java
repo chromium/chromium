@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -372,7 +374,7 @@ public class AndroidPaymentAppFinderUnitTest {
     }
 
     private PackageManagerDelegate installPaymentApps(String[] packageNames, String[] methodNames) {
-        assert packageNames.length == methodNames.length;
+        assertThat(packageNames.length).isEqualTo(methodNames.length);
         List<ResolveInfo> activities = new ArrayList<>();
         for (int i = 0; i < packageNames.length; i++) {
             ResolveInfo alicePay = new ResolveInfo();
