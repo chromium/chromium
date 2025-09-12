@@ -172,7 +172,8 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   net::ProxyConfigWithAnnotation pref_config_;
 
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<ProxyConfigServiceImpl> proxy_config_service_impl_;  // Weak ptr.
+  raw_ptr<ProxyConfigServiceImpl, DanglingUntriaged>
+      proxy_config_service_impl_;  // Weak ptr.
   PrefChangeRegistrar proxy_prefs_;
 
   // State of |active_config_|.  |active_config_| is only valid if
