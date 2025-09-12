@@ -484,6 +484,17 @@ BASE_FEATURE_PARAM(
     "glic-shortcuts-tab-access-toggle-learn-more-url-data-protected",
     "");
 BASE_FEATURE_PARAM(std::string,
+                   kGlicDefaultTabAccessToggleLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-default-tab-access-toggle-learn-more-url",
+                   "");
+BASE_FEATURE_PARAM(
+    std::string,
+    kGlicDefaultTabAccessToggleLearnMoreURLDataProtected,
+    &kGlicLearnMoreURLConfig,
+    "glic-default-tab-access-toggle-learn-more-url-data-protected",
+    "");
+BASE_FEATURE_PARAM(std::string,
                    kGlicSettingsPageLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-settings-page-learn-more-url",

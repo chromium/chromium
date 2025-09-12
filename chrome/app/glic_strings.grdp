@@ -179,6 +179,15 @@
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
     Share page content with Gemini to get more relevant answers. Your data is not used to improve generative AI models.
+   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE" desc="Name of the enable current default tab access setting." translateable="false">
+    Always share current tab
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default for new conversations." translateable="false">
+    Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab anytime.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model." translateable="false">
+    Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab anytime. Your data is not used to improve generative AI models.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
     Gemini Apps Activity
@@ -202,6 +211,15 @@
     When you choose to share the current tab with Gemini, the tab’s full content and URL are sent to Google.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the 'things to consider' section.">
+    Learn more
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'default tab access' expands" translateable="false">
+    You can easily ask Gemini questions about your current tab as you browse
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands" translateable="false">
+    Your current tab will be automatically shared when you open Gemini in Chrome. The current tab’s full content and URL are sent to Google.
+  </message>
+   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the 'things to consider' section." translateable="false">
     Learn more
   </message>
 

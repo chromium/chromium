@@ -770,6 +770,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL},
       {"glicTabAccessToggleSublabelDataProtected",
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
+      {"glicDefaultTabAccessToggle",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE},
+      {"glicDefaultTabAccessToggleSublabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL},
+      {"glicDefaultTabAccessToggleSublabelDataProtected",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
       {"glicActivityButton", IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL},
@@ -784,6 +790,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1},
       {"glicTabAccessConsider1LearnMoreLabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL},
+      {"glicDefaultTabAccessWhenOn1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1},
+      {"glicDefaultTabAccessConsider1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1},
+      {"glicDefaultTabAccessConsider1LearnMoreLabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -805,6 +817,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "glicTabAccessToggleLearnMoreUrlDataProtected",
       features::kGlicTabAccessToggleLearnMoreURLDataProtected.Get());
+  html_source->AddString(
+      "glicDefaultTabAccessToggleLearnMoreUrl",
+      features::kGlicDefaultTabAccessToggleLearnMoreURL.Get());
+  html_source->AddString(
+      "glicDefaultTabAccessToggleLearnMoreUrlDataProtected",
+      features::kGlicDefaultTabAccessToggleLearnMoreURLDataProtected.Get());
   html_source->AddString("glicSettingsPageLearnMoreUrl",
                          features::kGlicSettingsPageLearnMoreURL.Get());
   html_source->AddString("glicExtensionsManagementUrl",
@@ -820,6 +838,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
   html_source->AddBoolean("glicAssetsV2Enabled", base::FeatureList::IsEnabled(
                                                      features::kGlicAssetsV2));
+  html_source->AddBoolean(
+      "showGlicDefaultTabContextSetting",
+      base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

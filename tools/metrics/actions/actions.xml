@@ -12835,6 +12835,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.DefaultTabContext.Disabled">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when a user disables the default tab context setting on the Glic
+    settings page.
+  </description>
+</action>
+
+<action name="Glic.Settings.DefaultTabContext.Enabled">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when a user enables the default tab context setting on the Glic
+    settings page.
+  </description>
+</action>
+
 <action name="Glic.Settings.Geolocation.Disabled">
   <owner>tommasin@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -36720,12 +36738,49 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Settings.AiPage.GlicShortcuts.DefaultTabAccessToggleLearnMoreClicked">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link associated with the
+    Default Tab Access Toggle in chrome://settings/ai/gemini.
+  </description>
+</action>
+
+<action name="Settings.AiPage.GlicShortcuts.LauncherToggleLearnMoreClicked">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link associated with the
+    Glic Shortcuts Launcher Toggle in chrome://settings/ai/gemini.
+  </description>
+</action>
+
 <action name="Settings.AiPage.GlicShortcuts.LearnMoreClicked">
   <owner>sanaakbani@google.com</owner>
   <owner>iwells@chromium.org</owner>
   <description>
     Logged when the user clicks on the 'Learn more about shortcuts' link inside
     the keyboard shortcuts description from chrome://settings.
+  </description>
+</action>
+
+<action name="Settings.AiPage.GlicShortcuts.LocationToggleLearnMoreClicked">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link associated with the
+    Location Toggle in chrome://settings/ai/gemini.
+  </description>
+</action>
+
+<action name="Settings.AiPage.GlicShortcuts.TabAccessToggleLearnMoreClicked">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link associated with the Tab
+    Access Toggle in chrome://settings/ai/gemini.
   </description>
 </action>
 

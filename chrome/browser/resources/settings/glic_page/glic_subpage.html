@@ -21,7 +21,7 @@
     margin-inline-start: 0;
   }
 
-  #tabAccessToggleActions {
+  .toggle-actions-container {
     display: flex;
     align-items: center;
   }
@@ -147,7 +147,14 @@
       <settings-toggle-button
           id="tabAccessToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicTabAccessToggle}"
-          sub-label="[[tabAccessSubLabel_]]">
+          sub-label="[[tabAccessSubLabel_]]"
+          hidden="[[showGlicDefaultTabContextSetting_]]">
+      </settings-toggle-button>
+      <settings-toggle-button
+          id="defaultTabAccessToggle" pref="[[fakePref_]]" disabled
+          label="$i18n{glicDefaultTabAccessToggle}"
+          sub-label="[[defaultTabAccessSubLabel_]]"
+          hidden="[[!showGlicDefaultTabContextSetting_]]">
       </settings-toggle-button>
     </template>
 
@@ -167,6 +174,7 @@
           sub-label="[[microphoneSubLabel_]]"
           on-settings-boolean-control-change="onMicrophoneToggleChange_">
       </settings-toggle-button>
+      <div hidden="[[showGlicDefaultTabContextSetting_]]">
       <settings-toggle-button
           id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
           label="$i18n{glicTabAccessToggle}"
@@ -174,8 +182,10 @@
           learn-more-url="[[tabAccessLearnMoreUrl_]]"
           on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
           on-settings-boolean-control-change="onTabAccessToggleChange_"
-          no-toggle-on-host-click on-click="onTabAccessExpand_">
-        <div id="tabAccessToggleActions" slot="more-actions">
+          no-toggle-on-host-click on-click="onTabAccessExpand_"
+          hidden="[[showGlicDefaultTabContextSetting_]]">
+        <div id="tabAccessToggleActions" class="toggle-actions-container"
+            slot="more-actions">
           <cr-expand-button id="tabAccessExpandButton" no-hover
               expanded="{{tabAccessToggleExpanded_}}">
           </cr-expand-button>
@@ -183,7 +193,8 @@
         </div>
       </settings-toggle-button>
       <cr-collapse id="tabAccessInfoCollapse"
-          opened="[[tabAccessToggleExpanded_]]">
+          opened="[[tabAccessToggleExpanded_]]"
+          hidden="[[showGlicDefaultTabContextSetting_]]">
         <div class="settings-columned-section">
           <div class="column">
             <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
@@ -191,45 +202,117 @@
               <li>
                 <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                    icon="settings20:edit-square">
+                      icon="settings20:edit-square">
 </if>
 <if expr="_google_chrome">
-                    icon="settings-internal:text-analysis">
+                      icon="settings-internal:text-analysis">
 </if>
-                </cr-icon>
-                <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
-              </li>
-            </ul>
-          </div>
-          <div class="column">
-            <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-            <ul class="icon-bulleted-list">
-              <li>
-                <cr-icon aria-hidden="true"
+                  </cr-icon>
+                  <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                    icon="settings20:web">
+                      icon="settings20:web">
 </if>
 <if expr="_google_chrome">
-                    icon="settings-internal:screensaver-auto">
+                      icon="settings-internal:screensaver-auto">
 </if>
-                </cr-icon>
-                <div class="secondary">$i18n{glicTabAccessConsider1}
-                  <a id="shortcutTabAccessConsider1LearnMoreLabel"
-                      class="learn-more-label"
-                      href="[[tabAccessLearnMoreUrl_]]"
-                      on-click="onTabAccessToggleLearnMoreClick_"
-                      aria-label=
-                         "$i18n{glicTabAccessConsider1LearnMoreLabel}"
-                      aria-description="$i18n{opensInNewTab}"
-                      target="_blank">
-                  $i18n{glicTabAccessConsider1LearnMoreLabel}
-                </a>
-                </div>
-              </li>
-            </ul>
+                  </cr-icon>
+                  <div class="secondary">$i18n{glicTabAccessConsider1}
+                    <a id="shortcutTabAccessConsider1LearnMoreLabel"
+                        class="learn-more-label"
+                        href="[[tabAccessLearnMoreUrl_]]"
+                        on-click="onTabAccessToggleLearnMoreClick_"
+                        aria-label=
+                           "$i18n{glicTabAccessConsider1LearnMoreLabel}"
+                        aria-description="$i18n{opensInNewTab}"
+                        target="_blank">
+                    $i18n{glicTabAccessConsider1LearnMoreLabel}
+                  </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </cr-collapse>
+        </cr-collapse>
+      </div>
+      <div hidden="[[!showGlicDefaultTabContextSetting_]]">
+        <settings-toggle-button
+            id="defaultTabAccessToggle"
+            pref="{{prefs.glic.default_tab_context_enabled}}"
+            label="$i18n{glicDefaultTabAccessToggle}"
+            sub-label="[[defaultTabAccessSubLabel_]]"
+            learn-more-url="[[defaultTabAccessLearnMoreUrl_]]"
+            on-learn-more-clicked="onDefaultTabAccessToggleLearnMoreClick_"
+            on-settings-boolean-control-change="onDefaultTabAccessToggleChange_"
+            no-toggle-on-host-click on-click="onDefaultTabAccessExpand_">
+          <div id="defaultTabAccessToggleActions"
+              class="toggle-actions-container"
+              slot="more-actions">
+            <cr-expand-button id="defaultTabAccessExpandButton" no-hover
+                expanded="{{defaultTabAccessToggleExpanded_}}">
+            </cr-expand-button>
+            <div class="separator"></div>
+          </div>
+        </settings-toggle-button>
+        <cr-collapse id="defaultTabAccessInfoCollapse"
+            opened="[[defaultTabAccessToggleExpanded_]]">
+          <div class="settings-columned-section">
+            <div class="column">
+              <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                      icon="settings20:edit-square">
+</if>
+<if expr="_google_chrome">
+                      icon="settings-internal:text-analysis">
+</if>
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicDefaultTabAccessWhenOn1}
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                      icon="settings20:web">
+</if>
+<if expr="_google_chrome">
+                      icon="settings-internal:screensaver-auto">
+</if>
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicDefaultTabAccessConsider1}
+                    <a id="shortcutDefaultTabAccessConsider1LearnMoreLabel"
+                        class="learn-more-label"
+                        href="[[defaultTabAccessLearnMoreUrl_]]"
+                        on-click="onDefaultTabAccessToggleLearnMoreClick_"
+                        aria-label=
+                           "$i18n{glicDefaultTabAccessConsider1LearnMoreLabel}"
+                        aria-description="$i18n{opensInNewTab}"
+                        target="_blank">
+                    $i18n{glicDefaultTabAccessConsider1LearnMoreLabel}
+                  </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </cr-collapse>
+      </div>
       <cr-link-row id="activityButton" on-click="onActivityRowClick_"
           label="$i18n{glicActivityButton}"
           sub-label="$i18n{glicActivityButtonSublabel}" external>

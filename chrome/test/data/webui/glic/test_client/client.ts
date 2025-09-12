@@ -36,13 +36,14 @@ class TestInitFailure extends Error implements WebClientInitializeError {
 }
 
 export type PermissionSwitchName =
-    'microphone'|'geolocation'|'tabContext'|'osGeolocation';
+    'microphone'|'geolocation'|'tabContext'|'osGeolocation'|'defaultTabContext';
 export const permissionSwitches:
     Record<PermissionSwitchName, HTMLInputElement> = {
       microphone: $.microphoneSwitch,
       geolocation: $.geolocationSwitch,
       tabContext: $.tabContextSwitch,
       osGeolocation: $.osGeolocationPermissionSwitch,
+      defaultTabContext: $.defaultTabContextSwitch,
     };
 
 // Update a permission switch display state.
@@ -95,12 +96,16 @@ class WebClient implements GlicWebClient {
 
     // Initialize permission switches and subscribe for updates.
     const permissionStates:
-        Record<PermissionSwitchName, Observable<boolean>> = {
+        Partial<Record<PermissionSwitchName, Observable<boolean>>> = {
           microphone: this.browser.getMicrophonePermissionState!(),
           geolocation: this.browser.getLocationPermissionState!(),
           tabContext: this.browser.getTabContextPermissionState!(),
           osGeolocation: this.browser.getOsLocationPermissionState!(),
         };
+    if (this.browser.getDefaultTabContextPermissionState) {
+      permissionStates.defaultTabContext =
+          this.browser.getDefaultTabContextPermissionState();
+    }
     for (const permission of Object.keys(permissionStates) as
          PermissionSwitchName[]) {
       const state = permissionStates[permission]!;

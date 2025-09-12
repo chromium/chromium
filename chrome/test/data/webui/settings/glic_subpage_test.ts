@@ -257,51 +257,50 @@ suite('GlicSubpage', function() {
     test('TabContextExpand', async () => {
       const tabAccessToggle =
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
-      const expandButton =
-          $<SettingsToggleButtonElement>('tabAccessExpandButton')!;
       const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse')!;
 
       assertFalse(infoCard.opened);
 
-      // Clicking the expand button opens the info card.
-      expandButton.click();
+      // Clicking the host element of the toggle button opens the info card but
+      // does not change the pref.
+      tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
 
-      // Clicking the expand button again collapses the info card.
-      expandButton.click();
+      // Clicking the host element again collapses the info card.
+      tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Toggling the setting to on opens the info card.
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
-      expandButton.click();
+      tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
       // closed.
-      expandButton.click();
+      tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
@@ -404,6 +403,12 @@ suite('GlicSubpage', function() {
       const closedCaptionsToggle =
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
       assertFalse(isVisible(closedCaptionsToggle));
+    });
+
+    test('DefaultTabContextSettingFeatureDisabled', () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      assertFalse(isVisible(defaultTabAccessToggle));
     });
 
     test('tabstripButtonToggleEnabled', () => {
@@ -584,6 +589,87 @@ suite('GlicSubpage', function() {
       assertFalse(page.getPref(PrefName.CLOSED_CAPTIONS_ENABLED).value);
       assertFalse(closedCaptionsToggle.checked);
       await verifyUserAction('Glic.Settings.ClosedCaptions.Disabled');
+    });
+  });
+
+  suite('DefaultTabContextSettingFeatureEnabled', () => {
+    test('DefaultTabContextSettingFeatureEnabled', () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      assertTrue(isVisible(defaultTabAccessToggle));
+    });
+
+    test('TabContextSettingHidden', () => {
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertFalse(isVisible(tabAccessToggle));
+    });
+
+    test('ToggleEnabled', () => {
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
+    });
+
+    test('ToggleDisabled', () => {
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
+    });
+
+    test('DefaultTabContextExpand', async () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      const infoCard = $<CrCollapseElement>('defaultTabAccessInfoCollapse')!;
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+
+      assertFalse(infoCard.opened);
+
+      // Clicking the host element of the toggle button opens the info card but
+      // does not change the pref.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+
+      // Clicking the host element again collapses the info card.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+
+      // Toggling the setting to on opens the info card.
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting off closes the info card.
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(infoCard.opened);
+
+      // Toggling the setting to on while the info card is open leaves it open.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting to off while the info card is closed leaves it
+      // closed.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(infoCard.opened);
     });
   });
 

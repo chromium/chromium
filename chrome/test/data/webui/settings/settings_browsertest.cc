@@ -47,9 +47,11 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
             features::kGlic, features::kTabstripComboButton,
 #endif
             privacy_sandbox::kFingerprintingProtectionUx},
-        /*disabled_features=*/{
+        /*disabled_features=*/
+        {
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicClosedCaptioning
+            features::kGlicClosedCaptioning,
+            features::kGlicDefaultTabContextSetting
 #endif
         });
     set_test_loader_host(chrome::kChromeUISettingsHost);
@@ -506,6 +508,26 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubageClosedCaptionsToggleTest,
                        SettingsGlicSubageClosedCaptionsToggleEnabled) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage ClosedCaptionsToggleEnabled')");
+}
+
+class SettingsGlicSubPageDefaultTabContextToggleTest
+    : public SettingsBrowserTest {
+ public:
+  SettingsGlicSubPageDefaultTabContextToggleTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicDefaultTabContextSetting},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageDefaultTabContextToggleTest,
+                       SettingsGlicSubPageDefaultTabContextToggleEnabled) {
+  RunTest(
+      "settings/glic_subpage_test.js",
+      "runMochaSuite('GlicSubpage DefaultTabContextSettingFeatureEnabled')");
 }
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
