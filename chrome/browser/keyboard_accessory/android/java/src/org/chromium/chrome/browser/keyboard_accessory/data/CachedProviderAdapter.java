@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
  * @param <T> The type of data the provider collects and provides.
  */
 @NullMarked
-public class CachedProviderAdapter<T> extends PropertyProvider<T> implements Provider.Observer<T> {
+public class CachedProviderAdapter<T> extends Provider<T> implements Provider.Observer<T> {
     private final @Nullable Callback<CachedProviderAdapter> mNewCachedDataAvailable;
     private T mLastItems;
 
@@ -29,7 +29,7 @@ public class CachedProviderAdapter<T> extends PropertyProvider<T> implements Pro
      * @param newCachedDataAvailable Optional callback to be called if new data arrives.
      */
     public CachedProviderAdapter(
-            PropertyProvider<T> provider,
+            Provider<T> provider,
             T defaultItems,
             @Nullable Callback<CachedProviderAdapter> newCachedDataAvailable) {
         super(provider.mType);

@@ -18,12 +18,11 @@ import java.util.function.Supplier;
  *     about provided data by caching it and trigger it later.
  */
 @NullMarked
-public class ConditionalProviderAdapter<T> extends PropertyProvider<T>
-        implements Provider.Observer<T> {
+public class ConditionalProviderAdapter<T> extends Provider<T> implements Provider.Observer<T> {
     private final Supplier<Boolean> mPropagationCondition;
 
     public ConditionalProviderAdapter(
-            PropertyProvider<T> provider, Supplier<Boolean> propagationCondition) {
+            Provider<T> provider, Supplier<Boolean> propagationCondition) {
         mPropagationCondition = propagationCondition;
         provider.addObserver(this);
     }

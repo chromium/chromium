@@ -6,33 +6,23 @@ package org.chromium.chrome.browser.keyboard_accessory.data;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * A provider notifies all registered {@link Observer}s about a changed object.
+ * A simple class that holds a set of {@link Observer}s which can be notified about new data by
+ * directly passing that data into {@link Provider#notifyObservers(T)}.
  *
  * @param <T> The object this provider provides.
  */
 @NullMarked
-public interface Provider<T> {
+public class Provider<T> {
     /**
-     * Every observer added by this needs to be notified whenever the object changes.
-     *
-     * @param observer The observer to be notified.
-     */
-    void addObserver(Observer<T> observer);
-
-    /**
-     * Passes the given item to all subscribed {@link Observer}s.
-     *
-     * @param item The item to be passed to the {@link Observer}s.
-     */
-    void notifyObservers(T item);
-
-    /**
-     * An observer receives notifications from an {@link Provider} it is subscribed to.
+     * An observer receives notifications from a {@link Provider} it is subscribed to.
      *
      * @param <T> Any object that this instance observes.
      */
-    interface Observer<T> {
+    public interface Observer<T> {
         int DEFAULT_TYPE = Integer.MIN_VALUE;
 
         /**
@@ -43,5 +33,26 @@ public interface Provider<T> {
          * @param item An item to be displayed in the Accessory.
          */
         void onItemAvailable(int typeId, T item);
+    }
+
+    private final Set<Observer<T>> mObservers = new HashSet<>();
+    protected int mType;
+
+    public Provider() {
+        this(Observer.DEFAULT_TYPE);
+    }
+
+    public Provider(int type) {
+        mType = type;
+    }
+
+    public void addObserver(Observer<T> observer) {
+        mObservers.add(observer);
+    }
+
+    public void notifyObservers(T item) {
+        for (Observer<T> observer : mObservers) {
+            observer.onItemAvailable(mType, item);
+        }
     }
 }

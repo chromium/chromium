@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
@@ -600,8 +599,7 @@ public class AccessorySheetRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetModel.get(TABS).add(sheetComponent.getTab());
-                    Provider<KeyboardAccessoryData.AccessorySheetData> provider =
-                            new PropertyProvider<>();
+                    Provider<KeyboardAccessoryData.AccessorySheetData> provider = new Provider<>();
                     sheetComponent.registerDataProvider(provider);
                     provider.notifyObservers(sheetData);
                     mSheetModel.set(ACTIVE_TAB_INDEX, 0);

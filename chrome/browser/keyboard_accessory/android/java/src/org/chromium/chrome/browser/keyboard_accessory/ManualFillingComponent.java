@@ -13,7 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -144,16 +144,16 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * By registering a provider, an empty tab of the given tab type is created. Call {@link
-     * PropertyProvider#notifyObservers(Object)} to fill or update the sheet.
+     * Provider#notifyObservers(Object)} to fill or update the sheet.
      *
      * @param webContents The {@link WebContents} the provided data is meant for.
      * @param sheetType The type of sheet to instantiate and to provide data for.
-     * @param sheetDataProvider The {@link PropertyProvider} the tab will get its data from.
+     * @param sheetDataProvider The {@link Provider} the tab will get its data from.
      */
     void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
+            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
 
     /**
      * Registers an updater delegate which requests new accessory sheets for a given `webContents`.
@@ -166,24 +166,23 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Registers a provider, to provide actions for the keyboard accessory bar. Call {@link
-     * PropertyProvider#notifyObservers(Object)} to fill or update the actions.
+     * Provider#notifyObservers(Object)} to fill or update the actions.
      *
      * @param webContents The {@link WebContents} the provided data is meant for.
-     * @param actionProvider The {@link PropertyProvider} providing actions.
+     * @param actionProvider The {@link Provider} providing actions.
      */
     void registerActionProvider(
-            WebContents webContents,
-            PropertyProvider<KeyboardAccessoryData.Action[]> actionProvider);
+            WebContents webContents, Provider<KeyboardAccessoryData.Action[]> actionProvider);
 
     /**
      * Registers a provider, to provide autofill suggestions for the keyboard accessory bar. Call
-     * {@link PropertyProvider#notifyObservers(Object)} to fill or update the suggestions.
+     * {@link Provider#notifyObservers(Object)} to fill or update the suggestions.
      *
-     * @param autofillProvider The {@link PropertyProvider} providing autofill suggestions.
+     * @param autofillProvider The {@link Provider} providing autofill suggestions.
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
     void registerAutofillProvider(
-            PropertyProvider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
+            Provider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
 
     /**
      * Signals that the accessory has permission to show.

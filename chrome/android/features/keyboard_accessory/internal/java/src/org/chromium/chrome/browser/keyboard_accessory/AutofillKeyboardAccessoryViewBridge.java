@@ -19,7 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
@@ -39,8 +39,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private WeakReference<Activity> mActivity;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
-    private final PropertyProvider<List<AutofillSuggestion>> mChipProvider =
-            new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
+    private final Provider<List<AutofillSuggestion>> mChipProvider =
+            new Provider<>(AccessoryAction.AUTOFILL_SUGGESTION);
     private final Callback<ManualFillingComponent> mFillingComponentObserver =
             this::connectToFillingComponent;
 

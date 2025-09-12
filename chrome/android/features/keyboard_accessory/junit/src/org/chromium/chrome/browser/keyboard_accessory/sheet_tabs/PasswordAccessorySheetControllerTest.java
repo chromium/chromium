@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -123,7 +122,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testModelNotifiesAboutTabDataChangedByProvider() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
 
         mSheetDataPieces.addObserver(mMockItemListObserver);
         mCoordinator.registerDataProvider(testProvider);
@@ -160,7 +159,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testNoDividerWithUserInfo() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -181,7 +180,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testUsesTabTitleOnlyForEmptyLists() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -209,7 +208,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testOptionToggleCompoundCallback() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -339,7 +338,7 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     private void addToggleToSheet(boolean toggleEnabled) {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,

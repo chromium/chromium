@@ -32,7 +32,6 @@ android_library("java") {
     "src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/KeyboardAccessoryData.java",
-    "src/org/chromium/chrome/browser/keyboard_accessory/data/PropertyProvider.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
   ]

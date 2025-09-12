@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -173,8 +173,7 @@ public class KeyboardAccessoryControllerTest {
         setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
         mModel.get(BAR_ITEMS).addObserver(mMockActionListObserver);
 
-        PropertyProvider<Action[]> testProvider =
-                new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
+        Provider<Action[]> testProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
         mCoordinator.registerActionProvider(testProvider);
 
         // If the coordinator receives an initial action, the model should report an insertion.
@@ -233,12 +232,10 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testSortsActionsBasedOnType() {
-        PropertyProvider<Action[]> generationProvider =
-                new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
-        PropertyProvider<Action[]> credManProvider =
-                new PropertyProvider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
+        Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
+        Provider<Action[]> credManProvider = new Provider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
 
         mCoordinator.registerActionProvider(generationProvider);
         mCoordinator.registerActionProvider(credManProvider);
@@ -285,10 +282,9 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testChangesCaptionIdForCredManEntry() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
-        PropertyProvider<Action[]> credManProvider =
-                new PropertyProvider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
+        Provider<Action[]> credManProvider = new Provider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
 
         mCoordinator.registerActionProvider(credManProvider);
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -313,10 +309,9 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testMovesTabSwitcherToEnd() {
-        PropertyProvider<Action[]> generationProvider =
-                new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -342,10 +337,9 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testDeletingActionsAffectsOnlyOneType() {
-        PropertyProvider<Action[]> generationProvider =
-                new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -397,8 +391,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithIph() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -421,8 +415,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesPaymentItemWithIph() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -445,8 +439,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testIphFeatureSetForAutofillSuggestion() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -472,8 +466,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesIphForSecondPasswordItem() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion passwordSuggestion1 =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -503,8 +497,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithExternallyProvidedIph() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -596,8 +590,8 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testModelChangesUpdatesTheContentDescription() {
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
@@ -624,8 +618,8 @@ public class KeyboardAccessoryControllerTest {
                         SuggestionType.ADDRESS_ENTRY))
                 .thenReturn(FillingProduct.ADDRESS);
 
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillProfilePayload payload = new AutofillProfilePayload("123");
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
@@ -668,8 +662,8 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testLargeFormFactorHasDismissButton() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
-        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));

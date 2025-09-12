@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
@@ -620,8 +620,8 @@ public class ManualFillingTestHelper {
     // --------------------------------------------
 
     public void addGenerationButton() {
-        PropertyProvider<KeyboardAccessoryData.Action[]> generationActionProvider =
-                new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
+        Provider<KeyboardAccessoryData.Action[]> generationActionProvider =
+                new Provider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
         getManualFillingCoordinator()
                 .registerActionProvider(mWebContentsRef.get(), generationActionProvider);
         ThreadUtils.runOnUiThreadBlocking(
@@ -645,8 +645,7 @@ public class ManualFillingTestHelper {
     public void registerSheetDataProvider(@AccessoryTabType int tabType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyProvider<AccessorySheetData> sheetDataProvider =
-                            new PropertyProvider<>();
+                    Provider<AccessorySheetData> sheetDataProvider = new Provider<>();
                     getManualFillingCoordinator()
                             .registerSheetDataProvider(
                                     mWebContentsRef.get(), tabType, sheetDataProvider);
