@@ -1015,6 +1015,9 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 class PDFiumEngineSelectionTest : public PDFiumEngineTest {
  public:
+  static constexpr gfx::PointF kHelloWorldStartPosition{50.0f, 110.0f};
+  static constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
+
   void TearDown() override {
     // Reset `engine_` before PDFium gets uninitialized.
     engine_.reset();
@@ -1031,6 +1034,26 @@ class PDFiumEngineSelectionTest : public PDFiumEngineTest {
       EXPECT_THAT(engine_->GetSelectedText(), IsEmpty());
     }
     return engine_.get();
+  }
+
+  // Select from `point1` to `point2` and then select in the reverse order.
+  // Only returns one of the two selection results since they should be the
+  // same.
+  std::string DoForwardBackwardSelections(const gfx::PointF& point1,
+                                          const gfx::PointF& point2) {
+    EXPECT_TRUE(engine_->HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(point1)));
+    EXPECT_TRUE(
+        engine_->HandleInputEvent(CreateMoveWebMouseEventToPosition(point2)));
+    std::string direction1_text = engine_->GetSelectedText();
+
+    EXPECT_TRUE(engine_->HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(point2)));
+    EXPECT_TRUE(
+        engine_->HandleInputEvent(CreateMoveWebMouseEventToPosition(point1)));
+    std::string direction2_text = engine_->GetSelectedText();
+    EXPECT_EQ(direction1_text, direction2_text);
+    return direction1_text;
   }
 
  private:
@@ -1146,13 +1169,11 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextWithMouse) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  constexpr gfx::PointF kStartPosition(50, 110);
   EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldStartPosition)));
 
-  constexpr gfx::PointF kEndPosition(100, 110);
   EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
 }
@@ -1163,15 +1184,13 @@ TEST_P(PDFiumEngineSelectionTest, CtrlLeftClickShouldNotSelectTextOnMac) {
   ASSERT_TRUE(engine);
 
   // In https://crbug.com/339681892, these are the events PDFiumEngine sees.
-  constexpr gfx::PointF kStartPosition(50, 110);
   MouseEventBuilder builder;
-  builder.CreateLeftClickAtPosition(kStartPosition)
+  builder.CreateLeftClickAtPosition(kHelloWorldStartPosition)
       .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
   EXPECT_FALSE(engine->HandleInputEvent(builder.Build()));
 
-  constexpr gfx::PointF kEndPosition(100, 110);
   EXPECT_FALSE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
 
   EXPECT_EQ("", engine->GetSelectedText());
 }
@@ -1180,15 +1199,13 @@ TEST_P(PDFiumEngineSelectionTest, CtrlLeftClickSelectTextOnNonMac) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  constexpr gfx::PointF kStartPosition(50, 110);
   MouseEventBuilder builder;
-  builder.CreateLeftClickAtPosition(kStartPosition)
+  builder.CreateLeftClickAtPosition(kHelloWorldStartPosition)
       .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
   EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
 
-  constexpr gfx::PointF kEndPosition(100, 110);
   EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
 }
@@ -1226,20 +1243,9 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextOneChar) {
 
   static constexpr gfx::PointF kStartPosition(159, 120);
   static constexpr gfx::PointF kEndPosition(159.5f, 120);
-
-  // Forward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-  EXPECT_EQ("r", engine->GetSelectedText());
-
-  // Backward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kStartPosition)));
-  EXPECT_EQ("r", engine->GetSelectedText());
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ("r", result);
 }
 
 TEST_P(PDFiumEngineSelectionTest, SelectTextTwoChar) {
@@ -1248,20 +1254,9 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextTwoChar) {
 
   static constexpr gfx::PointF kStartPosition(159, 120);
   static constexpr gfx::PointF kEndPosition(163, 120);
-
-  // Forward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-  EXPECT_EQ("rl", engine->GetSelectedText());
-
-  // Backward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kStartPosition)));
-  EXPECT_EQ("rl", engine->GetSelectedText());
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ("rl", result);
 }
 
 TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossEmptyPage) {
@@ -1271,24 +1266,9 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossEmptyPage) {
 
   static constexpr gfx::PointF kStartPosition(80, 200);
   static constexpr gfx::PointF kEndPosition(95, 765);
-
-  // Forward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-  static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye,";
-  EXPECT_EQ(GetPlatformTextExpectation(kExpectedForwardSelection),
-            engine->GetSelectedText());
-
-  // Backward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kStartPosition)));
-  static constexpr char kExpectedBackwardSelection[] = "world!\nGoodbye,";
-  EXPECT_EQ(GetPlatformTextExpectation(kExpectedBackwardSelection),
-            engine->GetSelectedText());
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ(GetPlatformTextExpectation("world!\nGoodbye,"), result);
 
   // Select all.
   engine->SelectAll();
