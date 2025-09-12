@@ -308,6 +308,9 @@ TestBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+views::Button* TestBrowserWindow::GetSharingHubIconButton() {
+  return nullptr;
+}
 void TestBrowserWindow::ToggleMultitaskMenu() const {
   return;
 }

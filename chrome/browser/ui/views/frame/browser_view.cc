@@ -165,6 +165,7 @@
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -3274,6 +3275,11 @@ BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+views::Button* BrowserView::GetSharingHubIconButton() {
+  return toolbar_button_provider()->GetPageActionIconView(
+      PageActionIconType::kSharingHub);
+}
+
 void BrowserView::ToggleMultitaskMenu() const {
   auto* frame_view =
       static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
@@ -3293,6 +3299,12 @@ sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
       toolbar_button_provider()->GetAnchorView(std::nullopt), attempt,
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           attempt.web_contents.get()));
+  PageActionIconView* icon_view =
+      toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kSharingHub);
+  if (icon_view) {
+    bubble->SetHighlightedButton(icon_view);
+  }
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. method documentation.

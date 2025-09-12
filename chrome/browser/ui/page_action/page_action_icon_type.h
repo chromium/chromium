@@ -30,7 +30,7 @@ enum class PageActionIconType {
   kAutofillAddress = 14,
   kSaveCard = 15,
   // DEPRECATED: kSendTabToSelf = 16,
-  // DEPRECATED: kSharingHub = 17,
+  kSharingHub = 17,
   // DEPRECATED: kSideSearch = 18,
   kSmsRemoteFetcher = 19,
   kTranslate = 20,
@@ -67,7 +67,7 @@ static_assert(static_cast<int>(PageActionIconType::kPriceTracking) == 10);
 static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
-
+static_assert(static_cast<int>(PageActionIconType::kSharingHub) == 17);
 static_assert(static_cast<int>(PageActionIconType::kSmsRemoteFetcher) == 19);
 static_assert(static_cast<int>(PageActionIconType::kTranslate) == 20);
 static_assert(static_cast<int>(PageActionIconType::kVirtualCardEnroll) == 21);

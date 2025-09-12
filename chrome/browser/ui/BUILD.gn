@@ -4227,6 +4227,8 @@ static_library("ui") {
       "views/sharing_hub/sharing_hub_bubble_action_button.h",
       "views/sharing_hub/sharing_hub_bubble_util.cc",
       "views/sharing_hub/sharing_hub_bubble_util.h",
+      "views/sharing_hub/sharing_hub_icon_view.cc",
+      "views/sharing_hub/sharing_hub_icon_view.h",
       "views/site_data/page_specific_site_data_dialog.cc",
       "views/site_data/page_specific_site_data_dialog.h",
       "views/site_data/page_specific_site_data_dialog_controller.cc",
