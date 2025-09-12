@@ -241,7 +241,7 @@ class ProfileTokenQuality {
       const std::string& app_locale) const;
 
   // The profile for which observations are collected.
-  raw_ref<AutofillProfile> profile_;
+  raw_ref<AutofillProfile, DanglingUntriaged> profile_;
 
   // Maps from `AutofillProfile::kDatabaseStoredTypes` to the observations
   // for this stored type. The following invariants hold for the
