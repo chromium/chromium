@@ -13,7 +13,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/browser/test_support.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/variations/variations_switches.h"
@@ -74,7 +77,15 @@ class FingerprintingProtectionChildNavigationThrottleTest
     : public ChildFrameNavigationFilteringThrottleTestHarness,
       public testing::WithParamInterface</*is_incognito*/ bool> {
  public:
-  FingerprintingProtectionChildNavigationThrottleTest() = default;
+  FingerprintingProtectionChildNavigationThrottleTest() {
+    feature_list_.InitWithFeatures(
+        {fingerprinting_protection_filter::features::
+             kEnableFingerprintingProtectionFilter,
+         fingerprinting_protection_filter::features::
+             kEnableFingerprintingProtectionFilterInIncognito,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
+  }
 
   FingerprintingProtectionChildNavigationThrottleTest(
       const FingerprintingProtectionChildNavigationThrottleTest&) = delete;
@@ -108,6 +119,11 @@ class FingerprintingProtectionChildNavigationThrottleTest
                     registry.AddThrottle(std::move(throttle));
                   }
                 }));
+    FingerprintingProtectionWebContentsHelper::CreateForWebContents(
+        content::RenderViewHostTestHarness::web_contents(),
+        test_support_.prefs(), test_support_.content_settings(),
+        test_support_.tracking_protection_settings(), /*dealer_handle=*/nullptr,
+        /*is_incognito=*/GetParam());
   }
 
   // content::WebContentsObserver:
@@ -116,7 +132,14 @@ class FingerprintingProtectionChildNavigationThrottleTest
     ASSERT_FALSE(navigation_handle->IsInMainFrame());
   }
 
+  FingerprintingProtectionWebContentsHelper* GetTestWebContentsHelper() {
+    return FingerprintingProtectionWebContentsHelper::FromWebContents(
+        content::RenderViewHostTestHarness::web_contents());
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
+  TestSupport test_support_;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
@@ -129,9 +152,14 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
   base::HistogramTester histogram_tester;
   ChildFrameNavigationFilteringThrottleTestHarness::
       InitializeDocumentSubresourceFilter(GURL("https://example.test"));
+
+  auto* test_web_contents_helper = GetTestWebContentsHelper();
+  ASSERT_NE(test_web_contents_helper, nullptr);
+
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(
           GURL("https://example.test/allowed.html"), main_rfh());
+
   navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
@@ -139,6 +167,9 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
             SimulateRedirectAndGetResult(
                 navigation_simulator(),
                 GURL("https://example.test/disallowed.html")));
+
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::DISALLOW);
 
   navigation_simulator()->CommitErrorPage();
 
@@ -158,6 +189,9 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
+
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::ALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 1);
@@ -223,6 +257,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
       InitializeDocumentSubresourceFilter(
           GURL("https://example.test"),
           subresource_filter::mojom::ActivationLevel::kDryRun);
+  auto* test_web_contents_helper = GetTestWebContentsHelper();
+  ASSERT_NE(test_web_contents_helper, nullptr);
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(
           GURL("https://example.test/allowed.html"), main_rfh());
@@ -234,6 +270,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
                 navigation_simulator(),
                 GURL("https://example.test/disallowed.html")));
   navigation_simulator()->Commit();
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::WOULD_DISALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
@@ -251,6 +289,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::ALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
@@ -296,6 +336,9 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
       GURL("https://example.test"), {"disallowedcname.com"},
       subresource_filter::mojom::ActivationLevel::kEnabled);
 
+  auto* test_web_contents_helper = GetTestWebContentsHelper();
+  ASSERT_NE(test_web_contents_helper, nullptr);
+
   const GURL url = GURL("https://example.test/allowed.html");
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(url, main_rfh());
@@ -307,6 +350,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::DISALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 1);
@@ -335,6 +380,9 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
       {"cnamed.com", "alias-me.com", "i.am.alias"},
       subresource_filter::mojom::ActivationLevel::kDryRun);
 
+  auto* test_web_contents_helper = GetTestWebContentsHelper();
+  ASSERT_NE(test_web_contents_helper, nullptr);
+
   const GURL url = GURL("https://example.test/allowed.html");
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(url, main_rfh());
@@ -347,6 +395,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::WOULD_DISALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 1);
@@ -368,6 +418,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::ALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 1);
@@ -396,6 +448,9 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
       {"cnamed.com", "alias-me.com", "i.am.alias"},
       subresource_filter::mojom::ActivationLevel::kEnabled);
 
+  auto* test_web_contents_helper = GetTestWebContentsHelper();
+  ASSERT_NE(test_web_contents_helper, nullptr);
+
   const GURL url = GURL("https://example.test/allowed.html");
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(url, main_rfh());
@@ -408,6 +463,8 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
+            subresource_filter::LoadPolicy::ALLOW);
 
   if (/*is_incognito*/ GetParam()) {
     histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);

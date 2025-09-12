@@ -284,6 +284,7 @@ void FingerprintingProtectionWebContentsHelper::
           std::move(issue));
     }
   }
+  most_recent_child_frame_load_policy_ = load_policy;
 }
 
 void FingerprintingProtectionWebContentsHelper::FrameDeleted(
