@@ -21,9 +21,7 @@ namespace {
 
 const CGFloat kDefaultActionsBottomMargin = 10;
 const CGFloat kActionButtonImageInsets = 10;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kButtonStackViewSpacing = 12;
-#endif
 // Gradient height.
 const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
@@ -828,11 +826,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   actionStackView.axis = UILayoutConstraintAxisVertical;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     actionStackView.spacing = kButtonStackViewSpacing;
   }
-#endif
 
   if (self.primaryActionString) {
     _primaryButton = [self createPrimaryActionButton];
