@@ -114,6 +114,21 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   enum QueueFrameResult { REJECTED, ACCEPTED_ACTIVE, ACCEPTED_PENDING };
 
+  enum class PendingFrameDataChangeReason {
+    kNotSet,
+    kCommitFrameReset,
+    kCommitFrameDependencies,
+    kActivatePendingFrameReset,
+    kSurfaceDestruction,
+  };
+
+  enum class FrameActivationReason {
+    kNotSet,
+    kDependencyResolved,
+    kDeadline,
+    kCommitWithNoDependencies,
+  };
+
   using CommitPredicate =
       base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;
 
@@ -426,6 +441,11 @@ class VIZ_SERVICE_EXPORT Surface final {
   const size_t max_uncommitted_frames_;
 
   uint32_t last_sent_frame_token_ = 0;
+
+  PendingFrameDataChangeReason pending_frame_data_change_reason_ =
+      PendingFrameDataChangeReason::kNotSet;
+  FrameActivationReason frame_activation_reason_ =
+      FrameActivationReason::kNotSet;
 
   base::WeakPtrFactory<Surface> weak_factory_{this};
 };

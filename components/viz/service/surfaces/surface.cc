@@ -9,12 +9,14 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,6 +55,36 @@ void RequestCopyOfOutputOnRenderPass(std::unique_ptr<CopyOutputRequest> request,
                   });
   }
   render_pass.copy_requests.push_back(std::move(request));
+}
+
+std::string PendingFrameDataChangeReasonToString(
+    Surface::PendingFrameDataChangeReason reason) {
+  switch (reason) {
+    case Surface::PendingFrameDataChangeReason::kNotSet:
+      return "NotSet";
+    case Surface::PendingFrameDataChangeReason::kCommitFrameReset:
+      return "CommitFrameReset";
+    case Surface::PendingFrameDataChangeReason::kCommitFrameDependencies:
+      return "CommitFrameDependencies";
+    case Surface::PendingFrameDataChangeReason::kActivatePendingFrameReset:
+      return "ActivatePendingFrameReset";
+    case Surface::PendingFrameDataChangeReason::kSurfaceDestruction:
+      return "SurfaceDestruction";
+  }
+}
+
+std::string FrameActivationReasonToString(
+    Surface::FrameActivationReason reason) {
+  switch (reason) {
+    case Surface::FrameActivationReason::kNotSet:
+      return "NotSet";
+    case Surface::FrameActivationReason::kDependencyResolved:
+      return "DependencyResolved";
+    case Surface::FrameActivationReason::kDeadline:
+      return "Deadline";
+    case Surface::FrameActivationReason::kCommitWithNoDependencies:
+      return "CommitWithNoDependencies";
+  }
 }
 
 }  // namespace
@@ -111,6 +143,8 @@ Surface::~Surface() {
     UnrefFrameResourcesAndRunCallbacks(std::move(frame));
   }
 
+  pending_frame_data_change_reason_ =
+      PendingFrameDataChangeReason::kSurfaceDestruction;
   UnrefFrameResourcesAndRunCallbacks(std::move(pending_frame_data_));
   UnrefFrameResourcesAndRunCallbacks(std::move(active_frame_data_));
 
@@ -256,6 +290,8 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
 
   TakePendingLatencyInfo(&frame.frame.metadata.latency_info);
 
+  pending_frame_data_change_reason_ =
+      PendingFrameDataChangeReason::kCommitFrameReset;
   std::optional<FrameData> previous_pending_frame_data =
       std::move(pending_frame_data_);
   pending_frame_data_.reset();
@@ -266,7 +302,10 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
   if (activation_dependencies_.empty()) {
     // If there are no blockers, then immediately activate the frame.
     ActivateFrame(std::move(frame));
+    frame_activation_reason_ = FrameActivationReason::kCommitWithNoDependencies;
   } else {
+    pending_frame_data_change_reason_ =
+        PendingFrameDataChangeReason::kCommitFrameDependencies;
     pending_frame_data_ = std::move(frame);
 
     auto traced_value = std::make_unique<base::trace_event::TracedValue>();
@@ -371,6 +410,7 @@ void Surface::OnActivationDependencyResolved(
 
   // All blockers have been cleared. The surface can be activated now.
   ActivatePendingFrame();
+  frame_activation_reason_ = FrameActivationReason::kDependencyResolved;
 }
 
 void Surface::ActivatePendingFrameForDeadline() {
@@ -387,6 +427,7 @@ void Surface::ActivatePendingFrameForDeadline() {
   activation_dependencies_.clear();
 
   ActivatePendingFrame();
+  frame_activation_reason_ = FrameActivationReason::kDeadline;
 }
 
 Surface::FrameData::FrameData(CompositorFrame&& frame, uint32_t frame_index)
@@ -408,6 +449,17 @@ void Surface::FrameData::SendAckIfNeeded(SurfaceClient* client) {
 
 void Surface::ActivatePendingFrame() {
   DCHECK(pending_frame_data_);
+  if (!pending_frame_data_) {
+    SCOPED_CRASH_KEY_STRING32("viz", "Pending frame data change reason",
+                              PendingFrameDataChangeReasonToString(
+                                  pending_frame_data_change_reason_));
+    SCOPED_CRASH_KEY_STRING32(
+        "viz", "Last frame activation reason",
+        FrameActivationReasonToString(frame_activation_reason_));
+  }
+
+  pending_frame_data_change_reason_ =
+      PendingFrameDataChangeReason::kActivatePendingFrameReset;
   FrameData frame_data = std::move(*pending_frame_data_);
   pending_frame_data_.reset();
 
