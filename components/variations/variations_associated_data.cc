@@ -157,13 +157,22 @@ class GroupMapAccessor {
 
 }  // namespace
 
-void AssociateGoogleVariationID(IDCollectionKey key,
-                                std::string_view trial_name,
-                                std::string_view group_name,
+void AssociateGoogleVariationID(base::PassKey<VariationsSeedProcessor> pass_key,
+                                IDCollectionKey key,
+                                ActiveGroupId active_group_id,
                                 VariationID variation_id,
                                 TimeWindow time_window) {
-  AssociateGoogleVariationID(key, MakeActiveGroupId(trial_name, group_name),
-                             variation_id, time_window);
+  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
+                                               variation_id, time_window);
+}
+
+void AssociateGoogleVariationID(base::PassKey<SyntheticTrialRegistry> pass_key,
+                                IDCollectionKey key,
+                                ActiveGroupId active_group_id,
+                                VariationID variation_id,
+                                TimeWindow time_window) {
+  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
+                                               variation_id, time_window);
 }
 
 void AssociateGoogleVariationIDForTesting(IDCollectionKey key,
@@ -171,16 +180,9 @@ void AssociateGoogleVariationIDForTesting(IDCollectionKey key,
                                           std::string_view group_name,
                                           VariationID variation_id,
                                           TimeWindow time_window) {
-  AssociateGoogleVariationID(key, MakeActiveGroupId(trial_name, group_name),
-                             variation_id, time_window);
-}
-
-void AssociateGoogleVariationID(IDCollectionKey key,
-                                ActiveGroupId active_group_id,
-                                VariationID variation_id,
-                                TimeWindow time_window) {
-  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
-                                               variation_id, time_window);
+  GroupMapAccessor::GetInstance()->AssociateID(
+      key, MakeActiveGroupId(trial_name, group_name), variation_id,
+      time_window);
 }
 
 VariationID GetGoogleVariationID(IDCollectionKey key,

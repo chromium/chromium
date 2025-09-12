@@ -127,13 +127,14 @@ std::optional<IDCollectionKey> GetKeyForWebExperiment(
 
 // If there are VariationIDs associated with the |experiment| arm of |study|,
 // register said VariationIDs unless `is_trial_overridden` is true.
-void RegisterVariationIds(const Study::Experiment& experiment,
+void RegisterVariationIds(base::PassKey<VariationsSeedProcessor> pass_key,
+                          const Study::Experiment& experiment,
                           const Study& study,
                           bool is_trial_overridden) {
   if (is_trial_overridden && experiment.has_google_web_experiment_id()) {
     Study::Experiment updated_experiment = experiment;
     updated_experiment.clear_google_web_experiment_id();
-    RegisterVariationIds(updated_experiment, study, false);
+    RegisterVariationIds(pass_key, updated_experiment, study, false);
     return;
   }
 
@@ -142,7 +143,8 @@ void RegisterVariationIds(const Study::Experiment& experiment,
   if (experiment.has_google_app_experiment_id()) {
     const VariationID variation_id =
         static_cast<VariationID>(experiment.google_app_experiment_id());
-    AssociateGoogleVariationID(GOOGLE_APP, trial_name, experiment.name(),
+    AssociateGoogleVariationID(pass_key, GOOGLE_APP,
+                               MakeActiveGroupId(trial_name, experiment.name()),
                                variation_id, web_visibility_time_window);
   }
 
@@ -161,7 +163,8 @@ void RegisterVariationIds(const Study::Experiment& experiment,
                 experiment.google_web_trigger_experiment_id())
           : static_cast<VariationID>(experiment.google_web_experiment_id());
 
-  AssociateGoogleVariationID(key.value(), trial_name, experiment.name(),
+  AssociateGoogleVariationID(pass_key, key.value(),
+                             MakeActiveGroupId(trial_name, experiment.name()),
                              variation_id, web_visibility_time_window);
 }
 
@@ -196,13 +199,14 @@ bool ShouldActivate(const Study& study,
 
 // Forces the specified |experiment| to be enabled in |study|.
 void ForceExperimentState(
+    base::PassKey<VariationsSeedProcessor> pass_key,
     const Study& study,
     const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
     StickyActivationManager& sticky_activation_manager,
     base::FieldTrial& trial) {
   RegisterExperimentParams(study, experiment);
-  RegisterVariationIds(experiment, study, trial.IsOverridden());
+  RegisterVariationIds(pass_key, experiment, study, trial.IsOverridden());
 
   if (ShouldActivate(study, experiment.name(), sticky_activation_manager)) {
     // This call must happen after all params have been registered for the
@@ -446,7 +450,8 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
             experiment.feature_association().forcing_feature_off(),
             base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
       }
-      ForceExperimentState(study, experiment, override_callback,
+      ForceExperimentState(base::PassKey<VariationsSeedProcessor>(), study,
+                           experiment, override_callback,
                            *sticky_activation_manager_, *trial);
       return;
     }
@@ -487,9 +492,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       trial->AppendGroup(experiment.name(), experiment.probability_weight());
     }
 
-    RegisterVariationIds(experiment, study,
-                         /*is_trial_overridden=*/existing_trial &&
-                             existing_trial->IsOverridden());
+    bool is_trial_overridden = existing_trial && existing_trial->IsOverridden();
+    RegisterVariationIds(base::PassKey<VariationsSeedProcessor>(), experiment,
+                         study, is_trial_overridden);
 
     has_overrides = has_overrides || experiment.override_ui_string_size() > 0;
     if (experiment.feature_association().enable_feature_size() != 0 ||

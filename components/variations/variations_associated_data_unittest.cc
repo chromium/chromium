@@ -121,9 +121,9 @@ TEST_F(VariationsAssociatedDataTest, NoAssociation) {
 TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
   EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(APP, TRIAL, GROUP));
 
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A);
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A);
   EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_B);
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_B);
   EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(APP, TRIAL, GROUP));
 }
 
@@ -181,7 +181,8 @@ TEST_F(VariationsAssociatedDataTest, Timeboxing) {
   const base::Time timestamp = base::Time::Now();
   const base::Time start = timestamp + base::Days(7);
   const base::Time end = timestamp + base::Days(14);
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A,
+                                       {start, end});
 
   // The associated variation id is not visible before the time window starts.
   EXPECT_EQ(EMPTY_ID,
@@ -215,7 +216,8 @@ TEST_F(VariationsAssociatedDataTest, GetNextTimeWindowEvent_Basic) {
   EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(end));
 
   // Associate a variation id that becomes visible in 7 days, for 7 days.
-  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+  AssociateGoogleVariationIDForTesting(APP, TRIAL, GROUP, TEST_VALUE_A,
+                                       {start, end});
 
   // Validate the next time window event as 'current_time' moves forward.
   EXPECT_EQ(start, GetNextTimeWindowEvent(start - base::Days(1)));
@@ -241,7 +243,7 @@ TEST_F(VariationsAssociatedDataTest,
   // Associate a variation id for each time window.
   int i = 0;
   for (const auto& window : windows) {
-    AssociateGoogleVariationID(
+    AssociateGoogleVariationIDForTesting(
         APP, base::StrCat({TRIAL, "_", base::NumberToString(i)}), GROUP,
         TEST_VALUE_A + i, window);
     ++i;
