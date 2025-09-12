@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
@@ -771,6 +772,10 @@ void PasswordFormManager::UpdateStateOnUserInput(
   if (!HasGeneratedPassword()) {
     return;
   }
+
+  SCOPED_CRASH_KEY_NUMBER("Bug40072712", "pmf_genElemId",
+                          generation_element_.value());
+
   // Update the presaved password form. Even if generated password was not
   // modified, the user might have modified the username.
   std::u16string generated_password =
