@@ -16,6 +16,7 @@ import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCh
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
@@ -62,6 +63,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
                   PermissionsRevocationType.DISRUPTIVE_NOTIFICATION_PERMISSIONS,
             },
           ]);
+
+  async function waitFor(f: () => boolean, timeoutMs: number = 5000) {
+    if (f() || timeoutMs < 0) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await waitFor(f, timeoutMs - 50);
+  }
 
   function assertEqualsMockData(
       siteList: UnusedSitePermissions[], mockDataLength: number) {
@@ -137,6 +146,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // that will be shown for review.
     await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
     await flushTasks();
+    testElement.$.module.setModelUpdateDelayMsForTesting(0);
   }
 
   /**
@@ -166,6 +176,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     const [origin] =
         await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
     assertEquals(mockData[index]!.origin, origin);
+    browserProxy.resetResolver('allowPermissionsAgainForUnusedSite');
   }
 
   /**
@@ -298,6 +309,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain();
     assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel');
+    assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -323,6 +335,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     for (const [i, site] of getSiteList().entries()) {
       // User clicks Allow Again and then Undo.
       site.querySelector('cr-icon-button')!.click();
+      await assertAllowAgain(i);
+      await flushTasks();
+      assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', i);
+      assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
+
       metricsBrowserProxy.reset();
       testElement.$.toastUndoButton.click();
 
@@ -335,6 +352,10 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
+      await waitFor(
+          () => getDeepActiveElement() === site.querySelector('#mainButton'));
+      assertEquals(getDeepActiveElement(), site.querySelector('#mainButton'));
+
       // Ensure the metric for 'Undo Allow Again' action is recorded. The
       // last site at index 4 includes revoked notifications, so the abusive
       // notification histogram should also be recorded.
@@ -345,6 +366,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
       }
 
+      await flushTasks();
       assertInitialUi();
     }
   });
@@ -400,6 +422,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertFalse(isVisible(testElement.$.gotItButton));
     assertTrue(isVisible(testElement.$.bulkUndoButton));
 
+    assertEquals(getDeepActiveElement(), testElement.$.bulkUndoButton);
+
     // Ensure the metric for 'Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL, true);
   });
@@ -407,6 +431,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Undo Got It', async function() {
     // User clicks Got It and then Bulk Undo.
     testElement.$.gotItButton.click();
+
+    // UI should be in a completion state.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+
     metricsBrowserProxy.reset();
     testElement.$.bulkUndoButton.click();
 
@@ -419,11 +448,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // UI should be back to its initial state.
     webUIListenerCallback(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
+    await flushTasks();
     assertInitialUi();
 
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.gotItButton));
     assertFalse(isVisible(testElement.$.bulkUndoButton));
+
+    await waitFor(() => getDeepActiveElement() === testElement.$.gotItButton);
+    assertEquals(getDeepActiveElement(), testElement.$.gotItButton);
 
     // Ensure the metric for 'Undo Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(

@@ -264,6 +264,18 @@ export class SettingsSafetyHubModuleElement extends
     setTimeout(this.finalizeAnimation_.bind(this), delayMs);
   }
 
+  /** Focus the main button for the given |origin|, if it exists. */
+  focusOriginMainButton(origin: string) {
+    for (const item of this.shadowRoot!.querySelectorAll<HTMLElement>(
+             '#siteList .list-item')) {
+      const siteRepresentation = item.querySelector('.site-representation');
+      if (siteRepresentation && siteRepresentation.innerHTML === origin) {
+        item.querySelector<HTMLElement>('#mainButton')!.focus();
+        return;
+      }
+    }
+  }
+
   private finalizeAnimation_() {
     const items = this.shadowRoot!.querySelectorAll<HTMLElement>(
         '#siteList .list-item, #line');
