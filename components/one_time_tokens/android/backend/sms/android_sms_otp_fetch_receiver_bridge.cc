@@ -14,7 +14,7 @@
 #include "components/one_time_tokens/android/backend/sms/jni_headers/AndroidSmsOtpFetchReceiverBridge_jni.h"
 
 // static
-std::unique_ptr<AndroidSmsOtpFetchReceiverBridge>
+std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface>
 AndroidSmsOtpFetchReceiverBridge::Create() {
   return std::make_unique<AndroidSmsOtpFetchReceiverBridge>();
 }

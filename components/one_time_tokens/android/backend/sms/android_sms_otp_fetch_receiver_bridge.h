@@ -10,46 +10,33 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge_interface.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
 
 // A bridge to communicate Java OTP fetcher replies back to the native code.
-class AndroidSmsOtpFetchReceiverBridge {
+// Lives on the UI thread.
+class AndroidSmsOtpFetchReceiverBridge
+    : public AndroidSmsOtpFetchReceiverBridgeInterface {
  public:
-  // A bridge is created with a consumer that will be called when an OTP
-  // fetching request is completed.
-  class Consumer {
-   public:
-    virtual ~Consumer() = default;
-
-    // Asynchronous response called when an OTP value is retrieved.
-    virtual void OnOtpValueRetrieved(std::string value) = 0;
-
-    // Asynchronous response called if there was an error while fetching an OTP
-    // value.
-    virtual void OnOtpValueRetrievalError(
-        SmsOtpRetrievalApiErrorCode error_code) = 0;
-  };
+  // Factory function for creating the bridge.
+  static std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> Create();
 
   AndroidSmsOtpFetchReceiverBridge();
-  ~AndroidSmsOtpFetchReceiverBridge();
+  ~AndroidSmsOtpFetchReceiverBridge() override;
 
-  // Implements consumer interface. Called via JNI when OTP value retrieval
-  // succeeds.
+  // Returns reference to the Java JNI bridge object.
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaBridge() const override;
+
+  // Sets the consumer to be notified when an OTP fetching request finishes.
+  void SetConsumer(base::WeakPtr<Consumer> consumer) override;
+
+  // Methods called via JNI from Java.
   void OnOtpValueRetrieved(JNIEnv* env,
                            const base::android::JavaRef<jstring>& otp_value);
 
   // Implements consumer interface. Called via JNI when OTP value retrieval
   // fails.
   void OnOtpValueRetrievalError(JNIEnv* env, jint api_error_code);
-
-  // Returns reference to the Java JNI bridge object.
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaBridge() const;
-
-  // Sets the consumer to be notified when an OTP fetching request finishes.
-  void SetConsumer(base::WeakPtr<Consumer> consumer);
-
-  // Factory function for creating the bridge.
-  static std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> Create();
 
  private:
   // Method to be run on the correct sequence when value retrieval succeeds.

@@ -8,27 +8,25 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
-#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge_interface.h"
 
 // A bridge to send OTP fetch requests to Java. Lives on the background thread.
-class AndroidSmsOtpFetchDispatcherBridge {
+class AndroidSmsOtpFetchDispatcherBridge
+    : public AndroidSmsOtpFetchDispatcherBridgeInterface {
  public:
   // Factory function for creating the bridge.
-  static std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge> Create();
+  static std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface> Create();
 
   AndroidSmsOtpFetchDispatcherBridge();
-  ~AndroidSmsOtpFetchDispatcherBridge();
+  ~AndroidSmsOtpFetchDispatcherBridge() override;
 
-  // Perform bridge and Java counterpart initialization.
-  // `receiver_bridge` is the java counterpart of the
-  // `AndroidSmsOtpFetchReceiverBridge` and should outlive this object.
-  // Returns true if initialization is successful and the Java counterpart
-  // is created.
-  bool Init(base::android::ScopedJavaGlobalRef<jobject> receiver_bridge);
+  // AndroidSmsOtpFetchDispatcherBridgeInterface:
+  bool Init(
+      base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) override;
 
-  // Asynchronously requests the OTP value received via SMS from the backend.
-  void RetrieveSmsOtp();
+  void RetrieveSmsOtp() override;
 
  private:
   // The Java counterpart to this class.

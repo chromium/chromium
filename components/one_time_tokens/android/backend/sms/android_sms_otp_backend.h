@@ -20,15 +20,18 @@
 
 // This class processes SMS OTP requests and propagates back the replies
 // with OTP values, 1 per profile.
-class AndroidSmsOtpBackend : public KeyedService,
-                             public one_time_tokens::SmsOtpBackend,
-                             public AndroidSmsOtpFetchReceiverBridge::Consumer {
+class AndroidSmsOtpBackend
+    : public KeyedService,
+      public one_time_tokens::SmsOtpBackend,
+      public AndroidSmsOtpFetchReceiverBridgeInterface::Consumer {
  public:
   AndroidSmsOtpBackend();
   AndroidSmsOtpBackend(
       base::PassKey<class AndroidSmsOtpBackendTest>,
-      std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> receiver_bridge,
-      std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge> dispatcher_bridge,
+      std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface>
+          receiver_bridge,
+      std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface>
+          dispatcher_bridge,
       scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
 
   AndroidSmsOtpBackend(const AndroidSmsOtpBackend&) = delete;
@@ -44,6 +47,9 @@ class AndroidSmsOtpBackend : public KeyedService,
   void OnOtpValueRetrieved(std::string value) override;
   void OnOtpValueRetrievalError(
       SmsOtpRetrievalApiErrorCode error_code) override;
+
+  // Getter for tests to check the initialization state.
+  std::optional<bool> GetInitializationResultForTesting() const;
 
  private:
   // Initializes bridges, which triggers initialization of the downstream
@@ -64,10 +70,11 @@ class AndroidSmsOtpBackend : public KeyedService,
   bool pending_fetch_request_ = false;
 
   // A bridge to communicate Java OTP fetcher replies back to the native code.
-  std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> receiver_bridge_;
+  std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> receiver_bridge_;
 
   // A bridge to send OTP fetch requests to Java.
-  std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge> dispatcher_bridge_;
+  std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface>
+      dispatcher_bridge_;
 
   // Background thread pool task runner to execute all backend operations.
   // Limited to a single thread as JNIEnv is only suitable for use on a single

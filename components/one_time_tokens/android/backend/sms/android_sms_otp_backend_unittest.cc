@@ -4,14 +4,15 @@
 
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_backend.h"
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge_interface.h"
+#include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge_interface.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 namespace {
 
 using one_time_tokens::OneTimeToken;
@@ -20,12 +21,13 @@ using one_time_tokens::OtpFetchReply;
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;
+using testing::Optional;
 using testing::Property;
 using testing::Return;
 using testing::StrictMock;
 
 class MockAndroidSmsOtpFetchReceiverBridge
-    : public AndroidSmsOtpFetchReceiverBridge {
+    : public AndroidSmsOtpFetchReceiverBridgeInterface {
  public:
   MOCK_METHOD(base::android::ScopedJavaGlobalRef<jobject>,
               GetJavaBridge,
@@ -35,46 +37,37 @@ class MockAndroidSmsOtpFetchReceiverBridge
 };
 
 class MockAndroidSmsOtpFetchDispatcherBridge
-    : public AndroidSmsOtpFetchDispatcherBridge {
+    : public AndroidSmsOtpFetchDispatcherBridgeInterface {
  public:
   MOCK_METHOD(bool, Init, (base::android::ScopedJavaGlobalRef<jobject>), ());
   MOCK_METHOD(void, RetrieveSmsOtp, (), ());
 };
 
 }  // namespace
-
 class AndroidSmsOtpBackendTest : public testing::Test {
  protected:
   AndroidSmsOtpBackend CreateBackend(
-      std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> receiver_bridge,
-      std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge> dispatcher_bridge,
+      std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface>
+          receiver_bridge,
+      std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface>
+          dispatcher_bridge,
       scoped_refptr<base::SingleThreadTaskRunner> background_task_runner) {
-    EXPECT_CALL(*receiver_bridge_, GetJavaBridge);
-    EXPECT_CALL(*receiver_bridge_, SetConsumer);
-    return AndroidSmsOtpBackend(base::PassKey<class AndroidSmsOtpBackendTest>(),
-                                std::move(receiver_bridge),
-                                std::move(dispatcher_bridge),
-                                background_task_runner);
+    return AndroidSmsOtpBackend(
+        base::PassKey<AndroidSmsOtpBackendTest>(), std::move(receiver_bridge),
+        std::move(dispatcher_bridge), background_task_runner);
   }
 
-  std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> CreateMockReceiverBridge() {
-    auto unique_receiver_bridge =
-        std::make_unique<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>();
-    receiver_bridge_ = unique_receiver_bridge.get();
-    return unique_receiver_bridge;
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+  CreateMockReceiverBridge() {
+    return std::make_unique<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>();
   }
 
-  std::unique_ptr<AndroidSmsOtpFetchDispatcherBridge>
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
   CreateMockDispatcherBridge() {
-    auto unique_dispatcher_bridge =
-        std::make_unique<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>();
-    dispatcher_bridge_ = unique_dispatcher_bridge.get();
-    return unique_dispatcher_bridge;
+    return std::make_unique<
+        StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>();
   }
 
-  raw_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>> receiver_bridge_;
-  raw_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
-      dispatcher_bridge_;
   scoped_refptr<base::TestSimpleTaskRunner> background_task_runner_ =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
@@ -85,98 +78,185 @@ class AndroidSmsOtpBackendTest : public testing::Test {
 };
 
 TEST_F(AndroidSmsOtpBackendTest, BackendInitFails) {
-  AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
-                    background_task_runner_);
-
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
   // Run tasks on the background thread to trigger calls to the dispatcher
   // bridge.
-  EXPECT_CALL(*dispatcher_bridge_, Init).WillOnce(Return(false));
-  background_task_runner_->RunPendingTasks();
-
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(false));
   // No fetch requests should be made if initialization failed.
-  EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp).Times(0);
+
+  AndroidSmsOtpBackend backend =
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
+                    background_task_runner_);
+  // Run the background task (dispatcher->Init)
+  background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
+
   backend.RetrieveSmsOtp(base::DoNothing());
 }
 
 TEST_F(AndroidSmsOtpBackendTest, BackendInitSucceeds) {
-  AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
-                    background_task_runner_);
-
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
   // Run tasks on the background thread to trigger calls to the dispatcher
   // bridge.
-  EXPECT_CALL(*dispatcher_bridge_, Init).WillOnce(Return(true));
-  background_task_runner_->RunPendingTasks();
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(true));
+  // This will be called after initialization succeeds and RetrieveSmsOtp is
+  // called.
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp);
 
-  EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp);
+  AndroidSmsOtpBackend backend =
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
+                    background_task_runner_);
+  // Run the background task (dispatcher->Init)
+  background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
+
   backend.RetrieveSmsOtp(base::DoNothing());
 }
 
 TEST_F(AndroidSmsOtpBackendTest,
        FetchRequestReceivedBeforeBackendInitComplete) {
-  AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
-                    background_task_runner_);
-
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
   // No fetching should happen before initialization is complete.
-  EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp).Times(0);
-  backend.RetrieveSmsOtp(base::DoNothing());
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(true));
+  // Fetching should happen after initialization is complete.
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp);
 
-  // Fetch request should happen once initialization is complete.
-  EXPECT_CALL(*dispatcher_bridge_, Init).WillOnce(Return(true));
-  EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp);
+  AndroidSmsOtpBackend backend =
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
+                    background_task_runner_);
+  // Run the background task (dispatcher->Init)
   background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
+
+  backend.RetrieveSmsOtp(base::DoNothing());
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchSucceeds) {
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(true));
+  // This will be called after initialization succeeds and RetrieveSmsOtp is
+  // called.
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp);
+
   AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
                     background_task_runner_);
+  // Run the background task (dispatcher->Init)
+  background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
-      mock_otp_callback;
-  backend.RetrieveSmsOtp(mock_otp_callback.Get());
-
-  EXPECT_CALL(
-      mock_otp_callback,
-      Run(AllOf(
+  base::test::TestFuture<const OtpFetchReply&> future;
+  backend.RetrieveSmsOtp(future.GetCallback());
+  backend.OnOtpValueRetrieved("123456");
+  const OtpFetchReply& actual_result = future.Get();
+  EXPECT_THAT(
+      actual_result,
+      AllOf(
           Field(&OtpFetchReply::otp_value,
                 testing::Optional(AllOf(Property("type", &OneTimeToken::type,
                                                  Eq(OneTimeTokenType::kSmsOtp)),
                                         Property("value", &OneTimeToken::value,
                                                  Eq(std::string("123456")))))),
-          Field(&OtpFetchReply::request_complete, true))));
-  backend.OnOtpValueRetrieved("123456");
+          Field(&OtpFetchReply::request_complete, true)));
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(true));
+  // This will be called after initialization succeeds and RetrieveSmsOtp is
+  // called.
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp);
+
   AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
                     background_task_runner_);
+  // Run the background task (dispatcher->Init)
+  background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
-      mock_otp_callback;
-  backend.RetrieveSmsOtp(mock_otp_callback.Get());
-
-  EXPECT_CALL(mock_otp_callback,
-              Run(AllOf(Field(&OtpFetchReply::otp_value, Eq(std::nullopt)),
-                        Field(&OtpFetchReply::request_complete, true))));
+  base::test::TestFuture<const OtpFetchReply&> future;
+  backend.RetrieveSmsOtp(future.GetCallback());
   backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiErrorCode::kTimeout);
+  const OtpFetchReply& actual_result = future.Get();
+  EXPECT_EQ(actual_result.otp_value, std::nullopt);
+  EXPECT_TRUE(actual_result.request_complete);
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchReceiverBridge>>
+      receiver_bridge = CreateMockReceiverBridge();
+  std::unique_ptr<StrictMock<MockAndroidSmsOtpFetchDispatcherBridge>>
+      dispatcher_bridge = CreateMockDispatcherBridge();
+  // Setup bridge
+  EXPECT_CALL(*receiver_bridge, SetConsumer);
+  EXPECT_CALL(*receiver_bridge, GetJavaBridge)
+      .WillOnce(Return(base::android::ScopedJavaGlobalRef<jobject>()));
+  EXPECT_CALL(*dispatcher_bridge, Init).WillOnce(Return(true));
+  // This will be called after initialization succeeds and RetrieveSmsOtp is
+  // called.
+  EXPECT_CALL(*dispatcher_bridge, RetrieveSmsOtp);
+
   AndroidSmsOtpBackend backend =
-      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+      CreateBackend(std::move(receiver_bridge), std::move(dispatcher_bridge),
                     background_task_runner_);
+  // Run the background task (dispatcher->Init)
+  background_task_runner_->RunPendingTasks();
+  // Run the task posted to main thread
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
-      mock_otp_callback;
-  backend.RetrieveSmsOtp(mock_otp_callback.Get());
-
-  EXPECT_CALL(mock_otp_callback,
-              Run(AllOf(Field(&OtpFetchReply::otp_value, Eq(std::nullopt)),
-                        Field(&OtpFetchReply::request_complete, false))));
+  base::test::TestFuture<const OtpFetchReply&> future;
+  backend.RetrieveSmsOtp(future.GetCallback());
   backend.OnOtpValueRetrievalError(
       SmsOtpRetrievalApiErrorCode::kApiNotAvailable);
+  const OtpFetchReply& actual_result = future.Get();
+  EXPECT_EQ(actual_result.otp_value, std::nullopt);
+  EXPECT_FALSE(actual_result.request_complete);
 }
