@@ -20,7 +20,23 @@
     </li>
     <li style="padding: 5px 0;">
       <button id="get_window_button">get()</button>
-      <input type="number" id="window_id_input" placeholder="Enter Window ID">
+      <input type="number" id="get_window_id_input" placeholder="Enter Window ID">
+    </li>
+    <li style="padding: 5px 0;">
+      <button id="update_window_button">update()</button>
+      <select id="update_window_options_select">
+        <option value="focused_true">focused: true</option>
+        <option value="focused_false">focused: false</option>
+        <option value="resize_100_200_400_300">resize: (100, 200, 400, 300)</option>
+        <option value="state_normal">state: normal</option>
+        <option value="state_minimized">state: minimized</option>
+        <option value="state_maximized">state: maximized</option>
+        <option value="state_fullscreen">state: fullscreen</option>
+        <option value="state_locked_fullscreen">state: locked-fullscreen</option>
+        <option value="drawAttention_true">drawAttention: true</option>
+        <option value="drawAttention_true">drawAttention: false</option>
+      </select>
+      <input type="number" id="update_window_id_input" placeholder="Enter Window ID">
     </li>
   </ul>
 
