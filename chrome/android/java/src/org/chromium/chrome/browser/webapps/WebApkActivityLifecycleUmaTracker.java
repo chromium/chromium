@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
 import java.util.function.Supplier;
 
 /** Handles recording user metrics for WebAPK activities. */
+@NullMarked
 public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
     private final Activity mActivity;
@@ -70,6 +74,7 @@ public class WebApkActivityLifecycleUmaTracker
                     }
 
                     WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+                    assumeNonNull(webApkExtras);
                     WebApkUmaRecorder.recordShellApkVersion(
                             webApkExtras.shellApkVersion, webApkExtras.distributor);
                 });
@@ -109,12 +114,13 @@ public class WebApkActivityLifecycleUmaTracker
     public void onPostInflationStartup() {}
 
     @Override
-    public void onResumeWithNative() {
-    }
+    public void onResumeWithNative() {}
 
     @Override
     public void onPauseWithNative() {
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+        assumeNonNull(webApkExtras);
+
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
         WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
         WebApkUkmRecorder.recordWebApkSessionDuration(
