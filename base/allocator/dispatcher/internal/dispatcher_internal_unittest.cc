@@ -106,6 +106,11 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
   static void* alloc_zero_initialized_function(size_t, size_t, void*) {
     return GetAllocatedAddress();
   }
+  static void* alloc_zero_initialized_unchecked_function(size_t,
+                                                         size_t,
+                                                         void*) {
+    return GetAllocatedAddress();
+  }
   static void* alloc_aligned_function(size_t, size_t, void*) {
     return GetAllocatedAddress();
   }
@@ -144,27 +149,29 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
     return GetAllocatedAddress();
   }
 
-  AllocatorDispatch allocator_dispatch_ = {&alloc_function,
-                                           &alloc_unchecked_function,
-                                           &alloc_zero_initialized_function,
-                                           &alloc_aligned_function,
-                                           &realloc_function,
-                                           &realloc_unchecked_function,
-                                           [](void*, void*) {},
-                                           [](void*, size_t, void*) {},
-                                           [](void*, size_t, void*) {},
-                                           [](void*, size_t, size_t, void*) {},
-                                           &get_size_estimate_function,
-                                           &good_size_function,
-                                           &claimed_address_function,
-                                           &batch_malloc_function,
-                                           [](void**, unsigned, void*) {},
-                                           [](void*, void*) {},
-                                           &aligned_malloc_function,
-                                           &aligned_malloc_unchecked_function,
-                                           &aligned_realloc_function,
-                                           &aligned_realloc_unchecked_function,
-                                           [](void*, void*) {}};
+  AllocatorDispatch allocator_dispatch_ = {
+      &alloc_function,
+      &alloc_unchecked_function,
+      &alloc_zero_initialized_function,
+      &alloc_zero_initialized_unchecked_function,
+      &alloc_aligned_function,
+      &realloc_function,
+      &realloc_unchecked_function,
+      [](void*, void*) {},
+      [](void*, size_t, void*) {},
+      [](void*, size_t, void*) {},
+      [](void*, size_t, size_t, void*) {},
+      &get_size_estimate_function,
+      &good_size_function,
+      &claimed_address_function,
+      &batch_malloc_function,
+      [](void**, unsigned, void*) {},
+      [](void*, void*) {},
+      &aligned_malloc_function,
+      &aligned_malloc_unchecked_function,
+      &aligned_realloc_function,
+      &aligned_realloc_unchecked_function,
+      [](void*, void*) {}};
 #endif
 };
 
@@ -356,6 +363,34 @@ TEST_F(
   auto* const allocated_address =
       allocator_dispatch->alloc_zero_initialized_function(n, GetAllocatedSize(),
                                                           nullptr);
+
+  EXPECT_EQ(allocated_address, GetAllocatedAddress());
+}
+
+TEST_F(
+    AllocationEventDispatcherInternalTest,
+    VerifyAllocatorShimHooksTriggerCorrectly_alloc_zero_initialized_unchecked_function) {
+  std::array<ObserverMock, kMaximumNumberOfObservers> observers;
+  constexpr int n = 8;
+
+  for (auto& mock : observers) {
+    EXPECT_CALL(mock, OnAllocation(_)).Times(0);
+    EXPECT_CALL(mock, OnAllocation(AllocationNotificationMatches(
+                          GetAllocatedAddress(), n * GetAllocatedSize(),
+                          AllocationSubsystem::kAllocatorShim)))
+        .Times(1);
+    EXPECT_CALL(mock, OnFree(_)).Times(0);
+  }
+
+  auto const dispatch_data =
+      GetNotificationHooks(CreateTupleOfPointers(observers));
+
+  auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch();
+  allocator_dispatch->next = GetNextAllocatorDispatch();
+
+  auto* const allocated_address =
+      allocator_dispatch->alloc_zero_initialized_unchecked_function(
+          n, GetAllocatedSize(), nullptr);
 
   EXPECT_EQ(allocated_address, GetAllocatedAddress());
 }

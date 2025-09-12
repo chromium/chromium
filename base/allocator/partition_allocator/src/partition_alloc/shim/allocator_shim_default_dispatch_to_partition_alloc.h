@@ -43,6 +43,8 @@ class PartitionAllocFunctionsInternal {
 
   static void* Calloc(size_t n, size_t size, void* context);
 
+  static void* CallocUnchecked(size_t n, size_t size, void* context);
+
   static void* Memalign(size_t alignment, size_t size, void* context);
 
   static void* AlignedAlloc(size_t size, size_t alignment, void* context);
@@ -102,6 +104,7 @@ class PartitionAllocFunctionsInternal {
         &Malloc,                    // alloc_function
         &MallocUnchecked,           // alloc_unchecked_function
         &Calloc,                    // alloc_zero_initialized_function
+        &CallocUnchecked,           // alloc_zero_initialized_unchecked_function
         &Memalign,                  // alloc_aligned_function
         &Realloc,                   // realloc_function
         &ReallocUnchecked,          // realloc_unchecked_function

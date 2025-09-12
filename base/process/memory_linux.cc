@@ -112,6 +112,17 @@ bool AdjustOOMScore(ProcessId process, int score) {
   return AdjustOOMScoreHelper::AdjustOOMScore(process, score);
 }
 
+bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  *result = allocator_shim::UncheckedCalloc(num_items, size);
+#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
+  *result = calloc(num_items, size);
+#elif defined(LIBC_GLIBC)
+  *result = __libc_calloc(num_items, size);
+#endif
+  return *result != nullptr;
+}
+
 bool UncheckedMalloc(size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);

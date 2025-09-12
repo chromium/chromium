@@ -245,6 +245,20 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags,
 template <partition_alloc::AllocFlags base_alloc_flags,
           partition_alloc::FreeFlags base_free_flags>
 void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    CallocUnchecked(size_t n, size_t size, void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  const size_t total =
+      partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
+  return Allocator()
+      ->AllocInline<base_alloc_flags |
+                    partition_alloc::AllocFlags::kReturnNull |
+                    partition_alloc::AllocFlags::kZeroFill>(total);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     Memalign(size_t alignment, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory<base_alloc_flags>(alignment, size);

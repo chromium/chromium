@@ -83,6 +83,27 @@ void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
                                                                     context);
 }
 
+void* AllocZeroInitializedUncheckedFn(size_t n, size_t size, void* context) {
+  if (sampling_state.Sample(size)) [[unlikely]] {
+    base::CheckedNumeric<size_t> checked_total = size;
+    checked_total *= n;
+    if (!checked_total.IsValid()) [[unlikely]] {
+      return nullptr;
+    }
+
+    size_t total_size = checked_total.ValueOrDie();
+    if (void* allocation = gpa->Allocate(total_size)) {
+      // SAFETY: This is a low-level function.
+      // The memory was just allocated for this size above.
+      UNSAFE_BUFFERS(memset(allocation, 0, total_size));
+      return allocation;
+    }
+  }
+
+  return g_allocator_dispatch.next->alloc_zero_initialized_unchecked_function(
+      n, size, context);
+}
+
 void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
@@ -355,6 +376,7 @@ AllocatorDispatch g_allocator_dispatch = {
     &AllocFn,
     &AllocUncheckedFn,
     &AllocZeroInitializedFn,
+    &AllocZeroInitializedUncheckedFn,
     &AllocAlignedFn,
     &ReallocFn,
     &ReallocUncheckedFn,

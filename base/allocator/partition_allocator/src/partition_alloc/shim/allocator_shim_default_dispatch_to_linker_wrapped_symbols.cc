@@ -76,15 +76,16 @@ size_t RealSizeEstimate(void* address, void* context) {
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &RealMalloc,                   /* alloc_function */
-    &RealMalloc,                   /* alloc_unchecked_function */
-    &RealCalloc,                   /* alloc_zero_initialized_function */
-    &RealMemalign,                 /* alloc_aligned_function */
-    &RealRealloc,                  /* realloc_function */
-    &RealRealloc,                  /* realloc_unchecked_function */
-    &RealFree,                     /* free_function */
-    &RealFreeWithSize,             /* free_with_size_function */
-    &RealFreeWithAlignment,        /* free_with_alignment_function */
+    &RealMalloc,            /* alloc_function */
+    &RealMalloc,            /* alloc_unchecked_function */
+    &RealCalloc,            /* alloc_zero_initialized_function */
+    &RealCalloc,            /* alloc_zero_initialized_unchecked_function */
+    &RealMemalign,          /* alloc_aligned_function */
+    &RealRealloc,           /* realloc_function */
+    &RealRealloc,           /* realloc_unchecked_function */
+    &RealFree,              /* free_function */
+    &RealFreeWithSize,      /* free_with_size_function */
+    &RealFreeWithAlignment, /* free_with_alignment_function */
     &RealFreeWithSizeAndAlignment, /* free_with_size_and_alignment_function */
     &RealSizeEstimate,             /* get_size_estimate_function */
     nullptr,                       /* good_size_function */

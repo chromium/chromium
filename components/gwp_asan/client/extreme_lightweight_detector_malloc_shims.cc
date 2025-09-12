@@ -249,6 +249,7 @@ AllocatorDispatch allocator_dispatch = {
     nullptr,  // alloc_function
     nullptr,  // alloc_unchecked_function
     nullptr,  // alloc_zero_initialized_function
+    nullptr,  // alloc_zero_initialized_unchecked_function
     nullptr,  // alloc_aligned_function
     // realloc doesn't always deallocate memory, so the Extreme LUD doesn't
     // support realloc.

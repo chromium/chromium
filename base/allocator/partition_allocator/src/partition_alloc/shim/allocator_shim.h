@@ -66,6 +66,11 @@ void SetCallNewHandlerOnMallocFailure(bool value);
 // regardless of SetCallNewHandlerOnMallocFailure().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void* UncheckedAlloc(size_t size);
 
+// Allocates |n| zeroed elements of size |size| or returns nullptr. It does NOT
+// call the new_handler, regardless of SetCallNewHandlerOnMallocFailure().
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* UncheckedCalloc(size_t n, size_t size);
+
 // Reallocates |ptr| to point at |size| bytes with the same alignment as |ptr|,
 // or returns nullptr while leaving the |ptr| unchanged. It does NOT call the
 // new_handler, regardless of SetCallNewHandlerOnMallocFailure().

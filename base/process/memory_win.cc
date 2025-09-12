@@ -43,6 +43,15 @@ void EnableTerminationOnOutOfMemory() {
   _set_new_mode(kCallNewHandlerOnAllocationFailure);
 }
 
+bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  *result = allocator_shim::UncheckedCalloc(num_items, size);
+#else
+  *result = calloc(num_items, size);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  return *result != nullptr;
+}
+
 bool UncheckedMalloc(size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);

@@ -128,6 +128,18 @@ TEST(PartitionAllocAsMalloc, Calloc) {
   PartitionAllocFunctions::Free(data, nullptr);
 }
 
+TEST(PartitionAllocAsMalloc, CallocUnchecked) {
+  constexpr size_t alloc_size = 100;
+  void* data = PartitionAllocFunctions::CallocUnchecked(1, alloc_size, nullptr);
+  EXPECT_TRUE(data);
+
+  char* zeroes[alloc_size];
+  memset(zeroes, 0, alloc_size);
+
+  EXPECT_EQ(0, memcmp(zeroes, data, alloc_size));
+  PartitionAllocFunctions::Free(data, nullptr);
+}
+
 TEST(PartitionAllocAsMalloc, Memalign) {
   constexpr size_t alloc_size = 100;
   constexpr size_t alignment = 1024;

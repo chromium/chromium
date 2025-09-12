@@ -20,6 +20,9 @@ struct AllocatorDispatch {
   using AllocFn = void*(size_t size, void* context);
   using AllocUncheckedFn = void*(size_t size, void* context);
   using AllocZeroInitializedFn = void*(size_t n, size_t size, void* context);
+  using AllocZeroInitializedUncheckedFn = void*(size_t n,
+                                                size_t size,
+                                                void* context);
   using AllocAlignedFn = void*(size_t alignment, size_t size, void* context);
   using ReallocFn = void*(void* address, size_t size, void* context);
   using ReallocUncheckedFn = void*(void* ptr, size_t size, void* context);
@@ -60,6 +63,7 @@ struct AllocatorDispatch {
   AllocFn* alloc_function;
   AllocUncheckedFn* alloc_unchecked_function;
   AllocZeroInitializedFn* alloc_zero_initialized_function;
+  AllocZeroInitializedUncheckedFn* alloc_zero_initialized_unchecked_function;
   AllocAlignedFn* alloc_aligned_function;
   ReallocFn* realloc_function;
   ReallocUncheckedFn* realloc_unchecked_function;
@@ -133,6 +137,7 @@ struct AllocatorDispatch {
     COPY_IF_NULLPTR(alloc_function);
     COPY_IF_NULLPTR(alloc_unchecked_function);
     COPY_IF_NULLPTR(alloc_zero_initialized_function);
+    COPY_IF_NULLPTR(alloc_zero_initialized_unchecked_function);
     COPY_IF_NULLPTR(alloc_aligned_function);
     COPY_IF_NULLPTR(realloc_function);
     COPY_IF_NULLPTR(realloc_unchecked_function);

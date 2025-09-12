@@ -42,6 +42,14 @@ void* DelegatedAllocZeroInitializedFn(size_t n, size_t size, void* context) {
                                                                context);
 }
 
+void* DelegatedAllocZeroInitializedUncheckedFn(size_t n,
+                                               size_t size,
+                                               void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->alloc_zero_initialized_unchecked_function(
+      n, size, context);
+}
+
 void* DelegatedAllocAlignedFn(size_t alignment, size_t size, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->alloc_aligned_function(alignment, size, context);
@@ -227,6 +235,8 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     .alloc_function = &DelegatedAllocFn,
     .alloc_unchecked_function = &DelegatedAllocUncheckedFn,
     .alloc_zero_initialized_function = &DelegatedAllocZeroInitializedFn,
+    .alloc_zero_initialized_unchecked_function =
+        &DelegatedAllocZeroInitializedUncheckedFn,
     .alloc_aligned_function = &DelegatedAllocAlignedFn,
     .realloc_function = &DelegatedReallocFn,
     .realloc_unchecked_function = &DelegatedReallocUncheckedFn,

@@ -72,6 +72,12 @@ void* UncheckedAlloc(size_t size) {
   return chain_head->alloc_unchecked_function(size, nullptr);
 }
 
+void* UncheckedCalloc(size_t n, size_t size) {
+  const AllocatorDispatch* const chain_head = internal::GetChainHead();
+  return chain_head->alloc_zero_initialized_unchecked_function(n, size,
+                                                               nullptr);
+}
+
 void* UncheckedRealloc(void* ptr, size_t size) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
   return chain_head->realloc_unchecked_function(ptr, size, nullptr);

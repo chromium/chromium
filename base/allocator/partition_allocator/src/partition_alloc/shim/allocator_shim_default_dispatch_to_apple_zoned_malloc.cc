@@ -121,15 +121,16 @@ void TryFreeDefaultImpl(void* ptr, void* context) {
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &MallocImpl,                   /* alloc_function */
-    &MallocImpl,                   /* alloc_unchecked_function */
-    &CallocImpl,                   /* alloc_zero_initialized_function */
-    &MemalignImpl,                 /* alloc_aligned_function */
-    &ReallocImpl,                  /* realloc_function */
-    &ReallocImpl,                  /* realloc_unchecked_function */
-    &FreeImpl,                     /* free_function */
-    &FreeWithSizeImpl,             /* free_with_size_function */
-    &FreeWithAlignmentImpl,        /* free_with_size_function */
+    &MallocImpl,            /* alloc_function */
+    &MallocImpl,            /* alloc_unchecked_function */
+    &CallocImpl,            /* alloc_zero_initialized_function */
+    &CallocImpl,            /* alloc_zero_initialized_unchecked_function */
+    &MemalignImpl,          /* alloc_aligned_function */
+    &ReallocImpl,           /* realloc_function */
+    &ReallocImpl,           /* realloc_unchecked_function */
+    &FreeImpl,              /* free_function */
+    &FreeWithSizeImpl,      /* free_with_size_function */
+    &FreeWithAlignmentImpl, /* free_with_size_function */
     &FreeWithSizeAndAlignmentImpl, /* free_with_size_function */
     &GetSizeEstimateImpl,          /* get_size_estimate_function */
     &GoodSizeImpl,                 /* good_size_function */
