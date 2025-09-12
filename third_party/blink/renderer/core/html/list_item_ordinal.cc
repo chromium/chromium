@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -155,14 +154,7 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextOrdinalItem(
 }
 
 std::optional<int> ListItemOrdinal::ExplicitValue() const {
-  if (RuntimeEnabledFeatures::
-          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
-    return explicit_value_;
-  }
-  if (!UseExplicitValue()) {
-    return {};
-  }
-  return value_;
+  return explicit_value_;
 }
 
 int ListItemOrdinal::CalcValue(const Node& item_node) const {
@@ -182,9 +174,7 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
 
   // If the element does not have the `counter-set` CSS property set, return
   // `explicit_value_`.
-  if (RuntimeEnabledFeatures::
-          ListItemWithCounterSetNotSetExplicitValueEnabled() &&
-      ExplicitValue().has_value()) {
+  if (ExplicitValue().has_value()) {
     return explicit_value_.value();
   }
 
@@ -261,15 +251,12 @@ void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
   // See https://drafts.csswg.org/css-lists-3/#ua-stylesheet for more details.
   // If the element has the `counter-set` CSS property set, the `value_` is not
   // explicitly updated.
-  if (RuntimeEnabledFeatures::
-          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
-    explicit_value_ = value;
-    if (const auto* style = element.GetComputedStyle()) {
-      const auto directives =
-          style->GetCounterDirectives(AtomicString("list-item"));
-      if (directives.IsSet()) {
-        return;
-      }
+  explicit_value_ = value;
+  if (const auto* style = element.GetComputedStyle()) {
+    const auto directives =
+        style->GetCounterDirectives(AtomicString("list-item"));
+    if (directives.IsSet()) {
+      return;
     }
   }
 
@@ -279,10 +266,7 @@ void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
 }
 
 void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {
-  if (RuntimeEnabledFeatures::
-          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
-    explicit_value_.reset();
-  }
+  explicit_value_.reset();
   if (!UseExplicitValue()) {
     return;
   }

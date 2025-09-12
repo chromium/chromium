@@ -2918,10 +2918,6 @@
       status: "stable",
     },
     {
-      name: "ListItemWithCounterSetNotSetExplicitValue",
-      status: "stable",
-    },
-    {
       name: "ListOwnerMustHaveCSSBox",
       status: "stable",
     },
