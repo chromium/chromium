@@ -32,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/history/core/browser/download_constants.h"
@@ -51,6 +52,10 @@
 
 namespace history {
 namespace {
+
+using base::Bucket;
+using base::BucketsAre;
+using testing::IsEmpty;
 
 // This must be outside the anonymous namespace for the friend statement in
 // HistoryBackend to work.
@@ -3273,6 +3278,36 @@ TEST_F(HistoryBackendDBTest,
   EXPECT_THAT(results[2]->GetURL(), url3);
   EXPECT_THAT(results[3]->GetURL(), url1);
   EXPECT_THAT(results[4]->GetURL(), url2);
+}
+
+TEST_F(HistoryBackendDBTest, DatabaseDoesNotExist) {
+  base::HistogramTester histogram_tester;
+  CreateBackendAndDatabase();
+  EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableExists"),
+              IsEmpty());
+}
+
+TEST_F(HistoryBackendDBTest, MetaTableExists) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
+  CreateBackendAndDatabase();
+  EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableExists"),
+              BucketsAre(Bucket(true, /*count=*/1)));
+}
+
+TEST_F(HistoryBackendDBTest, MetaTableDoesNotExist) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_TRUE(db.Execute("DROP TABLE meta"));
+  }
+  CreateBackendAndDatabase();
+  EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableExists"),
+              BucketsAre(Bucket(false, /*count=*/1)));
 }
 
 }  // namespace

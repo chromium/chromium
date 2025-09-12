@@ -102,8 +102,20 @@ HistoryDatabase::HistoryDatabase(
 HistoryDatabase::~HistoryDatabase() = default;
 
 sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
+  const bool database_exists = base::PathExists(history_name);
+
   if (!db_.Open(history_name))
     return LogInitFailure(InitStep::OPEN);
+
+  if (database_exists) {
+    // TODO(crbug.com/40777743): The history database should always have a meta
+    // table. If it's missing, we either have a corrupted or a very very old
+    // database. The code currently doesn't handle this case. Log an histogram
+    // to know if this represents a problem in the real world. The histogram
+    // can be removed once the bug is fixed.
+    base::UmaHistogramBoolean("History.MetaTableExists",
+                              sql::MetaTable::DoesTableExist(&db_));
+  }
 
   // Wrap the rest of init in a transaction. This will prevent the database from
   // getting corrupted if we crash in the middle of initialization or migration.
