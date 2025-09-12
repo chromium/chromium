@@ -24,7 +24,12 @@ SoftNavigationContext::SoftNavigationContext(
     : paint_attribution_mode_(mode),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
           DOMWindowPerformance::performance(window))),
-      heuristics_(window.GetSoftNavigationHeuristics()) {}
+      heuristics_(window.GetSoftNavigationHeuristics()) {
+  heuristics_->ForEachInteractionEffectsMonitor(
+      [&](InteractionEffectsMonitor& monitor) {
+        monitor.OnSoftNavigationContextCreated();
+      });
+}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
   if (paint_attribution_mode_ !=

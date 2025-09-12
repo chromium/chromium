@@ -38,11 +38,16 @@ WebInteractionEffectsMonitor::~WebInteractionEffectsMonitor() {
   }
 }
 
+uint32_t WebInteractionEffectsMonitor::InteractionCount() const {
+  return interaction_effects_monitor_
+             ? interaction_effects_monitor_->InteractionCount()
+             : 0;
+}
+
 uint64_t WebInteractionEffectsMonitor::TotalPaintedArea() const {
-  if (!interaction_effects_monitor_) {
-    return 0;
-  }
-  return interaction_effects_monitor_->TotalPaintedArea();
+  return interaction_effects_monitor_
+             ? interaction_effects_monitor_->TotalPaintedArea()
+             : 0;
 }
 
 }  // namespace blink

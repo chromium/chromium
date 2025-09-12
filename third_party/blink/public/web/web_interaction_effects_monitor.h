@@ -22,6 +22,10 @@ class WebLocalFrame;
 // when a page becomes stable after user interaction. Observation occurs as long
 // as the instance of this class is alive, and only for interactions that occur
 // after it has been created.
+//
+// Note: Not all types of interactions are supported (only click and keyboard
+// events are currently supported), and only main frames are currently
+// supported.
 class BLINK_EXPORT WebInteractionEffectsMonitor {
  public:
   WebInteractionEffectsMonitor(const WebLocalFrame&,
@@ -31,6 +35,11 @@ class BLINK_EXPORT WebInteractionEffectsMonitor {
       delete;
   ~WebInteractionEffectsMonitor();
 
+  // Returns the number of interactions the monitor has observed.
+  uint32_t InteractionCount() const;
+
+  // Returns the total area in DIPs of contentful paints attributed to
+  // interactions the monitor is observing.
   uint64_t TotalPaintedArea() const;
 
 #if INSIDE_BLINK

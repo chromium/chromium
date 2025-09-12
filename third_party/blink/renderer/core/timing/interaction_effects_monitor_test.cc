@@ -103,9 +103,11 @@ TEST_F(InteractionEffectsMonitorTest, CreateMonitor) {
 
   TestObserver observer;
   WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
+  EXPECT_EQ(monitor.InteractionCount(), 0);
 
   SoftNavigationContext* context = SimulateInteraction();
   ASSERT_TRUE(context);
+  EXPECT_EQ(monitor.InteractionCount(), 1);
 
   Node* node1 = CreateNodeForTest();
   context->AddPaintedArea(CreateTextRecordForTest(node1, 200, 50, context));
@@ -125,8 +127,10 @@ TEST_F(InteractionEffectsMonitorTest, CreateMonitor) {
 TEST_F(InteractionEffectsMonitorTest, CreateMonitorMultipleContextsSameFrame) {
   TestObserver observer;
   WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
+  EXPECT_EQ(monitor.InteractionCount(), 0);
   {
     SoftNavigationContext* context = SimulateInteraction();
+    EXPECT_EQ(monitor.InteractionCount(), 1);
     ASSERT_TRUE(context);
     Node* node = CreateNodeForTest();
     context->AddPaintedArea(CreateTextRecordForTest(node, 200, 50, context));
@@ -135,6 +139,7 @@ TEST_F(InteractionEffectsMonitorTest, CreateMonitorMultipleContextsSameFrame) {
   {
     SoftNavigationContext* context = SimulateInteraction();
     ASSERT_TRUE(context);
+    EXPECT_EQ(monitor.InteractionCount(), 2);
     Node* node = CreateNodeForTest();
     context->AddPaintedArea(CreateTextRecordForTest(node, 100, 30, context));
   }
@@ -156,9 +161,11 @@ TEST_F(InteractionEffectsMonitorTest, ObserverStopsOnMonitorDestruction) {
   TestObserver observer;
   {
     WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
+    EXPECT_EQ(monitor.InteractionCount(), 0);
 
     SoftNavigationContext* context = SimulateInteraction();
     ASSERT_TRUE(context);
+    EXPECT_EQ(monitor.InteractionCount(), 1);
     Node* node = CreateNodeForTest();
     context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
 
@@ -185,8 +192,10 @@ TEST_F(InteractionEffectsMonitorTest, SubsequentObservers) {
   for (int i = 0; i < 5; ++i) {
     TestObserver observer;
     WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
+    EXPECT_EQ(monitor.InteractionCount(), 0);
     SoftNavigationContext* context = SimulateInteraction();
     ASSERT_TRUE(context);
+    EXPECT_EQ(monitor.InteractionCount(), 1);
 
     Node* node = CreateNodeForTest();
     context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
@@ -200,11 +209,13 @@ TEST_F(InteractionEffectsMonitorTest, SubsequentObservers) {
 TEST_F(InteractionEffectsMonitorTest, ObserveNonBodyKeyEvents) {
   TestObserver observer;
   WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
+  EXPECT_EQ(monitor.InteractionCount(), 0);
 
   Node* node = CreateNodeForTest();
   SoftNavigationContext* context =
       SimulateInteraction(EventScopeType::kKeydown, node);
   ASSERT_TRUE(context);
+  EXPECT_EQ(monitor.InteractionCount(), 1);
 
   context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
   GetSoftNavigationHeuristics()->OnPaintFinished();
@@ -223,6 +234,7 @@ TEST_F(InteractionEffectsMonitorTest, NewInteractionsOnly) {
   Node* node = CreateNodeForTest();
   context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
   GetSoftNavigationHeuristics()->OnPaintFinished();
+  EXPECT_EQ(monitor.InteractionCount(), 0);
   EXPECT_EQ(observer.NumContentfulPaints(), 0u);
   EXPECT_EQ(observer.TotalPaintedArea(), 0u);
   EXPECT_EQ(monitor.TotalPaintedArea(), 0u);
@@ -252,10 +264,12 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 1000u);
+  EXPECT_EQ(monitor1->InteractionCount(), 1);
   EXPECT_EQ(monitor1->TotalPaintedArea(), 1000u);
 
   EXPECT_EQ(observer2.NumContentfulPaints(), 0u);
   EXPECT_EQ(observer2.TotalPaintedArea(), 0u);
+  EXPECT_EQ(monitor2->InteractionCount(), 0);
   EXPECT_EQ(monitor2->TotalPaintedArea(), 0u);
 
   // Add a second monitor, which should only observe new interactions.
@@ -266,10 +280,12 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 2000u);
+  EXPECT_EQ(monitor1->InteractionCount(), 1);
   EXPECT_EQ(monitor1->TotalPaintedArea(), 2000u);
 
   EXPECT_EQ(observer2.NumContentfulPaints(), 0u);
   EXPECT_EQ(observer2.TotalPaintedArea(), 0u);
+  EXPECT_EQ(monitor2->InteractionCount(), 0);
   EXPECT_EQ(monitor2->TotalPaintedArea(), 0u);
 
   // Simulate a second interaction, which both monitors should observe.
@@ -280,10 +296,12 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 3u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 3000u);
+  EXPECT_EQ(monitor1->InteractionCount(), 2);
   EXPECT_EQ(monitor1->TotalPaintedArea(), 3000u);
 
   EXPECT_EQ(observer2.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer2.TotalPaintedArea(), 1000u);
+  EXPECT_EQ(monitor2->InteractionCount(), 1);
   EXPECT_EQ(monitor2->TotalPaintedArea(), 1000u);
 
   // Remove the first monitor, and simulate a new interaction which only the
@@ -297,10 +315,12 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 3u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 3000u);
+  EXPECT_EQ(monitor1->InteractionCount(), 2);
   EXPECT_EQ(monitor1->TotalPaintedArea(), 3000u);
 
   EXPECT_EQ(observer2.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer2.TotalPaintedArea(), 2000u);
+  EXPECT_EQ(monitor1->InteractionCount(), 2);
   EXPECT_EQ(monitor2->TotalPaintedArea(), 2000u);
 
   monitor2->StopMonitoring();
@@ -314,6 +334,7 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
       GetSoftNavigationHeuristics());
   TestObserver observer;
   monitor->StartMonitoring(&observer);
+  EXPECT_EQ(monitor->InteractionCount(), 0);
 
   Node* node = CreateNodeForTest();
 
@@ -324,6 +345,7 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
 
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
+  EXPECT_EQ(monitor->InteractionCount(), 1);
   EXPECT_EQ(monitor->TotalPaintedArea(), 1000u);
 
   monitor->StopMonitoring();
@@ -335,6 +357,7 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
 
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
+  EXPECT_EQ(monitor->InteractionCount(), 1);
   EXPECT_EQ(monitor->TotalPaintedArea(), 1000u);
 
   // Start monitoring again. Only the new interaction should be considered.
@@ -351,6 +374,7 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
   // over when restarting it.
   EXPECT_EQ(observer.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1100u);
+  EXPECT_EQ(monitor->InteractionCount(), 2);
   EXPECT_EQ(monitor->TotalPaintedArea(), 100u);
 
   monitor->StopMonitoring();

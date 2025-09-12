@@ -45,8 +45,12 @@ class CORE_EXPORT InteractionEffectsMonitor
   void Shutdown();
 
   uint64_t TotalPaintedArea() const { return total_painted_area_; }
+  uint32_t InteractionCount() const { return interaction_count_; }
+
+  void OnSoftNavigationContextCreated() { ++interaction_count_; }
 
   void OnContentfulPaint(SoftNavigationContext*, uint64_t new_painted_area);
+
   void Trace(Visitor*) const;
 
  private:
@@ -54,6 +58,7 @@ class CORE_EXPORT InteractionEffectsMonitor
   Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
   uint64_t total_painted_area_ = 0;
   uint64_t min_context_id_ = 0;
+  uint32_t interaction_count_ = 0;
 };
 
 }  // namespace blink
