@@ -41,6 +41,7 @@ using ColorMap = std::map<int, SkColor>;
 
 class GtkKeyBindingsHandler;
 class NativeThemeGtk;
+class OsSettingsProviderGtk;
 class SettingsProvider;
 
 // Interface to GTK desktop features.
@@ -67,7 +68,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // ui::LinuxUi:
   bool Initialize() override;
   void InitializeFontSettings() override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
@@ -155,6 +155,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
                               const ui::ColorProviderKey& key);
 
   std::unique_ptr<GtkUiPlatform> platform_;
+
+  // Instantiating this will make it the default. Must not be constructed until
+  // after GTK is loaded.
+  std::unique_ptr<OsSettingsProviderGtk> os_settings_provider_;
 
   raw_ptr<NativeThemeGtk> native_theme_;
 

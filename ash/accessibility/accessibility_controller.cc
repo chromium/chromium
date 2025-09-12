@@ -3276,14 +3276,9 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   const auto caret_blink_interval = base::Milliseconds(
       active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
   if (auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-      native_theme->GetCaretBlinkInterval() != caret_blink_interval) {
+      native_theme->caret_blink_interval() != caret_blink_interval) {
     native_theme->set_caret_blink_interval(caret_blink_interval);
     native_theme->NotifyOnNativeThemeUpdated();
-  }
-  if (auto* const native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-      native_theme_web->GetCaretBlinkInterval() != caret_blink_interval) {
-    native_theme_web->set_caret_blink_interval(caret_blink_interval);
-    native_theme_web->NotifyOnNativeThemeUpdated();
   }
 }
 

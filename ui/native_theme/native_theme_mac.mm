@@ -4,7 +4,6 @@
 
 #include "ui/native_theme/native_theme_mac.h"
 
-#import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <MediaAccessibility/MediaAccessibility.h>
@@ -23,7 +22,6 @@
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkTileMode.h"
-#include "ui/base/cocoa/defaults_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -113,7 +111,6 @@ bool NativeTheme::SystemDarkModeSupported() {
 }
 
 struct NativeThemeMac::ObjCMembers {
-  id __strong non_blinking_cursor_token;
   id __strong display_accessibility_notification_token;
   EffectiveAppearanceObserver* __strong appearance_observer;
 };
@@ -550,17 +547,6 @@ NativeThemeMac::NativeThemeMac() {
                     theme->set_inverted_colors(InvertedColors());
                     theme->NotifyOnNativeThemeUpdated();
                   }];
-  if (@available(macOS 15.0, *)) {
-    objc_members_->non_blinking_cursor_token =
-        [[NSNotificationCenter defaultCenter]
-            addObserverForName:
-                AXPrefersNonBlinkingTextInsertionIndicatorDidChangeNotification
-                        object:nil
-                         queue:nil
-                    usingBlock:^(NSNotification* notification) {
-                      theme->NotifyOnNativeThemeUpdated();
-                    }];
-  }
 
   if (static bool initialized = false; !initialized) {
     // Observe caption style changes. Technically these notify the web instance
@@ -579,33 +565,6 @@ NativeThemeMac::NativeThemeMac() {
 NativeThemeMac::~NativeThemeMac() {
   [NSNotificationCenter.defaultCenter
       removeObserver:objc_members_->display_accessibility_notification_token];
-  if (@available(macOS 15.0, *)) {
-    [NSNotificationCenter.defaultCenter
-        removeObserver:objc_members_->non_blinking_cursor_token];
-  }
-}
-
-bool NativeThemeMac::PrefersNonBlinkingCursor() const {
-  if (prefers_non_blinking_cursor_for_testing_) {
-    return true;
-  }
-  if (@available(macOS 15.0, *)) {
-    return AXPrefersNonBlinkingTextInsertionIndicator();
-  }
-  return false;
-}
-
-std::optional<base::TimeDelta> NativeThemeMac::GetPlatformCaretBlinkInterval()
-    const {
-  // MacOS 15 introduces a new setting that allows users to enable a
-  // non-blinking cursor. When this setting is enabled, we always show the
-  // cursor. In Blink/Views this is signaled by a blink period of 0.
-  if (PrefersNonBlinkingCursor()) {
-    return base::TimeDelta();
-  }
-  // If there's insertion point flash rate info in NSUserDefaults, use the
-  // blink period derived from that.
-  return ui::TextInsertionCaretBlinkPeriodFromDefaults();
 }
 
 void NativeThemeMac::PaintSelectedMenuItem(

@@ -161,6 +161,8 @@ component("qt") {
   sources = [
     "native_theme_qt.cc",
     "native_theme_qt.h",
+    "os_settings_provider_qt.cc",
+    "os_settings_provider_qt.h",
     "qt_ui.cc",
     "qt_ui.h",
   ]

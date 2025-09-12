@@ -9,6 +9,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -443,6 +444,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Whether OS-level dark mode is available in the current OS.
   static bool SystemDarkModeSupported();
 
+  // Registers this instance as an observer of `OsSettingsProvider` changes.
+  // This should not be called on an instance marked as the "associated web
+  // instance" of another theme, since in that case the other theme should
+  // notify about setting changes as necessary.
+  void BeginObservingOsSettingChanges();
+
   // Add or remove observers to be notified when the native theme changes.
   void AddObserver(NativeThemeObserver* observer);
   void RemoveObserver(NativeThemeObserver* observer);
@@ -521,6 +528,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     return scheme_variant_;
   }
 
+  base::TimeDelta caret_blink_interval() const { return caret_blink_interval_; }
+  void set_caret_blink_interval(base::TimeDelta caret_blink_interval) {
+    caret_blink_interval_ = caret_blink_interval;
+  }
+
   void set_should_use_system_accent_color(bool should_use_system_accent_color) {
     should_use_system_accent_color_ = should_use_system_accent_color;
   }
@@ -542,17 +554,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   static float AdjustBorderRadiusByZoom(Part part,
                                         float border_width,
                                         float zoom_level);
-
-  // Returns the rate at which the text caret should blink. If 0, the caret
-  // will not blink.
-  base::TimeDelta GetCaretBlinkInterval() const;
-
-  // Sets the rate at which the text caret should blink. Overrides any
-  // platform values.
-  void set_caret_blink_interval(
-      std::optional<base::TimeDelta> caret_blink_interval) {
-    caret_blink_interval_ = std::move(caret_blink_interval);
-  }
 
   // Whether high contrast is forced via command-line flag.
   static bool IsForcedHighContrast();
@@ -576,8 +577,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Calculates and returns the current user preferred contrast.
   virtual PreferredContrast CalculatePreferredContrast() const;
 
-  // Gets the platform caret blink interval if it exists.
-  virtual std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const;
+  // Called when toolkit settings change. Updates affected variables. If
+  // anything changes, notifies observers.
+  virtual void OnToolkitSettingsChanged();
 
   // Instructs this theme instance to mirror various appearance settings to
   // `associated_web_instance` when they change.
@@ -593,6 +595,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Updates web instance and notifies observers something has changed.
   void NotifyOnNativeThemeUpdatedImpl();
   void NotifyOnPreferredContrastUpdatedImpl();
+
+  // Updates variables affected by toolkit settings and returns whether anything
+  // changed as a result.
+  bool UpdateVariablesForToolkitSettings();
+
+  base::CallbackListSubscription os_settings_changed_subscription_;
 
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
@@ -616,7 +624,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   bool inverted_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
-  std::optional<base::TimeDelta> caret_blink_interval_;
+  base::TimeDelta caret_blink_interval_;
   bool use_overlay_scrollbars_ = false;
 
   raw_ptr<NativeTheme> associated_web_instance_ = nullptr;

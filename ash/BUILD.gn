@@ -4796,6 +4796,7 @@ test("ash_unittests") {
     "//ui/message_center:test_support",
     "//ui/message_center/public/cpp",
     "//ui/native_theme",
+    "//ui/native_theme:test_support",
     "//ui/ozone",
     "//ui/ozone/testhelpers:mock_gesture_properties_service",
     "//ui/platform_window/stub",

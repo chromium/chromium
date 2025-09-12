@@ -72,9 +72,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeWin>;
 
-  // NativeTheme:
-  std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
-
   NativeThemeWin();
   ~NativeThemeWin() override;
 

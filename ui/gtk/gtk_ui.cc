@@ -71,6 +71,7 @@
 #include "ui/gtk/input_method_context_impl_gtk.h"
 #include "ui/gtk/native_theme_gtk.h"
 #include "ui/gtk/nav_button_provider_gtk.h"
+#include "ui/gtk/os_settings_provider_gtk.h"
 #include "ui/gtk/printing/print_dialog_gtk.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
 #include "ui/gtk/select_file_dialog_linux_gtk.h"
@@ -340,6 +341,7 @@ bool GtkUi::Initialize() {
     return false;
   }
 
+  os_settings_provider_ = std::make_unique<OsSettingsProviderGtk>();
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&GtkUi::AddGtkNativeColorMixer,
                           base::Unretained(this)));
@@ -505,25 +507,6 @@ void GtkUi::GetInactiveSelectionBgColor(SkColor* color) const {
 
 void GtkUi::GetInactiveSelectionFgColor(SkColor* color) const {
   *color = inactive_selection_fg_color_;
-}
-
-base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
-  // From http://library.gnome.org/devel/gtk/unstable/GtkSettings.html, this is
-  // the default value for gtk-cursor-blink-time.
-  static const gint kGtkDefaultCursorBlinkTime = 1200;
-
-  // Dividing GTK's cursor blink cycle time (in milliseconds) by this value
-  // yields an appropriate value for
-  // blink::RendererPreferences::caret_blink_interval.
-  static const double kGtkCursorBlinkCycleFactor = 2000.0;
-
-  gint cursor_blink_time = kGtkDefaultCursorBlinkTime;
-  gboolean cursor_blink = TRUE;
-  g_object_get(gtk_settings_get_default(), "gtk-cursor-blink-time",
-               &cursor_blink_time, "gtk-cursor-blink", &cursor_blink, nullptr);
-  return cursor_blink
-             ? base::Seconds(cursor_blink_time / kGtkCursorBlinkCycleFactor)
-             : base::TimeDelta();
 }
 
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,

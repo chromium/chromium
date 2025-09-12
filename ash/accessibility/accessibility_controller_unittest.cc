@@ -58,6 +58,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 using message_center::MessageCenter;
 
@@ -1720,23 +1721,24 @@ TEST_F(AccessibilityControllerTest, VerifyFeatureData) {
 
 TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
   // The pref should contain the default value.
-  static constexpr auto kDefaultCaretBlinkInterval = base::Milliseconds(500);
-  EXPECT_EQ(prefs()->GetInteger(prefs::kAccessibilityCaretBlinkInterval),
-            kDefaultCaretBlinkInterval.InMilliseconds());
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kAccessibilityCaretBlinkInterval),
+      ui::OsSettingsProvider::kDefaultCaretBlinkInterval.InMilliseconds());
 
   // All NativeThemes should start with the default value.
   const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   const auto* const native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  EXPECT_EQ(kDefaultCaretBlinkInterval, native_theme->GetCaretBlinkInterval());
-  EXPECT_EQ(kDefaultCaretBlinkInterval,
-            native_theme_web->GetCaretBlinkInterval());
+  EXPECT_EQ(ui::OsSettingsProvider::kDefaultCaretBlinkInterval,
+            native_theme->caret_blink_interval());
+  EXPECT_EQ(ui::OsSettingsProvider::kDefaultCaretBlinkInterval,
+            native_theme_web->caret_blink_interval());
 
   // NativeThemes should be updated when the pref updates.
   static constexpr auto kNewInterval = base::Milliseconds(42);
   prefs()->SetInteger(prefs::kAccessibilityCaretBlinkInterval,
                       kNewInterval.InMilliseconds());
-  EXPECT_EQ(kNewInterval, native_theme->GetCaretBlinkInterval());
-  EXPECT_EQ(kNewInterval, native_theme_web->GetCaretBlinkInterval());
+  EXPECT_EQ(kNewInterval, native_theme->caret_blink_interval());
+  EXPECT_EQ(kNewInterval, native_theme_web->caret_blink_interval());
 }
 
 TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {

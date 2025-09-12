@@ -102,18 +102,14 @@ TEST(NativeThemeTest, TestColorProviderKeyForcedColors) {
   EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
 }
 
-TEST(NativeThemeTest, TestCaretBlinkInterval) {
-  TestNativeTheme theme;
+TEST(NativeThemeTest, CaretBlinkInterval) {
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  static constexpr auto kNewInterval = base::Milliseconds(42);
+  native_theme->set_caret_blink_interval(kNewInterval);
+  EXPECT_EQ(native_theme->caret_blink_interval(), kNewInterval);
 
-  EXPECT_EQ(base::Milliseconds(500), theme.GetCaretBlinkInterval());
-
-  base::TimeDelta new_interval = base::Milliseconds(42);
-  theme.set_caret_blink_interval(new_interval);
-  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
-
-  new_interval = base::Milliseconds(0);
-  theme.set_caret_blink_interval(new_interval);
-  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
+  native_theme->set_caret_blink_interval(base::TimeDelta());
+  EXPECT_EQ(native_theme->caret_blink_interval(), base::TimeDelta());
 }
 
 }  // namespace ui

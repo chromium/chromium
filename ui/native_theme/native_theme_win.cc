@@ -328,17 +328,6 @@ NativeThemeWin::NativeThemeWin() {
                                 color_scheme);
 }
 
-std::optional<base::TimeDelta> NativeThemeWin::GetPlatformCaretBlinkInterval()
-    const {
-  static const size_t system_value =
-      base::win::IsUser32AndGdi32Available() ? ::GetCaretBlinkTime() : 0;
-  if (system_value != 0) {
-    return (system_value == INFINITE) ? base::TimeDelta()
-                                      : base::Milliseconds(system_value);
-  }
-  return std::nullopt;
-}
-
 NativeThemeWin::~NativeThemeWin() {
   // TODO(crbug.com/40551168): Calling CloseHandles() here breaks
   // certain tests and the reliability bots.

@@ -88,11 +88,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   // scale factor.
   static gfx::Size GetThumbMinSize(bool vertical, float scale);
 
-  // This is used in tests to simulate enabling a non-blinking cursor.
-  void SetPrefersNonBlinkingCursorForTesting(bool enabled) {
-    prefers_non_blinking_cursor_for_testing_ = enabled;
-  }
-
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMac>;
@@ -100,16 +95,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   NativeThemeMac();
   ~NativeThemeMac() override;
 
-  // NativeTheme:
-  std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
-
  private:
   // Because this header is #included from C++ source, we can't use Obj-C here.
   // Instead the Obj-C members are defined entirely in the .mm.
   struct ObjCMembers;
-
-  // Returns true if the user prefers a non blinking cursor.
-  bool PrefersNonBlinkingCursor() const;
 
   // Paint the selected menu item background, and a border for emphasis when in
   // high contrast.
@@ -158,8 +147,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   int GetScrollbarThumbInset(bool is_overlay, float scale_from_dip) const {
     return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
-
-  bool prefers_non_blinking_cursor_for_testing_ = false;
 
   std::unique_ptr<ObjCMembers> objc_members_;
 };

@@ -114,8 +114,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #endif
   prefs->focus_ring_color = BUILDFLAG(IS_MAC) ? SkColorSetRGB(0x00, 0x5F, 0xCC)
                                               : SkColorSetRGB(0x10, 0x10, 0x10);
-  prefs->caret_blink_interval =
-      ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval();
 #if defined(USE_AURA)
 #if BUILDFLAG(IS_CHROMEOS)
   // This color is 0x544d90fe modulated with 0xffffff.
@@ -139,12 +137,10 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
           &prefs->inactive_selection_fg_color);
     }
   }
-
-  if (auto* linux_ui = ui::LinuxUi::instance()) {
-    prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
-  }
 #endif
 #endif
+  prefs->caret_blink_interval =
+      ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval();
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
       TrackingProtectionSettingsFactory::GetForProfile(profile)

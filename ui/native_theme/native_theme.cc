@@ -35,6 +35,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_observer.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/native_theme/native_theme_aura.h"
@@ -51,11 +52,6 @@
 #endif
 
 namespace ui {
-
-namespace {
-static constexpr base::TimeDelta kDefaultCaretBlinkInterval =
-    base::Milliseconds(500);
-}
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
 NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
@@ -102,6 +98,11 @@ using WebUiTheme = NativeThemeMobile;
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeUiTheme> s_native_theme;
+  static bool initialized = false;
+  if (!initialized) {
+    s_native_theme->BeginObservingOsSettingChanges();
+    initialized = true;
+  }
   return s_native_theme.get();
 }
 
@@ -182,6 +183,13 @@ float NativeTheme::GetBorderRadiusForPart(Part part,
   return 0;
 }
 
+void NativeTheme::BeginObservingOsSettingChanges() {
+  os_settings_changed_subscription_ =
+      OsSettingsProvider::RegisterOsSettingsChangedCallback(base::BindRepeating(
+          &NativeTheme::OnToolkitSettingsChanged, base::Unretained(this)));
+  UpdateVariablesForToolkitSettings();
+}
+
 void NativeTheme::AddObserver(NativeThemeObserver* observer) {
   native_theme_observers_.AddObserver(observer);
 }
@@ -243,18 +251,6 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
              : border_radius;
 }
 
-base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {
-  if (caret_blink_interval_.has_value()) {
-    return caret_blink_interval_.value();
-  }
-  std::optional<base::TimeDelta> platform_interval =
-      GetPlatformCaretBlinkInterval();
-  if (platform_interval.has_value()) {
-    return platform_interval.value();
-  }
-  return kDefaultCaretBlinkInterval;
-}
-
 NativeTheme::NativeTheme(ui::SystemTheme system_theme)
     : system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
@@ -304,11 +300,6 @@ void NativeTheme::PaintMenuItemBackground(
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 
-std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()
-    const {
-  return std::nullopt;
-}
-
 void NativeTheme::SetPreferredContrast(
     NativeTheme::PreferredContrast preferred_contrast) {
   if (preferred_contrast_ == preferred_contrast) {
@@ -355,6 +346,12 @@ bool NativeTheme::HasDifferentSystemColors(
 void NativeTheme::set_system_colors(
     const std::map<NativeTheme::SystemThemeColor, SkColor>& colors) {
   system_colors_ = colors;
+}
+
+void NativeTheme::OnToolkitSettingsChanged() {
+  if (UpdateVariablesForToolkitSettings()) {
+    NotifyOnNativeThemeUpdated();
+  }
 }
 
 void NativeTheme::SetAssociatedWebInstance(
@@ -412,6 +409,11 @@ bool NativeTheme::UpdateWebInstance() const {
   // side), making callers who want to toggle overlay scrollbars on/off globally
   // simpler and safer.
 
+  // TODO(pkasting): The code duplication between this function and
+  // `UpdateVariablesForToolkitSettings()` is error-prone; e.g. it's easy to
+  // forget to update the web instance properly when adding a new member.
+  // Refactor to a settings struct or similar.
+
   bool updated_web_instance = false;
   if (associated_web_instance_->system_colors() != system_colors()) {
     associated_web_instance_->system_colors_ = system_colors();
@@ -452,9 +454,9 @@ bool NativeTheme::UpdateWebInstance() const {
     associated_web_instance_->inverted_colors_ = inverted_colors();
     updated_web_instance = true;
   }
-  if (associated_web_instance_->GetCaretBlinkInterval() !=
-      GetCaretBlinkInterval()) {
-    associated_web_instance_->caret_blink_interval_ = GetCaretBlinkInterval();
+  if (associated_web_instance_->caret_blink_interval() !=
+      caret_blink_interval()) {
+    associated_web_instance_->caret_blink_interval_ = caret_blink_interval();
     updated_web_instance = true;
   }
   return updated_web_instance;
@@ -490,6 +492,35 @@ void NativeTheme::NotifyOnPreferredContrastUpdatedImpl() {
   if (updated_web_instance) {
     associated_web_instance_->NotifyOnPreferredContrastUpdatedImpl();
   }
+}
+
+bool NativeTheme::UpdateVariablesForToolkitSettings() {
+  // This should not be called except in an instance that is monitoring OS
+  // setting changes. Otherwise, either:
+  //   * This is the associated web instance of another instance, and that
+  //     instance will update our members via `UpdateWebInstance()`, so updating
+  //     them here is both wasteful and potentially incorrect
+  //   * Or, whoever created this instance didn't call
+  //     `BeginObservingOsSettingChanges()` and should have
+  // Getting this right is important, because calling
+  // `OsSettingsProvider::Get()` in the renderer may not return the expected
+  // instance (see comments on that function), so we shouldn't be introducing
+  // new calls to it carelessly.
+  CHECK(os_settings_changed_subscription_);
+
+  // Calculate updated values.
+  const auto& os_settings_provider = OsSettingsProvider::Get();
+  const auto new_caret_blink_interval =
+      os_settings_provider.CaretBlinkInterval();
+
+  // Set updated values and see if anything changed.
+  bool updated = false;
+  if (caret_blink_interval() != new_caret_blink_interval) {
+    caret_blink_interval_ = new_caret_blink_interval;
+    updated = true;
+  }
+
+  return updated;
 }
 
 int NativeTheme::GetPaintedScrollbarTrackInset() const {

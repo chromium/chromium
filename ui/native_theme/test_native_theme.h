@@ -5,11 +5,12 @@
 #ifndef UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 #define UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 
+#include "base/component_export.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
-class TestNativeTheme : public NativeTheme {
+class COMPONENT_EXPORT(NATIVE_THEME) TestNativeTheme : public NativeTheme {
  public:
   TestNativeTheme();
 

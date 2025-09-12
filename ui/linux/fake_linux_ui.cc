@@ -4,7 +4,6 @@
 
 #include "ui/linux/fake_linux_ui.h"
 
-#include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/gfx/color_palette.h"
@@ -72,10 +71,6 @@ void FakeLinuxUi::GetInactiveSelectionBgColor(SkColor* color) const {
 
 void FakeLinuxUi::GetInactiveSelectionFgColor(SkColor* color) const {
   *color = gfx::kPlaceholderColor;
-}
-
-base::TimeDelta FakeLinuxUi::GetCursorBlinkInterval() const {
-  return base::TimeDelta();
 }
 
 gfx::Image FakeLinuxUi::GetIconForContentType(const std::string& content_type,

@@ -1429,7 +1429,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   slow_web_preference_cache_observation_.Observe(
       SlowWebPreferenceCache::GetInstance());
   renderer_preferences_.caret_blink_interval =
-      native_theme->GetCaretBlinkInterval();
+      native_theme->caret_blink_interval();
 #if BUILDFLAG(IS_CHROMEOS)
   renderer_preferences_.use_overlay_scrollbar =
       native_theme->use_overlay_scrollbar();
@@ -11644,7 +11644,7 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
   HandleColorRelatedStateChanges();
 
-  const auto caret_blink_interval = observed_theme->GetCaretBlinkInterval();
+  const auto caret_blink_interval = observed_theme->caret_blink_interval();
 #if BUILDFLAG(IS_CHROMEOS)
   const auto use_overlay_scrollbar = observed_theme->use_overlay_scrollbar();
 #endif

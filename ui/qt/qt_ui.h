@@ -24,6 +24,7 @@
 namespace qt {
 
 class NativeThemeQt;
+class OsSettingsProviderQt;
 
 // Interface to QT desktop features.
 class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
@@ -38,7 +39,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   // ui::LinuxUi:
   bool Initialize() override;
   void InitializeFontSettings() override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
@@ -111,6 +111,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   std::optional<gfx::FontRenderParams> font_params_;
   std::unique_ptr<QtInterface> shim_;
 
+  std::unique_ptr<OsSettingsProviderQt> os_settings_provider_;
   std::unique_ptr<NativeThemeQt> native_theme_;
 
   std::optional<SkColor> accent_color_;

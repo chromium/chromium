@@ -23,7 +23,6 @@ class FallbackLinuxUi : public LinuxUiAndTheme {
   // ui::LinuxUi:
   bool Initialize() override;
   void InitializeFontSettings() override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;

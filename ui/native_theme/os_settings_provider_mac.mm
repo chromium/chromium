@@ -1,0 +1,60 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/native_theme/os_settings_provider.h"
+
+#import <Accessibility/Accessibility.h>
+#import <Cocoa/Cocoa.h>
+
+#include <optional>
+
+#include "base/no_destructor.h"
+#include "ui/base/cocoa/defaults_utils.h"
+#include "ui/native_theme/os_settings_provider_mac.h"
+
+namespace ui {
+
+struct OsSettingsProviderMac::ObjCMembers {
+  id __strong non_blinking_cursor_token;
+};
+
+OsSettingsProviderMac::OsSettingsProviderMac()
+    : OsSettingsProvider(PriorityLevel::kProduction) {
+  objc_members_ = std::make_unique<ObjCMembers>();
+
+  __block auto provider = this;
+  if (@available(macOS 15.0, *)) {
+    objc_members_->non_blinking_cursor_token =
+        [[NSNotificationCenter defaultCenter]
+            addObserverForName:
+                AXPrefersNonBlinkingTextInsertionIndicatorDidChangeNotification
+                        object:nil
+                         queue:nil
+                    usingBlock:^(NSNotification* notification) {
+                      provider->NotifyOnSettingsChanged();
+                    }];
+  }
+}
+
+OsSettingsProviderMac::~OsSettingsProviderMac() {
+  if (@available(macOS 15.0, *)) {
+    [NSNotificationCenter.defaultCenter
+        removeObserver:objc_members_->non_blinking_cursor_token];
+  }
+}
+
+base::TimeDelta OsSettingsProviderMac::CaretBlinkInterval() const {
+  if (@available(macOS 15.0, *)) {
+    if (AXPrefersNonBlinkingTextInsertionIndicator()) {
+      return base::TimeDelta();
+    }
+  }
+
+  // If there's insertion point flash rate info in NSUserDefaults, use the
+  // blink period derived from that.
+  return ui::TextInsertionCaretBlinkPeriodFromDefaults().value_or(
+      OsSettingsProvider::CaretBlinkInterval());
+}
+
+}  // namespace ui

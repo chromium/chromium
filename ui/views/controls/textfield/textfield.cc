@@ -3089,7 +3089,7 @@ int Textfield::CharsToDips(int width_in_chars) const {
 
 bool Textfield::ShouldBlinkCursor() const {
   return ShouldShowCursor() && !ui::NativeTheme::GetInstanceForNativeUi()
-                                    ->GetCaretBlinkInterval()
+                                    ->caret_blink_interval()
                                     .is_zero();
 }
 
@@ -3097,7 +3097,7 @@ void Textfield::StartBlinkingCursor() {
   DCHECK(ShouldBlinkCursor());
   cursor_blink_timer_.Start(
       FROM_HERE,
-      ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval(), this,
+      ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval(), this,
       &Textfield::OnCursorBlinkTimerFired);
 }
 

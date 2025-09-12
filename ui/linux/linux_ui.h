@@ -31,10 +31,6 @@ namespace aura {
 class Window;
 }
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gfx {
 struct FontRenderParams;
 class Image;
@@ -137,8 +133,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // explicitly since the first call to get the font settings will implicitly
   // initialize the default front render parameters.
   virtual void InitializeFontSettings() = 0;
-
-  virtual base::TimeDelta GetCursorBlinkInterval() const = 0;
 
   // Returns the icon for a given content type from the icon theme.
   // TODO(davidben): Add an observer for the theme changing, so we can drop the

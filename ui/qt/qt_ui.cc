@@ -24,7 +24,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -49,6 +48,7 @@
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/qt/native_theme_qt.h"
+#include "ui/qt/os_settings_provider_qt.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -197,12 +197,12 @@ bool QtUi::Initialize() {
     return false;
   }
   void* libqt_shim = nullptr;
-  auto load_libqt_shim = [&](int qt_version) -> bool {
+  auto load_libqt_shim = [&](int qt_version) {
     auto file_name = base::StringPrintf("libqt%d_shim.so", qt_version);
     if ((libqt_shim = LoadLibrary(path.Append(file_name)))) {
       qt_version_ = qt_version;
     }
-    return libqt_shim;
+    return !!libqt_shim;
   };
   PreferQt6() ? load_libqt_shim(6) || load_libqt_shim(5)
               : load_libqt_shim(5) || load_libqt_shim(6);
@@ -215,7 +215,9 @@ bool QtUi::Initialize() {
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
 
   // Initialize native theme.
+  os_settings_provider_ = std::make_unique<OsSettingsProviderQt>(shim_.get());
   native_theme_ = std::make_unique<NativeThemeQt>(shim_.get());
+  native_theme_->BeginObservingOsSettingChanges();
 
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
@@ -308,11 +310,6 @@ void QtUi::GetInactiveSelectionBgColor(SkColor* color) const {
 DISABLE_CFI_VCALL
 void QtUi::GetInactiveSelectionFgColor(SkColor* color) const {
   *color = shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
-}
-
-DISABLE_CFI_VCALL
-base::TimeDelta QtUi::GetCursorBlinkInterval() const {
-  return base::Milliseconds(shim_->GetCursorBlinkIntervalMs());
 }
 
 DISABLE_CFI_VCALL
