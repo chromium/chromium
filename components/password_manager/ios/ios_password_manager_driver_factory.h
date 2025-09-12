@@ -56,7 +56,8 @@ class IOSPasswordManagerDriverFactory
       password_manager::PasswordManagerInterface* password_manager);
 
   id<PasswordManagerDriverBridge> bridge_;
-  raw_ptr<password_manager::PasswordManagerInterface> password_manager_;
+  raw_ptr<password_manager::PasswordManagerInterface, DanglingUntriaged>
+      password_manager_;
   int next_free_id = 0;
 };
 

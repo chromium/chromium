@@ -168,7 +168,8 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   BOOL _cleanupScheduled;
 
   // Password Manager tied to the same web state as this helper.
-  raw_ptr<password_manager::PasswordManagerInterface> _passwordManager;
+  raw_ptr<password_manager::PasswordManagerInterface, DanglingUntriaged>
+      _passwordManager;
 }
 
 #pragma mark - Initialization

@@ -94,7 +94,7 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> web_frames_manager_;
   web::FakeWebState web_state_;
   raw_ptr<IOSPasswordManagerDriver> driver_;
   raw_ptr<IOSPasswordManagerDriver> driver2_;

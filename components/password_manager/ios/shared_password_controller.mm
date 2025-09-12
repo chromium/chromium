@@ -170,11 +170,11 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
 @end
 
 @implementation SharedPasswordController {
-  raw_ptr<PasswordManagerInterface> _passwordManager;
+  raw_ptr<PasswordManagerInterface, DanglingUntriaged> _passwordManager;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  raw_ptr<web::WebState> _webState;
+  raw_ptr<web::WebState, DanglingUntriaged> _webState;
 
   PasswordControllerDriverHelper* _driverHelper;
 
@@ -211,7 +211,7 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
   FieldRendererId _lastFocusedFieldIdentifier;
 
   // Last focused frame.
-  raw_ptr<web::WebFrame> _lastFocusedFrame;
+  raw_ptr<web::WebFrame, DanglingUntriaged> _lastFocusedFrame;
 
   // A refcounted object is stored here, because otherwise the driver can
   // be deleted with the frame, and the driver needs to be alive after the
