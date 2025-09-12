@@ -1888,6 +1888,9 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
           CacheControlNoStoreDeviceBoundSessionTerminated;
     case Reason::kSharedWorkerMessage:
       return Page::BackForwardCacheNotRestoredReasonEnum::SharedWorkerMessage;
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          SharedWorkerWithNoActiveClient;
   }
 }
 
@@ -2182,6 +2185,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
     case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
     case Reason::kSharedWorkerMessage:
+    case Reason::kSharedWorkerWithNoActiveClient:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:

@@ -706,6 +706,7 @@ message BackForwardCacheCanStoreDocumentResult {
     CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE = 66;
     CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE = 67;
     SHARED_WORKER_MESSAGE = 68;
+    SHARED_WORKER_WITH_NO_ACTIVE_CLIENT = 69;
   }
 
   optional BackForwardCacheNotRestoredReason

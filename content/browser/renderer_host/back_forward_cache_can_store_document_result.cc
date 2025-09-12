@@ -203,6 +203,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE;
     case Reason::kSharedWorkerMessage:
       return ProtoEnum::SHARED_WORKER_MESSAGE;
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return ProtoEnum::SHARED_WORKER_WITH_NO_ACTIVE_CLIENT;
   }
   NOTREACHED();
 }
@@ -462,6 +464,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
              "Cache-Control: no-store";
     case Reason::kSharedWorkerMessage:
       return "Pages with shared worker in bfcache received a message";
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return "SharedWorker has no active clients";
   }
 }
 
@@ -557,6 +561,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
                  : "cookie-removed";
     case Reason::kSharedWorkerMessage:
       return "sharedworker-message";
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return "sharedworker-with-no-active-client";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);

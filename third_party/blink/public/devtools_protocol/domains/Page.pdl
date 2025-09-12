@@ -1577,6 +1577,7 @@ domain Page
       WebXR
       SharedWorker
       SharedWorkerMessage
+      SharedWorkerWithNoActiveClient
       WebLocks
       WebHID
       WebShare
