@@ -301,10 +301,9 @@ bool IdentityManager::HasAccountWithRefreshTokenInPersistentErrorState(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-std::vector<uint8_t>
-IdentityManager::GetWrappedBindingKeyOfRefreshTokenForAccount(
+bool IdentityManager::HasAccountWithBoundRefreshToken(
     const CoreAccountId& account_id) const {
-  return token_service_->GetWrappedBindingKey(account_id);
+  return !token_service_->GetWrappedBindingKey(account_id).empty();
 }
 
 bool IdentityManager::AllBoundTokensShareSameBindingKey() const {

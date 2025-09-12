@@ -480,10 +480,8 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
       "refresh_token", "access_token", 10, /*is_child_account=*/false,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   // Check that the token has been inserted in the token service.
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                account_id),
-            kWrappedKey);
+  EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(), kWrappedKey);
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
   histogram_tester_.ExpectUniqueSample(
@@ -515,9 +513,7 @@ TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
   // Check that the token has been inserted in the token service and it is
   // unbound.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_TRUE(identity_manager()
-                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
-                  .empty());
+  EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
   histogram_tester_.ExpectUniqueSample(
@@ -548,9 +544,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
   // Check that the token has been inserted in the token service and it is
   // unbound.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_TRUE(identity_manager()
-                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
-                  .empty());
+  EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
   histogram_tester_.ExpectUniqueSample(
@@ -593,9 +587,7 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_TRUE(identity_manager()
-                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
-                  .empty());
+  EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
   histogram_tester_.ExpectUniqueSample(
@@ -638,10 +630,8 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
       "refresh_token", "access_token", 10, /*is_child_account=*/false,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   // Check that the token has been inserted in the token service.
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                account_id),
-            kWrappedKey);
+  EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(), kWrappedKey);
 }
 
 TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
@@ -721,19 +711,14 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
       "refresh_token", "access_token", 10, /*is_child_account=*/false,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+  EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(
       account_id(dice_params_1)));
-  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                account_id(dice_params_1)),
-            kWrappedKey);
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
       "refresh_token", "access_token", 10, /*is_child_account=*/false,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+  EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(
       account_id(dice_params_2)));
-  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                account_id(dice_params_2)),
-            kWrappedKey);
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(), kWrappedKey);
   histogram_tester_.ExpectUniqueSample(
       kTokenBindingOutcomeHistogram,
       DiceResponseHandler::TokenBindingOutcome::kBound,
@@ -817,10 +802,8 @@ TEST_F(DiceResponseHandlerTest,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       account_id(dice_params_1)));
-  EXPECT_TRUE(identity_manager()
-                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                      account_id(dice_params_1))
-                  .empty());
+  EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(
+      account_id(dice_params_1)));
 
   // Next request should create a new RegistrationTokenHelper with a new binding
   // key as none of the existing tokens are bound.
@@ -862,9 +845,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_TRUE(identity_manager()
-                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
-                  .empty());
+  EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
   histogram_tester_.ExpectUniqueSample(

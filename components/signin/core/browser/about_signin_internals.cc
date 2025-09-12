@@ -830,11 +830,8 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       if (switches::IsChromeRefreshTokenBindingEnabled(
               signin_client->GetPrefs())) {
-        entry.Set("isBound",
-                  !identity_manager
-                       ->GetWrappedBindingKeyOfRefreshTokenForAccount(
-                           account_info.account_id)
-                       .empty());
+        entry.Set("isBound", identity_manager->HasAccountWithBoundRefreshToken(
+                                 account_info.account_id));
       }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       account_info_section.Append(std::move(entry));

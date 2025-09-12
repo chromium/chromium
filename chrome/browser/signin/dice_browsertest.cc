@@ -834,12 +834,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
 
   // Check that the bound token was requested and added to the token service.
   SendRefreshTokenResponse();
-  EXPECT_TRUE(
-      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
-  EXPECT_FALSE(
-      GetIdentityManager()
-          ->GetWrappedBindingKeyOfRefreshTokenForAccount(GetMainAccountID())
-          .empty());
+  EXPECT_TRUE(GetIdentityManager()->HasAccountWithBoundRefreshToken(
+      GetMainAccountID()));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
