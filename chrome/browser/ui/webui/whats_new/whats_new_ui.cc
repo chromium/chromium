@@ -53,9 +53,9 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
       enable_staging
-          ? "child-src chrome://webui-test https://www.google.com/ "
+          ? "frame-src chrome://webui-test https://www.google.com/ "
             "https://chrome-staging.corp.google.com/;"
-          : "child-src chrome://webui-test https://www.google.com/;");
+          : "frame-src chrome://webui-test https://www.google.com/;");
 }
 
 }  // namespace
