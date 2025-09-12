@@ -105,6 +105,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(base::StringPairs* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
+  void OnBrowserIdle() override;
 
   // Called by SqlEntryImpl when it's being closed and is not doomed.
   // Removes the entry from `active_entries_`.

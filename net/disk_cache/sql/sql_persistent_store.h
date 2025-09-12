@@ -311,6 +311,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Asynchronously retrieves the total size of all entries.
   virtual void GetSizeOfAllEntries(Int64Callback callback) const = 0;
 
+  // If the browser is idle and the number of pages recorded in the WAL exceeds
+  // kSqlDiskCacheIdleCheckpointThreshold, a checkpoint is executed.
+  virtual void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) = 0;
+
   // Enables a strict corruption checking mode for testing purposes.
   virtual void EnableStrictCorruptionCheckForTesting() = 0;
 

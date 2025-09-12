@@ -131,6 +131,18 @@ chromium-metrics-reviews@google.com.
                and otherwise the initial referrer URL)."/>
 </variants>
 
+<variants name="SqlPersistentStoreCheckpointType">
+  <variant name="ForceCheckpoint"
+      summary="A checkpoint was executed when a commit to the DB occurred
+               while the browser was not idle."/>
+  <variant name="IdleCheckpoint"
+      summary="A checkpoint was executed when a commit to the DB occurred
+               while the browser was idle."/>
+  <variant name="IdleEventCheckpoint"
+      summary="A checkpoint was executed when the browser transitioned to an
+               idle state."/>
+</variants>
+
 <variants name="SqlPersistentStoreMethodName">
   <variant name="CalculateSizeOfEntriesBetween"/>
   <variant name="CreateEntry"/>
@@ -7683,6 +7695,39 @@ chromium-metrics-reviews@google.com.
     Records the total size of entries in the SQL-based disk cache. This is
     recorded when the backend is initialized.
   </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{CheckpointType}.{ResultType}"
+    units="pages" expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the number of pages in the WAL file when the SQL-based disk cache
+    checkpoint is performed. This metric is recorded immediately after the
+    checkpoint succeeded or failed. It helps diagnose performance regressions.
+  </summary>
+  <token key="CheckpointType" variants="SqlPersistentStoreCheckpointType"/>
+  <token key="ResultType">
+    <variant name="FailurePages"/>
+    <variant name="SuccessPages"/>
+  </token>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{CheckpointType}.{TimeType}"
+    units="microseconds" expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time taken to run the checkpoint of the SQL-based disk cache
+    backend. This metric is recorded immediately after the checkpoint succeeded
+    or failed. It helps diagnose performance regressions. The histogram is not
+    reported on Windows machines without high resolution clocks.
+  </summary>
+  <token key="CheckpointType" variants="SqlPersistentStoreCheckpointType"/>
+  <token key="TimeType">
+    <variant name="FailureTime"/>
+    <variant name="SuccessTime"/>
+  </token>
 </histogram>
 
 <histogram name="Net.SqlDiskCache.Backend.{MethodName}.Result"

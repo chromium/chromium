@@ -23,6 +23,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
@@ -241,6 +243,12 @@ void RecordTimeAndErrorResultHistogram(std::string_view method_name,
   return meta.SetValue(key, value);
 }
 
+bool IsBrowserIdle() {
+  return performance_scenarios::CurrentScenariosMatch(
+      performance_scenarios::ScenarioScope::kGlobal,
+      performance_scenarios::kDefaultIdleScenarios);
+}
+
 // The `Backend` class encapsulates all direct interaction with the SQLite
 // database. It is designed to be owned by a `base::SequenceBound` and run on a
 // dedicated background sequence to avoid blocking the network IO thread.
@@ -265,7 +273,13 @@ class Backend {
                 .set_exclusive_database_file_lock(true)
 #endif  // IS_WIN
                 .set_preload(true)
-                .set_wal_mode(true),
+                .set_wal_mode(true)
+                .set_wal_commit_callback(base::BindRepeating(
+                    &Backend::OnCommitCallback,
+                    // This callback is only called while the `db_` instance
+                    // is alive, and never during destructor, so it's safe
+                    // to use base::Unretained.
+                    base::Unretained(this))),
             // Tag for metrics collection.
             sql::Database::Tag("HttpCacheDiskCache")) {
   }
@@ -335,6 +349,7 @@ class Backend {
       int64_t res_id_cursor);
   ErrorAndEvictionRequested RunEviction(
       base::flat_set<CacheEntryKey> excluded_keys);
+  bool MaybeRunCheckpoint();
 
   void EnableStrictCorruptionCheckForTesting() {
     strict_corruption_check_enabled_ = true;
@@ -481,6 +496,7 @@ class Backend {
   void MaybeCrashIfCorrupted(bool corruption_detected) {
     CHECK(!(corruption_detected && strict_corruption_check_enabled_));
   }
+  void OnCommitCallback(int pages);
 
   const base::FilePath path_;
   const int64_t max_bytes_;
@@ -491,6 +507,9 @@ class Backend {
   std::optional<Error> db_init_status_;
   StoreStatus store_status_;
   bool strict_corruption_check_enabled_ = false;
+  // The number of pages in the write-ahead log file. This is updated by
+  // `OnCommitCallback` and reset to 0 after a checkpoint.
+  int wal_pages_ = 0;
 };
 
 InitResultOrError Backend::Initialize() {
@@ -2253,6 +2272,57 @@ int64_t Backend::CalculateTotalSize() {
   return result;
 }
 
+bool Backend::MaybeRunCheckpoint() {
+  TRACE_EVENT("disk_cache", "SqlBackend.MaybeRunCheckpoint");
+  if (!IsBrowserIdle()) {
+    // Between the time when idle was detected in the browser process and the
+    // time when this backend was notified, the browser became non-idle.
+    return false;
+  }
+  if (wal_pages_ < net::features::kSqlDiskCacheIdleCheckpointThreshold.Get()) {
+    return false;
+  }
+  TRACE_EVENT("disk_cache", "SqlBackend.CheckpointDatabase", "pages",
+              wal_pages_);
+  base::ElapsedTimer timer;
+  bool checkpoint_result = db_.CheckpointDatabase();
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kHistogramPrefix, "IdleEventCheckpoint.",
+                    checkpoint_result ? "Success" : "Failure", "Time"}),
+      timer.Elapsed());
+  base::UmaHistogramCounts100000(
+      base::StrCat({kHistogramPrefix, "IdleEventCheckpoint.",
+                    checkpoint_result ? "Success" : "Failure", "Pages"}),
+      wal_pages_);
+  wal_pages_ = 0;
+  return checkpoint_result;
+}
+
+void Backend::OnCommitCallback(int pages) {
+  TRACE_EVENT("disk_cache", "SqlBackend.OnCommitCallback");
+  const bool is_idle = IsBrowserIdle();
+  if (pages >= net::features::kSqlDiskCacheForceCheckpointThreshold.Get() ||
+      (pages >= net::features::kSqlDiskCacheIdleCheckpointThreshold.Get() &&
+       is_idle)) {
+    TRACE_EVENT("disk_cache", "SqlBackend.CheckpointDatabase", "pages", pages);
+    base::ElapsedTimer timer;
+    bool checkpoint_result = db_.CheckpointDatabase();
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kHistogramPrefix, is_idle ? "Idle" : "Force",
+                      "Checkpoint.", checkpoint_result ? "Success" : "Failure",
+                      "Time"}),
+        timer.Elapsed());
+    base::UmaHistogramCounts100000(
+        base::StrCat({kHistogramPrefix, is_idle ? "Idle" : "Force",
+                      "Checkpoint.", checkpoint_result ? "Success" : "Failure",
+                      "Pages"}),
+        pages);
+    wal_pages_ = 0;
+    return;
+  }
+  wal_pages_ = pages;
+}
+
 // `SqlPersistentStoreImpl` is the concrete implementation of the
 // `SqlPersistentStore` interface. It serves as the bridge between the caller
 // (on the main sequence = network IO thread) and the `Backend` (on the
@@ -2434,6 +2504,9 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void GetSizeOfAllEntries(Int64Callback callback) const override {
     backend_.AsyncCall(&Backend::GetSizeOfAllEntries).Then(std::move(callback));
+  }
+  void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) override {
+    backend_.AsyncCall(&Backend::MaybeRunCheckpoint).Then(std::move(callback));
   }
 
   void EnableStrictCorruptionCheckForTesting() override {

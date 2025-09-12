@@ -1135,6 +1135,11 @@ interface NetworkContext {
       mojo_base.mojom.Time start_time, mojo_base.mojom.Time end_time)
       => (bool is_upper_bound, int64 size_or_error);
 
+  // Notifies the network context that the browser is idle. This can be used
+  // by underlying services to perform deferred tasks, such as checkpointing
+  // the disk cache's database.
+  NotifyBrowserIdle();
+
   // Notifies the HttpCache of a renderer-level cache hit with `url`
   // and `http_method`, with the network isolation key `key` and
   // `include_credentials` used when calculating the corresponding cache

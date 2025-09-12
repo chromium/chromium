@@ -1826,7 +1826,10 @@ component("net") {
       "disk_cache/sql/sql_persistent_store.h",
       "disk_cache/sql/sql_persistent_store_queries.h",
     ]
-    deps += [ "//sql" ]
+    deps += [
+      "//components/performance_manager/scenario_api",
+      "//sql",
+    ]
   }
 }
 
@@ -3499,6 +3502,8 @@ target(_test_target_type, "net_unittests") {
       "disk_cache/sql/sql_backend_impl_unittest.cc",
       "disk_cache/sql/sql_persistent_store_unittest.cc",
     ]
+
+    deps += [ "//components/performance_manager/scenario_api:test_support" ]
 
     # Platforms where sqlite_dev_shell is defined.
     if (is_win || is_mac || is_linux || is_chromeos) {
