@@ -984,6 +984,8 @@ static_library("ui") {
 
     if (enable_extensions_core) {
       sources += [
+        "android/extensions/extension_action_context_menu_bridge.cc",
+        "android/extensions/extension_action_context_menu_bridge.h",
         "android/extensions/extension_action_popup_contents.cc",
         "android/extensions/extension_action_popup_contents.h",
         "android/extensions/extension_actions_bridge.cc",

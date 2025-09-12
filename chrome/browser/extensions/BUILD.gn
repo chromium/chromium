@@ -1780,3 +1780,9 @@ source_set("chrome_extensions_browser_client") {
     ]
   }
 }
+
+if (is_android) {
+  java_cpp_enum("extension_context_menu_model_enums") {
+    sources = [ "extension_context_menu_model.h" ]
+  }
+}

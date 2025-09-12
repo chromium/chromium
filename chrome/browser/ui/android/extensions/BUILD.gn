@@ -37,6 +37,7 @@ android_library("java") {
     ]
     sources += [
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionContextMenuBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackendImpl.java",
@@ -44,6 +45,7 @@ android_library("java") {
     ]
     srcjar_deps += [
       ":jni_headers",
+      "//chrome/browser/extensions:extension_context_menu_model_enums",
       "//extensions/browser:extension_action_enums",
     ]
     resources_package = "org.chromium.chrome.browser.ui.extensions"
@@ -54,6 +56,7 @@ if (enable_extensions_core) {
   generate_jni("jni_headers") {
     sources = [
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionContextMenuBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
@@ -81,6 +84,7 @@ android_library("test_support_java") {
     "//base:base_java",
     "//chrome/browser/profiles/android:java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   if (enable_extensions_core) {
