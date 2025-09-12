@@ -164,16 +164,18 @@ SiteInfo SiteInfo::CreateForErrorPage(
   if (cross_origin_isolation_key.has_value()) {
     agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
         url::Origin::Create(GetErrorPageSiteAndLockURL()),
-        cross_origin_isolation_key.value());
+        cross_origin_isolation_key.value(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   } else {
-    agent_cluster_key =
-        AgentClusterKey::CreateSiteKeyed(GetErrorPageSiteAndLockURL());
+    agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
+        GetErrorPageSiteAndLockURL(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
   return SiteInfo(
       agent_cluster_key, GetErrorPageSiteAndLockURL() /* site_url */,
-      AgentClusterKey::OACStatus::kSiteKeyedByDefault, false /* is_sandboxed */,
-      UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
-      web_exposed_isolation_info, web_exposed_isolation_level, is_guest,
+      false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+      storage_partition_config, web_exposed_isolation_info,
+      web_exposed_isolation_level, is_guest,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* are_v8_optimizations_disabled */,
       false /* is_pdf */, is_fenced);
@@ -203,14 +205,15 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   if (cross_origin_isolation_key.has_value()) {
     agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
         url::Origin::Create(SiteInstanceImpl::GetDefaultSiteURL()),
-        cross_origin_isolation_key.value());
+        cross_origin_isolation_key.value(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   } else {
-    agent_cluster_key =
-        AgentClusterKey::CreateSiteKeyed(SiteInstanceImpl::GetDefaultSiteURL());
+    agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
+        SiteInstanceImpl::GetDefaultSiteURL(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
   return SiteInfo(agent_cluster_key,
                   /*site_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
-                  AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                   /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                   storage_partition_config, web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
@@ -232,7 +235,7 @@ SiteInfo SiteInfo::CreateForGuest(
   // SiteInstances with real site and lock URLs.
   return SiteInfo(
       AgentClusterKey(),
-      /*site_url=*/GURL(), AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+      /*site_url=*/GURL(),
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated,
@@ -248,11 +251,9 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(url_info.is_sandboxed ||
          url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
-  std::pair<AgentClusterKey, AgentClusterKey::OACStatus>
-      agent_cluster_key_and_oac =
-          GetAgentClusterKeyForURL(isolation_context, url_info,
-                                   /*effective_url=*/std::nullopt);
-  AgentClusterKey& agent_cluster_key = agent_cluster_key_and_oac.first;
+  AgentClusterKey agent_cluster_key =
+      GetAgentClusterKeyForURL(isolation_context, url_info,
+                               /*effective_url=*/std::nullopt);
   GURL site_url = agent_cluster_key.GetURL();
 
   // PDF content should live in JIT-less processes because it is inherently less
@@ -285,7 +286,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   if (effective_url.has_value()) {
     site_url =
         GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
-            .first.GetURL();
+            .GetURL();
   }
 
   BrowserContext* browser_context =
@@ -351,10 +352,10 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   bool does_site_request_dedicated_process_for_coop =
       url_info.requests_coop_isolation();
 
-  return SiteInfo(agent_cluster_key, site_url, agent_cluster_key_and_oac.second,
-                  url_info.is_sandboxed, url_info.unique_sandbox_id,
-                  storage_partition_config.value(), web_exposed_isolation_info,
-                  web_exposed_isolation_level, isolation_context.is_guest(),
+  return SiteInfo(agent_cluster_key, site_url, url_info.is_sandboxed,
+                  url_info.unique_sandbox_id, storage_partition_config.value(),
+                  web_exposed_isolation_info, web_exposed_isolation_level,
+                  isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
                   are_v8_optimizations_disabled, url_info.is_pdf,
                   isolation_context.is_fenced());
@@ -368,7 +369,6 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 
 SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    const GURL& site_url,
-                   AgentClusterKey::OACStatus oac_status,
                    bool is_sandboxed,
                    int unique_sandbox_id,
                    const StoragePartitionConfig storage_partition_config,
@@ -382,7 +382,6 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    bool is_fenced)
     : site_url_(site_url),
       agent_cluster_key_(agent_cluster_key),
-      oac_status_(oac_status),
       is_sandboxed_(is_sandboxed),
       unique_sandbox_id_(unique_sandbox_id),
       storage_partition_config_(storage_partition_config),
@@ -397,8 +396,8 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       is_fenced_(is_fenced) {
   DCHECK(is_sandboxed_ ||
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
-  DCHECK((oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
-          oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
+  DCHECK((oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
+          oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
          agent_cluster_key_.IsOriginKeyed());
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
@@ -408,7 +407,6 @@ SiteInfo::~SiteInfo() = default;
 SiteInfo::SiteInfo(BrowserContext* browser_context)
     : SiteInfo(AgentClusterKey(),
                /*site_url=*/GURL(),
-               AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                /*is_sandboxed*/ false,
                UrlInfo::kInvalidUniqueSandboxId,
                StoragePartitionConfig::CreateDefault(browser_context),
@@ -446,13 +444,11 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   // Do not convert cross-origin isolated SiteInfos back into site keyed ones as
   // cross-origin isolated agent clusters are required by spec to be
   // origin-keyed, regardless of the Origin-Agent-Cluster header.
-  if ((oac_status_ == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
-       oac_status_ == AgentClusterKey::OACStatus::kOriginKeyedByDefault) &&
+  if ((oac_status() == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+       oac_status() == AgentClusterKey::OACStatus::kOriginKeyedByDefault) &&
       !agent_cluster_key_.GetCrossOriginIsolationKey().has_value()) {
     CHECK(agent_cluster_key_.IsOriginKeyed());
     DCHECK(agent_cluster_key_.GetOrigin().scheme() == url::kHttpsScheme);
-    non_oac_site_info.oac_status_ =
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault;
 
     // TODO(wjmaclean): It would probably be better if we just changed
     // SiteInstanceImpl::original_url_ to be SiteInfo::original_url_info_ and
@@ -493,12 +489,8 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
 
     // Convert the AgentClusterKey from an origin-keyed one into a site-keyed
     // one.
-    non_oac_site_info.agent_cluster_key_ =
-        AgentClusterKey::CreateSiteKeyed(process_lock_url);
-
-    // Update the OAC status of the site-keyed SiteInfo.
-    non_oac_site_info.oac_status_ =
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault;
+    non_oac_site_info.agent_cluster_key_ = AgentClusterKey::CreateSiteKeyed(
+        process_lock_url, AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
   return non_oac_site_info;
 }
@@ -778,10 +770,10 @@ bool SiteInfo::is_error_page() const {
 }
 
 // static
-std::pair<AgentClusterKey, AgentClusterKey::OACStatus>
-SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
-                                   const UrlInfo& url_info,
-                                   std::optional<GURL> effective_url) {
+AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info,
+    std::optional<GURL> effective_url) {
   GURL url = effective_url.value_or(url_info.url);
 
   // Explicitly map all chrome-error: URLs to a single URL so that they all
@@ -791,8 +783,8 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
   // SiteInfo::CreateForErrorPage which will recompute the AgentClusterKey based
   // on the CrossOriginIsolationKey in the URLinfo.
   if (url.SchemeIs(kChromeErrorScheme)) {
-    return std::make_pair(
-        AgentClusterKey::CreateSiteKeyed(GetErrorPageSiteAndLockURL()),
+    return AgentClusterKey::CreateSiteKeyed(
+        GetErrorPageSiteAndLockURL(),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
 
@@ -808,10 +800,9 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
   if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url) &&
       !effective_url.has_value()) {
     WebUIDomains host_domains = GetWebUIDomains(url_info.url);
-    return std::make_pair(
-        AgentClusterKey::CreateSiteKeyed(GURL(url_info.url.scheme() +
-                                              url::kStandardSchemeSeparator +
-                                              host_domains.back())),
+    return AgentClusterKey::CreateSiteKeyed(
+        GURL(url_info.url.scheme() + url::kStandardSchemeSeparator +
+             host_domains.back()),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
 
@@ -894,10 +885,8 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
   // Cross-origin isolated contexts should always be given an origin-keyed
   // AgentClusterKey with a CrossOriginIsolationKey.
   if (url_info.cross_origin_isolation_key.has_value()) {
-    return std::make_pair(
-        AgentClusterKey::CreateWithCrossOriginIsolationKey(
-            origin, url_info.cross_origin_isolation_key.value()),
-        oac_status);
+    return AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        origin, url_info.cross_origin_isolation_key.value(), oac_status);
   }
 
   bool requires_origin_keyed_process =
@@ -911,8 +900,7 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
         SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
 
   if (requires_origin_keyed_process) {
-    return std::make_pair(AgentClusterKey::CreateOriginKeyed(origin),
-                          oac_status);
+    return AgentClusterKey::CreateOriginKeyed(origin, oac_status);
   }
 
   // If the url has a host, then determine the AgentClusterKey. Skip file URLs
@@ -926,8 +914,7 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     // AgentClusterKey instead of a site-keyed one.
     if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
         origin.GetURL().SchemeIsHTTPOrHTTPS()) {
-      return std::make_pair(AgentClusterKey::CreateSiteKeyed(origin.GetURL()),
-                            oac_status);
+      return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
     }
 
     // For isolated sandboxed iframes in per-origin mode we just return a
@@ -939,8 +926,7 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     // TODO(crbug.com/433443082): This should return an origin-keyed
     // AgentClusterKey instead of a site-keyed one.
     if (is_origin_isolated_sandboxed_data_iframe) {
-      return std::make_pair(AgentClusterKey::CreateSiteKeyed(origin.GetURL()),
-                            oac_status);
+      return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
     }
 
     // Isolated origins should use the full origin as their site URL. For the
@@ -968,9 +954,8 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin, /*requests_origin_keyed_process=*/false,
             site_url, &isolated_origin)) {
-      return std::make_pair(
-          AgentClusterKey::CreateSiteKeyed(isolated_origin.GetURL()),
-          oac_status);
+      return AgentClusterKey::CreateSiteKeyed(isolated_origin.GetURL(),
+                                              oac_status);
     }
 
     // All other cases where the origin has a host should get a site-keyed
@@ -978,8 +963,7 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     // TODO(crbug.com/342366372): Return an origin-keyed AgentClusterKey by
     // default once SiteInstanceGroup has shipped and different SiteInstances
     // can share the same process.
-    return std::make_pair(AgentClusterKey::CreateSiteKeyed(site_url),
-                          oac_status);
+    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
   }
 
   // If there is no host but there is a scheme, return a site-keyed
@@ -991,15 +975,14 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     // https://crbug.com/697111).
     DCHECK(!origin.scheme().empty());
     GURL site_url = GURL(origin.scheme() + ":");
-    return std::make_pair(AgentClusterKey::CreateSiteKeyed(site_url),
-                          oac_status);
+    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
   }
 
   // If the URL is invalid, return a site-keyed AgentClusterKey with an empty
   // URL.
   if (!url.has_scheme()) {
     DCHECK(!url.is_valid()) << url;
-    return std::make_pair(AgentClusterKey(), oac_status);
+    return AgentClusterKey();
   }
 
   if (url.SchemeIs(url::kDataScheme)) {
@@ -1023,8 +1006,7 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
     // TODO(crbug.com/433443082): This should return an origin-keyed
     // AgentClusterKey instead of a site-keyed one.
     GURL site_url = GetOriginBasedSiteURLForDataURL(origin);
-    return std::make_pair(AgentClusterKey::CreateSiteKeyed(site_url),
-                          oac_status);
+    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
   }
 
   if (url.SchemeIsBlob()) {
@@ -1044,14 +1026,13 @@ SiteInfo::GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
       replacements.ClearRef();
       site_url = url.ReplaceComponents(replacements);
     }
-    return std::make_pair(AgentClusterKey::CreateSiteKeyed(site_url),
-                          oac_status);
+    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
   DCHECK(!url.scheme().empty());
   GURL site_url = GURL(url.scheme() + ":");
-  return std::make_pair(AgentClusterKey::CreateSiteKeyed(site_url), oac_status);
+  return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
 
 // static
@@ -1179,7 +1160,7 @@ GURL SiteInfo::GetSiteForURLForTest(const IsolationContext& isolation_context,
         url_info.url);
   }
   return GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
-      .first.GetURL();
+      .GetURL();
 }
 
 // static

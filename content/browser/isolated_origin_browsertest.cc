@@ -141,9 +141,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock::FromSiteInfo(SiteInfo(
-        AgentClusterKey::CreateSiteKeyed(GURL(url)),
+        AgentClusterKey::CreateSiteKeyed(
+            GURL(url), AgentClusterKey::OACStatus::kSiteKeyedByDefault),
         /*site_url=*/GURL(url),
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault,
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(),
@@ -171,9 +171,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock::FromSiteInfo(SiteInfo(
-        AgentClusterKey::CreateSiteKeyed(origin_url),
+        AgentClusterKey::CreateSiteKeyed(
+            origin_url, AgentClusterKey::OACStatus::kSiteKeyedByDefault),
         /*site_url=*/origin_url,
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault,
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(),
@@ -1728,9 +1728,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
   auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(SiteInfo(
-      AgentClusterKey::CreateOriginKeyed(url::Origin::Create(origin_url)),
+      AgentClusterKey::CreateOriginKeyed(
+          url::Origin::Create(origin_url),
+          AgentClusterKey::OACStatus::kOriginKeyedByHeader),
       /*site_url=*/origin_url,
-      AgentClusterKey::OACStatus::kOriginKeyedByHeader,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(),

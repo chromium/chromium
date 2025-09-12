@@ -72,19 +72,45 @@ class CONTENT_EXPORT AgentClusterKey {
     kSiteKeyedByDefault
   };
 
+  // The following functions are used to create appropriate AgentClusterKeys for
+  // a navigation. The |oac_status| parameter passed to the AgentClusterKey is
+  // the OAC status computed for the navigation. Note that it corresponds to OAC
+  // backed by actual process isolation, and not logical OAC (ie OAC enabled
+  // only in the renderer process).
+  //
   // Following the deprecation of document.domain by default (a.k.a.
   // Origin-Agent-Cluster by default), AgentClusterKeys should be origin keyed
   // unless the document sends a "Origin-Agent-Cluster: ?0" header. However,
   // without SiteInstanceGroup, this would lead to extra process creation. So
-  // when computing AgentClusterKeys for all navigations, we might need to make
-  // them site-keyed by default until SiteInstanceGroup ships.
+  // when computing AgentClusterKeys for all navigations, we make
+  // them site-keyed by default. Eventually, we should make them origin-keyed,
+  // but have SiteInfos with a same-site AgentClusterKey share a
+  // SiteInstanceGroup when kOriginKeyedProcessesByDefault is not enabled.
   // See crbug.com/40176090.
-  static AgentClusterKey CreateSiteKeyed(const GURL& site_url);
-  static AgentClusterKey CreateOriginKeyed(const url::Origin& origin);
+  //
+  // When using CreateSiteKeyed, the |oac_status| must be kSiteKeyed*.
+  //
+  // When using CreateOriginKeyed, the |oac_status| does not have to be
+  // kOriginKeyed*. The browser might want to
+  // assign origin-keyed agent clusters in some cases, even when the document
+  // did not request OAC and kOriginKeyedProcessesByDefault is not enabled. This
+  // does not happen in practice currently, but should happen when we convert
+  // the following cases to always create origin-keyed AgentClusterKeys:
+  //   - origin-isolated sandboxed data iframes
+  //   - legacy kStrictOriginIsolation mode.
+  //
+  // When using CreateWithCrossOriginIsolationKey, the |oac_status| does not
+  // have to be kOriginKeyed*. Cross-origin isolated contexts are always
+  // origin-keyed per spec, regardless of the OAC header.
+  static AgentClusterKey CreateSiteKeyed(const GURL& site_url,
+                                         const OACStatus& oac_status);
+  static AgentClusterKey CreateOriginKeyed(const url::Origin& origin,
+                                           const OACStatus& oac_status);
 
   static AgentClusterKey CreateWithCrossOriginIsolationKey(
       const url::Origin& origin,
-      const AgentClusterKey::CrossOriginIsolationKey& isolation_key);
+      const AgentClusterKey::CrossOriginIsolationKey& isolation_key,
+      const OACStatus& oac_status);
 
   // The default constructor will create an AgentClusterKey site-keyed to the
   // empty URL.
@@ -98,6 +124,24 @@ class CONTENT_EXPORT AgentClusterKey {
   // Whether the Agent Cluster is keyed using Site URL or Origin.
   bool IsSiteKeyed() const;
   bool IsOriginKeyed() const;
+
+  // The status of the Origin-Agent-Cluster header request for the navigation
+  // that created the AgentClusterKey.
+  // This is mainly used in SiteInfo to distinguish between SiteInfos that
+  // received process isolation for their origin due to an explicit OAC opt-in
+  // via header (kOriginKeyedByHeader) from the SiteInfos that received process
+  // isolation due to features::kOriginKeyedProcessesByDefault
+  // (kOriginKeyedByDefault). The former must be tracked per BrowsingInstance to
+  // maintain a consistent OAC state, while the latter do not need to do so.
+  // Note that this only applies to OAC that is backed by process isolation. OAC
+  // can also be logical, in which case it will only apply in the renderer
+  // process and is not tracked in the AgentClusterKey (and by extension
+  // SiteInfo). Also note that having an |oac_status_| of kOriginKeyedByHeader
+  // or kOriginKeyedByDefault will make the AgentClusterKey origin-keyed, the
+  // reverse is not true. It is possible for the AgentClusterKey to be
+  // origin-keyed and |oac_status_| to be kSiteKeyedByDefault, for example in
+  // the case of a cross-origin isolated document with DocumentIsolationPolicy.
+  const OACStatus& oac_status() const { return oac_status_; }
 
   // The site URL or the origin of the AgentClusterKey. Each function should
   // only be called when the Agent Cluster is site-keyed or origin-keyed
@@ -128,7 +172,8 @@ class CONTENT_EXPORT AgentClusterKey {
  private:
   AgentClusterKey(const std::variant<GURL, url::Origin>& key,
                   const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
-                      isolation_key);
+                      isolation_key,
+                  const OACStatus& oac_status);
 
   // The origin or site URL that all execution contexts in the agent cluster
   // must share. By default, this is a site URL and the agent cluster is
@@ -156,6 +201,20 @@ class CONTENT_EXPORT AgentClusterKey {
   // set based on DocumentIsolationPolicy. It should also be set for documents
   // in a page with COOP and COEP.
   std::optional<AgentClusterKey::CrossOriginIsolationKey> isolation_key_;
+
+  // Tracks the status of the OAC header opt-in request for the navigation that
+  // created this AgentClusterKey.
+  // Note: this is not taken into account in
+  // AgentClusterKey::operator== because we want a document
+  // with OAC: 1? to have an AgentClusterKey equal to the AgentClusterKey of a
+  // document that got origin isolation through other means
+  // (features::kOriginKeyedProcessesByDefault,
+  // cross-origin isolation provided the cross-origin isolation status
+  // match...). Origin isolation is taken into account because origin-keyed and
+  // site-keyed AgentClusterKeys are never equivalent. The precise manner in
+  // which it was achieved is not.
+  AgentClusterKey::OACStatus oac_status_ =
+      AgentClusterKey::OACStatus::kSiteKeyedByDefault;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(

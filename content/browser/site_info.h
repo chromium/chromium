@@ -184,7 +184,6 @@ class CONTENT_EXPORT SiteInfo {
   // should be updated accordingly.
   SiteInfo(const AgentClusterKey& agent_cluster_key,
            const GURL& site_url,
-           AgentClusterKey::OACStatus oac_status,
            bool is_sandboxed,
            int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
@@ -288,7 +287,9 @@ class CONTENT_EXPORT SiteInfo {
   // reverse is not true. It is possible for the |agent_cluster_key_| to be
   // origin-keyed and |oac_status_| to be kSiteKeyedByDefault, for example in
   // the case of a cross-origin isolated document with DocumentIsolationPolicy.
-  AgentClusterKey::OACStatus oac_status() const { return oac_status_; }
+  AgentClusterKey::OACStatus oac_status() const {
+    return agent_cluster_key_.oac_status();
+  }
 
   // The following accessor is for the `is_sandboxed` flag, which is true when
   // this SiteInfo is for an origin-restricted-sandboxed iframe.
@@ -431,10 +432,10 @@ class CONTENT_EXPORT SiteInfo {
   // allowing WebUI with a shared TLD to share a RenderProcessHost.
   // TODO(crbug.com/40176090): Remove this and replace it with
   // SiteInstanceGroups once the support lands.
-  static std::pair<AgentClusterKey, AgentClusterKey::OACStatus>
-  GetAgentClusterKeyForURL(const IsolationContext& isolation_context,
-                           const UrlInfo& url_info,
-                           std::optional<GURL> effective_url);
+  static AgentClusterKey GetAgentClusterKeyForURL(
+      const IsolationContext& isolation_context,
+      const UrlInfo& url_info,
+      std::optional<GURL> effective_url);
 
   // Helper function for ProcessLockCompareTo(). Returns a std::tie of the
   // SiteInfo elements required for doing a ProcessLock comparison.
@@ -456,20 +457,6 @@ class CONTENT_EXPORT SiteInfo {
   // COOP and COEP should also use the AgentClusterKey instead of
   // WebExposedIsolationInfo.
   AgentClusterKey agent_cluster_key_;
-
-  // Tracks the status of the OAC header opt-in request for this SiteInfo.
-  // Note: this is not taken into account in
-  // SiteInfo::MakeSecurityPrincipalKey() because we want to consider a document
-  // with OAC: 1? to have the same security principal as a document that got
-  // origin isolation through other means
-  // (features::kOriginKeyedProcessesByDefault,
-  // cross-origin isolation provided the cross-origin isolation status
-  // match...). Origin isolation is taken into account in
-  // SiteInfo::MakeSecurityPrincipalKey() through the AgentClusterKey, which can
-  // be origin-keyed or site-keyed. Origin-keyed and site-keyed AgentClusterKeys
-  // are never equivalent.
-  AgentClusterKey::OACStatus oac_status_ =
-      AgentClusterKey::OACStatus::kSiteKeyedByDefault;
 
   // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
   // iframe.

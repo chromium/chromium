@@ -25,12 +25,14 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       cross_origin_isolation_key.has_value()
           ? AgentClusterKey::CreateWithCrossOriginIsolationKey(
                 SiteInfo::GetOriginForUnlockedProcess(),
-                cross_origin_isolation_key.value())
-          : AgentClusterKey::CreateSiteKeyed(GURL());
+                cross_origin_isolation_key.value(),
+                AgentClusterKey::OACStatus::kSiteKeyedByDefault)
+          : AgentClusterKey::CreateSiteKeyed(
+                GURL(), AgentClusterKey::OACStatus::kSiteKeyedByDefault);
 
   return ProcessLock(SiteInfo(
       agent_cluster_key,
-      /*site_url=*/GURL(), AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+      /*site_url=*/GURL(),
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       storage_partition_config, web_exposed_isolation_info,
       web_exposed_isolation_level, /*is_guest=*/false,
