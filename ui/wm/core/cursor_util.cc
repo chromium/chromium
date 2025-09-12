@@ -132,70 +132,26 @@ void RotateCursorBitmapAndHotpoint(display::Display::Rotation rotation,
   }
 }
 
-// Create bitmaps from static lottie. |image_rep| is unscaled and contains
-// a paint record for the lottie animation.
-void CreateBitmapsFromStaticLottie(const gfx::ImageSkiaRep& image_rep,
-                                   const gfx::Size& scaled_size,
-                                   float scale,
-                                   const gfx::Transform& rotation_transform,
-                                   std::vector<SkBitmap>* bitmaps_out) {
-  CHECK(bitmaps_out->empty());
-
+// Create a bitmap from a lottie `animation` at the normalized time instance `t`
+// with given `rotation_transform`, `scale` and `scaled_size`.
+SkBitmap CreateBitmapFromLottieAnimation(
+    lottie::Animation* animation,
+    float t,
+    const gfx::Size& scaled_size,
+    float scale,
+    const gfx::Transform& rotation_transform) {
   // Non-animated cursor.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(scaled_size.width(), scaled_size.height());
   bitmap.eraseColor(SK_ColorTRANSPARENT);
 
-  SkCanvas canvas(bitmap);
-  canvas.concat(TransformToSkM44(rotation_transform));
-  canvas.scale(scale, scale);
-  image_rep.GetPaintRecord().Playback(&canvas);
+  cc::SkiaPaintCanvas paint_canvas(bitmap);
+  gfx::Canvas canvas(&paint_canvas, scale);
+  canvas.Transform(rotation_transform);
+  animation->PaintFrame(&canvas, t, scaled_size);
   bitmap.setImmutable();
 
-  bitmaps_out->push_back(std::move(bitmap));
-}
-
-// Create bitmaps from animated lottie.
-void CreateBitmapsFromAnimatedLottie(int resource_id,
-                                     const gfx::Size& scaled_size,
-                                     float scale,
-                                     const gfx::Transform& rotation_transform,
-                                     CursorType type,
-                                     std::vector<SkBitmap>* bitmaps_out) {
-  CHECK(bitmaps_out->empty());
-
-  AnimationCache& cursor_animations = GetAnimationCache();
-  if (!base::Contains(cursor_animations, type)) {
-    std::optional<std::vector<uint8_t>> lottie_bytes =
-        ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
-    scoped_refptr<cc::SkottieWrapper> skottie =
-        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
-    cursor_animations[type] = std::make_unique<lottie::Animation>(skottie);
-  }
-  lottie::Animation* animation = cursor_animations[type].get();
-  const float cursor_animation_duration_in_second =
-      animation->GetAnimationDuration().InSecondsF();
-
-  // Target frame rate for animated cursor.
-  const int kAnimatedCursorFramePerSecond = 60;
-  const int frames =
-      kAnimatedCursorFramePerSecond * cursor_animation_duration_in_second;
-
-  for (int i = 0; i < frames; i++) {
-    float t = static_cast<float>(i) / frames;
-
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(scaled_size.width(), scaled_size.height());
-    bitmap.eraseColor(SK_ColorTRANSPARENT);
-
-    cc::SkiaPaintCanvas paint_canvas(bitmap);
-    gfx::Canvas canvas(&paint_canvas, scale);
-    canvas.Transform(rotation_transform);
-    animation->PaintFrame(&canvas, t, scaled_size);
-    bitmap.setImmutable();
-
-    bitmaps_out->push_back(std::move(bitmap));
-  }
+  return bitmap;
 }
 
 struct CursorResourceData {
@@ -311,6 +267,12 @@ constexpr auto kCursorResourceData = std::to_array<
 static_assert(std::size(kCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
+// The name of cursor fill shape in lottie.
+constexpr char kCursorFillColorName[] = "cursor.fill.color";
+
+// Target frame rate for animated cursor.
+constexpr int kAnimatedCursorFramePerSecond = 60;
+
 }  // namespace
 
 std::optional<ui::CursorData> GetCursorData(
@@ -329,46 +291,53 @@ std::optional<ui::CursorData> GetCursorData(
   }
   DCHECK_NE(type, CursorType::kNone);
 
-  std::vector<SkBitmap> bitmaps;
-  const gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  // Since all cursor image sources are lottie image sources now, it has
-  // representations at all scales.
-  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(0.0f);
-  CHECK(image_rep.unscaled());
+  cc::SkottieColorMap colormap = {};
+  if (color != ui::kDefaultCursorColor) {
+    // If cursor color is not the default, color map needs to be applied
+    // when creating lottie animation for dynamic coloration.
+    colormap.emplace(cc::SkottieMapColor(kCursorFillColorName, color));
+  }
 
+  AnimationCache& cursor_animations = GetAnimationCache();
+  if (!base::Contains(cursor_animations, type)) {
+    // Read lottie content and create a lottie animation.
+    std::optional<std::vector<uint8_t>> lottie_bytes =
+        ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
+    scoped_refptr<cc::SkottieWrapper> skottie =
+        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
+    cursor_animations[type] =
+        std::make_unique<lottie::Animation>(skottie, colormap);
+  }
+  lottie::Animation* animation = cursor_animations[type].get();
+
+  const gfx::Size cursor_size_in_dp = animation->GetOriginalSize();
   if (target_cursor_size_in_px) {
     // If `target_cursor_size_in_px` presents, use it to calculate scale.
     // Use `image_rep.GetHeight()` as cursor dp size. An animated bitmap
     // is composed of horizontally tiled frames so its width could not
     // be used as cursor size.
-    int cursor_size_in_dp = image_rep.GetHeight();
     scale = static_cast<float>(target_cursor_size_in_px.value()) /
-            static_cast<float>(cursor_size_in_dp);
+            static_cast<float>(cursor_size_in_dp.height());
   }
+  const gfx::Size scaled_size = ScaleToRoundedSize(cursor_size_in_dp, scale);
 
-  const gfx::Size scaled_size = ScaleToRoundedSize(
-      gfx::Size(image_rep.GetWidth(), image_rep.GetHeight()), scale);
-  const gfx::Transform rotation_transform = display::CreateRotationTransform(
-      rotation, gfx::SizeF(scaled_size.width(), scaled_size.height()));
   hotspot = gfx::ScaleToFlooredPoint(hotspot, scale);
   RotateCursorHotpoint(rotation, scaled_size.width(), scaled_size.height(),
                        &hotspot);
 
-  if (!is_animated) {
-    // Non-animated lottie cursor.
-    CreateBitmapsFromStaticLottie(image_rep, scaled_size, scale,
-                                  rotation_transform, &bitmaps);
-  } else {
-    // Animated lottie cursor.
-    CreateBitmapsFromAnimatedLottie(resource_id, scaled_size, scale,
-                                    rotation_transform, type, &bitmaps);
-  }
+  const gfx::Transform rotation_transform = display::CreateRotationTransform(
+      rotation, gfx::SizeF(scaled_size.width(), scaled_size.height()));
 
-  if (color != ui::kDefaultCursorColor) {
-    std::for_each(bitmaps.begin(), bitmaps.end(), [&](SkBitmap& bitmap) {
-      bitmap = GetColorAdjustedBitmap(bitmap, color);
-    });
+  std::vector<SkBitmap> bitmaps;
+
+  const int frames = is_animated
+                         ? kAnimatedCursorFramePerSecond *
+                               animation->GetAnimationDuration().InSecondsF()
+                         : 1;
+  for (int i = 0; i < frames; i++) {
+    float t = static_cast<float>(i) / frames;
+    bitmaps.push_back(CreateBitmapFromLottieAnimation(
+        animation, t, scaled_size, scale, rotation_transform));
   }
 
   return ui::CursorData(std::move(bitmaps), std::move(hotspot), scale);
@@ -490,6 +459,10 @@ SkBitmap GetColorAdjustedBitmap(const SkBitmap& bitmap, SkColor cursor_color) {
     }
   }
   return recolored;
+}
+
+void ClearCursorAnimationCache() {
+  GetAnimationCache().clear();
 }
 
 }  // namespace wm

@@ -3044,8 +3044,12 @@ void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
       active_user_prefs_->GetBoolean(prefs::kAccessibilityCursorColorEnabled);
   Shell* shell = Shell::Get();
   shell->SetCursorColor(
-      enabled ? active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor)
-              : ui::kDefaultCursorColor);
+      enabled
+          // Settings page only sends RGB now. Set alpha as full opaque.
+          ? SkColorSetA(active_user_prefs_->GetInteger(
+                            prefs::kAccessibilityCursorColor),
+                        0xFF)
+          : ui::kDefaultCursorColor);
   if (notify) {
     NotifyAccessibilityStatusChanged();
   }

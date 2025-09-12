@@ -92,6 +92,10 @@ void CursorLoader::SetColor(SkColor color) {
   }
 
   color_ = color;
+
+  // Reset cursor lottie animation cache when new color needs to be applied.
+  wm::ClearCursorAnimationCache();
+
   UnloadCursors();
 }
 

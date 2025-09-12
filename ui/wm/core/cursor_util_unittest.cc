@@ -185,34 +185,41 @@ TEST(CursorUtil, GetCursorDataWithColor) {
     SkColor found;         // Spot-check: This color should be in the cursor.
     CursorType cursor_type;
   } kColorTestCases[] = {
-      // Cursors should still have white.
-      {SK_ColorMAGENTA, SK_ColorBLUE, SK_ColorWHITE, CursorType::kHand},
-      {SK_ColorBLUE, SK_ColorMAGENTA, SK_ColorWHITE, CursorType::kCell},
-      {SK_ColorGREEN, SK_ColorBLUE, SK_ColorWHITE, CursorType::kNoDrop},
+      // Cursors should not have black because the black cursor body should be
+      // replaced by other colors.
+      {SK_ColorRED, SK_ColorBLACK, SK_ColorWHITE, CursorType::kPointer},
+      {SK_ColorRED, SK_ColorBLACK, SK_ColorWHITE, CursorType::kCell},
+
+      // Cursors should not have white because the white cursor body should be
+      // replaced by other colors.
+      {SK_ColorMAGENTA, SK_ColorWHITE, SK_ColorBLACK, CursorType::kHand},
+
       // Also cursors should still have transparent.
       {SK_ColorRED, SK_ColorGREEN, SK_ColorTRANSPARENT, CursorType::kPointer},
+
       // The no drop cursor has red in it, check it's still there:
-      // Most of the cursor should be colored, but the red part shouldn't be
+      // Cursor body should be colored, but the red part shouldn't be
       // re-colored.
       {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(181, 70, 72),
        CursorType::kNoDrop},
-      // Similarly, the copy cursor has green in it.
+
+      // Similarly, the copy cursor has a green part in it which should not be
+      // re-colored.
       {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(57, 149, 88),
        CursorType::kCopy},
   };
 
   for (const auto& test : kColorTestCases) {
+    ClearCursorAnimationCache();
     auto pointer_data =
         GetCursorData(test.cursor_type, 1.0f, std::nullopt,
                       display::Display::ROTATE_0, test.cursor_color);
     const SkBitmap bitmap = pointer_data->bitmaps[0];
-    // We should find `cursor_color` pixels in the cursor, but no black or
-    // |not_found| color pixels. All black pixels are recolored.
-    // We should also find |found| color.
+    // We should find `cursor_color` and `found` color pixels in the cursor, but
+    // no |not_found| color pixels.
     bool has_color = false;
     bool has_not_found_color = false;
     bool has_found_color = false;
-    bool has_black = false;
     for (int x = 0; x < bitmap.width(); ++x) {
       for (int y = 0; y < bitmap.height(); ++y) {
         SkColor color = bitmap.getColor(x, y);
@@ -222,15 +229,12 @@ TEST(CursorUtil, GetCursorDataWithColor) {
           has_not_found_color = true;
         } else if (color == test.found) {
           has_found_color = true;
-        } else if (color == SK_ColorBLACK) {
-          has_black = true;
         }
       }
     }
     EXPECT_TRUE(has_color);
     EXPECT_TRUE(has_found_color);
     EXPECT_FALSE(has_not_found_color);
-    EXPECT_FALSE(has_black);
   }
 }
 

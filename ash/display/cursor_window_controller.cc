@@ -211,7 +211,12 @@ void CursorWindowController::SetLargeCursorSizeInDip(
 void CursorWindowController::SetCursorColor(SkColor cursor_color) {
   if (cursor_color_ == cursor_color)
     return;
+
   cursor_color_ = cursor_color;
+
+  // Reset cursor lottie animation cache when new color needs to be applied.
+  wm::ClearCursorAnimationCache();
+
   if (display_.is_valid())
     UpdateCursorImage();
 }
