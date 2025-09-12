@@ -357,22 +357,29 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoWebkitAnyLink:
         case CSSSelector::kPseudoAnyLink:
         case CSSSelector::kPseudoFocusVisible:
-        case CSSSelector::kPseudoPlaceholder:
-        case CSSSelector::kPseudoDetailsContent:
-        case CSSSelector::kPseudoPermissionIcon:
-        case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
+        case CSSSelector::kPseudoActiveViewTransition:
+          // Pseudo classes.
+          pseudo_type = selector->GetPseudoType();
+          break;
+        case CSSSelector::kPseudoPlaceholder:
+        case CSSSelector::kPseudoDetailsContent:
+        case CSSSelector::kPseudoPermissionIcon:
+        case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoScrollbarButton:
         case CSSSelector::kPseudoScrollbarCorner:
         case CSSSelector::kPseudoScrollbarThumb:
         case CSSSelector::kPseudoScrollbarTrack:
         case CSSSelector::kPseudoScrollbarTrackPiece:
-        case CSSSelector::kPseudoActiveViewTransition:
-          pseudo_type = selector->GetPseudoType();
+          // Pseudo elements; do not overwrite a pseudo class
+          // (in particular, :host).
+          if (pseudo_type == CSSSelector::kPseudoUnknown) {
+            pseudo_type = selector->GetPseudoType();
+          }
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
