@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
-    enum="ContentSetting" expires_after="2025-10-20">
+    enum="ContentSetting" expires_after="2026-04-20">
   <owner>pkotwicz@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
