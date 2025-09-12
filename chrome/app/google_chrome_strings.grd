@@ -1706,6 +1706,11 @@ Google Chrome is unable to recover your settings.
         Customize Chrome
       </message>
 
+      <!-- History Strings -->
+      <message name="IDS_HISTORY_HISTORY_MENU_ITEM" desc="Label displayed in history sidebar button to display history.">
+        Chrome history
+      </message>
+
       <!-- Lens Overlay Strings -->
       <if expr="not is_android">
         <!-- Side Panel Pinnable Entrypoint Strings -->

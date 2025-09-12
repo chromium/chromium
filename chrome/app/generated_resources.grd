@@ -476,9 +476,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_HISTORY_HISTORY_MENU_DESCRIPTION" desc="Tooltip for the history sidebar menu button.">
         Main menu
       </message>
-      <message name="IDS_HISTORY_HISTORY_MENU_ITEM" desc="Label displayed in history sidebar button to display history.">
-        Chrome history
-      </message>
       <message name="IDS_HISTORY_NO_SYNCED_RESULTS" desc="Text indicating that there are no synced tabs from other devices.">
         No tabs from other devices
       </message>

@@ -1695,6 +1695,11 @@ Chromium is unable to recover your settings.
         Customize Chromium
       </message>
 
+      <!-- History Strings -->
+      <message name="IDS_HISTORY_HISTORY_MENU_ITEM" desc="Label displayed in history sidebar button to display history.">
+        Chromium history
+      </message>
+
       <!-- Lens Overlay Strings -->
       <if expr="not is_android">
         <!-- Side Panel Pinnable Entrypoint Strings -->
