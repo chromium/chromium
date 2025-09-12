@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -51,8 +52,10 @@ ImageBitmap* ToImageBitmap(V8TestingScope* v8_scope, ScriptValue value) {
 class VideoFrameTest : public testing::Test {
  public:
   void SetUp() override {
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   void TearDown() override { SharedGpuContext::Reset(); }
