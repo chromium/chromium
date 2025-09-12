@@ -5,7 +5,6 @@
 import("//build/config/clang/clang.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/rbe.gni")
-import("//build/toolchain/siso.gni")
 
 declare_args() {
   # Precompiled header file support is by default available, except on the
