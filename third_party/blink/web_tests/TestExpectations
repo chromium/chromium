@@ -8968,6 +8968,10 @@ crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar.js [ Fai
 crbug.com/325441197 http/tests/devtools/elements/event-listeners-about-blank.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Failure Pass ]
 
+# Temporarily disabling these tests for unblocking frontend changes crrev.com/c/6939235
+crbug.com/443052776 http/tests/devtools/a11y-axe-core/quick-open-a11y-test.js [ Failure Pass ]
+crbug.com/443052776 http/tests/devtools/persistence/persistence-go-to-file-dialog.js [ Failure Pass ]
+
 # Gardener 2024-04-24
 crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-inline-classic-script.html [ Failure ]
 
