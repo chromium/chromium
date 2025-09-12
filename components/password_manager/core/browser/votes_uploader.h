@@ -376,7 +376,7 @@ class VotesUploader {
       bool is_forgot_password_vote);
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient> client_ = nullptr;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_ = nullptr;
 
   // Whether generation popup was shown at least once.
   bool generation_popup_was_shown_ = false;

@@ -442,7 +442,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::unique_ptr<FormFetcher> CreateFormFetcher();
 
   // The client which implements embedder-specific PasswordManager operations.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 

@@ -99,11 +99,11 @@ class PasswordGenerationFrameHelper {
 
   // The PasswordManagerClient instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   // The PasswordManagerDriver instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerDriver> driver_;
+  const raw_ptr<PasswordManagerDriver, DanglingUntriaged> driver_;
 
   // The fields that have manual generation enabled. This includes fields that
   // have type="text".

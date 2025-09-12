@@ -170,7 +170,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::unique_ptr<FormSaver> account_store_form_saver_;
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient> client_ = nullptr;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_ = nullptr;
 
   // Stores updated credentials when the form was submitted but success is still
   // unknown. This variable contains credentials that are ready to be written

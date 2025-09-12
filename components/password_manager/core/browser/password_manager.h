@@ -474,7 +474,7 @@ class PasswordManager : public PasswordManagerInterface {
   std::unique_ptr<PasswordFormManager> owned_submitted_form_manager_;
 
   // The embedder-level client. Must outlive this class.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   const base::CallbackListSubscription account_store_cb_list_subscription_;
 

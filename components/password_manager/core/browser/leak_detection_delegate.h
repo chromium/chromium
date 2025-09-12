@@ -71,7 +71,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // Notifies `client_` about leaked credentials.
   void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
 
-  raw_ptr<PasswordManagerClient> client_;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
   // The factory that creates objects for performing a leak check up.
   std::unique_ptr<LeakDetectionCheckFactory> leak_factory_;
 
