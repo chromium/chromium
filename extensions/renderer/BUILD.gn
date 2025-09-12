@@ -412,6 +412,7 @@ source_set("unit_tests") {
     "scoped_web_frame.cc",
     "scoped_web_frame.h",
     "script_context_set_unittest.cc",
+    "storage_area_unittest.cc",
     "utils_unittest.cc",
   ]
 
@@ -442,7 +443,6 @@ source_set("unit_tests") {
     sources += [
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
-      "storage_area_unittest.cc",
     ]
   }
 }
