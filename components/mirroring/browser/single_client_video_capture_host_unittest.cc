@@ -172,8 +172,8 @@ class MockVideoCaptureObserver final
   }
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
 
-  MOCK_METHOD1(OnNewSubCaptureTargetVersion,
-               void(uint32_t sub_capture_target_version));
+  MOCK_METHOD1(OnNewCaptureVersion,
+               void(const media::CaptureVersion& capture_version));
 
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));

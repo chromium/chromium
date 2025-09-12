@@ -150,7 +150,7 @@ WrapApplySubCaptureTarget(
         if (result ==
             media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion) {
           std::move(bad_message_callback)
-              .Run("Non-increasing sub-capture-target-version.");
+              .Run("Non-increasing capture-target-version.");
           // Intentionally avoid returning. Instead, continue execution and
           // invoke the callback. If the callback were allowed to "drop" that
           // would trigger a DCHECK in the mojom pipe.
@@ -743,7 +743,7 @@ void MediaStreamDispatcherHost::ApplySubCaptureTarget(
     const base::UnguessableToken& device_id,
     media::mojom::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     ApplySubCaptureTargetCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -766,7 +766,7 @@ void MediaStreamDispatcherHost::ApplySubCaptureTarget(
       base::BindOnce(
           &MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete,
           weak_factory_.GetWeakPtr(), device_id, type, sub_capture_target,
-          sub_capture_target_version,
+          sub_capture_version,
           WrapApplySubCaptureTarget(std::move(callback),
                                     mojo::GetBadMessageCallback())));
 }
@@ -775,7 +775,7 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
     const base::UnguessableToken& session_id,
     media::mojom::SubCaptureTargetType type,
     const base::Token& target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     ApplySubCaptureTargetCallback callback,
     bool target_passed_validation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -789,8 +789,7 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
   }
 
   media_stream_manager_->video_capture_manager()->ApplySubCaptureTarget(
-      session_id, type, target, sub_capture_target_version,
-      std::move(callback));
+      session_id, type, target, sub_capture_version, std::move(callback));
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 

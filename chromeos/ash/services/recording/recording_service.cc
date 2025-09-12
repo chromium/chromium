@@ -433,8 +433,8 @@ void RecordingService::OnFrameCaptured(
       .WithArgs(std::move(frame));
 }
 
-void RecordingService::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void RecordingService::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 void RecordingService::OnFrameWithEmptyRegionCapture() {}
 

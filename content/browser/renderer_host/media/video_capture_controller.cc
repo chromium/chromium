@@ -568,17 +568,17 @@ void VideoCaptureController::OnFrameDropped(
   }
 }
 
-void VideoCaptureController::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void VideoCaptureController::OnNewCaptureVersion(
+    media::CaptureVersion capture_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(
-      base::StringPrintf("%s(%u)", __func__, sub_capture_target_version), 3);
+      base::StringPrintf("%s(%s)", __func__, capture_version.ToString()), 3);
   for (const auto& client : controller_clients_) {
     if (client->session_closed) {
       continue;
     }
-    client->event_handler->OnNewSubCaptureTargetVersion(
-        client->controller_id, sub_capture_target_version);
+    client->event_handler->OnNewCaptureVersion(client->controller_id,
+                                               capture_version);
   }
 }
 
@@ -759,7 +759,7 @@ void VideoCaptureController::Resume() {
 void VideoCaptureController::ApplySubCaptureTarget(
     media::mojom::SubCaptureTargetType type,
     const base::Token& target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -775,8 +775,8 @@ void VideoCaptureController::ApplySubCaptureTarget(
     return;
   }
 
-  launched_device_->ApplySubCaptureTarget(
-      type, target, sub_capture_target_version, std::move(callback));
+  launched_device_->ApplySubCaptureTarget(type, target, sub_capture_version,
+                                          std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {

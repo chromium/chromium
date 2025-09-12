@@ -95,8 +95,8 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, media::VideoCaptureError));
   MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnStartedUsingGpuDecode, void(const VideoCaptureControllerID&));
-  MOCK_METHOD2(OnNewSubCaptureTargetVersion,
-               void(const VideoCaptureControllerID&, uint32_t));
+  MOCK_METHOD2(OnNewCaptureVersion,
+               void(const VideoCaptureControllerID&, media::CaptureVersion));
   MOCK_METHOD2(OnFrameDropped,
                void(const VideoCaptureControllerID&,
                     media::VideoCaptureFrameDropReason));

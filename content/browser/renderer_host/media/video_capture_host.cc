@@ -463,9 +463,9 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
   std::move(callback).Run(formats_in_use);
 }
 
-void VideoCaptureHost::OnNewSubCaptureTargetVersion(
+void VideoCaptureHost::OnNewCaptureVersion(
     const base::UnguessableToken& device_id,
-    uint32_t sub_capture_target_version) {
+    media::CaptureVersion capture_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const VideoCaptureControllerID controller_id(device_id);
@@ -478,7 +478,7 @@ void VideoCaptureHost::OnNewSubCaptureTargetVersion(
     return;
   }
 
-  it->second->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+  it->second->OnNewCaptureVersion(capture_version);
 }
 
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,

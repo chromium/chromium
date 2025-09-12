@@ -423,17 +423,17 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target,
-    uint32_t sub_capture_target_version) {
+    uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(sub_capture_target_version, sub_capture_target_version_);
+  CHECK_GE(sub_capture_version, capture_version_sub_capture_);
 
   target_ = target;
 
-  if (sub_capture_target_version_ != sub_capture_target_version) {
-    sub_capture_target_version_ = sub_capture_target_version;
+  if (capture_version_sub_capture_ != sub_capture_version) {
+    capture_version_sub_capture_ = sub_capture_version;
 
     if (consumer_) {
-      consumer_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+      consumer_->OnNewCaptureVersion(capture_version());
     }
   }
 
@@ -1125,7 +1125,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   }
   // Note that this is done unconditionally, as a new sub-capture-target version
   // may indicate that the stream has been successfully uncropped.
-  metadata.sub_capture_target_version = sub_capture_target_version_;
+  metadata.capture_version = capture_version();
   FrameCapture frame_capture(capture_frame_number, oracle_frame_number,
                              content_version_, content_rect, *region_properties,
                              std::move(frame), capture_begin_time);
@@ -1484,11 +1484,12 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(FrameCapture frame_capture) {
   base::TimeTicks media_ticks;
 
   if (frame_capture.success()) {
-    // TODO(crbug.com/40227755): When capture fails because the
-    // sub-capture-target version has changed, expedite the capture/delivery of
-    // a new frame.
-    if (frame_capture.frame->metadata().sub_capture_target_version !=
-        sub_capture_target_version_) {
+    // TODO(crbug.com/394794490): When capture fails because the
+    // capture-target version has changed, expedite the capture/delivery of
+    // a new frame. (Whether there has been a change in crop-status,
+    // restriction-status, share-this-tab-instead of anything else, an early new
+    // frame is desirable.)
+    if (frame_capture.frame->metadata().capture_version != capture_version()) {
       frame_capture.CaptureFailed(CaptureResult::kSubCaptureTargetChanged);
     } else if (!oracle_->CompleteCapture(frame_capture.oracle_frame_number,
                                          frame_capture.success(),

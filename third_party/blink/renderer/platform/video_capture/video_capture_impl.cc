@@ -1021,13 +1021,12 @@ void VideoCaptureImpl::OnFrameDropped(
   }
 }
 
-void VideoCaptureImpl::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void VideoCaptureImpl::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   for (const auto& client : clients_) {
-    client.second.capture_version_cb.Run(
-        media::CaptureVersion(sub_capture_target_version));
+    client.second.capture_version_cb.Run(capture_version);
   }
 }
 

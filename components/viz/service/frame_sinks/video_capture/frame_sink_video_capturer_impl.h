@@ -415,6 +415,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // overly chatty and waste CPU.
   void MaybeInformConsumerOfEmptyRegion();
 
+  media::CaptureVersion capture_version() const {
+    return media::CaptureVersion(capture_version_sub_capture_);
+  }
+
   // Owner/Manager of this instance.
   const raw_ref<FrameSinkVideoCapturerManager> frame_sink_manager_;
 
@@ -535,13 +539,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // of frames dropped due to being cropped to zero pixels.
   bool consumer_informed_of_empty_region_ = false;
 
-  // The sub-capture-target-version allows Viz to communicate back to Blink the
-  // information of which crop-target each frame is associated with. Better, if
-  // cropTo() is called multiple times, oscillating between two targets, Blink
-  // can even tell whether the frame is cropped to an earlier or later
-  // invocation of cropTo() for a given target, because the
-  // sub-capture-target-version keeps increasing.
-  uint32_t sub_capture_target_version_ = 0;
+  // The current version of the capture, indicating source-changes and the
+  // application of sub-capture.
+  uint32_t capture_version_sub_capture_ = 0;
 
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.

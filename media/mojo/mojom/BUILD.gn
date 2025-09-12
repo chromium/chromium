@@ -277,6 +277,14 @@ mojom("mojom") {
       traits_headers = [ "video_frame_metadata_mojom_traits.h" ]
       traits_public_deps = [ ":shared_mojom_traits" ]
     },
+    {
+      types = [
+        {
+          mojom = "media.mojom.CaptureVersion"
+          cpp = "::media::CaptureVersion"
+        },
+      ]
+    },
   ]
 
   # The dependencies for |media.mojom.VideoFrame| traits are different on

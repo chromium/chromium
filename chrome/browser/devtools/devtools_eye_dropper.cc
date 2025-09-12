@@ -360,8 +360,8 @@ void DevToolsEyeDropper::OnFrameCaptured(
   UpdateCursor();
 }
 
-void DevToolsEyeDropper::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void DevToolsEyeDropper::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 void DevToolsEyeDropper::OnFrameWithEmptyRegionCapture() {}
 

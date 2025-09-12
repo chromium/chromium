@@ -699,8 +699,8 @@ void CameraVideoFrameHandler::OnFrameDropped(
               << static_cast<int>(reason);
 }
 
-void CameraVideoFrameHandler::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void CameraVideoFrameHandler::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 void CameraVideoFrameHandler::OnFrameWithEmptyRegionCapture() {}
 

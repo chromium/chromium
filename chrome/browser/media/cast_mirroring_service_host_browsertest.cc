@@ -125,8 +125,8 @@ class MockVideoCaptureObserver final
     OnBufferDestroyedCall(buffer_id);
   }
 
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override {}
+  void OnNewCaptureVersion(
+      const media::CaptureVersion& capture_version) override {}
 
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
     if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)

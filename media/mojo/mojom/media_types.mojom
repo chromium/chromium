@@ -372,8 +372,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Size? source_size;
 
   gfx.mojom.Rect? region_capture_rect;
-  // TODO(crbug.com/394794490): Use CaptureVersion.
-  uint32 sub_capture_target_version;
+  CaptureVersion capture_version;
 
   bool copy_required;
 

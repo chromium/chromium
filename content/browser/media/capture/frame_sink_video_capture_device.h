@@ -102,7 +102,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
-  void OnNewSubCaptureTargetVersion(uint32_t sub_capture_target_version) final;
+  void OnNewCaptureVersion(const media::CaptureVersion& capture_version) final;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;
@@ -245,7 +245,8 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // The value 0 is used before any sub-capture-target is assigned.
   // (Note that by applying and then removing a sub-capture target,
   // values other than 0 can also be associated with an uncropped track.)
-  uint32_t sub_capture_target_version_ = 0;
+  // TODO(crbug.com/394794490): Change to a media::CaptureVersion.
+  uint32_t sub_capture_version_ = 0;
 
   // Prevent display sleeping while content capture is in progress.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;

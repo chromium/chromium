@@ -66,6 +66,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
   EXPECT_FALSE(metadata_out.transformation.has_value());
   EXPECT_FALSE(metadata_out.allow_overlay);
+  EXPECT_FALSE(metadata_out.region_capture_rect.has_value());
   EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
   EXPECT_FALSE(metadata_out.in_surface_view);
@@ -96,6 +97,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
   EXPECT_FALSE(metadata_out.source_id.has_value());
   EXPECT_FALSE(metadata_out.background_blur.has_value());
+
+  EXPECT_EQ(metadata_out.capture_version, media::CaptureVersion());
 }
 
 TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
@@ -110,6 +113,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
+  metadata_in.region_capture_rect = gfx::Rect(56, 78, 180, 240);
 
   // VideoTransformation
   metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
@@ -155,14 +159,18 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   metadata_in.background_blur = media::EffectInfo{.enabled = true};
 
+  metadata_in.capture_version = media::CaptureVersion(123);
+
   VideoFrameMetadata metadata_out;
 
   ASSERT_TRUE(RoundTrip(metadata_in, &metadata_out));
 
   EXPECT_EQ(metadata_in.capture_counter, metadata_out.capture_counter);
   EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
+  EXPECT_EQ(metadata_in.region_capture_rect, metadata_out.region_capture_rect);
   EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
+  EXPECT_EQ(metadata_in.capture_version, metadata_out.capture_version);
   EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
   EXPECT_EQ(metadata_in.in_surface_view, metadata_out.in_surface_view);

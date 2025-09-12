@@ -334,7 +334,7 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
                                       constraints.fixed_aspect_ratio);
 
   if (target_) {
-    capturer_->ChangeTarget(target_, sub_capture_target_version_);
+    capturer_->ChangeTarget(target_, sub_capture_version_);
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -399,7 +399,7 @@ void FrameSinkVideoCaptureDevice::Resume() {
 void FrameSinkVideoCaptureDevice::ApplySubCaptureTarget(
     media::mojom::SubCaptureTargetType type,
     const base::Token& target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -515,15 +515,15 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
       std::move(info)));
 }
 
-void FrameSinkVideoCaptureDevice::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void FrameSinkVideoCaptureDevice::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!receiver_) {
     return;
   }
 
-  receiver_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+  receiver_->OnNewCaptureVersion(capture_version);
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameWithEmptyRegionCapture() {
@@ -556,21 +556,21 @@ void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
 
 void FrameSinkVideoCaptureDevice::OnTargetChanged(
     const std::optional<viz::VideoCaptureTarget>& target,
-    uint32_t sub_capture_target_version) {
+    uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
+  DCHECK_GE(sub_capture_version, sub_capture_version_);
 
   target_ = target;
-  sub_capture_target_version_ = sub_capture_target_version;
+  sub_capture_version_ = sub_capture_version;
 
   if (capturer_) {
-    capturer_->ChangeTarget(target_, sub_capture_target_version_);
+    capturer_->ChangeTarget(target_, sub_capture_version_);
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnTargetChanged(std::nullopt, sub_capture_target_version_);
+  OnTargetChanged(std::nullopt, sub_capture_version_);
   OnFatalError("Capture target has been permanently lost.");
 }
 

@@ -123,8 +123,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnBufferReady(media::mojom::blink::ReadyBufferPtr buffer) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(
+      const media::CaptureVersion& capture_version) override;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 

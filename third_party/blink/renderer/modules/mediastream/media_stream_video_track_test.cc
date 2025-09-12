@@ -922,7 +922,7 @@ TEST_F(MediaStreamVideoTrackTest,
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current sub-capture-target version should be delivered.
-  frame->metadata().sub_capture_target_version = 5;
+  frame->metadata().capture_version = media::CaptureVersion(5);
   EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 
@@ -944,7 +944,7 @@ TEST_F(MediaStreamVideoTrackTest,
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Old sub-capture-target version delivered after construction.
-  frame->metadata().sub_capture_target_version = 4;
+  frame->metadata().capture_version = media::CaptureVersion(4);
   base::RunLoop run_loop;
   EXPECT_CALL(sink,
               OnNotifyFrameDropped(media::VideoCaptureFrameDropReason::
@@ -972,8 +972,8 @@ TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterSubCaptureVersionChanges) {
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  frame->metadata().sub_capture_target_version =
-      5;  // No longer current version.
+  frame->metadata().capture_version =
+      media::CaptureVersion(5);  // No longer current version.
   base::RunLoop run_loop;
   EXPECT_CALL(sink,
               OnNotifyFrameDropped(media::VideoCaptureFrameDropReason::
@@ -1003,7 +1003,7 @@ TEST_F(MediaStreamVideoTrackTest,
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current sub-capture-target version should be delivered.
-  frame->metadata().sub_capture_target_version = 6;
+  frame->metadata().capture_version = media::CaptureVersion(6);
   EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 

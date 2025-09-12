@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "media/base/capture_version.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 
@@ -75,13 +76,20 @@ bool EnumTraits<media::mojom::EffectState, intermediate::EffectState>::
 }
 
 // static
+bool StructTraits<media::mojom::CaptureVersionDataView, media::CaptureVersion>::
+    Read(media::mojom::CaptureVersionDataView data,
+         media::CaptureVersion* out) {
+  out->sub_capture = data.sub_capture();
+  return true;
+}
+
+// static
 bool StructTraits<media::mojom::VideoFrameMetadataDataView,
                   media::VideoFrameMetadata>::
     Read(media::mojom::VideoFrameMetadataDataView input,
          media::VideoFrameMetadata* output) {
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
-  output->sub_capture_target_version = input.sub_capture_target_version();
   output->frame_sequence = input.frame_sequence();
   output->source_id = input.source_id();
   output->background_blur = FromMojom(input.background_blur());
@@ -129,6 +137,10 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::TimeDelta, frame_duration, FrameDuration);
   READ_AND_ASSIGN_OPT(base::TimeDelta, wallclock_frame_duration,
                       WallclockFrameDuration);
+
+  if (!input.ReadCaptureVersion(&output->capture_version)) {
+    return false;
+  }
 
   return true;
 }

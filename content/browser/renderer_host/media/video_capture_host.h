@@ -108,9 +108,8 @@ class CONTENT_EXPORT VideoCaptureHost
                              const base::UnguessableToken& session_id,
                              GetDeviceFormatsInUseCallback callback) override;
   // This refers to a late frame drop, originating from the renderer process.
-  void OnNewSubCaptureTargetVersion(
-      const base::UnguessableToken& device_id,
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(const base::UnguessableToken& device_id,
+                           media::CaptureVersion capture_version) override;
   void OnLog(const base::UnguessableToken& device_id,
              const std::string& message) override;
 

@@ -219,7 +219,7 @@ void AshMojomVideoConsumer::OnLog(const std::string& message) {
 }
 // Invoked every time we change target, but, sub_capture_target_version is not
 // relevant for window capture.
-void AshMojomVideoConsumer::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void AshMojomVideoConsumer::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 }  // namespace remoting
