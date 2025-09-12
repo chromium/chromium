@@ -44,10 +44,13 @@ inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 // --allow-third-party-modules
 inline constexpr char kWebNNOrtLibraryPathForTesting[] =
     "webnn-ort-library-path-for-testing";
-// Force ORT EP libraries to be loaded from a location specified by the switch
-// for testing development EP build. This switch is not to be used in shipping
-// scenarios and is ignored by default.
-// Usage: --webnn-ort-ep-library-path-for-testing="C:\Program
+// Specify the ORT EP name and library path pair via this switch for testing
+// development EP builds. Libraries of the ORT EP specified by the EP name
+// are forced to be loaded from the specified path. This switch is not to be
+// used in shipping scenarios and is ignored by default.
+// The value should be in the format <ep_name>?<ep_library_path>.
+// Usage:
+// --webnn-ort-ep-library-path-for-testing=OpenVINOExecutionProvider?"C:\Program
 // Files\ONNXRuntime-EP\onnxruntime_providers_openvino_plugin.dll"
 // --allow-third-party-modules
 inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =

@@ -16,6 +16,8 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split_win.h"
+#include "base/strings/utf_string_conversions.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/webnn_switches.h"
@@ -297,6 +299,28 @@ void LogRegisteredEpDevices(const OrtApi* ort_api, const OrtEnv* env) {
   }
 }
 
+// Parses the value of `--webnn-ort-ep-library-path-for-testing` switch. Returns
+// the ORT EP name and library path pair if the value is valid. Otherwise,
+// returns the error message.
+base::expected<std::pair<std::string, base::FilePath>, std::string>
+ParseEpLibraryPathSwitch(std::wstring_view value) {
+  std::vector<std::wstring> parts = base::SplitString(
+      value, L"?", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parts.size() != 2) {
+    return base::unexpected(
+        "Invalid format of the specified EP library path. It should be in "
+        "the format of <ep_name>?<ep_library_path>.");
+  }
+  std::string ep_name = base::WideToUTF8(parts[0]);
+  base::FilePath ep_library_path(parts[1]);
+
+  if (!kKnownEPs.contains(ep_name)) {
+    return base::unexpected("The specified EP name is not recognized.");
+  }
+
+  return std::make_pair(ep_name, ep_library_path);
+}
+
 }  // namespace
 
 // static
@@ -334,19 +358,23 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     return base::unexpected("Failed to create the ONNX Runtime environment.");
   }
 
-  // Get the ORT EP library path specified by `kWebNNOrtEpLibraryPathForTesting`
-  // switch for testing development EP build.
-  std::optional<base::FilePath> specified_ep_path;
+  // Get the ORT EP name and library path pair specified by
+  // `kWebNNOrtEpLibraryPathForTesting` switch if it exists and the switch value
+  // is valid.
+  std::optional<std::pair<std::string, base::FilePath>> specified_ep_path_info;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtEpLibraryPathForTesting)) {
-    base::FilePath base_path =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+    std::wstring value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
             switches::kWebNNOrtEpLibraryPathForTesting);
-    if (base_path.empty()) {
-      return base::unexpected(
-          "The specified ONNX Runtime EP library path is empty.");
+    auto result = ParseEpLibraryPathSwitch(value);
+    if (!result.has_value()) {
+      LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                   << switches::kWebNNOrtEpLibraryPathForTesting << ": "
+                   << result.error() << " The switch will be ignored.";
+    } else {
+      specified_ep_path_info = result.value();
     }
-    specified_ep_path = base_path;
   }
 
   // Register the execution provider based on the GPU/NPU vendor id if it's not
@@ -361,11 +389,11 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     }
 
     // First try to load EP libraries from the specified path by
-    // `kWebNNOrtEpLibraryPathForTesting` switch. Otherwise, try to load it from
-    // the EP package path.
+    // `kWebNNOrtEpLibraryPathForTesting` switch if the EP name matches the
+    // specified EP name. Otherwise, try to load it from the EP package path.
     base::FilePath ep_library_path;
-    if (specified_ep_path) {
-      ep_library_path = specified_ep_path.value();
+    if (specified_ep_path_info && ep_name == specified_ep_path_info->first) {
+      ep_library_path = specified_ep_path_info->second;
     } else {
       const std::optional<base::FilePath>& ep_package_path =
           platform_functions->InitializePackageDependency(
