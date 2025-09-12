@@ -149,8 +149,6 @@ void PassthroughTouchEventQueue::SetAckStateForPendingTouchMovesFromSequence(
     return;
   }
 
-  CHECK(processing_acks_, base::NotFatalUntil::M143);
-
   // Ack all outstanding touches in the current sequence to unblock the
   // browser.
   for (auto& it : outstanding_touches_) {
@@ -259,6 +257,17 @@ void PassthroughTouchEventQueue::FlushQueue() {
           blink::mojom::InputEventResultSource::kBrowser,
           blink::mojom::InputEventResultState::kNoConsumerExists);
     AckTouchEventToClient(event, event.ack_source(), event.ack_state());
+  }
+}
+
+void PassthroughTouchEventQueue::OnTouchActionFromMain() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
+    // It's possible a deferred scroll might have actually started upon
+    // receiving touch action from main. And as a result ack of some touch moves
+    // would have been set locally in Browser itself in
+    // `SetAckStateForPendingTouchMovesFromSequence`.
+    AckCompletedEvents();
   }
 }
 
