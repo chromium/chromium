@@ -245,7 +245,8 @@ int main(int argc, char** argv) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
   if (use_gpu) {
-    command_line->AppendSwitchASCII(switches::kUseGL, gl::kGLImplementationEGLName);
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    gl::kGLImplementationANGLEName);
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     rendering_thread.task_runner()->PostTask(
