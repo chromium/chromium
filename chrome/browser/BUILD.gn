@@ -7257,9 +7257,10 @@ static_library("browser") {
   }
 
   if (enable_background_contents) {
-    sources += [
-      "background/background_contents_service.cc",
-      "background/background_contents_service_factory.cc",
+    allow_circular_includes_from += [
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/profiles/profile_manager.h gets componentized.
+      "//chrome/browser/background:impl",
     ]
   }
 

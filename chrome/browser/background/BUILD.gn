@@ -49,13 +49,32 @@ source_set("impl") {
     "//chrome/browser/task_manager",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+
+  if (enable_background_contents) {
+    sources += [
+      "background_contents_service.cc",
+      "background_contents_service_factory.cc",
+    ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/extensions",
+      "//chrome/browser/notifications",
+      "//chrome/browser/ui",
+      "//components/pref_registry",
+    ]
+    if (is_chromeos) {
+      deps += [ "//ash/constants" ]
+    }
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
+  sources = []
 
   if (!is_android) {
-    sources = [ "startup_launch_manager_unittest.cc" ]
+    sources += [ "startup_launch_manager_unittest.cc" ]
   }
 
   if (enable_background_contents) {
@@ -69,4 +88,22 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gmock",
   ]
+}
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "background_contents_test_waiter.cc",
+      "background_contents_test_waiter.h",
+    ]
+    public_deps = [
+      ":background",
+      "//base",
+    ]
+    deps = [
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }
