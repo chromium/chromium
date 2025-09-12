@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -85,7 +86,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
-GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceForTab(
     tabs::TabInterface* tab) {
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
@@ -323,7 +324,7 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 
 std::unique_ptr<views::View>
 GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
-  auto* instance = GetOrCreateGlicInstanceForTab(&tab);
+  GlicInstanceImpl* instance = GetOrCreateGlicInstanceForTab(&tab);
   CHECK(instance);
   return instance->CreateViewForSidePanel(&tab);
 }
@@ -350,9 +351,9 @@ void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
     tabs::TabInterface* tab) {
-  if (GlicInstance* instance = GetInstanceForTab(tab)) {
+  if (GlicInstanceImpl* instance = GetInstanceForTab(tab)) {
     return instance;
   }
 
@@ -365,7 +366,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
   return new_instance;
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceFor(
     const InstanceId& id) {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
@@ -374,10 +375,10 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
   return nullptr;
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
-  auto new_instance = std::make_unique<GlicInstance>(
+  auto new_instance = std::make_unique<GlicInstanceImpl>(
       profile_, std::make_unique<Host>(profile_), instance_id,
       weak_ptr_factory_.GetWeakPtr());
   auto* instance_ptr = new_instance.get();
@@ -391,8 +392,8 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty() {
   }
   auto instance_iter = instances_.find(*floating_instance_key_);
   CHECK(instance_iter != instances_.end());
-  GlicInstance* instance = instance_iter->second.get();
-  instance->Toggle(GlicInstance::EmbedderType::kFloating, nullptr);
+  GlicInstanceImpl* instance = instance_iter->second.get();
+  instance->Toggle(GlicInstanceImpl::EmbedderType::kFloating, nullptr);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
@@ -402,7 +403,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
   auto* instance = GetOrCreateGlicInstanceForTab(tab);
-  instance->Toggle(GlicInstance::EmbedderType::kSidePanel, tab);
+  instance->Toggle(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {

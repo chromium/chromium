@@ -27,7 +27,8 @@ class GlicSidePanelUi : public GlicUiEmbedder,
                         public Host::Delegate,
                         public GlicSidePanelCoordinator::StateObserver {
  public:
-  GlicSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
+  GlicSidePanelUi(Profile* profile,
+                  base::WeakPtr<tabs::TabInterface> tab,
                   GlicInstance& instance);
   ~GlicSidePanelUi() override;
 
@@ -59,6 +60,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
       coordinator_observation_{this};
   mojom::PanelState panel_state_;
 
+  raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   // Owns this.
   raw_ref<GlicInstance> instance_;

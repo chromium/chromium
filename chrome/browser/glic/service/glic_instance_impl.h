@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
-#define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
+#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_IMPL_H_
+#define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_IMPL_H_
 
 #include <variant>
 
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/service/glic_instance_delegate.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 
 class BrowserWindowInterface;
@@ -35,7 +35,7 @@ class GlicUiEmbedder;
 // GlicUiEmbedder to display the webcontents in. An instance (and host) exist
 // even if it has no GlicUiEmbedder showing the UI. A host could have many
 // different GlicUiEmbedders during its lifetime.
-class GlicInstance : public GlicInstanceDelegate {
+class GlicInstanceImpl : public GlicInstance, public Host::InstanceDelegate {
  public:
   enum class EmbedderType {
     kSidePanel,
@@ -50,25 +50,24 @@ class GlicInstance : public GlicInstanceDelegate {
     virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
   };
 
-  GlicInstance(Profile* profile,
-               std::unique_ptr<Host> host,
-               InstanceId instance_id,
-               base::WeakPtr<AttachmentDelegate> attachment_delegate);
-  ~GlicInstance() override;
+  GlicInstanceImpl(Profile* profile,
+                   std::unique_ptr<Host> host,
+                   InstanceId instance_id,
+                   base::WeakPtr<AttachmentDelegate> attachment_delegate);
+  ~GlicInstanceImpl() override;
 
-  GlicInstance(const GlicInstance&) = delete;
-  GlicInstance& operator=(const GlicInstance&) = delete;
+  GlicInstanceImpl(const GlicInstanceImpl&) = delete;
+  GlicInstanceImpl& operator=(const GlicInstanceImpl&) = delete;
 
   Profile* profile() { return profile_; }
-  Host& host() { return *host_; }
 
   void DisassociateWindow();
 
-  void AttachInstance() override;
-  void DetachInstance() override;
+  void AttachInstance();
+  void DetachInstance();
+  void CloseInstanceAndShutdown();
   bool IsShowing() const;
   BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
-  const InstanceId& id() const { return id_; }
 
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);
@@ -80,8 +79,11 @@ class GlicInstance : public GlicInstanceDelegate {
   void DisassociateFromTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
 
-  // InstanceDelegate:
-  void CloseInstanceAndShutdown() override;
+  // GlicInstance:
+  Host& host() override;
+  const InstanceId& id() const override;
+
+  // GlicInstance::Delegate:
   void CreateTab() override;
   void CreateTask() override;
   void PerformActions() override;
@@ -135,9 +137,9 @@ class GlicInstance : public GlicInstanceDelegate {
   std::optional<EmbedderKey> active_embedder_key_;
 
   std::unique_ptr<Host> host_;
-  base::WeakPtrFactory<GlicInstance> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
+#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_IMPL_H_

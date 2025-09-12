@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/service/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -21,13 +21,13 @@
 
 namespace glic {
 
-GlicInstance::EmbedderEntry::EmbedderEntry() = default;
-GlicInstance::EmbedderEntry::~EmbedderEntry() = default;
-GlicInstance::EmbedderEntry::EmbedderEntry(EmbedderEntry&&) = default;
-GlicInstance::EmbedderEntry& GlicInstance::EmbedderEntry::operator=(
+GlicInstanceImpl::EmbedderEntry::EmbedderEntry() = default;
+GlicInstanceImpl::EmbedderEntry::~EmbedderEntry() = default;
+GlicInstanceImpl::EmbedderEntry::EmbedderEntry(EmbedderEntry&&) = default;
+GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
     EmbedderEntry&&) = default;
 
-GlicInstance::GlicInstance(
+GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
     std::unique_ptr<Host> host,
     InstanceId instance_id,
@@ -37,27 +37,27 @@ GlicInstance::GlicInstance(
       id_(instance_id),
       host_(std::move(host)) {}
 
-GlicInstance::~GlicInstance() = default;
+GlicInstanceImpl::~GlicInstanceImpl() = default;
 
-void GlicInstance::AttachInstance() {
+void GlicInstanceImpl::AttachInstance() {
   if (!attachment_delegate_) {
     return;
   }
   attachment_delegate_->AttachInstance(this);
 }
 
-void GlicInstance::DetachInstance() {
+void GlicInstanceImpl::DetachInstance() {
   if (!attachment_delegate_) {
     return;
   }
   attachment_delegate_->DetachInstance(this);
 }
 
-bool GlicInstance::IsShowing() const {
+bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();
 }
 
-void GlicInstance::Show(EmbedderType type, tabs::TabInterface* tab) {
+void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   EmbedderKey new_key = GetEmbedderKey(type, tab);
 
   if (active_embedder_key_.has_value() &&
@@ -73,11 +73,11 @@ void GlicInstance::Show(EmbedderType type, tabs::TabInterface* tab) {
   embedder_to_show->Show();
 }
 
-void GlicInstance::Close() {
+void GlicInstanceImpl::Close() {
   DeactivateCurrentEmbedder();
 }
 
-void GlicInstance::Toggle(EmbedderType type, tabs::TabInterface* tab) {
+void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
   EmbedderKey key = GetEmbedderKey(type, tab);
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
     Close();
@@ -86,7 +86,7 @@ void GlicInstance::Toggle(EmbedderType type, tabs::TabInterface* tab) {
   }
 }
 
-std::unique_ptr<views::View> GlicInstance::CreateViewForSidePanel(
+std::unique_ptr<views::View> GlicInstanceImpl::CreateViewForSidePanel(
     tabs::TabInterface* tab) {
   if (auto* embedder = GetEmbedderForTab(tab)) {
     return embedder->CreateView();
@@ -94,7 +94,7 @@ std::unique_ptr<views::View> GlicInstance::CreateViewForSidePanel(
   return nullptr;
 }
 
-GlicUiEmbedder* GlicInstance::GetEmbedderForTab(tabs::TabInterface* tab) {
+GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
   auto it = embedders_.find(EmbedderKey(tab));
   if (it != embedders_.end()) {
     return it->second.embedder.get();
@@ -102,35 +102,35 @@ GlicUiEmbedder* GlicInstance::GetEmbedderForTab(tabs::TabInterface* tab) {
   return nullptr;
 }
 
-void GlicInstance::CloseInstanceAndShutdown() {
+void GlicInstanceImpl::CloseInstanceAndShutdown() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::CreateTab() {
+void GlicInstanceImpl::CreateTab() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::CreateTask() {
+void GlicInstanceImpl::CreateTask() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::PerformActions() {
+void GlicInstanceImpl::PerformActions() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::StopActorTask() {
+void GlicInstanceImpl::StopActorTask() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::PauseActorTask() {
+void GlicInstanceImpl::PauseActorTask() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::ResumeActorTask() {
+void GlicInstanceImpl::ResumeActorTask() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::GetZeroStateSuggestionsAndSubscribe() {
+void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe() {
   NOTIMPLEMENTED();
 }
-void GlicInstance::GetZeroStateSuggestionsForFocusedTab() {
+void GlicInstanceImpl::GetZeroStateSuggestionsForFocusedTab() {
   NOTIMPLEMENTED();
 }
 
-void GlicInstance::DisassociateFromTab(tabs::TabInterface* tab) {
+void GlicInstanceImpl::DisassociateFromTab(tabs::TabInterface* tab) {
   if (active_embedder_key_.has_value() &&
       active_embedder_key_.value() == EmbedderKey(tab)) {
     DeactivateCurrentEmbedder();
@@ -138,7 +138,7 @@ void GlicInstance::DisassociateFromTab(tabs::TabInterface* tab) {
   embedders_.erase(EmbedderKey(tab));
 }
 
-bool GlicInstance::IsOrphaned() const {
+bool GlicInstanceImpl::IsOrphaned() const {
   // An instance is orphaned if it has no tab associations. The floating
   // embedder does not count.
   for (const auto& [key, entry] : embedders_) {
@@ -149,7 +149,15 @@ bool GlicInstance::IsOrphaned() const {
   return true;
 }
 
-GlicInstance::EmbedderKey GlicInstance::GetEmbedderKey(
+Host& GlicInstanceImpl::host() {
+  return *host_;
+}
+
+const InstanceId& GlicInstanceImpl::id() const {
+  return id_;
+}
+
+GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(
     EmbedderType type,
     tabs::TabInterface* tab) {
   if (type == EmbedderType::kSidePanel) {
@@ -159,7 +167,7 @@ GlicInstance::EmbedderKey GlicInstance::GetEmbedderKey(
   return FloatingEmbedderKey();
 }
 
-GlicUiEmbedder* GlicInstance::GetActiveEmbedder() {
+GlicUiEmbedder* GlicInstanceImpl::GetActiveEmbedder() {
   if (!active_embedder_key_.has_value()) {
     return nullptr;
   }
@@ -170,7 +178,7 @@ GlicUiEmbedder* GlicInstance::GetActiveEmbedder() {
   return nullptr;
 }
 
-void GlicInstance::DeactivateCurrentEmbedder() {
+void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   auto* old_embedder = GetActiveEmbedder();
   if (!old_embedder) {
     active_embedder_key_.reset();
@@ -184,31 +192,32 @@ void GlicInstance::DeactivateCurrentEmbedder() {
   active_embedder_key_.reset();
 }
 
-GlicUiEmbedder* GlicInstance::CreateActiveEmbedderFor(const EmbedderKey& key) {
+GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
+    const EmbedderKey& key) {
   EmbedderEntry new_entry;
-  std::visit(
-      absl::Overload{
-          [&](FloatingEmbedderKey) {
-            new_entry.embedder = std::make_unique<GlicFloatingUi>();
-          },
-          [&](tabs::TabInterface* tab) {
-            new_entry.embedder =
-                std::make_unique<GlicSidePanelUi>(tab->GetWeakPtr(), *this);
-            auto* helper = GlicInstanceHelper::From(tab);
-            CHECK(helper);
-            new_entry.destruction_subscription = helper->SubscribeToDestruction(
-                base::BindRepeating(&GlicInstance::OnAssociatedTabDestroyed,
-                                    weak_ptr_factory_.GetWeakPtr()));
-          },
-      },
-      key);
+  std::visit(absl::Overload{
+                 [&](FloatingEmbedderKey) {
+                   new_entry.embedder = std::make_unique<GlicFloatingUi>();
+                 },
+                 [&](tabs::TabInterface* tab) {
+                   new_entry.embedder = std::make_unique<GlicSidePanelUi>(
+                       profile_, tab->GetWeakPtr(), *this);
+                   auto* helper = GlicInstanceHelper::From(tab);
+                   CHECK(helper);
+                   new_entry.destruction_subscription =
+                       helper->SubscribeToDestruction(base::BindRepeating(
+                           &GlicInstanceImpl::OnAssociatedTabDestroyed,
+                           weak_ptr_factory_.GetWeakPtr()));
+                 },
+             },
+             key);
 
   auto* embedder_ptr = new_entry.embedder.get();
   embedders_.insert_or_assign(key, std::move(new_entry));
   return embedder_ptr;
 }
 
-void GlicInstance::MaybeShowHostUi(GlicUiEmbedder* embedder) {
+void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   Host::Delegate* delegate = embedder->GetHostDelegate();
   if (!delegate) {
     return;
@@ -225,8 +234,8 @@ void GlicInstance::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   host_->PanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
-void GlicInstance::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
-                                            const InstanceId& instance_id) {
+void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
+                                                const InstanceId& instance_id) {
   DisassociateFromTab(tab);
   if (IsOrphaned() && attachment_delegate_) {
     attachment_delegate_->OnInstanceOrphaned(this);

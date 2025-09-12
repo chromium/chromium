@@ -18,7 +18,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/service/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -40,8 +40,9 @@ class Point;
 }  // namespace gfx
 
 namespace glic {
-class GlicInstanceCoordinatorImpl : public GlicWindowController,
-                                    public GlicInstance::AttachmentDelegate {
+class GlicInstanceCoordinatorImpl
+    : public GlicWindowController,
+      public GlicInstanceImpl::AttachmentDelegate {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -53,7 +54,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
                               GlicEnabling* enabling);
   ~GlicInstanceCoordinatorImpl() override;
 
-  // GlicInstance::AttachmentDelegate implementation
+  // GlicInstanceImpl::AttachmentDelegate implementation
   void AttachInstance(GlicInstance* instance) override;
   void DetachInstance(GlicInstance* instance) override;
   void OnInstanceOrphaned(GlicInstance* instance) override;
@@ -118,10 +119,10 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
       FloatyStateChangeCallback callback) override;
 
  private:
-  GlicInstance* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
-  GlicInstance* GetInstanceFor(const InstanceId& id);
-  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
-  GlicInstance* CreateGlicInstance();
+  GlicInstanceImpl* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* GetInstanceFor(const InstanceId& id);
+  GlicInstanceImpl* GetInstanceForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* CreateGlicInstance();
 
   void ToggleFloaty();
   void ToggleSidePanel(BrowserWindowInterface* browser);
@@ -138,7 +139,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
 
-  std::map<InstanceId, std::unique_ptr<GlicInstance>> instances_;
+  std::map<InstanceId, std::unique_ptr<GlicInstanceImpl>> instances_;
 
   // The instance ID of the one instance that is currently floating.
   std::optional<InstanceId> floating_instance_key_;

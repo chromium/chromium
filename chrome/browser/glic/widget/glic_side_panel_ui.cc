@@ -5,7 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/glic/service/glic_instance.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
@@ -18,9 +18,10 @@
 
 namespace glic {
 
-GlicSidePanelUi::GlicSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
+GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
+                                 base::WeakPtr<tabs::TabInterface> tab,
                                  GlicInstance& instance)
-    : tab_(tab), instance_(instance) {
+    : profile_(profile), tab_(tab), instance_(instance) {
   if (tab_) {
     coordinator_observation_.Observe(
         tab_->GetTabFeatures()->glic_side_panel_coordinator());
@@ -92,7 +93,7 @@ void GlicSidePanelUi::Show() {
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
   auto glic_view = std::make_unique<GlicView>(
-      instance_->profile(), GlicWidget::GetInitialSize(), nullptr);
+      profile_, GlicWidget::GetInitialSize(), nullptr);
   // TODO(refactor): use the right host when we have multiple hosts
   glic_view->SetWebContents(instance_->host().webui_contents());
   glic_view->UpdateBackgroundColor();

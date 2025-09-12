@@ -6,14 +6,11 @@
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_HELPER_H_
 
 #include "base/callback_list.h"
-#include "base/uuid.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace glic {
-
-// A type alias for the Glic instance identifier.
-using InstanceId = base::Uuid;
 
 // Attaches a InstanceId to a TabInterface. An instance of this class is
 // created by and owned by TabFeatures.
