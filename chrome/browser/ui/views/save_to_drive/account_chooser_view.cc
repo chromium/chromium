@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_radio_group_view.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -106,11 +107,15 @@ std::unique_ptr<views::View> AccountChooserView::CreateDriveLogoView() {
   drive_logo_view->SetBetweenChildSpacing(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   drive_logo_view->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          omnibox::kDriveLogoIcon, ui::kColorIcon,
+          vector_icons::kGoogleDriveIcon, ui::kColorIcon,
           ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_TOAST_BUBBLE_ICON_SIZE))));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   auto drive_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_DRIVE),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
