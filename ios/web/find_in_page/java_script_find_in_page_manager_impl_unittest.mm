@@ -86,7 +86,7 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
   }
 
   std::unique_ptr<FakeWebState> fake_web_state_;
-  raw_ptr<FakeWebFramesManager> fake_web_frames_manager_;
+  raw_ptr<FakeWebFramesManager, DanglingUntriaged> fake_web_frames_manager_;
   FakeFindInPageManagerDelegate fake_delegate_;
   base::UserActionTester user_action_tester_;
 };

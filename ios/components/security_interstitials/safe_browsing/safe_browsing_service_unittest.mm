@@ -348,12 +348,13 @@ class SafeBrowsingServiceTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
 
   // Owned by V4Database.
-  raw_ptr<safe_browsing::TestV4DatabaseFactory> v4_db_factory_;
+  raw_ptr<safe_browsing::TestV4DatabaseFactory, DanglingUntriaged>
+      v4_db_factory_;
   // Owned by V4GetHashProtocolManager.
-  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory>
+  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory, DanglingUntriaged>
       v4_get_hash_factory_;
   // Owned by V4Database.
-  raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
+  raw_ptr<safe_browsing::TestV4StoreFactory, DanglingUntriaged> store_factory_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
 };

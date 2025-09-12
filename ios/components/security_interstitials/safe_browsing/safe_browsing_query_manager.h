@@ -91,13 +91,13 @@ class SafeBrowsingQueryManager
     ~QueryData();
 
     // The SafeBrowsingQueryManager related to the query.
-    raw_ptr<SafeBrowsingQueryManager> manager;
+    raw_ptr<SafeBrowsingQueryManager, DanglingUntriaged> manager;
     // The underlying query.
     raw_ref<const SafeBrowsingQueryManager::Query> query;
     // The type of query.
     const QueryType type;
     // The result of the query.
-    raw_ref<const SafeBrowsingQueryManager::Result> result;
+    raw_ref<const SafeBrowsingQueryManager::Result, DanglingUntriaged> result;
     // The PerformedCheck for a query.
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
   };

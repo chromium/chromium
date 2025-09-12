@@ -184,7 +184,7 @@ class FakeWebState : public WebState {
   void OnDownloadFinished(NSError* error);
 
  private:
-  raw_ptr<BrowserState> browser_state_ = nullptr;
+  raw_ptr<BrowserState, DanglingUntriaged> browser_state_ = nullptr;
   NSString* stable_identifier_ = nil;
   const WebStateID unique_identifier_;
   bool web_usage_enabled_ = true;

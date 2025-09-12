@@ -10,8 +10,8 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 
 @implementation FakeDownloadManagerTabHelperDelegate {
   std::unique_ptr<web::DownloadTask::State> _state;
-  raw_ptr<web::DownloadTask> _decidingPolicyForDownload;
-  raw_ptr<web::DownloadTask> _currentDownloadTask;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> _decidingPolicyForDownload;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> _currentDownloadTask;
   DecidePolicyForDownloadHandler _decidePolicyForDownloadHandler;
   BOOL _shouldObserveFullscreen;
 }

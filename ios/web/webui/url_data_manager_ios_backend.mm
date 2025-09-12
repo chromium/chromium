@@ -445,7 +445,7 @@ class ChromeProtocolHandler
   }
 
  private:
-  raw_ptr<BrowserState> browser_state_;
+  raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
 
   // True when generated from an incognito profile.
   const bool is_incognito_;

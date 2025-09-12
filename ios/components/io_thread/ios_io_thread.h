@@ -165,7 +165,7 @@ class IOSIOThread : public web::WebThreadDelegate {
   // These member variables are initialized in Init() and do not change for the
   // lifetime of the IO thread.
 
-  raw_ptr<Globals> globals_;
+  raw_ptr<Globals, DanglingUntriaged> globals_;
 
   net::HttpNetworkSessionParams params_;
 

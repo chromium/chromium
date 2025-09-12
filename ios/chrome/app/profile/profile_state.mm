@@ -54,7 +54,7 @@
 @end
 
 @implementation ProfileState {
-  raw_ptr<ProfileIOS> _profile;
+  raw_ptr<ProfileIOS, DanglingUntriaged> _profile;
 
   // Agents attached to this profile state.
   NSMutableArray<id<ProfileStateAgent>>* _agents;

@@ -41,7 +41,7 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
   struct State {
     State();
     ~State();
-    raw_ptr<WebState> web_state = nullptr;
+    raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
     int match_count = -1;
     NSString* query;
     int index = -1;

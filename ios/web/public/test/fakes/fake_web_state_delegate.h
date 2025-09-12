@@ -18,7 +18,7 @@ namespace web {
 
 // Encapsulates parameters passed to CreateNewWebState.
 struct FakeCreateNewWebStateRequest {
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   GURL url;
   GURL opener_url;
   bool initiated_by_user = false;
@@ -51,7 +51,7 @@ struct FakeAuthenticationRequest {
   FakeAuthenticationRequest();
   FakeAuthenticationRequest(FakeAuthenticationRequest&&);
   ~FakeAuthenticationRequest();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   NSURLProtectionSpace* protection_space;
   NSURLCredential* credential;
   WebStateDelegate::AuthCallback auth_callback;

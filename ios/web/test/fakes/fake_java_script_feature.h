@@ -61,7 +61,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 
-  raw_ptr<WebState> last_received_web_state_ = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> last_received_web_state_ = nullptr;
   std::unique_ptr<const ScriptMessage> last_received_message_;
 };
 

@@ -157,7 +157,7 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
 
  private:
   // UI handler class which communicates with test WebUI page.
-  raw_ptr<TestUIHandler> ui_handler_;
+  raw_ptr<TestUIHandler, DanglingUntriaged> ui_handler_;
 };
 }  // namespace
 
