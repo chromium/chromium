@@ -77,7 +77,7 @@ public class TopControlsStackerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer);
     }
 
@@ -91,12 +91,14 @@ public class TopControlsStackerUnitTest {
                         /* contributesToTotalHeight= */ true,
                         100);
         mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
         Assert.assertEquals(
                 "Total height should be 100.",
                 100,
                 mTopControlsStacker.getVisibleTopControlsTotalHeight());
 
         mTopControlsStacker.removeControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
         Assert.assertEquals(
                 "Total height should be 0.",
                 0,
@@ -121,6 +123,7 @@ public class TopControlsStackerUnitTest {
                         50);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(tabstrip);
+        mTopControlsStacker.requestLayerUpdate(false);
 
         Assert.assertEquals(
                 "Total height should be 150.",
@@ -148,6 +151,7 @@ public class TopControlsStackerUnitTest {
                         50);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(tabstrip);
+        mTopControlsStacker.requestLayerUpdate(false);
 
         Assert.assertEquals(
                 "Total height should be 100.",
@@ -173,6 +177,7 @@ public class TopControlsStackerUnitTest {
                         5);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(progressBar);
+        mTopControlsStacker.requestLayerUpdate(false);
 
         Assert.assertEquals(
                 "Total height should be 100.",
@@ -198,6 +203,7 @@ public class TopControlsStackerUnitTest {
                         50);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(tabstrip);
+        mTopControlsStacker.requestLayerUpdate(false);
 
         Assert.assertEquals(
                 "Total height should be 150.",

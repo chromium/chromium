@@ -135,7 +135,11 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     public void setScrollingDisabled(boolean disabled) {
         if (mScrollingDisabled == disabled) return;
         mScrollingDisabled = disabled;
-        updateTopControlsHeight();
+
+        // This call can potentially still change the browser control's shown ration when minHeight
+        // is updated when the controls is scrolled off, or when BrowserControlsState.HIDDEN.
+        // We intentionally disabling animation updates for those.
+        requestLayerUpdate(false);
     }
 
     /**
@@ -145,8 +149,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * @return The total height of all visible controls in pixels.
      */
     public int getVisibleTopControlsTotalHeight() {
-        // TODO(wenyufu): Introduce #requestLayerUpdate(boolean) to trigger height recalculation.
-        recalculateHeights();
         return mTotalHeight;
     }
 
@@ -157,8 +159,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * @return The min height of all visible controls in pixels.
      */
     public int getVisibleTopControlsMinHeight() {
-        // TODO(wenyufu): Introduce #requestLayerUpdate(boolean) to trigger height recalculation.
-        recalculateHeights();
         return mMinHeight;
     }
 
@@ -170,6 +170,19 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      */
     public @Nullable OffsetTag getTopControlsOffsetTag() {
         return mTopControlsOffsetTag;
+    }
+
+    /**
+     * Trigger the browser controls height update based on the current layer status. If there's
+     * already an animated transition running, this call might cause it to skip to the end state.
+     *
+     * @param animate Whether animate the browser controls size change.
+     */
+    public void requestLayerUpdate(boolean animate) {
+        recalculateHeights();
+        updateTopControlsHeight(animate);
+
+        // Add more implementations here when necessary (e.g. offset calculation)
     }
 
     private void recalculateHeights() {
@@ -202,9 +215,14 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         return false;
     }
 
-    private void updateTopControlsHeight() {
-        recalculateHeights();
+    private void updateTopControlsHeight(boolean requireAnimations) {
+        if (requireAnimations) {
+            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+        }
         mBrowserControlsSizer.setTopControlsHeight(mTotalHeight, mMinHeight);
+        if (requireAnimations) {
+            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+        }
     }
 
     // BrowserControlsStateProvider.Observer implementation:
@@ -233,7 +251,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (mBrowserControlsState == constraints) return;
         mBrowserControlsState = constraints;
         if (mScrollingDisabled) {
-            updateTopControlsHeight();
+            requestLayerUpdate(false);
         }
     }
 

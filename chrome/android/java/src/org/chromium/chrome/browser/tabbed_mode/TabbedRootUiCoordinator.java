@@ -1299,6 +1299,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         final boolean animate =
                 !sDisableTopControlsAnimationForTesting
                         && !AppHeaderUtils.isAppInDesktopWindow(getDesktopWindowStateManager());
+        if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
+            mTopControlsStacker.requestLayerUpdate(animate);
+            return;
+        }
+
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
@@ -1316,13 +1321,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
         final int bookmarkBarHeight = getBookmarkBarHeight();
 
-        // When the refactor feature is enabled, fetch height from the TopControlsStacker.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOP_CONTROLS_REFACTOR)) {
-            topControlsNewHeight = mTopControlsStacker.getVisibleTopControlsTotalHeight();
-        } else {
-            topControlsNewHeight =
-                    bookmarkBarHeight + toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
-        }
+        topControlsNewHeight =
+                bookmarkBarHeight + toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
 
         if (tabStripHeight > 0 && !isTablet) {
             String msg =
