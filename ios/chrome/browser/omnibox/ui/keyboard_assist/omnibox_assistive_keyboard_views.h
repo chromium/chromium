@@ -10,9 +10,10 @@
 @protocol HelpCommands;
 @protocol OmniboxAssistiveKeyboardDelegate;
 @class OmniboxKeyboardAccessoryView;
+@protocol OmniboxTextInput;
 class TemplateURLService;
 
-// Adds a keyboard assistive view [1] to `textField`. The assistive view
+// Adds a keyboard assistive view [1] to `textInput`. The assistive view
 // contains among other things a button to quickly enter `dotComTLD`, and the
 // callbacks are handled via `delegate`. `dotComTLD` must not be nil.
 // `templateURLService' must be so the keyboard can be keep track of the default
@@ -25,7 +26,7 @@ class TemplateURLService;
 //
 // Returns the keyboard accessory view if on iPhone, otherwise returns nil.
 OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
-    UITextField* textField,
+    id<OmniboxTextInput> textInput,
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
     TemplateURLService* templateURLService,

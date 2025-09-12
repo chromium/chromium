@@ -1110,6 +1110,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return self;
 }
 
+- (UIResponder<UITextInput>*)scribbleInput {
+  return self;
+}
+
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidChange:(id)sender {

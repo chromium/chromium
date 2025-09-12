@@ -212,10 +212,6 @@ using base::UserMetricsAction;
 
 #pragma mark - public methods
 
-- (OmniboxTextFieldIOS*)textField {
-  return self.view.textField;
-}
-
 - (id<OmniboxTextInput>)textInput {
   return self.view.textField;
 }

@@ -16,7 +16,9 @@
 /// typing. Unlike a normal iOS selection, no selection handles are displayed.
 /// - Inline autocomplete: optional autocomplete text following the caret.
 /// - Additional text: optional text after user and autocomplete text.
-@protocol OmniboxTextInput <UITextInput, OmniboxKeyboardDelegate>
+@protocol OmniboxTextInput <UITextInput,
+                            OmniboxKeyboardDelegate,
+                            UITextPasteConfigurationSupporting>
 
 /// The delegate for this text input.
 @property(nonatomic, weak) id<OmniboxTextInputDelegate>
@@ -38,8 +40,17 @@
 /// The text displayed in the text input.
 @property(nonatomic, copy) NSString* text;
 
+/// Whether the text input is editing.
+@property(nonatomic, readonly, getter=isEditing) BOOL editing;
+
+/// Input accessory view.
+@property(nonatomic, strong) UIView* inputAccessoryView;
+
 /// Returns the underlying view of the text input.
 - (UIView*)view;
+
+/// Returns the text input responder for Scribble.
+- (UIResponder<UITextInput>*)scribbleInput;
 
 /// Use to make the view or any subview that is the first responder resign
 /// (optionally force)

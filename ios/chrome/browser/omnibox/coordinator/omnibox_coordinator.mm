@@ -179,7 +179,6 @@
   DCHECK(_client.get());
 
   _omniboxTextModel = std::make_unique<OmniboxTextModel>(_client.get());
-  OmniboxTextFieldIOS* textField = viewController.textField;
   id<OmniboxTextInput> textInput = viewController.textInput;
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
@@ -194,7 +193,7 @@
                                     autocompleteController]];
 
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
-  [textField setPasteDelegate:self.pasteDelegate];
+  [textInput setPasteDelegate:self.pasteDelegate];
 
   _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
   _keyboardMediator.applicationCommandsHandler =
@@ -209,7 +208,7 @@
   _keyboardMediator.browserCoordinatorCommandsHandler =
       static_cast<id<BrowserCoordinatorCommands>>(
           browser->GetCommandDispatcher());
-  _keyboardMediator.omniboxTextField = textField;
+  _keyboardMediator.omniboxTextInput = textInput;
   _keyboardMediator.delegate = self;
 
   _omniboxTextController = [[OmniboxTextController alloc]
@@ -361,7 +360,7 @@
 }
 
 - (UIResponder<UITextInput>*)scribbleInput {
-  return self.viewController.textField;
+  return [self.viewController.textInput scribbleInput];
 }
 
 #pragma mark - OmniboxAssistiveKeyboardMediatorDelegate
@@ -378,7 +377,7 @@
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-        self.viewController.textField, kDotComTLD, _keyboardMediator,
+        self.viewController.textInput, kDotComTLD, _keyboardMediator,
         templateURLService,
         HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));
   }

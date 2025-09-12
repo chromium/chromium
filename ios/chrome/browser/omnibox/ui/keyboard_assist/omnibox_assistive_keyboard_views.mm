@@ -10,10 +10,11 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_input_assistant_items.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_keyboard_accessory_view.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ui/base/device_form_factor.h"
 
 OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
-    UITextField* textField,
+    id<OmniboxTextInput> textInput,
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
     TemplateURLService* templateURLService,
@@ -26,22 +27,22 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
   // LINT.ThenChange(//ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h:IOSOmniboxAssistiveKey)
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    textField.inputAssistantItem.leadingBarButtonGroups =
-        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate, textField);
-    textField.inputAssistantItem.trailingBarButtonGroups =
+    textInput.view.inputAssistantItem.leadingBarButtonGroups =
+        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate, textInput);
+    textInput.view.inputAssistantItem.trailingBarButtonGroups =
         OmniboxAssistiveKeyboardTrailingBarButtonGroups(delegate, buttonTitles);
   } else {
-    textField.inputAssistantItem.leadingBarButtonGroups = @[];
-    textField.inputAssistantItem.trailingBarButtonGroups = @[];
+    textInput.view.inputAssistantItem.leadingBarButtonGroups = @[];
+    textInput.view.inputAssistantItem.trailingBarButtonGroups = @[];
     OmniboxKeyboardAccessoryView* keyboardAccessoryView =
         [[OmniboxKeyboardAccessoryView alloc] initWithButtons:buttonTitles
                                                      delegate:delegate
-                                                  pasteTarget:textField
+                                                  pasteTarget:textInput
                                            templateURLService:templateURLService
-                                                    textField:textField
+                                                    responder:textInput.view
                                                   helpHandler:helpHandler];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-    [textField setInputAccessoryView:keyboardAccessoryView];
+    [textInput setInputAccessoryView:keyboardAccessoryView];
     return keyboardAccessoryView;
   }
 

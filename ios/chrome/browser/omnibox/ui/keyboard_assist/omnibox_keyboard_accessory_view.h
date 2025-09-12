@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
 @protocol HelpCommands;
+@protocol OmniboxTextInput;
 class TemplateURLService;
 
 // Accessory View above the keyboard.
@@ -24,7 +25,7 @@ class TemplateURLService;
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
-                      textField:(UITextField*)textField
+                      responder:(UIResponder*)responder
                     helpHandler:(id<HelpCommands>)helpHandler
     NS_DESIGNATED_INITIALIZER;
 

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -70,8 +70,8 @@
 }
 
 - (void)keyPressed:(NSString*)title {
-  // Event can happen when the textfield is not editing (crbug.com/349002705).
-  if (!self.omniboxTextField.isEditing) {
+  // Event can happen when the text input is not editing (crbug.com/349002705).
+  if (!self.omniboxTextInput.isEditing) {
     return;
   }
 
@@ -79,7 +79,7 @@
                                 AssistiveKeyStringToEnumValue(title));
 
   NSString* text = [self updateTextForDotCom:title];
-  [self.omniboxTextField insertTextWhileEditing:text];
+  [self.omniboxTextInput insertTextWhileEditing:text];
 }
 
 #pragma mark - Private
@@ -87,12 +87,12 @@
 /// Returns 'com' without the period if cursor is directly after a period.
 - (NSString*)updateTextForDotCom:(NSString*)text {
   if ([text isEqualToString:kDotComTLD]) {
-    UITextRange* textRange = [self.omniboxTextField selectedTextRange];
-    NSInteger pos = [self.omniboxTextField
-        offsetFromPosition:[self.omniboxTextField beginningOfDocument]
+    UITextRange* textRange = [self.omniboxTextInput selectedTextRange];
+    NSInteger pos = [self.omniboxTextInput
+        offsetFromPosition:[self.omniboxTextInput beginningOfDocument]
                 toPosition:textRange.start];
     if (pos > 0 &&
-        [[self.omniboxTextField text] characterAtIndex:pos - 1] == '.') {
+        [[self.omniboxTextInput text] characterAtIndex:pos - 1] == '.') {
       return [kDotComTLD substringFromIndex:1];
     }
   }

@@ -29,7 +29,6 @@
 @property(nonatomic, assign) BOOL searchOnlyUI;
 
 // The text input used by this view controller.
-@property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
 @property(nonatomic, readonly, strong) id<OmniboxTextInput> textInput;
 
 // The view, which contains a text field view.

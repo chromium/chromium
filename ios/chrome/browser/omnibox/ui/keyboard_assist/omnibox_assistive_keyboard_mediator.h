@@ -12,7 +12,7 @@
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
-@class OmniboxTextFieldIOS;
+@protocol OmniboxTextInput;
 @protocol QRScannerCommands;
 @class OmniboxAssistiveKeyboardMediator;
 
@@ -33,7 +33,7 @@
     browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
-@property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
+@property(nonatomic, weak) id<OmniboxTextInput> omniboxTextInput;
 
 @property(nonatomic, weak) id<OmniboxAssistiveKeyboardMediatorDelegate>
     delegate;
