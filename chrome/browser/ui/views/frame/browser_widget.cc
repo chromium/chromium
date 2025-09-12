@@ -15,7 +15,6 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -163,7 +162,6 @@ void BrowserWidget::InitBrowserWidget() {
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.name = "BrowserWidget";
   params.delegate = browser_view_;
-  params.headless_mode = headless::IsHeadlessMode();
 
   Browser* browser = browser_view_->browser();
   if (browser->is_type_picture_in_picture()) {

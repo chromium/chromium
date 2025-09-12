@@ -455,7 +455,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   if (!is_tooltip) {
     tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
   }
-  is_headless_mode_window_ = params.ShouldInitAsHeadless();
+  is_headless_mode_window_ = display::Screen::Get()->IsHeadless();
 
   if (params.workspace.length()) {
     std::string restoration_data;

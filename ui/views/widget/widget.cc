@@ -222,18 +222,6 @@ ui::ZOrderLevel Widget::InitParams::EffectiveZOrderLevel() const {
   }
 }
 
-bool Widget::InitParams::ShouldInitAsHeadless() const {
-  if (headless_mode) {
-    return true;
-  }
-
-  if (Widget* top_level_widget = GetTopLevelWidgetForNativeView(parent)) {
-    return top_level_widget->is_headless();
-  }
-
-  return false;
-}
-
 void Widget::InitParams::SetParent(Widget* parent_widget) {
   SetParent(parent_widget->GetNativeView());
 }
@@ -481,7 +469,6 @@ void Widget::Init(InitParams params) {
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
-  is_headless_ = params.ShouldInitAsHeadless();
   is_autosized_ = params.autosize;
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred &&

@@ -415,15 +415,7 @@ Widget* ShowTestBubble(Browser* browser) {
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
-  // Desktop window widget should be headless.
-  gfx::NativeWindow desktop_window = browser()->window()->GetNativeWindow();
-  Widget* desktop_widget = Widget::GetWidgetForNativeWindow(desktop_window);
-  ASSERT_TRUE(desktop_widget);
-  ASSERT_TRUE(desktop_widget->is_headless());
-
-  // Bubble widget is expected to be headless.
   Widget* bubble_widget = ShowTestBubble(browser());
-  EXPECT_TRUE(bubble_widget->is_headless());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows and Mac in headless mode we still have actual platform
@@ -442,8 +434,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleSize) {
   Widget* bubble_widget = ShowTestBubble(browser());
-  ASSERT_TRUE(bubble_widget->is_headless());
-
   gfx::Rect bounds = test::GetPlatformWindowExpectedBounds(bubble_widget);
   EXPECT_FALSE(bounds.IsEmpty());
 }
