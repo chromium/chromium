@@ -362,6 +362,10 @@ void WindowAndroid::OnWindowPointerLockRelease(JNIEnv* env) {
   pointer_locking_view_ = nullptr;
 }
 
+void WindowAndroid::OnWindowPositionChanged(JNIEnv* env) {
+  DispatchWindowPositionChange();
+}
+
 bool WindowAndroid::SetHasKeyboardCapture(bool keyboard_capture) {
   JNIEnv* env = AttachCurrentThread();
   return Java_WindowAndroid_setHasKeyboardCapture(env, GetJavaObject(),

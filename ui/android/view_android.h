@@ -193,6 +193,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void OnVerticalScrollDirectionChanged(bool direction_up,
                                         float current_scroll_ratio);
   void OnControlsResizeViewChanged(bool controls_resize_view);
+  void DispatchWindowPositionChange();
 
   // Gets the Visual Viewport inset to apply in physical pixels.
   int GetViewportInsetBottom();

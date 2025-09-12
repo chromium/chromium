@@ -32,6 +32,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.window.TrustedPresentationThresholds;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -65,6 +66,7 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.gfx.OverlayTransform;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -216,6 +218,9 @@ public class WindowAndroid
 
     private @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
 
+    private @Nullable WindowInsetObserver mWindowInsetObserver;
+    private @Nullable Rect mLastWindowBounds;
+
     /**
      * @param context The application {@link Context}.
      * @param trackOcclusion Whether to track occlusion of the window.
@@ -242,6 +247,18 @@ public class WindowAndroid
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
+        if (mInsetObserver != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && UiAndroidFeatureList.sAndroidUseCorrectWindowBounds.isEnabled()) {
+            mWindowInsetObserver =
+                    new WindowInsetObserver() {
+                        @Override
+                        public void onInsetChanged() {
+                            maybeSendWindowPositionChangedEventToNative();
+                        }
+                    };
+            mInsetObserver.addObserver(mWindowInsetObserver);
+        }
     }
 
     /**
@@ -910,8 +927,13 @@ public class WindowAndroid
         return mNativeWindowAndroid;
     }
 
+    /* package */ void setNativePointerForTesting(long ptr) {
+        mNativeWindowAndroid = ptr;
+    }
+
     /**
      * Returns current wheel scroll factor (physical pixels per mouse scroll click).
+     *
      * @return wheel scroll factor or zero if attr retrieval fails.
      */
     private float getMouseWheelScrollFactor() {
@@ -1393,6 +1415,27 @@ public class WindowAndroid
         }; // x, y, width, height
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    private void maybeSendWindowPositionChangedEventToNative() {
+        if (mNativeWindowAndroid == 0) {
+            return;
+        }
+
+        final Context context = mContextRef.get();
+        if (context == null) {
+            return;
+        }
+
+        final WindowManager wm = context.getSystemService(WindowManager.class);
+        final Rect boundsPx = wm.getCurrentWindowMetrics().getBounds();
+        if (boundsPx.equals(mLastWindowBounds)) {
+            return;
+        }
+        mLastWindowBounds = boundsPx;
+
+        WindowAndroidJni.get().onWindowPositionChanged(mNativeWindowAndroid);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -1424,5 +1467,7 @@ public class WindowAndroid
         void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
 
         void onWindowPointerLockRelease(long nativeWindowAndroid);
+
+        void onWindowPositionChanged(long nativeWindowAndroid);
     }
 }

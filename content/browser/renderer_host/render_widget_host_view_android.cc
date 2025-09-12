@@ -2965,6 +2965,15 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
         std::nullopt);
 }
 
+void RenderWidgetHostViewAndroid::OnWindowPositionChanged() {
+  RenderWidgetHostDelegate* delegate = host()->delegate();
+  if (!delegate) {
+    return;
+  }
+
+  delegate->SendScreenRects();
+}
+
 void RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged(bool visible) {
   TRACE_EVENT1("browser",
                "RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged",

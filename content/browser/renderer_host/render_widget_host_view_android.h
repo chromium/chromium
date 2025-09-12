@@ -287,6 +287,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnSizeChanged() override;
   void OnPhysicalBackingSizeChanged(
       std::optional<base::TimeDelta> deadline_override) override;
+  void OnWindowPositionChanged() override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   void ShowInterestInElement(int) override;

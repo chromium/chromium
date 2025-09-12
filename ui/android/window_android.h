@@ -118,6 +118,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   void OnWindowPointerLockRelease(JNIEnv* env);
 
+  void OnWindowPositionChanged(JNIEnv* env);
+
   void ShowToast(const std::string text);
 
   // Return whether the specified Android permission is granted.

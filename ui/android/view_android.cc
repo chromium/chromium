@@ -565,6 +565,16 @@ void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {
   }
 }
 
+void ViewAndroid::DispatchWindowPositionChange() {
+  if (event_handler_) {
+    event_handler_->OnWindowPositionChanged();
+  }
+
+  for (ViewAndroid* child : children_) {
+    child->DispatchWindowPositionChange();
+  }
+}
+
 gfx::Size ViewAndroid::GetPhysicalBackingSize() const {
   return physical_size_;
 }
