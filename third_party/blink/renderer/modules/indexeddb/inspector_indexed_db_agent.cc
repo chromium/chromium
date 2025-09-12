@@ -759,9 +759,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
     }
 
     IDBRequest* idb_request;
-    // TODO(crbug.com/326322993): Remove the empty check below once the
-    // devtools-frontend is updated accordingly.
-    if (index_name_.has_value() && !index_name_->empty()) {
+    if (index_name_.has_value()) {
       IDBIndex* idb_index = IndexForObjectStore(idb_object_store, *index_name_);
       if (!idb_index) {
         request_callback_->sendFailure(
