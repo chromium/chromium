@@ -10027,6 +10027,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_NTP_CLOSE_BUTTON_ARIA_LABEL" desc="The screen reader text describing the split view new tab page close button.">
         Close this view
       </message>
+      <message name="IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL" desc="A label for the drag entrypoint indicating it can create a split view.">
+        Create split view
+      </message>
 
       <!-- Vertical Tab Strings -->
       <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
