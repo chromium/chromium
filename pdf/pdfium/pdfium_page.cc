@@ -1071,6 +1071,7 @@ PDFiumPage::Area PDFiumPage::GetLinkTarget(FPDF_LINK link, LinkTarget* target) {
 
 PDFiumPage::Area PDFiumPage::GetCharInfo(const gfx::PointF& point,
                                          int* char_index,
+                                         PdfRect* char_bounds,
                                          int* form_type,
                                          LinkTarget* target) {
   if (!available_) {
@@ -1081,6 +1082,11 @@ PDFiumPage::Area PDFiumPage::GetCharInfo(const gfx::PointF& point,
   constexpr double kTolerance = 20.0;
   *char_index = FPDFText_GetCharIndexAtPos(GetTextPage(), point.x(), point.y(),
                                            kTolerance, kTolerance);
+  if (*char_index >= 0) {
+    FPDF_BOOL rv = FPDFText_GetLooseCharBox(GetTextPage(), *char_index,
+                                            &FsRectFFromPdfRect(*char_bounds));
+    CHECK(rv);
+  }
 
   FPDF_LINK link = FPDFLink_GetLinkAtPoint(GetPage(), point.x(), point.y());
   int control = FPDFPage_HasFormFieldAtPoint(engine_->form(), GetPage(),

@@ -1429,9 +1429,9 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
 
   point_data.page_index = page;
   point_data.pdf_point = DeviceToPdf(page, point);
-  PDFiumPage::Area result =
-      pages_[page]->GetCharInfo(point_data.pdf_point, &point_data.char_index,
-                                &point_data.form_type, &point_data.target);
+  PDFiumPage::Area result = pages_[page]->GetCharInfo(
+      point_data.pdf_point, &point_data.char_index, &point_data.char_bounds,
+      &point_data.form_type, &point_data.target);
   point_data.area =
       (client_->IsPrintPreview() && result == PDFiumPage::WEBLINK_AREA)
           ? PDFiumPage::NONSELECTABLE_AREA

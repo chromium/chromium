@@ -671,6 +671,7 @@ class PDFiumEngine : public DocumentLoader::Client,
     PDFiumPage::Area area = PDFiumPage::NONSELECTABLE_AREA;
     int page_index = -1;
     int char_index = -1;
+    PdfRect char_bounds;
     int form_type = FPDF_FORMFIELD_UNKNOWN;
     PDFiumPage::LinkTarget target;
     gfx::PointF pdf_point;

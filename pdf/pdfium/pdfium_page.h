@@ -224,10 +224,12 @@ class PDFiumPage {
   //
   // Also writes to the following non-optional out-parameters:
   // - `char_index`, if `point` is near a character.
+  // - `char_bounds`, if `char_index` is valid.
   // - `form_type, if `point` is over a form.
   // - `target`, if the area is `WEBLINK_AREA` or `DOCLINK_AREA`.
   Area GetCharInfo(const gfx::PointF& point,
                    int* char_index,
+                   PdfRect* char_bounds,
                    int* form_type,
                    LinkTarget* target);
 
