@@ -317,16 +317,14 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
     case Program::kTaiyaki:
       return RegionalCapabilitiesService::ChoiceScreenDesign{
           .title_string_id = IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE,
-          // TODO(crbug.com/433501136): Need to add the string for the
-          // subtitle 1.
-          .subtitle_1_string_id = IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE,
+          .subtitle_1_string_id =
+              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_WITH_DEFINITION1,
           .subtitle_1_learn_more_suffix_string_id =
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK,
           .subtitle_1_learn_more_a11y_string_id =
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL,
-          // TODO(crbug.com/433501136): Need to add the string for the
-          // subtitle 2.
-          .subtitle_2_string_id = IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE,
+          .subtitle_2_string_id =
+              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_WITH_DEFINITION2,
       };
     case Program::kWaffle:
       return RegionalCapabilitiesService::ChoiceScreenDesign{
