@@ -4949,22 +4949,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Zram.PSISomeOrigDataSizeMB" units="MB"
-    expires_after="2025-09-07">
-  <owner>erikchen@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    This is a multi-dimensional metric that includes information from two
-    existing metrics: ChromeOS.Zram.OrigDataSizeMB and
-    ChromeOS.CWP.PSIMemPressure.Some. There are exactly 300 buckets. To
-    interpret the bucket label, divide the bucket by 20 to get OrigDataSizeMB.
-    The result is memory usage in gigabytes. The ranges are [0, 1), [1, 2), ...,
-    [14, infinity). Modulus the bucket by 20 to get PSIMemPressure.Some (ranges
-    of 0.05, 20 buckets). The metric is logged every 10 seconds.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Zram.{CountMetric}" units="count"
     expires_after="never">
 <!-- expires-never: Used to monitor zram key metrics in number. -->
