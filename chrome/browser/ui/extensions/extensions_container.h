@@ -14,7 +14,6 @@
 #include "extensions/common/extension_id.h"
 
 class ToolbarActionViewController;
-class ToolbarActionsBarBubbleDelegate;
 class ToolbarActionView;
 
 // An interface for containers in the toolbar that host extensions.
@@ -65,10 +64,6 @@ class ExtensionsContainer {
   // returning true if a popup is shown and invoking |callback| upon completion.
   virtual bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                                 ShowPopupCallback callback) = 0;
-
-  // Displays the given |bubble| once the toolbar is no longer animating.
-  virtual void ShowToolbarActionBubble(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
 
   // Toggle the Extensions menu (as if the user clicked the puzzle piece icon).
   virtual void ToggleExtensionsMenu() = 0;

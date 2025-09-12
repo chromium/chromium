@@ -11345,7 +11345,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/toolbar",
-      "//chrome/browser/ui/toolbar:test_support",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/infobars",

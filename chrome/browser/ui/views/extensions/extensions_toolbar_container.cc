@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -657,20 +656,6 @@ bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
   action->TriggerPopupForAPI(std::move(callback));
 
   return true;
-}
-
-void ExtensionsToolbarContainer::ShowToolbarActionBubble(
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller) {
-  const std::string extension_id = controller->GetAnchorActionId();
-
-  views::View* const anchor_view = GetViewForId(extension_id);
-
-  views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<ToolbarActionsBarBubbleViews>(
-          anchor_view ? anchor_view : GetExtensionsButton(),
-          std::move(controller)));
-
-  ShowWidgetForExtension(widget, extension_id);
 }
 
 void ExtensionsToolbarContainer::ToggleExtensionsMenu() {

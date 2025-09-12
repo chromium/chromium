@@ -204,8 +204,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                     base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
-  void ShowToolbarActionBubble(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
   void UpdateToolbarActionHoverCard(

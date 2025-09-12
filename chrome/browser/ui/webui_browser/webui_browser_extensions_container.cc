@@ -178,11 +178,6 @@ bool WebUIBrowserExtensionsContainer::ShowToolbarActionPopupForAPICall(
   return true;
 }
 
-void WebUIBrowserExtensionsContainer::ShowToolbarActionBubble(
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) {
-  NOTIMPLEMENTED();
-}
-
 void WebUIBrowserExtensionsContainer::ToggleExtensionsMenu() {
   if (extensions_menu_coordinator_->IsShowing()) {
     extensions_menu_coordinator_->Hide();

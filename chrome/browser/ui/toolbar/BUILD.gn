@@ -245,8 +245,6 @@ source_set("test_support") {
     sources += [
       "test_toolbar_action_view_controller.cc",
       "test_toolbar_action_view_controller.h",
-      "test_toolbar_actions_bar_bubble_delegate.cc",
-      "test_toolbar_actions_bar_bubble_delegate.h",
     ]
     deps += [
       ":toolbar",
