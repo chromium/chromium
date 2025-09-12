@@ -26326,6 +26326,25 @@
             ]
         }
     ],
+    "VariationsHeaderForCrossSiteSpeculationRulesPrefetch": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VariationsHeaderForCrossSiteSpeculationRulesPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [

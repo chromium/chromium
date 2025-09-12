@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
@@ -34,6 +35,11 @@ namespace {
 
 // Enable Zstd for cross-site prefetch (crbug.com/444393104).
 BASE_FEATURE(kZstdForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allow the variations header to be treated as CORS exempted for cross-site
+// prefetch (crbug.com/444264052).
+BASE_FEATURE(kVariationsHeaderForCrossSiteSpeculationRulesPrefetch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
@@ -126,6 +132,10 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
+  if (base::FeatureList::IsEnabled(
+          kVariationsHeaderForCrossSiteSpeculationRulesPrefetch)) {
+    variations::UpdateCorsExemptHeaderForVariations(context_params.get());
+  }
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 
