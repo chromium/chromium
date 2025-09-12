@@ -36,9 +36,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -174,7 +176,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
     MessageDataDeleter(MessageDataDeleter&&) = default;
     MessageDataDeleter& operator=(MessageDataDeleter&&) = default;
 
-    void operator()(char* p) const;
+    void operator()(uint8_t* p) const;
 
    private:
     raw_ptr<v8::Isolate> isolate_;
@@ -183,7 +185,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
         external_memory_accounter_;
   };
 
-  using MessageData = std::unique_ptr<char[], MessageDataDeleter>;
+  using MessageData = base::HeapArray<uint8_t, MessageDataDeleter>;
 
   static MessageData CreateMessageData(v8::Isolate*, size_t);
 
@@ -224,12 +226,12 @@ class MODULES_EXPORT WebSocketChannelImpl final
     explicit Message(scoped_refptr<BlobDataHandle>);
 
     // Initializes message from the contents of a blob
-    Message(MessageData, size_t);
+    explicit Message(MessageData);
 
     // Initializes message as a string or ArrayBuffer
     Message(MessageType,
             v8::Isolate*,
-            base::span<const char> message,
+            base::span<const uint8_t> message,
             std::unique_ptr<SendCompletionWatcher>,
             DidCallSendMessage did_call_send_message);
 
@@ -249,9 +251,9 @@ class MODULES_EXPORT WebSocketChannelImpl final
     String Reason() const;
     std::unique_ptr<SendCompletionWatcher> TakeSendCompletionWatcher();
 
-    // Returns a mutable |pending_payload_|. Since calling code always mutates
-    // the value, |pending_payload_| only has a mutable getter.
-    base::span<const char>& MutablePendingPayload();
+    // Returns a mutable `pending_payload_`. Since calling code always mutates
+    // the value, `pending_payload_` only has a mutable getter.
+    base::span<const uint8_t>& MutablePendingPayload();
 
     void SetDidCallSendMessage(DidCallSendMessage did_call_send_message);
 
@@ -260,7 +262,8 @@ class MODULES_EXPORT WebSocketChannelImpl final
     MessageType type_;
 
     scoped_refptr<BlobDataHandle> blob_data_handle_;
-    base::span<const char> pending_payload_;
+    // TODO(crbug.com/367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION base::span<const uint8_t> pending_payload_;
     DidCallSendMessage did_call_send_message_ = DidCallSendMessage(false);
     uint16_t code_ = 0;
     String reason_;
@@ -318,15 +321,16 @@ class MODULES_EXPORT WebSocketChannelImpl final
   // Send a message for which the underlying data is available immediately.
   // Anything which cannot be sent immediately is queued.
   void SendFromMemory(MessageType,
-                      base::span<const char> data,
+                      base::span<const uint8_t> data,
                       std::unique_ptr<SendCompletionWatcher>);
 
   // Send as much of `data` as can be sent immediately. `data` will be modified
   // to point to the remaining unsent data. Returns `true` if all of `data` was
   // sent.
-  bool MaybeSendSynchronously(MessageTypeForMojo, base::span<const char>* data);
+  bool MaybeSendSynchronously(MessageTypeForMojo,
+                              base::span<const uint8_t>* data);
   void ProcessSendQueue();
-  bool SendMessageData(base::span<const char>* data);
+  bool SendMessageData(base::span<const uint8_t>* data);
   void FailAsError(const String& reason) {
     Fail(reason, mojom::ConsoleMessageLevel::kError,
          location_at_construction_->Clone());
@@ -338,7 +342,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void OnCompletion(const std::optional<WebString>& error);
 
   // Methods for BlobLoader.
-  void DidFinishLoadingBlob(MessageData, size_t);
+  void DidFinishLoadingBlob(MessageData);
   void BlobTooLarge();
   void DidFailLoadingBlob(FileErrorCode);
 
@@ -355,7 +359,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
                         base::span<const uint8_t> data);
   // Called when |writable_| becomes writable.
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state);
-  MojoResult ProduceData(base::span<const char>* data,
+  MojoResult ProduceData(base::span<const uint8_t>* data,
                          uint64_t* consumed_buffered_amount);
   String GetTextMessage(const Vector<base::span<const uint8_t>>& chunks,
                         wtf_size_t size);

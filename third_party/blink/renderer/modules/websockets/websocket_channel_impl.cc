@@ -43,6 +43,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
@@ -110,7 +111,7 @@ WebSocketChannelImpl::MessageDataDeleter::MessageDataDeleter(
   external_memory_accounter_.Increase(isolate, size);
 }
 
-void WebSocketChannelImpl::MessageDataDeleter::operator()(char* p) const {
+void WebSocketChannelImpl::MessageDataDeleter::operator()(uint8_t* p) const {
   DCHECK(isolate_) << "Cannot call deleter when default constructor was used";
   external_memory_accounter_.Decrease(isolate_.get(), size_);
   Partitions::FastFree(p);
@@ -120,10 +121,14 @@ void WebSocketChannelImpl::MessageDataDeleter::operator()(char* p) const {
 WebSocketChannelImpl::MessageData WebSocketChannelImpl::CreateMessageData(
     v8::Isolate* isolate,
     size_t message_size) {
-  return MessageData(
-      static_cast<char*>(Partitions::FastMalloc(
-          message_size, "blink::WebSockChannelImpl::MessageData")),
-      MessageDataDeleter(isolate, message_size));
+  // SAFETY: `Partitions::FastMalloc` returns a pointer to at least
+  // `message_size` bytes.
+  return UNSAFE_BUFFERS(MessageData::FromOwningPointer(
+      message_size
+          ? static_cast<uint8_t*>(Partitions::FastMalloc(
+                message_size, "blink::WebSockChannelImpl::MessageData"))
+          : nullptr,
+      message_size, MessageDataDeleter(isolate, message_size)));
 }
 
 class WebSocketChannelImpl::BlobLoader final
@@ -155,7 +160,6 @@ class WebSocketChannelImpl::BlobLoader final
   // This doesn't use Vector because it doesn't currently support 64-bit
   // sizes.
   MessageData data_;
-  size_t size_ = 0;
   size_t offset_ = 0;
 
   bool blob_too_large_ = false;
@@ -174,7 +178,7 @@ WebSocketChannelImpl::BlobLoader::BlobLoader(
 void WebSocketChannelImpl::BlobLoader::Cancel() {
   loader_->Cancel();
   loader_ = nullptr;
-  data_ = nullptr;
+  data_ = {};
 }
 
 FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
@@ -184,29 +188,28 @@ FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
     blob_too_large_ = true;
     return FileErrorCode::kAbortErr;
   }
-  size_ = static_cast<size_t>(size.value());
   data_ = WebSocketChannelImpl::CreateMessageData(
-      channel_->execution_context_->GetIsolate(), size_);
+      channel_->execution_context_->GetIsolate(),
+      base::checked_cast<size_t>(size.value()));
   return FileErrorCode::kOK;
 }
 
 FileErrorCode WebSocketChannelImpl::BlobLoader::DidReceiveData(
     base::span<const uint8_t> data) {
-  auto remaining_message =
-      UNSAFE_TODO(base::span(data_.get(), size_)).subspan(offset_);
+  auto remaining_message = data_.subspan(offset_);
   const size_t data_to_copy = std::min(remaining_message.size(), data.size());
   if (!data_to_copy) {
     return FileErrorCode::kOK;
   }
-  remaining_message.copy_prefix_from(base::as_chars(data.first(data_to_copy)));
+  remaining_message.copy_prefix_from(data.first(data_to_copy));
   offset_ += data_to_copy;
   return FileErrorCode::kOK;
 }
 
 void WebSocketChannelImpl::BlobLoader::DidFinishLoading() {
   // This is guaranteed by FileReaderLoader::OnDataPipeReadable.
-  DCHECK_EQ(offset_, size_);
-  channel_->DidFinishLoadingBlob(std::move(data_), size_);
+  DCHECK_EQ(offset_, data_.size());
+  channel_->DidFinishLoadingBlob(std::move(data_));
   loader_ = nullptr;
 }
 
@@ -217,7 +220,7 @@ void WebSocketChannelImpl::BlobLoader::DidFail(FileErrorCode error_code) {
   }
   channel_->DidFailLoadingBlob(error_code);
   loader_ = nullptr;
-  data_ = nullptr;
+  data_ = {};
 }
 
 struct WebSocketChannelImpl::ConnectInfo {
@@ -411,7 +414,8 @@ void WebSocketChannelImpl::Send(
     "WebSocketSend", InspectorWebSocketTransferEvent::Data,
     execution_context_.Get(), identifier_, message.length());
 
-  SendFromMemory(kMessageTypeText, message, std::move(watcher));
+  SendFromMemory(kMessageTypeText, base::as_byte_span(message),
+                 std::move(watcher));
 }
 
 void WebSocketChannelImpl::Send(
@@ -447,9 +451,7 @@ void WebSocketChannelImpl::Send(
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "WebSocketSend", InspectorWebSocketTransferEvent::Data,
       execution_context_.Get(), identifier_, byte_length);
-  // TODO(crbug.com/421031840): Use base::span<const uint8_t> instead of char.
-  auto message = UNSAFE_TODO(base::span(
-      static_cast<const char*>(buffer.Data()) + byte_offset, byte_length));
+  auto message = buffer.ByteSpan().subspan(byte_offset, byte_length);
   SendFromMemory(kMessageTypeArrayBuffer, message, std::move(watcher));
 }
 
@@ -668,24 +670,23 @@ WebSocketChannelImpl::Message::Message(
     scoped_refptr<BlobDataHandle> blob_data_handle)
     : type_(kMessageTypeBlob), blob_data_handle_(std::move(blob_data_handle)) {}
 
-WebSocketChannelImpl::Message::Message(MessageData data, size_t size)
+WebSocketChannelImpl::Message::Message(MessageData data)
     : message_data_(std::move(data)),
       type_(kMessageTypeArrayBuffer),
-      pending_payload_(UNSAFE_TODO(base::span(message_data_.get(), size))) {}
+      pending_payload_(message_data_.as_span()) {}
 
 WebSocketChannelImpl::Message::Message(
     MessageType type,
     v8::Isolate* isolate,
-    base::span<const char> message,
+    base::span<const uint8_t> message,
     std::unique_ptr<SendCompletionWatcher> watcher,
     DidCallSendMessage did_call_send_message)
     : message_data_(CreateMessageData(isolate, message.size())),
       type_(type),
       did_call_send_message_(did_call_send_message),
       watcher_(std::move(watcher)) {
-  UNSAFE_TODO(memcpy(message_data_.get(), message.data(), message.size()));
-  pending_payload_ =
-      UNSAFE_TODO(base::span(message_data_.get(), message.size()));
+  message_data_.copy_from(message);
+  pending_payload_ = message_data_.as_span();
 }
 
 WebSocketChannelImpl::Message::Message(uint16_t code, const String& reason)
@@ -718,7 +719,8 @@ WebSocketChannelImpl::Message::GetBlobDataHandle() {
   return blob_data_handle_;
 }
 
-base::span<const char>& WebSocketChannelImpl::Message::MutablePendingPayload() {
+base::span<const uint8_t>&
+WebSocketChannelImpl::Message::MutablePendingPayload() {
   return pending_payload_;
 }
 
@@ -769,7 +771,7 @@ void WebSocketChannelImpl::ConnectionCountTrackerHandle::Decrement() {
 
 void WebSocketChannelImpl::SendFromMemory(
     MessageType type,
-    base::span<const char> data,
+    base::span<const uint8_t> data,
     std::unique_ptr<SendCompletionWatcher> watcher) {
   bool did_attempt_to_send = false;
   if (messages_.empty() && !wait_for_writable_) {
@@ -803,7 +805,7 @@ void WebSocketChannelImpl::SendFromMemory(
 
 bool WebSocketChannelImpl::MaybeSendSynchronously(
     MessageTypeForMojo frame_type,
-    base::span<const char>* data) {
+    base::span<const uint8_t>* data) {
   DCHECK(messages_.empty());
   DCHECK(!wait_for_writable_);
 
@@ -823,7 +825,7 @@ void WebSocketChannelImpl::ProcessSendQueue() {
         message_type = MessageTypeForMojo::TEXT;
         [[fallthrough]];
       case kMessageTypeArrayBuffer: {
-        base::span<const char>& data_frame = message.MutablePendingPayload();
+        base::span<const uint8_t>& data_frame = message.MutablePendingPayload();
         if (!message.GetDidCallSendMessage()) {
           websocket_->SendMessage(message_type, data_frame.size());
           message.SetDidCallSendMessage(Message::DidCallSendMessage(true));
@@ -858,7 +860,7 @@ void WebSocketChannelImpl::ProcessSendQueue() {
   }
 }
 
-bool WebSocketChannelImpl::SendMessageData(base::span<const char>* data) {
+bool WebSocketChannelImpl::SendMessageData(base::span<const uint8_t>* data) {
   if (data->size() > 0) {
     uint64_t consumed_buffered_amount = 0;
     ProduceData(data, &consumed_buffered_amount);
@@ -934,7 +936,7 @@ void WebSocketChannelImpl::OnCompletion(
   }
 }
 
-void WebSocketChannelImpl::DidFinishLoadingBlob(MessageData data, size_t size) {
+void WebSocketChannelImpl::DidFinishLoadingBlob(MessageData data) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   blob_loader_.Clear();
@@ -943,7 +945,7 @@ void WebSocketChannelImpl::DidFinishLoadingBlob(MessageData data, size_t size) {
   DCHECK_EQ(messages_.front().Type(), kMessageTypeBlob);
 
   // We replace it with the loaded blob.
-  messages_.front() = Message(std::move(data), size);
+  messages_.front() = Message(std::move(data));
 
   ProcessSendQueue();
 }
@@ -1136,7 +1138,7 @@ void WebSocketChannelImpl::OnWritable(MojoResult result,
 }
 
 MojoResult WebSocketChannelImpl::ProduceData(
-    base::span<const char>* data,
+    base::span<const uint8_t>* data,
     uint64_t* consumed_buffered_amount) {
   MojoResult begin_result = MOJO_RESULT_OK;
   base::span<uint8_t> buffer;
@@ -1146,8 +1148,7 @@ MojoResult WebSocketChannelImpl::ProduceData(
     const size_t size_to_write = std::min(buffer.size(), data->size());
     DCHECK_GT(size_to_write, 0u);
 
-    base::as_writable_chars(buffer).copy_prefix_from(
-        data->first(size_to_write));
+    buffer.copy_prefix_from(data->first(size_to_write));
     *data = data->subspan(size_to_write);
 
     const MojoResult end_result = writable_->EndWriteData(size_to_write);
