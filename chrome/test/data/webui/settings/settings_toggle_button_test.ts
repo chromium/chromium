@@ -17,6 +17,22 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite('SettingsToggleButton', () => {
   let testElement: SettingsToggleButtonElement;
 
+  function createNoToggleOnClickElement(): SettingsToggleButtonElement {
+    // Pref for noToggleOnClick disabled tests
+    const noTogglePref = {
+      key: 'noToggleOnClickTest',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    };
+    const noToggleTestElement =
+        document.createElement('settings-toggle-button');
+    noToggleTestElement.set('pref', noTogglePref);
+    noToggleTestElement.noToggleOnHostClick = true;
+    document.body.appendChild(noToggleTestElement);
+    flush();
+    return noToggleTestElement;
+  }
+
   // Initialize a checked control before each test.
   setup(() => {
     /**
@@ -114,6 +130,50 @@ suite('SettingsToggleButton', () => {
     testElement.click();
     assertFalse(testElement.checked);
     assertFalse(testElement.$.control.checked);
+  });
+
+  test('clicking the host does not toggle pref', async () => {
+    const noToggleTestElement = createNoToggleOnClickElement();
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+    const changeEventPromise =
+        eventToPromise('change', noToggleTestElement).catch(() => {
+          // Expect a rejection if 'change' is not fired
+          return null;
+        });
+    // Simulate clicking the host element, not the cr-toggle itself.
+    noToggleTestElement.$.labelWrapper.click();
+    // Ensure no 'change' event was fired
+    const changeEvent = await Promise.race([
+      changeEventPromise,
+      new Promise(resolve => setTimeout(resolve, 50)),
+    ]);  // Small delay to confirm no event
+    assertFalse(!!changeEvent, 'Change event should not have fired');
+    // Verify the toggle state and pref value remain unchanged
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+  });
+
+  test('clicking the control still toggles the pref', async () => {
+    const noToggleTestElement = createNoToggleOnClickElement();
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+    let changeEventPromise = eventToPromise('change', noToggleTestElement);
+    // Click specifically on the internal cr-toggle control
+    noToggleTestElement.$.control.click();
+    // Wait for the change event
+    let changeEvent = await changeEventPromise;
+    assertFalse(changeEvent.detail);
+    // Verify the toggle state and pref value have changed
+    assertFalse(noToggleTestElement.checked);
+    assertFalse(noToggleTestElement.pref!.value);
+    // Click again to toggle back
+    changeEventPromise = eventToPromise('change', noToggleTestElement);
+    noToggleTestElement.$.control.click();
+    changeEvent = await changeEventPromise;
+    assertTrue(changeEvent.detail);
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
   });
 
   test('inverted', () => {

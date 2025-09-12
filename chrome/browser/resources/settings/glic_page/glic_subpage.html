@@ -173,7 +173,8 @@
           sub-label="[[tabAccessSubLabel_]]"
           learn-more-url="[[tabAccessLearnMoreUrl_]]"
           on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
-          on-settings-boolean-control-change="onTabAccessToggleChange_">
+          on-settings-boolean-control-change="onTabAccessToggleChange_"
+          no-toggle-on-host-click on-click="onTabAccessExpand_">
         <div id="tabAccessToggleActions" slot="more-actions">
           <cr-expand-button id="tabAccessExpandButton" no-hover
               expanded="{{tabAccessToggleExpanded_}}">
