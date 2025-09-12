@@ -6,9 +6,8 @@ import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
-# TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
 if (enable_av1_decoder &&
-    (use_v4l2_codec || use_vaapi || is_win || is_android)) {
+    (use_linux_video_acceleration || is_win || is_android)) {
   test("video_decode_accelerator_tests") {
     testonly = true
     sources = [
@@ -219,7 +218,7 @@ static_library("video_player") {
     "//testing/gtest",
   ]
 
-  if (use_vaapi || use_v4l2_codec) {
+  if (use_linux_video_acceleration) {
     sources += [
       "video_player/mappable_video_frame_converter.cc",
       "video_player/mappable_video_frame_converter.h",
