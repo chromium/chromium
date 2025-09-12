@@ -4067,11 +4067,6 @@ if (!is_android) {
       sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc" ]
     }
 
-    if (is_win || is_mac || is_linux) {
-      deps +=
-          [ "//chrome/browser/ui/views/session_restore_infobar:browser_tests" ]
-    }
-
     if (is_chromeos) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
@@ -11607,6 +11602,10 @@ if (!is_android && !is_chromeos_device) {
     if (is_win && is_chrome_branded) {
       deps +=
           [ "//chrome/browser/win/installer_downloader:interactive_ui_tests" ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/views/session_restore_infobar:interactive_ui_tests" ]
     }
 
     if (toolkit_views) {

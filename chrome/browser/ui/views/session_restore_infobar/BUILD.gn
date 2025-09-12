@@ -6,11 +6,13 @@ source_set("session_restore_infobar") {
   public = [
     "session_restore_infobar_controller.h",
     "session_restore_infobar_delegate.h",
+    "session_restore_infobar_manager.h",
     "session_restore_infobar_model.h",
   ]
   sources = [
     "session_restore_infobar_controller.cc",
     "session_restore_infobar_delegate.cc",
+    "session_restore_infobar_manager.cc",
     "session_restore_infobar_model.cc",
   ]
   public_deps = [ "//base" ]
@@ -23,8 +25,11 @@ source_set("session_restore_infobar") {
     "//chrome/browser/sessions",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/infobars",
     "//chrome/common",
     "//components/infobars/content",
@@ -66,21 +71,32 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
+source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "session_restore_infobar_controller_browsertest.cc" ]
+  sources = [ "session_restore_infobar_interactive_uitest.cc" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
     ":session_restore_infobar",
-    "//chrome/app:branded_strings_grit",
+    "//base/test:test_support",
+    "//chrome/app:branded_strings",
+    "//chrome/app:command_ids",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/infobars",
+    "//chrome/common",
+    "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
     "//components/infobars/content",
-    "//content/test:test_support",
+    "//components/infobars/core",
+    "//components/prefs",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -16,38 +16,34 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
 
-SessionRestoreInfobarController::SessionRestoreInfobarController(
+void SessionRestoreInfobarController::MaybeShowInfoBar(
     Profile& profile,
     bool was_restarted,
-    bool is_post_crash_launch)
-    : profile_(profile),
-      model_(
-          std::make_unique<SessionRestoreInfobarModel>(profile_.get(),
-                                                       was_restarted,
-                                                       is_post_crash_launch)) {}
+    bool is_post_crash_launch) {
+  model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
+                                                        is_post_crash_launch);
 
-SessionRestoreInfobarController::~SessionRestoreInfobarController() = default;
-
-void SessionRestoreInfobarController::CreateOrDestroySessionRestoreInfobar(
-    content::WebContents& web_contents) {
   if (!model_->ShouldShowOnStartup()) {
     return;
   }
-
   if (GetInfobarMessageType() ==
       SessionRestoreInfoBarDelegate::InfobarMessageType::kNone) {
     return;
   }
 
-  session_restore_infobar::SessionRestoreInfoBarDelegate::Show(
-      &web_contents, base::OnceCallback<void()>(), GetInfobarMessageType());
+  SessionRestoreInfoBarManager::GetInstance()->ShowInfoBar(
+      profile, GetInfobarMessageType());
 }
+
+SessionRestoreInfobarController::SessionRestoreInfobarController() = default;
+
+SessionRestoreInfobarController::~SessionRestoreInfobarController() = default;
 
 SessionRestoreInfoBarDelegate::InfobarMessageType
 SessionRestoreInfobarController::GetInfobarMessageType() {

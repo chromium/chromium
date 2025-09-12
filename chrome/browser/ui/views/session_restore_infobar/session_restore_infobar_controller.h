@@ -7,25 +7,18 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
-#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
 
 class Profile;
-
-namespace content {
-class WebContents;
-}
-
 namespace session_restore_infobar {
+
+class SessionRestoreInfobarModel;
 
 // This class is responsible for determining when the  session restore infobar
 // should be shown and handling user interactions within the infobar.
 class SessionRestoreInfobarController {
  public:
-  SessionRestoreInfobarController(Profile& profile,
-                                  bool was_restarted,
-                                  bool is_post_crash_launch);
+  SessionRestoreInfobarController();
   ~SessionRestoreInfobarController();
 
   SessionRestoreInfobarController(const SessionRestoreInfobarController&) =
@@ -33,14 +26,14 @@ class SessionRestoreInfobarController {
   SessionRestoreInfobarController& operator=(
       const SessionRestoreInfobarController&) = delete;
 
-  // Creates or destroys the session restore infobar based on the current state.
-  void CreateOrDestroySessionRestoreInfobar(content::WebContents& web_contents);
-
-  // Gets the message type to be displayed for the infobar.
-  SessionRestoreInfoBarDelegate::InfobarMessageType GetInfobarMessageType();
+  // Checks if a session restore prompt should be shown for the given profile
+  // and browser state. If so, it begins tracking tabs to show the infobar.
+  void MaybeShowInfoBar(Profile& profile,
+                        bool was_restarted,
+                        bool is_post_crash_launch);
 
  private:
-  const raw_ref<Profile> profile_;
+  SessionRestoreInfoBarDelegate::InfobarMessageType GetInfobarMessageType();
   std::unique_ptr<SessionRestoreInfobarModel> model_;
 };
 
