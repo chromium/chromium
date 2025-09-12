@@ -19,7 +19,6 @@
 
 #include "base/bits.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -538,17 +537,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   if (shared_image) {
     frame->acquire_sync_token_ = sync_token;
     frame->shared_image_ = shared_image->MakeUnowned();
-    if (coded_size != shared_image->size()) {
-      SCOPED_CRASH_KEY_STRING64("video_frame", "si_size",
-                                shared_image->size().ToString());
-      SCOPED_CRASH_KEY_STRING64("video_frame", "coded_size",
-                                coded_size.ToString());
-      SCOPED_CRASH_KEY_STRING64("video_frame", "si_label",
-                                shared_image->debug_label());
-      DUMP_WILL_BE_CHECK(false) << "coded_size (" << coded_size.ToString()
-                                << ") does not match shared_image size ("
-                                << shared_image->size().ToString() << ")";
-    }
+    CHECK_EQ(coded_size, shared_image->size())
+        << "coded_size (" << coded_size.ToString()
+        << ") does not match shared_image size ("
+        << shared_image->size().ToString() << ")";
   }
   frame->mailbox_holder_release_cb_ = std::move(mailbox_holder_release_cb);
 
