@@ -1404,6 +1404,13 @@
       depends_on: ["CSSLineClamp"],
     },
     {
+      // Allows pseudo-element selectors within logical combination pseudo-
+      // classes, e.g. :is(div::before).
+      //
+      // https://crbug.com/444386484
+      name: "CSSLogicalCombinationPseudo",
+    },
+    {
       name: "CSSMarkerNestedPseudoElement",
       status: "stable",
     },

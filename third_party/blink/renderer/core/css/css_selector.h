@@ -193,10 +193,21 @@ class CORE_EXPORT CSSSelector {
     kDirectAdjacent,
     // ~ combinator
     kIndirectAdjacent,
+
     // The relation types below are implicit combinators inserted at parse time
-    // before pseudo-elements which match another flat tree element than the
-    // rest of the compound.
+    // before pseudo-elements.
+
+    // The pseudo-child combinator (:>) is inserted before pseudo-elements
+    // that are not covered by kUAShadow, kShadowSlot, or kShadowPart.
     //
+    // For example, `div::before` effectively becomes `div :> ::before`.
+    //
+    // The CSSWG has resolved to add this combinator to CSS [1], but we
+    // do not (yet) expose this combinator; it exists solely to aid
+    // selector matching.
+    //
+    // [1] https://github.com/w3c/csswg-drafts/issues/7346
+    kPseudoChild,
     // Implicit combinator inserted before pseudo-elements matching an element
     // inside a UA shadow tree. This combinator allows the selector matching to
     // cross a shadow root.

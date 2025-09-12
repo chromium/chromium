@@ -14,12 +14,30 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+HeapVector<CSSSelector> ParseSelector(String s) {
+  HeapVector<CSSSelector> arena;
+  CSSParserTokenStream stream(s);
+  base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+      stream,
+      MakeGarbageCollected<CSSParserContext>(
+          kUASheetMode, SecureContextMode::kInsecureContext),
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+      /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
+  return HeapVector<CSSSelector>(vector);
+}
+
+}  // namespace
 
 typedef struct {
   const char* input;
@@ -554,6 +572,113 @@ TEST(CSSSelectorParserTest, ColumnPseudo) {
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
   }
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_Before_FeatureDisabled) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(false);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("div::before");
+  ASSERT_EQ(2u, vector.size());
+
+  // div
+  EXPECT_EQ(CSSSelector::MatchType::kTag, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[0].Relation());
+
+  // ::before
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoBefore, vector[1].GetPseudoType());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_Before) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("div::before");
+  ASSERT_EQ(2u, vector.size());
+
+  // ::before
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoBefore, vector[0].GetPseudoType());
+
+  // div
+  EXPECT_EQ(CSSSelector::MatchType::kTag, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_After) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("div::after");
+  ASSERT_EQ(2u, vector.size());
+
+  // ::after
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, vector[0].GetPseudoType());
+
+  // div
+  EXPECT_EQ(CSSSelector::MatchType::kTag, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_BeforeMarker) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("div::before::marker");
+  ASSERT_EQ(3u, vector.size());
+
+  // ::marker
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoMarker, vector[0].GetPseudoType());
+
+  // ::before
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[1].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoBefore, vector[1].GetPseudoType());
+
+  // div
+  EXPECT_EQ(CSSSelector::MatchType::kTag, vector[2].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[2].Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_UniversalOriginating) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("*::after");
+  ASSERT_EQ(2u, vector.size());
+
+  // ::after
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, vector[0].GetPseudoType());
+
+  // *
+  EXPECT_EQ(CSSSelector::MatchType::kUniversalTag, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_NoOriginating) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector("::after");
+  ASSERT_EQ(2u, vector.size());
+
+  // ::after
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, vector[0].GetPseudoType());
+
+  // * (implicitly inserted)
+  EXPECT_EQ(CSSSelector::MatchType::kUniversalTag, vector[1].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
 }
 
 // Pseudo-elements are not valid within :is() as per the spec:

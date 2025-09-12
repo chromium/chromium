@@ -1453,6 +1453,7 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
         result = StrCat({" ~ ", builder.ReleaseString(), result});
         break;
       case kSubSelector:
+      case kPseudoChild:
       case kShadowPart:
       case kUAShadow:
       case kShadowSlot:

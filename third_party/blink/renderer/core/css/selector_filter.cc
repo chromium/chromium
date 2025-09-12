@@ -171,6 +171,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
         break;
       case CSSSelector::kDirectAdjacent:
       case CSSSelector::kIndirectAdjacent:
+      case CSSSelector::kPseudoChild:
         skip_over_subselectors = true;
         break;
       case CSSSelector::kShadowSlot:

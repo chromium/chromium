@@ -74,6 +74,14 @@ CSSSelector::RelationType GetImplicitCombinatorForMatching(
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
       return CSSSelector::RelationType::kShadowPart;
+    case CSSSelector::PseudoType::kPseudoBefore:
+    case CSSSelector::PseudoType::kPseudoAfter:
+    case CSSSelector::PseudoType::kPseudoMarker:
+      // TODO(crbug.com/444386484): Support additional pseudo-elements.
+      if (RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+        return CSSSelector::RelationType::kPseudoChild;
+      }
+      [[fallthrough]];
     default:
       return CSSSelector::RelationType::kSubSelector;
   }
@@ -2305,16 +2313,33 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
   }
 }
 
-// If we have a compound that implicitly crosses a shadow root, rewrite it to
-// have a shadow-crossing combinator (kUAShadow, which has no symbol, but let's
-// call it >> for the same of the argument) instead of kSubSelector. E.g.:
+// Pseudo-element selectors essentially contain a "built-in" combinator;
+// the "foo" and "bar" parts of a selector like `foo::bar` target two
+// different elements, just like `foo > bar` would. Due to how CSSSelectors
+// are stored in memory (reverse compound order), we sometimes need to create
+// an impliit combinator preceding each pseudo-element selector in order
+// to start the matching process in the right place. For example:
 //
-//   video::-webkit-video-controls => video >> ::webkit-video-controls
+//   .somehost::part(mypart)
 //
-// This is required because the element matching ::-webkit-video-controls is
-// not the video element itself, but an element somewhere down in <video>'s
-// shadow DOM tree. Note that since we store compounds right-to-left, this may
-// require rearranging elements in memory (see the comment below).
+// This selector should match some element (e.g. <div part=mypart>) inside
+// a shadow tree hosted by e.g. <div class=somehost>, and we need to check
+// this selector while holding the <div part=mypart> element as the context
+// element [1]. However, without a combinator split, this is a single compound
+// selector, and selector evaluation would start at the .somehost part,
+// which is really targeting a *different element* (the host).
+//
+// Therefore, we basically rewrite this selector to:
+//
+//   .somehost >> ::part(mypart)
+//
+// (Where >> is an imaginary "part" combinator.)
+//
+// This allows matching to begin with the correct selector (::part(mypart)),
+// and we change the context element to the host when processing the '>>'
+// combinator.
+//
+// [1] SelectorCheckingContext::element
 void CSSSelectorParser::SplitCompoundAtImplicitCombinator(
     base::span<CSSSelector> selectors) {
   // The simple selectors are stored in an array that stores

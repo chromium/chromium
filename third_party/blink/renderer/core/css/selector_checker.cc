@@ -1045,6 +1045,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       }
       return kSelectorFailsAllSiblings;
 
+    case CSSSelector::kPseudoChild:
+      // TODO(crbug.com/444386484): Implement support for this.
+      return kSelectorFailsCompletely;
     case CSSSelector::kUAShadow: {
       // Note: context.tree_scope should be non-null unless we're checking user
       // or UA origin rules, or VTT rules.  (We could CHECK() this if it
