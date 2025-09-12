@@ -98,7 +98,7 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
 
   std::unique_ptr<policy::ChromeBrowserCloudManagementController>
       chrome_browser_cloud_management_controller_;
-  raw_ptr<policy::MachineLevelUserCloudPolicyManager>
+  raw_ptr<policy::MachineLevelUserCloudPolicyManager, DanglingUntriaged>
       machine_level_user_cloud_policy_manager_ = nullptr;
 };
 

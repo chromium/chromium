@@ -119,7 +119,7 @@ class ShopCardMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS, DanglingUntriaged> profile_;
   TestProfileManagerIOS profile_manager_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;

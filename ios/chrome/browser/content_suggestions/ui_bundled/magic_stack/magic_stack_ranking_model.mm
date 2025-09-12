@@ -133,13 +133,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 @end
 
 @implementation MagicStackRankingModel {
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
+  raw_ptr<segmentation_platform::SegmentationPlatformService, DanglingUntriaged>
       _segmentationService;
-  raw_ptr<commerce::ShoppingService> _shoppingService;
-  raw_ptr<AppStoreBundleService> _appStoreBundleService;
-  raw_ptr<AuthenticationService> _authService;
-  raw_ptr<PrefService> _prefService;
-  raw_ptr<PrefService> _localState;
+  raw_ptr<commerce::ShoppingService, DanglingUntriaged> _shoppingService;
+  raw_ptr<AppStoreBundleService, DanglingUntriaged> _appStoreBundleService;
+  raw_ptr<AuthenticationService, DanglingUntriaged> _authService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
   // The latest module ranking returned from the SegmentationService.
   NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
   // YES if the module ranking has been received from the SegmentationService.
@@ -160,11 +160,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   TipsMagicStackMediator* _tipsMediator;
   AppBundlePromoMediator* _appBundlePromoMediator;
   DefaultBrowserMediator* _defaultBrowserMediator;
-  raw_ptr<TipsManagerIOS> _tipsManager;
+  raw_ptr<TipsManagerIOS, DanglingUntriaged> _tipsManager;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
-  raw_ptr<TemplateURLService> _templateURLService;
-  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+  raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> _bookmarkModel;
 }
 
 - (instancetype)

@@ -25,7 +25,7 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
 }  // namespace
 
 @implementation LensOverlayEntrypointButton {
-  raw_ptr<const PrefService> _profilePrefs;
+  raw_ptr<const PrefService, DanglingUntriaged> _profilePrefs;
 
   // Indicates whether the feature is currently active and visible.
   UIView* _visibilityIndicatorView;

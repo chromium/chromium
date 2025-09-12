@@ -33,7 +33,7 @@ namespace utils {
 
 // Struct containing local tab group information.
 struct LocalTabGroupInfo {
-  raw_ptr<const TabGroup> tab_group = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> tab_group = nullptr;
   raw_ptr<WebStateList> web_state_list = nullptr;
   raw_ptr<Browser> browser = nullptr;
 };

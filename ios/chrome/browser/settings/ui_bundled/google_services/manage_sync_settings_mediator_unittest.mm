@@ -125,7 +125,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<syncer::TestSyncService> sync_service_;
+  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_;
   std::unique_ptr<TestProfileIOS> profile_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;

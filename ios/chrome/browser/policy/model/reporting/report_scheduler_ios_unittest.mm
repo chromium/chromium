@@ -175,9 +175,9 @@ class ReportSchedulerIOSTest : public PlatformTest,
 
   ReportingDelegateFactoryIOS report_delegate_factory_;
   std::unique_ptr<ReportScheduler> scheduler_;
-  raw_ptr<policy::MockCloudPolicyClient> client_;
+  raw_ptr<policy::MockCloudPolicyClient, DanglingUntriaged> client_;
   raw_ptr<MockReportGenerator> generator_;
-  raw_ptr<MockReportUploader> uploader_;
+  raw_ptr<MockReportUploader, DanglingUntriaged> uploader_;
   policy::FakeBrowserDMTokenStorage storage_;
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;

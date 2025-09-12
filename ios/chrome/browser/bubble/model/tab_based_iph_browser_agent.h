@@ -161,7 +161,7 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   // Observer for browser view visibility.
-  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent, DanglingUntriaged>
       browser_view_visibility_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.
   CommandDispatcher* command_dispatcher_;

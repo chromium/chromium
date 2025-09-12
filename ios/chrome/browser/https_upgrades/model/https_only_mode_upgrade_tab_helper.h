@@ -120,8 +120,8 @@ class HttpsOnlyModeUpgradeTabHelper
   base::OneShotTimer timer_;
 
   raw_ptr<web::WebState> web_state_;
-  raw_ptr<PrefService> prefs_;
-  raw_ptr<HttpsUpgradeService> service_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<HttpsUpgradeService, DanglingUntriaged> service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_

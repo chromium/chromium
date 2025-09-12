@@ -74,17 +74,19 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 @implementation HomeCustomizationMediator {
   // Pref service to handle preference changes.
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
   // Browser agent to be notified of Discover eligibility.
-  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       _discoverFeedVisibilityBrowserAgent;
   // The image fetcher used to download individual background images.
-  raw_ptr<image_fetcher::ImageFetcher> _imageFetcher;
+  raw_ptr<image_fetcher::ImageFetcher, DanglingUntriaged> _imageFetcher;
   // The Background customization service for getting current and recently used
   // backgrounds.
-  raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
+  raw_ptr<HomeBackgroundCustomizationService, DanglingUntriaged>
+      _backgroundService;
   // The image manager used to load uesr uploaded images.
-  raw_ptr<UserUploadedImageManager> _userUploadedImageManager;
+  raw_ptr<UserUploadedImageManager, DanglingUntriaged>
+      _userUploadedImageManager;
 
   // Whether the theme has been changed.
   BOOL _themeHasChanged;

@@ -34,7 +34,7 @@ const float kMaxModuleEngagementIndex = 50;
 }
 
 @implementation ContentSuggestionsMetricsRecorder {
-  raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {

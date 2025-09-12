@@ -249,7 +249,7 @@ class AutofillBottomSheetTabHelper
   __weak id<AutofillCommands> commands_handler_;
 
   // The WebState with which this object is associated.
-  const raw_ptr<web::WebState> web_state_;
+  const raw_ptr<web::WebState, DanglingUntriaged> web_state_;
 
   // TODO(crbug.com/40266699): Remove once this class uses FormGlobalIds.
   base::ScopedObservation<web::WebFramesManager,

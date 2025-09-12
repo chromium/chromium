@@ -52,7 +52,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 
  protected:
   // The controller `this` queries for logic and state.
-  raw_ptr<CardUnmaskPromptController> controller_;  // weak
+  raw_ptr<CardUnmaskPromptController, DanglingUntriaged> controller_;  // weak
 
   // The presented UINavigationController containing `prompt_view_controller_`.
   UINavigationController* navigation_controller_;
@@ -63,7 +63,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  private:
   UIImage* GetCardIcon();
 
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
 
   CreditCardData* credit_card_data_;
 

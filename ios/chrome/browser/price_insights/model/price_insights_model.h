@@ -95,7 +95,8 @@ class PriceInsightsModel final : public ContextualPanelModel,
   // Updates PriceInsightsItemConfiguration.
   void UpdatePriceInsightsItemConfig(const GURL& url);
   // Pointer to the shopping service.
-  raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
+  raw_ptr<commerce::ShoppingService, DanglingUntriaged> shopping_service_ =
+      nullptr;
   // Map containing Price Insights execution status for each URL.
   std::unordered_map<GURL, std::unique_ptr<PriceInsightsExecution>, GURLHash>
       price_insights_executions_;

@@ -259,9 +259,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
   scoped_refptr<TestPasswordStore> store_;
-  raw_ptr<AuthenticationService> auth_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   TestProfileManagerIOS profile_manager_;
   SafetyCheckMediator* mediator_;

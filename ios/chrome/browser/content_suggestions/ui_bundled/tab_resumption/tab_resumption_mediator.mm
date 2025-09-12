@@ -350,21 +350,23 @@ class TabResumptionMediatorProxy {
   TabResumptionItem* _pendingItem;
 
   // The owning Browser.
-  raw_ptr<Browser> _browser;
-  raw_ptr<PrefService> _profilePrefs;
+  raw_ptr<Browser, DanglingUntriaged> _browser;
+  raw_ptr<PrefService, DanglingUntriaged> _profilePrefs;
   SceneState* _sceneState;
   // Loads favicons.
   raw_ptr<FaviconLoader> _faviconLoader;
   // Browser Agent that manages the most recent WebState.
   raw_ptr<StartSurfaceRecentTabBrowserAgent> _recentTabBrowserAgent;
   // KeyedService responsible session sync.
-  raw_ptr<sync_sessions::SessionSyncService> _sessionSyncService;
+  raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
+      _sessionSyncService;
   // KeyedService responsible for sync state.
-  raw_ptr<syncer::SyncService> _syncService;
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
-  raw_ptr<WebStateList> _webStateList;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> _syncService;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingBrowserAgent;
+  raw_ptr<WebStateList, DanglingUntriaged> _webStateList;
   // KeyedService for Salient images.
-  raw_ptr<page_image_service::ImageService> _pageImageService;
+  raw_ptr<page_image_service::ImageService, DanglingUntriaged>
+      _pageImageService;
   // Observer bridge for mediator to listen to
   // StartSurfaceRecentTabObserverBridge.
   std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;

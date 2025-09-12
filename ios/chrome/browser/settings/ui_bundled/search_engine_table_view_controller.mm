@@ -90,13 +90,13 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<raw_ptr<TemplateURL>> _firstList;
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _firstList;
   // The second list in the page which contains all remaining custom search
   // engines.
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<raw_ptr<TemplateURL>> _secondList;
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;

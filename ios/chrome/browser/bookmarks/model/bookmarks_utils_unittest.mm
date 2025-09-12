@@ -42,9 +42,12 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
   }
 
   raw_ptr<PrefService> prefs_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> account_folder_node_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> local_folder_node_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> local_bookmark_node_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>
+      account_folder_node_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> local_folder_node_ =
+      nullptr;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>
+      local_bookmark_node_ = nullptr;
 };
 
 // Tests GetDefaultBookmarkFolder() when no default folder was set and account

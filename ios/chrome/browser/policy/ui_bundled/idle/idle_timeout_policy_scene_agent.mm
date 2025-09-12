@@ -67,7 +67,7 @@
 
   // Service handling IdleTimeout and IdleTimeoutActions policies.
   // IdleTimeoutPolicySceneAgents observe this service.
-  raw_ptr<enterprise_idle::IdleService> _idleService;
+  raw_ptr<enterprise_idle::IdleService, DanglingUntriaged> _idleService;
 
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout

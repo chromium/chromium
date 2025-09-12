@@ -69,7 +69,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 @implementation LensOverlayMediator {
   /// The profile pref service.
-  raw_ptr<const PrefService> _profilePrefs;
+  raw_ptr<const PrefService, DanglingUntriaged> _profilePrefs;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Orchestrates the navigation in the bottom sheet of the lens result page.

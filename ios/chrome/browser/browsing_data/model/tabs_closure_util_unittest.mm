@@ -152,8 +152,8 @@ class TabsClosureUtilTest : public PlatformTest {
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
 
-  raw_ptr<web::WebState> web_state0_;
-  raw_ptr<web::WebState> web_state1_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state0_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state1_;
 };
 
 // Tests `GetTabsInfoForCache` with several time ranges.

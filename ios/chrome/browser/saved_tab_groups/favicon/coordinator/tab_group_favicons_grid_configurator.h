@@ -57,9 +57,10 @@ class TabGroupFaviconsGridConfigurator {
 
  private:
   // The tab group sync service to retrieve group info.
-  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<tab_groups::TabGroupSyncService, DanglingUntriaged>
+      tab_group_sync_service_;
   // The object to retrieve tabs favicons.
-  raw_ptr<FaviconLoader> favicon_loader_;
+  raw_ptr<FaviconLoader, DanglingUntriaged> favicon_loader_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_COORDINATOR_TAB_GROUP_FAVICONS_GRID_CONFIGURATOR_H_

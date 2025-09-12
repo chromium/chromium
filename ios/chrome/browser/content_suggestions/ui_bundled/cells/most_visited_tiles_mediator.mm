@@ -74,10 +74,11 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // Whether incognito mode is available.
   BOOL _incognitoAvailable;
   BOOL _recordedPageImpression;
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
-  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingBrowserAgent;
+  raw_ptr<ChromeAccountManagerService, DanglingUntriaged>
+      _accountManagerService;
 }
 
 - (instancetype)

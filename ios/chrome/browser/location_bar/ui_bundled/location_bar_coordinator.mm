@@ -132,7 +132,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // Service for local and profile preferences.
   raw_ptr<PrefService> _prefService;
   // Tracker for feature events.
-  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;

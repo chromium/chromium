@@ -116,7 +116,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
-  raw_ptr<PolicyWatcherBrowserAgent> agent_;
+  raw_ptr<PolicyWatcherBrowserAgent, DanglingUntriaged> agent_;
   std::unique_ptr<Browser> browser_;
   SceneState* scene_state_;
   SceneState* scene_state_mock_;

@@ -69,7 +69,8 @@ CGFloat const kSheetCornerRadius = 30;
 
   // The Background customization service for getting current and recently used
   // backgrounds.
-  raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
+  raw_ptr<HomeBackgroundCustomizationService, DanglingUntriaged>
+      _backgroundService;
 }
 
 // The main page of the customization menu.

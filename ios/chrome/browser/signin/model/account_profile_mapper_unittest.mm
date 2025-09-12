@@ -51,7 +51,7 @@ using testing::UnorderedElementsAre;
 @end
 
 @implementation FakeChangeProfileCommands {
-  raw_ptr<ProfileManagerIOS> _manager;
+  raw_ptr<ProfileManagerIOS, DanglingUntriaged> _manager;
 }
 
 - (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {

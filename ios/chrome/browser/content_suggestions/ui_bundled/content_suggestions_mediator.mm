@@ -56,7 +56,7 @@
 
 @implementation ContentSuggestionsMediator {
   // Local State prefs.
-  raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
 }
 
 #pragma mark - Public

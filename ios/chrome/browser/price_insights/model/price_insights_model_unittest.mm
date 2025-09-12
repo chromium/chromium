@@ -95,7 +95,7 @@ class PriceInsightsModelTest : public PlatformTest {
   base::test::ScopedFeatureList features_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
-  raw_ptr<commerce::MockShoppingService> shopping_service_;
+  raw_ptr<commerce::MockShoppingService, DanglingUntriaged> shopping_service_;
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;
   int fetch_configuration_callback_count;
   std::unique_ptr<web::FakeWebState> web_state_;

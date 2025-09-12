@@ -186,7 +186,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
   // The profile pref service.
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
 
   // The sync service.
   raw_ptr<syncer::SyncService> _syncService;

@@ -273,7 +273,8 @@ struct EnhancedSafeBrowsingActivePromoData
   PasswordsCoordinator* _passwordsCoordinator;
 
   // Feature engagement tracker for the signin IPH.
-  raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged>
+      _featureEngagementTracker;
   // Presenter for the signin IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
 

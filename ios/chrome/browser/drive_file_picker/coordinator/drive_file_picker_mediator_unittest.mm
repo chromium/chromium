@@ -324,7 +324,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   DriveFilePickerMediator* mediator_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
-  raw_ptr<drive::DriveService> drive_service_;
+  raw_ptr<drive::DriveService, DanglingUntriaged> drive_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
@@ -333,8 +333,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
   FakeDriveFilePickerConsumer* fake_consumer_;
-  raw_ptr<TestDriveList> drive_list_;
-  raw_ptr<TestDriveFileDownloader> file_downloader_;
+  raw_ptr<TestDriveList, DanglingUntriaged> drive_list_;
+  raw_ptr<TestDriveFileDownloader, DanglingUntriaged> file_downloader_;
   DriveFilePickerMetricsHelper* metrics_helper_;
 };
 

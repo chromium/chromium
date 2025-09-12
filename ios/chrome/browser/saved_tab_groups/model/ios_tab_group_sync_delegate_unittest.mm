@@ -225,11 +225,11 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   FakeSceneState* scene_state_same_profile_;
   FakeSceneState* other_scene_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<Browser> browser_;
-  raw_ptr<Browser> browser_same_profile_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_same_profile_;
   std::unique_ptr<TestProfileIOS> other_profile_;
-  raw_ptr<Browser> other_browser_;
-  raw_ptr<Browser> other_inactive_browser_;
+  raw_ptr<Browser, DanglingUntriaged> other_browser_;
+  raw_ptr<Browser, DanglingUntriaged> other_inactive_browser_;
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate_;
   raw_ptr<MockTabGroupSyncService> mock_service_;

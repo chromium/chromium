@@ -86,13 +86,16 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   HomeCustomizationMediator* mediator_;
-  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       discover_feed_visibility_browser_agent_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<HomeBackgroundCustomizationService> customizationService_;
-  raw_ptr<image_fetcher::ImageFetcherService> imageFetcherService_;
-  raw_ptr<UserUploadedImageManager> userUploadedImageManager_;
+  raw_ptr<HomeBackgroundCustomizationService, DanglingUntriaged>
+      customizationService_;
+  raw_ptr<image_fetcher::ImageFetcherService, DanglingUntriaged>
+      imageFetcherService_;
+  raw_ptr<UserUploadedImageManager, DanglingUntriaged>
+      userUploadedImageManager_;
 };
 
 // Tests that the mediator populates the main page data for its consumer based

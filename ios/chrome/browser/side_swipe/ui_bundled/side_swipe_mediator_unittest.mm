@@ -117,7 +117,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
   ScopedKeyWindow scoped_window_;
   WKWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
-  raw_ptr<web::WebState> original_web_state_ = nil;
+  raw_ptr<web::WebState, DanglingUntriaged> original_web_state_ = nil;
   std::optional<int> active_web_state_index_;
 };
 

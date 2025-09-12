@@ -100,7 +100,7 @@ class LensOverlaySnapshotController final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<SnapshotTabHelper> snapshot_tab_helper_ = nullptr;
+  raw_ptr<SnapshotTabHelper, DanglingUntriaged> snapshot_tab_helper_ = nullptr;
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
   base::WeakPtr<LensOverlaySnapshotControllerDelegate> delegate_ = nullptr;
 

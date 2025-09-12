@@ -55,7 +55,7 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
       bool is_machine_scope) override;
 
  private:
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
 };
 
 }  // namespace enterprise_reporting

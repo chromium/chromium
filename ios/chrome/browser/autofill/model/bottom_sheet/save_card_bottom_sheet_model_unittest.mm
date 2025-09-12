@@ -122,7 +122,8 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<MockAutofillSaveCardDelegate> save_card_delegate_ = nil;
+  raw_ptr<MockAutofillSaveCardDelegate, DanglingUntriaged> save_card_delegate_ =
+      nil;
   std::unique_ptr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
   bool ran_on_confirmation_closed_callback_ = false;
 };

@@ -31,7 +31,7 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
 }  // namespace
 
 @implementation SettingsSearchEngineItem {
-  raw_ptr<const TemplateURL> _templateURL;
+  raw_ptr<const TemplateURL, DanglingUntriaged> _templateURL;
 }
 
 @synthesize enabled = _enabled;

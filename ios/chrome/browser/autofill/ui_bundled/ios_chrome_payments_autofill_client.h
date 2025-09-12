@@ -147,17 +147,17 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       AutofillSaveCardUiInfo ui_info,
       std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate);
 
-  const raw_ref<autofill::ChromeAutofillClientIOS> client_;
+  const raw_ref<autofill::ChromeAutofillClientIOS, DanglingUntriaged> client_;
 
-  const raw_ref<infobars::InfoBarManager> infobar_manager_;
+  const raw_ref<infobars::InfoBarManager, DanglingUntriaged> infobar_manager_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<MultipleRequestPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
 
   // TODO(crbug.com/40937065): Make these member variables as const raw_refs.
-  const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<web::WebState> web_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  const raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
 
   // The unique_ptr reference is only temporarily valid until the corresponding
