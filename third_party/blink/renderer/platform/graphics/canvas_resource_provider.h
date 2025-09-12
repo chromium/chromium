@@ -544,7 +544,9 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
 // * Renders to a SharedImage, which manages memory internally.
 // * Layers may be overlay candidates.
 class PLATFORM_EXPORT CanvasResourceProviderSharedImage
-    : public CanvasResourceProvider {
+    : public CanvasResourceProvider,
+      public viz::ContextLostObserver,
+      public BitmapGpuChannelLostObserver {
  public:
   CanvasResourceProviderSharedImage(
       gfx::Size,
@@ -622,6 +624,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool notified_context_lost_ = false;
 
  private:
+  // `viz::ContextLostObserver` implementation.
+  void OnContextLost() override;
+
+  // BitmapGpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override;
+
   virtual base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() = 0;
 };
 

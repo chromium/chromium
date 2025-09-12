@@ -248,12 +248,40 @@ void CanvasResourceProviderSharedImage::NotifyTexParamsModified(
   }
 }
 
+void CanvasResourceProviderSharedImage::OnContextLost() {
+  if (notified_context_lost_) {
+    return;
+  }
+
+  // Notify the owner of this resource provider that the GPU context was
+  // lost. The call is done in a separate task, so that the owner can delete
+  // this resource provider if needed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
+                     CreateWeakPtr()));
+  notified_context_lost_ = true;
+}
+
+void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
+  if (notified_context_lost_) {
+    return;
+  }
+
+  // Notify the owner of this resource provider that the GPU context was
+  // lost. The call is done in a separate task, so that the owner can delete
+  // this resource provider if needed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
+                     CreateWeakPtr()));
+  notified_context_lost_ = true;
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
-    : public CanvasResourceProviderSharedImage,
-      public viz::ContextLostObserver,
-      public BitmapGpuChannelLostObserver {
+    : public CanvasResourceProviderSharedImage {
  public:
   CanvasResourceProviderSharedImageImpl(
       gfx::Size size,
@@ -876,38 +904,6 @@ class CanvasResourceProviderSharedImageImpl
   }
 
  private:
-  // `viz::ContextLostObserver` implementation.
-  void OnContextLost() override {
-    if (notified_context_lost_) {
-      return;
-    }
-
-    // Notify the owner of this resource provider that the GPU context was
-    // lost. The call is done in a separate task, so that the owner can delete
-    // this resource provider if needed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
-                       CreateWeakPtr()));
-    notified_context_lost_ = true;
-  }
-
-  // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override {
-    if (notified_context_lost_) {
-      return;
-    }
-
-    // Notify the owner of this resource provider that the GPU context was
-    // lost. The call is done in a separate task, so that the owner can delete
-    // this resource provider if needed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
-                       CreateWeakPtr()));
-    notified_context_lost_ = true;
-  }
-
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override {
     if (!resource->IsLost() && resource->HasOneRef()) {
