@@ -71,9 +71,9 @@ def _get_enums_from_files(files):
   enums_used_in_file = set()
   for histogram_name, data in histograms.items():
     # Skip non-enum histograms.
-    if 'enum' not in data:
+    if 'enumDetails' not in data:
       continue
-    enum_name = data['enum']['name']
+    enum_name = data['enumDetails']['name']
     enums_used_in_file.add(enum_name)
   return enums_used_in_file
 

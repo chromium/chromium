@@ -3640,16 +3640,6 @@ shown properly on the user-facing crash UI.
   <int value="8" label="Cancelled by Chrome"/>
 </enum>
 
-<enum name="DeviceMode">
-  <int value="1" label="ClamshellMode"/>
-  <int value="2" label="TabletMode"/>
-</enum>
-
-<enum name="DeviceOrientation">
-  <int value="0" label="Landscape"/>
-  <int value="1" label="Portrait"/>
-</enum>
-
 <!-- This is not accessible from where the above enum is defined in code. -->
 
 <enum name="DeviceOrientation2">
@@ -4889,38 +4879,6 @@ shown properly on the user-facing crash UI.
 <enum name="GameControlsToggleFunction">
   <int value="0" label="Feature"/>
   <int value="1" label="Mapping hint"/>
-</enum>
-
-<enum name="GameDashboardFunction">
-  <int value="0" label="Feedback"/>
-  <int value="1" label="Help"/>
-  <int value="2" label="Setting"/>
-  <int value="3" label="Setting back"/>
-  <int value="4" label="Screen size"/>
-  <int value="5" label="Controls setup or edit"/>
-</enum>
-
-<enum name="GameDashboardMainMenuToggleMethod">
-  <int value="0" label="Game dashboard button"/>
-  <int value="1" label="Search plus G"/>
-  <int value="2" label="Esc"/>
-  <int value="3" label="Activate a new feature"/>
-  <int value="4" label="Enter overview mode"/>
-  <int value="5" label="Others"/>
-  <int value="6" label="Enter tablet mode"/>
-  <int value="7" label="Window animation"/>
-</enum>
-
-<enum name="GameDashboardMenu">
-  <int value="0" label="Main menu"/>
-  <int value="1" label="Toolbar"/>
-</enum>
-
-<enum name="GameDashboardToolbarSnapLocation">
-  <int value="0" label="Top left"/>
-  <int value="1" label="Top right"/>
-  <int value="2" label="Bottom right"/>
-  <int value="3" label="Bottom left"/>
 </enum>
 
 <enum name="GameModeResult">
@@ -26737,16 +26695,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="5" label="AcceptButtonClicked"/>
 </enum>
 
-<enum name="WindowAppType">
-  <int value="0" label="Non app"/>
-  <int value="1" label="Browser"/>
-  <int value="2" label="Chrome app"/>
-  <int value="3" label="Arc app"/>
-  <int value="4" label="Crostini app"/>
-  <int value="5" label="System app"/>
-  <int value="6" label="Lacros"/>
-</enum>
-
 <enum name="WindowOpenDisposition">
   <int value="0" label="Unknown"/>
   <int value="1" label="Current Tab"/>
@@ -26801,41 +26749,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="0" label="IsActive"/>
   <int value="1" label="HasBeenActive"/>
   <int value="2" label="NeverActive"/>
-</enum>
-
-<enum name="WindowSizeRange">
-  <summary>The window resize ranges are half-open (low, high].</summary>
-  <int value="0" label="(0-800, 0-600)"/>
-  <int value="1" label="(0-800, 600-728)"/>
-  <int value="2" label="(0-800, 728-900)"/>
-  <int value="3" label="(0-800, &gt;900)"/>
-  <int value="4" label="(800-1024, 0-600"/>
-  <int value="5" label="(800-1024, 600-728)"/>
-  <int value="6" label="(800-1024, 728-900)"/>
-  <int value="7" label="(800-1024, &gt;900)"/>
-  <int value="8" label="(1024-1400, 0-600)"/>
-  <int value="9" label="(1024-1400, 600-728)"/>
-  <int value="10" label="(1024-1400, 728-900)"/>
-  <int value="11" label="(1024-1400, &gt;900)"/>
-  <int value="12" label="(&gt;1400, 0-600)"/>
-  <int value="13" label="(&gt;1400, 600-728)"/>
-  <int value="14" label="(&gt;1400, 728-900)"/>
-  <int value="15" label="(&gt;1400, &gt;900)"/>
-</enum>
-
-<enum name="WindowStateType">
-  <int value="0" label="Default"/>
-  <int value="1" label="Normal"/>
-  <int value="2" label="Minimized"/>
-  <int value="3" label="Maxmized"/>
-  <int value="4" label="Inactive"/>
-  <int value="5" label="Fullscreen"/>
-  <int value="6" label="Primary Snapped"/>
-  <int value="7" label="Secondary Snapped"/>
-  <int value="8" label="Pinned"/>
-  <int value="9" label="Trusted Pinned"/>
-  <int value="10" label="Pip"/>
-  <int value="11" label="Floated"/>
 </enum>
 
 <enum name="WorkerType">
