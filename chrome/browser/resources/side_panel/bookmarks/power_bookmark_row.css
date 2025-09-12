@@ -14,9 +14,14 @@
 }
 
 cr-url-list-item[size=compact] {
-  margin-left: 10px;
+  margin-inline-start: 10px;
   --cr-url-list-item-padding: 6px;
   width: inherit;
+}
+
+:host(:not([has-folders])) cr-url-list-item {
+  margin-inline-start: 0px;
+  padding-inline-start: 8px;
 }
 
 /* Visually hide the label but allow the screen reader to pick it up. */
@@ -47,7 +52,7 @@ cr-expand-button {
   display: flex;
   flex-direction: row-reverse;
   --cr-section-vertical-padding: 0px;
-  margin-left: calc(var(--depth) * var(--margin-per-depth));
+  margin-inline-start: calc(var(--depth) * var(--margin-per-depth));
 
   --cr-expand-button-icon-size: 16px;
   --cr-expand-button-size: 20px;
@@ -64,8 +69,12 @@ cr-expand-button[selected] {
       var(--color-side-panel-bookmarks-active-folder-foreground);
 }
 
+:host(:not([has-folders])) #bookmark {
+  margin-inline-start: 0;
+}
+
 #bookmark {
-  margin-left: calc(var(--depth) * var(--margin-per-depth) +
+  margin-inline-start: calc(var(--depth) * var(--margin-per-depth) +
       var(--base-margin));
 }
 

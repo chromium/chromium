@@ -72,6 +72,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
       activeFolderPath: {type: Array},
+      hasFolders: {type: Boolean, reflect: true},
     };
   }
 
@@ -105,6 +106,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor isPriceTracked: boolean = false;
   accessor canDrag: boolean = true;
   accessor activeFolderPath: BookmarksTreeNode[] = [];
+  accessor hasFolders: boolean = false;
 
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
@@ -154,6 +156,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+
+    if (changedProperties.has('bookmark') &&
+        this.bookmark.id !== changedProperties.get('bookmark')?.id) {
+      this.toggleExpand = false;
+    }
 
     if (changedProperties.has('activeFolderPath')) {
       this.isSelected = this.activeFolderPath?.length > 0 &&
@@ -315,13 +322,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // eat input clicks. Also ignore clicks if the row has no associated
     // bookmark, or if the event is a right-click.
     if (this.isRenamingItem_() || !this.bookmark || event.button === 2) {
-      return;
-    }
-    // In compact view, if the item is a folder, ignore row clicks to toggle
-    // the folder.
-    if (this.shouldExpand_() && !this.hasCheckbox) {
-      // If clicking on a row that's a folder in compact view, move focus to it.
-      this.keyArrowNavigationService_.setCurrentFocusIndex(this);
       return;
     }
     event.preventDefault();

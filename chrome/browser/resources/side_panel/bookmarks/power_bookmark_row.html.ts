@@ -75,6 +75,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
   if (this.shouldExpand_()) {
     return html`<!--_html_template_start_-->
 <cr-expand-button no-hover id="expandButton"
+    .expanded="${this.toggleExpand}"
     collapse-icon="cr:expand-more"
     ?selected="${this.isSelected}"
     expand-icon="cr:chevron-right"
@@ -98,7 +99,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
           .activeFolderPath="${this.activeFolderPath}"
-          .contextMenuBookmark="${this.contextMenuBookmark}">
+          .contextMenuBookmark="${this.contextMenuBookmark}"
+          ?has-folders="${true}">
       </power-bookmark-row>
     `)}`: ''
   }<!--_html_template_end_-->`;

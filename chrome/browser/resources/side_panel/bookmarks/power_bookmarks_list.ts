@@ -282,6 +282,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
             'activeFolderPath_.length, hasShownBookmarks_,' +
             'labels_.length, hasSomeActiveFilter_)',
       },
+
+      hasFolders_: {
+        type: Boolean,
+        computed: 'computeHasFolders_(displayLists_.*)',
+        reflect: true,
+      },
     };
   }
 
@@ -325,6 +331,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private hasSomeActiveFilter_: boolean;
   declare private hasShownBookmarks_: boolean;
   declare private sectionVisibility_: SectionVisibility;
+  declare private hasFolders_: boolean;
   declare private shoppingCollectionFolderId_: string;
   private recordCountMetricsOnNextUpdate_: boolean = false;
   declare private updatedElementIds_: string[];
@@ -622,6 +629,15 @@ export class PowerBookmarksListElement extends PolymerElement implements
     }
   }
 
+  private computeHasFolders_(): boolean {
+    if (!this.displayLists_ || this.displayLists_.length === 0) {
+      return false;
+    }
+    return this.displayLists_.some(
+        list => list.some(bookmark => !!bookmark.children),
+    );
+  }
+
   private computeCanDrag_(): boolean {
     return !this.editing_ && !this.renamingId_ && !this.hasSomeActiveFilter_;
   }
@@ -715,9 +731,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private getActiveFolderLabel_(): string {
-    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
-      return loadTimeData.getString('allBookmarks');
-    }
     return getFolderLabel(this.getActiveFolder_());
   }
 
@@ -750,9 +763,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    const activeFolder = this.bookmarksTreeViewEnabled_ && this.compact_ ?
-        undefined :
-        this.getActiveFolder_();
+    const activeFolder = this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     if (this.hasSomeActiveFilter_ && !!activeFolder) {
@@ -849,17 +860,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
         sortType.sortOrder;
   }
 
-  private onRowToggled_(event: CustomEvent<{
+  private onRowToggled_(_event: CustomEvent<{
     bookmark: BookmarksTreeNode,
     expanded: boolean,
     event: MouseEvent,
   }>) {
-    const bookmark = event.detail.bookmark;
-    if (event.detail.expanded) {
-      this.activeFolderPath_ = this.bookmarksService_.findPathToId(bookmark.id);
-    } else if (bookmark === this.getActiveFolder_()) {
-      this.activeFolderPath_ = this.activeFolderPath_.slice(0, -1);
-    }
     this.notifyBookmarksListResize_();
   }
   /**
@@ -1025,9 +1030,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private shouldHideBackButton_(): boolean {
-    if (this.compact_ && this.bookmarksTreeViewEnabled_) {
-      return true;
-    }
     return !this.activeFolderPath_.length;
   }
 
