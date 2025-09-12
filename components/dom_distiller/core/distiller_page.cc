@@ -141,39 +141,52 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
 
   std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result(
       new dom_distiller::proto::DomDistillerResult());
-  bool found_content;
-  DistillationParseResult result;
+
+  // Initialize variables to a default failure state.
+  bool found_content = false;
+  DistillationParseResult result = DistillationParseResult::kParseFailure;
 
   if (value->is_none()) {
-    found_content = false;
     result = DistillationParseResult::kNoData;
   } else {
+    bool parsed_successfully = false;
     switch (GetDistillerType()) {
       case DistillerType::kReadability:
-        found_content = ReadabilityDistillerResultToDomDistillerResult(
+        parsed_successfully = ReadabilityDistillerResultToDomDistillerResult(
             *value, distiller_result.get());
         break;
       case DistillerType::kDOMDistiller:
-        found_content =
+        parsed_successfully =
             dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
                 *value, distiller_result.get());
+        break;
     }
 
-    if (found_content) {
-      bool content_long_enough = true;
-      if (distiller_result->has_statistics_info() &&
-          distiller_result->statistics_info().has_word_count()) {
-        content_long_enough =
-            distiller_result->statistics_info().word_count() >=
-            GetMinimumAllowableDistilledContentLength();
-      }
+    if (parsed_successfully) {
+      // Assume success unless a specific validation check fails.
+      found_content = true;
+      result = DistillationParseResult::kSuccess;
 
-      result = content_long_enough ? DistillationParseResult::kSuccess
-                                   : DistillationParseResult::kContentTooShort;
-      found_content = found_content && content_long_enough;
+      // Apply a content length check specifically for the Readability
+      // distiller.
+      if (GetDistillerType() == DistillerType::kReadability) {
+        bool content_is_long_enough = true;
+        if (distiller_result->has_statistics_info() &&
+            distiller_result->statistics_info().has_word_count()) {
+          content_is_long_enough =
+              distiller_result->statistics_info().word_count() >=
+              GetMinimumAllowableDistilledContentLength();
+        }
+
+        // If content is too short, update the result state.
+        if (!content_is_long_enough) {
+          result = DistillationParseResult::kContentTooShort;
+          found_content = false;
+        }
+      }
     } else {
+      // Parsing failed, the default state is already kParseFailure.
       DVLOG(1) << "Unable to parse DomDistillerResult.";
-      result = DistillationParseResult::kParseFailure;
     }
   }
 
