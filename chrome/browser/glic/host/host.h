@@ -63,6 +63,24 @@ class Host {
     virtual bool IsShowing() const = 0;
   };
 
+  // Interface for methods that the host can call on an instance.
+  // TODO(refactor): This interface should eventually take the place of
+  // Delegate.
+  class InstanceDelegate {
+   public:
+    virtual ~InstanceDelegate() = default;
+
+    virtual void CreateTab() = 0;
+    virtual void CreateTask() = 0;
+    virtual void PerformActions() = 0;
+    virtual void StopActorTask() = 0;
+    virtual void PauseActorTask() = 0;
+    virtual void ResumeActorTask() = 0;
+
+    virtual void GetZeroStateSuggestionsAndSubscribe() = 0;
+    virtual void GetZeroStateSuggestionsForFocusedTab() = 0;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the client is ready to show, invoked sometime after
