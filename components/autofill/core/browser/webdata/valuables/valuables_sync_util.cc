@@ -74,6 +74,7 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
   AutofillValuableSpecifics trimmed_specifics =
       AutofillValuableSpecifics(specifics);
   trimmed_specifics.clear_id();
+  trimmed_specifics.clear_is_editable();
   trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
   trimmed_specifics.mutable_loyalty_card()->clear_program_name();
   trimmed_specifics.mutable_loyalty_card()->clear_program_logo();

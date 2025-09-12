@@ -2030,6 +2030,7 @@ VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(id);
+  VISIT(is_editable);
   VISIT(loyalty_card);
   VISIT(vehicle_registration);
   VISIT(flight_reservation);

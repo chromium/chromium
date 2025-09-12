@@ -105,6 +105,9 @@ message AutofillValuableSpecifics {
   // The valuable id.
   optional string id = 1;
 
+  // True if the pass is editable by external clients.
+  optional bool is_editable = 6;
+
   oneof valuable_data {
     LoyaltyCard loyalty_card = 2;
     VehicleRegistration vehicle_registration = 3;
