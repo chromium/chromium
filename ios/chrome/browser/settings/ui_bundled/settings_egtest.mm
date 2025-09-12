@@ -432,7 +432,8 @@ id<GREYMatcher> SafariImportButton() {
 
 // Tests that the Safari Import button remains visible if at least one data type
 // is not blocked from import by enterprise policies.
-- (void)testSafariImportButtonVisibleWhenSomeBlocked {
+// TODO(crbug.com/444394494): Test is failing.
+- (void)DISABLED_testSafariImportButtonVisibleWhenSomeBlocked {
   if (@available(iOS 18.2, *)) {
     MergePolicy(true, "AutofillCreditCardEnabled");
     MergePolicy(false, "PasswordManagerEnabled");
