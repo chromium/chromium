@@ -391,6 +391,7 @@ source_set("unit_tests") {
     "bindings/argument_spec_builder.h",
     "bindings/argument_spec_unittest.cc",
     "bindings/binding_access_checker_unittest.cc",
+    "bindings/declarative_event_unittest.cc",
     "bindings/event_emitter_unittest.cc",
     "bindings/exception_handler_unittest.cc",
     "bindings/listener_tracker_unittest.cc",
@@ -441,7 +442,6 @@ source_set("unit_tests") {
     sources += [
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
-      "bindings/declarative_event_unittest.cc",
       "storage_area_unittest.cc",
     ]
   }
