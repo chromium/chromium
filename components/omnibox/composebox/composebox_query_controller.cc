@@ -150,8 +150,8 @@ lens::Payload CreateContentextualDataUploadPayload(
   return payload;
 }
 
-// Creates the server request proto for the pdf file upload request. Called
-// on the main thread after the payload is ready.
+// Creates the server request proto for the pdf / page content upload request.
+// Called on the main thread after the payload is ready.
 void CreateFileUploadRequestProtoWithPayloadAndContinue(
     lens::LensOverlayRequestId request_id,
     lens::LensOverlayClientContext client_context,
@@ -175,6 +175,21 @@ bool IsValidFileUploadStatusForMultimodalRequest(
   return upload_status == FileUploadStatus::kProcessing ||
          upload_status == FileUploadStatus::kUploadStarted ||
          upload_status == FileUploadStatus::kUploadSuccessful;
+}
+
+// Returns the media type for the given mime type.
+lens::LensOverlayRequestId::MediaType MediaTypeForMimeType(
+    lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
+    case lens::MimeType::kAnnotatedPageContent:
+      return lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE;
+    case lens::MimeType::kImage:
+      [[fallthrough]];
+    default:
+      return lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE;
+  }
 }
 
 }  // namespace
@@ -302,7 +317,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   bool has_viewport_screenshot =
       contextual_input_data->viewport_screenshot.has_value();
 #endif  // BUILDFLAG(IS_IOS)
-  // Unlike image uploads,PDF / page content uploads need to increment the
+  // Unlike image uploads, PDF / page content uploads need to increment the
   // long context id instead of the image sequence id.
   current_file_info.request_id_ = GetNextRequestId(
       current_file_info.mime_type_ == lens::MimeType::kImage
@@ -311,9 +326,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
                  ? lens::RequestIdUpdateMode::kPageContentWithViewportRequest
                  : lens::RequestIdUpdateMode::kPageContentRequest),
       current_file_info.mime_type_,
-      current_file_info.mime_type_ == lens::MimeType::kPdf
-          ? lens::LensOverlayRequestId::MEDIA_TYPE_PDF
-          : lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+      MediaTypeForMimeType(current_file_info.mime_type_));
 
   // Preparing for the upload requests require multiple async flows to
   // complete before the request is ready to be send to the server. Start the
@@ -705,6 +718,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
 
   switch (file_info->mime_type_) {
     case lens::MimeType::kPdf:
+      [[fallthrough]];
+    case lens::MimeType::kAnnotatedPageContent:
       CHECK(contextual_input_data->context_input.has_value() &&
             contextual_input_data->context_input->size() > 0);
       // Call CreateContentextualDataUploadPayload off the main thread to avoid
