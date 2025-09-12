@@ -94,6 +94,8 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
             VerificationStatus::kServerParsed);
 }
 
+// Tests that the `CreateSpecificsFromEntityInstance` function correctly
+// serializes the flight reservation entity into its proto representation.
 TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_FlightReservation) {
   EntityInstance flight_reservation =
       test::GetFlightReservationEntityInstance();
@@ -122,6 +124,51 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_FlightReservation) {
   EXPECT_EQ(GetStringValue(flight_reservation,
                            AttributeTypeName::kFlightReservationArrivalAirport),
             specifics.flight_reservation().arrival_airport());
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function correctly sets
+// the `are_attributes_read_only` property.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_IsEditable) {
+  {
+    sync_pb::AutofillValuableSpecifics specifics =
+        TestFlightReservationSpecifics();
+
+    specifics.set_is_editable(true);
+    std::optional<EntityInstance> flight_reservation =
+        CreateEntityInstanceFromSpecifics(specifics);
+    ASSERT_TRUE(flight_reservation.has_value());
+    EXPECT_FALSE(flight_reservation->are_attributes_read_only());
+  }
+  {
+    sync_pb::AutofillValuableSpecifics specifics =
+        TestFlightReservationSpecifics();
+    specifics.set_is_editable(false);
+    std::optional<EntityInstance> flight_reservation =
+        CreateEntityInstanceFromSpecifics(specifics);
+    ASSERT_TRUE(flight_reservation.has_value());
+    EXPECT_TRUE(flight_reservation->are_attributes_read_only());
+  }
+}
+
+// Tests that the `CreateSpecificsFromEntityInstance` function correctly sets
+// the `is_editable` property.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_IsEditable) {
+  {
+    sync_pb::AutofillValuableSpecifics specifics =
+        CreateSpecificsFromEntityInstance(
+            test::GetFlightReservationEntityInstance(
+                {.are_attributes_read_only =
+                     EntityInstance::AreAttributesReadOnly(false)}));
+    EXPECT_TRUE(specifics.is_editable());
+  }
+  {
+    sync_pb::AutofillValuableSpecifics specifics =
+        CreateSpecificsFromEntityInstance(
+            test::GetFlightReservationEntityInstance(
+                {.are_attributes_read_only =
+                     EntityInstance::AreAttributesReadOnly(true)}));
+    EXPECT_FALSE(specifics.is_editable());
+  }
 }
 
 }  // namespace autofill

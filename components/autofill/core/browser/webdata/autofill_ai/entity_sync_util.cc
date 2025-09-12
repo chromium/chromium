@@ -156,6 +156,7 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
   };
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
 
   sync_pb::FlightReservation& flight_reservation =
       *specifics.mutable_flight_reservation();
@@ -190,6 +191,7 @@ sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
   };
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
 
   sync_pb::VehicleRegistration& vehicle =
       *specifics.mutable_vehicle_registration();
@@ -272,8 +274,6 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
   const EntityInstance::EntityId guid(specifics.id());
   switch (specifics.valuable_data_case()) {
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration: {
-      // TODO(crbug.com/436174974): Update the value of
-      // `are_attributes_read_only` once it becomes available in the specifics.
       return EntityInstance(
           EntityType(EntityTypeName::kVehicle),
           GetVehicleAttributesFromSpecifics(specifics), guid,
@@ -281,11 +281,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           /*use_date=*/{},
           /*record_type=*/EntityInstance::RecordType::kServerWallet,
           /*are_attributes_read_only=*/
-          EntityInstance::AreAttributesReadOnly(false));
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()));
     }
     case sync_pb::AutofillValuableSpecifics::kFlightReservation: {
-      // TODO(crbug.com/436174974): Update the value of
-      // `are_attributes_read_only` once it becomes available in the specifics.
       return EntityInstance(
           EntityType(EntityTypeName::kFlightReservation),
           GetFlightReservationAttributesFromSpecifics(specifics), guid,
@@ -293,7 +291,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           /*use_date=*/{},
           /*record_type=*/EntityInstance::RecordType::kServerWallet,
           /*are_attributes_read_only=*/
-          EntityInstance::AreAttributesReadOnly(false));
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()));
     }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
