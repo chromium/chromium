@@ -106,3 +106,17 @@ source_set("reading_list_adder") {
     "//url",
   ]
 }
+
+source_set("agent") {
+  sources = [
+    "share_extension_scene_agent.h",
+    "share_extension_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/app_group",
+  ]
+}
