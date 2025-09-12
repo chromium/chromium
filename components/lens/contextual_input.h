@@ -46,8 +46,13 @@ struct ContextualInputData {
   std::optional<std::string> page_title;
   // If the context is a pdf, this is the current viewed page.
   std::optional<uint32_t> pdf_current_page;
+#if BUILDFLAG(IS_IOS)
+  // If the context is a webpage or pdf, this is the viewport screenshot.
+  std::optional<std::vector<uint8_t>> viewport_screenshot_bytes;
+#else
   // If the context is a webpage or pdf, this is the viewport screenshot.
   std::optional<SkBitmap> viewport_screenshot;
+#endif  // BUILDFLAG(IS_IOS)
   // Whether or not webpage or pdf context is eligible.
   bool is_page_context_eligible;
 };

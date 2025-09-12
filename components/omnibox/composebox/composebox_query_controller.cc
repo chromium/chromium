@@ -295,12 +295,19 @@ void ComposeboxQueryController::StartFileUploadFlow(
   UpdateFileUploadStatus(file_token, FileUploadStatus::kProcessing,
                          std::nullopt);
 
+#if BUILDFLAG(IS_IOS)
+  bool has_viewport_screenshot =
+      contextual_input_data->viewport_screenshot_bytes.has_value();
+#else
+  bool has_viewport_screenshot =
+      contextual_input_data->viewport_screenshot.has_value();
+#endif  // BUILDFLAG(IS_IOS)
   // Unlike image uploads,PDF / page content uploads need to increment the
   // long context id instead of the image sequence id.
   current_file_info.request_id_ = GetNextRequestId(
       current_file_info.mime_type_ == lens::MimeType::kImage
           ? lens::RequestIdUpdateMode::kFullImageRequest
-          : (contextual_input_data->viewport_screenshot.has_value()
+          : (has_viewport_screenshot
                  ? lens::RequestIdUpdateMode::kPageContentWithViewportRequest
                  : lens::RequestIdUpdateMode::kPageContentRequest),
       current_file_info.mime_type_,
@@ -667,14 +674,24 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     return;
   }
 
-#if !BUILDFLAG(IS_IOS)
   // If there is a viewport screenshot, create the viewport upload request body.
-  // TODO(crbug.com/442683956): Support alternative to SkBitmap for viewport
-  // screenshot, for iOS.
+  // TODO(crbug.com/442685171): Pass the pdf page number to the viewport
+  // upload request if available.
+#if BUILDFLAG(IS_IOS)
+  if (contextual_input_data->viewport_screenshot_bytes.has_value()) {
+    CHECK(image_options.has_value());
+    CreateImageUploadRequest(
+        file_token,
+        // Pass ownership of the viewport screenshot bytes to the callback.
+        std::move(contextual_input_data->viewport_screenshot_bytes.value()),
+        std::move(image_options),
+        base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
+                       weak_ptr_factory_.GetWeakPtr(), file_token,
+                       file_info->num_outstanding_network_requests_++));
+  }
+#else
   if (contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
-    // TODO(crbug.com/442685171): Pass the pdf page number to the viewport
-    // upload request if available.
     ProcessDecodedImageAndContinue(
         *file_info->request_id_, image_options.value(),
         base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
