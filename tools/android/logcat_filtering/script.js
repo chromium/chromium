@@ -46,16 +46,12 @@ const dropdownListTag = document.getElementById('dropdown-list-tag');
 const dropdownHeaderPriority = document.getElementById(
   'dropdown-header-priority');
 const dropdownListPriority = document.getElementById('dropdown-list-priority');
+const exceptionFeedback = document.getElementById('exception-feedback');
 const nextExceptionButton = document.getElementById('next-exception-button');
-const nextExceptionFeedback = document.getElementById(
-  'next-exception-feedback');
 const prevExceptionButton = document.getElementById('prev-exception-button');
-const prevExceptionFeedback = document.getElementById(
-  'prev-exception-feedback');
+const testFeedback = document.getElementById('test-feedback');
 const nextTestButton = document.getElementById('next-test-button');
-const nextTestFeedback = document.getElementById('next-test-feedback');
 const prevTestButton = document.getElementById('prev-test-button');
-const prevTestFeedback = document.getElementById('prev-test-feedback');
 const dropdownHeaderSettings = document.getElementById(
   'dropdown-header-settings');
 const dropdownListSettings = document.getElementById('dropdown-list-settings');
@@ -304,6 +300,7 @@ function setUpElements(currentFileLines) {
   setUpProcessDropdownList();
   setUpTagDropdownList();
   setUpPriorityDropdownList();
+  setUpArrowFeedback();
 }
 
 /**
@@ -1028,6 +1025,25 @@ function findFirstVisibleLine() {
 }
 
 /**
+ * Set up the feedback displayed on the exception and test buttons.
+ * This is called initially after the user uploads a new logcat.
+ */
+function setUpArrowFeedback() {
+  let totalNumExceptions = 0;
+  let totalNumTests = 0;
+  for (const parsedLine of currentFileParsedLines) {
+    if (isStartOfStackTrace(parsedLine)) {
+      totalNumExceptions += 1;
+    }
+    if (isStartOfTest(parsedLine)) {
+      totalNumTests += 1;
+    }
+  }
+  exceptionFeedback.textContent = `Exceptions (0/${totalNumExceptions})`;
+  testFeedback.textContent = `Tests (0/${totalNumTests})`;
+}
+
+/**
  * Scroll to the next logcat line that represents a program exception.
  */
 function jumpToNextException() {
@@ -1040,23 +1056,30 @@ function jumpToNextException() {
   // Find the first line after the firstVisibleLine that represents
   // a program exception and scroll to that line.
   const logcatLines = Array.from(textDisplayArea.children);
+  let totalNumExceptions = 0;
+  let currentExceptionPosition = 0;
   for (const logcatLine of logcatLines) {
     const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
-    if (!isNaN(lineNumber) && lineNumber > firstVisibleLineNumber) {
-      const parsedLine = currentFileParsedLines[lineNumber];
-      if (isStartOfStackTrace(parsedLine)) {
+    const parsedLine = currentFileParsedLines[lineNumber];
+    if (isStartOfStackTrace(parsedLine)) {
+      totalNumExceptions += 1;
+      if (currentExceptionPosition === 0 &&
+        lineNumber > firstVisibleLineNumber) {
         scrollToLine(logcatLine);
-        return;
+        currentExceptionPosition = totalNumExceptions;
       }
     }
   }
 
-  // If no next exception is found, display a feedback text.
-  nextExceptionFeedback.textContent = 'There is no next exception';
-  nextExceptionFeedback.classList.remove('hidden-element');
-  setTimeout(() => {
-    nextExceptionFeedback.classList.add('hidden-element');
-  }, 5000);
+  if (totalNumExceptions === 0) {
+    exceptionFeedback.textContent = `Exceptions (0/0)`;
+  } else if (currentExceptionPosition === 0) {
+    exceptionFeedback.textContent = `Exceptions ` +
+      `(${totalNumExceptions}/${totalNumExceptions})`;
+  } else {
+    exceptionFeedback.textContent = `Exceptions ` +
+      `(${currentExceptionPosition}/${totalNumExceptions})`;
+  }
 }
 
 /**
@@ -1072,24 +1095,30 @@ function jumpToPreviousException() {
   // Find the last line before the firstVisibleLine that represents
   // a program exception and scroll to that line.
   const logcatLines = Array.from(textDisplayArea.children);
-  for (let i = logcatLines.length - 1; i >= 0; i--) {
-    const logcatLine = logcatLines[i];
+  let totalNumExceptions = 0;
+  let currentExceptionPosition = 0;
+  let currentExceptionLogcatLine;
+  for (const logcatLine of logcatLines) {
     const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
-    if (!isNaN(lineNumber) && lineNumber < firstVisibleLineNumber) {
-      const parsedLine = currentFileParsedLines[lineNumber];
-      if (isStartOfStackTrace(parsedLine)) {
-        scrollToLine(logcatLine);
-        return;
+    const parsedLine = currentFileParsedLines[lineNumber];
+    if (isStartOfStackTrace(parsedLine)) {
+      totalNumExceptions += 1;
+      if (lineNumber < firstVisibleLineNumber) {
+        currentExceptionPosition = totalNumExceptions;
+        currentExceptionLogcatLine = logcatLine;
       }
     }
   }
 
-  // If no previous exception is found, display a feedback text.
-  prevExceptionFeedback.textContent = 'There is no previous exception';
-  prevExceptionFeedback.classList.remove('hidden-element');
-  setTimeout(() => {
-    prevExceptionFeedback.classList.add('hidden-element');
-  }, 5000);
+  if (totalNumExceptions === 0) {
+    exceptionFeedback.textContent = `Exceptions (0/0)`;
+  } else if (currentExceptionPosition === 0) {
+    exceptionFeedback.textContent = `Exceptions (1/${totalNumExceptions})`;
+  } else {
+    scrollToLine(currentExceptionLogcatLine);
+    exceptionFeedback.textContent = `Exceptions ` +
+      `(${currentExceptionPosition}/${totalNumExceptions})`;
+  }
 }
 
 /**
@@ -1118,23 +1147,30 @@ function jumpToNextTest() {
   // Find the first line after the firstVisibleLine that represents
   // the start of a test and scroll to that line.
   const logcatLines = Array.from(textDisplayArea.children);
+  let totalNumTests = 0;
+  let currentTestPosition = 0;
   for (const logcatLine of logcatLines) {
     const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
-    if (!isNaN(lineNumber) && lineNumber > firstVisibleLineNumber) {
-      const parsedLine = currentFileParsedLines[lineNumber];
-      if (isStartOfTest(parsedLine)) {
+    const parsedLine = currentFileParsedLines[lineNumber];
+    if (isStartOfTest(parsedLine)) {
+      totalNumTests += 1;
+      if (currentTestPosition === 0 &&
+        lineNumber > firstVisibleLineNumber) {
         scrollToLine(logcatLine);
-        return;
+        currentTestPosition = totalNumTests;
       }
     }
   }
 
-  // If no next test is found, display a feedback text.
-  nextTestFeedback.textContent = 'There is no next test';
-  nextTestFeedback.classList.remove('hidden-element');
-  setTimeout(() => {
-    nextTestFeedback.classList.add('hidden-element');
-  }, 5000);
+  if (totalNumTests === 0) {
+    testFeedback.textContent = `Tests (0/0)`;
+  } else if (currentTestPosition === 0) {
+    testFeedback.textContent = `Tests ` +
+      `(${totalNumTests}/${totalNumTests})`;
+  } else {
+    testFeedback.textContent = `Tests ` +
+      `(${currentTestPosition}/${totalNumTests})`;
+  }
 }
 
 /**
@@ -1150,24 +1186,30 @@ function jumpToPreviousTest() {
   // Find the last line before the firstVisibleLine that represents
   // the start of a test and scroll to that line.
   const logcatLines = Array.from(textDisplayArea.children);
-  for (let i = logcatLines.length - 1; i >= 0; i--) {
-    const logcatLine = logcatLines[i];
+  let totalNumTests = 0;
+  let currentTestPosition = 0;
+  let currentTestLogcatLine;
+  for (const logcatLine of logcatLines) {
     const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
-    if (!isNaN(lineNumber) && lineNumber < firstVisibleLineNumber) {
-      const parsedLine = currentFileParsedLines[lineNumber];
-      if (isStartOfTest(parsedLine)) {
-        scrollToLine(logcatLine);
-        return;
+    const parsedLine = currentFileParsedLines[lineNumber];
+    if (isStartOfTest(parsedLine)) {
+      totalNumTests += 1;
+      if (lineNumber < firstVisibleLineNumber) {
+        currentTestPosition = totalNumTests;
+        currentTestLogcatLine = logcatLine;
       }
     }
   }
 
-  // If no previous test is found, display a feedback text.
-  prevTestFeedback.textContent = 'There is no previous test';
-  prevTestFeedback.classList.remove('hidden-element');
-  setTimeout(() => {
-    prevTestFeedback.classList.add('hidden-element');
-  }, 5000);
+  if (totalNumTests === 0) {
+    testFeedback.textContent = `Tests (0/0)`;
+  } else if (currentTestPosition === 0) {
+    testFeedback.textContent = `Tests (1/${totalNumTests})`;
+  } else {
+    scrollToLine(currentTestLogcatLine);
+    testFeedback.textContent = `Tests ` +
+      `(${currentTestPosition}/${totalNumTests})`;
+  }
 }
 
 /**

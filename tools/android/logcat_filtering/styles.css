@@ -9,6 +9,7 @@
   --google-button-bg-color: #4285f4;
   --google-button-text-color: white;
   --google-button-hover-bg-color: #357ae8;
+  --google-button-arrow-hover-bg-color: #0000001a;
   --dropdown-border-color: #ccc;
   --dropdown-header-bg-color: #f9f9f9;
   --dropdown-header-text-color: #5f6368;
@@ -40,6 +41,7 @@
   --google-button-bg-color: #5f6368;
   --google-button-text-color: #e8eaed;
   --google-button-hover-bg-color: #72767c;
+  --google-button-arrow-hover-bg-color: #ffffff26;
   --dropdown-border-color: #5f6368;
   --dropdown-header-bg-color: #33363b;
   --dropdown-header-text-color: #e8eaed;
@@ -142,20 +144,26 @@ body {
   margin-right: 8px;
 }
 
-.button-with-feedback {
-  position: relative;
-  display: flex;
-  flex-direction: column;
+.google-button.arrow-controls {
+  padding-right: 8px;
+  /* Disable mouse interactions for the entire button */
+  pointer-events: none;
 }
 
-.feedback-text {
-  position: absolute;
-  bottom: -20px;
-  left: 10px;
-  color: red;
-  font-size: 12px;
-  /* Prevents the text from wrapping, keeping height consistent */
-  white-space: nowrap;
+.google-button .arrow-feedback {
+  margin-right: 8px;
+}
+
+.google-button .arrow {
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 3px;
+  /* Re-enable mouse interaction only for the arrows */
+  pointer-events: auto;
+}
+
+.google-button .arrow:hover {
+  background-color: var(--google-button-arrow-hover-bg-color);
 }
 
 .dropdown {
