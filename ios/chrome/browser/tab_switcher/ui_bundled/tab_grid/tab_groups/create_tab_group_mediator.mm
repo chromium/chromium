@@ -45,7 +45,7 @@
   // Web state list where the tab group belong.
   raw_ptr<WebStateList> _webStateList;
   // Tab group to edit.
-  raw_ptr<const TabGroup> _tabGroup;
+  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
   // Helper class to configure tab item images.

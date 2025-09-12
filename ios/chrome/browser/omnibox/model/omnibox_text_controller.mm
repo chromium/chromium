@@ -36,11 +36,11 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 @implementation OmniboxTextController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient> _omniboxClient;
+  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
-  raw_ptr<OmniboxTextModel> _omniboxTextModel;
+  raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
   /// Whether it's the lens overlay omnibox.
   BOOL _inLensOverlay;
   /// The previous omnibox text state.

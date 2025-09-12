@@ -85,7 +85,7 @@ class SaveAddressProfileModalRequestConfig
       const std::vector<autofill::ProfileValueDifference>& profile_diff);
 
   // The InfoBar causing this modal.
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
 
   // Configuration data extracted from `infobar_`'s save address profile
   // delegate.

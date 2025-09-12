@@ -34,7 +34,7 @@
   // Preference service from the application context.
   raw_ptr<PrefService> _prefService;
   // Feature engagement tracker.
-  raw_ptr<feature_engagement::Tracker> _engagementTracker;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _engagementTracker;
   // Identity manager providing AccountInfo capabilities.
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer to track changes to Family Link user state.

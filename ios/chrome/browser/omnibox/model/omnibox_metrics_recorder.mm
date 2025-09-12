@@ -44,11 +44,12 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
 
 @implementation OmniboxMetricsRecorder {
   /// The omnibox client.
-  raw_ptr<OmniboxClient> _omniboxClient;
+  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
   /// The omnibox text model used to retrieve the text state.
-  raw_ptr<const OmniboxTextModel> _omniboxTextModel;
+  raw_ptr<const OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
   /// The autocomplete controller.
-  raw_ptr<const AutocompleteController> _autocompleteController;
+  raw_ptr<const AutocompleteController, DanglingUntriaged>
+      _autocompleteController;
 }
 
 - (instancetype)initWithClient:(OmniboxClient*)omniboxClient

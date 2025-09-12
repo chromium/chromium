@@ -70,7 +70,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 @implementation SearchWithMediator {
   // The service to retrieve default search engine URL.
-  raw_ptr<TemplateURLService> _templateURLService;
+  raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
 }
 
 - (instancetype)initWithTemplateURLService:

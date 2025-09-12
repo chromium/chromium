@@ -194,7 +194,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
-  raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
+  raw_ptr<UserActivityBrowserAgent, DanglingUntriaged>
+      user_activity_browser_agent_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;

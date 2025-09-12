@@ -103,7 +103,8 @@ class WebStateDelegateBrowserAgent
                       base::OnceCallback<void(bool)> callback) override;
 
   raw_ptr<WebStateList> web_state_list_ = nullptr;
-  raw_ptr<TabInsertionBrowserAgent> tab_insertion_agent_ = nullptr;
+  raw_ptr<TabInsertionBrowserAgent, DanglingUntriaged> tab_insertion_agent_ =
+      nullptr;
 
   OverlayJavaScriptDialogPresenter java_script_dialog_presenter_;
 

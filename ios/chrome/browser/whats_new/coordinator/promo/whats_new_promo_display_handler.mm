@@ -14,7 +14,7 @@
 
 @implementation WhatsNewPromoDisplayHandler {
   // Promos Manager to alert if the user uses What's New.
-  raw_ptr<PromosManager> _promosManager;
+  raw_ptr<PromosManager, DanglingUntriaged> _promosManager;
 }
 
 #pragma mark - StandardPromoDisplayHandler

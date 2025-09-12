@@ -65,7 +65,7 @@ class PermissionsTabHelper
   raw_ptr<web::WebState> web_state_;
 
   // The currently displayed infobar.
-  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_ = nullptr;
 
   // Permissions that have changed its state from NotAccessible to Allowed
   // within a given timeout period.
@@ -84,10 +84,10 @@ class PermissionsTabHelper
       infobar_manager_scoped_observation_{this};
 
   // Banner queue for the TabHelper's WebState;
-  raw_ptr<OverlayRequestQueue> banner_queue_ = nullptr;
+  raw_ptr<OverlayRequestQueue, DanglingUntriaged> banner_queue_ = nullptr;
 
   // Request inserter for the TabHelper's WebState;
-  raw_ptr<InfobarOverlayRequestInserter> inserter_ = nullptr;
+  raw_ptr<InfobarOverlayRequestInserter, DanglingUntriaged> inserter_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_TAB_HELPER_H_

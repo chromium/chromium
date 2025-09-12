@@ -680,7 +680,8 @@ enum class ToolbarKind {
   DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
-  raw_ptr<UrlLoadingNotifierBrowserAgent> _urlLoadingNotifierBrowserAgent;
+  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged>
+      _urlLoadingNotifierBrowserAgent;
   id<LoadQueryCommands> _loadQueryCommandsHandler;
   id<OmniboxCommands> _omniboxCommandsHandler;
   LayoutGuideCenter* _layoutGuideCenter;

@@ -49,8 +49,8 @@
 
   raw_ptr<WebStateList> _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
-  raw_ptr<feature_engagement::Tracker> _tracker;
-  raw_ptr<UrlLoadingNotifierBrowserAgent> _loadingNotifier;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
+  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged> _loadingNotifier;
 
   // YES if browsing in incognito.
   BOOL _incognito;

@@ -30,7 +30,7 @@ class OverlayRequestImpl : public OverlayRequest,
     queue_web_state_ = queue_web_state;
   }
 
-  raw_ptr<web::WebState> queue_web_state_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> queue_web_state_ = nullptr;
   OverlayCallbackManagerImpl callback_manager_;
 };
 

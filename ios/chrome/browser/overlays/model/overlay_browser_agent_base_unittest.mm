@@ -106,7 +106,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
-  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_ = nullptr;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext presentation_context_;
 };

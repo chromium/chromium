@@ -55,7 +55,7 @@ using tab_groups::SharingState;
   raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   raw_ptr<data_sharing::DataSharingService> _dataSharingService;
-  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
 
   // Bridges between C++ service observers and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge>
@@ -67,7 +67,7 @@ using tab_groups::SharingState;
       _scopedDataSharingServiceObservation;
 
   // URL loader to open tabs when needed.
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoader;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;

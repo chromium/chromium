@@ -187,7 +187,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   TestOmniboxAutocompleteController* controller_;
-  raw_ptr<MockAutocompleteController> autocomplete_controller_;
+  raw_ptr<MockAutocompleteController, DanglingUntriaged>
+      autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;

@@ -53,7 +53,7 @@ class BwgService : public KeyedService,
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // The PrefService associated with the Profile.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 
   // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
   // Enterprise).

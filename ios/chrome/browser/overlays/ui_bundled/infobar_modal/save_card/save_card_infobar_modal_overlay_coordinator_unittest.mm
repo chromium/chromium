@@ -65,7 +65,7 @@ class SaveCardInfobarModalOverlayCoordinatorTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
-  raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
+  raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile, DanglingUntriaged>
       save_card_infobar_delegate_ = nil;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;

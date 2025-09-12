@@ -32,7 +32,7 @@
 @end
 
 @implementation FakeNTPDelegate {
-  raw_ptr<web::WebState> _lastReloadedWebState;
+  raw_ptr<web::WebState, DanglingUntriaged> _lastReloadedWebState;
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {

@@ -208,8 +208,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
-  raw_ptr<web::FakeWebState> web_state_;
-  raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
+  raw_ptr<ToolbarTestNavigationManager, DanglingUntriaged> navigation_manager_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   id consumer_;

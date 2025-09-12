@@ -172,7 +172,7 @@ class CollaborationGroupInfoBarDelegateTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<const TabGroup> tab_group_;
+  raw_ptr<const TabGroup, DanglingUntriaged> tab_group_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

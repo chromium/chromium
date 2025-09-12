@@ -56,7 +56,7 @@ enum class PlusAddressAction {
   url::Origin _mainFrameOrigin;
   // The reserved plus address, which is then eligible for confirmation.
   NSString* _reservedPlusAddress;
-  raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _urlLoader;
   BOOL _incognito;
 
   // The delegate for this mediator.

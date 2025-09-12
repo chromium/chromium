@@ -12,7 +12,7 @@
 
 @implementation BWGLinkOpeningHandler {
   // The URL loading agent for opening URLs.
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingAgent;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingAgent;
 }
 
 #pragma mark - BWGLinkOpeningDelegate

@@ -167,7 +167,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<BrowserList> browser_list_;
+  raw_ptr<BrowserList, DanglingUntriaged> browser_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;

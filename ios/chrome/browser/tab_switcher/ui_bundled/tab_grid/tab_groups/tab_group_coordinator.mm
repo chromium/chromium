@@ -80,7 +80,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   // Context Menu helper for the tabs.
   TabContextMenuHelper* _tabContextMenuHelper;
   // Tab group to display.
-  raw_ptr<const TabGroup> _tabGroup;
+  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
   // The coordinator for the user education half screen.
   SharedTabGroupUserEducationCoordinator* _userEducationCoordinator;
   // Coordinator that handles confirmation dialog when the last tab of a group

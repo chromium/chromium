@@ -131,7 +131,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   // The blur background.
   UIVisualEffectView* _blurView;
   // Currently displayed group.
-  raw_ptr<const TabGroup> _tabGroup;
+  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
   // Whether the `Back` button or the `Esc` key has been tapped.
   BOOL _backButtonTapped;
   // Title view displayed in the navigation bar containing group title and

@@ -46,7 +46,8 @@ class OverlayContainerFullscreenDisabler {
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
     // The FullscreenController being disabled.
-    raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
+    raw_ptr<FullscreenController, DanglingUntriaged> fullscreen_controller_ =
+        nullptr;
     // The animated disabler.
     std::unique_ptr<AnimatedScopedFullscreenDisabler> disabler_;
     base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>

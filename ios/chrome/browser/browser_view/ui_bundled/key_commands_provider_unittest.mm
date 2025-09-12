@@ -177,7 +177,7 @@ class KeyCommandsProviderTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<WebStateList> web_state_list_;
+  raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
   base::UserActionTester user_action_tester_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   KeyCommandsProvider* provider_;

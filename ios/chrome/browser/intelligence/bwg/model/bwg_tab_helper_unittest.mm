@@ -56,7 +56,7 @@ class BwgTabHelperTest : public PlatformTest {
   // Profile and services that depend on the environment are declared next.
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<BwgTabHelper> tab_helper_;
+  raw_ptr<BwgTabHelper, DanglingUntriaged> tab_helper_;
 
   // Mock BWG handler.
   id mock_bwg_handler_;

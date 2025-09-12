@@ -50,7 +50,7 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
   __strong HandoffManager* handoff_manager_;
 
   // The current active browser.
-  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> active_browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_

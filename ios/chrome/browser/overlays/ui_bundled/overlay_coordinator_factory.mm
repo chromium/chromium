@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts/alert_overlay_coordinator.h"
 
 @implementation OverlayRequestCoordinatorFactory {
-  raw_ptr<Browser> _browser;
+  raw_ptr<Browser, DanglingUntriaged> _browser;
   OverlayModality _modality;
 }
 

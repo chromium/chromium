@@ -25,7 +25,7 @@ class ChooseFileTabHelperTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<ChooseFileTabHelper> tab_helper_;
+  raw_ptr<ChooseFileTabHelper, DanglingUntriaged> tab_helper_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 

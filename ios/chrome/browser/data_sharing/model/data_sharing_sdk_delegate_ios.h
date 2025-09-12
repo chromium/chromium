@@ -69,7 +69,7 @@ class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
                                     absl::Status>&)> callback) override;
 
  private:
-  raw_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<ShareKitService, DanglingUntriaged> share_kit_service_;
 };
 
 }  // namespace data_sharing

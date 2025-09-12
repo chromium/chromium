@@ -69,7 +69,9 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS> delegate_;
+  raw_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS,
+          DanglingUntriaged>
+      delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;
   FakeOverlayRequestCallbackInstaller callback_installer_;

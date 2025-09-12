@@ -50,7 +50,7 @@ class OverlayRequestUIState {
   }
 
  private:
-  raw_ptr<OverlayRequest> request_ = nullptr;
+  raw_ptr<OverlayRequest, DanglingUntriaged> request_ = nullptr;
   OverlayRequestCoordinator* coordinator_ = nil;
   bool has_ui_been_presented_ = false;
   OverlayPresentationCallback presentation_callback_;

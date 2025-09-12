@@ -51,9 +51,9 @@ using base::UserMetricsAction;
 
 @implementation OmniboxAutocompleteController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient> _omniboxClient;
+  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
   /// Omnibox text model.
-  raw_ptr<OmniboxTextModel> _omniboxTextModel;
+  raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
 
   /// The autocomplete controller.
   std::unique_ptr<AutocompleteController> _autocompleteController;

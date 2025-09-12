@@ -244,16 +244,18 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
-  raw_ptr<MockCollaborationService> mock_collaboration_service_;
+  raw_ptr<tab_groups::TabGroupSyncService, DanglingUntriaged>
+      tab_group_sync_service_;
+  raw_ptr<MockCollaborationService, DanglingUntriaged>
+      mock_collaboration_service_;
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
-  raw_ptr<WebStateList> web_state_list_;
+  raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
   id signin_coordinator_mock_;
   id application_commands_mock_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
   UIViewController* base_view_controller_;
-  raw_ptr<const TabGroup> tab_group_;
+  raw_ptr<const TabGroup, DanglingUntriaged> tab_group_;
   raw_ptr<ShareKitService> share_kit_service_;
   ServiceStatus collaboration_status_;
 };

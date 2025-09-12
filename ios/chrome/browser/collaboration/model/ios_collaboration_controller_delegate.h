@@ -220,12 +220,14 @@ class IOSCollaborationControllerDelegate
 
   raw_ptr<Browser> browser_ = nullptr;
 
-  raw_ptr<TabGroupService> tab_group_service_ = nullptr;
-  raw_ptr<ShareKitService> share_kit_service_ = nullptr;
-  raw_ptr<FaviconLoader> favicon_loader_ = nullptr;
-  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-  raw_ptr<collaboration::CollaborationService> collaboration_service_ = nullptr;
+  raw_ptr<TabGroupService, DanglingUntriaged> tab_group_service_ = nullptr;
+  raw_ptr<ShareKitService, DanglingUntriaged> share_kit_service_ = nullptr;
+  raw_ptr<FaviconLoader, DanglingUntriaged> favicon_loader_ = nullptr;
+  raw_ptr<tab_groups::TabGroupSyncService, DanglingUntriaged>
+      tab_group_sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_ = nullptr;
+  raw_ptr<collaboration::CollaborationService, DanglingUntriaged>
+      collaboration_service_ = nullptr;
 
   std::unique_ptr<TabGroupFaviconsGridConfigurator> favicons_grid_configurator_;
   __weak UIViewController* base_view_controller_ = nil;

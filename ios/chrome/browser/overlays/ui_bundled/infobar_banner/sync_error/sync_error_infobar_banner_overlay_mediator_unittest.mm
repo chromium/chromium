@@ -77,7 +77,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
  protected:
   id<SyncPresenter> presenter_;
-  raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
+  raw_ptr<MockSyncErrorInfoBarDelegate, DanglingUntriaged> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<InfoBarIOS> infobar_;

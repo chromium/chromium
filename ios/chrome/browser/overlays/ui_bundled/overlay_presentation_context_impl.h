@@ -162,7 +162,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
 
    private:
     // The presenter whose delegate needs to be reset.
-    raw_ptr<OverlayPresenter> presenter_ = nullptr;
+    raw_ptr<OverlayPresenter, DanglingUntriaged> presenter_ = nullptr;
     // OverlayPresentationContextImpl reference.
     raw_ptr<OverlayPresentationContextImpl> presentation_context_ = nullptr;
     // Scoped observation.
@@ -187,7 +187,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   };
 
   // The presenter whose UI is being handled by this delegate.
-  raw_ptr<OverlayPresenter> presenter_ = nullptr;
+  raw_ptr<OverlayPresenter, DanglingUntriaged> presenter_ = nullptr;
   // The cleanup helper.
   BrowserShutdownHelper shutdown_helper_;
   // The delegate used to intercept presentation/dismissal events from
@@ -216,7 +216,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // The request that is currently presented by `presenter_`.  When a new
   // request is presented, the UI state for the request will be added to
   // `states_`.
-  raw_ptr<OverlayRequest> request_ = nullptr;
+  raw_ptr<OverlayRequest, DanglingUntriaged> request_ = nullptr;
   // Map storing the UI state for each OverlayRequest.
   std::map<OverlayRequest*, std::unique_ptr<OverlayRequestUIState>> states_;
   base::ObserverList<OverlayPresentationContextObserver,

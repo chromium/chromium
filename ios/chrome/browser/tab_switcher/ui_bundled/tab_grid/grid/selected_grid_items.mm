@@ -17,7 +17,7 @@
 #import "ios/web/public/web_state.h"
 
 @implementation SelectedGridItems {
-  raw_ptr<WebStateList> _webStateList;
+  raw_ptr<WebStateList, DanglingUntriaged> _webStateList;
   std::set<web::WebStateID> _sharableItemsIDs;
   NSMutableSet<GridItemIdentifier*>* _itemsIdentifiers;
 }
