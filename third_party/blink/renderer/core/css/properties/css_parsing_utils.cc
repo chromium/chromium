@@ -8926,7 +8926,7 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
                                            const CSSParserContext& context) {
-  // // <dashed-ident> || <try-tactic>
+  // <dashed-ident> || <try-tactic>
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
   }
@@ -8942,6 +8942,16 @@ CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,
   }
   return ConsumeCommaSeparatedList(ConsumeSinglePositionTryFallback, stream,
                                    context);
+}
+
+CSSValue* ConsumeAnchoredFallbackQueryValue(CSSParserTokenStream& stream,
+                                            const CSSParserContext& context) {
+  // <dashed-ident> || <try-tactic>
+  if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
+    return value;
+  }
+  // <position-area-query>
+  return ConsumePositionAreaQueryValue(stream);
 }
 
 CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
@@ -9044,9 +9054,15 @@ struct PositionAreaKeyword {
 };
 
 std::optional<PositionAreaKeyword> ConsumePositionAreaKeyword(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    bool allow_any_keyword) {
   PositionAreaKeyword::Type type = PositionAreaKeyword::kGeneral;
   switch (stream.Peek().Id()) {
+    case CSSValueID::kAny:
+      if (!allow_any_keyword) {
+        return std::nullopt;
+      }
+      [[fallthrough]];
     case CSSValueID::kSpanAll:
     case CSSValueID::kCenter:
       // General keywords
@@ -9151,13 +9167,15 @@ std::optional<PositionAreaKeyword> ConsumePositionAreaKeyword(
 //                  [ self-start | center | self-end | span-self-start |
 //                    span-self-end | span-all ]{1,2}
 //                ]
-CSSValue* ConsumePositionArea(CSSParserTokenStream& stream) {
-  std::optional<PositionAreaKeyword> first = ConsumePositionAreaKeyword(stream);
+CSSValue* ConsumePositionArea(CSSParserTokenStream& stream,
+                              bool allow_any_keyword) {
+  std::optional<PositionAreaKeyword> first =
+      ConsumePositionAreaKeyword(stream, allow_any_keyword);
   if (!first.has_value()) {
     return nullptr;
   }
   std::optional<PositionAreaKeyword> second =
-      ConsumePositionAreaKeyword(stream);
+      ConsumePositionAreaKeyword(stream, allow_any_keyword);
   if (!second.has_value()) {
     return first.value().value;
   }
@@ -9204,8 +9222,9 @@ bool IsRepeatedPositionAreaValue(CSSValueID value_id) {
     case CSSValueID::kSelfEnd:
     case CSSValueID::kSpanSelfStart:
     case CSSValueID::kSpanSelfEnd:
-      // A single value is repeated for the values above. For other values the
-      // default is span-all.
+    case CSSValueID::kAny:  // Used for <position-area-query>
+      // A single value is repeated for the values above.
+      // For other values the default is span-all.
       return true;
     default:
       return false;

@@ -517,8 +517,8 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
 
   if (media_feature == media_feature_names::kFallbackMediaFeature) {
     if (CSSValue* fallback_value =
-            css_parsing_utils::ConsumeSinglePositionTryFallback(stream,
-                                                                context)) {
+            css_parsing_utils::ConsumeAnchoredFallbackQueryValue(stream,
+                                                                 context)) {
       return MediaQueryExpValue(*fallback_value);
     }
   }

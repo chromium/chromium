@@ -93,6 +93,7 @@ PositionAreaRegion ToPhysicalRegion(
     case PositionAreaRegion::kBottom:
     case PositionAreaRegion::kLeft:
     case PositionAreaRegion::kRight:
+    case PositionAreaRegion::kAny:
       return region;
     case PositionAreaRegion::kStart:
     case PositionAreaRegion::kInlineStart:
@@ -246,6 +247,9 @@ PositionArea::AlignJustifySelfFromPhysical(
   StyleSelfAlignmentData align_reverse(ItemPosition::kEnd, overflow);
   StyleSelfAlignmentData justify(ItemPosition::kStart, overflow);
   StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd, overflow);
+
+  CHECK(!ContainsAny()) << "The 'any' keyword can only be used for "
+                           "anchored(fallback) container queries";
 
   if (FirstStart() == PositionAreaRegion::kTop &&
       FirstEnd() == PositionAreaRegion::kBottom) {

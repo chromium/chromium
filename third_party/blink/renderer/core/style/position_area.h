@@ -50,6 +50,7 @@ enum class PositionAreaRegion : uint8_t {
   kXSelfEnd,
   kYSelfStart,
   kYSelfEnd,
+  kAny,  // Used in anchored(fallback: <position-area>) only.
 };
 
 // Represents the computed value for the position-area property. Each span is
@@ -90,11 +91,26 @@ class CORE_EXPORT PositionArea {
   }
   bool operator!=(const PositionArea& other) const { return !(*this == other); }
   bool IsNone() const { return span1_start_ == PositionAreaRegion::kNone; }
-
+  bool ContainsAny() const {
+    return span1_start_ == PositionAreaRegion::kAny ||
+           span1_end_ == PositionAreaRegion::kAny ||
+           span2_start_ == PositionAreaRegion::kAny ||
+           span2_end_ == PositionAreaRegion::kAny;
+  }
+  bool Matches(const PositionArea& other) const {
+    return (span1_start_ == PositionAreaRegion::kAny ||
+            other.span1_start_ == PositionAreaRegion::kAny ||
+            (span1_start_ == other.span1_start_ &&
+             span1_end_ == other.span1_end_)) &&
+           (span2_start_ == PositionAreaRegion::kAny ||
+            other.span2_start_ == PositionAreaRegion::kAny ||
+            (span2_start_ == other.span2_start_ &&
+             span2_end_ == other.span2_end_));
+  }
   // Convert the computed position-area into a physical representation where the
   // first span is always a top/center/bottom span, and the second is a
-  // left/center/right span. If the position-area is not valid, all regions will be
-  // PositionAreaRegion::kNone.
+  // left/center/right span. If the position-area is not valid, all regions will
+  // be PositionAreaRegion::kNone.
   PositionArea ToPhysical(
       const WritingDirectionMode& container_writing_direction,
       const WritingDirectionMode& self_writing_direction) const;

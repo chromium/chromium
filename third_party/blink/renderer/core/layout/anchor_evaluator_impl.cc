@@ -725,6 +725,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
   const PositionArea physical_position_area =
       position_area.ToPhysical(container_writing_direction_,
                                query_box_->StyleRef().GetWritingDirection());
+  CHECK(!position_area.ContainsAny())
+      << "The 'any' keyword can only be used for anchored(fallback) container "
+         "queries";
 
   PhysicalBoxStrut offsets;
   PhysicalBoxSides behaves_as_auto;

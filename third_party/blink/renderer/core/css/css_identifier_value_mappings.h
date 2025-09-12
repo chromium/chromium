@@ -2191,6 +2191,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(PositionAreaRegion region)
     case PositionAreaRegion::kYSelfEnd:
       value_id_ = CSSValueID::kYSelfEnd;
       break;
+    case PositionAreaRegion::kAny:
+      value_id_ = CSSValueID::kAny;
+      break;
   }
 }
 
@@ -2251,6 +2254,8 @@ inline PositionAreaRegion CSSIdentifierValue::ConvertTo() const {
       return PositionAreaRegion::kYSelfStart;
     case CSSValueID::kYSelfEnd:
       return PositionAreaRegion::kYSelfEnd;
+    case CSSValueID::kAny:
+      return PositionAreaRegion::kAny;
     default:
       NOTREACHED();
   };

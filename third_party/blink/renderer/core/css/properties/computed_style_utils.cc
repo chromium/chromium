@@ -4704,6 +4704,7 @@ CSSValueID PositionAreaSpanToCSSValueID(PositionAreaRegion span_start,
     case PositionAreaRegion::kNone:
     case PositionAreaRegion::kAll:
     case PositionAreaRegion::kCenter:
+    case PositionAreaRegion::kAny:
       // Should have been handled above
       NOTREACHED();
   }

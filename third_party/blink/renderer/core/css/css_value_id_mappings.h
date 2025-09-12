@@ -644,6 +644,8 @@ inline CSSValueID PlatformEnumToCSSValueID(PositionAreaRegion v) {
       return CSSValueID::kYSelfStart;
     case PositionAreaRegion::kYSelfEnd:
       return CSSValueID::kYSelfEnd;
+    case PositionAreaRegion::kAny:
+      return CSSValueID::kAny;
   }
 }
 
