@@ -364,7 +364,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndex) {
           "runMochaSuite('PrivacyPageIndex Main')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndexSiteSettings) {
+// TODO(crbug.com/444408606): Enable on Linux once test fix is identified.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrivacyPageIndexSiteSettings DISABLED_PrivacyPageIndexSiteSettings
+#else
+#define MAYBE_PrivacyPageIndexSiteSettings PrivacyPageIndexSiteSettings
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PrivacyPageIndexSiteSettings) {
   RunTest("settings/privacy_page_index_test.js",
           "runMochaSuite('PrivacyPageIndex SiteSettings')");
 }
