@@ -650,6 +650,33 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       WaitForHide(kContentsSeparatorLeadingTopCornerElementId));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, RoundedCornersForSplitView) {
+  RunTestSequence(
+      CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
+      // Ensure the contents web views have rounded corners.
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return !multi_contents_view->GetActiveContentsView()
+                              ->GetBackgroundRadii()
+                              .IsEmpty() &&
+                         !multi_contents_view->GetInactiveContentsView()
+                              ->GetBackgroundRadii()
+                              .IsEmpty();
+                }),
+      // Add a regular tab to the tab strip
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      WaitForActiveTabChange(2),
+      // Ensure the active contents web view doesn't have rounded corners.
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return multi_contents_view->GetActiveContentsView()
+                      ->GetBackgroundRadii()
+                      .IsEmpty();
+                }));
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        MiniToolbarVisibilityForContents) {
   bool visible_on_active_contents =

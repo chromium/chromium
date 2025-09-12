@@ -234,6 +234,7 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
   devtools_web_view_->holder()->SetCornerRadii(kNoRoundedCorners);
   devtools_scrim_view_->SetRoundedCorners(kNoRoundedCorners);
 
+  contents_view_->SetBackgroundRadii(kNoRoundedCorners);
   contents_view_->holder()->SetCornerRadii(kNoRoundedCorners);
 
   if (new_tab_footer_view_) {
