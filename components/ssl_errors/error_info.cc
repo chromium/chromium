@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -100,9 +101,16 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
     case CERT_KNOWN_INTERCEPTION_BLOCKED:
     case CERT_AUTHORITY_INVALID:
     case CERT_SELF_SIGNED_LOCAL_NETWORK:
-      details =
-          l10n_util::GetStringFUTF16(IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS,
-                                     UTF8ToUTF16(request_url.host()));
+      details = l10n_util::GetStringFUTF16(
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+          base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
+              ? IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS_V2
+              : IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS
+#else
+          IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS
+#endif
+          ,
+          UTF8ToUTF16(request_url.host()));
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_AUTHORITY_INVALID_DESCRIPTION);
       break;

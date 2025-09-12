@@ -49,6 +49,11 @@ using chrome_browser_server_certificate_database::CertificateTrust;
 
 namespace {
 
+CertificateViewerDialog::MockShowCallback& GetMockCallbackInstance() {
+  static base::NoDestructor<CertificateViewerDialog::MockShowCallback> instance;
+  return *instance;
+}
+
 // TODO(crbug.com/40928765): find a good place to put this shared code.
 bool MaskFromIPAndPrefixLength(const net::IPAddress& ip,
                                size_t prefix_length,
@@ -387,6 +392,11 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrainedWithMetadata(
 }
 
 // static
+void CertificateViewerDialog::MockForTesting(MockShowCallback callback) {
+  GetMockCallbackInstance() = std::move(callback);
+}
+
+// static
 CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
     std::optional<
@@ -395,6 +405,11 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     CertMetadataModificationsCallback modifications_callback,
     content::WebContents* web_contents,
     gfx::NativeWindow parent) {
+  if (GetMockCallbackInstance()) {
+    GetMockCallbackInstance().Run(std::move(certs), web_contents);
+    return nullptr;
+  }
+
   CertificateViewerDialog* dialog_ptr =
       new CertificateViewerDialog(std::move(certs), std::move(cert_metadata),
                                   std::move(modifications_callback));

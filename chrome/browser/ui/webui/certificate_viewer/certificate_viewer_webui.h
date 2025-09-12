@@ -56,6 +56,11 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
+  using MockShowCallback = base::RepeatingCallback<void(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+      content::WebContents* web_contents)>;
+  static void MockForTesting(MockShowCallback callback);
+
   CertificateViewerDialog(const CertificateViewerDialog&) = delete;
   CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
 

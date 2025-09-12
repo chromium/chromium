@@ -115,6 +115,7 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
     case CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
     case CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
     case CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+    case CMD_SHOW_CERTIFICATE_VIEWER:
       NOTREACHED();
   }
 }

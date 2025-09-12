@@ -353,6 +353,13 @@ void SecurityInterstitialTabHelper::ReportPhishingErrorInNewTab() {
                     CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SecurityInterstitialTabHelper::ShowCertificateViewer() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_SHOW_CERTIFICATE_VIEWER);
+}
+#endif
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityInterstitialTabHelper);
 
 }  //  namespace security_interstitials

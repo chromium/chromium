@@ -124,6 +124,12 @@ void SecurityInterstitialControllerClient::Reload() {
       content::ReloadType::NORMAL, true);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SecurityInterstitialControllerClient::ShowCertificateViewer() {
+  NOTREACHED();
+}
+#endif
+
 void SecurityInterstitialControllerClient::OpenUrlInCurrentTab(
     const GURL& url) {
   content::OpenURLParams params(url, Referrer(),

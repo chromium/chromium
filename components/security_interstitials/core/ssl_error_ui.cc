@@ -14,6 +14,7 @@
 #include "components/ssl_errors/error_classification.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
@@ -80,6 +81,14 @@ void SSLErrorUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
       l10n_util::GetStringFUTF16(
           IDS_SSL_V2_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url_)));
+
+  load_time_data.Set("is_qwac_enabled",
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+                     base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
+#else
+                     false
+#endif
+  );
 
   if (soft_override_enabled_) {
     PopulateOverridableStrings(load_time_data);
@@ -247,6 +256,16 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller_->OpenEnhancedProtectionSettings();
       break;
+    }
+    case CMD_SHOW_CERTIFICATE_VIEWER: {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      controller_->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::VIEW_CERTIFICATE);
+      controller_->ShowCertificateViewer();
+      break;
+#else
+      NOTREACHED();
+#endif
     }
     case CMD_OPEN_DATE_SETTINGS:
     case CMD_OPEN_DIAGNOSTIC:

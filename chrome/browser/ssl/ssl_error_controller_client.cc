@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
@@ -124,3 +125,12 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
       base::BindOnce(&security_interstitials::LaunchDateAndTimeSettings));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void SSLErrorControllerClient::ShowCertificateViewer() {
+  // TODO(crbug.com/436274249): support "view certificate" on android too.
+  ::ShowCertificateViewer(web_contents(),
+                          web_contents()->GetTopLevelNativeWindow(),
+                          ssl_info_.cert.get());
+}
+#endif

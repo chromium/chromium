@@ -159,6 +159,13 @@ void SecurityInterstitialPageController::ReportPhishingErrorInNewTab() {
                   CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SecurityInterstitialPageController::ShowCertificateViewer() {
+  SendCommand(security_interstitials::SecurityInterstitialCommand::
+                  CMD_SHOW_CERTIFICATE_VIEWER);
+}
+#endif
+
 void SecurityInterstitialPageController::SendCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   if (!render_frame() || !active_) {
@@ -232,7 +239,16 @@ void SecurityInterstitialPageController::SendCommand(
     case security_interstitials::CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
       interface->ReportPhishingErrorInNewTab();
       break;
-    default:
+    case security_interstitials::CMD_SHOW_CERTIFICATE_VIEWER:
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      interface->ShowCertificateViewer();
+#endif
+      break;
+    case security_interstitials::CMD_TEXT_FOUND:
+    case security_interstitials::CMD_TEXT_NOT_FOUND:
+    case security_interstitials::CMD_ERROR:
+    case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case security_interstitials::CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
       // Other values in the enum are only used by tests so this
       // method should not be called with them.
       NOTREACHED();
@@ -289,7 +305,12 @@ SecurityInterstitialPageController::GetObjectTemplateBuilder(
               &SecurityInterstitialPageController::OpenWhitepaperInNewTab)
           .SetMethod(
               "reportPhishingErrorInNewTab",
-              &SecurityInterstitialPageController::ReportPhishingErrorInNewTab);
+              &SecurityInterstitialPageController::ReportPhishingErrorInNewTab)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+          .SetMethod("showCertificateViewer",
+                     &SecurityInterstitialPageController::ShowCertificateViewer)
+#endif
+      ;
 }
 
 const gin::WrapperInfo* SecurityInterstitialPageController::wrapper_info() const {

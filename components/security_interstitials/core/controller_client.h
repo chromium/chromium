@@ -26,7 +26,7 @@ extern const char kPrivacyLinkHtml[];
 
 // These represent the commands sent from the interstitial JavaScript.
 // DO NOT reorder or change these without also changing the JavaScript!
-// See components/security_interstitials/core/browser/resources/
+// LINT.IfChange(SecurityInterstitialCommand)
 enum SecurityInterstitialCommand {
   // Used by tests
   CMD_TEXT_FOUND = -3,
@@ -63,7 +63,10 @@ enum SecurityInterstitialCommand {
   CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB = 19,
   CMD_OPEN_WHITEPAPER_IN_NEW_TAB = 20,
   CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB = 21,
+  // View the certificate.
+  CMD_SHOW_CERTIFICATE_VIEWER = 22,
 };
+// LINT.ThenChange(/components/security_interstitials/core/common/resources/interstitial_common.js,/components/security_interstitials/content/renderer/security_interstitial_page_controller.cc,/components/security_interstitials/content/security_interstitial_tab_helper.cc,/components/security_interstitials/core/common/mojom/interstitial_commands.mojom)
 
 // Provides methods for handling commands from the user, which requires some
 // embedder-specific abstraction. This class should handle all commands sent
@@ -111,6 +114,11 @@ class ControllerClient {
 
   // Reload the blocked page to see if it succeeds now.
   virtual void Reload() = 0;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Shows the platform-specific certificate viewer.
+  virtual void ShowCertificateViewer() = 0;
+#endif
 
   MetricsHelper* metrics_helper() const;
 

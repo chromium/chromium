@@ -111,6 +111,7 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller_->OpenEnhancedProtectionSettings();
       break;
+    case CMD_SHOW_CERTIFICATE_VIEWER:
     case CMD_PROCEED:
     case CMD_OPEN_HELP_CENTER:
     case CMD_RELOAD:

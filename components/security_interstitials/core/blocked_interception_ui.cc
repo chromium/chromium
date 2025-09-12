@@ -123,7 +123,8 @@ void BlockedInterceptionUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
     case CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
     case CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
-      // Not supported by the SSL error page.
+    case CMD_SHOW_CERTIFICATE_VIEWER:
+      // Not supported by the blocked interception page.
       NOTREACHED() << "Unsupported command: " << command;
     case CMD_ERROR:
     case CMD_TEXT_FOUND:

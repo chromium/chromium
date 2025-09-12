@@ -106,6 +106,7 @@ void MITMSoftwareUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_OPEN_HELP_CENTER_IN_NEW_TAB:
     case CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB:
     case CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+    case CMD_SHOW_CERTIFICATE_VIEWER:
       // Not supported by the MITM software error page.
       NOTREACHED() << "Unsupported command: " << command;
     case CMD_ERROR:

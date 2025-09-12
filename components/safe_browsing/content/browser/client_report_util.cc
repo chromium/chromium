@@ -166,6 +166,7 @@ GetSecurityInterstitialInteractionFromCommand(
     case security_interstitials::CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
     case security_interstitials::CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
     case security_interstitials::CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+    case security_interstitials::CMD_SHOW_CERTIFICATE_VIEWER:
       break;
   }
   return CSBRR::InterstitialInteraction::UNSPECIFIED;

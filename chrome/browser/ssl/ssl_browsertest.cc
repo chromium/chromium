@@ -36,6 +36,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -733,7 +735,7 @@ class SSLUITest : public SSLUITestBase {
  public:
   SSLUITest() : SSLUITestBase() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{net::features::kVerifyQWACs},
         /*disabled_features=*/{blink::features::kMixedContentAutoupgrade});
   }
 
@@ -6759,6 +6761,68 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, OpenWhitepaperInNewTab) {
   ASSERT_TRUE(new_tab);
   EXPECT_NE(new_tab, interstitial_tab);
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SSLUITest, ShowCertificateViewer) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+  https_server.SetSSLConfig(cert_config);
+  ASSERT_TRUE(https_server.Start());
+
+  base::HistogramTester histograms;
+  static constexpr std::string_view interaction_histogram =
+      "interstitial.ssl_overridable.interaction";
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/ssl/google.html")));
+
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(interstitial_tab));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  base::test::TestFuture<std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>,
+                         content::WebContents*>
+      future;
+  CertificateViewerDialog::MockForTesting(future.GetRepeatingCallback());
+
+  // The "view certificate" link is part of the details paragraph that isn't
+  // visible until the details are expanded. (Technically finding the element
+  // in the DOM and calling .click() on it doesn't actually require the element
+  // to be visible, so doing this isn't strictly necessary, but it does verify
+  // more of the expected behavior.)
+  EXPECT_EQ(false, content::EvalJs(interstitial_tab,
+                                   "document.querySelector(\"#view-certificate-"
+                                   "link\").checkVisibility()"));
+
+  EXPECT_EQ(true,
+            content::EvalJs(
+                interstitial_tab,
+                "document.querySelector(\"#details-button\").click(); true"));
+
+  EXPECT_EQ(true, content::EvalJs(interstitial_tab,
+                                  "document.querySelector(\"#view-certificate-"
+                                  "link\").checkVisibility()"));
+
+  ASSERT_EQ(
+      true,
+      content::EvalJs(
+          interstitial_tab,
+          "document.querySelector(\"#view-certificate-link\").click(); true"));
+
+  auto [cert_buffers, web_contents] = future.Take();
+  EXPECT_EQ(1U, cert_buffers.size());
+  EXPECT_TRUE(net::x509_util::CryptoBufferEqual(
+      cert_buffers[0].get(), https_server.GetCertificate()->cert_buffer()));
+  EXPECT_EQ(web_contents, interstitial_tab);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::VIEW_CERTIFICATE, 1);
 }
 
 // This SPKI hash is from a self signed certificate generated using the

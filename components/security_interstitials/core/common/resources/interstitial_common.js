@@ -60,6 +60,8 @@ export const SecurityInterstitialCommandId = {
   CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB: 19,
   CMD_OPEN_WHITEPAPER_IN_NEW_TAB: 20,
   CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB: 21,
+  // View the certificate.
+  CMD_SHOW_CERTIFICATE_VIEWER: 22,
 };
 
 export const HIDDEN_CLASS = 'hidden';
@@ -131,6 +133,9 @@ export function sendCommand(cmd) {
         break;
       case SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
         certificateErrorPageController.reportPhishingErrorInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_SHOW_CERTIFICATE_VIEWER:
+        certificateErrorPageController.showCertificateViewer();
         break;
     }
     return;
