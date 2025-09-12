@@ -798,85 +798,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Tap"/>
 </enum>
 
-<enum name="AutoScreenBrightnessAlsReaderStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="InProgress"/>
-  <int value="2" label="Disabled"/>
-  <int value="3" label="IncorrectConfig"/>
-  <int value="4" label="MissingPath"/>
-</enum>
-
-<enum name="AutoScreenBrightnessBoundedBrightnessChange">
-  <int value="0" label="UserWithinBounds"/>
-  <int value="1" label="ModelWithinBounds"/>
-  <int value="2" label="UserLower"/>
-  <int value="3" label="UserUpper"/>
-  <int value="4" label="ModelLower"/>
-  <int value="5" label="ModelUpper"/>
-</enum>
-
-<enum name="AutoScreenBrightnessBrightnessChangeCause">
-  <int value="0" label="InitialAlsReceived"/>
-  <int value="1" label="ImmediateBrightneningThresholdExceeded"/>
-  <int value="2" label="ImmediateDarkeningThresholdExceeded"/>
-  <int value="3" label="BrightneningThresholdExceeded"/>
-  <int value="4" label="DarkeningThresholdExceeded"/>
-  <int value="5" label="UpdateAfterLidReopen"/>
-</enum>
-
-<enum name="AutoScreenBrightnessBrightnessMonitorStatus">
-  <int value="0" label="Initializing"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Disabled"/>
-</enum>
-
-<enum name="AutoScreenBrightnessDataError">
-  <int value="0" label="kAlsValue"/>
-  <int value="1" label="kBrightnessPercent"/>
-</enum>
-
-<enum name="AutoScreenBrightnessInvalidCurveReason">
-  <int value="0" label="TooFewPoints"/>
-  <int value="1" label="UnequalXY"/>
-  <int value="2" label="KnotsNotIncreasing"/>
-  <int value="3" label="ControlsDecreasing"/>
-</enum>
-
-<enum name="AutoScreenBrightnessModelLoadingStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="MissingGlobal"/>
-  <int value="2" label="IllFormattedGlobal"/>
-  <int value="3" label="MissingPersonal"/>
-  <int value="4" label="IllFormattedPersonal"/>
-  <int value="5" label="MissingIterationCount"/>
-</enum>
-
-<enum name="AutoScreenBrightnessNoBrightnessChangeCause">
-  <int value="0" label="WaitingForInitialAls"/>
-  <int value="1" label="WaitingForAvgHorizon"/>
-  <int value="2" label="MissingAlsData"/>
-  <int value="3" label="DisabledByUser"/>
-  <int value="4" label="BrightnessSetByPolicy"/>
-  <int value="5" label="FluctuatingAlsIncrease"/>
-  <int value="6" label="FluctuatingAlsDecrease"/>
-  <int value="7" label="MinimalAlsChange"/>
-  <int value="8" label="MissingPersonalCurve"/>
-  <int value="9" label="WaitingForTrainedPersonalCurve"/>
-  <int value="10" label="WaitingForReopenAls"/>
-  <int value="11" label="NoNewModel"/>
-</enum>
-
-<enum name="AutoScreenBrightnessParameterError">
-  <int value="0" label="ModelError"/>
-  <int value="1" label="AdapterError"/>
-</enum>
-
-<enum name="AutoScreenBrightnessUserAdjustmentEffect">
-  <int value="0" label="DisableAuto"/>
-  <int value="1" label="PauseAuto"/>
-  <int value="2" label="ContinueAuto"/>
-</enum>
-
 <enum name="BackForwardCacheBrowsingInstanceNotSwappedReason">
   <int value="0" label="Swapped"/>
   <int value="1" label="Proactive swap disabled"/>
@@ -1521,11 +1442,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BooleanReady">
   <int value="0" label="Not Ready"/>
   <int value="1" label="Ready"/>
-</enum>
-
-<enum name="BooleanReassigned">
-  <int value="0" label="Not Reassigned"/>
-  <int value="1" label="Reassigned"/>
 </enum>
 
 <enum name="BooleanReceived">
@@ -4330,32 +4246,6 @@ shown properly on the user-facing crash UI.
   <int value="8" label="Keyboard click"/>
 </enum>
 
-<enum name="ExploreSitesCategories">
-<!-- This must be kept current with
-     //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
-
-  <int value="0" label="Default"/>
-  <int value="1" label="Social"/>
-  <int value="2" label="Entertainment"/>
-  <int value="3" label="Sport"/>
-  <int value="4" label="News"/>
-  <int value="5" label="Shopping"/>
-  <int value="6" label="Reference"/>
-  <int value="7" label="Banking"/>
-  <int value="8" label="Government"/>
-  <int value="9" label="Travel"/>
-  <int value="10" label="Education"/>
-  <int value="11" label="Jobs"/>
-  <int value="12" label="Apps and Games"/>
-  <int value="13" label="Favorite"/>
-  <int value="14" label="Google"/>
-  <int value="15" label="Food"/>
-  <int value="16" label="Health"/>
-  <int value="17" label="Books"/>
-  <int value="18" label="Technology"/>
-  <int value="19" label="Science"/>
-</enum>
-
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
   <int value="1" label="In progress, but the final response has arrived"/>
@@ -6668,11 +6558,6 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Running buyer reportWin()"/>
   <int value="4" label="All worklets completed running"/>
   <int value="5" label="Initial state"/>
-</enum>
-
-<enum name="InterestGroupJoinPermissionResult">
-  <int value="0" label="Permission granted"/>
-  <int value="1" label="Permission denied"/>
 </enum>
 
 <enum name="InterstitialCloseReason">
@@ -20774,12 +20659,6 @@ from previous Chrome versions.
   <int value="1" label="Failure"/>
 </enum>
 
-<enum name="MixedContentAutoupgradeStatus">
-  <int value="0" label="Started"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="ResponseReceived"/>
-</enum>
-
 <enum name="ModuleTypeOnStartAndNTP">
   <int value="0" label="Most visited tiles"/>
   <int value="1" label="Omnibox"/>
@@ -25035,20 +24914,6 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="WriteFailure">
     Entries that could not be written, usually because they're too big.
   </int>
-</enum>
-
-<enum name="SmartCardConnectionClosedReason">
-  <int value="0" label="Disconnect"/>
-  <int value="1" label="PermissionRevoked"/>
-</enum>
-
-<enum name="SmartCardOneTimePermissionExpiryReason">
-  <int value="0" label="LastWindowClosed"/>
-  <int value="1" label="AllWindowsInTheBackgroundTimeout"/>
-  <int value="2" label="MaxLifetimeReached"/>
-  <int value="3" label="SystemSuspended"/>
-  <int value="4" label="ReaderRemoved"/>
-  <int value="5" label="CardRemoved"/>
 </enum>
 
 <enum name="SmartChargingMessages">

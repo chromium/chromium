@@ -240,11 +240,6 @@ chromium-metrics-reviews@google.com.
       label="A biometric verifier device is not configured for the user."/>
 </enum>
 
-<enum name="BooleanCalled">
-  <int value="0" label="Not called"/>
-  <int value="1" label="Called"/>
-</enum>
-
 <enum name="BooleanFormManager">
   <int value="0" label="Has Form Manager"/>
   <int value="1" label="Lacks Form Manager"/>

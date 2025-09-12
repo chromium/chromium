@@ -1179,28 +1179,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="23" label="Game dashboard stop recording for tablet mode"/>
 </enum>
 
-<enum name="EolIncentiveButtonType">
-  <int value="0" label="Notification Offer Approaching"/>
-  <int value="1" label="Notification No Offer Approaching"/>
-  <int value="2" label="Notification AboutUpdates Approaching"/>
-  <int value="3" label="Notification Offer Recently Passed"/>
-  <int value="4" label="Notification No Offer Recently Passed"/>
-  <int value="5" label="Notification AboutUpdates Recently Passed"/>
-  <int value="6" label="Notification Original LearnMore"/>
-  <int value="7" label="Notification Original Dismiss"/>
-  <int value="8" label="Quick Settings Offer Recently Passed"/>
-  <int value="9" label="Quick Settings No Offer Recently Passed"/>
-  <int value="10" label="Quick Settings No Offer Passed"/>
-</enum>
-
-<enum name="EolIncentiveShowSource">
-  <int value="0" label="Notification Approaching"/>
-  <int value="1" label="Notification Recently Passed"/>
-  <int value="2" label="Notification Original"/>
-  <int value="3" label="Quick Settings Recently Passed"/>
-  <int value="4" label="Quick Settings Passed"/>
-</enum>
-
 <enum name="EssentialSearchStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to serialize request body"/>

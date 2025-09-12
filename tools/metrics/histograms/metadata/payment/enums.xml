@@ -47,12 +47,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Completed"/>
 </enum>
 
-<enum name="PaymentRequestPrePurchaseQuery">
-  <int value="0" label="Other type of query"/>
-  <int value="1" label="Service Worker event"/>
-  <int value="2" label="Android intent"/>
-</enum>
-
 <!-- LINT.IfChange(PaymentRequestTryShowOutcome) -->
 
 <enum name="PaymentRequestTryShowOutcome">

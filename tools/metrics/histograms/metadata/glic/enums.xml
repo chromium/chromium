@@ -69,15 +69,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ChromeRelativePosition) -->
 
-<!-- LINT.IfChange(CreateTaskErrorReason) -->
-
-<enum name="CreateTaskErrorReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Task System Unavailable"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:CreateTaskErrorReason) -->
-
 <!-- LINT.IfChange(DeepScanAccessPoint) -->
 
 <enum name="DeepScanAccessPoint">
@@ -493,16 +484,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:PercentOverlap) -->
-
-<!-- LINT.IfChange(PerformActionsErrorReason) -->
-
-<enum name="PerformActionsErrorReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Invalid actions proto"/>
-  <int value="2" label="Action is missing task_id field"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:PerformActionsErrorReason) -->
 
 <!-- LINT.IfChange(WebClientUnresponsiveState) -->
 

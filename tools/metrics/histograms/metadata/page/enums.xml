@@ -99,23 +99,6 @@ chromium-metrics-reviews@google.com.
       label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
 </enum>
 
-<!-- LINT.IfChange(HeaderMismatchType) -->
-
-<enum name="HeaderMismatchType">
-  <int value="0" label="No mismatch"/>
-  <int value="1" label="Unexpected header found"/>
-  <int value="2" label="Header value mismatch"/>
-  <int value="3" label="Unexpected header found and header value mismatch"/>
-  <int value="4" label="Expected header not found"/>
-  <int value="5" label="Unexpected header found, expected header not found"/>
-  <int value="6" label="Header value mismatch, expected header not found"/>
-  <int value="7"
-      label="Unexpected header found, header value mismatch, expected header
-             not found"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/gws_page_load_metrics_observer.cc:HeaderMismatchType) -->
-
 <enum name="HeavyAdStatus2">
   <int value="0" label="Not heavy"/>
   <int value="1" label="Network">

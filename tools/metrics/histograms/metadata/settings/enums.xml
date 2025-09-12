@@ -555,25 +555,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:SettingsPrivacySandboxPromptStartupState) -->
 
-<enum name="SettingsPrivacySandboxStartupStates">
-  <int value="0" label="Prompt waiting to show"/>
-  <int value="1" label="Prompt Off, previously disabled, Enabled"/>
-  <int value="2" label="Prompt Off, previously disabled, Disalbed"/>
-  <int value="3" label="Consent Shown, Enabled"/>
-  <int value="4" label="Consent Shown, Disabled"/>
-  <int value="5" label="Notice Shown, Enabled"/>
-  <int value="6" label="Notice Shown, Disabled"/>
-  <int value="7" label="Prompt Off, 3PC Off, Enabled"/>
-  <int value="8" label="Prompt Off, 3PC Off, Disabled"/>
-  <int value="9" label="Prompt Off, Managed, Enabled"/>
-  <int value="10" label="Prompt Off, Managed, Disabled"/>
-  <int value="11" label="Prompt Off, User is restricted"/>
-  <int value="12" label="Prompt Off, Manually Controlled, Enabled"/>
-  <int value="13" label="Prompt Off, Manually Controlled, Disabled"/>
-  <int value="14" label="Prompt not required, Enabled"/>
-  <int value="15" label="Prompt not required, Disabled"/>
-</enum>
-
 <enum name="SettingsSafetyCheckInteractions">
   <int value="0" label="Safety check started"/>
   <int value="1" label="Updates, relaunch after updates"/>

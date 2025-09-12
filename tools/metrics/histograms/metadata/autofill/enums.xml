@@ -964,13 +964,6 @@ Called by update_autofill_enums.py.-->
       label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Autofilled value accepted"/>
 </enum>
 
-<enum name="AutofillDeveloperEngagement">
-  <int value="0" label="Fillable form parsed without type hints"/>
-  <int value="1" label="Fillable form parsed with type hints"/>
-  <int value="2"
-      label="(Obsolete) Includes UPI-VPA type hint (removed 04/2024)"/>
-</enum>
-
 <enum name="AutofillDynamicElementType">
   <int value="0" label="ButtonButton"/>
   <int value="1" label="ButtonSubmit"/>
@@ -3426,11 +3419,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Submitted"/>
 </enum>
 
-<enum name="BooleanSuppressed">
-  <int value="0" label="No suppressions"/>
-  <int value="1" label="Suppressed"/>
-</enum>
-
 <!-- LINT.IfChange(CardBenefitFormEvent) -->
 
 <enum name="CardBenefitFormEvent">
@@ -4240,16 +4228,6 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCreditCardPromptResultIOS) -->
-
-<!-- LINT.IfChange(SaveCvcPromptResultIOS) -->
-
-<enum name="SaveCvcPromptResultIOS">
-  <int value="0" label="Accepted"/>
-  <int value="1" label="Swiped"/>
-  <int value="2" label="TimedOut"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCvcPromptResultIOS) -->
 
 <!-- LINT.IfChange(SelectBnplIssuerDialogResult) -->
 

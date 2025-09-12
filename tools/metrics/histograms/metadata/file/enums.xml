@@ -471,25 +471,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AbortedInternally"/>
 </enum>
 
-<enum name="FuseboxPosixErrorCode">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="OK"/>
-  <int value="2" label="EOTHER"/>
-  <int value="3" label="EFAULT"/>
-  <int value="4" label="EBUSY"/>
-  <int value="5" label="EEXIST"/>
-  <int value="6" label="ENOENT"/>
-  <int value="7" label="EACCES"/>
-  <int value="8" label="EMFILE"/>
-  <int value="9" label="ENOMEM"/>
-  <int value="10" label="ENOSPC"/>
-  <int value="11" label="ENOTDIR"/>
-  <int value="12" label="ENOTSUP"/>
-  <int value="13" label="EINVAL"/>
-  <int value="14" label="ENOTEMPTY"/>
-  <int value="15" label="EIO"/>
-</enum>
-
 <enum name="GoogleDrive.BulkPinning.MountFailureReason">
   <int value="0" label="Successfully mounted"/>
   <int value="1" label="More than 3 consecutive startup failures"/>

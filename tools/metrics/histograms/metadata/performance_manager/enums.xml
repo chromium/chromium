@@ -74,13 +74,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Node Removed"/>
 </enum>
 
-<enum name="LocalSiteCharacteristicsDBInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Corruption"/>
-  <int value="2" label="IO Error"/>
-  <int value="3" label="Unknown Error"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

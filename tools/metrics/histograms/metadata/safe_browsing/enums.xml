@@ -93,11 +93,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Backoff mode enabled"/>
 </enum>
 
-<enum name="BooleanFreshness">
-  <int value="0" label="Is stale"/>
-  <int value="1" label="Is up to date"/>
-</enum>
-
 <enum name="BooleanHasKey">
   <int value="0" label="Lacks key"/>
   <int value="1" label="Has key"/>

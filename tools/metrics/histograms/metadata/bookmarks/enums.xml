@@ -69,20 +69,6 @@ chromium-metrics-reviews@google.com.
              reading list from the NTP"/>
 </enum>
 
-<!-- LINT.IfChange(BookmarkBarShownReason)-->
-
-<enum name="BookmarkBarShownReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Disabled by user pref (Desktop sync)"/>
-  <int value="2" label="Enabled by user pref (Desktop sync)"/>
-  <int value="3" label="Disabled by device pref explicitly"/>
-  <int value="4" label="Enabled by device pref explicitly"/>
-  <int value="5" label="Disabled by device pref feature param"/>
-  <int value="6" label="Enabled by device pref feature param"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarShownReason) -->
-
 <enum name="BookmarkEditSource">
   <int value="0" label="Edited by a user"/>
   <int value="1" label="Edited by an extension"/>

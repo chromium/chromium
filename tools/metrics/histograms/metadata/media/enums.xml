@@ -1442,17 +1442,6 @@ chromium-metrics-reviews@google.com.
       label="Frame got hidden while the HTMLMediaElement was playing"/>
 </enum>
 
-<enum name="MediaPlayerExitStatus">
-  <int value="0" label="No errors"/>
-  <int value="1" label="Has errors"/>
-</enum>
-
-<enum name="MediaPlayerWatchTimeType">
-  <int value="0" label="Non-HLS"/>
-  <int value="1" label="HLS audio-only"/>
-  <int value="2" label="HLS video"/>
-</enum>
-
 <enum name="MediaPreviewDeviceSelectionUserAction">
   <int value="0" label="User did not interact with the combobox"/>
   <int value="1" label="User opened the combobox"/>
@@ -1877,13 +1866,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/picture_in_picture/picture_in_picture_window_manager.h:PictureInPictureTuckedType) -->
-
-<enum name="PlaylistSegmentType">
-  <int value="0" label="kTS"/>
-  <int value="1" label="kMP4"/>
-  <int value="2" label="kAAC"/>
-  <int value="3" label="kUnexpected"/>
-</enum>
 
 <enum name="PresentationUrlBySink">
   <int value="0" label="Unknown"/>
