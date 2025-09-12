@@ -147,6 +147,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
         <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
+        <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
 
         <!-- Text dimensions. -->
         <item name="textLargeSize">@dimen/text_size_large</item>
@@ -327,6 +328,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size_desktop</item>
         <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding_desktop</item>
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin_desktop</item>
+        <item name="listDividerHeight">@dimen/list_divider_layout_height_desktop</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DesktopDensity.TabStrip" parent="">

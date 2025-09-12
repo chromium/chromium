@@ -78,6 +78,7 @@ found in the LICENSE file.
     <attr name="listItemIconSize" format="dimension" />
     <attr name="listItemIconPadding" format="dimension" />
     <attr name="listItemIconTextSpacing" format="dimension" />
+    <attr name="listDividerHeight" format="dimension" />
 
     <attr name="textLargeSize" format="dimension"/>
     <attr name="textLargeLeading" format="dimension"/>

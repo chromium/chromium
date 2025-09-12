@@ -32,7 +32,6 @@ import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -42,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -86,6 +84,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,7 +111,6 @@ public class TabContextMenuCoordinatorUnitTest {
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
     private static final String TAB_GROUP_TITLE = "Tab Group Title";
     private static final int TAB_GROUP_INDICATOR_COLOR_ID = 8;
-    private static final @ColorInt int TAB_GROUP_INDICATOR_COLOR = -2916608;
     private static final String COLLABORATION_ID = "CollaborationId";
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
@@ -196,8 +194,7 @@ public class TabContextMenuCoordinatorUnitTest {
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity = activity;
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(mActivity);
@@ -1124,7 +1121,8 @@ public class TabContextMenuCoordinatorUnitTest {
         GradientDrawable drawable = (GradientDrawable) tabGroupRowModel.get(START_ICON_DRAWABLE);
         assertEquals(
                 "Expected circle to have correct color",
-                TAB_GROUP_INDICATOR_COLOR,
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, TAB_GROUP_INDICATOR_COLOR_ID, /* isIncognito= */ false),
                 drawable.getColor().getDefaultColor());
         assertTrue("Expected tab group row to be enabled", tabGroupRowModel.get(ENABLED));
         headerItem.model.get(CLICK_LISTENER).onClick(mView);
