@@ -1595,6 +1595,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+        profile->GetPrefs()->SetString(
+            extensions::pref_names::kInitialInstallProviderName,
+            std::move(master_prefs_->initial_extensions_provider_name));
         // Store the initial extension IDs into the profile's prefs so that
         // InitialExternalExtensionLoader can later pick them up.
         profile->GetPrefs()->SetList(

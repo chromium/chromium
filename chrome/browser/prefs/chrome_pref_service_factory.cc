@@ -184,6 +184,9 @@ const auto kTrackedPrefs = std::to_array<prefs::TrackedPreferenceMetadata>({
     {37, extensions::pref_names::kInitialInstallList,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
+    {38, extensions::pref_names::kInitialInstallProviderName,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
 #endif
 
     // See note at top, new items added here also need to be added to

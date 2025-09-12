@@ -304,8 +304,11 @@ void SetupInitialPrefsFromInstallPrefs(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    out_prefs->initial_extensions_provider_name =
+        install_prefs.GetInitialExtensionsProviderName();
+
     if (const base::Value::List* initial_extensions =
-            install_prefs.GetInitialExtensionsBlock()) {
+            install_prefs.GetInitialExtensionsList()) {
       out_prefs->initial_extensions = initial_extensions->Clone();
     }
   }

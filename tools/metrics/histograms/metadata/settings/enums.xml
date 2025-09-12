@@ -639,6 +639,7 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="kExtensionsUIDeveloperMode"/>
   <int value="36" label="kScheduleToFlushToDisk"/>
   <int value="37" label="kInitialInstallList"/>
+  <int value="38" label="kInitialInstallProviderName"/>
 </enum>
 
 </enums>

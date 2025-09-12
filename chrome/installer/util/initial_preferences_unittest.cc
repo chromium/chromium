@@ -200,21 +200,25 @@ TEST_F(InitialPreferencesTest, FirstRunTabs) {
 }
 
 // Test the parsing of the initial_extensions block from initial preferences.
-TEST_F(InitialPreferencesTest, ParseInitialExtensions) {
+TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithProviderName) {
   constexpr char kTestExtensionId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   constexpr char kTestExtensionId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  constexpr char kProvider[] = "GTest";
   constexpr std::string_view kInitialExtensions = R"({
-  "initial_extensions": [
-      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-    ]
+    "initial_extensions": {
+      "provider_name": "GTest",
+      "list": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    }
   })";
 
   ASSERT_TRUE(base::WriteFile(prefs_file(), kInitialExtensions));
   installer::InitialPreferences prefs(prefs_file());
   ASSERT_TRUE(prefs.read_from_file());
 
-  const base::Value::List* extensions = prefs.GetInitialExtensionsBlock();
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
   ASSERT_NE(extensions, nullptr);
   ASSERT_EQ(extensions->size(), 2u);
 
@@ -225,9 +229,45 @@ TEST_F(InitialPreferencesTest, ParseInitialExtensions) {
   const std::string* id2 = (*extensions)[1].GetIfString();
   ASSERT_NE(id2, nullptr);
   EXPECT_EQ(*id2, kTestExtensionId2);
+
+  EXPECT_EQ(prefs.GetInitialExtensionsProviderName(), std::string(kProvider));
 }
 
-// Test that GetInitialExtensionsBlock returns null when the block is absent.
+// Test parsing when initial_extensions.list exists but provider_name is
+// omitted.
+TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithoutProviderName) {
+  constexpr char kTestExtensionId1[] = "cccccccccccccccccccccccccccccccc";
+  constexpr char kTestExtensionId2[] = "dddddddddddddddddddddddddddddddd";
+  constexpr std::string_view kInitialExtensions = R"({
+    "initial_extensions": {
+      "list": [
+        "cccccccccccccccccccccccccccccccc",
+        "dddddddddddddddddddddddddddddddd"
+      ]
+    }
+  })";
+
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kInitialExtensions));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  ASSERT_NE(extensions, nullptr);
+  ASSERT_EQ(extensions->size(), 2u);
+
+  const std::string* id1 = (*extensions)[0].GetIfString();
+  ASSERT_NE(id1, nullptr);
+  EXPECT_EQ(*id1, kTestExtensionId1);
+
+  const std::string* id2 = (*extensions)[1].GetIfString();
+  ASSERT_NE(id2, nullptr);
+  EXPECT_EQ(*id2, kTestExtensionId2);
+
+  // Provider name should be empty when not present.
+  EXPECT_TRUE(prefs.GetInitialExtensionsProviderName().empty());
+}
+
+// Test that GetInitialExtensionsList returns null when the block is absent.
 TEST_F(InitialPreferencesTest, MissingInitialExtensionsBlock) {
   constexpr std::string_view kDistribution = R"({
   "distribution": {
@@ -239,7 +279,7 @@ TEST_F(InitialPreferencesTest, MissingInitialExtensionsBlock) {
   installer::InitialPreferences prefs(prefs_file());
   ASSERT_TRUE(prefs.read_from_file());
 
-  const base::Value::List* extensions = prefs.GetInitialExtensionsBlock();
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
   EXPECT_EQ(extensions, nullptr);
 }
 

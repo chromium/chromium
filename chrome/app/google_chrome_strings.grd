@@ -2254,6 +2254,11 @@ Google Chrome is unable to recover your settings.
 
 <ph name="EXTENSION_NAME">$1<ex>Babylon Toolbar</ex></ph>
         </message>
+        <message name="IDS_EXTENSION_EXTERNAL_INITIAL_INSTALL_PROMPT_TITLE_EXTENSION" desc="">
+          <ph name="PARTNER_NAME">$1<ex>Google</ex></ph> has added an extension that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME">$2<ex>Babylon Toolbar</ex></ph>
+        </message>
         <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ABORT_BUTTON" desc="Button on the external install prompt to remove an extension installed by a third party.">
           Remove from Chrome
         </message>

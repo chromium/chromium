@@ -67,6 +67,7 @@ struct MasterPrefs {
   std::string suppress_default_browser_prompt_for_version;
   base::Value::Dict import_bookmarks_dict;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::string initial_extensions_provider_name;
   base::Value::List initial_extensions;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)

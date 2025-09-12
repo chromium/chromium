@@ -2281,6 +2281,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
       /*default_value=*/false);
 
   registry->RegisterListPref(pref_names::kInitialInstallList);
+  registry->RegisterStringPref(pref_names::kInitialInstallProviderName,
+                               /*default_value=*/std::string());
 }
 
 template <class ExtensionIdContainer>

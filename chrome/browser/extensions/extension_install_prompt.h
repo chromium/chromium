@@ -114,6 +114,8 @@ class ExtensionInstallPrompt {
                          double average_rating,
                          int rating_count,
                          const std::string& localized_rating_count);
+    void SetInitialExtensionsProviderName(
+        std::u16string initial_extensions_provider_name);
 
     PromptType type() const { return type_; }
 
@@ -182,6 +184,10 @@ class ExtensionInstallPrompt {
 
    private:
     const PromptType type_;
+
+    // When this is non empty, means that this extension is an initial
+    // pre-installed one.
+    std::u16string initial_extensions_provider_name_;
 
     // Permissions that are being requested (may not be all of an extension's
     // permissions if only additional ones are being requested)

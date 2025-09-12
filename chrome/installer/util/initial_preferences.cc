@@ -315,9 +315,16 @@ std::vector<std::string> InitialPreferences::GetFirstRunTabs() const {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-const base::Value::List* InitialPreferences::GetInitialExtensionsBlock() const {
-  return initial_dictionary_->FindList(
-      initial_preferences::kInitialExtensionsBlock);
+std::string InitialPreferences::GetInitialExtensionsProviderName() const {
+  const std::string* provider_name =
+      initial_dictionary_->FindStringByDottedPath(
+          initial_preferences::kInitialExtensionsProviderName);
+  return provider_name ? *provider_name : std::string();
+}
+
+const base::Value::List* InitialPreferences::GetInitialExtensionsList() const {
+  return initial_dictionary_->FindListByDottedPath(
+      initial_preferences::kInitialExtensionsList);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

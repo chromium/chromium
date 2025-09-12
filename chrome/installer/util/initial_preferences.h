@@ -136,11 +136,15 @@ class InitialPreferences {
   // An example is the following:
   //
   // {
-  //   "initial_extensions": [
-  //     "ppflmjolhbonpkbkooiamcnenbmbjcbb"
-  //   ]
+  //   "initial_extensions": {
+  //     "provider_name": "ABCXYZ Provider",
+  //     "list": [
+  //        "ppflmjolhbonpkbkooiamcnenbmbjcbb"
+  //      ]
+  //   }
   // }
-  const base::Value::List* GetInitialExtensionsBlock() const;
+  std::string GetInitialExtensionsProviderName() const;
+  const base::Value::List* GetInitialExtensionsList() const;
 
   // The initial preferences file can include a bookmarks block that gets
   // imported on the first run. This block contains bookmark and folder nodes
