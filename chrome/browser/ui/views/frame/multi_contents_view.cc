@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_background_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
@@ -33,7 +34,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
@@ -57,6 +61,9 @@ MultiContentsView::MultiContentsView(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
+
+  background_view_ =
+      AddChildView(std::make_unique<MultiContentsBackgroundView>(browser_view));
 
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
@@ -141,6 +148,7 @@ MultiContentsView::~MultiContentsView() {
   drop_target_view_ = nullptr;
   resize_area_ = nullptr;
   contents_separators_.Reset();
+  background_view_ = nullptr;
   RemoveAllChildViews();
 }
 
@@ -160,6 +168,14 @@ ContentsContainerView* MultiContentsView::GetActiveContentsContainerView()
 ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView()
     const {
   return contents_container_views_[GetInactiveIndex()];
+}
+
+const gfx::RoundedCornersF& MultiContentsView::background_radii() const {
+  return background_view_->GetRoundedCorners();
+}
+
+void MultiContentsView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  background_view_->SetRoundedCorners(radii);
 }
 
 ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
@@ -362,11 +378,6 @@ double MultiContentsView::CalculateRatioWithSnapPoints(
   return end_width / total_width;
 }
 
-void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
-  // Paint the multi contents area background to match the toolbar.
-  TopContainerBackground::PaintBackground(canvas, this, browser_view_);
-}
-
 void MultiContentsView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateContentsBorderAndOverlay();
@@ -413,6 +424,9 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   const int height = size_bounds.height().value();
 
   gfx::Rect available_space = gfx::Rect(width, height);
+  layouts.child_layouts.emplace_back(
+      background_view_.get(), background_view_->GetVisible(), available_space);
+
   if (IsDragAndDropEnabled()) {
     available_space =
         CalculateDropTargetLayout(available_space, layouts.child_layouts);
