@@ -505,6 +505,39 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::optional<cc::PaintRecord> last_recording_;
 };
 
+// * Renders to a Skia RAM-backed bitmap.
+// * Mailboxing is not supported : cannot be directly composited.
+class PLATFORM_EXPORT CanvasResourceProviderBitmap
+    : public CanvasResourceProvider {
+ public:
+  CanvasResourceProviderBitmap(gfx::Size size,
+                               viz::SharedImageFormat format,
+                               SkAlphaType alpha_type,
+                               const gfx::ColorSpace& color_space,
+                               Delegate* delegate);
+
+  ~CanvasResourceProviderBitmap() override;
+
+  bool IsValid() const override;
+  bool IsAccelerated() const final;
+  bool SupportsDirectCompositing() const override;
+  bool IsSingleBuffered() const override;
+  void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
+      override;
+
+ private:
+  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      FlushReason reason,
+      ImageOrientation orientation) override;
+
+  base::WeakPtr<CanvasResourceProviderBitmap> CreateWeakPtr();
+  sk_sp<SkSurface> CreateSkSurface() const override;
+
+  base::WeakPtrFactory<CanvasResourceProviderBitmap> weak_ptr_factory_{this};
+};
+
 // * Renders to a SharedImage, which manages memory internally.
 // * Layers may be overlay candidates.
 class PLATFORM_EXPORT CanvasResourceProviderSharedImage

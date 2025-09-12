@@ -134,61 +134,63 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
 };
 
-// * Renders to a Skia RAM-backed bitmap.
-// * Mailboxing is not supported : cannot be directly composited.
-class CanvasResourceProviderBitmap : public CanvasResourceProvider {
- public:
-  CanvasResourceProviderBitmap(gfx::Size size,
-                               viz::SharedImageFormat format,
-                               SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space,
-                               Delegate* delegate)
-      : CanvasResourceProvider(kBitmap,
-                               size,
-                               format,
-                               alpha_type,
-                               color_space,
-                               /*context_provider_wrapper=*/nullptr,
-                               delegate) {}
+CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    Delegate* delegate)
+    : CanvasResourceProvider(kBitmap,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             delegate) {}
 
-  ~CanvasResourceProviderBitmap() override = default;
+CanvasResourceProviderBitmap::~CanvasResourceProviderBitmap() = default;
 
-  bool IsValid() const override { return GetSkSurface(); }
-  bool IsAccelerated() const final { return false; }
-  bool SupportsDirectCompositing() const override { return false; }
-  bool IsSingleBuffered() const override { return false; }
-  void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
-      override {
-    draw_callback(Canvas());
-  }
+bool CanvasResourceProviderBitmap::IsValid() const {
+  return GetSkSurface();
+}
+bool CanvasResourceProviderBitmap::IsAccelerated() const {
+  return false;
+}
+bool CanvasResourceProviderBitmap::SupportsDirectCompositing() const {
+  return false;
+}
+bool CanvasResourceProviderBitmap::IsSingleBuffered() const {
+  return false;
+}
+void CanvasResourceProviderBitmap::ExternalCanvasDrawHelper(
+    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
+  draw_callback(Canvas());
+}
 
- private:
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    return nullptr;  // Does not support direct compositing
-  }
+scoped_refptr<CanvasResource>
+CanvasResourceProviderBitmap::ProduceCanvasResource(FlushReason) {
+  return nullptr;  // Does not support direct compositing
+}
 
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
-      ImageOrientation orientation) override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
-    return SnapshotInternal(orientation, reason);
-  }
+scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
+    FlushReason reason,
+    ImageOrientation orientation) {
+  TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
+  return SnapshotInternal(orientation, reason);
+}
 
-  base::WeakPtr<CanvasResourceProviderBitmap> CreateWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
+base::WeakPtr<CanvasResourceProviderBitmap>
+CanvasResourceProviderBitmap::CreateWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
-  sk_sp<SkSurface> CreateSkSurface() const override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
+sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
+  TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
-    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
-    const auto props = GetSkSurfaceProps();
-    return SkSurfaces::Raster(info, &props);
-  }
-
-  base::WeakPtrFactory<CanvasResourceProviderBitmap> weak_ptr_factory_{this};
-};
+  const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+  const auto props = GetSkSurfaceProps();
+  return SkSurfaces::Raster(info, &props);
+}
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     gfx::Size size,
