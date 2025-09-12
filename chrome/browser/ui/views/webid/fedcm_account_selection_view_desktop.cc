@@ -201,11 +201,8 @@ bool FedCmAccountSelectionView::Show(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  bool create_view = !account_selection_view_ || !dialog_widget_;
-  if (create_view) {
-    CreateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
-                        has_modal_support);
-  }
+  CreateViewAndWidgetIfNeeded(rp_data, idp_title, rp_context, rp_mode,
+                              has_modal_support);
 
   if (!new_accounts.empty()) {
     // When we just logged in to an account that   not a single returning
@@ -351,11 +348,8 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  bool create_view = !account_selection_view_ || !dialog_widget_;
-  if (create_view) {
-    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
-                        rp_context, rp_mode, has_modal_support);
-  }
+  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                              rp_context, rp_mode, has_modal_support);
 
   account_selection_view_->ShowFailureDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
@@ -389,11 +383,8 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  bool create_view = !account_selection_view_ || !dialog_widget_;
-  if (create_view) {
-    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
-                        rp_context, rp_mode, has_modal_support);
-  }
+  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                              rp_context, rp_mode, has_modal_support);
 
   account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
                                            idp_metadata, error);
@@ -416,12 +407,9 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   state_ = State::LOADING;
   ResetDialogWidgetStateOnAnyShow();
 
-  bool create_view = !account_selection_view_ || !dialog_widget_;
-  if (create_view) {
-    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
-                        rp_context, rp_mode,
-                        /*has_modal_support=*/true);
-  }
+  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                              rp_context, rp_mode,
+                              /*has_modal_support=*/true);
 
   UpdateDialogVisibilityAndPosition();
   modal_loading_dialog_state_ = webid::LoadingDialogResult::kDestroy;
@@ -460,15 +448,13 @@ bool FedCmAccountSelectionView::ShowVerifyingDialog(
       base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
                      weak_ptr_factory_.GetWeakPtr());
 
-  bool create_view = !account_selection_view_ || !dialog_widget_;
-  if (create_view) {
-    // While the verifying UI may not need to show RP and IdP data in case of
-    // auto reauthn, we need them anyway to prepare for potential error UI
-    // afterwards.
-    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_data->idp_for_display),
-                        idp_data->rp_context, rp_mode,
-                        /*has_modal_support=*/true);
-  }
+  // While the verifying UI may not need to show RP and IdP data in case of
+  // auto reauthn, we need them anyway to prepare for potential error UI
+  // afterwards.
+  CreateViewAndWidgetIfNeeded(rp_data,
+                              base::UTF8ToUTF16(idp_data->idp_for_display),
+                              idp_data->rp_context, rp_mode,
+                              /*has_modal_support=*/true);
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
     state_ = State::AUTO_REAUTHN;
@@ -523,12 +509,16 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
   input_protector_ = std::move(input_protector);
 }
 
-void FedCmAccountSelectionView::CreateViewAndWidget(
+void FedCmAccountSelectionView::CreateViewAndWidgetIfNeeded(
     const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     bool has_modal_support) {
+  if (account_selection_view_ && dialog_widget_) {
+    return;
+  }
+
   CHECK(!dialog_widget_);
   CHECK(tab_);
   if (!account_selection_view_ || !parked_dialog_view_) {

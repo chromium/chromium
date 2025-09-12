@@ -421,12 +421,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void LogDialogDismissal(DismissReason dismiss_reason);
 
   // Creates account_selection_view_ (different subclasses for
-  // bubble/modal) and dialog_widget_.
-  void CreateViewAndWidget(const content::RelyingPartyData& rp_data,
-                           const std::optional<std::u16string>& idp_title,
-                           blink::mojom::RpContext rp_context,
-                           blink::mojom::RpMode rp_mode,
-                           bool has_modal_support);
+  // bubble/modal) and dialog_widget_ if it hasn't been created yet.
+  void CreateViewAndWidgetIfNeeded(
+      const content::RelyingPartyData& rp_data,
+      const std::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
+      bool has_modal_support);
 
   // Synchronously closes dialog_widget_. This method can result in synchronous
   // destruction of `this`.
