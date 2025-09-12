@@ -3,6 +3,7 @@
 <translationbundle lang="sr-Latn">
 <translation id="1010283278930414892">Nema sačuvanih lozinki na ovom uređaju</translation>
 <translation id="1011749477052068769">Premesti ovde</translation>
+<translation id="1014083013111769343">Podešavanja režima čitanja su otvorena na celom ekranu</translation>
 <translation id="1014147525163127655">Ne postoji nijedan pristupni kôd za <ph name="ORIGIN" /> na ovom uređaju</translation>
 <translation id="1016498331642356377">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="1028699632127661925">Šalje se na uređaj <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="197288927597451399">Zadrži</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
+<translation id="1982274314082047220">Prevucite nagore u režimu čitanja za podešavanja</translation>
 <translation id="1984087999855033707">broj telefona</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1986685561493779662">Naziv već postoji</translation>
@@ -428,6 +430,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2992473221983447149">Opisi slika</translation>
 <translation id="2996291259634659425">Napravite pristupnu frazu</translation>
 <translation id="2996809686854298943">URL je obavezan</translation>
+<translation id="3024215143424744261">Željena podešavanja režima čitanja su zatvorena</translation>
 <translation id="3026955690410463085">Uvrstite link</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je uključeno.</translation>
 <translation id="3027950907978057636">Od <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="696447261358045621">Izađi iz režima bez arhiviranja</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Prikaži <ph name="TABS_COUNT_ONE" /> standardnu karticu sa novom aktivnošću u deljenim grupama kartica}one{Prikaži <ph name="TABS_COUNT_MANY" /> standardnu karticu sa novom aktivnošću u deljenim grupama kartica}few{Prikaži <ph name="TABS_COUNT_MANY" /> standardne kartice sa novom aktivnošću u deljenim grupama kartica}other{Prikaži <ph name="TABS_COUNT_MANY" /> standardnih kartica sa novom aktivnošću u deljenim grupama kartica}}</translation>
+<translation id="6971555615916967190">Podešavanja režima čitanja su otvorena do polovine ekrana</translation>
 <translation id="6971862865055170158">Ne odobravam</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="6976811588313110624">Dodajte novu prečicu.</translation>

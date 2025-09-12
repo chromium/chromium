@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1063822554756965137">הקבצים נמחקו</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">‏מערכת Chrome סבורה שלא רצית לקבל התראות מהאתר הזה. לכן הבקשות מוסתרות כדי לצמצם את ההפרעות.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">הפרטים של מנוע החיפוש</translation>
 <translation id="1068467933609179019">הגדרות שירותי המילוי האוטומטי</translation>
@@ -1621,6 +1622,7 @@
 <translation id="3678529606614285348">‏פותחים את הדף בחלון פרטי חדש (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">כאן מזינים את קוד האימות (<ph name="OTP_LENGTH" /> ספרות)</translation>
 <translation id="3681007416295224113">פרטי אישור</translation>
+<translation id="3681191721636073359">‏מערכת Chrome סבורה שלא רצית להשתמש במיקום שלך באתר הזה. לכן הבקשות מוסתרות כדי לצמצם את ההפרעות.</translation>
 <translation id="3681421644246505351">‏Chrome מזהה נושאים שמעניינים אותך על סמך היסטוריית הגלישה שלך מהזמן האחרון.</translation>
 <translation id="3681841880472207951">‏סרטון Quicktime</translation>
 <translation id="3682094733650754138">נבחרה האפשרות 'מילוי הכתובת'</translation>
@@ -4596,6 +4598,7 @@ Del</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>
 <translation id="8634957317623797170">‏54x86 מ"מ</translation>
 <translation id="8637362707224133343">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google. התכונה הזו <ph name="BEGIN_LINK" />מצאה לאחרונה פישינג<ph name="END_LINK" /> באתר שבו ניסית לבקר. אתרי פישינג מתחזים לאתרים אחרים כדי להטעות אותך.<ph name="NEW_LINE" />גם אתרים שבדרך כלל נחשבים לבטוחים נפרצים לפעמים על ידי תוקפים. <ph name="BEGIN_ERROR_LINK" />חשוב לנו לדעת<ph name="END_ERROR_LINK" /> אם לדעתך מדובר בטעות והאתר לא מסוכן.</translation>
+<translation id="8640996933372643759">‏כדי לשתף כרטיסיות ולעבוד עם אנשים אחרים, צריכה להיות לך אפשרות להיכנס ל-Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
 <translation id="8643409044755049933">‏מעטפה – Kaku 3</translation>
 <translation id="8643846627971610148">כשהקבוצה סגורה, רק אנשים מסוימים יכולים להצטרף אליה</translation>

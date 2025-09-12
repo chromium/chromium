@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps Chromiumissa</translation>
 <translation id="1867772173333403444">4. Valitse Chromium</translation>
+<translation id="1965068424387304464">Chromium-vinkki: Tallenna salasanat</translation>
 <translation id="2006345422933397527">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
 <translation id="2042889939382983733">Näytä Chromium-historia</translation>
 <translation id="2052320862053429062">Chromium vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
@@ -118,6 +119,7 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="3816686541346279443">Chromium tarjoutuu tallentamaan salasanasi.</translation>
 <translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
 <translation id="3833326979834193417">Chromium tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
+<translation id="3837584850181228767">Chromium-vinkki: Parannettu selaussuoja</translation>
 <translation id="3845223911364528001">Palaa Chromiumiin ja lataa tiedosto</translation>
 <translation id="3855938650519180865">Uutta Chromiumissa</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>

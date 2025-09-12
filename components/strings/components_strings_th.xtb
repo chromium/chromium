@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1063822554756965137">ลบไฟล์เรียบร้อยแล้ว</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome คิดว่าคุณไม่ต้องการรับการแจ้งเตือนจากเว็บไซต์นี้ ระบบจึงซ่อนคำขอเพื่อลดสิ่งรบกวน</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">รายละเอียดเครื่องมือค้นหา</translation>
 <translation id="1068467933609179019">การตั้งค่าบริการป้อนข้อความอัตโนมัติ</translation>
@@ -1624,6 +1625,7 @@
 <translation id="3678529606614285348">เปิดหน้าเว็บในหน้าต่างที่ไม่ระบุตัวตนใหม่ (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">ป้อนรหัสยืนยัน <ph name="OTP_LENGTH" /> หลัก</translation>
 <translation id="3681007416295224113">ข้อมูลในใบรับรอง</translation>
+<translation id="3681191721636073359">Chrome คิดว่าคุณไม่ต้องการใช้ตำแหน่งในเว็บไซต์นี้ ระบบจึงซ่อนคำขอเพื่อลดสิ่งรบกวน</translation>
 <translation id="3681421644246505351">Chrome บันทึกหัวข้อที่คุณสนใจโดยพิจารณาจากประวัติการท่องเว็บล่าสุด</translation>
 <translation id="3681841880472207951">วิดีโอ QuickTime</translation>
 <translation id="3682094733650754138">เลือกตัวเลือกกรอกที่อยู่แล้ว</translation>
@@ -4595,6 +4597,7 @@
 <translation id="8624354461147303341">รับส่วนลด</translation>
 <translation id="8634957317623797170">54 x 86 มม.</translation>
 <translation id="8637362707224133343">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบฟิชชิง<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้ เว็บไซต์ฟิชชิงปลอมเป็นเว็บไซต์อื่นๆ เพื่อหลอกคุณ<ph name="NEW_LINE" />บางครั้งเว็บไซต์ที่โดยปกติจะปลอดภัยก็อาจถูกบุกรุกจากผู้โจมตีได้ โปรด<ph name="BEGIN_ERROR_LINK" />แจ้งให้เราทราบ<ph name="END_ERROR_LINK" />หากคุณคิดว่ามีข้อผิดพลาดเกิดขึ้นและเว็บไซต์นี้ไม่ก่อให้เกิดอันตราย</translation>
+<translation id="8640996933372643759">คุณต้องลงชื่อเข้าใช้ Chrome จึงจะแชร์แท็บและทำงานร่วมกับผู้อื่นได้</translation>
 <translation id="8641131559425911240">ซอง (ผนึก)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">เมื่อกลุ่มปิดอยู่ ระบบจะจำกัดผู้ที่เข้าร่วมได้</translation>

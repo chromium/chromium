@@ -106,6 +106,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2307973900865360088">Keep in Dock</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
+<translation id="2356070529366658676">Ask</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2361918034042471035">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chromium</translation>
 <translation id="236943522426971115">Disable Chromium running in background for apps</translation>

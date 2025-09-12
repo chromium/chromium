@@ -198,6 +198,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1129348283834595293">Sajberpank</translation>
 <translation id="1129420403709586868">da pregleda slike i medijski sadržaj sa telefona</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
+<translation id="1130116586186908674">Napravi podeljeni prikaz</translation>
 <translation id="1130430615924359526">{0,plural, =1{Zatvori prozor bez arhiviranja}one{Zatvori prozore bez arhiviranja (# prozor)}few{Zatvori prozore bez arhiviranja (# prozora)}other{Zatvori prozore bez arhiviranja (# prozora)}}</translation>
 <translation id="113050636487300043">Odaberite ime i temu boja da biste razlikovali profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – deo grupe <ph name="GROUP_NAME" /></translation>
@@ -473,6 +474,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
 <translation id="130744661532298792">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="1307559529304613120">Ups! Sistem nije uspeo da sačuva oznaku dugoročnog pristupa API-ju za ovaj uređaj.</translation>
+<translation id="1311092170520822848">Ovaj sajt kontroliše čitače pametnih kartica povezanih sa uređajem i potencijalno pametnih kartica koje su im dostupne</translation>
 <translation id="131112695174432497">Podaci koji utiču na personalizaciju oglasa se brišu</translation>
 <translation id="1311294419381837540">Prebacujete karticu. Prebacivanje možete da pauzirate ili zaustavite u svakom trenutku.</translation>
 <translation id="131188242279372879">Otkrijte Poboljšanu zaštitu da biste dobili najviši nivo bezbednosti u Chrome-u za preuzimanja</translation>
@@ -2096,6 +2098,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2431027948063157455">Google pomoćnik nije uspeo da se učita. Proverite mrežnu vezu, pa pokušajte ponovo.</translation>
 <translation id="243179355394256322">Organizacija ograničava registraciju uređaja samo na ovlašćene korisnike. Ovaj korisnik nije ovlašćen za registrovanje uređaja. Proverite da li korisnik ima administratorsku privilegiju Registracija Google Meet hardvera u odeljku Korisnici na administratorskoj konzoli.</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
+<translation id="2433237965825924228">Izolovane veb-aplikacije kontrolišu uređaje za potvrdu identiteta i pametne kartice kojima mogu da pristupaju. Pametne kartice obično sadrže identifikatore koji se koriste za potvrdu identiteta.</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da biste automatski osvežili stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Izgled</translation>
 <translation id="2433836460518180625">Otključaj samo uređaj</translation>
@@ -3512,6 +3515,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3429174588714165399">Napravite prečicu do ove stranice</translation>
 <translation id="3429271624041785769">Jezici veb-sadržaja</translation>
 <translation id="3429275422858276529">Obeležite ovu stranicu da biste je kasnije lakše pronašli</translation>
+<translation id="343084100869297747">Izolovane veb-aplikacije automatski prate ovo podešavanje</translation>
 <translation id="3431530007831146102">Koristi pokrete glave za kontrolu kursora miša</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – oslobođeno je<ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Deljeni resursi</translation>
@@ -8882,6 +8886,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7201535955609308429">Sačekajte da verifikacija bude u toku</translation>
 <translation id="7202337678781136582">Skenirajte QR kôd Android telefonom</translation>
 <translation id="7203150201908454328">Prošireno</translation>
+<translation id="7206252555702853828">Pristupa se čitačima pametnih kartica</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zatvori stranicu}one{Zatvori stranice}few{Zatvori stranice}other{Zatvori stranice}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To podešavanje primenjuje vlasnik. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu.</translation>
 <translation id="7207631048330366454">Pretražite aplikacije</translation>
@@ -11646,6 +11651,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
 <translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
+<translation id="9084383457260170045">Izolovane veb-aplikacije mogu da zatraže da kontrolišu čitače pametnih kartica.</translation>
 <translation id="9085256200913095638">Napravi duplikat izabrane kartice</translation>
 <translation id="9085446486797400519">Pristup kameri</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nije izabran. Da biste izabrali, pritisnite taster za pretragu i razmak.</translation>
@@ -11845,6 +11851,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Otvorite odeljak Dodaci da biste upravljali njime}one{Otvorite odeljak Dodaci da biste upravljali njima}few{Otvorite odeljak Dodaci da biste upravljali njima}other{Otvorite odeljak Dodaci da biste upravljali njima}}</translation>
 <translation id="924818813611903184">Upravljajte jezicima u podešavanjima Chrome OS-a</translation>
 <translation id="925575170771547168">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju sajtovi</translation>
+<translation id="927864230077808465">Izolovane veb-aplikacije ne mogu da kontrolišu čitače pametnih kartica</translation>
 <translation id="930268624053534560">Detaljne vremenske oznake</translation>
 <translation id="930551443325541578">Ponavljaj tastere i dijakritičke znakove</translation>
 <translation id="930893132043726269">Trenutno je u romingu</translation>

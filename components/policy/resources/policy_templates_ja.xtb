@@ -152,6 +152,7 @@
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
 <translation id="1087707496788636333">Chrome Enterprise ポリシーのリストは別のページに移動しました。ブックマークを <ph name="POLICY_DOCUMENTATION_URL" /> に変更してください。</translation>
 <translation id="1089150222292592899">SAML IdP ページでユーザー名を自動入力する</translation>
+<translation id="1090430607214486535">機密</translation>
 <translation id="1091765729282771296">サイトが HID デバイスへのアクセスをユーザーに要求することを許可する</translation>
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>

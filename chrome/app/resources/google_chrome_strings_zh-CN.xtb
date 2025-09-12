@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">选择文字</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
+<translation id="1979600810166324878">在 iOS 版 Chrome 上启用增强型安全浏览功能，随时随地更安全地浏览网页</translation>
 <translation id="2001586581944147178">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chrome 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chrome 建议您移除它。}other{这些扩展程序已不再受支持。Chrome 建议您移除它们。}}</translation>
 <translation id="2018528049276128029">每份个人资料均包含自己的 Chrome 信息，例如书签、历史记录、密码等等</translation>
@@ -374,6 +375,7 @@
 <translation id="5412485296464121825">网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5468572406162360320">为帮助改进这些功能，Chrome 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
+<translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外的安全保障</translation>
 <translation id="5524761631371622910">在试用期间，如果 Chrome 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">提高 Chrome 的运行速度</translation>
@@ -486,6 +488,7 @@
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已开启。</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
+<translation id="6800285125190089494">在 iOS 版 Chrome 中使用保存的密码更快地登录网站</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>

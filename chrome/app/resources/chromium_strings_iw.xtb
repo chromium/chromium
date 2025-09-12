@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">‏Chromium – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">השגיאה בבדיקת העדכון: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">‏הסרת החשבון מ-Chromium</translation>
+<translation id="2210502920229141283">‏נהנים מגלישה בטוחה יותר בכל מקום עם הגרסה המשופרת של גלישה בטוחה ב-Chromium ל-iOS</translation>
 <translation id="2210682093923538346">‏אתר מסוכן. ‫Chromium הסיר את ההתראות.</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2238130810669087193">‏כדי לקבל גישה לכתובות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chromium. לאחר הכניסה, הכתובת הזו תישמר בחשבון שלך ב-Google.</translation>
@@ -104,6 +105,7 @@
 <translation id="2307973900865360088">‏אני רוצה להשאיר את Chromium ב-Dock</translation>
 <translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם אתר מנסה לגנוב את הסיסמה שלך, או אם המערכת מזהה שהורדת קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות "גלישה בטוחה". הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
 <translation id="2343156876103232566">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chromium בשני המכשירים.</translation>
+<translation id="2356070529366658676">לשאלה בצ'אט</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2361918034042471035">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chromium</translation>
 <translation id="236943522426971115">‏השבתת הפעילות של Chromium ברקע לאפליקציות</translation>
@@ -154,6 +156,7 @@
 <translation id="2928420929544864228">ההתקנה הושלמה.</translation>
 <translation id="2933336679234709858">‏הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה.</translation>
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
+<translation id="2948852018303413228">‏נכנסים מהר יותר לאתרים באמצעות סיסמאות שמורות ב-Chromium ב-iOS</translation>
 <translation id="2970426615109535079">‏‫Chromium מנוהל על ידי הארגון שלך</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="2977506796191543575">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL וקטעי תוכן מדפים לבדיקה באמצעות "גלישה בטוחה"</translation>
@@ -557,6 +560,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7888981273428720788">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
 <translation id="7934340546140346950">‏‫Chromium משדרג חיבורים לא מאובטחים ל-HTTPS באופן אוטומטי כשאפשר</translation>
 <translation id="7937630085815544518">‏נכנסת ל-Chromium כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
+<translation id="7953047982688951904">‏כדאי להוריד את Chromium לטלפון כדי להוסיף עוד שכבת הגנה בכל מקום</translation>
 <translation id="7975919845073681630">‏זוהי התקנה משנית של Chromium. אי אפשר להפוך אותו לדפדפן ברירת המחדל.</translation>
 <translation id="7997934263947464652">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">דפדפן</translation>

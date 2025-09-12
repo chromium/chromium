@@ -681,6 +681,7 @@
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3700134753671613714">ログインすると、お使いのどのデバイスでも同じブックマークを利用できるようになります。</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}}</translation>
+<translation id="3709621342136814217">フォントやテキストサイズなどをここで選択します</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="372115889256123713">キャッシュされたファイル</translation>
 <translation id="3725081662140949903">他のユーザーがパスワードを使用できないようにするには、<ph name="APP" /> アプリを開いてパスワードを変更します</translation>

@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">Chromium – Kirjautuminen verkkoon – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Poista tili Chromiumista</translation>
+<translation id="2210502920229141283">Pysy turvassa liikkeellä iOS:n Chromiumin Parannetun selaussuojan avulla</translation>
 <translation id="2210682093923538346">Vaarallinen sivusto. Chromium poisti ilmoitukset.</translation>
 <translation id="2236949375853147973">Omat tapahtumat</translation>
 <translation id="2238130810669087193">Kirjaudu sisään Chromiumiin, niin voit käyttää osoitteita ja muita tietoja kaikilla laitteillasi Tämä osoite tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
@@ -104,6 +105,7 @@
 <translation id="2307973900865360088">Pidä Dock-palkissa</translation>
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>
 <translation id="2343156876103232566">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
+<translation id="2356070529366658676">Kysy</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2361918034042471035">Laajennus "<ph name="EXTENSION_NAME" />" haluaa, että kirjaudut Chromiumiin</translation>
 <translation id="236943522426971115">Poista käytöstä Chromiumin taustalla toimiminen sovelluksissa</translation>
@@ -154,6 +156,7 @@
 <translation id="2928420929544864228">Asennus valmis</translation>
 <translation id="2933336679234709858">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chromium-dataa Google-tililläsi.</translation>
 <translation id="2945997411976714835">Asennusvirhe: Asennusprosessin aloittaminen ei onnistunut.</translation>
+<translation id="2948852018303413228">Kirjaudu sivustoille nopeammin iOS:n Chromiumiin tallennetuilla salasanoilla</translation>
 <translation id="2970426615109535079">Organisaatiosi ylläpitää Chromiumia</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="2977506796191543575">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä</translation>
@@ -559,6 +562,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7888981273428720788">Valitse Chromium oletusselaimeksi</translation>
 <translation id="7934340546140346950">Chromium päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
+<translation id="7953047982688951904">Lataa Chromium puhelimelle, niin saat lisäsuojaa ollessasi liikkeellä</translation>
 <translation id="7975919845073681630">Tämä on Chromiumin toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
 <translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Selain</translation>

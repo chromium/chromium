@@ -8340,7 +8340,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan inte köras av en systemadministratör.</translation>
 <translation id="6812841287760418429">Behåll ändringarna</translation>
 <translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{Administratören kan spela in din skärm med <ph name="APP0_NAME" />.}=2{Administratören kan spela in din skärm med <ph name="APP0_NAME" /> och <ph name="APP1_NAME" />.}=3{Administratören kan spela in din skärm med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och en annan app.}other{Administratören kan spela in skärmen med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och # andra appar.}}</translation>
-<translation id="6813907279658683733">Helskärm</translation>
+<translation id="6813907279658683733">Hela skärmen</translation>
 <translation id="6814754908910736855">Information om WiFi Direct-klienter:</translation>
 <translation id="6815376457351236663">Öppna ändå</translation>
 <translation id="6815787852028615386">Den här filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
@@ -9141,7 +9141,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7393435859300249877">Du får en avisering om du pratar med mikrofonen avstängd när du använder vissa appar, till exempel videochattappar. Ljudet lämnar aldrig enheten.</translation>
 <translation id="7395008140803590549">Det gick inte att radera certifikatet</translation>
 <translation id="7395163818609347230">Avdelaren mellan fönster flyttades åt höger</translation>
-<translation id="7395774987022469191">Helskärm</translation>
+<translation id="7395774987022469191">Hela skärmen</translation>
 <translation id="7396017167185131589">Delade mappar visas här</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> startas när systemet startas och fortsätter att köras i bakgrunden även när du har stängt alla andra fönster i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Anpassa synkronisering</translation>

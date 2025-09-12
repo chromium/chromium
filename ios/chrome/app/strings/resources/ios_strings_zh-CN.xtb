@@ -681,6 +681,7 @@
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3700134753671613714">登录帐号即可将您的书签同步到您的所有设备上。</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
+<translation id="3709621342136814217">在此处选择字体、字号等</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="372115889256123713">缓存文件</translation>
 <translation id="3725081662140949903">为防止他人使用您的密码，请打开“<ph name="APP" />”应用以更改您的密码</translation>

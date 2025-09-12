@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium 中的地图</translation>
 <translation id="1867772173333403444">4. 选择“Chromium”</translation>
+<translation id="1965068424387304464">Chromium 提示：保存密码</translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="2042889939382983733">查看您的 Chromium 历史记录</translation>
 <translation id="2052320862053429062">Chromium 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
@@ -118,6 +119,7 @@
 <translation id="3816686541346279443">Chromium 会询问您是否保存密码。</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="3833326979834193417">Chromium 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
+<translation id="3837584850181228767">Chromium 提示：增强型安全浏览</translation>
 <translation id="3845223911364528001">返回到 Chromium 以上传文件</translation>
 <translation id="3855938650519180865">Chromium 中的新变化</translation>
 <translation id="3886689467633467988">登录此网站和 Chromium 即可获取您在所有设备上保存的书签及其他信息。</translation>

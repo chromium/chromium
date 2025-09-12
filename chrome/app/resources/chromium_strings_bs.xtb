@@ -98,6 +98,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2185166961232948079">Chromium – prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Greška provjere ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Ukloni račun iz Chromiuma</translation>
+<translation id="2210502920229141283">Budite sigurniji u pokretu uz poboljšano Sigurno pregledanje u Chromiumu za iOS</translation>
 <translation id="2210682093923538346">Opasna web lokacija. Chromium je uklonio obavještenja.</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2238130810669087193">Da dobijate adrese i druge stavke na svim svojim uređajima, prijavite se u Chromium. Ova adresa će se sačuvati na Google račun nakon što se prijavite.</translation>
@@ -106,6 +107,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2307973900865360088">Zadrži na donjoj traci</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="2343156876103232566">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chromium na oba uređaja.</translation>
+<translation id="2356070529366658676">Pitaj</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2361918034042471035">Ekstenzija "<ph name="EXTENSION_NAME" />" želi da se prijavite u Chromium</translation>
 <translation id="236943522426971115">Onemogući pokretanje Chromiuma u pozadini za aplikacije</translation>
@@ -156,6 +158,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2928420929544864228">Instalacija je završena.</translation>
 <translation id="2933336679234709858">Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuvate podatke Chromiuma na Google računu.</translation>
 <translation id="2945997411976714835">Greška prilikom instaliranja: pokretanje postupka programa za instaliranje nije uspjelo.</translation>
+<translation id="2948852018303413228">Brže se prijavite na web lokacije koristeći sačuvane lozinke za Chromium u iOS-u</translation>
 <translation id="2970426615109535079">Vaša organizacija upravlja Chromiumom</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2977506796191543575">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
@@ -561,6 +564,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>
 <translation id="7934340546140346950">Chromium automatski nadograđuje nesigurne veze na HTTPS kada je moguće</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti račun da se ponovo prijavite.</translation>
+<translation id="7953047982688951904">Preuzmite Chromium na telefon da dodatno poboljšate zaštitu kada ste u pokretu</translation>
 <translation id="7975919845073681630">Ovo je sekundarno instaliranje Chromiuma i stoga on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Preglednik</translation>

@@ -95,6 +95,7 @@
 <translation id="2185166961232948079">Chromium - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">更新確認エラー: <ph name="UPDATE_CHECK_ERROR" />。</translation>
 <translation id="2199210295479376551">Chromium からアカウントを削除</translation>
+<translation id="2210502920229141283">iOS 版 Chromium のセーフ ブラウジング保護強化機能により、外出先で安全に使用できます</translation>
 <translation id="2210682093923538346">危険なサイトのため、Chromium で通知の権限を削除しました。</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2238130810669087193">すべてのデバイスでアドレスやその他の設定を使用するには、Chromium にログインしてください。このアドレスは、ログイン後に Google アカウントに保存されます。</translation>
@@ -103,6 +104,7 @@
 <translation id="2307973900865360088">Dock に追加</translation>
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
+<translation id="2356070529366658676">確認する</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2361918034042471035">拡張機能「<ph name="EXTENSION_NAME" />」が Chromium へのログインを求めています</translation>
 <translation id="236943522426971115">Chromium のアプリ向けのバックグラウンドでの実行を無効にする</translation>
@@ -153,6 +155,7 @@
 <translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="2933336679234709858">データはパスフレーズで暗号化されます。Google アカウントで Chromium のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="2945997411976714835">インストール エラー: インストーラのプロセスを開始できませんでした。</translation>
+<translation id="2948852018303413228">iOS 版 Chromium で保存したパスワードを使用して、サイトにすばやくログインできます</translation>
 <translation id="2970426615109535079">Chromium は組織によって管理されています</translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
@@ -552,6 +555,7 @@
 <translation id="7888981273428720788">Chromium を既定として設定</translation>
 <translation id="7934340546140346950">可能な場合に安全でない接続を HTTPS に自動的にアップグレードします</translation>
 <translation id="7937630085815544518">Chromium に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
+<translation id="7953047982688951904">スマートフォンに Chromium をダウンロードして、外出先でのセキュリティを強化できます</translation>
 <translation id="7975919845073681630">この Chromium はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="7997934263947464652">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> で公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="8004582292198964060">ブラウザ</translation>

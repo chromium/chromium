@@ -8323,7 +8323,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
 <translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app.}}</translation>
-<translation id="6813907279658683733">Schermo intero</translation>
+<translation id="6813907279658683733">Intero schermo</translation>
 <translation id="6814754908910736855">Informazioni clienti WiFi Direct:</translation>
 <translation id="6815376457351236663">Apri comunque</translation>
 <translation id="6815787852028615386">Questo file è ingannevole e potrebbe apportare modifiche impreviste al dispositivo</translation>
@@ -9124,7 +9124,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7393435859300249877">Riceverai notifiche se parli mentre l'audio del microfono è disattivato quando usi determinate app, ad esempio le app di video chat. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="7395008140803590549">Impossibile eliminare il certificato</translation>
 <translation id="7395163818609347230">Finestre ridimensionate a destra</translation>
-<translation id="7395774987022469191">Schermo intero</translation>
+<translation id="7395774987022469191">Intero schermo</translation>
 <translation id="7396017167185131589">Le cartelle condivise verranno visualizzate qui</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> si attiverà all'avvio del sistema e continuerà a funzionare in background anche dopo la chiusura di tutte le altre finestre di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizza sincronizzazione</translation>

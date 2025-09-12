@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Korvaa</translation>
 <translation id="1063822554756965137">Tiedostot poistettiin</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
+<translation id="1065369186007547872">Chromen mukaan et halua ilmoituksia tältä sivustolta. Pyynnöt on piilotettu häiriöiden vähentämiseksi.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Hakukoneen tiedot</translation>
 <translation id="1068467933609179019">Automaattisen täytön palveluiden asetukset</translation>
@@ -1626,6 +1627,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3678529606614285348">Avaa sivu uudessa incognito-ikkunassa (Ctrl + Vaihto + N).</translation>
 <translation id="3678914302246317895">Lisää <ph name="OTP_LENGTH" />-numeroinen vahvistuskoodi</translation>
 <translation id="3681007416295224113">Varmenteen tiedot</translation>
+<translation id="3681191721636073359">Chrome arvelee, ettet halua käyttää sijaintiasi tällä sivustolla. Pyynnöt on piilotettu häiriöiden vähentämiseksi.</translation>
 <translation id="3681421644246505351">Chrome havaitsee viimeaikaisen selaushistoriasi perusteella sinua kiinnostavia aiheita.</translation>
 <translation id="3681841880472207951">Quicktime-video</translation>
 <translation id="3682094733650754138">Täytä osoite ‑vaihtoehto on valittu</translation>
@@ -4597,6 +4599,7 @@ Lisätietoja:
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Se <ph name="BEGIN_LINK" />löysi äskettäin tietojenkalastelua<ph name="END_LINK" /> sivustolta, jolle yritit siirtyä. Tietojenkalastelusivustot yrittävät huijata käyttäjiä tekeytymällä toisiksi sivustoiksi.<ph name="NEW_LINE" />Myös tavallisesti turvalliset sivustot voivat toisinaan joutua hyökkäyksen kohteiksi. <ph name="BEGIN_ERROR_LINK" />Kerro meille<ph name="END_ERROR_LINK" />, jos kyseessä on mielestäsi virhe eikä sivusto ole vaarallinen.</translation>
+<translation id="8640996933372643759">Sinun on voitava kirjautua Chromeen, jotta voit jakaa välilehtiä ja tehdä yhteistyötä muiden kanssa</translation>
 <translation id="8641131559425911240">Kirjekuori (joukko)</translation>
 <translation id="8643409044755049933">Kirjekuori Kaku 3</translation>
 <translation id="8643846627971610148">Kun ryhmä on suljettu, se rajoittaa sitä, kuka voi liittyä ryhmään</translation>

@@ -160,6 +160,7 @@
 <translation id="1087437665304381368">นโยบายนี้ควบคุมโหมดนักพัฒนาซอฟต์แวร์ของ <ph name="PRODUCT_OS_NAME" /> เท่านั้น หากคุณต้องการป้องกันการเข้าถึงตัวเลือกสำหรับนักพัฒนาแอป Android ก็จะต้องตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /></translation>
 <translation id="1087707496788636333">เรากำลังย้ายรายการนโยบายของ Chrome Enterprise โปรดอัปเดตบุ๊กมาร์กเป็น <ph name="POLICY_DOCUMENTATION_URL" /></translation>
 <translation id="1089150222292592899">ป้อนชื่อผู้ใช้อัตโนมัติในหน้า SAML IdP</translation>
+<translation id="1090430607214486535">มีความละเอียดอ่อน</translation>
 <translation id="1091765729282771296">อนุญาตให้เว็บไซต์ขอให้ผู้ใช้ให้สิทธิ์เข้าถึงอุปกรณ์ HID</translation>
 <translation id="1095209545735032039">บล็อก Serial API ในเว็บไซต์เหล่านี้</translation>
 <translation id="1096105751829466145">ผู้ให้บริการการค้นหาเริ่มต้น</translation>

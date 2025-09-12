@@ -425,6 +425,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1277020343994096713">Sortu beste PIN bat (ezin da izan une honetan darabilzuna)</translation>
 <translation id="1277597051786235230">Bilatu "<ph name="SEARCH_TERMS" />" <ph name="SEARCH_ENGINE" /> bidez beste fitxa batean</translation>
 <translation id="127849925363482083">Sakatu <ph name="SHORTCUT_TEXT" /> berriro fitxa ainguratua ixteko</translation>
+<translation id="1278542245784398460">Egin klik eskuineko botoiarekin fitxa honetan eta hautatu "Gehitu fitxa ikuspegi zatitu berrian"</translation>
 <translation id="1278859221870828664">Berrikusi Google Play-ko aplikazioak eta haren zerbitzuak</translation>
 <translation id="1279024913354609713">Ez eman baimena</translation>
 <translation id="127946606521051357">Inguruko gailu bat edukia partekatzen ari da</translation>
@@ -733,6 +734,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1503392482221435031">Automatikoki bidaltzen dizkio erabilera-estatistikak Google-ri. Gailuaren ezarpenetan aktibatu edo desaktiba ditzakezu hutsegite-txostenak.</translation>
 <translation id="1503556098270577657"><ph name="USER_EMAIL" /> kontuan saioa hasi duzu Android-eko mugikorraren bidez</translation>
 <translation id="150411034776756821">Kendu <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Ainguratu ikuspegi zatitua</translation>
 <translation id="1504551620756424144">Karpeta partekatuak Windows-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">pasahitzak esportatu behar ditu</translation>
 <translation id="1505654899813338756">Fitxak taldeka ditzakezu, erlazionatutako orriak elkarrekin eta gailuetan gordeta mantentzeko</translation>
@@ -877,6 +879,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1597806446183714225">Hobetu audio-kalitatea, ahotsak garbi eta naturaltasunez entzun ahal izateko.</translation>
 <translation id="1598163867407640634">Erabili <ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="1598233202702788831">Administratzaileak desgaitu ditu eguneratzeak.</translation>
+<translation id="1598293830962835699">Sortu ikuspegi zatitu bat bizkor hura behar duzunean</translation>
 <translation id="1600857548979126453">Orriaren araztailearen backend-a atzitu.</translation>
 <translation id="1601481906560916994">Ez sartu webgunea</translation>
 <translation id="1601560923496285236">Aplikatu</translation>
@@ -3096,6 +3099,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3122883569442693641">Xehetasun gehiago</translation>
 <translation id="3124111068741548686">Erabiltzailearen heldulekuak</translation>
 <translation id="3124332159330678621">Arakatzaileari itxura berria emateko, pertsonalizatu Chrome</translation>
+<translation id="3125361247594231799">Ainguratu hurrengorako</translation>
 <translation id="3125816458150005808">Menuaren bidez hari aingura ken diezaiokezu, eta hura ireki</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3127860049873093642">Kargatzean eta erabiltzean arazorik ez izateko, erabili Dell-eko edo USB Type-C motako egokigailu bateragarri bat.</translation>
@@ -4818,6 +4822,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4310139701823742692">Fitxategiaren formatua ez da zuzena. Egiaztatu PPD fitxategia eta saiatu berriro.</translation>
 <translation id="4310496734563057511">Gailua beste batzuekin partekatzen baduzu, Windows Hello aktiba dezakezu. Horrela, gordetako pasahitz bat erabiltzen duzun bakoitzean zeu zarela egiaztatuko da.</translation>
 <translation id="431076611119798497">&amp;Xehetasunak</translation>
+<translation id="431127643228811252">Ikuspegi zatituak zeregin bat baino gehiago aldi berean exekutatzea errazten du</translation>
 <translation id="4311284648179069796">Ez dauka irakurri eta aldatzeko baimenik</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{Google-ko kontu bat}other{Google-ko <ph name="EXTRA_ACCOUNTS" /> kontu}}</translation>
 <translation id="4312866146174492540">Blokeatu (lehenetsia)</translation>
@@ -8487,6 +8492,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6931690462168617033">Kliken sentikortasuna</translation>
 <translation id="6933321725007230600">Aktibatu sinkronizazioa…</translation>
 <translation id="693459579445775904">Erabiltzaileek ahots-fitxategiak partekatzen dituzte, diskoko tokia aurrezteko</translation>
+<translation id="6934597021412437058">Orain, ikuspegi zatitua erabil dezakezu gauzak alderatzeko, zeregin bat baino gehiago aldi berean exekutatzeko eta abarretarako</translation>
 <translation id="6935031746833428401">Lortu informazio gehiago gailu-kudeatzaileari buruz</translation>
 <translation id="6935286146439255109">Paper-erretilu bat falta da</translation>
 <translation id="6938386202199793006">1 inprimagailu daukazu gordeta.</translation>
@@ -9581,6 +9587,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7705276765467986571">Ezin izan da laster-marken modeloa kargatu.</translation>
 <translation id="7705334495398865155">Antolatu ausaz hardware-identifikatzailea (BSSIDa) beste pertsonei gailuaren jarraipena egitea galarazteko.</translation>
 <translation id="7705524343798198388">VPNa</translation>
+<translation id="7706742200777909964">Ezarri orriak bata bestearen ondoan aukerak alderatzea eta abar errazteko</translation>
 <translation id="7707108266051544351">Webgune honi mugimendu-sentsoreak erabiltzeko aukera blokeatu zaio.</translation>
 <translation id="7707922173985738739">Erabili datu-konexioa</translation>
 <translation id="770831926727930011">Aurreko pasahitzaren bidez daude babestuta gailuko datuak. Haiek berreskuratzeko, idatzi aurreko pasahitza.</translation>

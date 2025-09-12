@@ -104,6 +104,7 @@
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="2343156876103232566">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
+<translation id="2356070529366658676">Kérés</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
 <translation id="236943522426971115">A Chromium háttérben való futtatásának letiltása az alkalmazásoknál</translation>

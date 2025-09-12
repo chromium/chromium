@@ -82,6 +82,7 @@
 <translation id="1880677175115548835">Matnni belgilash</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="1953553007165777902">Yuklab olinmoqda... <ph name="MINUTE" /> daqiqa qoldi</translation>
+<translation id="1979600810166324878">iOS uchun Chrome saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasi bilan maʼlumotlarni himoyalang</translation>
 <translation id="2001586581944147178">Internetingizni kuzatuvchi tomonlarga ochadigan saytlaringizni koʻrishni qiyinlashtiring. Chrome DNS (Domen nomlari tizimi) qaydlaridan saytning IP manzilini shifrlangan aloqa yordamida tekshiradi.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Bu kengaytma endi dastaklanmaydi. Chrome uni olib tashlashni tavsiya qiladi.}other{Bu kengaytmalar endi dastaklanmaydi. Chrome ularni olib tashlashni tavsiya qiladi.}}</translation>
 <translation id="2018528049276128029">Har bir profilda bukmark, tarix va parol kabi Chrome axboroti saqlanadi</translation>
@@ -379,6 +380,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 
 Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5468572406162360320">Funksiyalarni yaxshilash maqsadida Chrome ulardan foydalanish axborotingizni Googlega yuboradi. Bu axborot xodimlar tomonidan oʻqilishi, qayta ishlanishi va izohlanishi mumkin.</translation>
+<translation id="5510398294750420479">Qurilmani qoʻshimcha himoyalash uchun telefon orqali Chrome brauzerini yuklab oling</translation>
 <translation id="5524761631371622910">Sinov muddatlari yoqilganida Chrome sizni tasodifiy faol sinovga joylaganida, siz ochgan sahifalar tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi.</translation>
 <translation id="5524890928877629608">qidiruv hududining yuqori chap burchagi: chap <ph name="LEFT" />%, yuqori <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chromeni tezlashtirish</translation>
@@ -491,6 +493,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6760235774835597023">Chrome V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chrome brauzerining hujumlardan himoyasini biroz pasaytiradi. Bu sozlama yoniq.</translation>
 <translation id="677276454032249905">Chrome baribir yopilsinmi?</translation>
 <translation id="6794858689789885890">Chrome yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
+<translation id="6800285125190089494">iOS uchun Chromeda saqlangan parollar bilan saytlarga tezroq kiring</translation>
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="683440813066116847">Google Chrome Canary‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
 <translation id="684888714667046800">Internetga ulanilmadi. Himoya devori ishlatsangiz, <ph name="PRODUCT_EXE_NAME" /> ruxsat etilgan roʻyxatda borligini tekshiring.</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">置換</translation>
 <translation id="1063822554756965137">ファイルを削除しました</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">このサイトからの通知をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">検索エンジンの詳細</translation>
 <translation id="1068467933609179019">自動入力サービスの設定</translation>
@@ -1625,6 +1626,7 @@
 <translation id="3678529606614285348">ページを新しいシークレット ウィンドウで開く（Ctrl-Shift-N）</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> 桁の確認コードを入力してください</translation>
 <translation id="3681007416295224113">証明書情報</translation>
+<translation id="3681191721636073359">このサイトでの位置情報の使用をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
 <translation id="3681421644246505351">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。</translation>
 <translation id="3681841880472207951">QuickTime 動画</translation>
 <translation id="3682094733650754138">住所を入力するオプションが選択されました</translation>
@@ -4597,6 +4599,7 @@
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637362707224133343">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近フィッシングが検出<ph name="END_LINK" />されました。フィッシング サイトは、他のサイトになりすましてユーザーを騙そうとするサイトです。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
+<translation id="8640996933372643759">他のユーザーとタブを共有して共同作業を行うには、Chrome にログインする必要があります</translation>
 <translation id="8641131559425911240">封筒（ボンド）</translation>
 <translation id="8643409044755049933">角形 3 号封筒</translation>
 <translation id="8643846627971610148">グループを非公開にすると、参加できるユーザーが制限されます</translation>

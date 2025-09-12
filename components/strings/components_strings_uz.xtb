@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1063822554756965137">Fayllar oʻchirildi</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome bu saytdan bildirishnoma olishni istamaysiz deb hisoblaydi. Shu sababli, bezovta qilmaslik uchun soʻrovlar berkitilgan.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Qidiruv tizimi tafsilotlari</translation>
 <translation id="1068467933609179019">Avtomatik kiritish xizmati sozlamalari</translation>
@@ -1620,6 +1621,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3678529606614285348">Sahifani yangi inkognito oynada ochish (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> xonali tasdiqlash kodini kiriting</translation>
 <translation id="3681007416295224113">Sertifikat haqida ma’lumot</translation>
+<translation id="3681191721636073359">Chrome bu sayt joylashuvingizdan foydalanishini istamaysiz deb hisoblaydi. Shu sababli, bezovta qilmaslik uchun soʻrovlar berkitilgan.</translation>
 <translation id="3681421644246505351">Chrome oxirgi brauzer tarixi asosida qiziqish mavzularini qayd qiladi.</translation>
 <translation id="3681841880472207951">QuickTime video</translation>
 <translation id="3682094733650754138">Manzilni kiritish tanlandi</translation>
@@ -4588,6 +4590,7 @@ Batafsil axborot:
 <translation id="8624354461147303341">Chegirmalar olish</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud va bu funksiya siz ochayotgan saytda yaqinda <ph name="BEGIN_LINK" />fishing amaliyotini aniqlagan<ph name="END_LINK" />. Fishing saytlar boshqa saytlar koʻrinishida sizni aldashga urinadi.<ph name="NEW_LINE" />Hatto normal xavfsizlikdagi saytlar ham vaqti-vaqti bilan firibgarlar tomonidan boshqariladi. Agar buni xatolik va bu sayt xavfli emas deb hisoblasangiz, bu haqida <ph name="BEGIN_ERROR_LINK" />bizga xabar qiling<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Varaqlarni ulashish va boshqalar bilan birga ishlash uchun Chrome hisobiga kiring</translation>
 <translation id="8641131559425911240">Karton (oliy sifatli)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">Guruh yopilganda unga yana kim qoʻshilishi cheklanadi</translation>

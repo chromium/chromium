@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">Valitse tekstiä</translation>
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
+<translation id="1979600810166324878">Pysy turvassa liikkeellä ollessasi iOS:n Chromen Parannetun selaussuojan avulla</translation>
 <translation id="2001586581944147178">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chrome käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chrome suosittelee poistamaan sen.}other{Näitä laajennuksia ei enää tueta. Chrome suosittelee poistamaan ne.}}</translation>
 <translation id="2018528049276128029">Jokainen profiili sisältää omat Chrome-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
@@ -375,6 +376,7 @@
 <translation id="5412485296464121825">Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5468572406162360320">Chrome lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
+<translation id="5510398294750420479">Lataa Chrome puhelimelle, niin saat lisäsuojaa ollessasi liikkeellä</translation>
 <translation id="5524761631371622910">Jos Chrome on sijoittanut sinut aktiiviseen kokeiluun satunnaisesti, selaushistoriasi vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiin kokeilujen aikana. Yksityisyytesi suojaamiseksi Chrome poistaa kiinnostuksen kohteesi kuukausittain.</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Chromen nopeuttaminen</translation>
@@ -487,6 +489,7 @@
 <translation id="6760235774835597023">Nopeuttaa sivustoja Chromen V8-moottorilla, mutta heikentää Chromen suojaa hyökkäyksiä vastaan. Tämä asetus on päällä.</translation>
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
 <translation id="6794858689789885890">Poista laitteen sivustodata aina, kun suljet Chromen</translation>
+<translation id="6800285125190089494">Kirjaudu sivustoille nopeammin iOS:n Chromeen tallennetuilla salasanoilla</translation>
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="683440813066116847">Google Chrome Canaryn saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="684888714667046800">Internetyhteyttä ei voi muodostaa. Jos käytät palomuuria, varmista, että <ph name="PRODUCT_EXE_NAME" /> kuuluu sallittuihin.</translation>

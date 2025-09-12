@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">‏Chromium - تسجيل الدخول إلى الشبكة - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">خطأ في عملية التحقق من التحديث: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">‏إزالة الحساب من Chromium</translation>
+<translation id="2210502920229141283">‏يمكنك الحفاظ على أمانك أثناء التنقّل باستخدام ميزة "الحماية المحسّنة للتصفّح الآمن" في Chromium على أجهزة iOS</translation>
 <translation id="2210682093923538346">‏هذا الموقع الإلكتروني خطير، لذلك أزال Chromium إذن الإشعارات.</translation>
 <translation id="2236949375853147973">نشاطي</translation>
 <translation id="2238130810669087193">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى العناوين وغيرها على جميع أجهزتك. وسيتم حفظ هذا العنوان في حسابك على Google بعد تسجيل الدخول.</translation>
@@ -104,6 +105,7 @@
 <translation id="2307973900865360088">‏إبقاء التطبيق في شريط التطبيقات (Dock)</translation>
 <translation id="2313870531055795960">‏يعمل هذا الوضع على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chromium. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفِّح Chromium أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفُّح الآمن".</translation>
 <translation id="2343156876103232566">‏لإرسال رقم من هذا الجهاز إلى جهاز Android، يُرجى تسجيل الدخول إلى Chromium على الجهازَين.</translation>
+<translation id="2356070529366658676">طلب موافقة</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2361918034042471035">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chromium</translation>
 <translation id="236943522426971115">‏إيقاف تشغيل Chromium في الخلفية أثناء عمل التطبيقات</translation>
@@ -154,6 +156,7 @@
 <translation id="2928420929544864228">اكتمل التثبيت.</translation>
 <translation id="2933336679234709858">‏تم تشفير بياناتك باستخدام عبارة المرور. لاستخدام بيانات Chromium وحفظها في حسابك على Google، عليك إدخال عبارة المرور.</translation>
 <translation id="2945997411976714835">خطأ في التثبيت: تعذّر بدء عملية التثبيت.</translation>
+<translation id="2948852018303413228">‏يمكنك تسجيل الدخول بشكل أسرع إلى المواقع الإلكترونية باستخدام كلمات المرور المحفوظة في Chromium على أجهزة iOS</translation>
 <translation id="2970426615109535079">‏تدير مؤسستك متصفِّح Chromium</translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
 <translation id="2977506796191543575">‏إذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفِّح Chromium أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفُّح الآمن".</translation>
@@ -559,6 +562,7 @@
 <translation id="7888981273428720788">‏ضبط Chromium كمتصفّح تلقائي</translation>
 <translation id="7934340546140346950">‏يرقِّي متصفِّح Chromium الاتصالات غير الآمنة إلى اتصالات عبر بروتوكول HTTPS تلقائيًا إن أمكن ذلك</translation>
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
+<translation id="7953047982688951904">‏يمكنك تنزيل متصفِّح Chromium على هاتفك لإضافة طبقة حماية إضافية أثناء التنقّل</translation>
 <translation id="7975919845073681630">‏هذا تثبيت ثانوي من Chromium، ولا يمكن ضبطه كالمتصفح التلقائي.</translation>
 <translation id="7997934263947464652">‏يمكن أن تتسبب الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة في إلحاق الضرر بجهازك. ينصح Chromium بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط</translation>
 <translation id="8004582292198964060">المتصفّح</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">替换</translation>
 <translation id="1063822554756965137">已成功删除文件</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome 认为您不想接收来自该网站的通知。因此，系统会隐藏请求，以减少干扰。</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">搜索引擎详细信息</translation>
 <translation id="1068467933609179019">自动填充服务设置</translation>
@@ -1621,6 +1622,7 @@
 <translation id="3678529606614285348">在新的无痕式窗口中打开网页 (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">输入 <ph name="OTP_LENGTH" /> 位数的验证码</translation>
 <translation id="3681007416295224113">证书信息</translation>
+<translation id="3681191721636073359">Chrome 认为您不想在该网站上使用您的位置信息。因此，系统会隐藏请求，以减少干扰。</translation>
 <translation id="3681421644246505351">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。</translation>
 <translation id="3681841880472207951">QuickTime 视频</translation>
 <translation id="3682094733650754138">已选择“填充地址”选项</translation>
@@ -4591,6 +4593,7 @@
 <translation id="8624354461147303341">获取折扣信息</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637362707224133343">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了钓鱼式攻击<ph name="END_LINK" />。钓鱼式攻击网站会假冒其他网站来诱骗您。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
+<translation id="8640996933372643759">若要分享标签页并与他人协作，您必须能够登录 Chrome</translation>
 <translation id="8641131559425911240">信封（证券纸）</translation>
 <translation id="8643409044755049933">Kaku 3 信封</translation>
 <translation id="8643846627971610148">关闭分组会限制哪些人可以加入</translation>

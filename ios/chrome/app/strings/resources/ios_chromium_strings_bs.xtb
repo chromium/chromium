@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Mape u Chromiumu</translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
+<translation id="1965068424387304464">Savjet za Chromium: sačuvajte lozinke</translation>
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
@@ -118,6 +119,7 @@ Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite 
 <translation id="3816686541346279443">Chromium će ponuditi opciju da sačuva lozinku.</translation>
 <translation id="3827545470516145620">Dobijate standardnu sigurnosnu zaštitu na ovom uređaju</translation>
 <translation id="3833326979834193417">Chromium automatski pokreće sigurnosnu provjeru svakog dana da vas zaštiti od narušavanja podataka, nesigurnih web lokacija i drugog. U Postavkama možete pronaći više informacija o sigurnosnoj provjeri.</translation>
+<translation id="3837584850181228767">Savjet za Chromium: poboljšano Sigurno pregledanje</translation>
 <translation id="3845223911364528001">Vratite se u Chromium da otpremite fajl</translation>
 <translation id="3855938650519180865">Šta je novo u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web lokaciju i u Chromium da dobijete svoje oznake i još mnogo toga na svim svojim uređajima.</translation>

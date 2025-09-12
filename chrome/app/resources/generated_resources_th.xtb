@@ -103,6 +103,7 @@
 <translation id="1061904396131502319">เกือบถึงเวลาพักแล้ว</translation>
 <translation id="10619348099955377">คัดลอกชื่อที่แสดง</translation>
 <translation id="1062407476771304334">แทนที่</translation>
+<translation id="1065369186007547872">Chrome คิดว่าคุณไม่ต้องการรับการแจ้งเตือนจากเว็บไซต์นี้ ระบบจึงซ่อนคำขอเพื่อลดสิ่งรบกวน</translation>
 <translation id="1066964438793906105">สแกนหามัลแวร์</translation>
 <translation id="1067661089446014701">คุณสามารถเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในบัญชี Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
@@ -977,6 +978,7 @@
 <translation id="1650801028905250434">ไฟล์ใน "ไดรฟ์ของฉัน" จะซิงค์กับ Chromebook โดยอัตโนมัติ เพื่อให้คุณเข้าถึงได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า &gt; ไฟล์</translation>
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
 <translation id="1651609627703324721">แท็บนี้กำลังนำเสนอเนื้อหา VR ไปยังชุดหูฟัง</translation>
+<translation id="1651633344379798952">ลองใช้ Google Lens บนโทรศัพท์</translation>
 <translation id="1652281434788353738">ช่างคิด</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
 <translation id="1652862280638399816">หากต้องการใช้เครื่องมือจัดการรหัสผ่านกับ Keychain ของ macOS ให้เปิด Chromium อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
@@ -1006,6 +1008,7 @@
 <translation id="1673137583248014546"><ph name="URL" /> ต้องการดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
 <translation id="1674073353928166410">เปิดทั้งหมด (<ph name="URL_COUNT" />) ในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="1674142805528405174">เครื่องมือจัดการรหัสผ่านบน Google สามารถอัปเดตบัญชีของคุณด้วยรหัสผ่านที่รัดกุมซึ่งบันทึกไว้ให้คุณในบัญชี <ph name="EMAIL" /></translation>
+<translation id="1674945585974615438">ปิดใช้เครื่องมือเพิ่มประสิทธิภาพ JavaScript ในเว็บไซต์ที่ไม่คุ้นเคยโดยอัตโนมัติ</translation>
 <translation id="1677306805708094828">เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />ไม่ได้</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1678849866171627536">การสแกนไม่สำเร็จ ไฟล์นี้อาจเป็นไวรัสหรือมัลแวร์</translation>
@@ -2888,6 +2891,7 @@
 <translation id="2976547701881428815">เครื่องมือและการทำงาน</translation>
 <translation id="2976639738101799892">ใช้ Google Search และฟีเจอร์อัจฉริยะจาก Google ทุกครั้งที่ท่องเว็บ</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
+<translation id="2978697251742938065">ทำงานร่วมกับผู้อื่น</translation>
 <translation id="2979493931538961252">เมื่อ Chromebook ออฟไลน์และฮอตสปอตพร้อมใช้งาน</translation>
 <translation id="2979639724566107830">เปิดในหน้าต่างใหม่</translation>
 <translation id="2979893796619951531">ยกเว้นเว็บไซต์</translation>
@@ -3289,6 +3293,7 @@
 <translation id="3269612321104318480">สีน้ำเงินอมเขียวอ่อนและสีขาว</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ไฟล์}other{# ไฟล์}}</translation>
 <translation id="3270965368676314374">อ่าน เปลี่ยนแปลง และลบรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
+<translation id="3273033807960054795">ขยายการใช้งาน Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="3275464924531706548">ยุบ <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">ขณะนี้คีย์ความปลอดภัยภายในของคุณไม่ปลอดภัย โปรดนำคีย์ความปลอดภัยออกจากบริการที่คุณใช้ร่วมกับคีย์ดังกล่าว และโปรดรีเซ็ตคีย์ความปลอดภัยเพื่อแก้ปัญหานี้</translation>
 <translation id="3275778913554317645">เปิดเป็นหน้าต่าง</translation>
@@ -3414,6 +3419,7 @@
 <translation id="3364159059299045452">Alt+Hover</translation>
 <translation id="3364986687961713424">จากผู้ดูแลระบบ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">ใช้ Ctrl หรือ Alt อย่างใดอย่างหนึ่ง</translation>
+<translation id="3365651640097487828">หากต้องการแชร์แท็บและทำงานร่วมกับผู้อื่น คุณจะต้องยืนยันตัวตน รวมถึงซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="3368662179834713970">บ้าน</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369067987974711168">แสดงการทำงานเพิ่มเติมสำหรับพอร์ตนี้</translation>
@@ -3878,6 +3884,7 @@
 <translation id="3679126865530709868">ทัชแพดในตัว</translation>
 <translation id="3680683624079082902">เสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="3681017028939109078">แสดงการแนะนำหน้าต่างเมื่อเริ่มแยกหน้าจอ</translation>
+<translation id="3681191721636073359">Chrome คิดว่าคุณไม่ต้องการใช้ตำแหน่งในเว็บไซต์นี้ ระบบจึงซ่อนคำขอเพื่อลดสิ่งรบกวน</translation>
 <translation id="3681311097828166361">ขอขอบคุณสำหรับความคิดเห็น คุณกำลังออฟไลน์อยู่ในขณะนี้ และระบบจะส่งรายงานของคุณในภายหลัง</translation>
 <translation id="3681548574519135185">กรอบโฟกัส</translation>
 <translation id="3683524264665795342">คำขอการแชร์หน้าจอของ <ph name="APP_NAME" /></translation>
@@ -4980,6 +4987,7 @@
 <translation id="4421932782753506458">ฟลัฟฟี</translation>
 <translation id="4423376891418188461">กู้คืนการตั้งค่า</translation>
 <translation id="4423525817792153232">ยิงฟัน</translation>
+<translation id="4424107154724312436">ลองใช้ Google Lens บน iOS</translation>
 <translation id="4424262960694990728">ขอให้ดำเนินการ</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />การอนุญาตให้อุปกรณ์ Chrome OS ส่งรายงานอัตโนมัติจะช่วยให้เราจัดลำดับความสำคัญของสิ่งที่ต้องแก้ไขและปรับปรุงใน Chrome OS ได้ รายงานเหล่านี้ประกอบด้วยข้อมูลต่างๆ เช่น เวลาที่ ChromeOS ขัดข้อง ฟีเจอร์ที่ใช้ และจำนวนหน่วยความจำที่ใช้โดยปกติ<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ Chrome หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" /></translation>
@@ -5281,6 +5289,7 @@
 <translation id="4645575059429386691">จัดการโดยผู้ปกครอง</translation>
 <translation id="4645676300727003670">&amp;เก็บไว้</translation>
 <translation id="4646675363240786305">พอร์ต</translation>
+<translation id="4647025838970719122">การตั้งค่านี้จัดการโดยองค์กร</translation>
 <translation id="4647090755847581616">&amp;ปิดแท็บ</translation>
 <translation id="4647283074445570750">ขั้นตอนที่ <ph name="CURRENT_STEP" /> จาก <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">ตัวเลือกสี</translation>
@@ -5573,6 +5582,7 @@
 <translation id="4850886885716139402">ดู</translation>
 <translation id="485088796993065002">เว็บไซต์อาจเล่นเสียงเพื่อให้บริการเสียงสำหรับเพลง วิดีโอ และสื่ออื่นๆ</translation>
 <translation id="4850919322897956733">ลบข้อมูลแล้ว</translation>
+<translation id="4852030988197799562">บล็อกการเข้าถึงเครื่องมือเพิ่มประสิทธิภาพ JavaScript ในเว็บไซต์ที่เพิ่งเข้าชม</translation>
 <translation id="4852383141291180386">จัดการการแจ้งเตือนของแอป</translation>
 <translation id="4852916668365817106">สีของเมาส์</translation>
 <translation id="4853020600495124913">เปิดใน&amp;หน้าต่างใหม่</translation>
@@ -5732,6 +5742,7 @@
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
+<translation id="4961594008939394243">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องได้ทุกที่ทุกเวลา</translation>
 <translation id="496185450405387901">ผู้ดูแลระบบเป็นคนติดตั้งแอปนี้</translation>
 <translation id="4963603093937263654">ตรวจสอบว่าการแจ้งเตือนใน <ph name="DEVICE_NAME" /> เปิดอยู่</translation>
 <translation id="4963789650715167449">นำแท็บปัจจุบันออก</translation>
@@ -5758,6 +5769,7 @@
 <translation id="4979263087381759787">ตัวเลือกสำหรับนักพัฒนาแอป</translation>
 <translation id="4979510648199782334">การตั้งค่า Microsoft 365 เสร็จสมบูรณ์</translation>
 <translation id="4980805016576257426">ส่วนขยายนี้มีมัลแวร์</translation>
+<translation id="498274622779591291">หากต้องการแชร์แท็บและทำงานร่วมกับผู้อื่น คุณจะต้องซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="4983159853748980742">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chrome แล้ว จากนั้นลองอีกครั้ง</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4986706507552097681">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
@@ -6571,6 +6583,7 @@
 <translation id="556321030400250233">ไฟล์ในเครื่องหรือไฟล์ที่แชร์</translation>
 <translation id="5563234215388768762">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="5563824734298958390">ออกจากกลุ่มแท็บใช่ไหม</translation>
+<translation id="5564450015351086922">ลองใช้ Google Lens บน iOS</translation>
 <translation id="5565579144504951367">ฮาร์ดแวร์พร้อมตั้งค่าแล้ว</translation>
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
@@ -7271,6 +7284,7 @@
 <translation id="6075907793831890935">แลกเปลี่ยนข้อมูลกับอุปกรณ์ชื่อ <ph name="HOSTNAME" /></translation>
 <translation id="6076092653254552547">การตั้งค่าระบบ</translation>
 <translation id="6076491747490570887">สีเทาโทนเย็น</translation>
+<translation id="6076575605422709982">ลดขนาดแบบอักษรแล้ว</translation>
 <translation id="6076576896267434196">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ต้องการเข้าถึงบัญชีของคุณ</translation>
 <translation id="6077131872140550515">นำออกจากเครือข่ายที่ต้องการ</translation>
 <translation id="6077189836672154517">เคล็ดลับและข้อมูลอัปเดตเกี่ยวกับ <ph name="DEVICE_TYPE" /></translation>
@@ -7737,6 +7751,7 @@
 <translation id="6410328738210026208">เปลี่ยนช่องและ Powerwash</translation>
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
 <translation id="6411135999030237579">กดค้างไว้เพื่อพิมพ์อักขระบนแป้นซ้ำโดยอัตโนมัติ</translation>
+<translation id="6411516120707127482">ลองใช้ Google Lens บนโทรศัพท์</translation>
 <translation id="6414618057231176439">เลือกเวอร์ชันของ <ph name="VM_NAME" /> ที่จะติดตั้ง</translation>
 <translation id="641469293210305670">ติดตั้งอัปเดตและแอป</translation>
 <translation id="6415757856498750027">พิมพ์ "w" เพื่อใช้ "ư"</translation>
@@ -7782,6 +7797,7 @@
 <translation id="6445450263907939268">หากคุณไม่ต้องการการเปลี่ยนแปลงเหล่านี้ คุณสามารถกู้คืนการตั้งค่าก่อนหน้าได้</translation>
 <translation id="6446213738085045933">สร้างทางลัดบนเดสก์ท็อป</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
+<translation id="6449835059180426406">ใช้รหัสผ่านของคุณบนอุปกรณ์ iOS</translation>
 <translation id="6450876761651513209">เปลี่ยนการตั้งค่าที่เกี่ยวข้องกับความเป็นส่วนตัว</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
 <translation id="6451689256222386810">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
@@ -7818,6 +7834,7 @@
 <translation id="6469557521904094793">เปิดเครือข่ายมือถือ</translation>
 <translation id="6469702164109431067">รหัสผ่านและพาสคีย์</translation>
 <translation id="6470120577693311302">การแจ้งเตือนด้วยแฟลช</translation>
+<translation id="6470499912143282503">หากต้องการแชร์แท็บและทำงานร่วมกับผู้อื่น คุณจะต้องลงชื่อเข้าใช้ Chrome รวมถึงซิงค์ประวัติการเข้าชมและแท็บ นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="6470823736074966819">ปิดเสียงการแจ้งเตือน</translation>
 <translation id="6472893788822429178">แสดงปุ่มหน้าแรก</translation>
 <translation id="6473315466413288899">เลือกตัวเลือก</translation>
@@ -9440,6 +9457,7 @@
 <translation id="7617263010641145920">เปิด Play Store</translation>
 <translation id="7617648809369507487">ใช้การส่งข้อความแบบไม่มีการแจ้งเตือน</translation>
 <translation id="7619937211696316184">การบำรุงรักษาเสร็จสิ้นแล้ว</translation>
+<translation id="7620083113061729689">ซิงค์ประวัติการเข้าชม</translation>
 <translation id="7620616707541471029">เลือกบัญชีเพื่อดำเนินการต่อ</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="7621595347123595643">คุณจะกู้คืนข้อมูลในเครื่องไม่ได้หากลืมรหัสผ่านหรือ PIN</translation>
@@ -9486,6 +9504,7 @@
 <translation id="7648023614017258011">Chrome กำลังยืนยันแพ็กเกจการติดตั้ง</translation>
 <translation id="7648048654005891115">รูปแบบ Keymap</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
+<translation id="7649954700951153978">เตือนฉันบน iOS</translation>
 <translation id="7650141368285545431">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="7650178491875594325">กู้คืนข้อมูลในเครื่อง</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{ตั้งค่าลายนิ้วมือไว้ 1 รายการ}other{ตั้งค่าลายนิ้วมือไว้ {COUNT} รายการ}}</translation>
@@ -11758,6 +11777,7 @@
 <translation id="9170766151357647548">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" /> คุณใช้หมายเลขนี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
 <translation id="9170884462774788842">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มธีมที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>
+<translation id="9172270007201309670">เพิ่มขนาดแบบอักษรแล้ว</translation>
 <translation id="9173063514323762371">ซ่อนแถบบุ๊กมาร์ก</translation>
 <translation id="917350715406657904">คุณใช้งาน <ph name="APP_NAME" /> ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
 <translation id="9174401638287877180">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน</translation>

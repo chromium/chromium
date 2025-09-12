@@ -103,6 +103,7 @@
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="10619348099955377">表示名をコピー</translation>
 <translation id="1062407476771304334">置換</translation>
+<translation id="1065369186007547872">このサイトからの通知をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
 <translation id="1066964438793906105">マルウェアをスキャン</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
@@ -976,6 +977,7 @@
 <translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
+<translation id="1651633344379798952">スマートフォンで Google レンズを活用</translation>
 <translation id="1652281434788353738">思慮深い</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
@@ -1005,6 +1007,7 @@
 <translation id="1673137583248014546"><ph name="URL" /> よりセキュリティ キーのメーカーとモデルの読み取り許可を求められています</translation>
 <translation id="1674073353928166410">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="1674142805528405174">Google パスワード マネージャーで、Google アカウント「<ph name="EMAIL" />」に保存されているこのアカウントのパスワードを安全なものに変更できます。</translation>
+<translation id="1674945585974615438">未知のサイトで JavaScript オプティマイザーを自動的に無効にする</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1678849866171627536">スキャンに失敗しました。このファイルはウイルスや不正なソフトウェアの可能性があります。</translation>
@@ -2882,6 +2885,7 @@
 <translation id="2976547701881428815">ツールとアクション</translation>
 <translation id="2976639738101799892">Google 検索や Google の最先端技術をブラウジングで活用できます</translation>
 <translation id="2977480621796371840">グループから削除</translation>
+<translation id="2978697251742938065">他のユーザーと共同作業</translation>
 <translation id="2979493931538961252">Chromebook がオフラインで、アクセス ポイントを使用できる場合</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2979893796619951531">サイトを除外</translation>
@@ -3283,6 +3287,7 @@
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
+<translation id="3273033807960054795">セーフ ブラウジング保護強化機能で外出先でも安全</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> を折りたたむ</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
@@ -3408,6 +3413,7 @@
 <translation id="3364159059299045452">Alt+マウスオーバー</translation>
 <translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl キーまたは Alt キーのいずれかを使用してください</translation>
+<translation id="3365651640097487828">他のユーザーとタブを共有して共同作業を行うには、本人確認を行って、履歴とタブを同期してください</translation>
 <translation id="3368662179834713970">住宅</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369067987974711168">このポートのその他の操作を表示</translation>
@@ -3871,6 +3877,7 @@
 <translation id="3679126865530709868">内蔵タッチパッド</translation>
 <translation id="3680683624079082902">テキスト読み上げの音声</translation>
 <translation id="3681017028939109078">分割画面の開始時にウィンドウの候補を表示する</translation>
+<translation id="3681191721636073359">このサイトでの位置情報の使用をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
 <translation id="3681311097828166361">ご意見をお寄せいただきありがとうございます。現在オフラインのため、ご報告の内容は後で送信されます。</translation>
 <translation id="3681548574519135185">フォーカス リング</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 画面共有リクエスト</translation>
@@ -4972,6 +4979,7 @@
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="4423525817792153232">すべての歯を見せる</translation>
+<translation id="4424107154724312436">iOS で Google レンズを活用</translation>
 <translation id="4424262960694990728">対応が必要</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="442528696198546304">パスワード、パスキー、およびその他のデータが <ph name="BRAND" />から完全に削除されます</translation>
@@ -5272,6 +5280,7 @@
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4645676300727003670">継続(&amp;K)</translation>
 <translation id="4646675363240786305">ポート</translation>
+<translation id="4647025838970719122">この設定は組織によって管理されています</translation>
 <translation id="4647090755847581616">タブを閉じる(&amp;C)</translation>
 <translation id="4647283074445570750">ステップ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">カラー選択ツール</translation>
@@ -5564,6 +5573,7 @@
 <translation id="4850886885716139402">表示</translation>
 <translation id="485088796993065002">音楽や動画などのメディアの音声を再生するサイトもあります。</translation>
 <translation id="4850919322897956733">データを削除しました。</translation>
+<translation id="4852030988197799562">初めてアクセスするサイトで JavaScript オプティマイザーへのアクセスをブロックする</translation>
 <translation id="4852383141291180386">アプリの通知を管理する</translation>
 <translation id="4852916668365817106">マウスの色</translation>
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
@@ -5723,6 +5733,7 @@
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
+<translation id="4961594008939394243">カメラを使って、外出先で見たものを購入、翻訳、特定できます</translation>
 <translation id="496185450405387901">このアプリは管理者によってインストールされています。</translation>
 <translation id="4963603093937263654"><ph name="DEVICE_NAME" /> で通知がオンになっていることを確認してください</translation>
 <translation id="4963789650715167449">現在のタブを削除</translation>
@@ -5749,6 +5760,7 @@
 <translation id="4979263087381759787">デベロッパー オプション</translation>
 <translation id="4979510648199782334">Microsoft 365 のセットアップが完了しました</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
+<translation id="498274622779591291">他のユーザーとタブを共有して共同作業を行うには、履歴とタブを同期してください</translation>
 <translation id="4983159853748980742">パスワードは共有されませんでした。インターネット接続と、Chrome にログインしていることを確認してから、もう一度お試しください。</translation>
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
 <translation id="4986706507552097681">同期する項目はいつでも [設定] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
@@ -6559,6 +6571,7 @@
 <translation id="556321030400250233">ローカルまたは共有ファイル</translation>
 <translation id="5563234215388768762">Google で検索または URL を入力</translation>
 <translation id="5563824734298958390">タブグループから退出しますか？</translation>
+<translation id="5564450015351086922">iOS で Google レンズを活用</translation>
 <translation id="5565579144504951367">ハードウェアを設定する準備ができました</translation>
 <translation id="5565735124758917034">有効</translation>
 <translation id="5568069709869097550">ログインできない</translation>
@@ -7262,6 +7275,7 @@
 <translation id="6075907793831890935">デバイス <ph name="HOSTNAME" /> とのデータ交換</translation>
 <translation id="6076092653254552547">システム設定</translation>
 <translation id="6076491747490570887">寒色グレー</translation>
+<translation id="6076575605422709982">フォントサイズを小さくしました</translation>
 <translation id="6076576896267434196">拡張機能「<ph name="EXTENSION_NAME" />」がアカウントにアクセスしようとしています</translation>
 <translation id="6077131872140550515">優先ネットワークから削除</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> のヒントや最新情報</translation>
@@ -7728,6 +7742,7 @@
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
 <translation id="6411135999030237579">長押ししてキーを自動で繰り返す</translation>
+<translation id="6411516120707127482">スマートフォンで Google レンズを活用</translation>
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6415757856498750027">「ư」を入力するには「w」と入力します。</translation>
@@ -7773,6 +7788,7 @@
 <translation id="6445450263907939268">この変更を受け入れない場合は、以前の設定を復元できます。</translation>
 <translation id="6446213738085045933">デスクトップにショートカットを作成する</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6449835059180426406">iOS デバイスでパスワードを使用</translation>
 <translation id="6450876761651513209">プライバシー関連の設定の変更</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6451689256222386810">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します。</translation>
@@ -7809,6 +7825,7 @@
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
 <translation id="6469702164109431067">パスワードとパスキー</translation>
 <translation id="6470120577693311302">点滅による通知</translation>
+<translation id="6470499912143282503">他のユーザーとタブを共有して共同作業を行うには、Chrome にログインして、履歴とタブを同期してください。同期すると、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
 <translation id="6470823736074966819">通知をミュートする</translation>
 <translation id="6472893788822429178">ホーム ボタンを表示する</translation>
 <translation id="6473315466413288899">オプションを選択</translation>
@@ -9430,6 +9447,7 @@
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
 <translation id="7617648809369507487">目立たない方法で通知する</translation>
 <translation id="7619937211696316184">メンテナンスが完了しました</translation>
+<translation id="7620083113061729689">履歴を同期</translation>
 <translation id="7620616707541471029">続行するには、アカウントを選択してください</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
 <translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
@@ -9476,6 +9494,7 @@
 <translation id="7648023614017258011">Chrome がインストールするバンドルを確認しています</translation>
 <translation id="7648048654005891115">キーマップのスタイル</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
+<translation id="7649954700951153978">iOS で通知</translation>
 <translation id="7650141368285545431">別のデバイスのパスキーを使用</translation>
 <translation id="7650178491875594325">ローカルデータを復元</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 件の指紋が設定されています}other{{COUNT} 件の指紋が設定されています}}</translation>
@@ -11747,6 +11766,7 @@
 <translation id="9170766151357647548">デバイスの EID は <ph name="EID_NUMBER" /> です。この番号を使用して、サービスを有効にできます。</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるテーマが追加されました。</translation>
+<translation id="9172270007201309670">フォントサイズを大きくしました</translation>
 <translation id="9173063514323762371">ブックマーク バーを非表示(&amp;H)</translation>
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
 <translation id="9174401638287877180">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>

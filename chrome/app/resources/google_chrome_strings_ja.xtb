@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">テキストを選択</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1953553007165777902">ダウンロードしています... 残り <ph name="MINUTE" /> 分です</translation>
+<translation id="1979600810166324878">iOS 版 Chrome のセーフ ブラウジング保護強化機能により、外出先で安全に使用できます</translation>
 <translation id="2001586581944147178">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chrome では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{この拡張機能のサポートは終了しました。削除することをおすすめします。}other{これらの拡張機能のサポートは終了しました。削除することをおすすめします。}}</translation>
 <translation id="2018528049276128029">Chrome の情報（ブックマーク、履歴、パスワードなど）はプロファイルごとに分けて保持されます</translation>
@@ -374,6 +375,7 @@
 <translation id="5412485296464121825">サイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合があります。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
 <translation id="5468572406162360320">Chrome では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
+<translation id="5510398294750420479">スマートフォンに Chrome をダウンロードして、外出先でのセキュリティを強化できます</translation>
 <translation id="5524761631371622910">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。</translation>
 <translation id="5524890928877629608">検索範囲の左上隅: 左 <ph name="LEFT" />%、上 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome を高速化する</translation>
@@ -486,6 +488,7 @@
 <translation id="6760235774835597023">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）。この設定はオンになっています。</translation>
 <translation id="677276454032249905">今すぐ Chrome を終了しますか？</translation>
 <translation id="6794858689789885890">Chrome を閉じるとき、常にデバイスからサイトデータを削除する</translation>
+<translation id="6800285125190089494">iOS 版 Chrome で保存したパスワードを使用して、サイトにすばやくログインできます</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="683440813066116847">mDNS トラフィックを許可する Google Chrome Canary のインバウンド ルールです。</translation>
 <translation id="684888714667046800">インターネットに接続できません。ファイアウォールを使用している場合は、<ph name="PRODUCT_EXE_NAME" /> が許可リストに含まれていることを確認してください。</translation>

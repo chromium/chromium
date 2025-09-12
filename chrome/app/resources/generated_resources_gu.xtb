@@ -103,6 +103,7 @@
 <translation id="1061904396131502319">વિરામનો સમય થવા જ આવ્યો છે</translation>
 <translation id="10619348099955377">ડિસ્પ્લે નામ કૉપિ કરો</translation>
 <translation id="1062407476771304334">બદલો</translation>
+<translation id="1065369186007547872">Chromeને એવું લાગે છે કે તમને આ સાઇટ પરથી નોટિફિકેશન જોઈતા નથી. તેથી, વિક્ષેપો ઘટાડવા માટે વિનંતીઓ છુપાવેલી છે.</translation>
 <translation id="1066964438793906105">માલવેર માટે સ્કૅન કરો</translation>
 <translation id="1067661089446014701">વધારાની સલામતી માટે, તમારા Google એકાઉન્ટમાં સાચવવામાં આવે એ પહેલાં તમે તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરી શકો છો</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
@@ -975,6 +976,7 @@
 <translation id="1650801028905250434">મારી ડ્રાઇવની તમારી ફાઇલો તમારી Chromebook સાથે ઑટોમૅટિક રીતે સિંક થશે જેથી તમે તેને ઇન્ટરનેટ કનેક્શન વિના ઍક્સેસ કરી શકશો. તમે સેટિંગ &gt; Filesમાં આને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="1651008383952180276">તમારે તે જ પાસફ્રેઝ બે વાર દાખલ કરવો આવશ્યક છે</translation>
 <translation id="1651609627703324721">આ ટૅબ કોઈ હૅડસેટ પર VR કન્ટેન્ટ પ્રસ્તુત કરી રહ્યું છે</translation>
+<translation id="1651633344379798952">તમારા ફોન પર Google Lens અજમાવી જુઓ</translation>
 <translation id="1652281434788353738">વિચારશીલ</translation>
 <translation id="1652326691684645429">'નજીકના શેર' સુવિધા ચાલુ કરો</translation>
 <translation id="1652862280638399816">macOS કીચેન સાથે Password Managerનો ઉપયોગ કરવા માટે, Chromiumને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
@@ -1004,6 +1006,7 @@
 <translation id="1673137583248014546"><ph name="URL" /> તમારી સુરક્ષા કીની બનાવટ અને મૉડલ જોવા માગે છે</translation>
 <translation id="1674073353928166410">બધા (<ph name="URL_COUNT" />) URL છૂપી વિન્ડોમાં ખોલો</translation>
 <translation id="1674142805528405174">Google Password Manager તમારા એકાઉન્ટ <ph name="EMAIL" />માં સેવ કરેલા સશક્ત પાસવર્ડનો ઉપયોગ કરીને તમારા એકાઉન્ટને અપડેટ કરી શકે છે.</translation>
+<translation id="1674945585974615438">અપરિચિત સાઇટ પર JavaScript ઑપ્ટિમાઇઝર ઑટોમૅટિક રીતે બંધ કરો</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ને ઉમેરી શકતા નથી</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1678849866171627536">સ્કૅન કરવાનું નિષ્ફળ રહ્યું. આ ફાઇલ વાયરસ અથવા માલવેર હોઈ શકે છે.</translation>
@@ -2887,6 +2890,7 @@
 <translation id="2976547701881428815">ટૂલ અને ક્રિયાઓ</translation>
 <translation id="2976639738101799892">તમે બ્રાઉઝ કરો ત્યારે દર વખતે Google Search અને Google સ્માર્ટની સહાય મેળવો</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
+<translation id="2978697251742938065">અન્ય લોકો સાથે સહયોગ કરો</translation>
 <translation id="2979493931538961252">જ્યારે તમારી Chromebook ઑફલાઇન હોય અને હૉટસ્પૉટ ઉપલબ્ધ હોય</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2979893796619951531">સાઇટને બાકાત રાખો</translation>
@@ -3290,6 +3294,7 @@
 <translation id="3269612321104318480">આછો મોરપીંછ અને સફેદ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="3270965368676314374">તમારા કમ્પ્યુટરમાંથી ફોટો, મ્યુઝિક અને બીજું મીડિયા વાંચો, બદલો અને ડિલીટ કરો</translation>
+<translation id="3273033807960054795">Safe Browsingમાં વધારેલી સુરક્ષા વિસ્તૃત કરો</translation>
 <translation id="3275464924531706548"><ph name="HEADER" />ને નાની કરો</translation>
 <translation id="3275778809241512831">તમારી આંતરિક સિક્યુરિટી કી હાલમાં અસુરક્ષિત છે. કૃપા કરીને તે કીને તે બધી સેવાઓમાંથી કાઢી નાખો કે જેની સાથે તમે તેનો ઉપયોગ કરતા હોય. આ સમસ્યાને હલ કરવા માટે, કૃપા કરીને સિક્યુરિટી કી રીસેટ કરો.</translation>
 <translation id="3275778913554317645">વિંડો તરીકે ખોલો</translation>
@@ -3415,6 +3420,7 @@
 <translation id="3364159059299045452">Alt+લઈ જાઓ</translation>
 <translation id="3364986687961713424">તમારા વ્યવસ્થાપક તરફથી: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl અથવા Altનો ઉપયોગ કરો</translation>
+<translation id="3365651640097487828">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="3368662179834713970">મકાન</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369067987974711168">આ પોર્ટ માટે વધુ ક્રિયાઓ બતાવો</translation>
@@ -3879,6 +3885,7 @@
 <translation id="3679126865530709868">બિલ્ટ-ઇન ટચપૅડ</translation>
 <translation id="3680683624079082902">ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ</translation>
 <translation id="3681017028939109078">વિભાજિત સ્ક્રીન શરૂ કરતી વખતે વિન્ડોના સૂચનો બતાવો</translation>
+<translation id="3681191721636073359">Chromeને એવું લાગે છે કે તમે આ સાઇટ પર તમારા લોકેશનનો ઉપયોગ કરવા માગતા નથી. તેથી, વિક્ષેપો ઘટાડવા માટે વિનંતીઓ છુપાવેલી છે.</translation>
 <translation id="3681311097828166361">તમારા પ્રતિસાદ બદલ આભાર. તમે હમણાં ઑફલાઇન છો અને તમારી રિપોર્ટ પછીથી મોકલવામાં આવશે.</translation>
 <translation id="3681548574519135185">ફોકસ રિંગ</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> સ્ક્રીન શેરિંગ વિનંતી</translation>
@@ -4981,6 +4988,7 @@
 <translation id="4421932782753506458">ફ્લફી</translation>
 <translation id="4423376891418188461">સેટિંગ રિસ્ટોર કરો</translation>
 <translation id="4423525817792153232">તમારા બધા દાંત બતાવો</translation>
+<translation id="4424107154724312436">iOS પર Google Lens અજમાવી જુઓ</translation>
 <translation id="4424262960694990728">પગલું લેવું આવશ્યક છે</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં સુધારવી અને બહેતર બનાવવી જરૂરી બાબતોને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો અને સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો, જેવી બાબતોનો સમાવેશ થઈ શકે છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા Chrome ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
@@ -5282,6 +5290,7 @@
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4645676300727003670">&amp;રાખો</translation>
 <translation id="4646675363240786305">પોર્ટ</translation>
+<translation id="4647025838970719122">આ સેટિંગ તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />માંથી <ph name="CURRENT_STEP" /> પગલું</translation>
 <translation id="4647836961514597010">રંગ ચૂંટનાર</translation>
@@ -5575,6 +5584,7 @@
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="485088796993065002">મ્યુઝિક, વીડિયો અને અન્ય મીડિયા માટે ઑડિયો આપવા માટે, સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="4850919322897956733">ડેટા ડિલીટ કરવામાં આવ્યો.</translation>
+<translation id="4852030988197799562">મુલાકાત લીધેલી નવી સાઇટ પર JavaScript ઑપ્ટિમાઇઝરનો ઍક્સેસ બ્લૉક કરો</translation>
 <translation id="4852383141291180386">ઍપના નોટિફિકેશન મેનેજ કરો</translation>
 <translation id="4852916668365817106">માઉસનો રંગ</translation>
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
@@ -5734,6 +5744,7 @@
 <translation id="4960020053211143927">અમુક ઍપ દ્વારા સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
+<translation id="4961594008939394243">મુસાફરીમાં તમારા કૅમેરા વડે જે જુઓ, તેને ખરીદો, અનુવાદ કરો અને તેની ઓળખ કરો</translation>
 <translation id="496185450405387901">આ ઍપ તમારા વ્યવસ્થાપક દ્વારા બનાવવામાં આવી હતી.</translation>
 <translation id="4963603093937263654">તમારા <ph name="DEVICE_NAME" />માં નોટિફિકેશન ચાલુ કરવામાં આવ્યા હોવાની ખાતરી કરો</translation>
 <translation id="4963789650715167449">વર્તમાન ટૅબને કાઢી નાખો</translation>
@@ -5760,6 +5771,7 @@
 <translation id="4979263087381759787">ડેવલપરનાં વિકલ્પો</translation>
 <translation id="4979510648199782334">Microsoft 365 સેટઅપ પૂર્ણ થયું</translation>
 <translation id="4980805016576257426">આ એક્સટેન્શનમાં માલવેર છે.</translation>
+<translation id="498274622779591291">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="4983159853748980742">તમારો પાસવર્ડ શેર કર્યો નહોતો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ખાતરી કરો કે તમે Chrome પર સાઇન કર્યું છે. પછી, ફરી પ્રયાસ કરો.</translation>
 <translation id="498624032394115435">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફારો કરી શકે છે.</translation>
 <translation id="4986706507552097681">શું સિંક કરવું તે હંમેશાં તમે સેટિંગમાં જઈને પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
@@ -6574,6 +6586,7 @@
 <translation id="556321030400250233">સ્થાનિક અથવા શેર કરેલી ફાઇલો</translation>
 <translation id="5563234215388768762">Google પર શોધો અથવા URL લખો</translation>
 <translation id="5563824734298958390">ટૅબનું ગ્રૂપ છોડી દઈએ?</translation>
+<translation id="5564450015351086922">iOS પર Google Lens અજમાવી જુઓ</translation>
 <translation id="5565579144504951367">તમારું હાર્ડવેર સેટઅપ કરવા માટે તૈયાર છે</translation>
 <translation id="5565735124758917034">સક્રિય</translation>
 <translation id="5568069709869097550">સાઇન ઇન કરી શકાતું નથી</translation>
@@ -7279,6 +7292,7 @@ USB ડિવાઇસ</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> નામના ઉપકરણ સાથે ડેટા વિનિમય કરો</translation>
 <translation id="6076092653254552547">સિસ્ટમ સેટિંગ</translation>
 <translation id="6076491747490570887">સૌમ્ય રાખોડી</translation>
+<translation id="6076575605422709982">ફૉન્ટનું કદ ઘટાડવામાં આવ્યું</translation>
 <translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન તમારું એકાઉન્ટ ઍક્સેસ કરવા માગે છે</translation>
 <translation id="6077131872140550515">પસંદગીમાંથી દૂર કરો</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> વિશે ટિપ અને અપડેટ</translation>
@@ -7745,6 +7759,7 @@ USB ડિવાઇસ</translation>
 <translation id="6410328738210026208">ચેનલ બદલો અને Powerwash કરો</translation>
 <translation id="6410390304316730527">Safe Browsing એવા હુમલાખોરોથી તમારું રક્ષણ કરી શકે છે જે તમને દુર્ભાવનાપૂર્ણ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અથવા પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ જેવી વ્યક્તિગત માહિતી જાહેર કરવા જેવી જોખમી બાબતો કરવા ગેરમાર્ગે દોરી શકે છે. જો તમે આ બંધ કરો, તો અજાણી અથવા ભરોસાપાત્ર ન હોય એવી સાઇટ બ્રાઉઝ કરતી વખતે સાવધાન રહેજો.</translation>
 <translation id="6411135999030237579">કીને ઑટોમેટિક રીતે રિપીટ કરવા માટે દબાવી રાખો</translation>
+<translation id="6411516120707127482">તમારા ફોન પર Google Lens અજમાવી જુઓ</translation>
 <translation id="6414618057231176439"><ph name="VM_NAME" />નું કયું વર્ઝન ઇન્સ્ટૉલ કરવું છે તે પસંદ કરો.</translation>
 <translation id="641469293210305670">અપડેટ અને ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="6415757856498750027">"ư" મેળવવા માટે "w" ટાઇપ કરો</translation>
@@ -7790,6 +7805,7 @@ USB ડિવાઇસ</translation>
 <translation id="6445450263907939268">જો તમે આ ફેરફારો ઇચ્છતા ન હોય, તો તમે તમારા પાછલાં સેટિંગને પહેલાંના જેવું કરો.</translation>
 <translation id="6446213738085045933">ડેસ્કટૉપ શોર્ટકટ બનાવો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
+<translation id="6449835059180426406">તમારા iOS ડિવાઇસ પર તમારા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6450876761651513209">તમારા પ્રાઇવસી સંબંધિત સેટિંગ બદલો</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> અને અન્ય 1 ટૅબ}one{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}other{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}}</translation>
 <translation id="6451689256222386810">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયાં હોવ અથવા આ સેટિંગ બદલવા માગતા હોવ, તો <ph name="BEGIN_LINK" />સમન્વયનને ફરીથી સેટ કરો<ph name="END_LINK" />.</translation>
@@ -7826,6 +7842,7 @@ USB ડિવાઇસ</translation>
 <translation id="6469557521904094793">સેલ્યુલર નેટવર્ક ચાલુ કરો</translation>
 <translation id="6469702164109431067">પાસવર્ડ અને પાસકી</translation>
 <translation id="6470120577693311302">ફ્લૅશ નોટિફિકેશન</translation>
+<translation id="6470499912143282503">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો. તમને તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ તેમજ બીજું ઘણું મળશે.</translation>
 <translation id="6470823736074966819">નોટિફિકેશનને મ્યૂટ કરો</translation>
 <translation id="6472893788822429178">હોમ બટન બતાવો</translation>
 <translation id="6473315466413288899">વિકલ્પ પસંદ કરો</translation>
@@ -9451,6 +9468,7 @@ USB ડિવાઇસ</translation>
 <translation id="7617263010641145920">Play Store ચાલુ કરો</translation>
 <translation id="7617648809369507487">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો</translation>
 <translation id="7619937211696316184">જાળવણી થઈ ગઈ</translation>
+<translation id="7620083113061729689">ઇતિહાસ સિંક કરો</translation>
 <translation id="7620616707541471029">આગળ વધવા માટે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7621382409404463535">ડિવાઇસ ગોઠવણી સાચવવામાં સિસ્ટમ નિષ્ફળ ગઈ.</translation>
 <translation id="7621595347123595643">જો તમે તમારો પાસવર્ડ અથવા પિન ભૂલી જાઓ, તો તમે સ્થાનિક ડેટા રિકવર કરી શકશો નહીં.</translation>
@@ -9497,6 +9515,7 @@ USB ડિવાઇસ</translation>
 <translation id="7648023614017258011">Chrome ઇન્સ્ટૉલેશન બંડલની ચકાસણી કરી રહ્યું છે</translation>
 <translation id="7648048654005891115">કીમેપ શૈલી</translation>
 <translation id="7649070708921625228">સહાય</translation>
+<translation id="7649954700951153978">iOS પર મને યાદ કરાવો</translation>
 <translation id="7650141368285545431">અન્ય ડિવાઇસમાંથી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="7650178491875594325">સ્થાનિક ડેટા રિસ્ટોર કરો</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}one{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}other{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}}</translation>
@@ -11765,6 +11784,7 @@ USB ડિવાઇસ</translation>
 <translation id="9170766151357647548">તમારા ડિવાઇસનું EID <ph name="EID_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="9170848237812810038">&amp;પૂર્વવત્ કરો</translation>
 <translation id="9170884462774788842">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક થીમ ઉમેરી જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
+<translation id="9172270007201309670">ફૉન્ટનું કદ વધારવામાં આવ્યું</translation>
 <translation id="9173063514323762371">અને બુકમાર્ક બાર છુપાવો</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> માટે તમારા માતાપિતાએ સેટ કરેલી સમયમર્યાદાએ તમે પહોંચી ગયા છો. તમે આવતી કાલે <ph name="TIME_LIMIT" /> માટે તેનો ઉપયોગ કરી શકશો.</translation>
 <translation id="9174401638287877180">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા બાળકના Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારા બાળક માટે વધારાનું વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>

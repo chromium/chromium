@@ -95,6 +95,7 @@
 <translation id="2185166961232948079">Chromium - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Yangilanishni tekshirishda xato: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hisobni Chromiumdan chiqarish</translation>
+<translation id="2210502920229141283">iOS uchun Chromium saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasi bilan maʼlumotlarni himoyalang</translation>
 <translation id="2210682093923538346">Xavfli sayt. Chromium bildirishnomalarni olib tashladi.</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2238130810669087193">Barcha qurilmalarda manzillaringiz va boshqalarni olish uchun Chromiumga kiring Hisobga kirilgandan keyin bu manzil Google hisobida saqlanadi.</translation>
@@ -103,6 +104,7 @@
 <translation id="2307973900865360088">Dokda qoldirish</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
+<translation id="2356070529366658676">So‘ralsin</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" kengaytmasi Chromium hisobiga kirishni soʻramoqda</translation>
 <translation id="236943522426971115">Chromium ilovalarni fonda ishga tushirishini faolsizlantirish</translation>
@@ -153,6 +155,7 @@
 <translation id="2928420929544864228">Oʻrnatildi.</translation>
 <translation id="2933336679234709858">Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chromium maʼlumotlarini Google hisobingizda saqlash va ulardan foydalanish uchun uni kiriting.</translation>
 <translation id="2945997411976714835">Oʻrnatishda xato: Oʻrnatish vositasi boshlanmadi.</translation>
+<translation id="2948852018303413228">iOS uchun Chromiumda saqlangan parollar bilan saytlarga tezroq kiring</translation>
 <translation id="2970426615109535079">Chromium tashkilotingiz boshqaruvida</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="2977506796191543575">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
@@ -556,6 +559,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7888981273428720788">Chromiumni asosiy brauzer etib belgilang</translation>
 <translation id="7934340546140346950">Chromium himoyasiz ulanishlarni imkon qadar HTTPS protokolga avtomatik yangilaydi</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
+<translation id="7953047982688951904">Qurilmani qoʻshimcha himoyalash uchun telefon orqali Chromium brauzerini yuklab oling</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="7997934263947464652">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chromium ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="8004582292198964060">Brauzer</translation>

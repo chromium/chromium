@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Zamijeni</translation>
 <translation id="1063822554756965137">Fajlovi su uspješno izbrisani</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome smatra da ne želite primati obavještenja s ove web lokacije. Zato su zahtjevi sakriveni da se smanje ometanja.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalji o pretraživaču</translation>
 <translation id="1068467933609179019">Postavke usluga automatskog popunjavanja</translation>
@@ -1625,6 +1626,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3678529606614285348">Otvorite stranicu u novom anonimnom prozoru (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Unesite <ph name="OTP_LENGTH" />-cifreni kôd za potvrdu</translation>
 <translation id="3681007416295224113">Informacije o potvrdi</translation>
+<translation id="3681191721636073359">Chrome smatra da ne želite koristiti svoju lokaciju na ovoj web lokaciji. Zato su zahtjevi sakriveni da se smanje ometanja.</translation>
 <translation id="3681421644246505351">Chrome bilježi teme koje vas zanimaju na osnovu vaše nedavne historije pregledanja.</translation>
 <translation id="3681841880472207951">QuickTime videozapis</translation>
 <translation id="3682094733650754138">Odabrana je opcija popunjavanja polja za adresu</translation>
@@ -4595,6 +4597,7 @@ Dodatni detalji:
 <translation id="8624354461147303341">Primajte popuste</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome ima ugrađene sigurnosne funkcije koje vas štite prilikom pregledanja – kao što je Sigurno pregledanje na Googleu, koje je <ph name="BEGIN_LINK" />nedavno pronašlo slučaj krađe identiteta<ph name="END_LINK" /> na web lokaciji koju ste pokušali posjetiti. Web lokacije za krađu identiteta se lažno predstavljaju kao druge web lokacije da vas prevare.<ph name="NEW_LINE" />Napadači ponekad ugrožavaju čak i web lokacije koje su inače sigurne. <ph name="BEGIN_ERROR_LINK" />Javite nam<ph name="END_ERROR_LINK" /> ako mislite da je došlo do greške i da ova web lokacija nije opasna.</translation>
+<translation id="8640996933372643759">Da dijelite kartice i sarađujete s drugima, morate se moći prijaviti u Chrome</translation>
 <translation id="8641131559425911240">Koverta (bond)</translation>
 <translation id="8643409044755049933">Koverta Kaku 3</translation>
 <translation id="8643846627971610148">Kada se grupa zatvori, pridruživanje je ograničeno</translation>

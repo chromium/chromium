@@ -106,6 +106,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2307973900865360088">Mantener en el Dock</translation>
 <translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
+<translation id="2356070529366658676">Preguntar</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">La extensión "<ph name="EXTENSION_NAME" />" quiere que inicies sesión en Chromium</translation>
 <translation id="236943522426971115">Inhabilitar que Chromium se ejecute en segundo plano en las aplicaciones</translation>
