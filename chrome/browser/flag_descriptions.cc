@@ -524,6 +524,13 @@ const char kDevToolsProjectSettingsDescription[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
+const char kEnableSeamlessSigninDescription[] =
+    "Enables the Seamless Sign-in flow that signs in the user without showing "
+    "an additional bottom sheet when the sign-in promo button is clicked.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const char kForceHistoryOptInScreenName[] = "Force history opt-in screen";
 const char kForceHistoryOptInScreenDescription[] =
     "If enabled, the history opt-in screen will be forced to show up even if "

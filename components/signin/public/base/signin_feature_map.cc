@@ -20,6 +20,7 @@ namespace {
 // Array of features exposed through the Java SigninFeatures API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kCctSignInPrompt,
+    &switches::kEnableSeamlessSignin,
     &switches::kForceStartupSigninPromo,
     &switches::kForceHistoryOptInScreen,
     &switches::kSkipCheckForAccountManagementOnSignin,

@@ -388,6 +388,11 @@ extern const char kEnableSiteSearchAllowUserOverridePolicyName[];
 extern const char kEnableSiteSearchAllowUserOverridePolicyDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kEnableSeamlessSigninName[];
+extern const char kEnableSeamlessSigninDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 extern const char kForceHistoryOptInScreenName[];
 extern const char kForceHistoryOptInScreenDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

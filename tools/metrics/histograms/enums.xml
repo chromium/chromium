@@ -14243,6 +14243,7 @@ from previous Chrome versions.
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
+  <int value="-8635200" label="EnableSeamlessSignin:disabled"/>
   <int value="-8405936" label="IsolatedWebAppUnmanagedInstall:disabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
@@ -16144,6 +16145,7 @@ from previous Chrome versions.
   <int value="680166568" label="ForceDisableStackedTabs:disabled"/>
   <int value="680300401" label="DisplayAlignAssist:disabled"/>
   <int value="680474238" label="AdjustOmniboxIndent:disabled"/>
+  <int value="680654836" label="EnableSeamlessSignin:enabled"/>
   <int value="680773835" label="EnablePolicyTestPage:enabled"/>
   <int value="681622885" label="FullscreenExitUI:enabled"/>
   <int value="682549212" label="ash-enable-cursor-motion-blur"/>

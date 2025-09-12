@@ -12937,6 +12937,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-seamless-signin", flag_descriptions::kEnableSeamlessSigninName,
+     flag_descriptions::kEnableSeamlessSigninDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kEnableSeamlessSignin)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"force-history-opt-in-screen",
      flag_descriptions::kForceHistoryOptInScreenName,
      flag_descriptions::kForceHistoryOptInScreenDescription, kOsAndroid,

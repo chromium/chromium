@@ -4318,6 +4318,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-seamless-signin",
+    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
     "expiry_milestone": 150
