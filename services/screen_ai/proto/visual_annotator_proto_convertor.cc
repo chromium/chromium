@@ -253,7 +253,9 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   // Word length should specify the number of characters, which differs
   // from the number of bytes in multi-byte characters.
   size_t word_length = base::UTF8ToUTF16(word_box.utf8_string()).length();
-  if (word_box.has_space_after()) {
+  // Add whitespace if it's not empty.
+  if (word_box.whitespace_bounding_box().width() &&
+      word_box.whitespace_bounding_box().height()) {
     inner_text += " ";
     ++word_length;
   }
@@ -336,7 +338,8 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
        word_iter != formatting_context_end; ++word_iter) {
     SerializeWordBox(*word_iter, inline_text_box_node,
                      has_space_after_previous_word);
-    has_space_after_previous_word = word_iter->has_space_after();
+    has_space_after_previous_word =
+        word_iter->whitespace_bounding_box().width();
   }
 
   std::string language = formatting_context_start->language();
@@ -624,7 +627,10 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
       word_box->bounding_box = ProtoToMojo(word.bounding_box());
       word_box->bounding_box_angle = word.bounding_box().angle();
       word_box->direction = ProtoToMojo(word.direction());
-      word_box->has_space_after = word.has_space_after();
+      word_box->whitespace_bounding_box =
+          ProtoToMojo(word.whitespace_bounding_box());
+      word_box->whitespace_bounding_box_angle =
+          word.whitespace_bounding_box().angle();
       word_box->confidence = word.confidence();
       line_box->words.push_back(std::move(word_box));
     }

@@ -94,7 +94,8 @@ message WordBox {
   string language = 5;
 
   // This word is separated from next word by space.
-  bool has_space_after = 6;
+  // This field will be removed soon, use `whitespace_bounding_box` instead.
+  bool has_space_after = 6 [deprecated = true];
 
   // If true, foreground and background colors successfully detected.
   bool estimate_color_success = 7;
@@ -127,6 +128,10 @@ message WordBox {
 
   // If true, foreground and background gray values are valid.
   bool estimate_gray_success = 16;
+
+  // The bounding box of the whitespace between this word and the next word.
+  // Empty if there is no whitespace.
+  Rect whitespace_bounding_box = 17;
 }
 
 // Symbol with associated bounding box.
