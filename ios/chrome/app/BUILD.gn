@@ -732,6 +732,7 @@ chrome_app("chrome") {
     assert(ios_application_icons_target != "",
            "ios_application_icons_target must be defined.")
     bundle_deps += [ ios_application_icons_target ]
+    bundle_deps += [ ios_application_icons_target_legacy ]
     bundle_deps += ios_providers_resources_targets
   } else {
     _variants = []

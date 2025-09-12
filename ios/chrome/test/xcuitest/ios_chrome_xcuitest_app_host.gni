@@ -50,6 +50,7 @@ template("ios_chrome_xcuitest_app_host") {
     bundle_deps += [
       "//ios/chrome/app/resources",
       ios_application_icons_target,
+      ios_application_icons_target_legacy,
     ]
     bundle_deps += ios_providers_resources_targets
 
