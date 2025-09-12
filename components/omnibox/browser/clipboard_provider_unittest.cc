@@ -129,14 +129,13 @@ class ClipboardProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override;
 
+  base::test::TaskEnvironment task_environment_;
   TestSchemeClassifier classifier_;
   FakeClipboardRecentContent clipboard_content_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<ClipboardProvider> provider_;
   std::optional<AutocompleteMatch> matches_image_match_;
-
-  base::test::TaskEnvironment task_environment_;
 };
 
 void ClipboardProviderTest::OnProviderUpdate(

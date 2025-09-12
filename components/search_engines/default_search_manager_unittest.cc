@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -116,6 +117,7 @@ class DefaultSearchManagerTest : public testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;

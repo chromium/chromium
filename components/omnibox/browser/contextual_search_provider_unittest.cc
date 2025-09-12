@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
@@ -38,6 +39,7 @@ class ContextualSearchProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override {}
 
+  base::test::TaskEnvironment task_environment_;
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::ContextualSearch>
       contextual_search_config_;

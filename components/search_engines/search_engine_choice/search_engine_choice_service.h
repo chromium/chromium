@@ -19,6 +19,9 @@
 namespace policy {
 class PolicyService;
 }
+namespace signin {
+class IdentityManager;
+}
 namespace variations {
 class VariationsService;
 }
@@ -93,7 +96,8 @@ class SearchEngineChoiceService : public KeyedService {
       PrefService& profile_prefs,
       PrefService* local_state,
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver);
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
+      signin::IdentityManager& identity_manager);
   ~SearchEngineChoiceService() override;
 
   // Runs the initialisation step for this service, checking consistency in the
@@ -264,6 +268,7 @@ class SearchEngineChoiceService : public KeyedService {
       regional_capabilities_service_;
   const raw_ref<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   base::ObserverList<Observer> observers_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already

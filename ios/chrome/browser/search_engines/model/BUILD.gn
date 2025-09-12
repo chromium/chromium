@@ -52,6 +52,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",

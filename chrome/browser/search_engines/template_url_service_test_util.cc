@@ -23,6 +23,7 @@
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -218,7 +219,8 @@ TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
                 *profile->GetPrefs(), local_state, *regional_capabilities,
                 CHECK_DEREF(
                     TemplateURLPrepopulateData::ResolverFactory::GetInstance()
-                        ->GetForProfile(profile)));
+                        ->GetForProfile(profile)),
+                CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
           }),
   });
 

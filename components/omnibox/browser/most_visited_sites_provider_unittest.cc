@@ -189,7 +189,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
                         const AutocompleteProvider* provider) override;
 
   base::HistogramTester histogram_;
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakeAutocompleteProviderClient client_;
   scoped_refptr<FakeTopSites> top_sites_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
@@ -314,8 +314,6 @@ void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
 }
 
 void MostVisitedSitesProviderTest::SetUp() {
-  task_environment_ =
-      std::make_unique<base::test::SingleThreadTaskEnvironment>();
   top_sites_ = new FakeTopSites();
 
   client_.set_top_sites(top_sites_);

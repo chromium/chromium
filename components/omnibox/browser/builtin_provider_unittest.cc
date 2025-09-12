@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -126,6 +127,7 @@ class BuiltinProviderTest : public testing::Test {
     }
   }
 
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<BuiltinProvider> provider_;

@@ -44,8 +44,8 @@ class TabGroupProviderTest : public testing::Test {
   }
 
  private:
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   FakeAutocompleteProviderClient client_;
   scoped_refptr<TabGroupProvider> tab_group_provider_;
   base::test::ScopedFeatureList feature_list_;

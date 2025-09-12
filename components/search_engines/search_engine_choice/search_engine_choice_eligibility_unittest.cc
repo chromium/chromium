@@ -228,8 +228,6 @@ class SearchEngineChoiceEligibilityTest
  private:
   bool skip_search_engine_choice_service_init_ = false;
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<KeywordsDatabaseHolder> keywords_db_holder_;
 };
 

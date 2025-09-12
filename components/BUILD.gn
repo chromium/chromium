@@ -1360,6 +1360,7 @@ if (use_blink) {
 
     if (is_android) {
       deps += [
+        "//components/signin/public/android:signin_java_test_support",
         "//gin:v8_snapshot_assets",
         "//ui/android:ui_java",
       ]

@@ -11,6 +11,7 @@
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,7 +87,11 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
  protected:
   virtual std::unique_ptr<TemplateURLService> CreateService();
 
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
  private:
+  signin::IdentityTestEnvironment identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
@@ -121,8 +126,6 @@ class LoadedTemplateURLServiceUnitTestBase
       std::u16string keyword);
 
  private:
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::MainThreadType::UI};
   scoped_refptr<WebDatabaseService> database_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<KeywordWebDataService> keyword_data_service_;

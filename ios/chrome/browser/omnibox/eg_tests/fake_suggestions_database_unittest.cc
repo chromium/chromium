@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/omnibox/eg_tests/fake_suggestions_database.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -41,6 +42,7 @@ class FakeSuggestionsDatabaseTest : public testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeSuggestionsDatabase> fake_suggestions_database_;
 };

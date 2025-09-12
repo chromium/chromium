@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -96,7 +97,8 @@ void TemplateURLServiceUnitTestBase::SetUp() {
       std::make_unique<search_engines::SearchEngineChoiceService>(
           std::make_unique<FakeSearchEngineChoiceServiceClient>(),
           pref_service_, &local_state_, *regional_capabilities_service_,
-          *prepopulate_data_resolver_);
+          *prepopulate_data_resolver_,
+          CHECK_DEREF(identity_test_env_.identity_manager()));
 
   template_url_service_ = CreateService();
 }

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/about_this_site_validation.h"
@@ -126,6 +127,7 @@ class AboutThisSiteServiceTest : public ::testing::Test {
   MockAboutThisSiteService* service() { return service_.get(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAboutThisSiteService> service_;
   std::unique_ptr<MockTabHelper> tab_helper_mock_;

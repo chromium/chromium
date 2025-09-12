@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -346,12 +347,14 @@ SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
     regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver)
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
+    signin::IdentityManager& identity_manager)
     : client_(std::move(client)),
       profile_prefs_(profile_prefs),
       local_state_(local_state),
       regional_capabilities_service_(regional_capabilities),
-      prepopulate_data_resolver_(prepopulate_data_resolver) {}
+      prepopulate_data_resolver_(prepopulate_data_resolver),
+      identity_manager_(identity_manager) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 

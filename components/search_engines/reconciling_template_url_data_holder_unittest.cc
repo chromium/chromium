@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -27,6 +28,7 @@ class ReconcilingTemplateURLDataHolderTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   ReconcilingTemplateURLDataHolder holder_;
 };

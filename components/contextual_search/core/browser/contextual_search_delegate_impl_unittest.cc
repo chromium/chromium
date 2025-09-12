@@ -266,6 +266,8 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     return received_search_term_resolution_response_;
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 
   // The delegate under test.
@@ -329,8 +331,6 @@ class ContextualSearchDelegateImplTest : public testing::Test {
   // Tracks whether a response was received.
   bool received_search_term_resolution_response_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<network::SharedURLLoaderFactory>

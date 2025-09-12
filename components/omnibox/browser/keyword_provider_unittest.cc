@@ -109,9 +109,9 @@ class KeywordProviderTest : public testing::Test {
                ResultType AutocompleteMatch::* member);
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_{
       {.template_url_service_initializer = kTestData}};
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<KeywordProvider> kw_provider_;
 };

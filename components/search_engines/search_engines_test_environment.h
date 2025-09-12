@@ -13,6 +13,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace regional_capabilities {
@@ -33,6 +34,11 @@ namespace search_engines {
 // have the needed registrations.
 // The creation of the various services involved with `TemplateURLService` can
 // be controlled by passing a custom `ServiceFactories`.
+//
+// NOTE: SearchEnginesTestEnvironment requires that tests have a properly set up
+// task environment. If your test doesn't already have one, use a
+// base::test::TaskEnvironment instance variable to fulfill this
+// requirement.
 class SearchEnginesTestEnvironment {
  public:
   struct Deps {
@@ -102,9 +108,15 @@ class SearchEnginesTestEnvironment {
   // the function if forcing the service creation earlier is needed.
   const TemplateURLService* template_url_service() const;
 
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
+
   [[nodiscard]] std::unique_ptr<TemplateURLService> ReleaseTemplateURLService();
 
  private:
+  signin::IdentityTestEnvironment identity_test_env_;
+
   // Created when `Deps::local_state` is not provided.
   // Don't access it directly, prefer using `local_state_` instead.
   std::unique_ptr<TestingPrefServiceSimple> owned_local_state_;

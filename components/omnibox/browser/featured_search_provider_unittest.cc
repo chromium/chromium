@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -186,6 +187,7 @@ class FeaturedSearchProviderTest : public testing::Test {
         std::make_unique<TemplateURL>(template_url_data));
   }
 
+  base::test::TaskEnvironment task_environment_;
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::Toolbelt>
       toolbelt_scoped_config_;

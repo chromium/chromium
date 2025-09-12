@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace ios {
 
@@ -50,7 +51,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       CHECK_DEREF(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
-          profile)));
+          profile)),
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
 
   service->Init();
   return service;

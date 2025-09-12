@@ -21,8 +21,8 @@ class OpenTabProviderTest : public testing::Test {
   OpenTabProvider& open_tab_provider() { return *open_tab_provider_; }
 
  private:
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   FakeAutocompleteProviderClient client_;
   scoped_refptr<OpenTabProvider> open_tab_provider_;
 };

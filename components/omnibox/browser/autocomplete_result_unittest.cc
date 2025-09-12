@@ -230,10 +230,10 @@ class AutocompleteResultTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 
   // For every provider mentioned in TestData, we need a mock provider.

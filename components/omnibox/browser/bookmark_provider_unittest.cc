@@ -4,13 +4,9 @@
 
 #include "components/omnibox/browser/bookmark_provider.h"
 
-#include <array>
-
-#include "components/query_parser/query_parser.h"
-#include "third_party/omnibox_proto/groups.pb.h"
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -20,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -29,6 +26,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/query_parser/query_parser.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -37,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -188,6 +187,7 @@ class BookmarkProviderTest : public testing::Test {
   // provided.
   [[nodiscard]] size_t GetNumMatches(std::string input_text);
 
+  base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAutocompleteProviderClient> provider_client_;
   std::unique_ptr<BookmarkModel> local_or_syncable_model_;
