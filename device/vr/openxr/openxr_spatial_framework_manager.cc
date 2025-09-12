@@ -112,6 +112,11 @@ OpenXrSpatialFrameworkManager::~OpenXrSpatialFrameworkManager() {
   }
 }
 
+OpenXrSceneUnderstandingManagerType OpenXrSpatialFrameworkManager::GetType()
+    const {
+  return OpenXrSceneUnderstandingManagerType::kSpatialEntities;
+}
+
 OpenXrPlaneManager* OpenXrSpatialFrameworkManager::GetPlaneManager() {
   return plane_manager_.get();
 }

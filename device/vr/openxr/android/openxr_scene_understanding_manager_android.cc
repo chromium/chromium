@@ -46,6 +46,11 @@ OpenXRSceneUnderstandingManagerAndroid::OpenXRSceneUnderstandingManagerAndroid(
 OpenXRSceneUnderstandingManagerAndroid::
     ~OpenXRSceneUnderstandingManagerAndroid() = default;
 
+OpenXrSceneUnderstandingManagerType
+OpenXRSceneUnderstandingManagerAndroid::GetType() const {
+  return OpenXrSceneUnderstandingManagerType::kAndroid;
+}
+
 OpenXrPlaneManager* OpenXRSceneUnderstandingManagerAndroid::GetPlaneManager() {
   return plane_manager_.get();
 }

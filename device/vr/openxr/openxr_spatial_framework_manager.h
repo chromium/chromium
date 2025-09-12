@@ -32,6 +32,7 @@ class OpenXrSpatialFrameworkManager : public OpenXRSceneUnderstandingManager {
   ~OpenXrSpatialFrameworkManager() override;
 
   // OpenXRSceneUnderstandingManager
+  OpenXrSceneUnderstandingManagerType GetType() const override;
   OpenXrPlaneManager* GetPlaneManager() override;
   OpenXrHitTestManager* GetHitTestManager() override;
   OpenXrAnchorManager* GetAnchorManager() override;

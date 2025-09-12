@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(OpenXrSceneUnderstandingManagerType) -->
+
+<enum name="OpenXrSceneUnderstandingManagerType">
+  <int value="0" label="None"/>
+  <int value="1" label="MSFT"/>
+  <int value="2" label="Android"/>
+  <int value="3" label="SpatialEntities"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/vr/openxr/openxr_scene_understanding_manager.h:OpenXrSceneUnderstandingManagerType) -->
+
 <enum name="XRDeviceId">
   <int value="0" label="WEB_TEST_DEVICE_ID"/>
   <int value="1" label="FAKE_DEVICE_ID"/>

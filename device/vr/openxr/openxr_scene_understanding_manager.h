@@ -13,6 +13,19 @@
 
 namespace device {
 
+// This is used in metrics, so don't reorder or reuse.
+// When adding values here be sure to add a corresponding entry to the enum in
+// tools/metrics/histograms/metadata/xr/enums.xml as well.
+// LINT.IfChange(OpenXrSceneUnderstandingManagerType)
+enum class OpenXrSceneUnderstandingManagerType {
+  kNone = 0,
+  kMsft = 1,
+  kAndroid = 2,
+  kSpatialEntities = 3,
+  kMaxValue = kSpatialEntities
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/xr/enums.xml:OpenXrSceneUnderstandingManagerType)
+
 // The OpenXRSceneUnderstandingManager is responsible for managing various
 // delegates that need to interact with each other. These delegates sometimes
 // rely on separate extensions that are nevertheless part of a complete "system"
@@ -31,6 +44,7 @@ class OpenXRSceneUnderstandingManager {
   virtual void OnDiscoveryRecommended(
       const XrEventDataSpatialDiscoveryRecommendedEXT* event_data);
 
+  virtual OpenXrSceneUnderstandingManagerType GetType() const = 0;
   virtual OpenXrPlaneManager* GetPlaneManager() = 0;
   virtual OpenXrAnchorManager* GetAnchorManager() = 0;
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;

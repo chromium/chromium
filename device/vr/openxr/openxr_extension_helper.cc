@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_extension_handler_factories.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
@@ -307,12 +308,18 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     }
   }
 
+  std::unique_ptr<OpenXRSceneUnderstandingManager> manager;
   if (best_factory) {
-    return best_factory->CreateSceneUnderstandingManager(*this, openxr,
-                                                         base_space);
+    manager = best_factory->CreateSceneUnderstandingManager(*this, openxr,
+                                                            base_space);
   }
 
-  return nullptr;
+  UMA_HISTOGRAM_ENUMERATION("XR.OpenXR.SceneUnderstandingManagerType",
+                            manager
+                                ? manager->GetType()
+                                : OpenXrSceneUnderstandingManagerType::kNone);
+
+  return manager;
 }
 
 std::unique_ptr<OpenXrStageBoundsProvider>

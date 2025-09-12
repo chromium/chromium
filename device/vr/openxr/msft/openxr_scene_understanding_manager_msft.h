@@ -36,6 +36,7 @@ class OpenXRSceneUnderstandingManagerMSFT
 
  protected:
   // OpenXRSceneUnderstandingManager
+  OpenXrSceneUnderstandingManagerType GetType() const override;
   OpenXrPlaneManager* GetPlaneManager() override;
   OpenXrAnchorManager* GetAnchorManager() override;
   OpenXrHitTestManager* GetHitTestManager() override;
