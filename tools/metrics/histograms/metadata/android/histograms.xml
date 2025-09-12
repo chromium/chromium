@@ -6188,28 +6188,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.ApiCall.Static.First"
-    enum="WebViewApiCallStatic" expires_after="2025-10-25">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the first call to a static WebView API through the platform
-    (framework) APIs after the native library was loaded and the browser process
-    was started (meaning that this static method call caused the
-    initialization).
-
-    This may include AndroidX API calls on OS versions where the AndroidX
-    library just calls through the platform API (see
-    &quot;Android.WebView.AndroidX.ApiCall&quot; for details).
-
-    Recorded in M125+.
-
-    This metric was expired between Aug 2024 and Jan 2025 and may be missing
-    data.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.ApiCall.System" enum="WebViewApiCallSystem"
     expires_after="2025-10-25">
   <owner>ntfschr@chromium.org</owner>
@@ -8517,7 +8495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason"
+    name="Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason2"
     enum="WebViewStartupCallSite" expires_after="2026-03-01">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8528,6 +8506,13 @@ chromium-metrics-reviews@google.com.
 
     This metric is only recorded for async startup and upon successful
     completion of the initialization process.
+
+    The older version of this histogram
+    (Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason) used a
+    less granular callsite enum. If any WebView instance methods or static
+    method was the callsite, we couldn't know which exact method it was since it
+    was grouped together as the same callsite. This issue is fixed in this
+    histogram.
   </summary>
 </histogram>
 
@@ -8694,7 +8679,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Startup.CreationTime.InitReason"
+<histogram name="Android.WebView.Startup.CreationTime.InitReason2"
     enum="WebViewStartupCallSite" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8703,7 +8688,11 @@ chromium-metrics-reviews@google.com.
     a WebView instance, calling a static method through getStatics() or other
     static methods.
 
-    Recorded in M125+.
+    The older version of this histogram
+    (Android.WebView.Startup.CreationTime.InitReason) used a less granular
+    callsite enum. If any WebView instance methods or static method was the
+    callsite, we couldn't know which exact method it was since it was grouped
+    together as the same callsite. This issue is fixed in this histogram.
   </summary>
 </histogram>
 

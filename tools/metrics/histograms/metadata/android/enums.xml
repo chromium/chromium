@@ -2534,11 +2534,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ServiceWorkerClient is non-null."/>
 </enum>
 
+<!-- LINT.IfChange(WebViewStartupCallSite) -->
+
 <enum name="WebViewStartupCallSite">
   <int value="0" label="getAwTracingController"/>
   <int value="1" label="getAwProxyController"/>
-  <int value="2" label="webViewInstance"/>
-  <int value="3" label="getStatics"/>
+  <int value="2" label="(Obsolete) webViewInstance"/>
+  <int value="3" label="(Obsolete) getStatics"/>
   <int value="4" label="getDefaultGeolocationPermissions"/>
   <int value="5" label="getDefaultServiceWorkerController"/>
   <int value="6" label="getWebIconDatabase"/>
@@ -2546,7 +2548,104 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="getDefaultWebViewDatabase"/>
   <int value="9" label="getTracingController"/>
   <int value="10" label="asyncWebViewStartUp"/>
+  <int value="11" label="webViewInstanceOverlayHorizontalScrollbar"/>
+  <int value="12" label="webViewInstanceOverlayVerticalScrollbar"/>
+  <int value="13" label="webViewInstanceGetCertificate"/>
+  <int value="14" label="webViewInstanceGetHttpAuthUsernamePassword"/>
+  <int value="15" label="webViewInstanceSaveState"/>
+  <int value="16" label="webViewInstanceRestoreState"/>
+  <int value="17" label="webViewInstanceLoadUrl"/>
+  <int value="18" label="webViewInstancePostUrl"/>
+  <int value="19" label="webViewInstanceLoadData"/>
+  <int value="20" label="webViewInstanceLoadDataWithBaseUrl"/>
+  <int value="21" label="webViewInstanceEvaluateJavascript"/>
+  <int value="22" label="webViewInstanceCanGoBack"/>
+  <int value="23" label="webViewInstanceCanGoForward"/>
+  <int value="24" label="webViewInstanceCanGoBackOrForward"/>
+  <int value="25" label="webViewInstanceIsPaused"/>
+  <int value="26" label="webViewInstanceCopyBackForwardList"/>
+  <int value="27" label="webViewInstanceShowFindDialog"/>
+  <int value="28" label="webViewInstanceSetWebviewClient"/>
+  <int value="29" label="webViewInstanceSetWebchromeClient"/>
+  <int value="30" label="webViewInstanceCreateWebmessageChannel"/>
+  <int value="31" label="webViewInstanceGetZoomControls"/>
+  <int value="32" label="webViewInstanceZoomIn"/>
+  <int value="33" label="webViewInstanceZoomOut"/>
+  <int value="34" label="webViewInstanceZoomBy"/>
+  <int value="35" label="webViewInstanceSetRendererPriorityPolicy"/>
+  <int value="36" label="webViewInstanceGetRendererRequestedPriority"/>
+  <int value="37"
+      label="webViewInstanceGetRendererPriorityWaivedWhenNotVisible"/>
+  <int value="38" label="webViewInstanceSetTextClassifier"/>
+  <int value="39" label="webViewInstanceGetTextClassifier"/>
+  <int value="40" label="webViewInstanceAutofill"/>
+  <int value="41" label="webViewInstanceOnProvideAutofillVirtualStructure"/>
+  <int value="42" label="webViewInstanceOnProvideContentCaptureStructure"/>
+  <int value="43" label="webViewInstanceShouldDelayChildPressedState"/>
+  <int value="44" label="webViewInstanceGetAccessibilityNodeProvider"/>
+  <int value="45" label="webViewInstanceOnProvideVirtualStructure"/>
+  <int value="46" label="webViewInstancePerformAccessibilityAction"/>
+  <int value="47" label="webViewInstanceOnDraw"/>
+  <int value="48" label="webViewInstanceSetLayoutParams"/>
+  <int value="49" label="webViewInstanceOnDragEvent"/>
+  <int value="50" label="webViewInstanceOnCreateInputConnection"/>
+  <int value="51" label="webViewInstanceOnKeyMultiple"/>
+  <int value="52" label="webViewInstanceOnKeyDown"/>
+  <int value="53" label="webViewInstanceOnKeyUp"/>
+  <int value="54" label="webViewInstanceOnAttachedToWindow"/>
+  <int value="55" label="webViewInstanceDispatchKeyEvent"/>
+  <int value="56" label="webViewInstanceOnTouchEvent"/>
+  <int value="57" label="webViewInstanceOnHoverEvent"/>
+  <int value="58" label="webViewInstanceOnGenericMotionEvent"/>
+  <int value="59" label="webViewInstanceRequestFocus"/>
+  <int value="60" label="webViewInstanceOnMeasure"/>
+  <int value="61" label="webViewInstanceRequestChildRectangleOnScreen"/>
+  <int value="62" label="webViewInstanceSetBackgroundColor"/>
+  <int value="63" label="webViewInstanceOnStartTemporaryDetach"/>
+  <int value="64" label="webViewInstanceOnFinishTemporaryDetach"/>
+  <int value="65" label="webViewInstanceOnCheckIsTextEditor"/>
+  <int value="66" label="webViewInstanceOnApplyWindowInsets"/>
+  <int value="67" label="webViewInstanceOnResolvePointerIcon"/>
+  <int value="68" label="webViewInstanceComputeHorizontalScrollRange"/>
+  <int value="69" label="webViewInstanceComputeHorizontalScrollOffset"/>
+  <int value="70" label="webViewInstanceComputeVerticalScrollRange"/>
+  <int value="71" label="webViewInstanceComputeVerticalScrollOffset"/>
+  <int value="72" label="webViewInstanceComputeVerticalScrollExtent"/>
+  <int value="73" label="webViewInstanceComputeScroll"/>
+  <int value="74" label="webViewInstanceCreatePrintDocumentAdapter"/>
+  <int value="75" label="webViewInstanceExtractSmartClipData"/>
+  <int value="76" label="webViewInstanceSetSmartClipResultHandler"/>
+  <int value="77" label="webViewInstanceGetRenderProcess"/>
+  <int value="78" label="webViewInstanceGetWebviewRendererClientAdapter"/>
+  <int value="79" label="webViewInstancePageUp"/>
+  <int value="80" label="webViewInstancePageDown"/>
+  <int value="81" label="webViewInstanceLoadUrlAdditionalHeaders"/>
+  <int value="82" label="webViewInstanceInit"/>
+  <int value="83" label="webViewInstanceCapturePicture"/>
+  <int value="84" label="webViewInstanceGetScale"/>
+  <int value="85" label="webViewInstanceSetInitialScale"/>
+  <int value="86" label="webViewInstanceGetHitTestResults"/>
+  <int value="87" label="webViewInstanceGetUrl"/>
+  <int value="88" label="webViewInstanceGetOriginalUrl"/>
+  <int value="89" label="webViewInstanceGetTitle"/>
+  <int value="90" label="webViewInstanceGetFavicon"/>
+  <int value="91" label="staticFindAddress"/>
+  <int value="92" label="staticGetDefaultUserAgent"/>
+  <int value="93" label="staticSetWebContentsDebuggingEnabled"/>
+  <int value="94" label="staticClearClientCertPreferences"/>
+  <int value="95" label="staticFreeMemoryForTests"/>
+  <int value="96" label="staticEnableSlowWholeDocumentDraw"/>
+  <int value="97" label="staticParseFileChooserResult"/>
+  <int value="98" label="staticInitSafeBrowsing"/>
+  <int value="99" label="staticSetSafeBrowsingAllowlist"/>
+  <int value="100" label="staticGetSafeBrowsingPrivacyPolicyUrl"/>
+  <int value="101" label="staticIsMultiProcessEnabled"/>
+  <int value="102" label="staticGetVariationsHeader"/>
+  <int value="103" label="staticSetDefaultTrafficStatsTag"/>
+  <int value="104" label="staticSetDefaultTrafficStatsUid"/>
 </enum>
+
+<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->
 
 <enum name="WebViewUrlScheme">
   <int value="0" label="Empty URL"/>

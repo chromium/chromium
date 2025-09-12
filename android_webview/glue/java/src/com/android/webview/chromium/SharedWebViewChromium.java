@@ -65,7 +65,7 @@ public class SharedWebViewChromium {
     }
 
     public AwRenderProcess getRenderProcess() {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_RENDER_PROCESS);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(() -> getRenderProcess());
         }
@@ -101,7 +101,8 @@ public class SharedWebViewChromium {
     }
 
     public MessagePort[] createWebMessageChannel() {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_CREATE_WEBMESSAGE_CHANNEL);
         if (checkNeedsPost()) {
             MessagePort[] ret =
                     mRunQueue.runOnUiThreadBlocking(
@@ -178,7 +179,8 @@ public class SharedWebViewChromium {
     }
 
     public SharedWebViewRendererClientAdapter getWebViewRendererClientAdapter() {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_GET_WEBVIEW_RENDERER_CLIENT_ADAPTER);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(
                     new Callable<SharedWebViewRendererClientAdapter>() {
