@@ -3527,6 +3527,7 @@ if (!is_ios) {
       "cookies/cookie_monster_perftest.cc",
       "disk_cache/disk_cache_perftest.cc",
       "extras/sqlite/sqlite_persistent_cookie_store_perftest.cc",
+      "http/http_no_vary_search_data_perftest.cc",
       "http/http_request_headers_perftest.cc",
       "socket/udp_socket_perftest.cc",
       "spdy/spdy_http_utils_perftest.cc",
