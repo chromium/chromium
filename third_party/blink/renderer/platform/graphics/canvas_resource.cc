@@ -612,6 +612,7 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // sync token will be chained after `external_write_sync_token` thanks to the
   // wait above.
   owning_thread_data_.mailbox_needs_new_sync_token = true;
+  GetSyncToken();
 }
 
 void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
