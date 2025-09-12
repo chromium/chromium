@@ -27,7 +27,6 @@ id<GREYMatcher> FindEditMenuActionWithAccessibilityLabel(
     return edit_menu_item_matcher;
   }
   error = nil;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     // Tap on the next button
     [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
@@ -48,7 +47,6 @@ id<GREYMatcher> FindEditMenuActionWithAccessibilityLabel(
         testUIElementAppearanceWithMatcher:context_menu_item_matcher];
     return found ? context_menu_item_matcher : nil;
   }
-#endif
 
   // Start on first screen (previous not visible or disabled).
   [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface

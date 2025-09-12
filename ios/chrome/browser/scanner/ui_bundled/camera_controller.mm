@@ -384,12 +384,10 @@
         break;
       case AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient:
         NOTREACHED();
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
       case AVCaptureSessionInterruptionReasonSensitiveContentMitigationActivated:
         // TODO(crbug.com/423849692): Add a new camera state for this case.
         [weakSelf setCameraState:scanner::CAMERA_UNAVAILABLE];
         break;
-#endif
     }
   });
 }

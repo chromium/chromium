@@ -608,12 +608,10 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 }
 
 - (void)testEdgeSwipe {
-#if !defined(__IPHONE_26_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_26_0
   if (iOS26_OR_ABOVE()) {
     EARL_GREY_TEST_SKIPPED(@"The swipe gesture when running iOS26 simulators "
                            @"with Xcode 16 is difficult. Skip this edge case.");
   }
-#endif
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kSimpleFileBasedTestURL)];

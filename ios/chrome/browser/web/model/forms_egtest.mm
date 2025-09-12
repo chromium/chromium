@@ -374,7 +374,6 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [ChromeEarlGreyUI
           dismissByTappingOnTheWindowOfPopover:ResendPostButtonMatcher()];
@@ -382,10 +381,6 @@ id<GREYMatcher> ResendPostButtonMatcher() {
       [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
           performAction:grey_tap()];
     }
-#else
-    [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
-        performAction:grey_tap()];
-#endif
   }
 
   [ChromeEarlGrey waitForPageToFinishLoading];

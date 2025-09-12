@@ -338,7 +338,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [promo_commands_handler_ verify];
 
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     if (IsDefaultAppsDestinationAvailable() &&
         IsUseDefaultAppsDestinationForPromosEnabled()) {
@@ -346,7 +345,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
           URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
     }
   }
-#endif
   [[application_ expect] openURL:url options:{} completionHandler:nil];
   [scheduler_ logUserPerformedPromoAction];
 

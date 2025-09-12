@@ -55,14 +55,12 @@ UIAlertController* CameraPermissionDeniedDialog(
 
   BOOL canGoToSettings =
       [[UIApplication sharedApplication] canOpenURL:settingsURL];
-#if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
   // In Assistive Access, it's not possible to go to Settings, but
   // `-[UIApplication canOpenURL:]` still returns YES. Detect Assistive Access
   // (only available starting in iOS 18), and avoid sending to Settings.
   if (@available(iOS 18, *)) {
     canGoToSettings = canGoToSettings && !AXAssistiveAccessEnabled();
   }
-#endif
   if (!canGoToSettings) {
     // Display a dialog instructing the user how to change the settings.
     NSString* dialogTitle =

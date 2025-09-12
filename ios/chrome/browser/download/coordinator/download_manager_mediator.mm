@@ -239,7 +239,6 @@ void DownloadManagerMediator::UpdateConsumer() {
 
   NSString* originating_host = nil;
   bool display_originating_host = false;
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
   if (@available(iOS 18.2, *)) {
     // The originating host is only populated when compiled with iOS18.2 SDK
     // and running on iOS18.2.
@@ -262,7 +261,6 @@ void DownloadManagerMediator::UpdateConsumer() {
     display_originating_host = display_originating_host || should_show_origin_;
     should_show_origin_ = display_originating_host;
   }
-#endif
 
   [consumer_ setOriginatingHost:originating_host
                         display:display_originating_host];

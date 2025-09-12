@@ -662,12 +662,9 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly() {
 }
 
 bool IsLiquidGlassEffectEnabled() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return true;
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
   return false;
 }
@@ -1104,11 +1101,9 @@ BASE_FEATURE(kIOSDefaultBrowserOffCyclePromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultBrowserOffCyclePromoEnabled() {
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     return base::FeatureList::IsEnabled(kIOSDefaultBrowserOffCyclePromo);
   }
-#endif
   return false;
 }
 
@@ -1122,11 +1117,9 @@ BASE_FEATURE(kIOSUseDefaultAppsDestinationForPromos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultAppsDestinationAvailable() {
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     return true;
   }
-#endif
   return false;
 }
 
