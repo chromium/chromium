@@ -15,7 +15,7 @@
     <ph name="RELATIVE_DATE">$1<ex>Today</ex></ph> - <ph name="FULL_DATE">$2<ex>Wednesday, Nov 7, 2007</ex></ph>
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
-    Remove
+    Delete
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history page">
     Are you sure you want to delete these pages from your history?
@@ -96,7 +96,7 @@
     '<ph name="PAGE_TITLE">$1<ex>Google Store - My Cart</ex></ph>' deleted
   </message>
   <message name="IDS_HISTORY_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history items">
-    Remove selected items
+    Delete selected items
   </message>
   <message name="IDS_HISTORY_SEARCH_BUTTON" desc="Title of the button in the history page that triggers a search">
     Search history
