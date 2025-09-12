@@ -119,7 +119,8 @@ class TipsNotificationCriteriaTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  raw_ptr<feature_engagement::test::MockTracker, DanglingUntriaged>
+      mock_tracker_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TipsNotificationCriteria> criteria_;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;

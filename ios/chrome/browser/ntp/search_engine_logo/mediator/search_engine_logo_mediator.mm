@@ -78,12 +78,12 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 @implementation SearchEngineLogoMediator {
   raw_ptr<web::WebState> _webState;
-  raw_ptr<TemplateURLService> _templateURLService;
+  raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Default search provider. This can be null with some enterprise policy
   // settings.
-  raw_ptr<const TemplateURL> _defaultSearchProvider;
+  raw_ptr<const TemplateURL, DanglingUntriaged> _defaultSearchProvider;
   raw_ptr<GoogleLogoService> _logoService;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
 

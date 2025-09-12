@@ -112,7 +112,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
   // Infobar delegate to test.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
   // Pointer to the infobar's form manager.
-  raw_ptr<password_manager::MockPasswordFormManagerForUI> form_manager_ptr_;
+  raw_ptr<password_manager::MockPasswordFormManagerForUI, DanglingUntriaged>
+      form_manager_ptr_;
 };
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetUserNameText) {

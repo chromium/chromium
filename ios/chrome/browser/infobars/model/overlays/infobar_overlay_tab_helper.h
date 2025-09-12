@@ -51,7 +51,7 @@ class InfobarOverlayTabHelper
   };
 
   // The inserter used to add infobar OverlayRequests to the WebState's queue.
-  raw_ptr<InfobarOverlayRequestInserter> request_inserter_;
+  raw_ptr<InfobarOverlayRequestInserter, DanglingUntriaged> request_inserter_;
   // The scheduler used to create OverlayRequests for InfoBars added to the
   // corresponding WebState's InfoBarManagerImpl.
   OverlayRequestScheduler request_scheduler_;

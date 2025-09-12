@@ -98,7 +98,7 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -73,7 +73,7 @@ DestinationRanking SortByUsage(
 
 @implementation DestinationUsageHistory {
   // Pref service to retrieve/store preference values.
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
 
   // Nested dictionary containing the device's destination usage history. Has
   // the following shape:

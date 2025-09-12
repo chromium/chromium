@@ -15,7 +15,7 @@
 @end
 
 @implementation SessionWindowIOSFactory {
-  raw_ptr<WebStateList> _webStateList;
+  raw_ptr<WebStateList, DanglingUntriaged> _webStateList;
 }
 
 #pragma mark - Initialization

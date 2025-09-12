@@ -75,7 +75,8 @@ class NewTabPageTabHelperTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<web::NavigationItem> pending_item_;
-  raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
+  raw_ptr<web::FakeNavigationManager, DanglingUntriaged>
+      fake_navigation_manager_;
   web::FakeWebState fake_web_state_;
 };
 

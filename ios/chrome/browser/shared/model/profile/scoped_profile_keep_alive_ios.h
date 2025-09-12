@@ -51,7 +51,7 @@ class [[maybe_unused, nodiscard]] ScopedProfileKeepAliveIOS {
 
  private:
   // The profile instance. May be null if the profile could not be loaded.
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
 
   // The cleanup callback. Used to inform of this object destruction.
   Cleanup cleanup_;

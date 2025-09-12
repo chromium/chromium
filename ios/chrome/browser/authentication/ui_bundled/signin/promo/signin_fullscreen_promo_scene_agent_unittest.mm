@@ -100,9 +100,10 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
   StubBrowserProviderInterface* stub_browser_interface_provider_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<ChromeAccountManagerService> account_manager_service_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  raw_ptr<ChromeAccountManagerService, DanglingUntriaged>
+      account_manager_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   ProfileState* profile_state_;

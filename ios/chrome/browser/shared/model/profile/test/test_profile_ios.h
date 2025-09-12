@@ -247,7 +247,8 @@ class TestProfileIOS final : public ProfileIOS {
   // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
   // casting as `prefs_` may not be a TestingPrefServiceSyncable.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
+      testing_prefs_;
 
   // The WebKit storage identifier. May be invalid.
   const base::Uuid webkit_storage_id_;

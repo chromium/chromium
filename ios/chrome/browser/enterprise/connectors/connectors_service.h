@@ -66,7 +66,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::unique_ptr<ConnectorsManager> connectors_manager_;
   // Unowned pointer used for retrieving the management domain for connectors
   // policies. Can be null for incognito profiles.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 };
 
 }  // namespace enterprise_connectors

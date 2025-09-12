@@ -138,7 +138,7 @@ class IdleActionTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;

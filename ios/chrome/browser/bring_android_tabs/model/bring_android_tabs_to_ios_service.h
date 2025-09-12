@@ -91,11 +91,13 @@ class BringAndroidTabsToIOSService : public KeyedService {
   LoadSyncedSessionsAndComputeTabPositions();
 
   // Service dependencies.
-  const raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
+  const raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher,
+                DanglingUntriaged>
       device_switcher_result_dispatcher_;
-  const raw_ptr<syncer::SyncService> sync_service_;
-  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
-  const raw_ptr<PrefService> profile_prefs_;
+  const raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
+      session_sync_service_;
+  const raw_ptr<PrefService, DanglingUntriaged> profile_prefs_;
   // Flag that marks whether `LoadTabs` has been invoked.
   bool load_tabs_invoked_ = false;
 

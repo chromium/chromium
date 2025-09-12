@@ -200,7 +200,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   FeedMetricsRecorder* feed_metrics_recorder_;
   FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
   NewTabPageMediator* mediator_;
-  raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
+  raw_ptr<ToolbarTestNavigationManager, DanglingUntriaged> navigation_manager_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
       browser_view_visibility_notifier_;

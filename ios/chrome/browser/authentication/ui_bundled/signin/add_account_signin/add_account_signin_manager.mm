@@ -66,7 +66,7 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
   // The user pref service.
   raw_ptr<PrefService> _prefService;
   // The identity manager.
-  raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> _identityManager;
   // YES if the add account if done, and the delegate has been called.
   BOOL _addAccountFlowDone;
   // Timestamp of the last start of the flow to add an account to the device.

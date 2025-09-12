@@ -166,9 +166,9 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // directly save `distilled_url_`.
   virtual void FetchPDFFile();
 
-  raw_ptr<reading_list::ReadingListDistillerPageFactory>
+  raw_ptr<reading_list::ReadingListDistillerPageFactory, DanglingUntriaged>
       distiller_page_factory_;
-  raw_ptr<DistillerService> distiller_service_;
+  raw_ptr<DistillerService, DanglingUntriaged> distiller_service_;
   const DownloadCompletion download_completion_;
   const SuccessCompletion delete_completion_;
 

@@ -59,7 +59,7 @@ class TestBrowser final : public Browser {
 
  private:
   const Type type_;
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_ = nullptr;
   __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

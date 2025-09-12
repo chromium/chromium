@@ -78,7 +78,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
   autofill::AutofillProfile profile_{
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   web::FakeWebState web_state_;
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
   raw_ptr<OverlayRequest> request_ = nullptr;
   MockSaveAddressProfileInfobarModalInteractionHandler mock_handler_;
   SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller installer_;

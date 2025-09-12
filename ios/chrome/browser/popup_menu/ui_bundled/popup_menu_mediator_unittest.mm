@@ -312,7 +312,7 @@ class PopupMenuMediatorTest : public PlatformTest {
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  raw_ptr<web::FakeWebState> web_state_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   id popup_menu_;
   // Mock refusing all calls except -setPopupMenuItems:.

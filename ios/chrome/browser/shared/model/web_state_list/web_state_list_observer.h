@@ -187,13 +187,13 @@ class WebStateListChangeDetach final : public WebStateListChange {
   }
 
   // The group the WebState was in prior to the change.
-  raw_ptr<const TabGroup> group() const { return group_; }
+  raw_ptr<const TabGroup, DanglingUntriaged> group() const { return group_; }
 
  private:
   raw_ptr<web::WebState> detached_web_state_;
   const int detached_from_index_;
   const DetachReason detach_reason_;
-  raw_ptr<const TabGroup> group_;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_;
 };
 
 // Represents a change that corresponds to moving one WebState to a new index in

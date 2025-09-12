@@ -51,7 +51,7 @@ class SearchEngineJavaScriptFeature : public web::JavaScriptFeature {
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 
-  raw_ptr<SearchEngineJavaScriptFeatureDelegate> delegate_;
+  raw_ptr<SearchEngineJavaScriptFeatureDelegate, DanglingUntriaged> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_JAVA_SCRIPT_FEATURE_H_

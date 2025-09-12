@@ -88,11 +88,11 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<web::FakeWebState> web_state_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   FakeOverlayPresentationContext presentation_context_;
-  raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
 };
 
 // Test that when TranslationFinished() is called by the handler's observer, the

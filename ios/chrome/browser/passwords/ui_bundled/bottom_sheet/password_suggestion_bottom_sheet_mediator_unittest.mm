@@ -410,9 +410,9 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<web::WebState> web_state_ptr_;
-  raw_ptr<web::FakeWebFramesManager> frames_manager_ptr_;
-  raw_ptr<web::FakeWebFrame> main_frame_ptr_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_ptr_;
+  raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> frames_manager_ptr_;
+  raw_ptr<web::FakeWebFrame, DanglingUntriaged> main_frame_ptr_;
   scoped_refptr<password_manager::TestPasswordStore> store_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;

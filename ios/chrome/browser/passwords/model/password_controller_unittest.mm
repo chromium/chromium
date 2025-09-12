@@ -154,7 +154,8 @@ class MockPasswordManagerClient
  private:
   mutable FakeNetworkContext network_context_;
   raw_ptr<PrefService> const prefs_;
-  const raw_ptr<password_manager::PasswordStoreInterface> store_;
+  const raw_ptr<password_manager::PasswordStoreInterface, DanglingUntriaged>
+      store_;
 };
 
 // Creates PasswordController with the given `pref_service`, `web_state` and a

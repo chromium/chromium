@@ -51,7 +51,8 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  raw_ptr<dom_distiller::DistilledPagePrefs, DanglingUntriaged>
+      distilled_page_prefs_;
 
  private:
   // Starts and finishes a committed navigation in `web_state()`. This

@@ -49,10 +49,10 @@
 @end
 
 @implementation PostRestoreSignInProvider {
-  raw_ptr<syncer::SyncUserSettings> _syncUserSettings;
+  raw_ptr<syncer::SyncUserSettings, DanglingUntriaged> _syncUserSettings;
   std::optional<AccountInfo> _accountInfo;
   bool _historySyncEnabled;
-  raw_ptr<Browser> _browser;
+  raw_ptr<Browser, DanglingUntriaged> _browser;
 }
 
 #pragma mark - Initializers

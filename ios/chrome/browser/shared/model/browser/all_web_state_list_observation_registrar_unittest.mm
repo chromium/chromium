@@ -73,9 +73,9 @@ class AllWebStateListObservationRegistrarTest : public PlatformTest {
   // Unique pointer to an observer moved into the registrar under test.
   std::unique_ptr<TestRegisteredWebStateListObserver> owned_observer_;
   // Weak pointer to the the moved observer
-  raw_ptr<TestRegisteredWebStateListObserver> observer_;
+  raw_ptr<TestRegisteredWebStateListObserver, DanglingUntriaged> observer_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<BrowserList> browser_list_;
+  raw_ptr<BrowserList, DanglingUntriaged> browser_list_;
 };
 
 // Test

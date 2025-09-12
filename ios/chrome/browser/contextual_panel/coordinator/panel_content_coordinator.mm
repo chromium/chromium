@@ -40,7 +40,8 @@
   NSMutableArray<PanelBlockModulator*>* _modulators;
 
   // The contextual panel tab helper to use for this panel.
-  raw_ptr<ContextualPanelTabHelper> _contextualPanelTabHelper;
+  raw_ptr<ContextualPanelTabHelper, DanglingUntriaged>
+      _contextualPanelTabHelper;
 
   // Read-write version of `self.baseViewController` as the base view
   // controller for this coordinator changes during its lifetime.

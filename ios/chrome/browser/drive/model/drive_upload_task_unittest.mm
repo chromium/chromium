@@ -37,7 +37,7 @@ class DriveUploadTaskTest : public PlatformTest {
   using TaskEnvironment = base::test::TaskEnvironment;
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   id<SystemIdentity> uploading_identity_;
-  raw_ptr<TestDriveFileUploader> uploader_;
+  raw_ptr<TestDriveFileUploader, DanglingUntriaged> uploader_;
   std::unique_ptr<TestUploadTaskObserver> observer_;
   std::unique_ptr<DriveUploadTask> task_;
 };

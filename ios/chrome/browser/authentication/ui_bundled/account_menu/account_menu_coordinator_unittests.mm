@@ -200,7 +200,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
   AccountMenuMediator* mediator_;
   id<SyncEncryptionPassphraseTableViewControllerPresentationDelegate>
       presentation_delegate_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   // The view owned by the view controller.
   UIView* view_;

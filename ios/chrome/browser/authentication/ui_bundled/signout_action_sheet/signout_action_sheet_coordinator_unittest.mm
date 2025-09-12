@@ -182,7 +182,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SceneState* scene_state_mock_;
   StubBrowserProviderInterface* stub_browser_interface_provider_;
   std::unique_ptr<Browser> browser_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS, DanglingUntriaged> profile_;
   TestProfileManagerIOS profile_manager_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
@@ -190,7 +190,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
       OCMStrictProtocolMock(@protocol(SnackbarCommands));
   base::MockRepeatingCallback<void(bool)> completion_callback_;
 
-  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
+  raw_ptr<syncer::MockSyncService, DanglingUntriaged> sync_service_mock_ =
+      nullptr;
 };
 
 TEST_F(SignoutActionSheetCoordinatorTest,

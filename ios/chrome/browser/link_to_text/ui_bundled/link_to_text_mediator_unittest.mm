@@ -78,7 +78,7 @@ class FakeJSFeature : public LinkToTextJavaScriptFeature {
 
  private:
   base::TimeDelta latency_;
-  raw_ptr<base::Value> response_;
+  raw_ptr<base::Value, DanglingUntriaged> response_;
 };
 
 }  // namespace

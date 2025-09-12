@@ -183,22 +183,22 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Observes changes of the browser view visibility state.
-  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent, DanglingUntriaged>
       _browserViewVisibilityNotifierBrowserAgent;
   // Observes changes of the feed visibility state.
-  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       _discoverFeedVisibilityBrowserAgent;
   std::unique_ptr<BrowserViewVisibilityObserverBridge>
       _browserViewVisibilityObserverBridge;
   // Used to load URLs.
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoader;
   raw_ptr<PrefService> _prefService;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // The current default search engine.
-  raw_ptr<const TemplateURL> _defaultSearchEngine;
+  raw_ptr<const TemplateURL, DanglingUntriaged> _defaultSearchEngine;
   // Sync Service.
   raw_ptr<syncer::SyncService> _syncService;
   // Used to check feed configuration based on the country.
@@ -211,14 +211,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       _backgroundCustomizationServiceObserverBridge;
   // Used to fetch and cache images for the background.
   raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
-  raw_ptr<UserUploadedImageManager> _userUploadedImageManager;
+  raw_ptr<UserUploadedImageManager, DanglingUntriaged>
+      _userUploadedImageManager;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
   id<SystemIdentity> _signedInIdentity;
   std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
   // Feature engagement tracker for handling "new" badge IPH.
-  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
 }
 
 // Synthesized from NewTabPageMutator.

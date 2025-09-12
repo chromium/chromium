@@ -331,7 +331,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   id toolbar_delegate_;
   id delegate_;
   std::unique_ptr<Browser> browser_;
